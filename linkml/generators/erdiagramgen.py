@@ -101,8 +101,12 @@ class ERDiagram(pydantic.BaseModel):
     relationships: list[Relationship] = []
 
     def __str__(self):
-        ents = "\n".join([str(e) for e in self.entities])
-        rels = "\n".join([str(r) for r in self.relationships])
+        # Sort entities and relationships for stable output
+        sorted_entities = sorted(self.entities, key=lambda e: e.name)
+        sorted_relationships = sorted(self.relationships, key=lambda r: str(r))
+
+        ents = "\n".join([str(e) for e in sorted_entities])
+        rels = "\n".join([str(r) for r in sorted_relationships])
         return f"erDiagram\n{ents}\n\n{rels}\n"
 
 
@@ -129,11 +133,17 @@ class ERDiagramGenerator(Generator):
     exclude_attributes: bool = False
     """If True, do not include attributes in entities"""
 
+    exclude_abstract_classes: bool = False
+    """If True, do not include abstract classes in the diagram"""
+
     genmeta: bool = False
     gen_classvars: bool = True
     gen_slots: bool = True
     no_types_dir: bool = False
     use_slot_uris: bool = False
+
+    preserve_names: bool = False
+    """If true, preserve LinkML element names (classes/slots) in diagram labels."""
 
     def __post_init__(self):
         self.schemaview = SchemaView(self.schema)
@@ -223,7 +233,9 @@ class ERDiagramGenerator(Generator):
     def add_upstream_class(self, class_name: ClassDefinitionName, targets: set[str], diagram: ERDiagram) -> None:
         sv = self.schemaview
         cls = sv.get_class(class_name)
-        entity = Entity(name=camelcase(cls.name))
+        if self.exclude_abstract_classes and cls.abstract:
+            return
+        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             if slot.range in targets:
@@ -239,7 +251,9 @@ class ERDiagramGenerator(Generator):
         """
         sv = self.schemaview
         cls = sv.get_class(class_name)
-        entity = Entity(name=camelcase(cls.name))
+        if self.exclude_abstract_classes and cls.abstract:
+            return
+        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             # TODO: schemaview should infer this
@@ -269,7 +283,9 @@ class ERDiagramGenerator(Generator):
         rel = Relationship(
             first_entity=entity.name,
             relationship_type=rel_type,
-            second_entity=camelcase(sv.get_class(slot.range).name),
+            second_entity=(
+                sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
+            ),
             relationship_label=slot.name,
         )
         diagram.relationships.append(rel)
@@ -288,7 +304,7 @@ class ERDiagramGenerator(Generator):
         if slot.multivalued:
             # NOTE: mermaid does not support []s or *s in attribute types
             dt = f"{dt}List"
-        attr = Attribute(name=underscore(slot.name), datatype=dt)
+        attr = Attribute(name=(slot.name if self.preserve_names else underscore(slot.name)), datatype=dt)
         entity.attributes.append(attr)
 
 
@@ -304,11 +320,15 @@ class ERDiagramGenerator(Generator):
     help="If True, do not include attributes in entities",
 )
 @click.option(
+    "--exclude-abstract-classes/--no-exclude-abstract-classes",
+    default=False,
+    help="If True, do not include abstract classes in the diagram",
+)
+@click.option(
     "--follow-references/--no-follow-references",
     default=False,
     help="If True, follow references even if not inlined",
 )
-@click.option("--format", "-f", default="markdown", type=click.Choice(ERDiagramGenerator.valid_formats))
 @click.option("--max-hops", default=None, type=click.INT, help="Maximum number of hops")
 @click.option("--classes", "-c", multiple=True, help="List of classes to serialize")
 @click.option("--include-upstream", is_flag=True, help="Include upstream classes")

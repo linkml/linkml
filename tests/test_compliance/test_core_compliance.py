@@ -528,7 +528,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     choices = {
         (PYDANTIC, False, False): "Optional[str] = Field(default=None",
         (PYDANTIC, False, True): "str = Field(default=...",
-        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=None",
+        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=[]",
         (PYDANTIC, True, True): "list[str] = Field(default=...",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",
@@ -819,9 +819,16 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
         ("E", "'"),
         ("E[x]", "[x]"),
         ("E", "[x]"),
+        ("E", "a/b"),
+        # ("E", "a\nb"),  # TODO
+        ("E", "a.b"),
+        ("E", "a:b"),
+        ("E", "a#b"),
+        ("E", "a{b}"),
+        ("E", "♥️"),  # Unicode heart symbol
     ],
 )
-def test_non_standard_num_names(framework, enum_name, pv_name):
+def test_non_standard_enum_names(framework, enum_name, pv_name):
     """
     Tests that non-standard enum and permissible value names are handled gracefully.
 
@@ -848,7 +855,7 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
     }
     name = ensafeify(f"EN{enum_name}_PV{pv_name}")
     schema = validated_schema(
-        test_non_standard_num_names,
+        test_non_standard_enum_names,
         name,
         framework,
         classes=classes,
@@ -872,6 +879,8 @@ def test_non_standard_num_names(framework, enum_name, pv_name):
         expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
     if pv_name == " " and framework in PYDANTIC:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

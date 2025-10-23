@@ -46,6 +46,7 @@ OWL, or translated to shape languages such as ShEx and SHACL.
    shex
    shacl
    owl
+   yarrrml
 
 Documentation Generation
 ------------------------
@@ -80,6 +81,7 @@ languages such as Python, Javascript, or Java.
    pydantic
    java
    typescript
+   rust
 
 Database
 --------

@@ -1,0 +1,28 @@
+{% if generate_merge %}
+#[merge({{ merge_strategy }})]
+{% endif %}
+{%- if is_key_value -%}
+{% if container_mode == "list" and inline_mode == "inline" %}
+#[cfg_attr(feature = "serde", serde(
+    deserialize_with = "serde_utils::deserialize_inlined_dict_list{% if optional %}_optional{% endif %}{% if recursive %}_box{% endif %}",
+    serialize_with = "serde_utils::serialize_inlined_dict_list{% if optional %}_optional{% endif %}"
+))]
+{% elif container_mode == "mapping" and inline_mode == "inline" %}
+#[cfg_attr(feature = "serde", serde(
+    deserialize_with = "serde_utils::deserialize_inlined_dict_map{% if optional %}_optional{% endif %}{% if recursive %}_box{% endif %}",
+    serialize_with = "serde_utils::serialize_inlined_dict_map{% if optional %}_optional{% endif %}"
+))]
+{% endif %}
+{% elif container_mode == "list" and inline_mode == "primitive" %}
+#[cfg_attr(feature = "serde", serde(
+    deserialize_with = "serde_utils::deserialize_primitive_list_or_single_value{% if optional %}_optional{% endif %}",
+    serialize_with = "serde_utils::serialize_primitive_list_or_single_value{% if optional %}_optional{% endif %}"
+))]
+{% endif -%}
+{% if hasdefault %}
+#[cfg_attr(feature = "serde", serde(default))]
+{% endif %}
+{% if alias %}
+#[cfg_attr(feature = "serde", serde(alias = "{{ alias }}"))]
+{% endif %}
+pub {{ name }}: {{ type_for_field }}

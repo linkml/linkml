@@ -1,0 +1,81 @@
+{% if special_case_enabled and name == 'Anything' %}
+{% include 'anything.rs.jinja' %}
+{% elif special_case_enabled and name == 'AnyValue' %}
+pub type AnyValue = Anything;
+{% else %}
+{% if class_module %}
+{{ class_module }}
+{% endif %}
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+{% if stubgen %}
+#[cfg_attr(feature = "stubgen", gen_stub_pyclass)]
+{% endif %}
+#[cfg_attr(feature = "pyo3", pyclass(subclass, get_all, set_all))]
+{% if generate_merge %}
+#[derive(Merge)]
+{% endif %}
+pub struct {{ name }} {
+{% for property in properties %}
+{% filter indent(width=4, first=True, blank=False) %}
+{{ property }}
+{%- if not loop.last -%},{{ '\n' }}{% else %}{{ '\n' }}{%- endif -%}
+{% endfilter %}
+{% endfor %}
+}
+{% if properties | length > 0 %}
+#[cfg(feature = "pyo3")]
+{% if stubgen %}
+#[cfg_attr(feature = "stubgen", gen_stub_pymethods)]
+{% endif %}
+#[pymethods]
+impl {{ name }} {
+    #[new]
+    #[pyo3(signature = ({{ constructor_signature }}))]
+    pub fn new({% for (n, t) in property_names_and_types %}{{ n }}: {{ t }}{% if not loop.last  %}, {% endif %}{% endfor %}) -> Self {
+{% for name, expr in constructor_conversions %}
+        let {{ name }} = {{ expr }};
+{% endfor %}
+        {{ name }}{{ "{" }}{% for (p, _) in property_names_and_types %}{{ p }}{% if not loop.last %}, {% endif %}{% endfor %}{{ "}" }}
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for Box<{{ name }}>
+{
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        (*self).into_pyobject(py).map(move |x| x.into_any())
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for Box<{{ name }}> {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        if let Ok(val) = ob.extract::<{{ name }}>() {
+            return Ok(Box::new(val));
+        }
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ name}}",
+        ))
+    }
+}
+
+{% if generate_merge %}
+impl {{ name }} {
+    pub fn merge_with(&mut self, other: &{{ name }}) {
+        self.merge(other.clone())
+    }
+}
+{% endif %}
+
+{% endif %}
+{% if as_key_value %}
+{{ as_key_value }}
+{% endif %}
+{% if struct_or_subtype_enum %}
+{{ struct_or_subtype_enum }}
+{% endif %}
+{% endif %}

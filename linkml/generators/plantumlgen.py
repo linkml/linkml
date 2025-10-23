@@ -37,6 +37,7 @@ class PlantumlGenerator(Generator):
     generatorversion = "0.1.1"
     valid_formats = ["puml", "plantuml", "png", "pdf", "jpg", "json", "svg"]
     visit_all_class_slots = False
+    preserve_names: bool = False
 
     referenced: Optional[set[ClassDefinitionName]] = None  # List of classes that have to be emitted
     generated: Optional[set[ClassDefinitionName]] = None  # List of classes that have been emitted
@@ -99,10 +100,9 @@ class PlantumlGenerator(Generator):
             return plantuml_url
         if directory:
             file_suffix = ".svg" if self.format == "puml" or self.format == "puml" else "." + self.format
-            self.output_file_name = os.path.join(
-                directory,
-                camelcase(sorted(classes)[0] if classes else self.schema.name) + file_suffix,
-            )
+            schema_name = sorted(classes)[0] if classes else self.schema.name
+            filename = schema_name if self.preserve_names else camelcase(schema_name)
+            self.output_file_name = os.path.join(directory, filename + file_suffix)
             resp = requests.get(plantuml_url, stream=True, timeout=REQUESTS_TIMEOUT)
             if resp.ok:
                 with open(self.output_file_name, "wb") as f:
@@ -133,14 +133,14 @@ class PlantumlGenerator(Generator):
             for slot in self.filtered_cls_slots(cn, all_slots=True, filtr=lambda s: s.range not in self.schema.classes):
                 if True or cn in slot.domain_of:
                     mod = self.prop_modifier(cls, slot)
+                    slot_name = (
+                        self.aliased_slot_name(slot)
+                        if self.preserve_names
+                        else underscore(self.aliased_slot_name(slot))
+                    )
+                    range_name = slot.range if self.preserve_names else underscore(slot.range)
                     slot_defs.append(
-                        "    {field} "
-                        + underscore(self.aliased_slot_name(slot))
-                        + mod
-                        + " : "
-                        + underscore(slot.range)
-                        + " "
-                        + self.cardinality(slot)
+                        "    {field} " + slot_name + mod + " : " + range_name + " " + self.cardinality(slot)
                     )
             self.class_generated.add(cn)
         self.referenced.add(cn)
@@ -358,6 +358,12 @@ class PlantumlGenerator(Generator):
     default=False,
     show_default=True,
     help="Print out Kroki URL calls instead of sending the real requests",
+)
+@click.option(
+    "--preserve-names/--normalize-names",
+    default=False,
+    show_default=True,
+    help="Preserve original LinkML names in PlantUML diagram output (e.g., for class names, slot names, file names).",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

@@ -1,0 +1,64 @@
+name: Build and test linkml (rustgen)
+
+env:
+  UV_VERSION: "0.7.13"
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-rustgen:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml'
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Install uv and setup uv caching
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: '3.12'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Show rust/cargo version
+        run: |
+          rustc -V
+          cargo -V
+
+      - name: Install Python deps (rustgen tests)
+        run: uv sync --group dev --group tests-rustgen --group tests-extra
+
+      - name: Run rustgen tests with coverage
+        run: |
+          uv run --group dev --group tests-rustgen coverage run -m pytest -m rustgen --with-rustgen
+          uv run coverage xml
+          uv run coverage report -m
+
+      - name: Upload coverage report
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v5.5.1
+        with:
+          name: codecov-results-rustgen
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          fail_ci_if_error: true

@@ -10,13 +10,15 @@ from collections import Counter
 from collections.abc import Generator
 from copy import copy
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 import yaml
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.docgen import DocGenerator
+from linkml.generators.docgen import DiagramType, DocGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +101,16 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         tmp_path / "Organization.md",
         "from_schema: https://w3id.org/linkml/tests/kitchen_sink",
         after="Class: Organization",
+    )
+    assert_mdfile_contains(
+        tmp_path / "KitchenStatus.md",
+        "URI: [ks:KitchenStatus](https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus)",
+        after="Enum: KitchenStatus",
+    )
+    assert_mdfile_contains(
+        tmp_path / "SubsetA.md",
+        "URI: [SubsetA](SubsetA.md)",
+        after=" Subset: SubsetA ",
     )
     assert_mdfile_contains(tmp_path / "Organization.md", "slot_uri: skos:altLabel", after="Induced")
     # test truncating newlines
@@ -1040,6 +1052,11 @@ def test_subfolder_type_separation(kitchen_sink_path, tmp_path):
         tmp_path / "classes" / "Person.md", 'click LifeStatusEnum href "../../enums/LifeStatusEnum/"'
     )
 
+    assert_mdfile_contains(
+        tmp_path / "enums" / "KitchenStatus.md",
+        "[ks:enum/KitchenStatus](https://w3id.org/linkml/tests/kitchen_sink/enum/KitchenStatus)",
+    )
+
 
 def test_uml_diagram_er(kitchen_sink_path, tmp_path):
     gen = DocGenerator(
@@ -1247,3 +1264,89 @@ def test_classrule_to_dict_view_method(input_path, tmp_path):
 
     # Test that elseconditions is None since it's not defined in the rule
     assert rule_dict["elseconditions"] is None
+
+
+def test_preserve_names(tmp_path):
+    """Test preserve_names option preserves original LinkML names in documentation output"""
+    schema = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        classes={
+            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot"]),
+            "Another_Class": ClassDefinition(name="Another_Class"),
+        },
+        slots={
+            "my_slot": SlotDefinition(name="my_slot", range="string"),
+        },
+    )
+
+    # Test default behavior (names are normalized)
+    gen_default = DocGenerator(schema=schema, mergeimports=False)
+    gen_default.serialize(directory=str(tmp_path / "default"))
+    assert (tmp_path / "default" / "MyClass.md").exists()
+    assert_mdfile_contains(tmp_path / "default" / "MyClass.md", "# Class: MyClass")
+
+    # Test preserve_names behavior (names are preserved)
+    gen_preserve = DocGenerator(schema=schema, mergeimports=False, preserve_names=True)
+    gen_preserve.serialize(directory=str(tmp_path / "preserve"))
+    assert (tmp_path / "preserve" / "My_Class.md").exists()
+    assert_mdfile_contains(tmp_path / "preserve" / "My_Class.md", "# Class: My_Class")
+    assert_mdfile_contains(
+        tmp_path / "preserve" / "My_Class.md",
+        "URI: [https://example.com/test/My_Class](https://example.com/test/My_Class)",
+    )
+
+    # Test method edge cases for coverage
+    assert gen_preserve.name(None) == ""
+    assert gen_preserve.link(None) == "NONE"
+    assert not gen_preserve._is_external(None)
+
+    # Test URI generation edge cases
+    test_cases = [
+        ("", "empty_id"),  # Empty ID
+        ("simple-id", "no_protocol"),  # No protocol
+        ("https://example.com/", "trailing_slash"),  # Trailing slash
+    ]
+
+    for schema_id, case_name in test_cases:
+        test_schema = SchemaDefinition(id=schema_id, name=case_name, classes={"Test": ClassDefinition(name="Test")})
+        gen = DocGenerator(schema=test_schema, preserve_names=True)
+        assert gen.uri(test_schema.classes["Test"]) is not None
+
+    # Test diagram generation
+    schema_with_types = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+        classes={"Test": ClassDefinition(name="Test")},
+    )
+    gen_diag = DocGenerator(schema=schema_with_types, preserve_names=True)
+    gen_diag.diagram_type = DiagramType.er_diagram
+    assert gen_diag.mermaid_diagram(["Test"]) is not None
+    gen_diag.diagram_type = DiagramType.plantuml_class_diagram
+    assert gen_diag.mermaid_diagram(["Test"]) is not None
+
+    # Test mappings with valid element
+    assert gen_preserve.schemaview.get_mappings("My_Class") is not None
+
+    # Cover case where element exists but 'self'/'native' mappings are absent
+    with patch("linkml_runtime.utils.schemaview.SchemaView.get_mappings", return_value={"other": ["x"]}):
+        gen_no_keys = DocGenerator(schema=schema, preserve_names=True)
+        assert gen_no_keys.schemaview.get_mappings("My_Class") is not None
+
+    # Cover case where mappings exist but the element cannot be resolved
+    with (
+        patch("linkml_runtime.utils.schemaview.SchemaView.get_mappings", return_value={"self": ["x"]}),
+        patch("linkml_runtime.utils.schemaview.SchemaView.get_element", return_value=None),
+    ):
+        gen_no_element = DocGenerator(schema=schema, preserve_names=True)
+        assert gen_no_element.schemaview.get_mappings("My_Class") is not None
+
+    # Test exception handling in mappings override
+    gen_preserve.uri = lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("test"))
+    gen_preserve.schemaview.get_mappings("My_Class")  # Should not crash
+
+    # Test mappings edge cases
+    for test_input in [None, "", "NonExistent"]:
+        gen_preserve.schemaview.get_mappings(test_input)

@@ -44,6 +44,7 @@ slots:
     inverse: c2s2
     range: c2
     inlined: true
+    inlined_as_list: true
   c2s2:
     name: c2s2
     definition_uri: http://example.org/tests/issue18/c2s2
@@ -54,6 +55,7 @@ slots:
     inverse: c1s2
     range: c1
     inlined: true
+    inlined_as_list: true
   c3s1:
     name: c3s1
     definition_uri: http://example.org/tests/issue18/c3s1
@@ -65,6 +67,7 @@ slots:
     inverse: c4s1
     range: c4
     inlined: true
+    inlined_as_list: true
   c4s1:
     name: c4s1
     definition_uri: http://example.org/tests/issue18/c4s1

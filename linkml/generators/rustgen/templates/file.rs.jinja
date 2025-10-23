@@ -1,0 +1,75 @@
+#![allow(non_camel_case_types)]
+
+{% if inline_serde_utils %}
+#[cfg(feature = "serde")]
+mod serde_utils { {{ serde_utils }} }
+{% else %}
+#[cfg(feature = "serde")]
+mod serde_utils;
+{% endif %}
+{% if emit_poly %}
+pub mod poly;
+pub mod poly_containers;
+{% endif %}
+{% if stubgen %}
+#[cfg(feature = "stubgen")]
+pub mod stub_utils;
+{% endif %}
+
+{{ imports }}
+
+// Types
+
+{% for type in types %}
+{{ type }}
+{% endfor %}
+
+// Slots
+
+{% for slot in slots %}
+{{ slot }}
+{% endfor %}
+
+// Enums
+
+{% for enum in enums %}
+{{ enum }}
+{% endfor %}
+
+// Classes
+
+{% for struct in structs %}
+{{ struct }}
+{% endfor %}
+
+
+{% if needs_overwrite_except_none %}
+/// Overwrite `left` with `right` unless `right` is `None`.
+fn overwrite_except_none<T>(left: &mut Option<T>, right: Option<T>) {
+    if right.is_some() {
+        *left = right;
+    }
+}
+{% endif %}
+
+{% if stubgen %}
+#[cfg(feature = "stubgen")]
+define_stub_info_gatherer!(stub_info);
+{% endif %}
+
+
+{% if pyo3 %}
+#[cfg(feature = "pyo3")]
+{% if handwritten_lib %}
+pub fn register_pymodule(m: &Bound<'_, PyModule>) -> PyResult<()> {
+{% else %}
+#[pymodule]
+#[pyo3(name="{{ name }}")]
+fn {{ name }}(m: &Bound<'_, PyModule>) -> PyResult<()> {
+{% endif %}
+    {% for s in pyclass_struct_names %}
+    m.add_class::<{{ s }}>()?;
+    {% endfor %}
+    Ok(())
+}
+{% endif %}

@@ -7,8 +7,8 @@ from click.testing import CliRunner
 
 from linkml.validator.cli import cli
 
-VALID_PERSON_1 = {"id": "id:1", "full_name": "John Doe", "age": 35}
-VALID_PERSON_2 = {"id": "id:2", "full_name": "Jane Smith", "age": 25, "phone": "555-555-5550"}
+VALID_PERSON_1 = {"id": "id:1", "name": "John Doe", "age": 35}
+VALID_PERSON_2 = {"id": "id:2", "name": "Jane Smith", "age": 25, "telephone": "555-555-5550"}
 PERSONINFO_SCHEMA = str(Path(__file__).parent / "input/personinfo.yaml")
 
 
@@ -22,7 +22,7 @@ def csv_data_file(tmp_path):
     def create(data, filename="data.csv"):
         data_path = tmp_path / filename
         with open(data_path, "w") as data_file:
-            writer = csv.DictWriter(data_file, ["id", "full_name", "age", "phone"])
+            writer = csv.DictWriter(data_file, ["id", "name", "age", "telephone"])
             writer.writeheader()
             for row in data:
                 writer.writerow(row)
@@ -47,8 +47,8 @@ def test_valid_csv_file(cli_runner, csv_data_file):
 
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.exception is None
     assert result.output == "No issues found\n"
+    assert result.exception is None
     assert result.exit_code == 0
 
 
@@ -84,13 +84,13 @@ def test_no_schema_provided(cli_runner):
 def test_invalid_json(cli_runner, json_data_file):
     """Verify that validation messages are emitted for invalid data"""
 
-    invalid_data = {**VALID_PERSON_1, "phone": "asdf"}
+    invalid_data = {**VALID_PERSON_1, "telephone": "asdf"}
     data_path = json_data_file({"persons": [invalid_data]})
 
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert "[ERROR]" in result.output
     assert "'asdf' does not match" in result.output
-    assert "/persons/0/phone" in result.output
+    assert "/persons/0/telephone" in result.output
     assert result.exit_code == 1
 
 
@@ -116,7 +116,7 @@ plugins:
     result = cli_runner.invoke(cli, ["--config", str(config_path), data_path])
     assert result.exception is None
     assert "[WARN]" in result.output
-    assert "'phone' is recommended" in result.output
+    assert "'telephone' is recommended" in result.output
     assert "[ERROR]" not in result.output
     assert result.exit_code == 0
 
