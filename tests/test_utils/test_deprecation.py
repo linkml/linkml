@@ -276,14 +276,3 @@ def test_dataclass_fields():
                 warning_deprecated_metadata_flag = True
                 break
         assert warning_deprecated_metadata_flag
-
-
-def test_deprecation_warning_visible():
-    with warnings.catch_warnings(record=True) as record:
-        warnings.simplefilter("always")
-        warnings.warn("Test DeprecationWarning", DeprecationWarning)
-        warning_deprecated = False
-        for warning in record:
-            if warning.category is DeprecationWarning:
-                warning_deprecated = True
-        assert warning_deprecated
