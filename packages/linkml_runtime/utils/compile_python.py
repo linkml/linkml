@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 from logging import warning
@@ -17,7 +19,7 @@ def file_text(txt_or_fname: str) -> str:
     return txt_or_fname
 
 
-def compile_python(text_or_fn: str, package_path: str = None, module_name: str = None) -> ModuleType:
+def compile_python(text_or_fn: str, package_path: str | None = None, module_name: str | None = "test") -> ModuleType:
     """
     Compile the text or file and return the resulting module
 
@@ -26,7 +28,7 @@ def compile_python(text_or_fn: str, package_path: str = None, module_name: str =
     :param module_name: Used in an import statement, default 'test'
     :return: Compiled module
     """
-    if module_name is None:
+    if not module_name:
         module_name = "test"
     python_txt = file_text(text_or_fn)
     if package_path is None and python_txt != text_or_fn:
