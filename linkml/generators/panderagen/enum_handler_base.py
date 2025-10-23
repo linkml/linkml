@@ -1,7 +1,15 @@
+from typing import TYPE_CHECKING
+
 from linkml_runtime.linkml_model.meta import PermissibleValue, PermissibleValueText
 
+if TYPE_CHECKING:
+    from .dataframe_generator import DataframeGenerator
 
-class EnumGeneratorMixin:
+
+class EnumHandlerBase:
+    def __init__(self, generator: "DataframeGenerator"):
+        self.generator = generator
+
     def escape_permissible_value_text(self, pv_text):
         return pv_text.replace("'", "\\'").replace('"', '\\"')
 
