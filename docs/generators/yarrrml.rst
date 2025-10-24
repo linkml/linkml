@@ -40,10 +40,10 @@ The generator produces YARRRML like:
 CSV / TSV sources
 -----------------
 
-Besides JSON, CSV and TSV are supported. The key differences:
+Besides JSON, CSV/TSV is supported. The key differences:
 
 - No iterator is required for CSV/TSV (each row is a candidate).
-- ``sources`` must be expressed as a **list of lists** for compatibility with engines like Morph-KGC:
+- ``sources`` must be expressed as a **list of lists** for compatibility with common engines (e.g. Morph-KGC):
 
   .. code-block:: yaml
 
@@ -68,7 +68,7 @@ Besides JSON, CSV and TSV are supported. The key differences:
          value: $(employer)
          type: iri
 
-- TSV works the same way (``~csv``). Most engines auto-detect tab separators. Explicit CSVW options (delimiters, quoting, etc.) are out of scope for the generator and can be edited manually if needed.
+- TSV works via the same formulation (``~csv``). Most engines auto-detect the tab separator for ``.tsv`` files. If an engine requires explicit delimiter/CSVW options, that is currently out of scope and can be handled manually in post-editing.
 
 Source inference
 ----------------
@@ -97,12 +97,12 @@ Examples:
 Overview
 --------
 
-- One mapping per LinkML class
-- Prefixes come from the schema
-- Subject from identifier slot (else key; else safe fallback)
+- one mapping per LinkML class
+- prefixes come from the schema
+- subject from identifier slot (else key; else safe fallback)
 - ``po`` for all class attributes (slot aliases respected)
-- Emits ``rdf:type`` as CURIEs (e.g., ``ex:Person``)
-- JSON default: ``sources: [[data.json~jsonpath, $.items[*]]]``
+- emits ``rdf:type`` as CURIEs (e.g., ``ex:Person``)
+- JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
 - CSV/TSV: ``sources: [[path~csv]]`` (no iterator), values via ``$(column)``
 
 Command Line
@@ -143,6 +143,6 @@ Limitations
 - One source per mapping
 - Classes without an identifier are **assigned a fallback subject**: ``ex:<Class>/$(subject_id)``
 - Object slots: ``inlined: false`` → IRI; ``inlined: true`` → included as separate mapping
-- Iterators are not inferred from JSON Schema
-- No per-slot JSONPath/CSV expressions or transforms yet
-- CSV/TSV delimiter or CSVW configs must be edited manually if needed
+- Iterators not derived from JSON Schema
+- No per-slot JSONPath/CSV expressions or functions
+- CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed
