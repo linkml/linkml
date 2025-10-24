@@ -273,7 +273,7 @@ default_prefix: ex
 default_range: string
 
 classes:
-  Notification:
+  Note:
     attributes:
       text: {}
 """
@@ -329,14 +329,12 @@ def test_regression_no_yaml_python_object_garbage(tmp_path: Path):
 def test_regression_classes_without_identifier_are_included(tmp_path: Path):
     schema_path = tmp_path / "schema.yaml"
     schema_path.write_text(SCHEMA_NO_ID, encoding="utf-8")
-
     yg = YarrrmlGenerator(str(schema_path))
     yobj = yaml.safe_load(yg.serialize())
-
-    assert "Notification" in yobj["mappings"]
-    subj = yobj["mappings"]["Notification"]["s"]
-    assert subj.startswith("ex:Notification/$(")  # fallback subject
-    assert yobj["mappings"]["Notification"]["po"][0]["o"] == "ex:Notification"
+    assert "Note" in yobj["mappings"]
+    subj = yobj["mappings"]["Note"]["s"]
+    assert subj.startswith("ex:Note/$(")
+    assert yobj["mappings"]["Note"]["po"][0]["o"] == "ex:Note"
 
 
 @pytest.mark.yarrrml
@@ -352,15 +350,12 @@ def test_yarrrml_e2e_basic_json_morph_shacl(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_BASIC, indent=2), encoding="utf-8")
-
     js = JsonSchemaGenerator(str(schema_path)).serialize()
     jsonschema.validate(instance=DATA_BASIC, schema=json.loads(js))
-
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     for m in yarrrml["mappings"].values():
         assert isinstance(m["sources"][0], list) and "~jsonpath" in m["sources"][0][0]
-
     g = _materialize_with_morph(tmp_path, yarrrml)
     EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
     assert (EX.P1, RDF.type, EX.Person) in g
@@ -369,7 +364,6 @@ def test_yarrrml_e2e_basic_json_morph_shacl(tmp_path: Path):
     assert (EX.P1, EX.employer, rdflib.URIRef("https://ex.org/mini#O1")) in g
     assert (EX.O1, RDF.type, EX.Organization) in g
     assert (EX.O1, EX.org_name, rdflib.Literal("Org_A")) in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed:\n{results_text}"
 
@@ -380,21 +374,17 @@ def test_yarrrml_e2e_alias_support(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_ALIAS, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_ALIAS, indent=2), encoding="utf-8")
-
     js = JsonSchemaGenerator(str(schema_path)).serialize()
     jsonschema.validate(instance=DATA_ALIAS, schema=json.loads(js))
-
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     g = _materialize_with_morph(tmp_path, yarrrml)
-
     EX, RDF = rdflib.Namespace("https://ex.org/alias#"), rdflib.RDF
     assert (EX.U1, RDF.type, EX.Person) in g
     assert (EX.U1, EX.full_name, rdflib.Literal("User_Prime")) in g
     assert (EX.U1, EX.employer, rdflib.URIRef("https://ex.org/alias#M1")) in g
     assert (EX.M1, RDF.type, EX.Org) in g
     assert (EX.M1, EX.oname, rdflib.Literal("Vendor_X")) in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed:\n{results_text}"
 
@@ -405,24 +395,19 @@ def test_yarrrml_e2e_inlined_true_included(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_INLINED, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_INLINED, indent=2), encoding="utf-8")
-
     js = JsonSchemaGenerator(str(schema_path)).serialize()
     jsonschema.validate(instance=DATA_INLINED, schema=json.loads(js))
-
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
-
     assert "Address" in yarrrml["mappings"]
     addr_map = yarrrml["mappings"]["Address"]
     assert any(po["p"].endswith("street") for po in addr_map["po"])
     assert any(po["p"].endswith("city") for po in addr_map["po"])
-
     g = _materialize_with_morph(tmp_path, yarrrml)
     EX, RDF = rdflib.Namespace("https://ex.org/inl#"), rdflib.RDF
     assert (EX.A1, RDF.type, EX.Person) in g
     assert (EX.A1, EX.name, rdflib.Literal("WorkerX")) in g
     assert (EX.A1, EX.address, None) not in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed:\n{results_text}"
 
@@ -433,20 +418,16 @@ def test_yarrrml_e2e_prefixes_and_multiple_classes(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_PREFIXES, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_PREFIXES, indent=2), encoding="utf-8")
-
     js = JsonSchemaGenerator(str(schema_path)).serialize()
     jsonschema.validate(instance=DATA_PREFIXES, schema=json.loads(js))
-
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     assert "rdf" in yarrrml["prefixes"] and "ex" in yarrrml["prefixes"]
     assert set(yarrrml["mappings"].keys()) >= {"A", "B"}
-
     g = _materialize_with_morph(tmp_path, yarrrml)
     EX, RDF = rdflib.Namespace("https://ex.org/pfx#"), rdflib.RDF
     assert (EX.X1, RDF.type, EX.A) in g
     assert (EX.Y1, RDF.type, EX.B) in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed:\n{results_text}"
 
@@ -458,14 +439,11 @@ def test_yarrrml_e2e_missing_target_instances(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_MISSING, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_MISSING, indent=2), encoding="utf-8")
-
     js = JsonSchemaGenerator(str(schema_path)).serialize()
     jsonschema.validate(instance=DATA_MISSING, schema=json.loads(js))
-
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     g = _materialize_with_morph(tmp_path, yarrrml)
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"Expected SHACL failure but got:\n{results_text}"
 
@@ -474,7 +452,6 @@ def test_yarrrml_e2e_missing_target_instances(tmp_path: Path):
 def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
     schema_path = tmp_path / "schema.yaml"
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
-
     csv_path = tmp_path / "people.csv"
     csv_path.write_text(
         "person_id,name,employer,org_id,org_name\n"
@@ -482,16 +459,12 @@ def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
         "P2,WorkerB,https://ex.org/mini#O2,O2,Org_B\n",
         encoding="utf-8",
     )
-
     yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()) + "~csv")
     yarrrml = yaml.safe_load(yg.serialize())
-
     for m in yarrrml["mappings"].values():
-        assert isinstance(m["sources"][0], list), "CSV source must be list-wrapped (['...~csv'])"
-        assert "~csv" in m["sources"][0][0], "CSV source must carry ~csv formulation"
-
+        assert isinstance(m["sources"][0], list)
+        assert "~csv" in m["sources"][0][0]
     g = _materialize_with_morph(tmp_path, yarrrml)
-
     EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
     assert (EX.P1, RDF.type, EX.Person) in g
     assert (EX.P1, rdflib.URIRef("https://ex.org/mini#name"), rdflib.Literal("WorkerA")) in g
@@ -499,7 +472,6 @@ def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
     assert (EX.P1, rdflib.URIRef("https://ex.org/mini#employer"), rdflib.URIRef("https://ex.org/mini#O1")) in g
     assert (EX.O1, RDF.type, EX.Organization) in g
     assert (EX.O1, rdflib.URIRef("https://ex.org/mini#org_name"), rdflib.Literal("Org_A")) in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed for CSV:\n{results_text}"
 
@@ -508,7 +480,6 @@ def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
 def test_yarrrml_e2e_basic_tsv_morph_shacl(tmp_path: Path):
     schema_path = tmp_path / "schema.yaml"
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
-
     tsv_path = tmp_path / "people.tsv"
     tsv_path.write_text(
         "person_id\tname\temployer\torg_id\torg_name\n"
@@ -516,20 +487,15 @@ def test_yarrrml_e2e_basic_tsv_morph_shacl(tmp_path: Path):
         "P2\tWorkerB\thttps://ex.org/mini#O2\tO2\tOrg_B\n",
         encoding="utf-8",
     )
-
     yg = YarrrmlGenerator(str(schema_path), source=str(tsv_path.resolve()) + "~csv")
     yarrrml = yaml.safe_load(yg.serialize())
-
     for m in yarrrml["mappings"].values():
         assert isinstance(m["sources"][0], list)
         assert m["sources"][0][0].endswith("~csv")
-
     g = _materialize_with_morph(tmp_path, yarrrml)
-
     EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
     assert (EX.P1, RDF.type, EX.Person) in g
     assert (EX.O2, RDF.type, EX.Organization) in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed for TSV:\n{results_text}"
 
@@ -538,23 +504,18 @@ def test_yarrrml_e2e_basic_tsv_morph_shacl(tmp_path: Path):
 def test_yarrrml_e2e_csv_source_suffix_inference(tmp_path: Path):
     schema_path = tmp_path / "schema.yaml"
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
-
     csv_path = tmp_path / "minimal.csv"
     csv_path.write_text(
         "person_id,name,employer,org_id,org_name\nP9,UserZ,https://ex.org/mini#O9,O9,Org_Z\n",
         encoding="utf-8",
     )
-
     yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()))
     yarrrml = yaml.safe_load(yg.serialize())
-
     for m in yarrrml["mappings"].values():
         assert isinstance(m["sources"][0], list)
         assert m["sources"][0][0].endswith("~csv")
-
     g = _materialize_with_morph(tmp_path, yarrrml)
     EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
     assert (EX.P9, RDF.type, EX.Person) in g
-
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed for suffix inference:\n{results_text}"
