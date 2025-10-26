@@ -396,17 +396,36 @@ wheels = [
 
 [[package]]
 name = "curies"
-version = "0.10.19"
+version = "0.10.23"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.10'",
+]
 dependencies = [
     { name = "eval-type-backport", marker = "python_full_version < '3.10'" },
-    { name = "pydantic" },
-    { name = "pytrie" },
-    { name = "typing-extensions" },
+    { name = "pydantic", marker = "python_full_version < '3.10'" },
+    { name = "pytrie", marker = "python_full_version < '3.10'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.10'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/d9/911e88f1a78229fe85b2ebf2efd06312e7d012eca53ee75b611086851c6a/curies-0.10.19.tar.gz", hash = "sha256:aeae5e7cbb7aee6c5144376fcb69e15a0d3c0557a12f9edff809bd0ce5004ea2", size = 271414, upload-time = "2025-05-14T09:05:36.452Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4b/3d/305b5fbc6fa16ead33e6b5227cd5f2a2b6bc76ec2517f340c8334480ea25/curies-0.10.23.tar.gz", hash = "sha256:4dec36f371a7e47673817c6dc5d2c079cd81a349cef7bdc26f8b396708c7a984", size = 278203, upload-time = "2025-09-08T11:37:03.499Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0c/8d/440d865fbb1b38382f30f031795fc6c47db38744ecf06cb1cd7ce64d507a/curies-0.10.19-py3-none-any.whl", hash = "sha256:8f34e945c5101f6ba0916bc73c1e1e244da5412adf35eabcf0e596acb47460d6", size = 60459, upload-time = "2025-05-14T09:05:34.659Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/76/a18f435fc02e8933e3edd92703076ff6a5c291be4aa4b93d99247ea6aa5f/curies-0.10.23-py3-none-any.whl", hash = "sha256:dccb9339724393a15b5ca0385c6d7a9a8eaa63c572b7d3d20c021512588e1c84", size = 65926, upload-time = "2025-09-08T11:37:02.27Z" },
+]
+
+[[package]]
+name = "curies"
+version = "0.12.2"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.10'",
+]
+dependencies = [
+    { name = "pydantic", marker = "python_full_version >= '3.10'" },
+    { name = "typing-extensions", marker = "python_full_version >= '3.10'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b7/96/e3b42a5005b15a97c24a14f3356ea8714b6bd849de9b9fd8b2e527e9627f/curies-0.12.2.tar.gz", hash = "sha256:c31adfbcd969e5de32d737fd443196f6b292c31bb11c6894ef155be099f63387", size = 279883, upload-time = "2025-10-24T15:37:08.911Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d2/6c/94b0058728b7530aeedf5a94ef1bdc9998e940f4f43a4e3d4bd3dfacece5/curies-0.12.2-py3-none-any.whl", hash = "sha256:1dbe8a467718547c8a7ebd1224e9afa9d1730ee7db6942a512dcd9959d9de6fe", size = 67426, upload-time = "2025-10-24T15:37:07.016Z" },
 ]
 
 [[package]]
@@ -570,7 +589,8 @@ source = { editable = "." }
 dependencies = [
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "click", version = "8.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
-    { name = "curies" },
+    { name = "curies", version = "0.10.23", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "curies", version = "0.12.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "deprecated" },
     { name = "hbreader" },
     { name = "isodate", marker = "python_full_version < '3.11'" },
@@ -694,7 +714,8 @@ name = "prefixmaps"
 version = "0.2.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "curies" },
+    { name = "curies", version = "0.10.23", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "curies", version = "0.12.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pyyaml" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/4d/cf/f588bcdfd2c841839b9d59ce219a46695da56aa2805faff937bbafb9ee2b/prefixmaps-0.2.6.tar.gz", hash = "sha256:7421e1244eea610217fa1ba96c9aebd64e8162a930dc0626207cd8bf62ecf4b9", size = 709899, upload-time = "2024-10-17T16:30:57.738Z" }
@@ -909,7 +930,7 @@ name = "pytrie"
 version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "sortedcontainers" },
+    { name = "sortedcontainers", marker = "python_full_version < '3.10'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/d3/19/15ec77ab9c85f7c36eb590d6ab7dd529f8c8516c0e2219f1a77a99d7ee77/PyTrie-0.4.0.tar.gz", hash = "sha256:8f4488f402d3465993fb6b6efa09866849ed8cda7903b50647b7d0342b805379", size = 95139, upload-time = "2020-10-21T15:39:30.334Z" }
 wheels = [
