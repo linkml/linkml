@@ -1,0 +1,47 @@
+{
+   "_comments": "Auto generated from mappings.yaml by jsonldcontextgen.py version: 0.1.1\n    Generation date: 2022-07-14T00:56:31\n    Schema: mappings\n    metamodel version: 1.7.0\n    model version: 2.0.0\n    \n    id: https://w3id.org/linkml/mappings\n    description: LinkML model for mappings\n    license: https://creativecommons.org/publicdomain/zero/1.0/\n    ",
+   "@context": {
+      "IAO": {
+         "@id": "http://purl.obolibrary.org/obo/IAO_",
+         "@prefix": true
+      },
+      "OIO": "http://www.geneontology.org/formats/oboInOwl#",
+      "linkml": "https://w3id.org/linkml/",
+      "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+      "skos": "http://www.w3.org/2004/02/skos/core#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "@vocab": "https://w3id.org/linkml/",
+      "broad_mappings": {
+         "@type": "@id",
+         "@id": "skos:broadMatch"
+      },
+      "close_mappings": {
+         "@type": "@id",
+         "@id": "skos:closeMatch"
+      },
+      "deprecated_element_has_exact_replacement": {
+         "@type": "@id"
+      },
+      "deprecated_element_has_possible_replacement": {
+         "@type": "@id"
+      },
+      "exact_mappings": {
+         "@type": "@id",
+         "@id": "skos:exactMatch"
+      },
+      "mappings": {
+         "@type": "@id",
+         "@id": "skos:mappingRelation"
+      },
+      "narrow_mappings": {
+         "@type": "@id",
+         "@id": "skos:narrowMatch"
+      },
+      "related_mappings": {
+         "@type": "@id",
+         "@id": "skos:relatedMatch"
+      }
+   }
+}
+

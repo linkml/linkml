@@ -1,0 +1,13 @@
+id: parent
+name: parent
+title: parent
+description: Parent of our main schema, imports two layers down in the grandchild
+imports:
+  - linkml:types
+  - ./L1_0_1/L2_0_1_0/grandchild
+classes:
+  Parent:
+    attributes:
+      value:
+        range: string
+        ifabsent: "Parent"
