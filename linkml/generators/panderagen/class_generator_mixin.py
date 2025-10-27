@@ -7,8 +7,8 @@ class ClassGeneratorMixin:
             return self.schemaview.get_enum(cn, strict=True)
         elif cn in self.schemaview.all_classes():
             return self.schemaview.get_class(cn, strict=True)
-        else:
-            raise Exception(f"Unknown class or enum {cn}")
+
+        raise Exception(f"Unknown class or enum {cn}")
 
     def ordered_classes(self):
         sorter = DependencySorter()
