@@ -32,7 +32,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-include = ["linkml_runtime"]
 requires-python = ">=3.9"
 dynamic = ["version"]
 dependencies = [
@@ -48,7 +47,7 @@ dependencies = [
     "requests",
     "prefixmaps >=0.1.4",
     "curies >=0.5.4",
-    "pydantic >=2.0.0, <3.0.0",
+    "pydantic >=1.10.2, <3.0.0",
     "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
 
@@ -56,8 +55,6 @@ dependencies = [
 dev = [
     "coverage >=6.2",
     "requests-cache >=1.2.0",
-    "tox>=4",
-    "ruff==0.11.13",
 ]
 
 [project.scripts]
@@ -86,9 +83,6 @@ ignore-words-list = [
   # dropped when upstream is fixed
   "GENERARE",
   "re-used",
-  "ot",
-  "VRSATILE",
-  "vrsatile"
 ]
 quiet-level = 3
 # https://docs.astral.sh/ruff/settings/
@@ -178,10 +172,23 @@ ignore = [
     "E203",
     "E501",
     "ISC001",
+    "C901",  # complexity checks - runtime package has different conventions
+    "N801",  # invalid-class-name
+    "N802",  # invalid-function-name
+    "F821",  # undefined-name
+    "N818",  # error-suffix-on-exception-name
+    "E741",  # ambiguous-variable-name
+    "N816",  # mixed-case-variable-in-global-scope
+    "UP007", # non-pep604-annotation-union
+    "F811",  # redefined-while-unused
+    "F841",  # unused-variable
+    "E731",  # lambda-assignment
+    "E402",  # module-import-not-at-top-of-file
+    "E712",  # true-false-comparison
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101"] # use of assert
+"tests/**/*.py" = ["S101", "E402", "E501", "F811", "E741"] # use of assert, test files have different conventions
 
 [tool.ruff.lint.mccabe]
 # Flag errors (`C901`) whenever the complexity level exceeds 15.
@@ -241,3 +248,8 @@ fallback-version = "0.0.0"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
+
+[tool.hatch.build.targets.wheel]
+
+[tool.hatch.build.targets.sdist]
+include = ["**/*"]
