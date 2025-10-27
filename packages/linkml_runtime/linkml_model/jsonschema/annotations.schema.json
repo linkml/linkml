@@ -1,0 +1,128 @@
+{
+   "$defs": {
+      "Annotation": {
+         "additionalProperties": false,
+         "description": "a tag/value pair with the semantics of OWL Annotation",
+         "properties": {
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "tag",
+            "value"
+         ],
+         "title": "Annotation",
+         "type": "object"
+      },
+      "Annotation__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a tag/value pair with the semantics of OWL Annotation",
+         "properties": {
+            "annotations": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Annotation__identifier_optional"
+               },
+               "description": "a collection of tag/text tuples with the semantics of OWL Annotation"
+            },
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "value"
+         ],
+         "title": "Annotation",
+         "type": "object"
+      },
+      "Extension": {
+         "additionalProperties": false,
+         "description": "a tag/value pair used to add non-model information to an entry",
+         "properties": {
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "tag",
+            "value"
+         ],
+         "title": "Extension",
+         "type": "object"
+      },
+      "Extension__identifier_optional": {
+         "additionalProperties": false,
+         "description": "a tag/value pair used to add non-model information to an entry",
+         "properties": {
+            "extensions": {
+               "additionalProperties": {
+                  "$ref": "#/$defs/Extension__identifier_optional"
+               },
+               "description": "a tag/text tuple attached to an arbitrary element"
+            },
+            "tag": {
+               "description": "a tag associated with an extension",
+               "type": "string"
+            },
+            "value": {
+               "description": "the actual annotation",
+               "type": "string"
+            }
+         },
+         "required": [
+            "value"
+         ],
+         "title": "Extension",
+         "type": "object"
+      }
+   },
+   "$id": "https://w3id.org/linkml/annotations",
+   "$schema": "http://json-schema.org/draft-07/schema#",
+   "additionalProperties": true,
+   "metamodel_version": "1.7.0",
+   "properties": {},
+   "required": [],
+   "title": "annotations",
+   "type": "object",
+   "version": "2.0.0"
+}
+
