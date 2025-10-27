@@ -26,29 +26,28 @@ class DependencySorter:
         leaf_dependency_graph = {n: [] for n in no_dependency_nodes}
         self.dependency_dict.update(leaf_dependency_graph)
 
-    def _visit(self, node: str, visited: set[str], result: list[str]):
+    def _visit(self, node: str, visited: set[str], in_progress: set[str], result: list[str]) -> None:
         """
-        recursively visit dependencies in depth first order
+        recursively visit dependencies in depth first order.
+        the graph dicts are assumed to be in proper form (aside from cycles)
 
         :param visited: tracks progress (initialize to set())
         :param result: builds sorted dependency list (initialize to [])
+        :param in_progress: for tracking cycles (initialize to set())
         """
-        temp_visited = set()
+        if node in visited:
+            return
+        if node in in_progress:
+            cycle_path = " -> ".join(list(in_progress) + [node])
 
-        if node in temp_visited:
-            cycle_path = " -> ".join(list(temp_visited) + [node])
             raise ValueError(f"Cyclic dependency detected: {cycle_path}")
 
-        if node not in visited:
-            temp_visited.add(node)
-
-            for dependency in self.dependency_dict[node]:
-                if dependency in self.dependency_dict:
-                    self._visit(dependency, visited, result)
-
-            temp_visited.remove(node)
-            visited.add(node)
-            result.append(node)
+        in_progress.add(node)
+        for dependency in self.dependency_dict[node]:
+            self._visit(dependency, visited, in_progress, result)
+        in_progress.remove(node)
+        visited.add(node)
+        result.append(node)
 
     def sort_dependencies(self) -> list[str]:
         """
@@ -61,10 +60,11 @@ class DependencySorter:
 
         result = []
         visited = set()
+        in_progress = set()
 
         for node in self.dependency_dict:
             if node not in visited:
-                self._visit(node, visited, result)
+                self._visit(node, visited, in_progress, result)
 
         return result
 
