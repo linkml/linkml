@@ -894,6 +894,14 @@ class MarkdownDataDictGen(Generator):
         out = self.header(3, header_label)
 
         out += self.para(be(obj.description))
+
+        # Also include comments if present
+        if hasattr(obj, 'comments') and obj.comments:
+            for comment in obj.comments:
+                # Remove ^^rdf:HTML and similar type annotations
+                comment_text = re.sub(r'\^\^[\w:]+$', '', comment).strip()
+                out += self.para(be(comment_text))
+
         # out = "\n".join([out, f"URI: [{curie}]({uri})", ""])
         return out
 
