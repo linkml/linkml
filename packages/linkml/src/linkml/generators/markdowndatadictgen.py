@@ -164,6 +164,8 @@ class MarkdownDataDictGen(Generator):
     debug: bool = False
     kroki_server: Optional[str] = None
     diagram_dir: Optional[str] = None
+    add_svg_links: Optional[str] = None
+    pretty_format_svg: bool = False
     _diagram_counter: int = 0
 
     schema_classes = set[ClassDefinition]
@@ -212,6 +214,47 @@ class MarkdownDataDictGen(Generator):
             self.para(be(self.schema.description)),
         ]
 
+    def _pretty_format_svg(self, svg_content: str) -> str:
+        """
+        Pretty-format SVG content with proper indentation.
+
+        Args:
+            svg_content: The SVG content as a string
+
+        Returns:
+            Pretty-formatted SVG with proper HTML-style indentation
+        """
+        try:
+            from xml.dom import minidom
+
+            # Parse the SVG
+            dom = minidom.parseString(svg_content)
+
+            # Pretty print with 2-space indentation
+            pretty_xml = dom.toprettyxml(indent="  ", encoding=None)
+
+            # Remove the XML declaration line if present
+            lines = pretty_xml.split('\n')
+            if lines and lines[0].startswith('<?xml'):
+                lines = lines[1:]
+
+            # Remove extra blank lines that minidom sometimes adds
+            cleaned_lines = []
+            prev_blank = False
+            for line in lines:
+                is_blank = not line.strip()
+                if is_blank and prev_blank:
+                    continue
+                cleaned_lines.append(line)
+                prev_blank = is_blank
+
+            return '\n'.join(cleaned_lines).strip() + '\n'
+
+        except Exception as e:
+            # If formatting fails, return original content
+            logging.debug(f"Failed to pretty-format SVG: {e}")
+            return svg_content
+
     def _add_links_to_svg(self, svg_content: str) -> str:
         """
         Add hyperlinks to class names in SVG diagrams.
@@ -220,12 +263,18 @@ class MarkdownDataDictGen(Generator):
         - SVG <text> elements (used in ERD diagrams)
         - SVG <foreignObject> with HTML content (used in class diagrams)
 
+        Only adds links if add_svg_links is set (contains base URL for documentation).
+
         Args:
             svg_content: The SVG content as a string
 
         Returns:
-            Modified SVG with hyperlinks added to class names
+            Modified SVG with hyperlinks added to class names, or original SVG if add_svg_links is not set
         """
+        # Only add links if explicitly requested via --add-svg-links option
+        if not self.add_svg_links:
+            return svg_content
+
         try:
             # Register SVG and XHTML namespaces
             ET.register_namespace('', 'http://www.w3.org/2000/svg')
@@ -236,6 +285,9 @@ class MarkdownDataDictGen(Generator):
 
             # Get all class names from schema
             class_names = set(self.schema.classes.keys())
+
+            # Construct base URL for links (with trailing fragment)
+            base_url = self.add_svg_links.rstrip('/')
 
             # Handle SVG <text> elements (ERD diagrams)
             for text_elem in root.iter('{http://www.w3.org/2000/svg}text'):
@@ -260,8 +312,8 @@ class MarkdownDataDictGen(Generator):
                     if parent is not None and parent.tag == '{http://www.w3.org/2000/svg}g':
                         # Create an anchor element
                         anchor = ET.Element('{http://www.w3.org/2000/svg}a')
-                        # Use lowercase for better markdown compatibility
-                        anchor.set('{http://www.w3.org/1999/xlink}href', f'#{matched_class.lower()}')
+                        # Use absolute URL with lowercase anchor for markdown compatibility
+                        anchor.set('{http://www.w3.org/1999/xlink}href', f'{base_url}#{matched_class.lower()}')
 
                         # Find index of text element in parent
                         children = list(parent)
@@ -292,9 +344,9 @@ class MarkdownDataDictGen(Generator):
                     matched_class = text_content[2:]
 
                 if matched_class:
-                    # Wrap the text in an HTML anchor tag
+                    # Wrap the text in an HTML anchor tag with absolute URL
                     # Use lowercase for better markdown compatibility
-                    return f'<html:p><html:a href="#{matched_class.lower()}" style="color: inherit; text-decoration: none;">{text_content}</html:a></html:p>'
+                    return f'<html:p><html:a href="{base_url}#{matched_class.lower()}" style="color: inherit; text-decoration: none;">{text_content}</html:a></html:p>'
                 return full_p
 
             # Find p tags within nodeLabel spans and wrap class names
@@ -355,6 +407,10 @@ class MarkdownDataDictGen(Generator):
 
             # Add hyperlinks to class names in SVG
             svg_content = self._add_links_to_svg(svg_content)
+
+            # Pretty-format the SVG if requested
+            if self.pretty_format_svg:
+                svg_content = self._pretty_format_svg(svg_content)
 
             # If diagram_dir is set, save to file and return image reference
             if self.diagram_dir:
@@ -705,7 +761,7 @@ class MarkdownDataDictGen(Generator):
         # Basic enum information
         class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(enu.name))
         class_uri = self.namespaces.uri_for(class_curi)
-        items.append(self.element_header(enu, enu.name, class_curi, class_uri))
+        items.append(self.element_header(enu, camelcase(enu.name), class_curi, class_uri))
 
         # Enum values table
         items.extend(self._generate_enum_values_table(enu))
@@ -768,7 +824,7 @@ class MarkdownDataDictGen(Generator):
         # Basic class information
         class_curi = self.namespaces.uri_or_curie_for(str(self.namespaces._base), camelcase(cls.name))
         class_uri = self.namespaces.uri_for(class_curi)
-        items.append(self.element_header(cls, cls.name, class_curi, class_uri))
+        items.append(self.element_header(cls, camelcase(cls.name), class_curi, class_uri))
 
         # Add YAML definition if debug mode is enabled
         if self.debug:
@@ -1205,10 +1261,19 @@ class MarkdownDataDictGen(Generator):
             slot = self.schema.slots[slot_name]
             if slot.range == cls.name:
                 for domain in sorted(slot.domain_of):
+                    # Strip class name prefix from slot name for cleaner display
+                    # e.g., "Enumeration_default" -> "default"
+                    slot_display_name = slot.name
+                    if '_' in slot.name:
+                        # Check if it starts with the domain class name
+                        prefix = domain + '_'
+                        if slot.name.startswith(prefix):
+                            slot_display_name = slot.name[len(prefix):]
+
                     items.append(
                         self.bullet(
                             f" **{self.class_link(domain)}** : "
-                            f"*{self.slot_link(slot, add_subset=False)}*{self.predicate_cardinality(slot)} "
+                            f"{slot_display_name}{self.predicate_cardinality(slot)} "
                         )
                     )
 
@@ -1218,7 +1283,7 @@ class MarkdownDataDictGen(Generator):
                 items = []
                 curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
                 uri = self.namespaces.uri_for(curie)
-                items.append(self.element_header(obj=subset, name=subset.name, curie=curie, uri=uri))
+                items.append(self.element_header(obj=subset, name=camelcase(subset.name), curie=curie, uri=uri))
                 # TODO: consider showing hierarchy within a subset
                 items.append(self.header(3, "Classes"))
                 for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
@@ -1540,6 +1605,18 @@ def pad_heading(text: str) -> str:
     type=str,
     default=None,
     help="Directory to save diagram files (requires --kroki-server). Diagrams will be saved as SVG files and referenced in markdown.",
+)
+@click.option(
+    "--add-svg-links",
+    type=str,
+    default=None,
+    help="Add clickable hyperlinks to class names in SVG diagrams. Provide base URL for documentation (e.g., https://example.com/schema). Links will be absolute URLs to work with GitHub's SVG sanitization.",
+)
+@click.option(
+    "--pretty-format-svg",
+    is_flag=True,
+    default=False,
+    help="Pretty-format SVG files with proper HTML-style indentation (2 spaces). Makes SVGs more readable but increases file size.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
