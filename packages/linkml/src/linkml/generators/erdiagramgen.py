@@ -272,6 +272,11 @@ class ERDiagramGenerator(Generator):
         entity_name = cls.name if self.preserve_names else camelcase(cls.name)
         entity = Entity(name=self._sanitize_class_name_for_erd(entity_name))
         diagram.entities.append(entity)
+
+        # Track which slots we've already processed to avoid duplicates
+        processed_slots = set()
+
+        # Process regular induced slots
         for slot in sv.class_induced_slots(class_name):
             # TODO: schemaview should infer this
             if slot.range is None:
@@ -280,6 +285,25 @@ class ERDiagramGenerator(Generator):
                 self.add_relationship(entity, slot, diagram)
             else:
                 self.add_attribute(entity, slot)
+            processed_slots.add(slot.name)
+
+        # Also process slots defined in slot_usage (which may not appear in induced_slots)
+        if cls.slot_usage:
+            for slot_name in cls.slot_usage.keys():
+                if slot_name not in processed_slots:
+                    # Get the induced slot to get the properly overridden range
+                    try:
+                        slot = sv.induced_slot(slot_name, class_name)
+                        if slot.range is None:
+                            slot.range = sv.schema.default_range or "string"
+                        if slot.range in sv.all_classes():
+                            self.add_relationship(entity, slot, diagram)
+                        else:
+                            self.add_attribute(entity, slot)
+                        processed_slots.add(slot_name)
+                    except Exception:
+                        # Slot might not exist, skip it
+                        pass
 
     def add_relationship(self, entity: Entity, slot: SlotDefinition, diagram: ERDiagram) -> None:
         """
