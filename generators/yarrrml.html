@@ -451,7 +451,8 @@
 </pre></div>
 </div>
 </li>
-<li><p>Values come from columns via <code class="docutils literal notranslate"><span class="pre">$(column_name)</span></code>. For object slots (non-inlined references), IRIs are emitted:</p>
+<li><p>Values come directly from columns via <code class="docutils literal notranslate"><span class="pre">$(column_name)</span></code>.</p></li>
+<li><p>For object slots (non-inlined references), IRIs are emitted:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:employer</span>
 <span class="w">  </span><span class="nt">o</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(employer)</span>
@@ -464,7 +465,7 @@
 </section>
 <section id="source-inference">
 <h2>Source inference<a class="headerlink" href="#source-inference" title="Link to this heading">¶</a></h2>
-<p>If you pass a file without a formulation suffix, the generator infers it:</p>
+<p>If a file path is passed without a formulation suffix, the generator infers it automatically:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">*.json</span></code> → <code class="docutils literal notranslate"><span class="pre">~jsonpath</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">*.csv</span></code> / <code class="docutils literal notranslate"><span class="pre">*.tsv</span></code> → <code class="docutils literal notranslate"><span class="pre">~csv</span></code></p></li>
@@ -477,9 +478,10 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 
 <span class="c1"># CSV / TSV (no iterator)</span>
 linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>people.csv
-<span class="c1"># or explicitly:</span>
-linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>people.csv~csv
 linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>people.tsv~csv
+
+<span class="c1"># CLI alias (short form)</span>
+gen-yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<span class="w"> </span>data.csv~csv<span class="w"> </span>&gt;<span class="w"> </span>mappings.yml
 </pre></div>
 </div>
 </section>
@@ -489,8 +491,8 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 <li><p>one mapping per LinkML class</p></li>
 <li><p>prefixes come from the schema</p></li>
 <li><p>subject from identifier slot (else key; else safe fallback)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">po</span></code> for class-induced slots (slot aliases respected)</p></li>
-<li><p>emits <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> as a CURIE (e.g., <code class="docutils literal notranslate"><span class="pre">ex:Person</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">po</span></code> for all class attributes (slot aliases respected)</p></li>
+<li><p>emits <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> as CURIEs (e.g., <code class="docutils literal notranslate"><span class="pre">ex:Person</span></code>)</p></li>
 <li><p>JSON by default: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[data.json~jsonpath,</span> <span class="pre">$.items[*]]]</span></code></p></li>
 <li><p>CSV/TSV: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[path~csv]]</span></code> (no iterator), values via <code class="docutils literal notranslate"><span class="pre">$(column)</span></code></p></li>
 </ul>
@@ -500,8 +502,10 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>&gt;<span class="w"> </span>mappings.yml
 <span class="c1"># CSV instead of JSON:</span>
 linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--source<span class="w"> </span>data.csv~csv
-<span class="c1"># class-based arrays (JSON):</span>
+<span class="c1"># class-based JSON arrays:</span>
 linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--iterator-template<span class="w"> </span><span class="s2">&quot;</span>$<span class="s2">.{Class}[*]&quot;</span>
+<span class="c1"># or short alias:</span>
+gen-yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--source<span class="w"> </span>data.csv~csv<span class="w"> </span>&gt;<span class="w"> </span>mappings.yml
 </pre></div>
 </div>
 </section>
@@ -627,8 +631,7 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.generators.yarrrmlgen.YarrrmlGenerator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.yarrrmlgen.</span></span><span class="sig-name descname"><span class="pre">YarrrmlGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TextIO" title="(in Python v3.14)"><span class="pre">TextIO</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'yml'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/yarrrmlgen.html#YarrrmlGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.yarrrmlgen.YarrrmlGenerator" title="Link to this definition">¶</a></dt>
-<dd><p>LinkML -&gt; YARRRML exporter.</p>
-<dl class="py method">
+<dd><dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.yarrrmlgen.YarrrmlGenerator.serialize">
 <span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/yarrrmlgen.html#YarrrmlGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.yarrrmlgen.YarrrmlGenerator.serialize" title="Link to this definition">¶</a></dt>
 <dd><p>Generate output in the required format</p>
@@ -651,8 +654,8 @@ linkml<span class="w"> </span>generate<span class="w"> </span>yarrrml<span class
 <ul class="simple">
 <li><p>JSON-first by default</p></li>
 <li><p>One source per mapping</p></li>
-<li><p>Classes without an identifier are skipped</p></li>
-<li><p>Object slots: <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → IRI; <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → not materialized</p></li>
+<li><p>Classes without an identifier are <strong>assigned a fallback subject</strong>: <code class="docutils literal notranslate"><span class="pre">ex:&lt;Class&gt;/$(subject_id)</span></code></p></li>
+<li><p>Object slots: <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → IRI; <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → included as separate mapping</p></li>
 <li><p>Iterators not derived from JSON Schema</p></li>
 <li><p>No per-slot JSONPath/CSV expressions or functions</p></li>
 <li><p>CSV/TSV supported via <code class="docutils literal notranslate"><span class="pre">--source</span></code>; delimiter/custom CSVW options are not yet exposed</p></li>

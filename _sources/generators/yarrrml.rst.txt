@@ -58,7 +58,8 @@ Besides JSON, CSV/TSV is supported. The key differences:
            - p: ex:name
              o: $(name)
 
-- Values come from columns via ``$(column_name)``. For object slots (non-inlined references), IRIs are emitted:
+- Values come directly from columns via ``$(column_name)``.
+- For object slots (non-inlined references), IRIs are emitted:
 
   .. code-block:: yaml
 
@@ -72,7 +73,7 @@ Besides JSON, CSV/TSV is supported. The key differences:
 Source inference
 ----------------
 
-If you pass a file without a formulation suffix, the generator infers it:
+If a file path is passed without a formulation suffix, the generator infers it automatically:
 
 - ``*.json`` → ``~jsonpath``
 - ``*.csv`` / ``*.tsv`` → ``~csv``
@@ -88,9 +89,10 @@ Examples:
 
    # CSV / TSV (no iterator)
    linkml generate yarrrml schema.yaml --source people.csv
-   # or explicitly:
-   linkml generate yarrrml schema.yaml --source people.csv~csv
    linkml generate yarrrml schema.yaml --source people.tsv~csv
+
+   # CLI alias (short form)
+   gen-yarrrml schema.yaml --source data.csv~csv > mappings.yml
 
 Overview
 --------
@@ -98,8 +100,8 @@ Overview
 - one mapping per LinkML class
 - prefixes come from the schema
 - subject from identifier slot (else key; else safe fallback)
-- ``po`` for class-induced slots (slot aliases respected)
-- emits ``rdf:type`` as a CURIE (e.g., ``ex:Person``)
+- ``po`` for all class attributes (slot aliases respected)
+- emits ``rdf:type`` as CURIEs (e.g., ``ex:Person``)
 - JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
 - CSV/TSV: ``sources: [[path~csv]]`` (no iterator), values via ``$(column)``
 
@@ -111,8 +113,10 @@ Command Line
    linkml generate yarrrml path/to/schema.yaml > mappings.yml
    # CSV instead of JSON:
    linkml generate yarrrml path/to/schema.yaml --source data.csv~csv
-   # class-based arrays (JSON):
+   # class-based JSON arrays:
    linkml generate yarrrml path/to/schema.yaml --iterator-template "$.{Class}[*]"
+   # or short alias:
+   gen-yarrrml path/to/schema.yaml --source data.csv~csv > mappings.yml
 
 Docs
 ----
@@ -137,8 +141,8 @@ Limitations
 
 - JSON-first by default
 - One source per mapping
-- Classes without an identifier are skipped
-- Object slots: ``inlined: false`` → IRI; ``inlined: true`` → not materialized
+- Classes without an identifier are **assigned a fallback subject**: ``ex:<Class>/$(subject_id)``
+- Object slots: ``inlined: false`` → IRI; ``inlined: true`` → included as separate mapping
 - Iterators not derived from JSON Schema
 - No per-slot JSONPath/CSV expressions or functions
 - CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed
