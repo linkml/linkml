@@ -149,6 +149,21 @@ class ERDiagramGenerator(Generator):
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()
 
+    def _sanitize_class_name_for_erd(self, name: str) -> str:
+        """
+        Sanitize class name for ERD diagram output.
+
+        Mermaid ERD syntax has reserved keywords that conflict with common class names.
+        This method prefixes problematic names to avoid conflicts.
+
+        :param name: Original class name
+        :return: Sanitized class name safe for ERD diagrams
+        """
+        # "Class" is a reserved keyword in Mermaid ERD syntax
+        if name == "Class":
+            return "__Class"
+        return name
+
     def serialize(self) -> MERMAID_SERIALIZATION:
         """
         Serialize a schema as an ER Diagram.
@@ -235,7 +250,8 @@ class ERDiagramGenerator(Generator):
         cls = sv.get_class(class_name)
         if self.exclude_abstract_classes and cls.abstract:
             return
-        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
+        entity_name = cls.name if self.preserve_names else camelcase(cls.name)
+        entity = Entity(name=self._sanitize_class_name_for_erd(entity_name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             if slot.range in targets:
@@ -253,7 +269,8 @@ class ERDiagramGenerator(Generator):
         cls = sv.get_class(class_name)
         if self.exclude_abstract_classes and cls.abstract:
             return
-        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
+        entity_name = cls.name if self.preserve_names else camelcase(cls.name)
+        entity = Entity(name=self._sanitize_class_name_for_erd(entity_name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             # TODO: schemaview should infer this
@@ -280,12 +297,11 @@ class ERDiagramGenerator(Generator):
             ),
             left_cardinality=Cardinality(is_left=False),
         )
+        second_entity_name = sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
         rel = Relationship(
             first_entity=entity.name,
             relationship_type=rel_type,
-            second_entity=(
-                sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
-            ),
+            second_entity=self._sanitize_class_name_for_erd(second_entity_name),
             relationship_label=slot.name,
         )
         diagram.relationships.append(rel)
