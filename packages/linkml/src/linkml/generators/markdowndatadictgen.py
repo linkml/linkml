@@ -899,6 +899,10 @@ class MarkdownDataDictGen(Generator):
         if cls.attributes and slot.name in cls.attributes:
             return {"type": "own", "source": cls.name}
 
+        # Check if it's in this class's slot_usage (which means it's customized for this class)
+        if cls.slot_usage and slot.name in cls.slot_usage:
+            return {"type": "own", "source": cls.name}
+
         # Use SchemaView to get all ancestors (mixins + inheritance chain)
         ancestors = []
 
@@ -930,6 +934,13 @@ class MarkdownDataDictGen(Generator):
 
                 # Check if it's a direct attribute of this ancestor
                 if ancestor_cls.attributes and slot.name in ancestor_cls.attributes:
+                    if ancestor_name in (cls.mixins or []):
+                        return {"type": "mixin", "source": ancestor_name}
+                    else:
+                        return {"type": "inherited", "source": ancestor_name}
+
+                # Check if it's in this ancestor's slot_usage
+                if ancestor_cls.slot_usage and slot.name in ancestor_cls.slot_usage:
                     if ancestor_name in (cls.mixins or []):
                         return {"type": "mixin", "source": ancestor_name}
                     else:
