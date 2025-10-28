@@ -828,6 +828,9 @@ class MarkdownDataDictGen(Generator):
         This avoids duplication by using SchemaView.class_induced_slots() which provides
         the definitive view of what slots a class has, properly handling inheritance,
         mixins, and slot overrides without creating duplicates.
+
+        Additionally checks slot_usage from the current class and all ancestors, as
+        class_induced_slots() may not return slots that are only defined via slot_usage.
         """
         # Use SchemaView to get the canonical set of induced slots for this class
         # This automatically handles inheritance, mixins, and deduplication
@@ -836,8 +839,46 @@ class MarkdownDataDictGen(Generator):
         if not hasattr(self, "_schema_view"):
             self._schema_view = SchemaView(self.schema_location)
 
+        # Track which slots we've already processed to avoid duplicates
+        processed_slots = {}  # slot_name -> SlotDefinition
+
+        # First, process regular induced slots
         induced_slots = self._schema_view.class_induced_slots(cls.name)
-        return list(induced_slots)
+        for slot in induced_slots:
+            processed_slots[slot.name] = slot
+
+        # Also process slots defined in slot_usage (which may not appear in induced_slots)
+        # This includes slot_usage from the current class and all ancestors
+        slot_usage_to_check = set()
+
+        # Collect slot_usage from current class
+        if cls.slot_usage:
+            slot_usage_to_check.update(cls.slot_usage.keys())
+
+        # Collect slot_usage from all ancestor classes
+        if cls.is_a:
+            current = cls.is_a
+            while current:
+                parent_cls = self.schema.classes.get(current)
+                if parent_cls:
+                    if parent_cls.slot_usage:
+                        slot_usage_to_check.update(parent_cls.slot_usage.keys())
+                    current = parent_cls.is_a
+                else:
+                    break
+
+        # Process all slot_usage entries
+        for slot_name in slot_usage_to_check:
+            if slot_name not in processed_slots:
+                # Get the induced slot to get the properly overridden properties
+                try:
+                    slot = self._schema_view.induced_slot(slot_name, cls.name)
+                    processed_slots[slot_name] = slot
+                except Exception:
+                    # Slot might not exist, skip it
+                    pass
+
+        return list(processed_slots.values())
 
     def _get_slot_source(self, slot: SlotDefinition, cls: ClassDefinition) -> dict[str, Any]:
         """Determine where a slot comes from (own, mixin, or inheritance) using SchemaView."""
