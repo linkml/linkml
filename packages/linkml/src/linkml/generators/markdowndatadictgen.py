@@ -10,6 +10,7 @@ import base64
 import logging
 import os
 import re
+import xml.etree.ElementTree as ET
 import zlib
 from dataclasses import dataclass
 from typing import Any, Optional, Union
@@ -211,6 +212,105 @@ class MarkdownDataDictGen(Generator):
             self.para(be(self.schema.description)),
         ]
 
+    def _add_links_to_svg(self, svg_content: str) -> str:
+        """
+        Add hyperlinks to class names in SVG diagrams.
+
+        Handles both:
+        - SVG <text> elements (used in ERD diagrams)
+        - SVG <foreignObject> with HTML content (used in class diagrams)
+
+        Args:
+            svg_content: The SVG content as a string
+
+        Returns:
+            Modified SVG with hyperlinks added to class names
+        """
+        try:
+            # Register SVG and XHTML namespaces
+            ET.register_namespace('', 'http://www.w3.org/2000/svg')
+            ET.register_namespace('html', 'http://www.w3.org/1999/xhtml')
+
+            # Parse SVG
+            root = ET.fromstring(svg_content)
+
+            # Get all class names from schema
+            class_names = set(self.schema.classes.keys())
+
+            # Handle SVG <text> elements (ERD diagrams)
+            for text_elem in root.iter('{http://www.w3.org/2000/svg}text'):
+                text_content = ''.join(text_elem.itertext()).strip()
+
+                # Check if this text matches a class name (possibly with sanitization like __Class)
+                matched_class = None
+                if text_content in class_names:
+                    matched_class = text_content
+                elif text_content.startswith('__') and text_content[2:] in class_names:
+                    # Handle sanitized names like __Class
+                    matched_class = text_content[2:]
+
+                if matched_class:
+                    # Find the parent group element
+                    parent = None
+                    for elem in root.iter():
+                        if text_elem in list(elem):
+                            parent = elem
+                            break
+
+                    if parent is not None and parent.tag == '{http://www.w3.org/2000/svg}g':
+                        # Create an anchor element
+                        anchor = ET.Element('{http://www.w3.org/2000/svg}a')
+                        # Use lowercase for better markdown compatibility
+                        anchor.set('{http://www.w3.org/1999/xlink}href', f'#{matched_class.lower()}')
+
+                        # Find index of text element in parent
+                        children = list(parent)
+                        text_index = children.index(text_elem)
+
+                        # Remove text element from parent
+                        parent.remove(text_elem)
+
+                        # Add anchor at the same position
+                        anchor.append(text_elem)
+                        parent.insert(text_index, anchor)
+
+            # Handle <foreignObject> with HTML content (class diagrams)
+            # We need to use regex for this since ElementTree doesn't handle mixed HTML/SVG well
+            svg_str = ET.tostring(root, encoding='unicode', method='xml')
+
+            # Pattern to match text inside foreignObject HTML elements
+            # Class names can be in <p> tags within spans with "nodeLabel" class
+            def replace_class_name_in_p(match):
+                full_p = match.group(0)
+                text_content = match.group(1).strip()
+
+                # Check if it matches a class name
+                matched_class = None
+                if text_content in class_names:
+                    matched_class = text_content
+                elif text_content.startswith('__') and text_content[2:] in class_names:
+                    matched_class = text_content[2:]
+
+                if matched_class:
+                    # Wrap the text in an HTML anchor tag
+                    # Use lowercase for better markdown compatibility
+                    return f'<html:p><html:a href="#{matched_class.lower()}" style="color: inherit; text-decoration: none;">{text_content}</html:a></html:p>'
+                return full_p
+
+            # Find p tags within nodeLabel spans and wrap class names
+            svg_str = re.sub(
+                r'<html:p>([^<]+)</html:p>',
+                replace_class_name_in_p,
+                svg_str
+            )
+
+            return svg_str
+
+        except Exception as e:
+            # If anything goes wrong, return original SVG
+            logging.debug(f"Failed to add links to SVG: {e}")
+            return svg_content
+
     def _render_diagram_with_kroki(self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: Optional[str] = None) -> str:
         """
         Render a diagram using a Kroki server.
@@ -252,6 +352,9 @@ class MarkdownDataDictGen(Generator):
             req = urllib.request.Request(kroki_url, method='GET')
             with urllib.request.urlopen(req, timeout=30) as response:
                 svg_content = response.read().decode('utf-8')
+
+            # Add hyperlinks to class names in SVG
+            svg_content = self._add_links_to_svg(svg_content)
 
             # If diagram_dir is set, save to file and return image reference
             if self.diagram_dir:
