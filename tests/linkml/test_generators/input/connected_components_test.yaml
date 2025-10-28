@@ -39,7 +39,7 @@ classes:
     attributes:
       street:
       city:
-      
+
   Employment:
     is_a: Thing
     attributes:
@@ -60,14 +60,14 @@ classes:
     attributes:
       medical_record:
         range: MedicalRecord
-        
+
   MedicalRecord:
     is_a: Thing
     attributes:
       diagnosis:
         range: Diagnosis
         multivalued: true
-        
+
   Diagnosis:
     is_a: Thing
     attributes:
@@ -103,7 +103,7 @@ classes:
       phone:
       email:
 
-  # Truly standalone classes - no relationships and not used as base classes  
+  # Truly standalone classes - no relationships and not used as base classes
   ConfigSettings:
     is_a: Thing
     attributes:
@@ -120,7 +120,7 @@ classes:
     is_a: Thing
     attributes:
       species:
-        
+
   Mammal:
     is_a: Animal
     attributes:

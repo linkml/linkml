@@ -227,45 +227,49 @@ class MarkdownDataDictGen(Generator):
     def _generate_component_erd_diagrams(self) -> list[str]:
         """Generate separate ERD diagrams for each connected component."""
         items = []
-        
+
         connected_components, base_classes, truly_standalone_classes = self._detect_erd_connected_components()
-        
+
         # Generate diagrams for connected components
         if connected_components:
             if len(connected_components) == 1:
                 items.append(self.header(2, "ERD Diagram"))
             else:
                 items.append(self.header(2, "ERD Diagrams"))
-            
+
             for i, component in enumerate(connected_components, 1):
                 if len(connected_components) > 1:
                     # Sort component classes for consistent output
                     sorted_classes = sorted(component)
-                    component_name = f"Component {i} ({', '.join(sorted_classes[:3])}{'...' if len(sorted_classes) > 3 else ''})"
+                    component_name = (
+                        f"Component {i} ({', '.join(sorted_classes[:3])}{'...' if len(sorted_classes) > 3 else ''})"
+                    )
                     items.append(self.header(3, component_name))
-                
-                erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
+
+                erd_gen = ERDiagramGenerator(
+                    self.schema_location, exclude_abstract_classes=True, exclude_attributes=False
+                )
                 component_diagram = erd_gen.serialize_classes(list(component), follow_references=False, max_hops=0)
                 items.append(component_diagram)
-        
+
         # Generate section for base classes (classes used as parents but have no direct relationships)
         if base_classes and not self.omit_standalone_classes:
             items.append(self.header(2, "Base Classes"))
-            items.append(self.para("These classes have no direct relationships but serve as base classes for other classes:"))
-            
-            erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
-            base_diagram = erd_gen.serialize_classes(list(base_classes), follow_references=False, max_hops=0)
-            items.append(base_diagram)
-        
+            items.append(
+                self.para("These classes have no direct relationships but serve as base classes for other classes:")
+            )
+            items.append(self._generate_classes_table(base_classes))
+
         # Generate section for truly standalone classes
         if truly_standalone_classes and not self.omit_standalone_classes:
             items.append(self.header(2, "Standalone Classes"))
-            items.append(self.para("These classes are completely isolated with no relationships and are not used as base classes:"))
-            
-            erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
-            standalone_diagram = erd_gen.serialize_classes(list(truly_standalone_classes), follow_references=False, max_hops=0)
-            items.append(standalone_diagram)
-        
+            items.append(
+                self.para(
+                    "These classes are completely isolated with no relationships and are not used as base classes:"
+                )
+            )
+            items.append(self._generate_classes_table(truly_standalone_classes))
+
         return items
 
     def _generate_class_sections(self) -> list[str]:
@@ -338,25 +342,54 @@ class MarkdownDataDictGen(Generator):
 
         return items
 
+    def _generate_classes_table(self, class_names: set[str]) -> str:
+        """Generate a markdown table of classes with their descriptions and links.
+
+        Args:
+            class_names: Set of class names to include in the table
+
+        Returns:
+            Markdown table as a string
+        """
+        table_data = []
+
+        # Sort class names alphabetically for consistent output
+        for class_name in sorted(class_names):
+            cls = self.schema.classes.get(class_name)
+            if cls:
+                # Create link to the class anchor
+                class_link = self.class_link(cls, use_desc=False)
+                description = cls.description if cls.description else ""
+                # Clean up description - remove newlines and excessive whitespace
+                description = " ".join(description.split()) if description else ""
+
+                table_data.append({"Class": class_link, "Description": description})
+
+        if table_data:
+            table = markdown_table(table_data).set_params(quote=False, row_sep="markdown")
+            return table.get_markdown()
+        else:
+            return ""
+
     def _detect_erd_connected_components(self) -> tuple[list[set[str]], set[str], set[str]]:
         """Detect connected components in the ERD graph and classify standalone classes.
-        
+
         Returns:
             tuple: (list of connected components, set of base classes, set of truly standalone classes)
                   - connected components: sets of class names connected via relationships
-                  - base classes: no relationships but serve as parents for classes that do have relationships  
+                  - base classes: no relationships but serve as parents for classes that do have relationships
                   - truly standalone classes: no relationships and not used as base classes
         """
         # Build adjacency list of class relationships
         adjacency = {}
         all_classes = set()
-        
+
         # Get all concrete classes (non-abstract, non-mixin)
         for cls in self.schema.classes.values():
             if not cls.abstract and not cls.mixin:
                 all_classes.add(cls.name)
                 adjacency[cls.name] = set()
-        
+
         # Add edges based on slot relationships
         for cls in self.schema.classes.values():
             if not cls.abstract and not cls.mixin:
@@ -367,18 +400,18 @@ class MarkdownDataDictGen(Generator):
                         # Add bidirectional edge
                         adjacency[cls.name].add(slot.range)
                         adjacency[slot.range].add(cls.name)
-                
+
                 # Also check attributes (inline slots)
                 if cls.attributes:
                     for attr_name, attr_def in cls.attributes.items():
                         if attr_def.range in all_classes:
                             adjacency[cls.name].add(attr_def.range)
                             adjacency[attr_def.range].add(cls.name)
-        
+
         # Find connected components using DFS
         visited = set()
         components = []
-        
+
         def dfs(node, component):
             if node in visited:
                 return
@@ -386,36 +419,36 @@ class MarkdownDataDictGen(Generator):
             component.add(node)
             for neighbor in adjacency.get(node, set()):
                 dfs(neighbor, component)
-        
+
         for cls_name in all_classes:
             if cls_name not in visited:
                 component = set()
                 dfs(cls_name, component)
                 components.append(component)
-        
+
         # Separate connected components from singleton components
         connected_components = []
         singleton_classes = set()
-        
+
         for component in components:
             if len(component) == 1:
                 singleton_classes.update(component)
             else:
                 connected_components.append(component)
-        
+
         # Now classify singleton classes into base classes vs truly standalone
         base_classes = set()
         truly_standalone_classes = set()
-        
+
         # Get all classes that are in connected components (have relationships)
         classes_with_relationships = set()
         for component in connected_components:
             classes_with_relationships.update(component)
-        
+
         for singleton_class in singleton_classes:
             # Check if this singleton class is used as a parent (is_a) by any class with relationships
             is_base_class = False
-            
+
             for cls in self.schema.classes.values():
                 if not cls.abstract and not cls.mixin and cls.is_a == singleton_class:
                     # Check if this descendant class has relationships (is in connected components)
@@ -426,14 +459,14 @@ class MarkdownDataDictGen(Generator):
                     if self._class_descendants_have_relationships(cls.name, classes_with_relationships):
                         is_base_class = True
                         break
-            
+
             if is_base_class:
                 base_classes.add(singleton_class)
             else:
                 truly_standalone_classes.add(singleton_class)
-        
+
         return connected_components, base_classes, truly_standalone_classes
-    
+
     def _class_descendants_have_relationships(self, class_name: str, classes_with_relationships: set[str]) -> bool:
         """Check if any descendants of a class have relationships (recursively)."""
         for cls in self.schema.classes.values():
@@ -704,7 +737,7 @@ class MarkdownDataDictGen(Generator):
 
     def _collect_all_class_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Collect all slots for a class using SchemaView's canonical slot resolution.
-        
+
         This avoids duplication by using SchemaView.class_induced_slots() which provides
         the definitive view of what slots a class has, properly handling inheritance,
         mixins, and slot overrides without creating duplicates.
@@ -712,38 +745,39 @@ class MarkdownDataDictGen(Generator):
         # Use SchemaView to get the canonical set of induced slots for this class
         # This automatically handles inheritance, mixins, and deduplication
         from linkml_runtime import SchemaView
-        
-        if not hasattr(self, '_schema_view'):
+
+        if not hasattr(self, "_schema_view"):
             self._schema_view = SchemaView(self.schema_location)
-        
+
         induced_slots = self._schema_view.class_induced_slots(cls.name)
         return list(induced_slots)
 
     def _get_slot_source(self, slot: SlotDefinition, cls: ClassDefinition) -> dict[str, Any]:
         """Determine where a slot comes from (own, mixin, or inheritance) using SchemaView."""
-        if not hasattr(self, '_schema_view'):
+        if not hasattr(self, "_schema_view"):
             from linkml_runtime import SchemaView
+
             self._schema_view = SchemaView(self.schema_location)
-        
+
         # Use SchemaView to determine slot ownership
         slot_definition = self._schema_view.induced_slot(slot.name, cls.name)
-        
+
         # Check if it's directly defined in this class
         # A slot is "own" if this class is in its domain_of
         if cls.name in slot_definition.domain_of:
             return {"type": "own", "source": cls.name}
-        
+
         # Check if it's a direct attribute of this class
         if cls.attributes and slot.name in cls.attributes:
             return {"type": "own", "source": cls.name}
-        
+
         # Use SchemaView to get all ancestors (mixins + inheritance chain)
         ancestors = []
-        
+
         # Add mixins first
         if cls.mixins:
             ancestors.extend(cls.mixins)
-        
+
         # Add inheritance chain
         if cls.is_a:
             inheritance_chain = []
@@ -753,7 +787,7 @@ class MarkdownDataDictGen(Generator):
                 parent_cls = self.schema.classes.get(current)
                 current = parent_cls.is_a if parent_cls else None
             ancestors.extend(inheritance_chain)
-        
+
         # Check each ancestor to find the source
         for ancestor_name in ancestors:
             ancestor_cls = self.schema.classes.get(ancestor_name)
@@ -765,14 +799,14 @@ class MarkdownDataDictGen(Generator):
                         return {"type": "mixin", "source": ancestor_name}
                     else:
                         return {"type": "inherited", "source": ancestor_name}
-                
+
                 # Check if it's a direct attribute of this ancestor
                 if ancestor_cls.attributes and slot.name in ancestor_cls.attributes:
                     if ancestor_name in (cls.mixins or []):
                         return {"type": "mixin", "source": ancestor_name}
                     else:
                         return {"type": "inherited", "source": ancestor_name}
-        
+
         return {"type": "unknown", "source": "unknown"}
 
     def _format_slot_name(self, slot_name: str, source_info: dict[str, Any]) -> str:
