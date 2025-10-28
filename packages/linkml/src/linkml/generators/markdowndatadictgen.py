@@ -6,9 +6,11 @@ including class diagrams, ERD diagrams, and detailed documentation
 for all schema elements.
 """
 
+import base64
 import logging
 import os
 import re
+import zlib
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
@@ -159,6 +161,9 @@ class MarkdownDataDictGen(Generator):
     separate_erd_components: bool = True
     omit_standalone_classes: bool = False
     debug: bool = False
+    kroki_server: Optional[str] = None
+    diagram_dir: Optional[str] = None
+    _diagram_counter: int = 0
 
     schema_classes = set[ClassDefinition]
 
@@ -206,13 +211,87 @@ class MarkdownDataDictGen(Generator):
             self.para(be(self.schema.description)),
         ]
 
+    def _render_diagram_with_kroki(self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: Optional[str] = None) -> str:
+        """
+        Render a diagram using a Kroki server.
+
+        Args:
+            diagram_source: The diagram source code (e.g., Mermaid syntax),
+                           may be wrapped in markdown code blocks
+            diagram_type: The diagram type (default: "mermaid")
+            diagram_name: Optional name for the diagram file (without extension)
+
+        Returns:
+            SVG string if kroki_server is configured, otherwise the original mermaid code block
+            If diagram_dir is set, saves SVG to file and returns markdown image reference
+        """
+        # Extract raw diagram content if it's wrapped in markdown code blocks
+        clean_source = diagram_source.strip()
+        if clean_source.startswith(f"```{diagram_type}"):
+            # Remove code block wrapper
+            lines = clean_source.split('\n')
+            clean_source = '\n'.join(lines[1:-1]) if len(lines) > 2 else clean_source
+
+        if not self.kroki_server:
+            return f"```{diagram_type}\n{clean_source}\n```"
+
+        try:
+            import urllib.request
+            import urllib.error
+            from pathlib import Path
+
+            # Encode diagram using Kroki's URL-safe encoding
+            # Kroki expects: deflate -> base64 -> URL-safe base64
+            compressed = zlib.compress(clean_source.encode('utf-8'), level=9)
+            encoded = base64.urlsafe_b64encode(compressed).decode('utf-8')
+
+            # Construct Kroki URL
+            kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg/{encoded}"
+
+            # Fetch SVG from Kroki
+            req = urllib.request.Request(kroki_url, method='GET')
+            with urllib.request.urlopen(req, timeout=30) as response:
+                svg_content = response.read().decode('utf-8')
+
+            # If diagram_dir is set, save to file and return image reference
+            if self.diagram_dir:
+                # Create diagram directory if it doesn't exist
+                diagram_path = Path(self.diagram_dir)
+                diagram_path.mkdir(parents=True, exist_ok=True)
+
+                # Generate filename
+                if diagram_name:
+                    filename = f"{diagram_name}.svg"
+                else:
+                    self._diagram_counter += 1
+                    filename = f"diagram_{self._diagram_counter}.svg"
+
+                # Save SVG to file
+                svg_file = diagram_path / filename
+                with open(svg_file, 'w', encoding='utf-8') as f:
+                    f.write(svg_content)
+
+                # Return markdown image reference (relative path from markdown file location)
+                # Use just the last component of diagram_dir for relative reference
+                relative_dir = Path(self.diagram_dir).name
+                relative_path = f"{relative_dir}/{filename}"
+                return f"![{diagram_name or 'Diagram'}]({relative_path})"
+            else:
+                # Return the SVG embedded in markdown
+                return svg_content
+
+        except Exception as e:
+            # Fall back to mermaid code block if Kroki fails
+            logging.warning(f"Failed to render diagram with Kroki: {e}")
+            return f"```{diagram_type}\n{clean_source}\n```"
+
     def _generate_diagrams(self) -> list[str]:
         """Generate class and ERD diagrams."""
         items = []
 
         # Class Diagram
         items.append(self.header(2, "Class Diagram"))
-        items.append(f"```mermaid\n{self.full_class_diagram()}\n```")
+        items.append(self._render_diagram_with_kroki(str(self.full_class_diagram()), diagram_name="class_diagram"))
 
         # ERD Diagram(s)
         if self.separate_erd_components:
@@ -221,7 +300,7 @@ class MarkdownDataDictGen(Generator):
             # Original single ERD diagram
             erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
             items.append(self.header(2, "ERD Diagram"))
-            items.append(erd_gen.serialize())
+            items.append(self._render_diagram_with_kroki(erd_gen.serialize(), diagram_name="erd_diagram"))
 
         return items
 
@@ -239,9 +318,9 @@ class MarkdownDataDictGen(Generator):
                 items.append(self.header(2, "ERD Diagrams"))
 
             for i, component in enumerate(connected_components, 1):
+                # Sort component classes for consistent output
+                sorted_classes = sorted(component)
                 if len(connected_components) > 1:
-                    # Sort component classes for consistent output
-                    sorted_classes = sorted(component)
                     component_name = (
                         f"Component {i} ({', '.join(sorted_classes[:3])}{'...' if len(sorted_classes) > 3 else ''})"
                     )
@@ -251,7 +330,9 @@ class MarkdownDataDictGen(Generator):
                     self.schema_location, exclude_abstract_classes=True, exclude_attributes=False
                 )
                 component_diagram = erd_gen.serialize_classes(list(component), follow_references=False, max_hops=0)
-                items.append(component_diagram)
+                # Use first class name in component for diagram filename
+                diagram_name = f"erd_{sorted_classes[0].lower()}" if sorted_classes else f"erd_component_{i}"
+                items.append(self._render_diagram_with_kroki(component_diagram, diagram_name=diagram_name))
 
         # Generate section for base classes (classes used as parents but have no direct relationships)
         if base_classes and not self.omit_standalone_classes:
@@ -737,10 +818,12 @@ class MarkdownDataDictGen(Generator):
             erd_gen = ERDiagramGenerator(self.schema_location, exclude_attributes=True, structural=False)
             erd_classes.append(cls.name)
             diagram = erd_gen.serialize_classes(erd_classes, follow_references=False, max_hops=0)
-            items.append(diagram)
+            diagram_name = f"class_{cls.name.lower()}_erd"
+            items.append(self._render_diagram_with_kroki(diagram, diagram_name=diagram_name))
         elif children or cls.is_a:
             items.append(self.header(4, "Local class diagram"))
-            items.append(f"```mermaid\n{self.local_class_diagram(cls)}\n```")
+            diagram_name = f"class_{cls.name.lower()}_local"
+            items.append(self._render_diagram_with_kroki(str(self.local_class_diagram(cls)), diagram_name=diagram_name))
 
         return items
 
@@ -1342,6 +1425,18 @@ def pad_heading(text: str) -> str:
     is_flag=True,
     default=False,
     help="Include YAML class definitions in the output for debugging",
+)
+@click.option(
+    "--kroki-server",
+    type=str,
+    default=None,
+    help="URL of Kroki server to render diagrams as SVG (e.g., http://localhost:8000)",
+)
+@click.option(
+    "--diagram-dir",
+    type=str,
+    default=None,
+    help="Directory to save diagram files (requires --kroki-server). Diagrams will be saved as SVG files and referenced in markdown.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
