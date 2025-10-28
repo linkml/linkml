@@ -158,6 +158,7 @@ class MarkdownDataDictGen(Generator):
     gen_classes_neighborhood: Optional[References] = None
     separate_erd_components: bool = True
     omit_standalone_classes: bool = False
+    debug: bool = False
 
     schema_classes = set[ClassDefinition]
 
@@ -585,6 +586,10 @@ class MarkdownDataDictGen(Generator):
         class_uri = self.namespaces.uri_for(class_curi)
         items.append(self.element_header(cls, cls.name, class_curi, class_uri))
 
+        # Add YAML definition if debug mode is enabled
+        if self.debug:
+            items.extend(self._generate_class_yaml_definition(cls))
+
         # Gather class relationships
         class_relationships = self._gather_class_relationships(cls)
 
@@ -605,10 +610,92 @@ class MarkdownDataDictGen(Generator):
 
         return items
 
+    def _generate_class_yaml_definition(self, cls: ClassDefinition) -> list[str]:
+        """Generate YAML definition of the class for debugging purposes.
+
+        Args:
+            cls: The class definition to serialize
+
+        Returns:
+            List of markdown strings with YAML code block
+        """
+        import yaml
+
+        items = []
+
+        # Create a simplified dict representation of the class
+        class_dict = {}
+
+        # Add key class properties
+        if cls.is_a:
+            class_dict["is_a"] = str(cls.is_a)
+        if cls.mixins:
+            class_dict["mixins"] = [str(m) for m in cls.mixins]
+        if cls.abstract:
+            class_dict["abstract"] = cls.abstract
+        if cls.mixin:
+            class_dict["mixin"] = cls.mixin
+        if cls.description:
+            class_dict["description"] = cls.description
+        if cls.slots:
+            class_dict["slots"] = [str(s) for s in cls.slots]
+        if cls.slot_usage:
+            slot_usage_dict = {}
+            for k, v in cls.slot_usage.items():
+                slot_dict = {}
+                if v.range:
+                    slot_dict["range"] = str(v.range)
+                if v.required is not None:
+                    slot_dict["required"] = v.required
+                if v.multivalued is not None:
+                    slot_dict["multivalued"] = v.multivalued
+                if v.description:
+                    slot_dict["description"] = v.description
+                if slot_dict:
+                    slot_usage_dict[str(k)] = slot_dict
+            if slot_usage_dict:
+                class_dict["slot_usage"] = slot_usage_dict
+        if cls.attributes:
+            attrs = {}
+            for attr_name, attr_def in cls.attributes.items():
+                attr_dict = {}
+                if attr_def.range:
+                    attr_dict["range"] = str(attr_def.range)
+                if attr_def.required is not None:
+                    attr_dict["required"] = attr_def.required
+                if attr_def.multivalued is not None:
+                    attr_dict["multivalued"] = attr_def.multivalued
+                if attr_def.description:
+                    attr_dict["description"] = attr_def.description
+                if attr_dict:
+                    attrs[str(attr_name)] = attr_dict
+            if attrs:
+                class_dict["attributes"] = attrs
+
+        # Add YAML section with collapsible details
+        items.append(self.header(4, "YAML Definition"))
+        items.append("<details>")
+        items.append("<summary>Click to expand</summary>\n")
+        items.append("```yaml")
+        items.append(yaml.dump({str(cls.name): class_dict}, default_flow_style=False, sort_keys=False))
+        items.append("```")
+        items.append("</details>\n")
+
+        return items
+
     def _gather_class_relationships(self, cls: ClassDefinition) -> dict[str, Any]:
         """Gather all relationship information for a class."""
         class_refs = self.synopsis.classrefs.get(cls.name)
-        has_references_to = class_refs is not None and bool(class_refs.slotrefs)
+
+        # Check if there are actually any slots that reference this class
+        has_references_to = False
+        if class_refs is not None and class_refs.slotrefs:
+            for slot_name in class_refs.slotrefs:
+                slot = self.schema.slots[slot_name]
+                if slot.range == cls.name:
+                    has_references_to = True
+                    break
+
         children = set(self.get_class_children(cls.name))
 
         mixin_refs = self.synopsis.mixinrefs.get(cls.name)
@@ -623,7 +710,7 @@ class MarkdownDataDictGen(Generator):
 
         # Build ERD classes list
         erd_classes = []
-        if has_references_to:
+        if class_refs is not None and class_refs.slotrefs:
             for c in sorted(class_refs.classrefs):
                 if c not in children and c not in used_as_mixin_by:
                     erd_classes.append(c)
@@ -1197,6 +1284,12 @@ def pad_heading(text: str) -> str:
     is_flag=True,
     default=False,
     help="Omit standalone classes (classes with no relationships) from ERD diagrams",
+)
+@click.option(
+    "--debug",
+    is_flag=True,
+    default=False,
+    help="Include YAML class definitions in the output for debugging",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
