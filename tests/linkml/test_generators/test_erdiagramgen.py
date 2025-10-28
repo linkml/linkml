@@ -30,10 +30,10 @@ Person {
     string id
     string name
     integer age_in_years
+    stringList aliases
+    LifeStatusEnum is_living
     string species_name
     integer stomach_count
-    LifeStatusEnum is_living
-    stringList aliases
 }
 """
 )

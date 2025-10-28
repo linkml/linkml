@@ -8,7 +8,7 @@ import pydantic
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
@@ -257,6 +257,58 @@ class ERDiagramGenerator(Generator):
             if slot.range in targets:
                 self.add_relationship(entity, slot, diagram)
 
+    def _create_attribute_sort_key(self, slot: SlotDefinition, cls: ClassDefinition):
+        """
+        Create a sort key for attributes to match the markdown data dictionary ordering.
+
+        Attributes are sorted by:
+        1. Source type (inherited/own)
+        2. Priority slots (id, name, description)
+        3. Rank (if defined)
+        4. Alphabetically
+
+        :param slot: The slot to create a sort key for
+        :param cls: The class this slot belongs to
+        :return: Sort key tuple
+        """
+        sv = self.schemaview
+        priority_slots = ["id", "name", "description"]
+
+        # Determine if slot is inherited or own
+        # A slot is inherited if it's in domain_of of a parent class
+        # Otherwise it's treated as own/unknown
+        is_inherited = False
+        domain_of = slot.domain_of if hasattr(slot, 'domain_of') and slot.domain_of else []
+        if cls.is_a and domain_of:
+            current = cls.is_a
+            while current:
+                parent_cls = sv.get_class(current)
+                if parent_cls and current in domain_of:
+                    is_inherited = True
+                    break
+                if parent_cls:
+                    current = parent_cls.is_a
+                else:
+                    break
+
+        # Primary sort: inherited (0) vs own/unknown (1)
+        primary_sort = 0 if is_inherited else 1
+
+        # Secondary sort: priority slots come first
+        if slot.name in priority_slots:
+            secondary_sort = priority_slots.index(slot.name)
+        else:
+            secondary_sort = len(priority_slots)
+
+        # Tertiary sort: by rank if exists
+        rank = getattr(slot, "rank", None)
+        rank_value = rank if rank is not None else float("inf")
+
+        # Quaternary sort: alphabetically
+        alphabetical_sort = slot.name
+
+        return (primary_sort, secondary_sort, rank_value, alphabetical_sort)
+
     def add_class(self, class_name: ClassDefinitionName, diagram: ERDiagram) -> None:
         """
         Add a class to the ER Diagram.
@@ -273,19 +325,17 @@ class ERDiagramGenerator(Generator):
         entity = Entity(name=self._sanitize_class_name_for_erd(entity_name))
         diagram.entities.append(entity)
 
-        # Track which slots we've already processed to avoid duplicates
-        processed_slots = set()
+        # Collect all slots first (to enable sorting before adding)
+        all_slots = {}  # slot_name -> SlotDefinition
+        relationship_slots = []
+        attribute_slots = []
 
         # Process regular induced slots
         for slot in sv.class_induced_slots(class_name):
             # TODO: schemaview should infer this
             if slot.range is None:
                 slot.range = sv.schema.default_range or "string"
-            if slot.range in sv.all_classes():
-                self.add_relationship(entity, slot, diagram)
-            else:
-                self.add_attribute(entity, slot)
-            processed_slots.add(slot.name)
+            all_slots[slot.name] = slot
 
         # Also process slots defined in slot_usage (which may not appear in induced_slots)
         # This includes slot_usage from the current class and all ancestors
@@ -296,13 +346,11 @@ class ERDiagramGenerator(Generator):
             slot_usage_to_check.update(cls.slot_usage.keys())
 
         # Collect slot_usage from all ancestor classes
-        ancestors = []
         if cls.is_a:
             current = cls.is_a
             while current:
                 parent_cls = sv.get_class(current)
                 if parent_cls:
-                    ancestors.append(parent_cls)
                     if parent_cls.slot_usage:
                         slot_usage_to_check.update(parent_cls.slot_usage.keys())
                     current = parent_cls.is_a
@@ -311,20 +359,34 @@ class ERDiagramGenerator(Generator):
 
         # Process all slot_usage entries
         for slot_name in slot_usage_to_check:
-            if slot_name not in processed_slots:
+            if slot_name not in all_slots:
                 # Get the induced slot to get the properly overridden range
                 try:
                     slot = sv.induced_slot(slot_name, class_name)
                     if slot.range is None:
                         slot.range = sv.schema.default_range or "string"
-                    if slot.range in sv.all_classes():
-                        self.add_relationship(entity, slot, diagram)
-                    else:
-                        self.add_attribute(entity, slot)
-                    processed_slots.add(slot_name)
+                    all_slots[slot_name] = slot
                 except Exception:
                     # Slot might not exist, skip it
                     pass
+
+        # Separate into relationships and attributes
+        for slot in all_slots.values():
+            if slot.range in sv.all_classes():
+                relationship_slots.append(slot)
+            else:
+                attribute_slots.append(slot)
+
+        # Sort attribute slots using the same logic as the markdown data dictionary
+        attribute_slots.sort(key=lambda s: self._create_attribute_sort_key(s, cls))
+
+        # Add sorted attributes to entity
+        for slot in attribute_slots:
+            self.add_attribute(entity, slot)
+
+        # Add relationships (order doesn't matter as much for relationships)
+        for slot in relationship_slots:
+            self.add_relationship(entity, slot, diagram)
 
     def add_relationship(self, entity: Entity, slot: SlotDefinition, diagram: ERDiagram) -> None:
         """
