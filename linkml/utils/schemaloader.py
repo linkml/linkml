@@ -412,6 +412,7 @@ class SchemaLoader:
                     if slot.inlined is False:
                         if slot.inlined_as_list is True:
                             slot.inlined = True
+                            # TODO: do not override a given value, but raise an exception
                             self.logger.warning(
                                 f"Slot '{slot.name}': 'inlining' as list requested. "
                                 + "Overriding inconsistent `inlined: False`!!"
@@ -429,9 +430,17 @@ class SchemaLoader:
                                 + "specification. `inlined: True` has been automatically set!"
                             )
                         elif slot.inlined_as_list is False:
+                            # TODO: decide if `inlined` should be set or not and implement accordingly
                             self.logger.warning(
                                 f"Slot '{slot.name}': A value for 'inlined_as_list' specified, but no "
                                 + "'inlined' specification."
+                            )
+                    elif slot.inlined is True:
+                        if slot.inlined_as_list is None:
+                            slot.inlined_as_list = False
+                            self.logger.info(
+                                f"Slot '{slot.name}': A class with identifiers ({range_class.name}) will be "
+                                + "'inlined' as a dictionary. `inlined_as_list: False` has been set!"
                             )
                 else:
                     if slot.inlined is True:
@@ -439,6 +448,12 @@ class SchemaLoader:
                             self.logger.warning(
                                 f"Slot '{slot.name}': A class without identifiers ({range_class.name}) cannot be "
                                 + "'inlined' as a dictionary."
+                            )
+                        elif slot.inlined_as_list is None:
+                            slot.inlined_as_list = True
+                            self.logger.info(
+                                f"Slot '{slot.name}': A class without identifiers ({range_class.name}) will not be "
+                                + "typically 'inlined' as a dictionary. `inlined_as_list: True` has been set!"
                             )
                     elif slot.inlined is False:
                         slot.inlined = True
@@ -456,6 +471,12 @@ class SchemaLoader:
                             self.logger.warning(
                                 f"Slot '{slot.name}': A class without identifiers ({range_class.name}) cannot be "
                                 + "'inlined' as a dictionary."
+                            )
+                        elif slot.inlined_as_list is None:
+                            slot.inlined_as_list = True
+                            self.logger.info(
+                                f"Slot '{slot.name}': A class without identifiers ({range_class.name}) will not be "
+                                + "typically 'inlined' as a dictionary. `inlined_as_list: True` has been set!"
                             )
 
             if slot.slot_uri is not None:

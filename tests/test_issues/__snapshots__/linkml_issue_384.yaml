@@ -312,6 +312,7 @@ slots:
     range: Thing
     multivalued: true
     inlined: true
+    inlined_as_list: true
   person__aliases:
     name: person__aliases
     from_schema: https://w3id.org/linkml/examples/personinfo
@@ -367,6 +368,7 @@ slots:
     - GeoObject
     range: GeoAge
     inlined: true
+    inlined_as_list: true
   geoAge__unit:
     name: geoAge__unit
     from_schema: https://w3id.org/linkml/examples/personinfo
@@ -401,6 +403,7 @@ slots:
     range: Person
     multivalued: true
     inlined: true
+    inlined_as_list: true
   Organization_full_name:
     name: Organization_full_name
     definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
@@ -433,6 +436,7 @@ slots:
     range: Organization
     multivalued: true
     inlined: true
+    inlined_as_list: true
 classes:
   Thing:
     name: Thing
