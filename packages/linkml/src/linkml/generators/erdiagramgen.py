@@ -288,22 +288,43 @@ class ERDiagramGenerator(Generator):
             processed_slots.add(slot.name)
 
         # Also process slots defined in slot_usage (which may not appear in induced_slots)
+        # This includes slot_usage from the current class and all ancestors
+        slot_usage_to_check = set()
+
+        # Collect slot_usage from current class
         if cls.slot_usage:
-            for slot_name in cls.slot_usage.keys():
-                if slot_name not in processed_slots:
-                    # Get the induced slot to get the properly overridden range
-                    try:
-                        slot = sv.induced_slot(slot_name, class_name)
-                        if slot.range is None:
-                            slot.range = sv.schema.default_range or "string"
-                        if slot.range in sv.all_classes():
-                            self.add_relationship(entity, slot, diagram)
-                        else:
-                            self.add_attribute(entity, slot)
-                        processed_slots.add(slot_name)
-                    except Exception:
-                        # Slot might not exist, skip it
-                        pass
+            slot_usage_to_check.update(cls.slot_usage.keys())
+
+        # Collect slot_usage from all ancestor classes
+        ancestors = []
+        if cls.is_a:
+            current = cls.is_a
+            while current:
+                parent_cls = sv.get_class(current)
+                if parent_cls:
+                    ancestors.append(parent_cls)
+                    if parent_cls.slot_usage:
+                        slot_usage_to_check.update(parent_cls.slot_usage.keys())
+                    current = parent_cls.is_a
+                else:
+                    break
+
+        # Process all slot_usage entries
+        for slot_name in slot_usage_to_check:
+            if slot_name not in processed_slots:
+                # Get the induced slot to get the properly overridden range
+                try:
+                    slot = sv.induced_slot(slot_name, class_name)
+                    if slot.range is None:
+                        slot.range = sv.schema.default_range or "string"
+                    if slot.range in sv.all_classes():
+                        self.add_relationship(entity, slot, diagram)
+                    else:
+                        self.add_attribute(entity, slot)
+                    processed_slots.add(slot_name)
+                except Exception:
+                    # Slot might not exist, skip it
+                    pass
 
     def add_relationship(self, entity: Entity, slot: SlotDefinition, diagram: ERDiagram) -> None:
         """
