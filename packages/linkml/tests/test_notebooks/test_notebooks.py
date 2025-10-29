@@ -12,7 +12,8 @@ from tests.test_notebooks.environment import nbenv
 from tests.utils.filters import nb_filter
 
 FORCE_REWRITE = True
-NBBASEDIR = os.path.join(env.cwd, "..", "notebooks")
+# In monorepo: tests is at packages/linkml/tests, notebooks at root
+NBBASEDIR = os.path.join(env.cwd, "..", "..", "..", "notebooks")
 
 
 @pytest.fixture
