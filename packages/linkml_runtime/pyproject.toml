@@ -250,6 +250,7 @@ fallback-version = "0.0.0"
 source = "uv-dynamic-versioning"
 
 [tool.hatch.build.targets.wheel]
+packages = ["src/linkml_runtime"]
 
 [tool.hatch.build.targets.sdist]
 include = ["**/*"]
