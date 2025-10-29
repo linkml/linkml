@@ -17,11 +17,10 @@ authors = [
   {name = "Kevin Schaper", email = "kevin@tislab.org"},
 ]
 license = "Apache-2.0"
-license-files = ["../../LICENSE"]
 homepage = "https://linkml.io/"
 repository = "https://github.com/linkml/linkml"
 documentation = "https://linkml.io/linkml/"
-readme = "../../README.md"
+readme = "README.md"
 keywords = ["schema", "linked data", "data modeling", "rdf", "owl", "biolink"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -198,3 +197,10 @@ source = "uv-dynamic-versioning"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/linkml"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/",
+  "README.md",
+  "../../LICENSE",
+]
