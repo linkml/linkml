@@ -60,7 +60,7 @@ type {{gen.name(c)}} struct {
 	{{p}}
     {%- endfor %}
     {%- endif -%}
-    {%- for sn in view.class_slots(c.name, direct=False) %}
+    {%- for sn in view.class_slots(c.name, direct=True) %}
     {%- set s = view.induced_slot(sn, c.name) -%}
     {%- if s.description %}
 	/*

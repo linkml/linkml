@@ -6,7 +6,7 @@ def test_golanggen(kitchen_sink_path):
     code = GolangGenerator(kitchen_sink_path, mergeimports=True).serialize()
 
     def assert_in(s: str) -> None:
-        assert s.replace(" ", "") in code.replace(" ", "")
+        assert s.replace(" ", "") in code.replace(" ", "").replace("\t", "")
 
     assert "package kitchen" in code
     assert_in("type Person struct {")
@@ -17,6 +17,16 @@ def test_golanggen(kitchen_sink_path):
     assert_in("WasInformedBy *ActivityId")
     assert_in("StartedAtTime *time.Time")
     assert_in("Aliases []string")
+    assert_in("""
+type Place struct {
+    /*
+     * parent types
+     */
+    HasAliases
+    Id string `json:"id"`
+    Name *string `json:"name"`
+}
+""")
 
 
 def test_multivalued_non_id(tmp_path):
