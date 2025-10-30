@@ -1,9 +1,13 @@
 import os
 import sys
 
-from linkml_runtime.linkml_model import linkml_files
-from linkml_runtime.linkml_model.linkml_files import Format, Source
-from rdflib.plugins.serializers.turtle import TurtleSerializer
+from linkml.monkeypatch import monkeypatch_classdef
+
+monkeypatch_classdef()
+
+from linkml_runtime.linkml_model import linkml_files  # noqa: E402
+from linkml_runtime.linkml_model.linkml_files import Format, Source  # noqa: E402
+from rdflib.plugins.serializers.turtle import TurtleSerializer  # noqa: E402
 
 assert sys.version_info > (
     3,
