@@ -1,3 +1,5 @@
+import re
+
 from linkml.generators.golanggen import GolangGenerator
 
 
@@ -27,6 +29,10 @@ type Place struct {
     Name *string `json:"name"`
 }
 """)
+
+    # for reproducible codegen, we check that the generated structs are in sorted order
+    matches = re.findall(r"^type\s+(\w+)\s+struct", code, re.MULTILINE)
+    assert matches == sorted(matches)
 
 
 def test_multivalued_non_id(tmp_path):

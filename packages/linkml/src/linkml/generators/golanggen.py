@@ -44,7 +44,7 @@ import (
 )
 {%- endif -%}
 
-{% for c in view.all_classes().values() -%}
+{% for c in view.all_classes().values()|sort(attribute='name') -%}
 {%- if c.description -%}
 /*
  * {{c.description}}
