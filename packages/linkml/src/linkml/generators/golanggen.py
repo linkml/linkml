@@ -70,6 +70,10 @@ type {{gen.name(c)}} struct {
 	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}"`
     {%- endfor %}
 }
+{% set cref = gen.classref(c) %}
+{% if cref -%}
+type {{cref}} string
+{%- endif %}
 
 {% endfor %}
 """  # noqa: E101, W191
