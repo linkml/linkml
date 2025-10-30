@@ -164,7 +164,7 @@ class GolangGenerator(Generator):
                     else:
                         return f"[]{rc_name}"
                 else:
-                    return f"{rc_ref}[]"
+                    return f"[]{rc_ref}"
             else:
                 if not id_slot or slot.inlined:
                     return rc_name

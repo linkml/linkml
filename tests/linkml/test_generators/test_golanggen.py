@@ -12,3 +12,43 @@ def test_golanggen(kitchen_sink_path):
     assert_in("type Person struct {")
     assert_in("HasFamilialRelationships []FamilialRelationship")
     assert_in("CodeSystems []CodeSystem")
+
+
+def test_multivalued_non_id(tmp_path):
+    schema = tmp_path / "multivalued_non_id.yaml"
+    schema.write_text(
+        """
+id: http://example.org/test_multivalued_non_id
+name: test_multivalued_non_id
+
+imports:
+  - https://w3id.org/linkml/types
+
+slots:
+  int_dict:
+    range: KeyedInt
+    multivalued: true
+
+  id:
+    range: string
+    identifier: true
+
+  value:
+    range: integer
+    required: true
+
+classes:
+  KeyedInt:
+    slots:
+      - id
+      - value
+  Test:
+    tree_root: true
+    slots:
+      - int_dict
+""",
+        encoding="utf-8",
+    )
+
+    code = GolangGenerator(schema, mergeimports=True).serialize()
+    assert 'IntDict []KeyedIntId `json:"int_dict"`' in code
