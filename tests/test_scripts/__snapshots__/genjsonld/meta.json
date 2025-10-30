@@ -694,7 +694,8 @@
       ],
       "range": "Address",
       "multivalued": true,
-      "inlined": true
+      "inlined": true,
+      "inlined_as_list": true
     },
     {
       "name": "age_in_years",
@@ -769,7 +770,8 @@
         "Person"
       ],
       "range": "BirthEvent",
-      "inlined": true
+      "inlined": true,
+      "inlined_as_list": true
     },
     {
       "name": "in_code_system",
@@ -794,7 +796,8 @@
         "Dataset"
       ],
       "range": "AnyObject",
-      "inlined": true
+      "inlined": true,
+      "inlined_as_list": true
     },
     {
       "name": "species_name",
@@ -1294,7 +1297,8 @@
         "SubclassTest"
       ],
       "range": "ClassWithSpaces",
-      "inlined": true
+      "inlined": true,
+      "inlined_as_list": true
     },
     {
       "name": "Person_name",

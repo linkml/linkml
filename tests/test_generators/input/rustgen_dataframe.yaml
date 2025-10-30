@@ -1,0 +1,111 @@
+id: https://w3id.org/linkml/examples/dataframe_conversion
+name: dataframe_conversion
+prefixes:
+  ex: https://w3id.org/linkml/examples/dataframe_conversion/
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+
+classes:
+  NestedRecord:
+    description: Nested object inlined in lists and maps
+    attributes:
+      code:
+        identifier: true
+        range: string
+      metric:
+        range: integer
+        required: true
+      score:
+        range: integer
+        required: true
+
+  RecordDictionary:
+    description: Simple dictionary entry
+    attributes:
+      code:
+        identifier: true
+        range: string
+      metric:
+        range: integer
+        required: true
+
+  DataframeRow:
+    description: Row structure modeled after the Polars JSON conversion example
+    tree_root: true
+    attributes:
+      id_column:
+        identifier: true
+        range: integer
+        required: true
+      flag_column:
+        range: boolean
+        required: true
+      count_column:
+        range: integer
+        required: true
+      ratio_column:
+        range: float
+        required: true
+      label_column:
+        range: string
+        required: true
+      event_date_column:
+        range: date
+        required: true
+      event_datetime_column:
+        range: datetime
+        required: true
+      enum_column:
+        range: DemoEnum
+        required: true
+      ontology_enum_column:
+        range: DemoOntologyEnum
+        required: true
+      multivalued_column:
+        range: integer
+        multivalued: true
+        inlined_as_list: true
+        required: true
+      singular_column:
+        range: integer
+        minimum_cardinality: 1
+        maximum_cardinality: 1
+        required: true
+      nested_object_column:
+        range: NestedRecord
+        required: true
+        inlined: true
+      foreign_key_column:
+        description: Identifier of nested object
+        range: NestedRecord
+      inlined_list_column:
+        range: NestedRecord
+        multivalued: true
+        inlined: true
+        inlined_as_list: true
+        required: true
+      inlined_map_column:
+        range: NestedRecord
+        multivalued: true
+        inlined: true
+        required: true
+      simple_dict_column:
+        range: RecordDictionary
+        multivalued: true
+        inlined: true
+        required: true
+
+enums:
+  DemoEnum:
+    permissible_values:
+      ALPHA:
+      BETA:
+      GAMMA:
+
+  DemoOntologyEnum:
+    permissible_values:
+      fiction: ex:000001
+      non fiction: ex:000002

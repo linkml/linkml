@@ -14,9 +14,10 @@ from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOClass, OOCodeGenerator, OODocument
+from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 
 from .class_generator_mixin import ClassGeneratorMixin
+from .dataframe_class import DataframeClass
 from .enum_generator_mixin import EnumGeneratorMixin
 from .slot_generator_mixin import SlotGeneratorMixin
 
@@ -28,6 +29,7 @@ TYPEMAP = {
     "panderagen_class_based": {
         "xsd:string": "str",
         "xsd:integer": "int",
+        "xsd:int": "int",
         "xsd:float": "float",
         "xsd:double": "float",
         "xsd:boolean": "bool",
@@ -83,6 +85,8 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
     @staticmethod
     def make_multivalued(range: str) -> str:
+        if range == "Struct":
+            return "pl.List"
         return f"List[{range}]"
 
     def uri_type_map(self, xsd_uri: str, template: str = None):
@@ -92,14 +96,21 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
         return TYPEMAP[template].get(xsd_uri)
 
     def map_type(self, t: TypeDefinition) -> str:
+        logger.info(f"type_map definition: {t}")
+
+        typ = None
+
         if t.uri:
             typ = self.uri_type_map(t.uri)
-            return typ
+            if typ is None:
+                typ = self.map_type(self.schemaview.get_type(t.typeof))
         elif t.typeof:
             typ = self.map_type(self.schemaview.get_type(t.typeof))
-            return typ
-        else:
+
+        if typ is None:
             raise ValueError(f"{t} cannot be mapped to a type")
+
+        return typ
 
     def load_template(self, template_filename):
         jinja_env = Environment(loader=PackageLoader("linkml.generators.panderagen", self.template_path))
@@ -138,6 +149,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
             coerce=self.coerce,
             type_map=TYPEMAP,
             template_path=self.template_path,
+            pandera_validator_code=None,
         )
         return code
 
@@ -156,12 +168,17 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
         for c in self.ordered_classes():
             cn = c.name
             safe_cn = camelcase(cn)
-            ooclass = OOClass(
+            annotations = {}
+            identifier_or_key_slot = self.get_identifier_or_key_slot(cn)
+            if identifier_or_key_slot:
+                annotations["identifier_key_slot"] = identifier_or_key_slot.name
+            ooclass = DataframeClass(
                 name=safe_cn,
                 description=c.description,
                 package=self.package,
                 fields=[],
                 source_class=c,
+                annotations=annotations,
             )
             classes.append(ooclass)
             if c.mixin:

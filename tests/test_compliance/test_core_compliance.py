@@ -528,7 +528,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     choices = {
         (PYDANTIC, False, False): "Optional[str] = Field(default=None",
         (PYDANTIC, False, True): "str = Field(default=...",
-        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=None",
+        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=[]",
         (PYDANTIC, True, True): "list[str] = Field(default=...",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",
@@ -879,6 +879,8 @@ def test_non_standard_enum_names(framework, enum_name, pv_name):
         expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
     if pv_name == " " and framework in PYDANTIC:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+    if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,

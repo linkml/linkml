@@ -67,12 +67,21 @@ class RDFGenerator(Generator):
             base=str(self.namespaces._base),
             prefix=True,
         )
-        out = self._data(graph)
         if output:
+            # Binary-safe when -o/--output is used:
+            # delegate to RDFLib (Graph.serialize(destination=..., format=...)).
+            # Serializers that produce bytes write directly to the file; stdout stays empty.
+            fmt = "turtle" if self.format == "ttl" else self.format
+            try:
+                out = graph.serialize(format=fmt)
+            except UnicodeDecodeError:
+                graph.serialize(destination=output, format=fmt)
+                return ""
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(out)
+            return out
 
-        return out
+        return self._data(graph)
 
 
 @shared_arguments(RDFGenerator)

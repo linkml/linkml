@@ -142,6 +142,9 @@ class ERDiagramGenerator(Generator):
     no_types_dir: bool = False
     use_slot_uris: bool = False
 
+    preserve_names: bool = False
+    """If true, preserve LinkML element names (classes/slots) in diagram labels."""
+
     def __post_init__(self):
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()
@@ -232,7 +235,7 @@ class ERDiagramGenerator(Generator):
         cls = sv.get_class(class_name)
         if self.exclude_abstract_classes and cls.abstract:
             return
-        entity = Entity(name=camelcase(cls.name))
+        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             if slot.range in targets:
@@ -250,7 +253,7 @@ class ERDiagramGenerator(Generator):
         cls = sv.get_class(class_name)
         if self.exclude_abstract_classes and cls.abstract:
             return
-        entity = Entity(name=camelcase(cls.name))
+        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             # TODO: schemaview should infer this
@@ -280,7 +283,9 @@ class ERDiagramGenerator(Generator):
         rel = Relationship(
             first_entity=entity.name,
             relationship_type=rel_type,
-            second_entity=camelcase(sv.get_class(slot.range).name),
+            second_entity=(
+                sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
+            ),
             relationship_label=slot.name,
         )
         diagram.relationships.append(rel)
@@ -299,7 +304,7 @@ class ERDiagramGenerator(Generator):
         if slot.multivalued:
             # NOTE: mermaid does not support []s or *s in attribute types
             dt = f"{dt}List"
-        attr = Attribute(name=underscore(slot.name), datatype=dt)
+        attr = Attribute(name=(slot.name if self.preserve_names else underscore(slot.name)), datatype=dt)
         entity.attributes.append(attr)
 
 
@@ -324,7 +329,6 @@ class ERDiagramGenerator(Generator):
     default=False,
     help="If True, follow references even if not inlined",
 )
-@click.option("--format", "-f", default="markdown", type=click.Choice(ERDiagramGenerator.valid_formats))
 @click.option("--max-hops", default=None, type=click.INT, help="Maximum number of hops")
 @click.option("--classes", "-c", multiple=True, help="List of classes to serialize")
 @click.option("--include-upstream", is_flag=True, help="Include upstream classes")

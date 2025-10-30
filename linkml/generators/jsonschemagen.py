@@ -49,13 +49,14 @@ json_schema_types: dict[str, tuple[str, Optional[str]]] = {
 
 class JsonSchema(dict):
     OPTIONAL_IDENTIFIER_SUFFIX = "__identifier_optional"
+    PRESERVE_NAMES: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
 
     def add_def(self, name: str, subschema: "JsonSchema") -> None:
-        canonical_name = camelcase(name)
+        canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
 
         if "$defs" not in self:
             self["$defs"] = {}
@@ -78,7 +79,7 @@ class JsonSchema(dict):
             names = [names]
 
         for name in names:
-            canonical_name = camelcase(name)
+            canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
 
             if "$defs" not in self or canonical_name not in self["$defs"]:
                 self._lax_forward_refs[canonical_name] = identifier_name
@@ -90,7 +91,7 @@ class JsonSchema(dict):
     def add_property(
         self, name: str, subschema: "JsonSchema", *, value_required: bool = False, value_disallowed: bool = False
     ) -> None:
-        canonical_name = underscore(name)
+        canonical_name = name if self.PRESERVE_NAMES else underscore(name)
 
         if "properties" not in self:
             self["properties"] = {}
@@ -149,7 +150,7 @@ class JsonSchema(dict):
     @classmethod
     def ref_for(cls, class_name: Union[str, list[str]], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
-            def_name = camelcase(class_name)
+            def_name = class_name if cls.PRESERVE_NAMES else camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
             return JsonSchema({"$ref": f"#/$defs/{def_name}{def_suffix}"})
 
@@ -169,8 +170,8 @@ class JsonSchema(dict):
         return ref
 
     @classmethod
-    def array_of(cls, subschema: "JsonSchema", required: bool = True) -> "JsonSchema":
-        if required:
+    def array_of(cls, subschema: "JsonSchema", include_null: bool, required: bool = True) -> "JsonSchema":
+        if required or not include_null:
             typ = "array"
         else:
             typ = ["array", "null"]
@@ -265,12 +266,18 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     include_null: bool = True
     """Whether to include a "null" type in optional slots"""
 
+    preserve_names: bool = False
+    """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
+
     def __post_init__(self):
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
             self.top_class = self.topClass
 
         super().__post_init__()
+
+        # Set the class variable for JsonSchema to use
+        JsonSchema.PRESERVE_NAMES = self.preserve_names
 
         if self.top_class:
             if self.schemaview.get_class(self.top_class) is None:
@@ -372,9 +379,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         self.top_level_schema.add_def(cls.name, class_subschema)
 
-        if (self.top_class is not None and camelcase(self.top_class) == camelcase(cls.name)) or (
-            self.top_class is None and cls.tree_root
-        ):
+        if (
+            self.top_class is not None
+            and (
+                (self.preserve_names and self.top_class == cls.name)
+                or (not self.preserve_names and camelcase(self.top_class) == camelcase(cls.name))
+            )
+        ) or (self.top_class is None and cls.tree_root):
             for key, value in class_subschema.items():
                 # check this first to ensure we don't overwrite things like additionalProperties
                 # or description on the root. But we do want to copy over properties, required,
@@ -534,7 +545,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     "additionalProperties": True,
                 }
             )
-            return JsonSchema.array_of(prop, required=slot.required)
+            return JsonSchema.array_of(prop, include_null, required=slot.required)
         slot_is_multivalued = "multivalued" in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
@@ -579,7 +590,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         prop = JsonSchema({"type": typ, "additionalProperties": additionalProps})
                         self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
-                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), required=slot.required)
+                        prop = JsonSchema.array_of(JsonSchema.ref_for(reference), include_null, required=slot.required)
                 else:
                     prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
 
@@ -592,7 +603,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     prop = JsonSchema({"type": typ, "format": fmt})
 
                 if slot_is_multivalued:
-                    prop = JsonSchema.array_of(prop, required=slot.required)
+                    prop = JsonSchema.array_of(prop, include_null, required=slot.required)
                 else:
                     # handle optionals - bools like any_of, etc. below as they call this method recursively
                     if not slot.required and not slot_is_boolean and include_null:
@@ -762,6 +773,12 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=True,  # Default set to True
     show_default=True,
     help="If set, patterns will be materialized in the generated JSON Schema.",
+)
+@click.option(
+    "--preserve-names/--normalize-names",
+    default=False,
+    show_default=True,
+    help="Preserve original LinkML names in JSON Schema output (e.g., for $defs, properties, $ref targets).",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

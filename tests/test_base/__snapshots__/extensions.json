@@ -385,6 +385,7 @@
       "range": "AnyValue",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     }
   ],
@@ -445,11 +446,11 @@
         "@id": "tag"
       },
       "value": {
-        "@type": "linkml:Any",
+        "@type": "@id",
         "@id": "value"
       },
       "extensions": {
-        "@type": "linkml:Extension",
+        "@type": "@id",
         "@id": "extensions"
       },
       "AnyValue": {

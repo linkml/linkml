@@ -7,6 +7,7 @@ Gathers all the other linkml click entrypoints and puts them under ``linkml`` :)
 import click
 
 from linkml._version import __version__
+from linkml.converter.cli import cli as linkml_convert
 from linkml.generators.csvgen import cli as gen_csv
 from linkml.generators.dbmlgen import cli as gen_dbml
 from linkml.generators.docgen import cli as gen_doc
@@ -32,6 +33,7 @@ from linkml.generators.protogen import cli as gen_proto
 from linkml.generators.pydanticgen import cli as gen_pydantic
 from linkml.generators.pythongen import cli as gen_python
 from linkml.generators.rdfgen import cli as gen_rdf
+from linkml.generators.rustgen.cli import cli as gen_rust
 from linkml.generators.shaclgen import cli as gen_shacl
 from linkml.generators.shexgen import cli as gen_shex
 from linkml.generators.sparqlgen import cli as gen_sparql
@@ -42,9 +44,9 @@ from linkml.generators.summarygen import cli as gen_summary
 from linkml.generators.terminusdbgen import cli as gen_terminusdb
 from linkml.generators.typescriptgen import cli as gen_typescript
 from linkml.generators.yamlgen import cli as gen_yaml
+from linkml.generators.yarrrmlgen import cli as gen_yarrrml
 from linkml.generators.yumlgen import cli as gen_yuml
 from linkml.linter.cli import main as linkml_lint
-from linkml.utils.converter import cli as linkml_convert
 from linkml.utils.execute_tutorial import cli as run_tutorial
 from linkml.utils.schema_fixer import main as linkml_schema_fixer
 from linkml.utils.sqlutils import main as linkml_sqldb
@@ -113,6 +115,7 @@ generate.add_command(gen_python, name="python")
 generate.add_command(gen_pydantic, name="pydantic")
 generate.add_command(gen_pandera, name="pandera")
 generate.add_command(gen_rdf, name="rdf")
+generate.add_command(gen_rust, name="rust")
 generate.add_command(gen_shex, name="shex")
 generate.add_command(gen_shacl, name="shacl")
 generate.add_command(gen_sparql, name="sparql")
@@ -129,6 +132,7 @@ generate.add_command(gen_excel, name="excel")
 generate.add_command(gen_sssom, name="sssom")
 generate.add_command(gen_linkml, name="linkml")
 generate.add_command(gen_dbml, name="dbml")
+generate.add_command(gen_yarrrml, name="yarrrml")
 
 # Dev helpers
 dev.add_command(run_tutorial, name="tutorial")
