@@ -428,6 +428,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">includes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen.array</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArrayRangeGenerator</span><span class="p">,</span> <span class="n">ArrayRepresentation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassResult</span><span class="p">,</span> <span class="n">SlotResult</span><span class="p">,</span> <span class="n">SplitResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen.pydantic_ifabsent_processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticIfAbsentProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen.template</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Import</span><span class="p">,</span>
     <span class="n">Imports</span><span class="p">,</span>
@@ -438,7 +439,6 @@
     <span class="n">PydanticModule</span><span class="p">,</span>
     <span class="n">PydanticTemplateModel</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.python.python_ifabsent_processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">PythonIfAbsentProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">shared_arguments</span>
 
@@ -992,7 +992,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predefined_slot_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
-            <span class="n">ifabsent_processor</span> <span class="o">=</span> <span class="n">PythonIfAbsentProcessor</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
+            <span class="n">ifabsent_processor</span> <span class="o">=</span> <span class="n">PydanticIfAbsentProcessor</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
             <span class="n">slot_values</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">class_def</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
