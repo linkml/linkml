@@ -179,10 +179,16 @@ class GolangGenerator(Generator):
                 t = sv.get_type(r)
                 if t.base and t.base in type_map:
                     typ = type_map[t.base]
-                    return typ if slot.required else f"*{typ}"
+                    if slot.multivalued:
+                        return f"[]{typ}"
+                    else:
+                        return typ if slot.required else f"*{typ}"
                 else:
                     logger.warning(f"Unknown type.base: {t.name}")
-            return "string" if slot.required else "*string"
+            if slot.multivalued:
+                return "[]string"
+            else:
+                return "string" if slot.required else "*string"
 
     @staticmethod
     def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:

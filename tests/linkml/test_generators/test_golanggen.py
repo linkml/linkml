@@ -16,6 +16,7 @@ def test_golanggen(kitchen_sink_path):
     assert_in("Id *string")
     assert_in("WasInformedBy *ActivityId")
     assert_in("StartedAtTime *time.Time")
+    assert_in("Aliases []string")
 
 
 def test_multivalued_non_id(tmp_path):
