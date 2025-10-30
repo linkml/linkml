@@ -7,7 +7,7 @@ from linkml_runtime.linkml_model.meta import Annotation, SlotDefinition, UniqueK
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.dialects.oracle import VARCHAR2
-from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Text, Time, Numeric
+from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Numeric, Text, Time
 
 from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
