@@ -6,8 +6,8 @@ from linkml_runtime.linkml_model import (
 
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 
+
 class PydanticIfAbsentProcessor(PythonIfAbsentProcessor):
-    
     def map_enum_default_value(
         self, enum_name: EnumDefinitionName, permissible_value_name: str, slot: SlotDefinition, cls: ClassDefinition
     ):
