@@ -4,7 +4,7 @@ import os
 from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import click
 from jsonasobj2 import as_json, items, loads
@@ -152,7 +152,9 @@ class JSONLDGenerator(Generator):
     def visit_subset(self, ss: SubsetDefinition) -> None:
         self._visit(ss)
 
-    def end_schema(self, context: str | Sequence[str] | None = None, context_kwargs: dict | None = None, **_) -> str:
+    def end_schema(
+        self, context: Union[str, Sequence[str], None] = None, context_kwargs: Union[dict, None] = None, **_
+    ) -> str:
         default_context_kwargs = {"model": False}
         if context_kwargs is None:
             context_kwargs = default_context_kwargs
@@ -200,7 +202,7 @@ class JSONLDGenerator(Generator):
         return out
 
     def serialize(
-        self, context: str | Sequence[str] | None = None, context_kwargs: dict | None = None, **kwargs
+        self, context: Union[str, Sequence[str], None] = None, context_kwargs: Union[dict, None] = None, **kwargs
     ) -> str:
         """
         Serialize the model to JSON-LD
@@ -208,7 +210,7 @@ class JSONLDGenerator(Generator):
         Args:
             context (str, list[str], None): If ``None``, use context from schema,
                 otherwise replace context with this.
-            context_kwargs (dict | None): Keyword arguments forwarded to the JSON-LD Context generator
+            context_kwargs (dict, None): Keyword arguments forwarded to the JSON-LD Context generator
         """
         return super().serialize(context=context, context_kwargs=context_kwargs, **kwargs)
 
