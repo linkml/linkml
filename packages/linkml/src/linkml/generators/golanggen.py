@@ -171,17 +171,18 @@ class GolangGenerator(Generator):
                     return f"[]{rc_ref}"
             else:
                 if not id_slot or slot.inlined:
-                    return rc_name
+                    return rc_name if slot.required else f"*{rc_name}"
                 else:
-                    return f"{rc_ref}"
+                    return f"{rc_ref}" if slot.required else f"*{rc_ref}"
         else:
             if r in sv.all_types():
                 t = sv.get_type(r)
                 if t.base and t.base in type_map:
-                    return type_map[t.base]
+                    typ = type_map[t.base]
+                    return typ if slot.required else f"*{typ}"
                 else:
                     logger.warning(f"Unknown type.base: {t.name}")
-            return "string"
+            return "string" if slot.required else "*string"
 
     @staticmethod
     def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:

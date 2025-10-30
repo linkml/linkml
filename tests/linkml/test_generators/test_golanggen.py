@@ -13,6 +13,8 @@ def test_golanggen(kitchen_sink_path):
     assert_in("HasFamilialRelationships []FamilialRelationship")
     assert_in("CodeSystems []CodeSystem")
     assert_in("type ActivityId string")
+    assert_in("Id *string")
+    assert_in("WasInformedBy *ActivityId")
 
 
 def test_multivalued_non_id(tmp_path):
