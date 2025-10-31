@@ -1,0 +1,72 @@
+{
+  "persons": [
+    {
+      "id": "P:001",
+      "name": "fred bloggs",
+      "age_in_years": 33
+    },
+    {
+      "id": "P:002",
+      "name": "joe schmoe",
+      "has_employment_history": [
+        {
+          "started_at_time": "2019-01-01",
+          "is_current": true,
+          "employed_at": "ROR:1"
+        }
+      ],
+      "has_familial_relationships": [
+        {
+          "related_to": "P:001",
+          "type": "SIBLING_OF"
+        }
+      ],
+      "has_medical_history": [
+        {
+          "started_at_time": "2019-01-01",
+          "in_location": "GEO:1234",
+          "diagnosis": {
+            "id": "CODE:D0001",
+            "name": "headache",
+            "in_code_system": "DiseaseCodes"
+          },
+          "procedure": {
+            "id": "CODE:P0001",
+            "name": "trepanation",
+            "in_code_system": "ProcedureCodes"
+          }
+        }
+      ],
+      "addresses": [
+        {
+          "street": "1 foo street",
+          "city": "foo city"
+        }
+      ]
+    }
+  ],
+  "companies": [
+    {
+      "id": "ROR:1",
+      "name": "foo"
+    }
+  ],
+  "activities": [
+    {
+      "id": "A:1",
+      "started_at_time": "2019-01-01",
+      "was_associated_with": "Agent:987"
+    }
+  ],
+  "code_systems": {
+    "DiseaseCodes": {
+      "id": "DiseaseCodes",
+      "name": "disease codes"
+    },
+    "ProcedureCodes": {
+      "id": "ProcedureCodes",
+      "name": "disease codes"
+    }
+  },
+  "@type": "Dataset"
+}

@@ -1,0 +1,256 @@
+@prefix : <https://w3id.org/linkml/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a linkml:SchemaDefinition ;
+    linkml:classes [ a linkml:ClassDefinition ;
+            linkml:class_uri "https://w3id.org/linkml/Extensible" ;
+            linkml:definition_uri "https://w3id.org/linkml/Extensible" ;
+            linkml:description "mixin for classes that support extension" ;
+            linkml:from_schema "https://w3id.org/linkml/extensions" ;
+            linkml:imported_from "linkml:extensions" ;
+            linkml:mixin true ;
+            linkml:name "Extensible" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "extensions" ],
+        [ a linkml:ClassDefinition ;
+            linkml:class_uri "https://w3id.org/linkml/Annotatable" ;
+            linkml:definition_uri "https://w3id.org/linkml/Annotatable" ;
+            linkml:description "mixin for classes that support annotations" ;
+            linkml:from_schema "https://w3id.org/linkml/annotations" ;
+            linkml:mixin true ;
+            linkml:name "Annotatable" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "annotations" ],
+        [ a linkml:ClassDefinition ;
+            linkml:class_uri "https://w3id.org/linkml/Annotation" ;
+            linkml:definition_uri "https://w3id.org/linkml/Annotation" ;
+            linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
+            linkml:from_schema "https://w3id.org/linkml/annotations" ;
+            linkml:is_a "Extension" ;
+            linkml:mixins "Annotatable" ;
+            linkml:name "Annotation" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "annotations",
+                "extension_tag",
+                "extension_value",
+                "extensions" ],
+        [ a linkml:ClassDefinition ;
+            linkml:class_uri "https://w3id.org/linkml/Extension" ;
+            linkml:definition_uri "https://w3id.org/linkml/Extension" ;
+            linkml:description "a tag/value pair used to add non-model information to an entry" ;
+            linkml:from_schema "https://w3id.org/linkml/extensions" ;
+            linkml:imported_from "linkml:extensions" ;
+            linkml:name "Extension" ;
+            linkml:slot_usage [ ] ;
+            linkml:slots "extension_tag",
+                "extension_value",
+                "extensions" ] ;
+    linkml:default_prefix "linkml" ;
+    linkml:default_range "string" ;
+    linkml:description "Annotations mixin" ;
+    linkml:emit_prefixes "linkml" ;
+    linkml:generation_date "2022-07-14T00:56:47" ;
+    linkml:id "https://w3id.org/linkml/annotations" ;
+    linkml:imports "linkml:extensions",
+        "linkml:types" ;
+    linkml:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    linkml:metamodel_version "1.7.0" ;
+    linkml:name "annotations" ;
+    linkml:prefixes [ linkml:prefix_prefix "linkml" ;
+            linkml:prefix_reference "https://w3id.org/linkml/" ] ;
+    linkml:slots [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/extensions" ;
+            linkml:description "a tag/text tuple attached to an arbitrary element" ;
+            linkml:domain "Extensible" ;
+            linkml:domain_of "Extensible",
+                "Extension" ;
+            linkml:from_schema "https://w3id.org/linkml/extensions" ;
+            linkml:imported_from "linkml:extensions" ;
+            linkml:inlined true ;
+            linkml:multivalued true ;
+            linkml:name "extensions" ;
+            linkml:owner "Extensible" ;
+            linkml:range "Extension" ;
+            linkml:slot_uri "https://w3id.org/linkml/extensions" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "tag" ;
+            linkml:definition_uri "https://w3id.org/linkml/extension_tag" ;
+            linkml:description "a tag associated with an extension" ;
+            linkml:domain "Extension" ;
+            linkml:domain_of "Extension" ;
+            linkml:from_schema "https://w3id.org/linkml/extensions" ;
+            linkml:imported_from "linkml:extensions" ;
+            linkml:key true ;
+            linkml:name "extension_tag" ;
+            linkml:owner "Extension" ;
+            linkml:range "uriorcurie" ;
+            linkml:required true ;
+            linkml:slot_uri "https://w3id.org/linkml/tag" ],
+        [ a linkml:SlotDefinition ;
+            linkml:alias "value" ;
+            linkml:definition_uri "https://w3id.org/linkml/extension_value" ;
+            linkml:description "the actual annotation" ;
+            linkml:domain "Extension" ;
+            linkml:domain_of "Extension" ;
+            linkml:from_schema "https://w3id.org/linkml/extensions" ;
+            linkml:imported_from "linkml:extensions" ;
+            linkml:name "extension_value" ;
+            linkml:owner "Extension" ;
+            linkml:range "string" ;
+            linkml:required true ;
+            linkml:slot_uri "https://w3id.org/linkml/value" ],
+        [ a linkml:SlotDefinition ;
+            linkml:definition_uri "https://w3id.org/linkml/annotations" ;
+            linkml:description "a collection of tag/text tuples with the semantics of OWL Annotation" ;
+            linkml:domain "Annotatable" ;
+            linkml:domain_of "Annotatable",
+                "Annotation" ;
+            linkml:from_schema "https://w3id.org/linkml/annotations" ;
+            linkml:inlined true ;
+            linkml:is_a "extensions" ;
+            linkml:multivalued true ;
+            linkml:name "annotations" ;
+            linkml:owner "Annotation" ;
+            linkml:range "Annotation" ;
+            linkml:slot_uri "https://w3id.org/linkml/annotations" ] ;
+    linkml:source_file "annotations.yaml" ;
+    linkml:source_file_date "2022-07-14T00:55:10" ;
+    linkml:source_file_size 833 ;
+    linkml:types [ a linkml:TypeDefinition ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime" ;
+            linkml:description "Either a date or a datetime" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "date_or_datetime" ;
+            linkml:repr "str" ;
+            linkml:uri "https://w3id.org/linkml/DateOrDatetime" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "XSDDate" ;
+            linkml:definition_uri "https://w3id.org/linkml/Date" ;
+            linkml:description "a date (year, month and day) in an idealized calendar" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "date" ;
+            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#date" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "XSDTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Time" ;
+            linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "time" ;
+            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "ElementIdentifier" ;
+            linkml:comments "Used for inheritance and type checking" ;
+            linkml:definition_uri "https://w3id.org/linkml/Objectidentifier" ;
+            linkml:description "A URI or CURIE that represents an object in the model." ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "objectidentifier" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#iri" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "URIorCURIE" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
+            linkml:description "a URI or a CURIE" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "uriorcurie" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "URI" ;
+            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
+            linkml:description "a complete URI" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "uri" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "NCName" ;
+            linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
+            linkml:description "Prefix part of CURIE" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "ncname" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "int" ;
+            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
+            linkml:description "An integer" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "integer" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "str" ;
+            linkml:definition_uri "https://w3id.org/linkml/String" ;
+            linkml:description "A character string" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "string" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Float" ;
+            linkml:description "A real number that conforms to the xsd:float specification" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "float" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "Bool" ;
+            linkml:definition_uri "https://w3id.org/linkml/Boolean" ;
+            linkml:description "A binary (true or false) value" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "boolean" ;
+            linkml:repr "bool" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "float" ;
+            linkml:definition_uri "https://w3id.org/linkml/Double" ;
+            linkml:description "A real number that conforms to the xsd:double specification" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "double" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#double" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "NodeIdentifier" ;
+            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
+            linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "nodeidentifier" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "XSDDateTime" ;
+            linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
+            linkml:description "The combination of a date and time" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "datetime" ;
+            linkml:repr "str" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
+        [ a linkml:TypeDefinition ;
+            linkml:base "Decimal" ;
+            linkml:definition_uri "https://w3id.org/linkml/Decimal" ;
+            linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+            linkml:from_schema "https://w3id.org/linkml/types" ;
+            linkml:imported_from "linkml:types" ;
+            linkml:name "decimal" ;
+            linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ] ;
+    linkml:version "2.0.0" .
+
+
+

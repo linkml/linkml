@@ -1,0 +1,41 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+prefixes:
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  linkml: https://w3id.org/linkml/
+  ORCID: https://orcid.org/
+  sdo: http://schema.org/
+default_prefix: personinfo
+default_range: string
+
+classes:
+  Person:
+    slots:
+      - id
+      - full_name
+      - age
+      - phone
+    class_uri: sdo:Person
+    id_prefixes:
+      - ORCID
+
+  Container:
+    tree_root: true
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+
+slots:
+  id:
+    identifier: true
+    range: uriorcurie
+  full_name:
+  age:
+  phone:

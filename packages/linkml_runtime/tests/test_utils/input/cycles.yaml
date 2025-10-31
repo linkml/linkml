@@ -1,0 +1,189 @@
+# yaml-language-server: $schema=https://linkml.io/linkml-model/linkml_model/jsonschema/meta.schema.json
+id: https://example.org/test-cycle-schema
+name: TestCycleSchema
+description: |
+  Schema with intentional cycles in classes, mixins, slot ranges, and types.
+prefixes:
+  ex:     https://example.org/schema/
+
+default_prefix: ex
+default_range: string
+
+slots:
+  identifier_slot:
+    range: string
+    identifier: true
+  noncycle_slot:
+  slot_a:
+  slot_b:
+  slot_c:
+  mixed_in_slot_a:
+  mixed_in_slot_b:
+
+classes:
+  # Non‑cyclic base class with some children
+  BaseClass:
+    description: Simple base class with no cycles.
+    slots:
+      - noncycle_slot
+      - identifier_slot
+
+  MixinA:
+    mixin: true
+    slots:
+    - mixed_in_slot_a
+
+  MixinB:
+    mixin: true
+    slots:
+    - mixed_in_slot_b
+
+  NonCycleClassA:
+    is_a: BaseClass
+
+  NonCycleClassB:
+    mixins:
+    - MixinA
+    is_a: NonCycleClassA
+
+  NonCycleClassC:
+    mixins:
+    - MixinB
+    is_a: NonCycleClassA
+
+  # cycle in the range of a slot
+  IdentifierCycleClassA:
+    description: Class with a cycle in the range for the identifier slot.
+    attributes:
+      id_slot:
+        range: IdentifierCycleClassB
+        identifier: true
+
+  IdentifierCycleClassB:
+    description: Class with a cycle in the range for the identifier slot.
+    attributes:
+      id_slot:
+        range: IdentifierCycleClassC
+        identifier: true
+
+  IdentifierCycleClassC:
+    description: Class with a cycle in the range for the identifier slot.
+    attributes:
+      id_slot:
+        range: IdentifierCycleClassA
+        identifier: true
+
+  IdentifierCycleClassD:
+    description: Class with itself as the range for the identifier slot.
+    attributes:
+      id_slot:
+        range: IdentifierCycleClassD
+        identifier: true
+
+  # Cycle: ClassA -> ClassB -> ClassC -> ClassA
+  # ClassD and ClassE have the misfortune of inheriting all this nonsense.
+  ClassA:
+    is_a: ClassB
+    description: Part of a subclass inheritance cycle (A -> B).
+    slots:
+      - slot_a
+
+  ClassB:
+    is_a: ClassC
+    description: Part of a subclass inheritance cycle (B -> C).
+    slots:
+      - slot_b
+
+  ClassC:
+    is_a: ClassA
+    description: Part of a subclass inheritance cycle (C -> A).
+    slots:
+      - slot_c
+
+  ClassD:
+    is_a: ClassA
+
+  ClassE:
+    is_a: ClassD
+
+  # Cycle: ClassF -> ClassF
+  # ClassG is_a ClassF so inherits the cycle
+  ClassF:
+    is_a: ClassF
+
+  ClassG:
+    is_a: ClassF
+
+  # Mixin cycle (mixins reference each other)
+  Mixin1:
+    description: Mixin that pulls in Mixin2, forming a mixin cycle.
+    mixin: true
+    mixins:
+      - Mixin2
+
+  Mixin2:
+    description: Mixin that pulls in Mixin1, forming a mixin cycle.
+    mixin: true
+    mixins:
+      - Mixin1
+
+  MixedClass:
+    description: Class that applies both Mixin1 and Mixin2, thus inheriting the mixin cycle.
+    mixins:
+      - Mixin1
+      - Mixin2
+
+
+types:
+  # string and subtypes
+  string:
+    uri: ex:string
+    base: str
+    description: A character string
+
+  super_string:
+    typeof: string
+    description: Type with ancestors, no cycles
+
+  supreme_string:
+    typeof: super_string
+    description: Type with ancestors, no cycles
+
+  integer:
+    uri: ex:integer
+    base: int
+    description: An integer
+
+  boolean:
+    uri: ex:boolean
+    base: Bool
+    repr: bool
+    description: Your basic bool.
+
+  # in a cycle with itself!
+  circle:
+    typeof: circle
+    uri: ex:circle
+
+  circle_of_life:
+    typeof: circle
+
+  # cycle between type_circular and circular_type
+  circular_type:
+    typeof: type_circular
+    uri: ex:circ
+    description: Type in a cycle
+
+  type_circular:
+    typeof: circular_type
+    uri: ex:circ
+    description: Type in a cycle
+
+  # inherit the type_circular/circular_type confusion
+  semi_circular_type:
+    typeof: circular_type
+    description: Type with cyclic ancestors
+
+  curve_type:
+    typeof: semi_circular_type
+    description: Type with cyclic ancestors
