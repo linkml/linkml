@@ -63,6 +63,7 @@ force-exclude = '''
 '''
 
 [tool.pytest.ini_options]
+testpaths = ["packages/linkml/tests"]
 filterwarnings = [
   # https://github.com/RDFLib/rdflib/issues/1830
   "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"

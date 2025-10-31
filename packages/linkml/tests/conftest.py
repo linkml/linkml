@@ -38,7 +38,7 @@ class Snapshot(ABC):
 
     def __eq__(self, other: object) -> bool:
         __tracebackhide__ = True
-        if self.config.getoption("generate_snapshots"):
+        if getattr(self.config.option, "generate_snapshots", False):
             self.path.parent.mkdir(parents=True, exist_ok=True)
             return self.generate_snapshot(other)
         else:
@@ -101,7 +101,7 @@ class SnapshotFile(Snapshot):
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(_diff_text(actual, expected, self.config.getoption("verbose")))
+                self.eq_state = "\n".join(_diff_text(actual, expected, getattr(self.config.option, "verbose", 0)))
             return is_eq
 
 
@@ -179,49 +179,35 @@ def temp_dir(request) -> Path:
     test_dir = base / UNSAFE_PATHS.sub("_", request.node.name)
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
-    if not request.config.getoption("with_output"):
+    if not getattr(request.config.option, "with_output", False):
         shutil.rmtree(test_dir, ignore_errors=True)
 
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--generate-snapshots",
-        action="store_true",
-        help="Generate new files into __snapshot__ directories instead of checking against existing files",
-    )
-    parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
-    parser.addoption("--with-network", action="store_true", help="include tests marked network")
-    parser.addoption(
-        "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
-    )
-    parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
-    parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
-    parser.addoption(
-        "--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)"
-    )
+# Note: pytest_addoption is now defined in the root conftest.py to avoid
+# option registration conflicts in the monorepo workspace
 
 
 def pytest_collection_modifyitems(config, items: list[pytest.Item]):
-    if not config.getoption("--with-slow"):
+    if not getattr(config.option, "with_slow", False):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
         for item in items:
             if item.get_closest_marker("slow"):
                 item.add_marker(skip_slow)
 
-    if not config.getoption("--with-biolink"):
+    if not getattr(config.option, "with_biolink", False):
         skip_biolink = pytest.mark.skip(reason="need --with-biolink option to run")
         for item in items:
             if item.get_closest_marker("biolink"):
                 item.add_marker(skip_biolink)
 
     # Gate rustgen tests behind an explicit flag so they don't run by default
-    if not config.getoption("--with-rustgen"):
+    if not getattr(config.option, "with_rustgen", False):
         skip_rustgen = pytest.mark.skip(reason="need --with-rustgen option to run")
         for item in items:
             if item.get_closest_marker("rustgen"):
                 item.add_marker(skip_rustgen)
 
-    if not config.getoption("--with-network"):
+    if not getattr(config.option, "with_network", False):
         skip_network = pytest.mark.skip(reason="need --with-network option to run")
         for item in items:
             if item.get_closest_marker("network"):
@@ -259,8 +245,8 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
 
 
 def pytest_sessionstart(session: pytest.Session):
-    tests.WITH_OUTPUT = session.config.getoption("--with-output")
-    if session.config.getoption("--generate-snapshots"):
+    tests.WITH_OUTPUT = getattr(session.config.option, "with_output", False)
+    if getattr(session.config.option, "generate_snapshots", False):
         tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
 
     _monkeypatch_pyshex()
@@ -297,7 +283,7 @@ def patch_requests_cache(pytestconfig):
     Cache network requests - for each unique network request, store it in
     an sqlite cache. only do unique requests once per session.
     """
-    if pytestconfig.getoption("--without-cache"):
+    if getattr(pytestconfig.option, "without_cache", False):
         yield
         return
     cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
@@ -311,7 +297,7 @@ def patch_requests_cache(pytestconfig):
         yield
     requests_cache.uninstall_cache()
     # delete cache file unless we have requested it to persist for inspection
-    if not pytestconfig.getoption("--with-output"):
+    if not getattr(pytestconfig.option, "with_output", False):
         cache_file.unlink(missing_ok=True)
 
 

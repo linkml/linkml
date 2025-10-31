@@ -17,6 +17,7 @@ authors = [
   {name = "Kevin Schaper", email = "kevin@tislab.org"},
 ]
 license = "Apache-2.0"
+license-files = ["LICENSE"]
 homepage = "https://linkml.io/"
 repository = "https://github.com/linkml/linkml"
 documentation = "https://linkml.io/linkml/"
@@ -166,6 +167,7 @@ gen-typescript = "linkml.generators.typescriptgen:cli"
 gen-terminusdb = "linkml.generators.terminusdbgen:cli"
 gen-yuml = "linkml.generators.yumlgen:cli"
 gen-yaml = "linkml.generators.yamlgen:cli"
+gen-yarrrml = "linkml.generators.yarrrmlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
 gen-rust = "linkml.generators.rustgen.cli:cli"
 gen-sqla = "linkml.generators.sqlalchemygen:cli"
@@ -186,6 +188,40 @@ gen-sssom = "linkml.generators.sssomgen:cli"
 gen-linkml = "linkml.generators.linkmlgen:cli"
 gen-mermaid-class-diagram = "linkml.generators.mermaidclassdiagramgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+  # https://github.com/RDFLib/rdflib/issues/1830
+  "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
+]
+markers = [
+  "network: mark tests that make external network requests",
+  "slow: mark test as slow to run",
+  "no_asserts: tests that don't have meaningful asserts, but are only snapshot comparisons, or historically had print statements, or other non-erroring behavior",
+  "strcmp: tests that compare stringified values rather than the values themselves",
+  "biolink: tests that validate that the biolink model is unchanged",
+  "docker: tests that require a running docker server",
+  "plantumlgen: Tests for the plantuml generator",
+  "pydanticgen_split: Split module generation in pydanticgen",
+  "pydanticgen_npd: tests for the numpydantic array generator",
+  "panderagen: tests for the pandera generator",
+  "pythongen: Tests for python generator",
+  "pydanticgen: Tests for pydantic generator",
+  "javagen: Tests for java generator",
+  "jsonschemagen: Tests for Json Schema generator",
+  "shaclgen: Tests for shacl generator",
+  "shexgen: Tests for shex generator",
+  "jsonldgen: Test for JSON-LD generator",
+  "jsonldcontextgen: Test for JSON-LD context generator",
+  "rdfgen: Tests for the RDFGenerator",
+  "rustgen: Tests for the RustGenerator",
+  "sqlalchemygen: Tests for SQL Alchemy generator",
+  "sqlddlgen: Tests for SQL DDL generator",
+  "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
+  "owlgen: Tests for OWL generator",
+  "yamlgen: Tests for the YAML generator",
+  "yarrrml: End-to-end tests for the YARRRML generator"
+]
 
 [tool.uv-dynamic-versioning]
 vcs = "git"
