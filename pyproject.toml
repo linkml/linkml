@@ -1,67 +1,6 @@
 [tool.uv.workspace]
 members = ["packages/*"]
 
-[tool.codespell]
-skip = [
-  ".git", "*.pdf", "*.svg", "*.dill",
-  "./tests",  # TODO: bring in tests in too
-  "pyproject.toml",
-  "uv.lock",
-  "./notebooks/DistributedModels.ipynb",
-  "./docs/LinkML-logo/LinkML-Revised-Round-Logo-MASTER-FILE.ai",
-  "./tests/data/hp.ttl",
-  "./tests/data/hp_f.ttl",
-  "tests/test_generators/input/jsonschema_value_constraints.yaml",
-]
-# Ignore table where words could be split across rows
-ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
-ignore-words-list = [
-  "acsess",
-  "AGS",
-  "amination",
-  "anc",
-  "brite",
-  "CrossReference",
-  "crossReference",
-  "connexion",
-  "EHR",
-  "infarction",
-  "linke",
-  "mater",
-  "mor",
-  "ser",
-  "Stye",
-  "TE",
-  "thirdparty",
-  "Vas",
-  # These are temp exemptions because they are coming from
-  # upstream repos linkml-runtime and linkml-model
-  # we should remove these once the upstream repos are fixed
-  # and changes are propagated to linkml
-  "GENERARE",
-  "re-used",
-  "doesnt",
-  "crate"
-]
-quiet-level = 3
-
-[tool.black]
-line-length = 120
-target-version = ["py39", "py310", "py311", "py312", "py313"]
-force-exclude = '''
-/(
-  # default exclude
-  \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
-  # additional exclude
-  | tests.*/output
-  | __snapshots__
-  | docs
-  | examples
-  | notebooks
-  | linkml/linter/config/datamodel
-)/
-'''
-
 [tool.pytest.ini_options]
 testpaths = ["packages/linkml/tests"]
 filterwarnings = [
@@ -97,87 +36,52 @@ markers = [
   "yarrrml: End-to-end tests for the YARRRML generator"
 ]
 
-# https://docs.astral.sh/ruff/settings/
+# Minimal ruff config at root for workspace-level excludes
+# Package-specific rules are in packages/linkml/pyproject.toml
 [tool.ruff]
 extend-exclude = [
-    "tests/output",
-    "tests/**/output",
-    "tests/**/__snapshots__",
     "examples/",
     "docs/",
     "notebooks/",
-    # Auto-generated files that may not conform to current linting rules
-    "linkml/linter/config/datamodel/config.py"
-]
-force-exclude = true
-line-length = 120
-# Assume Python 3.9
-target-version = "py39"
-
-[tool.ruff.lint]
-extend-ignore = ["E203"]
-select = [
-  "E",  # pycodestyle errors
-  "F",  # Pyflakes
-  "I",  # isort
-  "UP", # pyupgrade
 ]
 
-[tool.ruff.lint.per-file-ignores]
-# These templates can have long lines
-"linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
-"linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
-
-# Notebooks can have unsorted imports
-"tests/test_notebooks/input/*" = ["E402"]
-
-[tool.tox]
-requires = ["tox>=4", "tox-uv"]
-env_list = ["lint", "py{39,310,311,312,313}"]
-
-[tool.tox.env_run_base]
-runner = "uv-venv-lock-runner"
-deps = ["pytest"]
-commands = [
-  ["pytest", "{posargs}"],
+# Codespell config at root for workspace-level excludes
+[tool.codespell]
+skip = [
+  ".git", "*.pdf", "*.svg", "*.dill",
+  "pyproject.toml",
+  "uv.lock",
+  "notebooks",
+  "docs",
+  "examples",
+  "**/__snapshots__",
+  "**/output",
 ]
-
-[tool.tox.env.codespell]
-description = "Run spell checkers."
-runner = "uv-venv-runner"
-skip_install = true
-deps = [
-  "codespell",
-  "tomli", # required for getting config from pyproject.toml
+# Ignore table where words could be split across rows
+ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
+ignore-words-list = [
+  "acsess",
+  "AGS",
+  "amination",
+  "anc",
+  "brite",
+  "CrossReference",
+  "crossReference",
+  "connexion",
+  "EHR",
+  "infarction",
+  "linke",
+  "mater",
+  "mor",
+  "ser",
+  "Stye",
+  "TE",
+  "thirdparty",
+  "Vas",
+  "GENERARE",
+  "re-used",
+  "doesnt",
+  "crate",
+  "alse",  # appears in snapshots
 ]
-commands = [
-  ["codespell", "{posargs}"]
-]
-
-[tool.tox.env.format]
-description = "Run code formatter and code-fixing linter."
-runner = "uv-venv-runner"
-skip_install = true
-deps = ["pre-commit"]
-commands = [
-  ["pre-commit", "run", "--all-files", "--show-diff-on-failure", { replace = "posargs", extend = true }]
-]
-
-[tool.tox.env.lint]
-description = "Run code linter and formatter (no fixes)."
-runner = "uv-venv-runner"
-skip_install = true
-deps = ["ruff==0.11.13"]
-commands = [
-  ["ruff", "check", "{posargs:.}"],
-  ["ruff", "format", "{posargs:.}"],
-]
-
-[tool.uv-dynamic-versioning]
-vcs = "git"
-style = "pep440"
-fallback-version = "0.0.0"
-
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
+quiet-level = 3
