@@ -621,11 +621,22 @@ class MarkdownDataDictGen(Generator):
         """Generate documentation for all slots as a comprehensive table."""
         items = []
 
-        # Sort slots by rank (if exists) then alphabetically
+        # Sort slots with priority slots (id, name, description) first, then by rank, then alphabetically
         def slot_sort_key(slot):
+            priority_slots = ["id", "name", "description"]
+
+            # Primary sort by priority slots
+            if slot.name in priority_slots:
+                primary_sort = priority_slots.index(slot.name)
+            else:
+                primary_sort = len(priority_slots)
+
+            # Secondary sort by rank (if exists)
             rank = getattr(slot, "rank", None)
             rank_value = rank if rank is not None else float("inf")
-            return (rank_value, slot.name)
+
+            # Tertiary sort alphabetically
+            return (primary_sort, rank_value, slot.name)
 
         slots = sorted(self.schema.slots.values(), key=slot_sort_key)
 
@@ -1400,7 +1411,10 @@ class MarkdownDataDictGen(Generator):
             return f"*{slot_name}*"  # Default to italics for unknown
 
     def _create_slot_sort_key(self, cls: ClassDefinition):
-        """Create a sort key function for slot attributes based on source, priority, rank, and name."""
+        """Create a sort key function for slot attributes based on priority, source, rank, and name.
+
+        Id, Name, Description always appear at the top in that order, regardless of source.
+        """
         priority_slots = ["id", "name", "description"]
 
         def sort_key(attr):
@@ -1408,26 +1422,26 @@ class MarkdownDataDictGen(Generator):
             slot = next((s for s in self._collect_all_class_slots(cls) if s.name == slot_name), None)
 
             if not slot:
-                return (99, 0, float("inf"), slot_name)  # Unknown slots go last
+                return (99, 0, 0, float("inf"), slot_name)  # Unknown slots go last
+
+            # Primary sort by priority slots (id, name, description first)
+            if slot_name in priority_slots:
+                primary_sort = priority_slots.index(slot_name)
+            else:
+                primary_sort = len(priority_slots)  # Non-priority slots come after
 
             source_info = self._get_slot_source(slot, cls)
             source_type = source_info["type"]
 
-            # Primary sort by source type: inherited (parents) -> mixins -> own
+            # Secondary sort by source type: inherited (parents) -> mixins -> own
             if source_type == "inherited":
-                primary_sort = 0
+                secondary_sort = 0
             elif source_type == "mixin":
-                primary_sort = 1
+                secondary_sort = 1
             elif source_type == "own":
-                primary_sort = 2
+                secondary_sort = 2
             else:
-                primary_sort = 3  # unknown
-
-            # Secondary sort by priority slots (id, name, description first)
-            if slot_name in priority_slots:
-                secondary_sort = priority_slots.index(slot_name)
-            else:
-                secondary_sort = len(priority_slots)  # Non-priority slots come after
+                secondary_sort = 3  # unknown
 
             # Tertiary sort by rank (if exists)
             rank = getattr(slot, "rank", None)
