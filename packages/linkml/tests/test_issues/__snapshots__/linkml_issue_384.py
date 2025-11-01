@@ -6,72 +6,29 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
+from jsonasobj2 import as_dict
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
+from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
-from linkml_runtime.linkml_model.types import Float, Integer, String
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-EX = CurieNamespace('ex', 'https://w3id.org/linkml/examples/personinfo/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-SDO = CurieNamespace('sdo', 'http://schema.org/')
+EX = CurieNamespace("ex", "https://w3id.org/linkml/examples/personinfo/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+SDO = CurieNamespace("sdo", "http://schema.org/")
 DEFAULT_ = EX
 
 
 # Types
 
 # Class references
-
 
 
 @dataclass(repr=False)
@@ -202,41 +159,108 @@ class GeoAge(YAMLRoot):
 class slots:
     pass
 
-slots.id = Slot(uri=EX.id, name="id", curie=EX.curie('id'),
-                   model_uri=EX.id, domain=None, range=Optional[str])
 
-slots.full_name = Slot(uri=EX.full_name, name="full_name", curie=EX.curie('full_name'),
-                   model_uri=EX.full_name, domain=None, range=Optional[str])
+slots.id = Slot(uri=EX.id, name="id", curie=EX.curie("id"), model_uri=EX.id, domain=None, range=Optional[str])
 
-slots.parent = Slot(uri=EX.parent, name="parent", curie=EX.curie('parent'),
-                   model_uri=EX.parent, domain=None, range=Optional[Union[Union[dict, Thing], list[Union[dict, Thing]]]])
+slots.full_name = Slot(
+    uri=EX.full_name,
+    name="full_name",
+    curie=EX.curie("full_name"),
+    model_uri=EX.full_name,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.person__aliases = Slot(uri=EX.aliases, name="person__aliases", curie=EX.curie('aliases'),
-                   model_uri=EX.person__aliases, domain=None, range=Optional[Union[str, list[str]]])
+slots.parent = Slot(
+    uri=EX.parent,
+    name="parent",
+    curie=EX.curie("parent"),
+    model_uri=EX.parent,
+    domain=None,
+    range=Optional[Union[Union[dict, Thing], list[Union[dict, Thing]]]],
+)
 
-slots.person__phone = Slot(uri=EX.phone, name="person__phone", curie=EX.curie('phone'),
-                   model_uri=EX.person__phone, domain=None, range=Optional[str])
+slots.person__aliases = Slot(
+    uri=EX.aliases,
+    name="person__aliases",
+    curie=EX.curie("aliases"),
+    model_uri=EX.person__aliases,
+    domain=None,
+    range=Optional[Union[str, list[str]]],
+)
 
-slots.person__age = Slot(uri=EX.age, name="person__age", curie=EX.curie('age'),
-                   model_uri=EX.person__age, domain=None, range=Optional[int])
+slots.person__phone = Slot(
+    uri=EX.phone,
+    name="person__phone",
+    curie=EX.curie("phone"),
+    model_uri=EX.person__phone,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.geoObject__aliases = Slot(uri=EX.aliases, name="geoObject__aliases", curie=EX.curie('aliases'),
-                   model_uri=EX.geoObject__aliases, domain=None, range=Optional[str])
+slots.person__age = Slot(
+    uri=EX.age, name="person__age", curie=EX.curie("age"), model_uri=EX.person__age, domain=None, range=Optional[int]
+)
 
-slots.geoObject__age = Slot(uri=EX.age, name="geoObject__age", curie=EX.curie('age'),
-                   model_uri=EX.geoObject__age, domain=None, range=Optional[Union[dict, GeoAge]])
+slots.geoObject__aliases = Slot(
+    uri=EX.aliases,
+    name="geoObject__aliases",
+    curie=EX.curie("aliases"),
+    model_uri=EX.geoObject__aliases,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.geoAge__unit = Slot(uri=EX.unit, name="geoAge__unit", curie=EX.curie('unit'),
-                   model_uri=EX.geoAge__unit, domain=None, range=Optional[str])
+slots.geoObject__age = Slot(
+    uri=EX.age,
+    name="geoObject__age",
+    curie=EX.curie("age"),
+    model_uri=EX.geoObject__age,
+    domain=None,
+    range=Optional[Union[dict, GeoAge]],
+)
 
-slots.geoAge__value = Slot(uri=EX.value, name="geoAge__value", curie=EX.curie('value'),
-                   model_uri=EX.geoAge__value, domain=None, range=Optional[float])
+slots.geoAge__unit = Slot(
+    uri=EX.unit,
+    name="geoAge__unit",
+    curie=EX.curie("unit"),
+    model_uri=EX.geoAge__unit,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.Person_parent = Slot(uri=EX.parent, name="Person_parent", curie=EX.curie('parent'),
-                   model_uri=EX.Person_parent, domain=Person, range=Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]])
+slots.geoAge__value = Slot(
+    uri=EX.value,
+    name="geoAge__value",
+    curie=EX.curie("value"),
+    model_uri=EX.geoAge__value,
+    domain=None,
+    range=Optional[float],
+)
 
-slots.Organization_full_name = Slot(uri=EX.full_name, name="Organization_full_name", curie=EX.curie('full_name'),
-                   model_uri=EX.Organization_full_name, domain=Organization, range=Optional[str])
+slots.Person_parent = Slot(
+    uri=EX.parent,
+    name="Person_parent",
+    curie=EX.curie("parent"),
+    model_uri=EX.Person_parent,
+    domain=Person,
+    range=Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]],
+)
 
-slots.Organization_parent = Slot(uri=EX.parent, name="Organization_parent", curie=EX.curie('parent'),
-                   model_uri=EX.Organization_parent, domain=Organization, range=Optional[Union[Union[dict, "Organization"], list[Union[dict, "Organization"]]]])
+slots.Organization_full_name = Slot(
+    uri=EX.full_name,
+    name="Organization_full_name",
+    curie=EX.curie("full_name"),
+    model_uri=EX.Organization_full_name,
+    domain=Organization,
+    range=Optional[str],
+)
+
+slots.Organization_parent = Slot(
+    uri=EX.parent,
+    name="Organization_parent",
+    curie=EX.curie("parent"),
+    model_uri=EX.Organization_parent,
+    domain=Organization,
+    range=Optional[Union[Union[dict, "Organization"], list[Union[dict, "Organization"]]]],
+)

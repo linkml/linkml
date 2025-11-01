@@ -18,81 +18,42 @@
 #   And links, e.g to [Person](Person.md)
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
 import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
+from jsonasobj2 import as_dict
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from linkml_runtime.linkml_model.types import Decimal
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
+from linkml_runtime.utils.metamodelcore import Bool, Decimal, XSDDate, empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
-from linkml_runtime.linkml_model.types import Boolean, Date, Decimal, Integer, String
-from linkml_runtime.utils.metamodelcore import Bool, Decimal, XSDDate
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-A = CurieNamespace('A', 'http://example.org/activities/')
-BFO = CurieNamespace('BFO', 'http://purl.obolibrary.org/obo/BFO_')
-CODE = CurieNamespace('CODE', 'http://example.org/code/')
-P = CurieNamespace('P', 'http://example.org/person/')
-RO = CurieNamespace('RO', 'http://purl.obolibrary.org/obo/RO_')
-ROR = CurieNamespace('ROR', 'http://example.org/ror/')
-BIOLINK = CurieNamespace('biolink', 'https://w3id.org/biolink/')
-BIZCODES = CurieNamespace('bizcodes', 'https://example.org/bizcodes/')
-CORE = CurieNamespace('core', 'https://w3id.org/linkml/tests/core/')
-DCE = CurieNamespace('dce', 'http://purl.org/dc/elements/1.1/')
-KS = CurieNamespace('ks', 'https://w3id.org/linkml/tests/kitchen_sink/')
-LEGO = CurieNamespace('lego', 'http://geneontology.org/lego/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-PAV = CurieNamespace('pav', 'http://purl.org/pav/')
-PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
-SCHEMA = CurieNamespace('schema', 'http://schema.org/')
-SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+A = CurieNamespace("A", "http://example.org/activities/")
+BFO = CurieNamespace("BFO", "http://purl.obolibrary.org/obo/BFO_")
+CODE = CurieNamespace("CODE", "http://example.org/code/")
+P = CurieNamespace("P", "http://example.org/person/")
+RO = CurieNamespace("RO", "http://purl.obolibrary.org/obo/RO_")
+ROR = CurieNamespace("ROR", "http://example.org/ror/")
+BIOLINK = CurieNamespace("biolink", "https://w3id.org/biolink/")
+BIZCODES = CurieNamespace("bizcodes", "https://example.org/bizcodes/")
+CORE = CurieNamespace("core", "https://w3id.org/linkml/tests/core/")
+DCE = CurieNamespace("dce", "http://purl.org/dc/elements/1.1/")
+KS = CurieNamespace("ks", "https://w3id.org/linkml/tests/kitchen_sink/")
+LEGO = CurieNamespace("lego", "http://geneontology.org/lego/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+PAV = CurieNamespace("pav", "http://purl.org/pav/")
+PROV = CurieNamespace("prov", "http://www.w3.org/ns/prov#")
+SCHEMA = CurieNamespace("schema", "http://schema.org/")
+SKOS = CurieNamespace("skos", "http://www.w3.org/2004/02/skos/core#")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = KS
 
 
@@ -302,6 +263,7 @@ class Person(YAMLRoot):
     """
     A person, living or dead
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Person"]
@@ -311,8 +273,12 @@ class Person(YAMLRoot):
 
     id: Union[str, PersonId] = None
     name: Optional[str] = None
-    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], list[Union[dict, "EmploymentEvent"]]]] = empty_list()
-    has_familial_relationships: Optional[Union[Union[dict, "FamilialRelationship"], list[Union[dict, "FamilialRelationship"]]]] = empty_list()
+    has_employment_history: Optional[Union[Union[dict, "EmploymentEvent"], list[Union[dict, "EmploymentEvent"]]]] = (
+        empty_list()
+    )
+    has_familial_relationships: Optional[
+        Union[Union[dict, "FamilialRelationship"], list[Union[dict, "FamilialRelationship"]]]
+    ] = empty_list()
     has_medical_history: Optional[Union[Union[dict, "MedicalEvent"], list[Union[dict, "MedicalEvent"]]]] = empty_list()
     age_in_years: Optional[int] = None
     addresses: Optional[Union[Union[dict, "Address"], list[Union[dict, "Address"]]]] = empty_list()
@@ -332,16 +298,27 @@ class Person(YAMLRoot):
             self.name = str(self.name)
 
         if not isinstance(self.has_employment_history, list):
-            self.has_employment_history = [self.has_employment_history] if self.has_employment_history is not None else []
-        self.has_employment_history = [v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history]
+            self.has_employment_history = (
+                [self.has_employment_history] if self.has_employment_history is not None else []
+            )
+        self.has_employment_history = [
+            v if isinstance(v, EmploymentEvent) else EmploymentEvent(**as_dict(v)) for v in self.has_employment_history
+        ]
 
         if not isinstance(self.has_familial_relationships, list):
-            self.has_familial_relationships = [self.has_familial_relationships] if self.has_familial_relationships is not None else []
-        self.has_familial_relationships = [v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v)) for v in self.has_familial_relationships]
+            self.has_familial_relationships = (
+                [self.has_familial_relationships] if self.has_familial_relationships is not None else []
+            )
+        self.has_familial_relationships = [
+            v if isinstance(v, FamilialRelationship) else FamilialRelationship(**as_dict(v))
+            for v in self.has_familial_relationships
+        ]
 
         if not isinstance(self.has_medical_history, list):
             self.has_medical_history = [self.has_medical_history] if self.has_medical_history is not None else []
-        self.has_medical_history = [v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v)) for v in self.has_medical_history]
+        self.has_medical_history = [
+            v if isinstance(v, MedicalEvent) else MedicalEvent(**as_dict(v)) for v in self.has_medical_history
+        ]
 
         if self.age_in_years is not None and not isinstance(self.age_in_years, int):
             self.age_in_years = int(self.age_in_years)
@@ -383,6 +360,7 @@ class Organization(YAMLRoot):
     * a
     * list
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["Organization"]
@@ -792,9 +770,15 @@ class Dataset(YAMLRoot):
 
     metadata: Optional[Union[dict, "AnyObject"]] = None
     persons: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = empty_dict()
-    companies: Optional[Union[dict[Union[str, CompanyId], Union[dict, Company]], list[Union[dict, Company]]]] = empty_dict()
-    activities: Optional[Union[dict[Union[str, ActivityId], Union[dict, "Activity"]], list[Union[dict, "Activity"]]]] = empty_dict()
-    code_systems: Optional[Union[dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], list[Union[dict, CodeSystem]]]] = empty_dict()
+    companies: Optional[Union[dict[Union[str, CompanyId], Union[dict, Company]], list[Union[dict, Company]]]] = (
+        empty_dict()
+    )
+    activities: Optional[
+        Union[dict[Union[str, ActivityId], Union[dict, "Activity"]], list[Union[dict, "Activity"]]]
+    ] = empty_dict()
+    code_systems: Optional[
+        Union[dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], list[Union[dict, CodeSystem]]]
+    ] = empty_dict()
 
     def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
@@ -875,6 +859,7 @@ class TubSubClass1(SubclassTest):
     """
     Same depth as Sub sub class 1
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = KS["TubSubClass1"]
@@ -885,11 +870,13 @@ class TubSubClass1(SubclassTest):
 
 AnyObject = Any
 
+
 @dataclass(repr=False)
 class Activity(YAMLRoot):
     """
     a provence-generating activity
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = CORE["Activity"]
@@ -937,6 +924,7 @@ class Agent(YAMLRoot):
     """
     a provence-generating agent
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = PROV["Agent"]
@@ -965,7 +953,6 @@ class Agent(YAMLRoot):
 
 # Enumerations
 class FamilialRelationshipType(EnumDefinitionImpl):
-
     SIBLING_OF = PermissibleValue(text="SIBLING_OF")
     PARENT_OF = PermissibleValue(text="PARENT_OF")
     CHILD_OF = PermissibleValue(text="CHILD_OF")
@@ -974,52 +961,42 @@ class FamilialRelationshipType(EnumDefinitionImpl):
         name="FamilialRelationshipType",
     )
 
-class DiagnosisType(EnumDefinitionImpl):
 
+class DiagnosisType(EnumDefinitionImpl):
     TODO = PermissibleValue(text="TODO")
 
     _defn = EnumDefinition(
         name="DiagnosisType",
     )
 
+
 class EmploymentEventType(EnumDefinitionImpl):
     """
     codes for different kinds of employment/HR related events
     """
-    HIRE = PermissibleValue(
-        text="HIRE",
-        description="event for a new employee",
-        meaning=BIZCODES["001"])
-    FIRE = PermissibleValue(
-        text="FIRE",
-        meaning=BIZCODES["002"])
-    PROMOTION = PermissibleValue(
-        text="PROMOTION",
-        description="promotion event",
-        meaning=BIZCODES["003"])
-    TRANSFER = PermissibleValue(
-        text="TRANSFER",
-        description="transfer internally",
-        meaning=BIZCODES["004"])
+
+    HIRE = PermissibleValue(text="HIRE", description="event for a new employee", meaning=BIZCODES["001"])
+    FIRE = PermissibleValue(text="FIRE", meaning=BIZCODES["002"])
+    PROMOTION = PermissibleValue(text="PROMOTION", description="promotion event", meaning=BIZCODES["003"])
+    TRANSFER = PermissibleValue(text="TRANSFER", description="transfer internally", meaning=BIZCODES["004"])
 
     _defn = EnumDefinition(
         name="EmploymentEventType",
         description="codes for different kinds of employment/HR related events",
     )
 
-class OtherCodes(EnumDefinitionImpl):
 
+class OtherCodes(EnumDefinitionImpl):
     _defn = EnumDefinition(
         name="OtherCodes",
     )
 
     @classmethod
     def _addvals(cls):
-        setattr(cls, "a b",
-            PermissibleValue(text="a b"))
+        setattr(cls, "a b", PermissibleValue(text="a b"))
+
 
 class LifeStatusEnum(EnumDefinitionImpl):
-
     LIVING = PermissibleValue(text="LIVING")
     DEAD = PermissibleValue(text="DEAD")
     UNKNOWN = PermissibleValue(text="UNKNOWN")
@@ -1028,24 +1005,18 @@ class LifeStatusEnum(EnumDefinitionImpl):
         name="LifeStatusEnum",
     )
 
-class CordialnessEnum(EnumDefinitionImpl):
 
-    heartfelt = PermissibleValue(
-        text="heartfelt",
-        description="warm and hearty friendliness")
-    hateful = PermissibleValue(
-        text="hateful",
-        description="spiteful")
-    indifferent = PermissibleValue(
-        text="indifferent",
-        description="not overly friendly nor obnoxiously spiteful")
+class CordialnessEnum(EnumDefinitionImpl):
+    heartfelt = PermissibleValue(text="heartfelt", description="warm and hearty friendliness")
+    hateful = PermissibleValue(text="hateful", description="spiteful")
+    indifferent = PermissibleValue(text="indifferent", description="not overly friendly nor obnoxiously spiteful")
 
     _defn = EnumDefinition(
         name="CordialnessEnum",
     )
 
-class KitchenStatus(EnumDefinitionImpl):
 
+class KitchenStatus(EnumDefinitionImpl):
     DIRTY = PermissibleValue(text="DIRTY")
     CLEAN = PermissibleValue(text="CLEAN")
 
@@ -1053,202 +1024,536 @@ class KitchenStatus(EnumDefinitionImpl):
         name="KitchenStatus",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.employed_at = Slot(uri=KS.employed_at, name="employed at", curie=KS.curie('employed_at'),
-                   model_uri=KS.employed_at, domain=None, range=Optional[Union[str, CompanyId]])
 
-slots.is_current = Slot(uri=KS.is_current, name="is current", curie=KS.curie('is_current'),
-                   model_uri=KS.is_current, domain=None, range=Optional[Union[bool, Bool]])
-
-slots.has_employment_history = Slot(uri=KS.has_employment_history, name="has employment history", curie=KS.curie('has_employment_history'),
-                   model_uri=KS.has_employment_history, domain=None, range=Optional[Union[Union[dict, EmploymentEvent], list[Union[dict, EmploymentEvent]]]])
-
-slots.has_marriage_history = Slot(uri=KS.has_marriage_history, name="has marriage history", curie=KS.curie('has_marriage_history'),
-                   model_uri=KS.has_marriage_history, domain=None, range=Optional[Union[Union[dict, MarriageEvent], list[Union[dict, MarriageEvent]]]])
-
-slots.has_medical_history = Slot(uri=KS.has_medical_history, name="has medical history", curie=KS.curie('has_medical_history'),
-                   model_uri=KS.has_medical_history, domain=None, range=Optional[Union[Union[dict, MedicalEvent], list[Union[dict, MedicalEvent]]]])
-
-slots.has_familial_relationships = Slot(uri=KS.has_familial_relationships, name="has familial relationships", curie=KS.curie('has_familial_relationships'),
-                   model_uri=KS.has_familial_relationships, domain=None, range=Optional[Union[Union[dict, FamilialRelationship], list[Union[dict, FamilialRelationship]]]])
-
-slots.married_to = Slot(uri=KS.married_to, name="married to", curie=KS.curie('married_to'),
-                   model_uri=KS.married_to, domain=None, range=Optional[Union[str, PersonId]])
-
-slots.in_location = Slot(uri=KS.in_location, name="in location", curie=KS.curie('in_location'),
-                   model_uri=KS.in_location, domain=None, range=Optional[Union[str, PlaceId]])
-
-slots.diagnosis = Slot(uri=KS.diagnosis, name="diagnosis", curie=KS.curie('diagnosis'),
-                   model_uri=KS.diagnosis, domain=None, range=Optional[Union[dict, DiagnosisConcept]])
-
-slots.procedure = Slot(uri=KS.procedure, name="procedure", curie=KS.curie('procedure'),
-                   model_uri=KS.procedure, domain=None, range=Optional[Union[dict, ProcedureConcept]])
-
-slots.addresses = Slot(uri=KS.addresses, name="addresses", curie=KS.curie('addresses'),
-                   model_uri=KS.addresses, domain=None, range=Optional[Union[Union[dict, Address], list[Union[dict, Address]]]])
-
-slots.age_in_years = Slot(uri=KS.age_in_years, name="age in years", curie=KS.curie('age_in_years'),
-                   model_uri=KS.age_in_years, domain=None, range=Optional[int])
-
-slots.related_to = Slot(uri=KS.related_to, name="related to", curie=KS.curie('related_to'),
-                   model_uri=KS.related_to, domain=None, range=Optional[str])
-
-slots.type = Slot(uri=KS.type, name="type", curie=KS.curie('type'),
-                   model_uri=KS.type, domain=None, range=Optional[str])
-
-slots.street = Slot(uri=KS.street, name="street", curie=KS.curie('street'),
-                   model_uri=KS.street, domain=None, range=Optional[str])
-
-slots.city = Slot(uri=KS.city, name="city", curie=KS.curie('city'),
-                   model_uri=KS.city, domain=None, range=Optional[str])
-
-slots.has_birth_event = Slot(uri=KS.has_birth_event, name="has birth event", curie=KS.curie('has_birth_event'),
-                   model_uri=KS.has_birth_event, domain=None, range=Optional[Union[dict, BirthEvent]])
-
-slots.in_code_system = Slot(uri=KS.in_code_system, name="in code system", curie=KS.curie('in_code_system'),
-                   model_uri=KS.in_code_system, domain=None, range=Optional[Union[str, CodeSystemId]])
-
-slots.metadata = Slot(uri=KS.metadata, name="metadata", curie=KS.curie('metadata'),
-                   model_uri=KS.metadata, domain=None, range=Optional[Union[dict, AnyObject]])
-
-slots.species_name = Slot(uri=KS.species_name, name="species name", curie=KS.curie('species_name'),
-                   model_uri=KS.species_name, domain=None, range=Optional[str],
-                   pattern=re.compile(r'^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$'))
-
-slots.stomach_count = Slot(uri=KS.stomach_count, name="stomach count", curie=KS.curie('stomach_count'),
-                   model_uri=KS.stomach_count, domain=None, range=Optional[int])
-
-slots.tree_slot_A = Slot(uri=KS.A, name="tree_slot_A", curie=KS.curie('A'),
-                   model_uri=KS.tree_slot_A, domain=None, range=Optional[str])
-
-slots.tree_slot_B = Slot(uri=KS.B, name="tree_slot_B", curie=KS.curie('B'),
-                   model_uri=KS.tree_slot_B, domain=None, range=Optional[str])
-
-slots.tree_slot_C = Slot(uri=KS.C, name="tree_slot_C", curie=KS.curie('C'),
-                   model_uri=KS.tree_slot_C, domain=None, range=Optional[str])
-
-slots.mixin_slot_I = Slot(uri=KS.mixin_slot_I, name="mixin_slot_I", curie=KS.curie('mixin_slot_I'),
-                   model_uri=KS.mixin_slot_I, domain=None, range=Optional[str])
-
-slots.life_status = Slot(uri=KS.life_status, name="life_status", curie=KS.curie('life_status'),
-                   model_uri=KS.life_status, domain=None, range=Optional[Union[str, "LifeStatusEnum"]])
-
-slots.cordialness = Slot(uri=KS.cordialness, name="cordialness", curie=KS.curie('cordialness'),
-                   model_uri=KS.cordialness, domain=None, range=Optional[str])
-
-slots.altitude = Slot(uri=KS.altitude, name="altitude", curie=KS.curie('altitude'),
-                   model_uri=KS.altitude, domain=None, range=Optional[Decimal])
-
-slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie('id'),
-                   model_uri=KS.id, domain=None, range=URIRef)
-
-slots.name = Slot(uri=CORE.name, name="name", curie=CORE.curie('name'),
-                   model_uri=KS.name, domain=None, range=Optional[str])
-
-slots.description = Slot(uri=CORE.description, name="description", curie=CORE.curie('description'),
-                   model_uri=KS.description, domain=None, range=Optional[str])
-
-slots.started_at_time = Slot(uri=PROV.startedAtTime, name="started at time", curie=PROV.curie('startedAtTime'),
-                   model_uri=KS.started_at_time, domain=None, range=Optional[Union[str, XSDDate]])
-
-slots.ended_at_time = Slot(uri=PROV.endedAtTime, name="ended at time", curie=PROV.curie('endedAtTime'),
-                   model_uri=KS.ended_at_time, domain=None, range=Optional[Union[str, XSDDate]])
-
-slots.was_informed_by = Slot(uri=PROV.wasInformedBy, name="was informed by", curie=PROV.curie('wasInformedBy'),
-                   model_uri=KS.was_informed_by, domain=None, range=Optional[Union[str, ActivityId]])
-
-slots.was_associated_with = Slot(uri=PROV.wasAssociatedWith, name="was associated with", curie=PROV.curie('wasAssociatedWith'),
-                   model_uri=KS.was_associated_with, domain=None, range=Optional[Union[str, AgentId]])
-
-slots.acted_on_behalf_of = Slot(uri=PROV.actedOnBehalfOf, name="acted on behalf of", curie=PROV.curie('actedOnBehalfOf'),
-                   model_uri=KS.acted_on_behalf_of, domain=None, range=Optional[Union[str, AgentId]])
-
-slots.was_generated_by = Slot(uri=PROV.wasGeneratedBy, name="was generated by", curie=PROV.curie('wasGeneratedBy'),
-                   model_uri=KS.was_generated_by, domain=None, range=Optional[Union[str, ActivityId]])
-
-slots.used = Slot(uri=PROV.used, name="used", curie=PROV.curie('used'),
-                   model_uri=KS.used, domain=Activity, range=Optional[str])
-
-slots.activity_set = Slot(uri=CORE.activity_set, name="activity set", curie=CORE.curie('activity_set'),
-                   model_uri=KS.activity_set, domain=None, range=Optional[Union[dict[Union[str, ActivityId], Union[dict, Activity]], list[Union[dict, Activity]]]])
-
-slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('agent_set'),
-                   model_uri=KS.agent_set, domain=None, range=Optional[Union[dict[Union[str, AgentId], Union[dict, Agent]], list[Union[dict, Agent]]]])
-
-slots.anyOfSimpleType__attribute1 = Slot(uri=KS.attribute1, name="anyOfSimpleType__attribute1", curie=KS.curie('attribute1'),
-                   model_uri=KS.anyOfSimpleType__attribute1, domain=None, range=Optional[str])
-
-slots.anyOfClasses__attribute2 = Slot(uri=KS.attribute2, name="anyOfClasses__attribute2", curie=KS.curie('attribute2'),
-                   model_uri=KS.anyOfClasses__attribute2, domain=None, range=Optional[str])
-
-slots.anyOfEnums__attribute3 = Slot(uri=KS.attribute3, name="anyOfEnums__attribute3", curie=KS.curie('attribute3'),
-                   model_uri=KS.anyOfEnums__attribute3, domain=None, range=Optional[str])
-
-slots.anyOfMix__attribute4 = Slot(uri=KS.attribute4, name="anyOfMix__attribute4", curie=KS.curie('attribute4'),
-                   model_uri=KS.anyOfMix__attribute4, domain=None, range=Optional[str])
-
-slots.equalsString__attribute5 = Slot(uri=KS.attribute5, name="equalsString__attribute5", curie=KS.curie('attribute5'),
-                   model_uri=KS.equalsString__attribute5, domain=None, range=Optional[str])
-
-slots.equalsStringIn__attribute6 = Slot(uri=KS.attribute6, name="equalsStringIn__attribute6", curie=KS.curie('attribute6'),
-                   model_uri=KS.equalsStringIn__attribute6, domain=None, range=Optional[str])
-
-slots.hasAliases__aliases = Slot(uri=SKOS.altLabel, name="hasAliases__aliases", curie=SKOS.curie('altLabel'),
-                   model_uri=KS.hasAliases__aliases, domain=None, range=Optional[Union[str, list[str]]])
-
-slots.person__is_living = Slot(uri=KS.is_living, name="person__is_living", curie=KS.curie('is_living'),
-                   model_uri=KS.person__is_living, domain=None, range=Optional[Union[str, "LifeStatusEnum"]])
-
-slots.company__ceo = Slot(uri=SCHEMA.ceo, name="company__ceo", curie=SCHEMA.curie('ceo'),
-                   model_uri=KS.company__ceo, domain=None, range=Optional[Union[str, PersonId]])
-
-slots.dataset__persons = Slot(uri=KS.persons, name="dataset__persons", curie=KS.curie('persons'),
-                   model_uri=KS.dataset__persons, domain=None, range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]])
-
-slots.dataset__companies = Slot(uri=KS.companies, name="dataset__companies", curie=KS.curie('companies'),
-                   model_uri=KS.dataset__companies, domain=None, range=Optional[Union[dict[Union[str, CompanyId], Union[dict, Company]], list[Union[dict, Company]]]])
-
-slots.dataset__activities = Slot(uri=KS.activities, name="dataset__activities", curie=KS.curie('activities'),
-                   model_uri=KS.dataset__activities, domain=None, range=Optional[Union[dict[Union[str, ActivityId], Union[dict, Activity]], list[Union[dict, Activity]]]])
-
-slots.dataset__code_systems = Slot(uri=KS.code_systems, name="dataset__code_systems", curie=KS.curie('code_systems'),
-                   model_uri=KS.dataset__code_systems, domain=None, range=Optional[Union[dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], list[Union[dict, CodeSystem]]]])
-
-slots.fakeClass__test_attribute = Slot(uri=KS.test_attribute, name="fakeClass__test_attribute", curie=KS.curie('test_attribute'),
-                   model_uri=KS.fakeClass__test_attribute, domain=None, range=Optional[str])
-
-slots.classWithSpaces__slot_with_space_1 = Slot(uri=KS.slot_with_space_1, name="classWithSpaces__slot_with_space_1", curie=KS.curie('slot_with_space_1'),
-                   model_uri=KS.classWithSpaces__slot_with_space_1, domain=None, range=Optional[str])
-
-slots.subclassTest__slot_with_space_2 = Slot(uri=KS.slot_with_space_2, name="subclassTest__slot_with_space_2", curie=KS.curie('slot_with_space_2'),
-                   model_uri=KS.subclassTest__slot_with_space_2, domain=None, range=Optional[Union[dict, ClassWithSpaces]])
-
-slots.Person_name = Slot(uri=CORE.name, name="Person_name", curie=CORE.curie('name'),
-                   model_uri=KS.Person_name, domain=Person, range=Optional[str],
-                   pattern=re.compile(r'^\S+ \S+$'))
-
-slots.Person_species_name = Slot(uri=KS.species_name, name="Person_species name", curie=KS.curie('species_name'),
-                   model_uri=KS.Person_species_name, domain=Person, range=Optional[str],
-                   pattern=re.compile(r'^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$'))
-
-slots.Person_stomach_count = Slot(uri=KS.stomach_count, name="Person_stomach count", curie=KS.curie('stomach_count'),
-                   model_uri=KS.Person_stomach_count, domain=Person, range=Optional[int])
-
-slots.Relationship_cordialness = Slot(uri=KS.cordialness, name="Relationship_cordialness", curie=KS.curie('cordialness'),
-                   model_uri=KS.Relationship_cordialness, domain=Relationship, range=Optional[Union[str, "CordialnessEnum"]])
-
-slots.FamilialRelationship_type = Slot(uri=KS.type, name="FamilialRelationship_type", curie=KS.curie('type'),
-                   model_uri=KS.FamilialRelationship_type, domain=FamilialRelationship, range=Union[str, "FamilialRelationshipType"])
-
-slots.FamilialRelationship_related_to = Slot(uri=KS.related_to, name="FamilialRelationship_related to", curie=KS.curie('related_to'),
-                   model_uri=KS.FamilialRelationship_related_to, domain=FamilialRelationship, range=Union[str, PersonId])
-
-slots.FamilialRelationship_cordialness = Slot(uri=KS.cordialness, name="FamilialRelationship_cordialness", curie=KS.curie('cordialness'),
-                   model_uri=KS.FamilialRelationship_cordialness, domain=FamilialRelationship, range=Optional[Union[str, "CordialnessEnum"]])
-
-slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
-                   model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[str])
-
+slots.employed_at = Slot(
+    uri=KS.employed_at,
+    name="employed at",
+    curie=KS.curie("employed_at"),
+    model_uri=KS.employed_at,
+    domain=None,
+    range=Optional[Union[str, CompanyId]],
+)
+
+slots.is_current = Slot(
+    uri=KS.is_current,
+    name="is current",
+    curie=KS.curie("is_current"),
+    model_uri=KS.is_current,
+    domain=None,
+    range=Optional[Union[bool, Bool]],
+)
+
+slots.has_employment_history = Slot(
+    uri=KS.has_employment_history,
+    name="has employment history",
+    curie=KS.curie("has_employment_history"),
+    model_uri=KS.has_employment_history,
+    domain=None,
+    range=Optional[Union[Union[dict, EmploymentEvent], list[Union[dict, EmploymentEvent]]]],
+)
+
+slots.has_marriage_history = Slot(
+    uri=KS.has_marriage_history,
+    name="has marriage history",
+    curie=KS.curie("has_marriage_history"),
+    model_uri=KS.has_marriage_history,
+    domain=None,
+    range=Optional[Union[Union[dict, MarriageEvent], list[Union[dict, MarriageEvent]]]],
+)
+
+slots.has_medical_history = Slot(
+    uri=KS.has_medical_history,
+    name="has medical history",
+    curie=KS.curie("has_medical_history"),
+    model_uri=KS.has_medical_history,
+    domain=None,
+    range=Optional[Union[Union[dict, MedicalEvent], list[Union[dict, MedicalEvent]]]],
+)
+
+slots.has_familial_relationships = Slot(
+    uri=KS.has_familial_relationships,
+    name="has familial relationships",
+    curie=KS.curie("has_familial_relationships"),
+    model_uri=KS.has_familial_relationships,
+    domain=None,
+    range=Optional[Union[Union[dict, FamilialRelationship], list[Union[dict, FamilialRelationship]]]],
+)
+
+slots.married_to = Slot(
+    uri=KS.married_to,
+    name="married to",
+    curie=KS.curie("married_to"),
+    model_uri=KS.married_to,
+    domain=None,
+    range=Optional[Union[str, PersonId]],
+)
+
+slots.in_location = Slot(
+    uri=KS.in_location,
+    name="in location",
+    curie=KS.curie("in_location"),
+    model_uri=KS.in_location,
+    domain=None,
+    range=Optional[Union[str, PlaceId]],
+)
+
+slots.diagnosis = Slot(
+    uri=KS.diagnosis,
+    name="diagnosis",
+    curie=KS.curie("diagnosis"),
+    model_uri=KS.diagnosis,
+    domain=None,
+    range=Optional[Union[dict, DiagnosisConcept]],
+)
+
+slots.procedure = Slot(
+    uri=KS.procedure,
+    name="procedure",
+    curie=KS.curie("procedure"),
+    model_uri=KS.procedure,
+    domain=None,
+    range=Optional[Union[dict, ProcedureConcept]],
+)
+
+slots.addresses = Slot(
+    uri=KS.addresses,
+    name="addresses",
+    curie=KS.curie("addresses"),
+    model_uri=KS.addresses,
+    domain=None,
+    range=Optional[Union[Union[dict, Address], list[Union[dict, Address]]]],
+)
+
+slots.age_in_years = Slot(
+    uri=KS.age_in_years,
+    name="age in years",
+    curie=KS.curie("age_in_years"),
+    model_uri=KS.age_in_years,
+    domain=None,
+    range=Optional[int],
+)
+
+slots.related_to = Slot(
+    uri=KS.related_to,
+    name="related to",
+    curie=KS.curie("related_to"),
+    model_uri=KS.related_to,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.type = Slot(uri=KS.type, name="type", curie=KS.curie("type"), model_uri=KS.type, domain=None, range=Optional[str])
+
+slots.street = Slot(
+    uri=KS.street, name="street", curie=KS.curie("street"), model_uri=KS.street, domain=None, range=Optional[str]
+)
+
+slots.city = Slot(uri=KS.city, name="city", curie=KS.curie("city"), model_uri=KS.city, domain=None, range=Optional[str])
+
+slots.has_birth_event = Slot(
+    uri=KS.has_birth_event,
+    name="has birth event",
+    curie=KS.curie("has_birth_event"),
+    model_uri=KS.has_birth_event,
+    domain=None,
+    range=Optional[Union[dict, BirthEvent]],
+)
+
+slots.in_code_system = Slot(
+    uri=KS.in_code_system,
+    name="in code system",
+    curie=KS.curie("in_code_system"),
+    model_uri=KS.in_code_system,
+    domain=None,
+    range=Optional[Union[str, CodeSystemId]],
+)
+
+slots.metadata = Slot(
+    uri=KS.metadata,
+    name="metadata",
+    curie=KS.curie("metadata"),
+    model_uri=KS.metadata,
+    domain=None,
+    range=Optional[Union[dict, AnyObject]],
+)
+
+slots.species_name = Slot(
+    uri=KS.species_name,
+    name="species name",
+    curie=KS.curie("species_name"),
+    model_uri=KS.species_name,
+    domain=None,
+    range=Optional[str],
+    pattern=re.compile(r"^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$"),
+)
+
+slots.stomach_count = Slot(
+    uri=KS.stomach_count,
+    name="stomach count",
+    curie=KS.curie("stomach_count"),
+    model_uri=KS.stomach_count,
+    domain=None,
+    range=Optional[int],
+)
+
+slots.tree_slot_A = Slot(
+    uri=KS.A, name="tree_slot_A", curie=KS.curie("A"), model_uri=KS.tree_slot_A, domain=None, range=Optional[str]
+)
+
+slots.tree_slot_B = Slot(
+    uri=KS.B, name="tree_slot_B", curie=KS.curie("B"), model_uri=KS.tree_slot_B, domain=None, range=Optional[str]
+)
+
+slots.tree_slot_C = Slot(
+    uri=KS.C, name="tree_slot_C", curie=KS.curie("C"), model_uri=KS.tree_slot_C, domain=None, range=Optional[str]
+)
+
+slots.mixin_slot_I = Slot(
+    uri=KS.mixin_slot_I,
+    name="mixin_slot_I",
+    curie=KS.curie("mixin_slot_I"),
+    model_uri=KS.mixin_slot_I,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.life_status = Slot(
+    uri=KS.life_status,
+    name="life_status",
+    curie=KS.curie("life_status"),
+    model_uri=KS.life_status,
+    domain=None,
+    range=Optional[Union[str, "LifeStatusEnum"]],
+)
+
+slots.cordialness = Slot(
+    uri=KS.cordialness,
+    name="cordialness",
+    curie=KS.curie("cordialness"),
+    model_uri=KS.cordialness,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.altitude = Slot(
+    uri=KS.altitude,
+    name="altitude",
+    curie=KS.curie("altitude"),
+    model_uri=KS.altitude,
+    domain=None,
+    range=Optional[Decimal],
+)
+
+slots.id = Slot(uri=CORE.id, name="id", curie=CORE.curie("id"), model_uri=KS.id, domain=None, range=URIRef)
+
+slots.name = Slot(
+    uri=CORE.name, name="name", curie=CORE.curie("name"), model_uri=KS.name, domain=None, range=Optional[str]
+)
+
+slots.description = Slot(
+    uri=CORE.description,
+    name="description",
+    curie=CORE.curie("description"),
+    model_uri=KS.description,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.started_at_time = Slot(
+    uri=PROV.startedAtTime,
+    name="started at time",
+    curie=PROV.curie("startedAtTime"),
+    model_uri=KS.started_at_time,
+    domain=None,
+    range=Optional[Union[str, XSDDate]],
+)
+
+slots.ended_at_time = Slot(
+    uri=PROV.endedAtTime,
+    name="ended at time",
+    curie=PROV.curie("endedAtTime"),
+    model_uri=KS.ended_at_time,
+    domain=None,
+    range=Optional[Union[str, XSDDate]],
+)
+
+slots.was_informed_by = Slot(
+    uri=PROV.wasInformedBy,
+    name="was informed by",
+    curie=PROV.curie("wasInformedBy"),
+    model_uri=KS.was_informed_by,
+    domain=None,
+    range=Optional[Union[str, ActivityId]],
+)
+
+slots.was_associated_with = Slot(
+    uri=PROV.wasAssociatedWith,
+    name="was associated with",
+    curie=PROV.curie("wasAssociatedWith"),
+    model_uri=KS.was_associated_with,
+    domain=None,
+    range=Optional[Union[str, AgentId]],
+)
+
+slots.acted_on_behalf_of = Slot(
+    uri=PROV.actedOnBehalfOf,
+    name="acted on behalf of",
+    curie=PROV.curie("actedOnBehalfOf"),
+    model_uri=KS.acted_on_behalf_of,
+    domain=None,
+    range=Optional[Union[str, AgentId]],
+)
+
+slots.was_generated_by = Slot(
+    uri=PROV.wasGeneratedBy,
+    name="was generated by",
+    curie=PROV.curie("wasGeneratedBy"),
+    model_uri=KS.was_generated_by,
+    domain=None,
+    range=Optional[Union[str, ActivityId]],
+)
+
+slots.used = Slot(
+    uri=PROV.used, name="used", curie=PROV.curie("used"), model_uri=KS.used, domain=Activity, range=Optional[str]
+)
+
+slots.activity_set = Slot(
+    uri=CORE.activity_set,
+    name="activity set",
+    curie=CORE.curie("activity_set"),
+    model_uri=KS.activity_set,
+    domain=None,
+    range=Optional[Union[dict[Union[str, ActivityId], Union[dict, Activity]], list[Union[dict, Activity]]]],
+)
+
+slots.agent_set = Slot(
+    uri=CORE.agent_set,
+    name="agent set",
+    curie=CORE.curie("agent_set"),
+    model_uri=KS.agent_set,
+    domain=None,
+    range=Optional[Union[dict[Union[str, AgentId], Union[dict, Agent]], list[Union[dict, Agent]]]],
+)
+
+slots.anyOfSimpleType__attribute1 = Slot(
+    uri=KS.attribute1,
+    name="anyOfSimpleType__attribute1",
+    curie=KS.curie("attribute1"),
+    model_uri=KS.anyOfSimpleType__attribute1,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.anyOfClasses__attribute2 = Slot(
+    uri=KS.attribute2,
+    name="anyOfClasses__attribute2",
+    curie=KS.curie("attribute2"),
+    model_uri=KS.anyOfClasses__attribute2,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.anyOfEnums__attribute3 = Slot(
+    uri=KS.attribute3,
+    name="anyOfEnums__attribute3",
+    curie=KS.curie("attribute3"),
+    model_uri=KS.anyOfEnums__attribute3,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.anyOfMix__attribute4 = Slot(
+    uri=KS.attribute4,
+    name="anyOfMix__attribute4",
+    curie=KS.curie("attribute4"),
+    model_uri=KS.anyOfMix__attribute4,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.equalsString__attribute5 = Slot(
+    uri=KS.attribute5,
+    name="equalsString__attribute5",
+    curie=KS.curie("attribute5"),
+    model_uri=KS.equalsString__attribute5,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.equalsStringIn__attribute6 = Slot(
+    uri=KS.attribute6,
+    name="equalsStringIn__attribute6",
+    curie=KS.curie("attribute6"),
+    model_uri=KS.equalsStringIn__attribute6,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.hasAliases__aliases = Slot(
+    uri=SKOS.altLabel,
+    name="hasAliases__aliases",
+    curie=SKOS.curie("altLabel"),
+    model_uri=KS.hasAliases__aliases,
+    domain=None,
+    range=Optional[Union[str, list[str]]],
+)
+
+slots.person__is_living = Slot(
+    uri=KS.is_living,
+    name="person__is_living",
+    curie=KS.curie("is_living"),
+    model_uri=KS.person__is_living,
+    domain=None,
+    range=Optional[Union[str, "LifeStatusEnum"]],
+)
+
+slots.company__ceo = Slot(
+    uri=SCHEMA.ceo,
+    name="company__ceo",
+    curie=SCHEMA.curie("ceo"),
+    model_uri=KS.company__ceo,
+    domain=None,
+    range=Optional[Union[str, PersonId]],
+)
+
+slots.dataset__persons = Slot(
+    uri=KS.persons,
+    name="dataset__persons",
+    curie=KS.curie("persons"),
+    model_uri=KS.dataset__persons,
+    domain=None,
+    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+)
+
+slots.dataset__companies = Slot(
+    uri=KS.companies,
+    name="dataset__companies",
+    curie=KS.curie("companies"),
+    model_uri=KS.dataset__companies,
+    domain=None,
+    range=Optional[Union[dict[Union[str, CompanyId], Union[dict, Company]], list[Union[dict, Company]]]],
+)
+
+slots.dataset__activities = Slot(
+    uri=KS.activities,
+    name="dataset__activities",
+    curie=KS.curie("activities"),
+    model_uri=KS.dataset__activities,
+    domain=None,
+    range=Optional[Union[dict[Union[str, ActivityId], Union[dict, Activity]], list[Union[dict, Activity]]]],
+)
+
+slots.dataset__code_systems = Slot(
+    uri=KS.code_systems,
+    name="dataset__code_systems",
+    curie=KS.curie("code_systems"),
+    model_uri=KS.dataset__code_systems,
+    domain=None,
+    range=Optional[Union[dict[Union[str, CodeSystemId], Union[dict, CodeSystem]], list[Union[dict, CodeSystem]]]],
+)
+
+slots.fakeClass__test_attribute = Slot(
+    uri=KS.test_attribute,
+    name="fakeClass__test_attribute",
+    curie=KS.curie("test_attribute"),
+    model_uri=KS.fakeClass__test_attribute,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.classWithSpaces__slot_with_space_1 = Slot(
+    uri=KS.slot_with_space_1,
+    name="classWithSpaces__slot_with_space_1",
+    curie=KS.curie("slot_with_space_1"),
+    model_uri=KS.classWithSpaces__slot_with_space_1,
+    domain=None,
+    range=Optional[str],
+)
+
+slots.subclassTest__slot_with_space_2 = Slot(
+    uri=KS.slot_with_space_2,
+    name="subclassTest__slot_with_space_2",
+    curie=KS.curie("slot_with_space_2"),
+    model_uri=KS.subclassTest__slot_with_space_2,
+    domain=None,
+    range=Optional[Union[dict, ClassWithSpaces]],
+)
+
+slots.Person_name = Slot(
+    uri=CORE.name,
+    name="Person_name",
+    curie=CORE.curie("name"),
+    model_uri=KS.Person_name,
+    domain=Person,
+    range=Optional[str],
+    pattern=re.compile(r"^\S+ \S+$"),
+)
+
+slots.Person_species_name = Slot(
+    uri=KS.species_name,
+    name="Person_species name",
+    curie=KS.curie("species_name"),
+    model_uri=KS.Person_species_name,
+    domain=Person,
+    range=Optional[str],
+    pattern=re.compile(r"^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$"),
+)
+
+slots.Person_stomach_count = Slot(
+    uri=KS.stomach_count,
+    name="Person_stomach count",
+    curie=KS.curie("stomach_count"),
+    model_uri=KS.Person_stomach_count,
+    domain=Person,
+    range=Optional[int],
+)
+
+slots.Relationship_cordialness = Slot(
+    uri=KS.cordialness,
+    name="Relationship_cordialness",
+    curie=KS.curie("cordialness"),
+    model_uri=KS.Relationship_cordialness,
+    domain=Relationship,
+    range=Optional[Union[str, "CordialnessEnum"]],
+)
+
+slots.FamilialRelationship_type = Slot(
+    uri=KS.type,
+    name="FamilialRelationship_type",
+    curie=KS.curie("type"),
+    model_uri=KS.FamilialRelationship_type,
+    domain=FamilialRelationship,
+    range=Union[str, "FamilialRelationshipType"],
+)
+
+slots.FamilialRelationship_related_to = Slot(
+    uri=KS.related_to,
+    name="FamilialRelationship_related to",
+    curie=KS.curie("related_to"),
+    model_uri=KS.FamilialRelationship_related_to,
+    domain=FamilialRelationship,
+    range=Union[str, PersonId],
+)
+
+slots.FamilialRelationship_cordialness = Slot(
+    uri=KS.cordialness,
+    name="FamilialRelationship_cordialness",
+    curie=KS.curie("cordialness"),
+    model_uri=KS.FamilialRelationship_cordialness,
+    domain=FamilialRelationship,
+    range=Optional[Union[str, "CordialnessEnum"]],
+)
+
+slots.EmploymentEvent_type = Slot(
+    uri=KS.type,
+    name="EmploymentEvent_type",
+    curie=KS.curie("type"),
+    model_uri=KS.EmploymentEvent_type,
+    domain=EmploymentEvent,
+    range=Optional[str],
+)

@@ -6,64 +6,19 @@
 # description: Test
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
 from linkml_runtime.utils.metamodelcore import URI
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = LINKML
 
 
@@ -76,7 +31,8 @@ class String(str):
 
 
 class Uri(URI):
-    """ a complete URI """
+    """a complete URI"""
+
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
@@ -84,7 +40,8 @@ class Uri(URI):
 
 
 class IdentifierType(String):
-    """ A string that is intended to uniquely identify a thing May be URI in full or compact (CURIE) form """
+    """A string that is intended to uniquely identify a thing May be URI in full or compact (CURIE) form"""
+
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "identifier type"
@@ -92,7 +49,8 @@ class IdentifierType(String):
 
 
 class LabelType(String):
-    """ A string that provides a human-readable name for a thing """
+    """A string that provides a human-readable name for a thing"""
+
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "label type"
@@ -121,6 +79,7 @@ class NamedThing(YAMLRoot):
     """
     a databased entity or concept/class
     """
+
     id: Union[str, NamedThingId] = None
     name: Optional[Union[str, LabelType]] = None
 
@@ -141,6 +100,7 @@ class Attribute(YAMLRoot):
     """
     A property or characteristic of an entity
     """
+
     id: Union[str, AttributeId] = None
     name: Optional[Union[str, LabelType]] = None
 
@@ -174,6 +134,7 @@ class OntologyClass(NamedThing):
     """
     a concept or class in an ontology, vocabulary or thesaurus
     """
+
     id: Union[str, OntologyClassId] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -189,4 +150,3 @@ class OntologyClass(NamedThing):
 
 
 # Slots
-

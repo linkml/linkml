@@ -6,69 +6,26 @@
 # description: sample complex ranges
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
-from linkml_runtime.linkml_model.types import Date, Double, Integer, String
 from linkml_runtime.utils.metamodelcore import XSDDate
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-COMPLEX_RANGES = CurieNamespace('complex_ranges', 'http://examples.org/linkml/test/complex_ranges')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+COMPLEX_RANGES = CurieNamespace("complex_ranges", "http://examples.org/linkml/test/complex_ranges")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
 DEFAULT_ = COMPLEX_RANGES
 
 
 # Types
+
 
 # Class references
 class KeyedOneElementClassName(extended_str):
@@ -100,6 +57,7 @@ class OneElementClass(YAMLRoot):
     """
     A class with a single non-key integer as a value
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["OneElementClass"]
@@ -121,6 +79,7 @@ class TwoElementClass(YAMLRoot):
     """
     A class with a two non-key strings as a values
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["TwoElementClass"]
@@ -146,6 +105,7 @@ class ThreeElementClass(YAMLRoot):
     """
     A class with three non-key doubles as values
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["ThreeElementClass"]
@@ -175,6 +135,7 @@ class KeyedOneElementClass(YAMLRoot):
     """
     A keyed class with one element
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedOneElementClass"]
@@ -198,6 +159,7 @@ class KeyedTwoElementClass(YAMLRoot):
     """
     A keyed class with an additional integer
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedTwoElementClass"]
@@ -225,6 +187,7 @@ class KeyedThreeElementClass(YAMLRoot):
     """
     A keyed class with an additional integer and date
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["KeyedThreeElementClass"]
@@ -256,6 +219,7 @@ class IdentifiedOneElementClass(YAMLRoot):
     """
     A identified class with one element
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedOneElementClass"]
@@ -279,6 +243,7 @@ class IdentifiedTwoElementClass(YAMLRoot):
     """
     A identified class with an additional integer
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedTwoElementClass"]
@@ -306,6 +271,7 @@ class IdentifiedThreeElementClass(YAMLRoot):
     """
     A identified class with an additional integer and date
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = COMPLEX_RANGES["IdentifiedThreeElementClass"]
@@ -339,56 +305,165 @@ class IdentifiedThreeElementClass(YAMLRoot):
 class slots:
     pass
 
-slots.oneElementClass__value = Slot(uri=COMPLEX_RANGES.value, name="oneElementClass__value", curie=COMPLEX_RANGES.curie('value'),
-                   model_uri=COMPLEX_RANGES.oneElementClass__value, domain=None, range=Optional[int])
 
-slots.twoElementClass__value1 = Slot(uri=COMPLEX_RANGES.value1, name="twoElementClass__value1", curie=COMPLEX_RANGES.curie('value1'),
-                   model_uri=COMPLEX_RANGES.twoElementClass__value1, domain=None, range=Optional[str])
+slots.oneElementClass__value = Slot(
+    uri=COMPLEX_RANGES.value,
+    name="oneElementClass__value",
+    curie=COMPLEX_RANGES.curie("value"),
+    model_uri=COMPLEX_RANGES.oneElementClass__value,
+    domain=None,
+    range=Optional[int],
+)
 
-slots.twoElementClass__value2 = Slot(uri=COMPLEX_RANGES.value2, name="twoElementClass__value2", curie=COMPLEX_RANGES.curie('value2'),
-                   model_uri=COMPLEX_RANGES.twoElementClass__value2, domain=None, range=Optional[str])
+slots.twoElementClass__value1 = Slot(
+    uri=COMPLEX_RANGES.value1,
+    name="twoElementClass__value1",
+    curie=COMPLEX_RANGES.curie("value1"),
+    model_uri=COMPLEX_RANGES.twoElementClass__value1,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.threeElementClass__value1 = Slot(uri=COMPLEX_RANGES.value1, name="threeElementClass__value1", curie=COMPLEX_RANGES.curie('value1'),
-                   model_uri=COMPLEX_RANGES.threeElementClass__value1, domain=None, range=Optional[float])
+slots.twoElementClass__value2 = Slot(
+    uri=COMPLEX_RANGES.value2,
+    name="twoElementClass__value2",
+    curie=COMPLEX_RANGES.curie("value2"),
+    model_uri=COMPLEX_RANGES.twoElementClass__value2,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.threeElementClass__value2 = Slot(uri=COMPLEX_RANGES.value2, name="threeElementClass__value2", curie=COMPLEX_RANGES.curie('value2'),
-                   model_uri=COMPLEX_RANGES.threeElementClass__value2, domain=None, range=Optional[float])
+slots.threeElementClass__value1 = Slot(
+    uri=COMPLEX_RANGES.value1,
+    name="threeElementClass__value1",
+    curie=COMPLEX_RANGES.curie("value1"),
+    model_uri=COMPLEX_RANGES.threeElementClass__value1,
+    domain=None,
+    range=Optional[float],
+)
 
-slots.threeElementClass__value3 = Slot(uri=COMPLEX_RANGES.value3, name="threeElementClass__value3", curie=COMPLEX_RANGES.curie('value3'),
-                   model_uri=COMPLEX_RANGES.threeElementClass__value3, domain=None, range=Optional[float])
+slots.threeElementClass__value2 = Slot(
+    uri=COMPLEX_RANGES.value2,
+    name="threeElementClass__value2",
+    curie=COMPLEX_RANGES.curie("value2"),
+    model_uri=COMPLEX_RANGES.threeElementClass__value2,
+    domain=None,
+    range=Optional[float],
+)
 
-slots.keyedOneElementClass__name = Slot(uri=COMPLEX_RANGES.name, name="keyedOneElementClass__name", curie=COMPLEX_RANGES.curie('name'),
-                   model_uri=COMPLEX_RANGES.keyedOneElementClass__name, domain=None, range=URIRef)
+slots.threeElementClass__value3 = Slot(
+    uri=COMPLEX_RANGES.value3,
+    name="threeElementClass__value3",
+    curie=COMPLEX_RANGES.curie("value3"),
+    model_uri=COMPLEX_RANGES.threeElementClass__value3,
+    domain=None,
+    range=Optional[float],
+)
 
-slots.keyedTwoElementClass__name = Slot(uri=COMPLEX_RANGES.name, name="keyedTwoElementClass__name", curie=COMPLEX_RANGES.curie('name'),
-                   model_uri=COMPLEX_RANGES.keyedTwoElementClass__name, domain=None, range=URIRef)
+slots.keyedOneElementClass__name = Slot(
+    uri=COMPLEX_RANGES.name,
+    name="keyedOneElementClass__name",
+    curie=COMPLEX_RANGES.curie("name"),
+    model_uri=COMPLEX_RANGES.keyedOneElementClass__name,
+    domain=None,
+    range=URIRef,
+)
 
-slots.keyedTwoElementClass__value = Slot(uri=COMPLEX_RANGES.value, name="keyedTwoElementClass__value", curie=COMPLEX_RANGES.curie('value'),
-                   model_uri=COMPLEX_RANGES.keyedTwoElementClass__value, domain=None, range=Optional[int])
+slots.keyedTwoElementClass__name = Slot(
+    uri=COMPLEX_RANGES.name,
+    name="keyedTwoElementClass__name",
+    curie=COMPLEX_RANGES.curie("name"),
+    model_uri=COMPLEX_RANGES.keyedTwoElementClass__name,
+    domain=None,
+    range=URIRef,
+)
 
-slots.keyedThreeElementClass__name = Slot(uri=COMPLEX_RANGES.name, name="keyedThreeElementClass__name", curie=COMPLEX_RANGES.curie('name'),
-                   model_uri=COMPLEX_RANGES.keyedThreeElementClass__name, domain=None, range=URIRef)
+slots.keyedTwoElementClass__value = Slot(
+    uri=COMPLEX_RANGES.value,
+    name="keyedTwoElementClass__value",
+    curie=COMPLEX_RANGES.curie("value"),
+    model_uri=COMPLEX_RANGES.keyedTwoElementClass__value,
+    domain=None,
+    range=Optional[int],
+)
 
-slots.keyedThreeElementClass__value = Slot(uri=COMPLEX_RANGES.value, name="keyedThreeElementClass__value", curie=COMPLEX_RANGES.curie('value'),
-                   model_uri=COMPLEX_RANGES.keyedThreeElementClass__value, domain=None, range=Optional[int])
+slots.keyedThreeElementClass__name = Slot(
+    uri=COMPLEX_RANGES.name,
+    name="keyedThreeElementClass__name",
+    curie=COMPLEX_RANGES.curie("name"),
+    model_uri=COMPLEX_RANGES.keyedThreeElementClass__name,
+    domain=None,
+    range=URIRef,
+)
 
-slots.keyedThreeElementClass__modifier = Slot(uri=COMPLEX_RANGES.modifier, name="keyedThreeElementClass__modifier", curie=COMPLEX_RANGES.curie('modifier'),
-                   model_uri=COMPLEX_RANGES.keyedThreeElementClass__modifier, domain=None, range=Optional[Union[str, XSDDate]])
+slots.keyedThreeElementClass__value = Slot(
+    uri=COMPLEX_RANGES.value,
+    name="keyedThreeElementClass__value",
+    curie=COMPLEX_RANGES.curie("value"),
+    model_uri=COMPLEX_RANGES.keyedThreeElementClass__value,
+    domain=None,
+    range=Optional[int],
+)
 
-slots.identifiedOneElementClass__name = Slot(uri=COMPLEX_RANGES.name, name="identifiedOneElementClass__name", curie=COMPLEX_RANGES.curie('name'),
-                   model_uri=COMPLEX_RANGES.identifiedOneElementClass__name, domain=None, range=URIRef)
+slots.keyedThreeElementClass__modifier = Slot(
+    uri=COMPLEX_RANGES.modifier,
+    name="keyedThreeElementClass__modifier",
+    curie=COMPLEX_RANGES.curie("modifier"),
+    model_uri=COMPLEX_RANGES.keyedThreeElementClass__modifier,
+    domain=None,
+    range=Optional[Union[str, XSDDate]],
+)
 
-slots.identifiedTwoElementClass__name = Slot(uri=COMPLEX_RANGES.name, name="identifiedTwoElementClass__name", curie=COMPLEX_RANGES.curie('name'),
-                   model_uri=COMPLEX_RANGES.identifiedTwoElementClass__name, domain=None, range=URIRef)
+slots.identifiedOneElementClass__name = Slot(
+    uri=COMPLEX_RANGES.name,
+    name="identifiedOneElementClass__name",
+    curie=COMPLEX_RANGES.curie("name"),
+    model_uri=COMPLEX_RANGES.identifiedOneElementClass__name,
+    domain=None,
+    range=URIRef,
+)
 
-slots.identifiedTwoElementClass__value = Slot(uri=COMPLEX_RANGES.value, name="identifiedTwoElementClass__value", curie=COMPLEX_RANGES.curie('value'),
-                   model_uri=COMPLEX_RANGES.identifiedTwoElementClass__value, domain=None, range=Optional[int])
+slots.identifiedTwoElementClass__name = Slot(
+    uri=COMPLEX_RANGES.name,
+    name="identifiedTwoElementClass__name",
+    curie=COMPLEX_RANGES.curie("name"),
+    model_uri=COMPLEX_RANGES.identifiedTwoElementClass__name,
+    domain=None,
+    range=URIRef,
+)
 
-slots.identifiedThreeElementClass__name = Slot(uri=COMPLEX_RANGES.name, name="identifiedThreeElementClass__name", curie=COMPLEX_RANGES.curie('name'),
-                   model_uri=COMPLEX_RANGES.identifiedThreeElementClass__name, domain=None, range=URIRef)
+slots.identifiedTwoElementClass__value = Slot(
+    uri=COMPLEX_RANGES.value,
+    name="identifiedTwoElementClass__value",
+    curie=COMPLEX_RANGES.curie("value"),
+    model_uri=COMPLEX_RANGES.identifiedTwoElementClass__value,
+    domain=None,
+    range=Optional[int],
+)
 
-slots.identifiedThreeElementClass__value = Slot(uri=COMPLEX_RANGES.value, name="identifiedThreeElementClass__value", curie=COMPLEX_RANGES.curie('value'),
-                   model_uri=COMPLEX_RANGES.identifiedThreeElementClass__value, domain=None, range=Optional[int])
+slots.identifiedThreeElementClass__name = Slot(
+    uri=COMPLEX_RANGES.name,
+    name="identifiedThreeElementClass__name",
+    curie=COMPLEX_RANGES.curie("name"),
+    model_uri=COMPLEX_RANGES.identifiedThreeElementClass__name,
+    domain=None,
+    range=URIRef,
+)
 
-slots.identifiedThreeElementClass__modifier = Slot(uri=COMPLEX_RANGES.modifier, name="identifiedThreeElementClass__modifier", curie=COMPLEX_RANGES.curie('modifier'),
-                   model_uri=COMPLEX_RANGES.identifiedThreeElementClass__modifier, domain=None, range=Optional[Union[str, XSDDate]])
+slots.identifiedThreeElementClass__value = Slot(
+    uri=COMPLEX_RANGES.value,
+    name="identifiedThreeElementClass__value",
+    curie=COMPLEX_RANGES.curie("value"),
+    model_uri=COMPLEX_RANGES.identifiedThreeElementClass__value,
+    domain=None,
+    range=Optional[int],
+)
+
+slots.identifiedThreeElementClass__modifier = Slot(
+    uri=COMPLEX_RANGES.modifier,
+    name="identifiedThreeElementClass__modifier",
+    curie=COMPLEX_RANGES.curie("modifier"),
+    model_uri=COMPLEX_RANGES.identifiedThreeElementClass__modifier,
+    domain=None,
+    range=Optional[Union[str, XSDDate]],
+)

@@ -6,15 +6,12 @@
 # description:
 # license:
 
-import dataclasses
-import sys
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from rdflib import Namespace, URIRef
+from linkml_runtime.utils.metamodelcore import empty_list, empty_dict
+from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 
 
@@ -69,7 +66,7 @@ class Organization(YAMLRoot):
 
     def __post_init__(self, **kwargs: Dict[str, Any]):
         if self.id is None:
-            raise ValueError(f"id must be supplied")
+            raise ValueError("id must be supplied")
         if not isinstance(self.id, OrganizationId):
             self.id = OrganizationId(self.id)
         if self.has_boss is not None and not isinstance(self.has_boss, Manager):
@@ -97,11 +94,11 @@ class Employee(YAMLRoot):
 
     def __post_init__(self, **kwargs: Dict[str, Any]):
         if self.id is None:
-            raise ValueError(f"id must be supplied")
+            raise ValueError("id must be supplied")
         if not isinstance(self.id, EmployeeId):
             self.id = EmployeeId(self.id)
         if self.last_name is None:
-            raise ValueError(f"last_name must be supplied")
+            raise ValueError("last_name must be supplied")
         super().__post_init__(**kwargs)
 
 
@@ -123,7 +120,7 @@ class Manager(Employee):
 
     def __post_init__(self, **kwargs: Dict[str, Any]):
         if self.id is None:
-            raise ValueError(f"id must be supplied")
+            raise ValueError("id must be supplied")
         if not isinstance(self.id, ManagerId):
             self.id = ManagerId(self.id)
         for k, v in self.has_employees.items():

@@ -6,65 +6,18 @@
 # description:
 # license:
 
-import dataclasses
-import re
-from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
 from linkml_runtime.utils.metamodelcore import Bool
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-METATYPE = CurieNamespace('metatype', 'https://w3id.org/linkml/types/')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
-DEFAULT_ = CurieNamespace('', 'http://example.org/tests/types/')
+METATYPE = CurieNamespace("metatype", "https://w3id.org/linkml/types/")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
+DEFAULT_ = CurieNamespace("", "http://example.org/tests/types/")
 
 
 # Types
@@ -99,12 +52,9 @@ class StringType(String):
 # Class references
 
 
-
-
 # Enumerations
 
 
 # Slots
 class slots:
     pass
-

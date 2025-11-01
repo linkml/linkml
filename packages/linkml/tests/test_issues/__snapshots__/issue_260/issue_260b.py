@@ -6,69 +6,23 @@
 # description: Another small file to be imported
 # license:
 
-import dataclasses
-import re
-from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import ClassVar
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
+from rdflib import URIRef
 
-from . issue_260a import C260a, String
+from .issue_260a import C260a
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-DEFAULT_ = CurieNamespace('', 'http://example.org/tests/issue_260b/')
+DEFAULT_ = CurieNamespace("", "http://example.org/tests/issue_260b/")
 
 
 # Types
 
 # Class references
-
 
 
 class C260b(C260a):

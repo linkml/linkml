@@ -6,70 +6,25 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
-from linkml_runtime.linkml_model.types import String
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-DEFAULT_ = CurieNamespace('', 'https://microbiomedata/schema/')
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+DEFAULT_ = CurieNamespace("", "https://microbiomedata/schema/")
 
 
 # Types
 
 # Class references
-
 
 
 class NamedThing(YAMLRoot):
@@ -110,11 +65,30 @@ class TestClass(YAMLRoot):
 class slots:
     pass
 
-slots.attribute = Slot(uri=DEFAULT_.attribute, name="attribute", curie=DEFAULT_.curie('attribute'),
-                   model_uri=DEFAULT_.attribute, domain=NamedThing, range=Optional[str])
 
-slots.test_attribute_1 = Slot(uri=DEFAULT_.test_attribute_1, name="test attribute 1", curie=DEFAULT_.curie('test_attribute_1'),
-                   model_uri=DEFAULT_.test_attribute_1, domain=NamedThing, range=Optional[str])
+slots.attribute = Slot(
+    uri=DEFAULT_.attribute,
+    name="attribute",
+    curie=DEFAULT_.curie("attribute"),
+    model_uri=DEFAULT_.attribute,
+    domain=NamedThing,
+    range=Optional[str],
+)
 
-slots.test_attribute_2 = Slot(uri=DEFAULT_.test_attribute_2, name="test attribute 2", curie=DEFAULT_.curie('test_attribute_2'),
-                   model_uri=DEFAULT_.test_attribute_2, domain=None, range=Optional[str])
+slots.test_attribute_1 = Slot(
+    uri=DEFAULT_.test_attribute_1,
+    name="test attribute 1",
+    curie=DEFAULT_.curie("test_attribute_1"),
+    model_uri=DEFAULT_.test_attribute_1,
+    domain=NamedThing,
+    range=Optional[str],
+)
+
+slots.test_attribute_2 = Slot(
+    uri=DEFAULT_.test_attribute_2,
+    name="test attribute 2",
+    curie=DEFAULT_.curie("test_attribute_2"),
+    model_uri=DEFAULT_.test_attribute_2,
+    domain=None,
+    range=Optional[str],
+)

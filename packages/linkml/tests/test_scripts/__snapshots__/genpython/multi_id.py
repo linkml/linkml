@@ -6,64 +6,21 @@
 # description:
 # license:
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
 from linkml_runtime.utils.metamodelcore import URIorCURIE
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
-DEFAULT_ = CurieNamespace('', 'http://example.org/example/multi_id/')
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
+DEFAULT_ = CurieNamespace("", "http://example.org/example/multi_id/")
 
 
 # Types
@@ -149,18 +106,48 @@ class SequenceVariant(NamedThing):
 class slots:
     pass
 
-slots.node_property = Slot(uri=DEFAULT_.node_property, name="node property", curie=DEFAULT_.curie('node_property'),
-                   model_uri=DEFAULT_.node_property, domain=NamedThing, range=Optional[Union[URIorCURIE, IdentifierType]])
 
-slots.not_overridden = Slot(uri=DEFAULT_.not_overridden, name="not overridden", curie=DEFAULT_.curie('not_overridden'),
-                   model_uri=DEFAULT_.not_overridden, domain=NamedThing, range=Optional[Union[URIorCURIE, IdentifierType]])
+slots.node_property = Slot(
+    uri=DEFAULT_.node_property,
+    name="node property",
+    curie=DEFAULT_.curie("node_property"),
+    model_uri=DEFAULT_.node_property,
+    domain=NamedThing,
+    range=Optional[Union[URIorCURIE, IdentifierType]],
+)
 
-slots.id = Slot(uri=DEFAULT_.id, name="id", curie=DEFAULT_.curie('id'),
-                   model_uri=DEFAULT_.id, domain=NamedThing, range=Union[URIorCURIE, NamedThingId])
+slots.not_overridden = Slot(
+    uri=DEFAULT_.not_overridden,
+    name="not overridden",
+    curie=DEFAULT_.curie("not_overridden"),
+    model_uri=DEFAULT_.not_overridden,
+    domain=NamedThing,
+    range=Optional[Union[URIorCURIE, IdentifierType]],
+)
 
-slots.sequence_variant_id = Slot(uri=DEFAULT_.id, name="sequence variant_id", curie=DEFAULT_.curie('id'),
-                   model_uri=DEFAULT_.sequence_variant_id, domain=SequenceVariant, range=Union[URIorCURIE, SequenceVariantId])
+slots.id = Slot(
+    uri=DEFAULT_.id,
+    name="id",
+    curie=DEFAULT_.curie("id"),
+    model_uri=DEFAULT_.id,
+    domain=NamedThing,
+    range=Union[URIorCURIE, NamedThingId],
+)
 
-slots.sequence_variant_node_property = Slot(uri=DEFAULT_.node_property, name="sequence variant_node property", curie=DEFAULT_.curie('node_property'),
-                   model_uri=DEFAULT_.sequence_variant_node_property, domain=SequenceVariant, range=Optional[Union[URIorCURIE, IdentifierType]])
+slots.sequence_variant_id = Slot(
+    uri=DEFAULT_.id,
+    name="sequence variant_id",
+    curie=DEFAULT_.curie("id"),
+    model_uri=DEFAULT_.sequence_variant_id,
+    domain=SequenceVariant,
+    range=Union[URIorCURIE, SequenceVariantId],
+)
 
+slots.sequence_variant_node_property = Slot(
+    uri=DEFAULT_.node_property,
+    name="sequence variant_node property",
+    curie=DEFAULT_.curie("node_property"),
+    model_uri=DEFAULT_.sequence_variant_node_property,
+    domain=SequenceVariant,
+    range=Optional[Union[URIorCURIE, IdentifierType]],
+)
