@@ -186,6 +186,7 @@ class MarkdownDataDictGen(Generator):
         items.extend(self._generate_header())
         items.extend(self._generate_diagrams())
         items.extend(self._generate_class_sections())
+        items.extend(self._generate_slot_sections())
         items.extend(self._generate_enum_sections())
 
         # Filter out None items and join
@@ -392,18 +393,45 @@ class MarkdownDataDictGen(Generator):
             import urllib.error
             from pathlib import Path
 
-            # Encode diagram using Kroki's URL-safe encoding
-            # Kroki expects: deflate -> base64 -> URL-safe base64
-            compressed = zlib.compress(clean_source.encode('utf-8'), level=9)
-            encoded = base64.urlsafe_b64encode(compressed).decode('utf-8')
+            svg_content = None
 
-            # Construct Kroki URL
-            kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg/{encoded}"
+            # Check if diagram source is large (>1KB) - use POST for large diagrams
+            source_size_kb = len(clean_source.encode('utf-8')) / 1024
 
-            # Fetch SVG from Kroki
-            req = urllib.request.Request(kroki_url, method='GET')
-            with urllib.request.urlopen(req, timeout=30) as response:
-                svg_content = response.read().decode('utf-8')
+            if source_size_kb > 1.0:
+                # Use POST for large diagrams (>1KB)
+                logging.debug(f"Diagram '{diagram_name or 'unnamed'}' is {source_size_kb:.1f}KB, using POST")
+
+                # Use POST endpoint - send plain text diagram source
+                kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg"
+
+                # Send diagram source as plain text in request body
+                req = urllib.request.Request(
+                    kroki_url,
+                    data=clean_source.encode('utf-8'),  # Send plain text source
+                    headers={'Content-Type': 'text/plain; charset=utf-8'},
+                    method='POST'
+                )
+                with urllib.request.urlopen(req, timeout=60) as response:
+                    svg_content = response.read().decode('utf-8')
+
+            else:
+                # Use GET for small diagrams (<= 1KB) - faster
+                # Encode diagram using Kroki's URL-safe encoding
+                # Kroki expects: deflate -> base64 -> URL-safe base64
+                compressed = zlib.compress(clean_source.encode('utf-8'), level=9)
+                encoded = base64.urlsafe_b64encode(compressed).decode('utf-8')
+
+                # Construct Kroki URL
+                kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg/{encoded}"
+
+                # Fetch SVG from Kroki
+                req = urllib.request.Request(kroki_url, method='GET')
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    svg_content = response.read().decode('utf-8')
+
+            if svg_content is None:
+                raise Exception("Failed to get SVG content from Kroki")
 
             # Add hyperlinks to class names in SVG
             svg_content = self._add_links_to_svg(svg_content)
@@ -441,7 +469,8 @@ class MarkdownDataDictGen(Generator):
 
         except Exception as e:
             # Fall back to mermaid code block if Kroki fails
-            logging.warning(f"Failed to render diagram with Kroki: {e}")
+            diagram_desc = f"'{diagram_name}'" if diagram_name else "unnamed diagram"
+            logging.warning(f"Failed to render {diagram_desc} with Kroki: {e}")
             return f"```{diagram_type}\n{clean_source}\n```"
 
     def _generate_diagrams(self) -> list[str]:
@@ -489,8 +518,13 @@ class MarkdownDataDictGen(Generator):
                     self.schema_location, exclude_abstract_classes=True, exclude_attributes=False
                 )
                 component_diagram = erd_gen.serialize_classes(list(component), follow_references=False, max_hops=0)
-                # Use first class name in component for diagram filename
-                diagram_name = f"erd_{sorted_classes[0].lower()}" if sorted_classes else f"erd_component_{i}"
+
+                # Use "erd_diagram" for single component (main ERD), otherwise use component-specific names
+                if len(connected_components) == 1:
+                    diagram_name = "erd_diagram"
+                else:
+                    diagram_name = f"erd_{sorted_classes[0].lower()}" if sorted_classes else f"erd_component_{i}"
+
                 items.append(self._render_diagram_with_kroki(component_diagram, diagram_name=diagram_name))
 
         # Generate section for base classes (classes used as parents but have no direct relationships)
@@ -580,6 +614,26 @@ class MarkdownDataDictGen(Generator):
             items.append(self.header(2, "Enums"))
             for enum in enums:
                 items.extend(self.describe_enum(enum))
+
+        return items
+
+    def _generate_slot_sections(self) -> list[str]:
+        """Generate documentation for all slots with rank-based sorting."""
+        items = []
+
+        # Sort slots by rank (if exists) then alphabetically
+        def slot_sort_key(slot):
+            rank = getattr(slot, "rank", None)
+            rank_value = rank if rank is not None else float("inf")
+            return (rank_value, slot.name)
+
+        slots = sorted(self.schema.slots.values(), key=slot_sort_key)
+
+        if slots:
+            items.append(self.header(2, "Slots"))
+            for slot in slots:
+                items.extend(self.describe_slot(slot))
+                items.append("\n")
 
         return items
 
@@ -817,6 +871,84 @@ class MarkdownDataDictGen(Generator):
 
         return items
 
+    def describe_slot(self, slot: SlotDefinition) -> list[str]:
+        """Generate comprehensive documentation for a slot."""
+        items = []
+
+        # Slot header with anchor
+        def make_anchor(name: str) -> str:
+            if self.anchor_style == "mkdocs":
+                return name.lower()
+            else:
+                return camelcase(name)
+
+        slot_name = camelcase(slot.name)
+        items.append(self.header(3, slot_name))
+
+        # Description
+        if slot.description:
+            items.append(self.para(f'<p class="lm-para">{be(slot.description)}</p>'))
+
+        # Slot properties table
+        properties = []
+
+        # Range/Type
+        if slot.range:
+            properties.append({"Property": "Range", "Value": self.class_type_link(slot.range)})
+
+        # Cardinality
+        cardinality = self.predicate_cardinality(slot)
+        properties.append({"Property": "Cardinality", "Value": cardinality})
+
+        # Required
+        if slot.required is not None:
+            properties.append({"Property": "Required", "Value": str(slot.required)})
+
+        # Multivalued
+        if slot.multivalued is not None:
+            properties.append({"Property": "Multivalued", "Value": str(slot.multivalued)})
+
+        # Identifier
+        if slot.identifier:
+            properties.append({"Property": "Identifier", "Value": str(slot.identifier)})
+
+        # Key
+        if slot.key:
+            properties.append({"Property": "Key", "Value": str(slot.key)})
+
+        # Pattern
+        if slot.pattern:
+            properties.append({"Property": "Pattern", "Value": f"`{slot.pattern}`"})
+
+        # Minimum value
+        if slot.minimum_value is not None:
+            properties.append({"Property": "Minimum Value", "Value": str(slot.minimum_value)})
+
+        # Maximum value
+        if slot.maximum_value is not None:
+            properties.append({"Property": "Maximum Value", "Value": str(slot.maximum_value)})
+
+        if properties:
+            items.append(self.header(4, "Properties"))
+            table = markdown_table(properties).set_params(quote=False, row_sep="markdown")
+            items.append(table.get_markdown())
+
+        # Used by - list classes that use this slot
+        # Use the same comprehensive logic as _collect_all_class_slots to ensure we find all usages
+        classes_using_slot = []
+        for cls in self.schema.classes.values():
+            # Use the same slot collection method that's used for class attribute tables
+            all_class_slots = self._collect_all_class_slots(cls)
+            if any(s.name == slot.name for s in all_class_slots):
+                classes_using_slot.append(cls.name)
+
+        if classes_using_slot:
+            items.append(self.header(4, "Used by"))
+            for class_name in sorted(classes_using_slot):
+                items.append(self.bullet(self.class_link(class_name)))
+
+        return items
+
     def describe_class(self, cls: ClassDefinition) -> list[str]:
         """Generate comprehensive documentation for a class."""
         items = []
@@ -1043,7 +1175,17 @@ class MarkdownDataDictGen(Generator):
         for slot in all_slots:
             # Determine slot source for styling
             source_info = self._get_slot_source(slot, cls)
-            name_display = self._format_slot_name(slot.name, source_info)
+
+            # Create a link to the slot documentation
+            slot_link_text = self.slot_link(slot, add_subset=False)
+
+            # Add source styling (inherited, from mixin, etc.)
+            if source_info["source"] == "parent":
+                name_display = f"*{slot_link_text}*"
+            elif source_info["source"] == "mixin":
+                name_display = f"_{slot_link_text}_"
+            else:
+                name_display = f"**{slot_link_text}**"
 
             attributes.append(
                 {
@@ -1456,6 +1598,9 @@ class MarkdownDataDictGen(Generator):
             link_name = camelcase(obj.name)
             link_ref = f"types/{link_name}" if not self.no_types_dir else f"{link_name}"
         elif isinstance(obj, ClassDefinition):
+            link_name = camelcase(obj.name)
+            link_ref = make_anchor(link_name)
+        elif isinstance(obj, SlotDefinition):
             link_name = camelcase(obj.name)
             link_ref = make_anchor(link_name)
         elif isinstance(obj, EnumDefinition):
