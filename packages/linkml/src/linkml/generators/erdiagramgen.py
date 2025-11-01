@@ -100,10 +100,53 @@ class ERDiagram(pydantic.BaseModel):
     entities: list[Entity] = []
     relationships: list[Relationship] = []
 
+    def _collapse_relationships(self, relationships: list[Relationship]) -> list[Relationship]:
+        """
+        Collapse multiple relationships between the same two entities into a single relationship
+        with comma-separated labels.
+
+        :param relationships: List of relationships
+        :return: List of collapsed relationships
+        """
+        # Group relationships by (first_entity, second_entity) pair
+        relationship_groups = {}
+        for rel in relationships:
+            key = (rel.first_entity, rel.second_entity)
+            if key not in relationship_groups:
+                relationship_groups[key] = []
+            relationship_groups[key].append(rel)
+
+        # Collapse groups with multiple relationships
+        collapsed = []
+        for key, group in relationship_groups.items():
+            if len(group) == 1:
+                # Single relationship, keep as is
+                collapsed.append(group[0])
+            else:
+                # Multiple relationships, combine labels
+                # Use the first relationship as a template
+                base_rel = group[0]
+                labels = [rel.relationship_label for rel in group if rel.relationship_label]
+                combined_label = ", ".join(sorted(labels))
+
+                # Create new collapsed relationship
+                collapsed_rel = Relationship(
+                    first_entity=base_rel.first_entity,
+                    relationship_type=base_rel.relationship_type,
+                    second_entity=base_rel.second_entity,
+                    relationship_label=combined_label
+                )
+                collapsed.append(collapsed_rel)
+
+        return collapsed
+
     def __str__(self):
         # Sort entities and relationships for stable output
         sorted_entities = sorted(self.entities, key=lambda e: e.name)
-        sorted_relationships = sorted(self.relationships, key=lambda r: str(r))
+
+        # Collapse multiple relationships between same entities
+        collapsed_relationships = self._collapse_relationships(self.relationships)
+        sorted_relationships = sorted(collapsed_relationships, key=lambda r: str(r))
 
         ents = "\n".join([str(e) for e in sorted_entities])
         rels = "\n".join([str(r) for r in sorted_relationships])
