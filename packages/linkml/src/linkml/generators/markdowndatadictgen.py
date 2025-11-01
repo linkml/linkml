@@ -618,7 +618,7 @@ class MarkdownDataDictGen(Generator):
         return items
 
     def _generate_slot_sections(self) -> list[str]:
-        """Generate documentation for all slots with rank-based sorting."""
+        """Generate documentation for all slots as a comprehensive table."""
         items = []
 
         # Sort slots by rank (if exists) then alphabetically
@@ -631,9 +631,65 @@ class MarkdownDataDictGen(Generator):
 
         if slots:
             items.append(self.header(2, "Slots"))
+
+            # Build table data
+            table_data = []
             for slot in slots:
-                items.extend(self.describe_slot(slot))
-                items.append("\n")
+                # Get classes that use this slot
+                classes_using_slot = []
+                for cls in self.schema.classes.values():
+                    all_class_slots = self._collect_all_class_slots(cls)
+                    if any(s.name == slot.name for s in all_class_slots):
+                        classes_using_slot.append(cls.name)
+
+                # Format used by as comma-separated links
+                used_by_links = ", ".join([self.class_link(cls_name) for cls_name in sorted(classes_using_slot)])
+                if not used_by_links:
+                    used_by_links = ""
+
+                # Format slot name with anchor
+                from linkml_runtime.utils.formatutils import camelcase
+                slot_name = camelcase(slot.name)
+
+                # Create anchor for linking from class attribute tables
+                def make_anchor(name: str) -> str:
+                    if self.anchor_style == "mkdocs":
+                        return name.lower()
+                    else:
+                        return camelcase(name)
+
+                anchor = make_anchor(slot.name)
+                # Add HTML anchor tag before the slot name
+                name_with_anchor = f'<a id="{anchor}"></a>**{slot_name}**'
+
+                # Get range/type
+                range_display = self.class_type_link(slot.range) if slot.range else ""
+
+                # Get cardinality
+                cardinality = self.predicate_cardinality(slot)
+
+                # Get description (first line only to keep table compact)
+                description = ""
+                if slot.description:
+                    # Take first sentence or first 100 chars
+                    desc = slot.description.strip()
+                    if len(desc) > 100:
+                        description = desc[:97] + "..."
+                    else:
+                        description = desc
+
+                table_data.append({
+                    "Name": name_with_anchor,
+                    "Range": range_display,
+                    "Cardinality": cardinality,
+                    "Description": description,
+                    "Used By": used_by_links
+                })
+
+            # Create and add the table
+            if table_data:
+                table = markdown_table(table_data).set_params(quote=False, row_sep="markdown")
+                items.append(table.get_markdown())
 
         return items
 
@@ -1176,7 +1232,7 @@ class MarkdownDataDictGen(Generator):
             # Determine slot source for styling
             source_info = self._get_slot_source(slot, cls)
 
-            # Create a link to the slot documentation
+            # Create link to slot in comprehensive slots table
             slot_link_text = self.slot_link(slot, add_subset=False)
 
             # Add source styling (inherited, from mixin, etc.)
