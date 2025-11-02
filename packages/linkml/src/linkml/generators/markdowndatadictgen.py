@@ -531,7 +531,7 @@ class MarkdownDataDictGen(Generator):
         if base_classes and not self.omit_standalone_classes:
             items.append(self.header(2, "Base Classes"))
             items.append(
-                self.para("These classes have no direct relationships but serve as base classes for other classes:")
+                self.para("Foundational classes in the hierarchy (root classes and direct children of Thing):")
             )
             items.append(self._generate_classes_table(base_classes))
 
@@ -802,25 +802,35 @@ class MarkdownDataDictGen(Generator):
         for component in connected_components:
             classes_with_relationships.update(component)
 
-        for singleton_class in singleton_classes:
-            # Check if this singleton class is used as a parent (is_a) by any class with relationships
-            is_base_class = False
-
+        # Helper function to check if a class has children
+        def has_children(class_name: str) -> bool:
             for cls in self.schema.classes.values():
-                if not cls.abstract and not cls.mixin and cls.is_a == singleton_class:
-                    # Check if this descendant class has relationships (is in connected components)
-                    if cls.name in classes_with_relationships:
-                        is_base_class = True
-                        break
-                    # Also check if descendant has relationships through inheritance chain
-                    if self._class_descendants_have_relationships(cls.name, classes_with_relationships):
-                        is_base_class = True
-                        break
+                if cls.is_a == class_name:
+                    return True
+            return False
 
-            if is_base_class:
-                base_classes.add(singleton_class)
-            else:
-                truly_standalone_classes.add(singleton_class)
+        # First, add base classes to the set (regardless of relationships):
+        # 1. Thing itself
+        # 2. Direct children of Thing (is_a == "Thing")
+        # 3. Root classes with no parent (no is_a) that have children
+        for cls_name, cls_def in self.schema.classes.items():
+            if cls_name == "Thing":
+                base_classes.add(cls_name)
+            elif cls_def and cls_def.is_a == "Thing":
+                base_classes.add(cls_name)
+            elif cls_def and not cls_def.is_a:
+                # Root classes with no parent - only include if they have children
+                if has_children(cls_name):
+                    base_classes.add(cls_name)
+
+        # Now classify singleton classes
+        for singleton_class in singleton_classes:
+            # Skip if already in base classes
+            if singleton_class in base_classes:
+                continue
+
+            # All other singleton classes are truly standalone
+            truly_standalone_classes.add(singleton_class)
 
         return connected_components, base_classes, truly_standalone_classes
 
