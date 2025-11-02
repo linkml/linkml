@@ -660,7 +660,7 @@ class MarkdownDataDictGen(Generator):
 
                 # Format slot name with anchor
                 from linkml_runtime.utils.formatutils import camelcase
-                slot_name = camelcase(slot.name)
+                slot_name = slot.name
 
                 # Create anchor for linking from class attribute tables
                 def make_anchor(name: str) -> str:
@@ -1671,8 +1671,8 @@ class MarkdownDataDictGen(Generator):
             link_name = camelcase(obj.name)
             link_ref = make_anchor(link_name)
         elif isinstance(obj, SlotDefinition):
-            link_name = camelcase(obj.name)
-            link_ref = make_anchor(link_name)
+            link_name = obj.name
+            link_ref = make_anchor(obj.name)
         elif isinstance(obj, EnumDefinition):
             link_name = camelcase(obj.name)
             link_ref = make_anchor(link_name)
