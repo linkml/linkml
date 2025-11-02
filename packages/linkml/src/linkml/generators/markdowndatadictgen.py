@@ -7,6 +7,7 @@ for all schema elements.
 """
 
 import base64
+import hashlib
 import logging
 import os
 import re
@@ -364,9 +365,112 @@ class MarkdownDataDictGen(Generator):
             logging.debug(f"Failed to add links to SVG: {e}")
             return svg_content
 
+    def _get_cache_path(self, content_hash: str) -> Optional[tuple[str, str]]:
+        """
+        Get the cache file path for a given content hash using git-like 2-level hierarchy.
+
+        Args:
+            content_hash: SHA-256 hash of the diagram content
+
+        Returns:
+            Tuple of (cache_file_path, relative_path_from_diagram_dir) or None if diagram_dir not set
+        """
+        if not self.diagram_dir:
+            return None
+
+        from pathlib import Path
+
+        # Use .kroki-cache subdirectory within diagram_dir
+        cache_base = Path(self.diagram_dir) / ".kroki-cache"
+
+        # Git-like structure: first 2 chars / next 2 chars / rest.svg
+        # Example: ab2345acdef -> ab/23/45acdef.svg
+        if len(content_hash) < 4:
+            # Fallback for short hashes
+            level1 = content_hash
+            level2 = "00"
+            rest = content_hash
+        else:
+            level1 = content_hash[:2]
+            level2 = content_hash[2:4]
+            rest = content_hash[4:]
+
+        cache_path = cache_base / level1 / level2 / f"{rest}.svg"
+
+        # Return absolute cache path and path relative to diagram_dir for reading
+        relative_to_cache = f".kroki-cache/{level1}/{level2}/{rest}.svg"
+        return (str(cache_path), relative_to_cache)
+
+    def _get_cached_svg(self, diagram_source: str) -> Optional[str]:
+        """
+        Check if SVG for this diagram is already cached.
+
+        Args:
+            diagram_source: The clean diagram source code
+
+        Returns:
+            Cached SVG content if found, None otherwise
+        """
+        # Calculate hash of the diagram source
+        content_hash = hashlib.sha256(diagram_source.encode('utf-8')).hexdigest()
+
+        cache_info = self._get_cache_path(content_hash)
+        if not cache_info:
+            return None
+
+        cache_file, _ = cache_info
+
+        from pathlib import Path
+        cache_path = Path(cache_file)
+
+        if cache_path.exists():
+            logging.debug(f"Cache hit for diagram (hash: {content_hash[:12]}...)")
+            try:
+                with open(cache_path, 'r', encoding='utf-8') as f:
+                    return f.read()
+            except Exception as e:
+                logging.warning(f"Failed to read cached SVG: {e}")
+                return None
+
+        return None
+
+    def _save_to_cache(self, diagram_source: str, svg_content: str) -> None:
+        """
+        Save generated SVG to cache.
+
+        Args:
+            diagram_source: The clean diagram source code
+            svg_content: The generated SVG content
+        """
+        # Calculate hash of the diagram source
+        content_hash = hashlib.sha256(diagram_source.encode('utf-8')).hexdigest()
+
+        cache_info = self._get_cache_path(content_hash)
+        if not cache_info:
+            return
+
+        cache_file, _ = cache_info
+
+        from pathlib import Path
+        cache_path = Path(cache_file)
+
+        # Create parent directories
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            with open(cache_path, 'w', encoding='utf-8') as f:
+                f.write(svg_content)
+            logging.debug(f"Cached SVG for diagram (hash: {content_hash[:12]}...)")
+        except Exception as e:
+            logging.warning(f"Failed to cache SVG: {e}")
+
     def _render_diagram_with_kroki(self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: Optional[str] = None) -> str:
         """
-        Render a diagram using a Kroki server.
+        Render a diagram using a Kroki server with caching.
+
+        Uses a git-like 2-level directory cache structure in diagram_dir/.kroki-cache/
+        to avoid regenerating unchanged diagrams. Cache keys are SHA-256 hashes of
+        the diagram source.
 
         Args:
             diagram_source: The diagram source code (e.g., Mermaid syntax),
@@ -395,40 +499,52 @@ class MarkdownDataDictGen(Generator):
 
             svg_content = None
 
-            # Check if diagram source is large (>1KB) - use POST for large diagrams
-            source_size_kb = len(clean_source.encode('utf-8')) / 1024
-
-            if source_size_kb > 1.0:
-                # Use POST for large diagrams (>1KB)
-                logging.debug(f"Diagram '{diagram_name or 'unnamed'}' is {source_size_kb:.1f}KB, using POST")
-
-                # Use POST endpoint - send plain text diagram source
-                kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg"
-
-                # Send diagram source as plain text in request body
-                req = urllib.request.Request(
-                    kroki_url,
-                    data=clean_source.encode('utf-8'),  # Send plain text source
-                    headers={'Content-Type': 'text/plain; charset=utf-8'},
-                    method='POST'
-                )
-                with urllib.request.urlopen(req, timeout=60) as response:
-                    svg_content = response.read().decode('utf-8')
-
+            # Check cache first
+            cached_svg = self._get_cached_svg(clean_source)
+            if cached_svg:
+                svg_content = cached_svg
             else:
-                # Use GET for small diagrams (<= 1KB) - faster
-                # Encode diagram using Kroki's URL-safe encoding
-                # Kroki expects: deflate -> base64 -> URL-safe base64
-                compressed = zlib.compress(clean_source.encode('utf-8'), level=9)
-                encoded = base64.urlsafe_b64encode(compressed).decode('utf-8')
+                # Cache miss - need to fetch from Kroki server
+                logging.debug(f"Cache miss for diagram '{diagram_name or 'unnamed'}', fetching from Kroki")
 
-                # Construct Kroki URL
-                kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg/{encoded}"
+                # Check if diagram source is large (>1KB) - use POST for large diagrams
+                source_size_kb = len(clean_source.encode('utf-8')) / 1024
 
-                # Fetch SVG from Kroki
-                req = urllib.request.Request(kroki_url, method='GET')
-                with urllib.request.urlopen(req, timeout=30) as response:
-                    svg_content = response.read().decode('utf-8')
+                if source_size_kb > 1.0:
+                    # Use POST for large diagrams (>1KB)
+                    logging.debug(f"Diagram '{diagram_name or 'unnamed'}' is {source_size_kb:.1f}KB, using POST")
+
+                    # Use POST endpoint - send plain text diagram source
+                    kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg"
+
+                    # Send diagram source as plain text in request body
+                    req = urllib.request.Request(
+                        kroki_url,
+                        data=clean_source.encode('utf-8'),  # Send plain text source
+                        headers={'Content-Type': 'text/plain; charset=utf-8'},
+                        method='POST'
+                    )
+                    with urllib.request.urlopen(req, timeout=60) as response:
+                        svg_content = response.read().decode('utf-8')
+
+                else:
+                    # Use GET for small diagrams (<= 1KB) - faster
+                    # Encode diagram using Kroki's URL-safe encoding
+                    # Kroki expects: deflate -> base64 -> URL-safe base64
+                    compressed = zlib.compress(clean_source.encode('utf-8'), level=9)
+                    encoded = base64.urlsafe_b64encode(compressed).decode('utf-8')
+
+                    # Construct Kroki URL
+                    kroki_url = f"{self.kroki_server.rstrip('/')}/{diagram_type}/svg/{encoded}"
+
+                    # Fetch SVG from Kroki
+                    req = urllib.request.Request(kroki_url, method='GET')
+                    with urllib.request.urlopen(req, timeout=30) as response:
+                        svg_content = response.read().decode('utf-8')
+
+                # Save to cache after fetching from Kroki
+                if svg_content:
+                    self._save_to_cache(clean_source, svg_content)
 
             if svg_content is None:
                 raise Exception("Failed to get SVG content from Kroki")
