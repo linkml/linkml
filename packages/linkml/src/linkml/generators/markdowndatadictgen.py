@@ -670,8 +670,12 @@ class MarkdownDataDictGen(Generator):
                         return camelcase(name)
 
                 anchor = make_anchor(slot.name)
-                # Add HTML anchor tag before the slot name
+                # Add HTML anchor tag before the slot name, with description underneath (not bold)
                 name_with_anchor = f'<a id="{anchor}"></a>**{slot_name}**'
+                if slot.description:
+                    desc = slot.description.strip()
+                    # Add description on new line without bold
+                    name_with_anchor += f'<br/>{desc}'
 
                 # Get range/type
                 range_display = self.class_type_link(slot.range) if slot.range else ""
@@ -679,21 +683,12 @@ class MarkdownDataDictGen(Generator):
                 # Get cardinality
                 cardinality = self.predicate_cardinality(slot)
 
-                # Get description (first line only to keep table compact)
-                description = ""
-                if slot.description:
-                    # Take first sentence or first 100 chars
-                    desc = slot.description.strip()
-                    if len(desc) > 100:
-                        description = desc[:97] + "..."
-                    else:
-                        description = desc
+                # Combine cardinality and range on separate lines
+                type_info = f"{cardinality}<br/>{range_display}" if range_display else cardinality
 
                 table_data.append({
                     "Name": name_with_anchor,
-                    "Range": range_display,
-                    "Cardinality": cardinality,
-                    "Description": description,
+                    "Cardinality/Range": type_info,
                     "Used By": used_by_links
                 })
 
