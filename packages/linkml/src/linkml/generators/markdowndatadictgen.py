@@ -1170,6 +1170,33 @@ class MarkdownDataDictGen(Generator):
 
         return items
 
+    def _clean_extended_str(self, obj: Any) -> Any:
+        """Recursively convert extended_str objects to plain strings.
+
+        LinkML's extended_str objects contain metadata about source location
+        that shouldn't be displayed in user-facing documentation.
+
+        Args:
+            obj: Any object that might contain extended_str values
+
+        Returns:
+            The same object with extended_str values converted to plain str
+        """
+        from linkml_runtime.utils.yamlutils import extended_str
+
+        if isinstance(obj, extended_str):
+            # Convert extended_str to plain string
+            return str(obj)
+        elif isinstance(obj, dict):
+            # Recursively clean dictionary values
+            return {k: self._clean_extended_str(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            # Recursively clean list items
+            return [self._clean_extended_str(item) for item in obj]
+        else:
+            # Return other types as-is
+            return obj
+
     def _generate_class_yaml_definition(self, cls: ClassDefinition) -> list[str]:
         """Generate YAML definition of the class for debugging purposes.
 
@@ -1196,7 +1223,7 @@ class MarkdownDataDictGen(Generator):
         if cls.mixin:
             class_dict["mixin"] = cls.mixin
         if cls.description:
-            class_dict["description"] = cls.description
+            class_dict["description"] = str(cls.description)
         if cls.slots:
             class_dict["slots"] = [str(s) for s in cls.slots]
         if cls.slot_usage:
@@ -1210,7 +1237,7 @@ class MarkdownDataDictGen(Generator):
                 if v.multivalued is not None:
                     slot_dict["multivalued"] = v.multivalued
                 if v.description:
-                    slot_dict["description"] = v.description
+                    slot_dict["description"] = str(v.description)
                 if slot_dict:
                     slot_usage_dict[str(k)] = slot_dict
             if slot_usage_dict:
@@ -1226,18 +1253,21 @@ class MarkdownDataDictGen(Generator):
                 if attr_def.multivalued is not None:
                     attr_dict["multivalued"] = attr_def.multivalued
                 if attr_def.description:
-                    attr_dict["description"] = attr_def.description
+                    attr_dict["description"] = str(attr_def.description)
                 if attr_dict:
                     attrs[str(attr_name)] = attr_dict
             if attrs:
                 class_dict["attributes"] = attrs
+
+        # Clean extended_str objects before dumping to YAML
+        clean_dict = self._clean_extended_str({str(cls.name): class_dict})
 
         # Add YAML section with collapsible details
         items.append(self.header(4, "YAML Definition"))
         items.append("<details>")
         items.append("<summary>Click to expand</summary>\n")
         items.append("```yaml")
-        items.append(yaml.dump({str(cls.name): class_dict}, default_flow_style=False, sort_keys=False))
+        items.append(yaml.dump(clean_dict, default_flow_style=False, sort_keys=False))
         items.append("```")
         items.append("</details>\n")
 
