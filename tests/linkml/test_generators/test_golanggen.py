@@ -26,7 +26,7 @@ type Place struct {
      */
     HasAliases
     Id string `json:"id"`
-    Name *string `json:"name"`
+    Name *string `json:"name,omitempty"`
 }
 """)
 
@@ -72,4 +72,4 @@ classes:
     )
 
     code = GolangGenerator(schema, mergeimports=True).serialize()
-    assert 'IntDict []KeyedIntId `json:"int_dict"`' in code
+    assert 'IntDict []KeyedIntId `json:"int_dict,omitempty"`' in code

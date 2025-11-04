@@ -67,7 +67,7 @@ type {{gen.name(c)}} struct {
 	 * {{s.description}}
 	 */
     {%- endif %}
-	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}"`
+	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}{{gen.json_opts(s) | join(',')}}"`
     {%- endfor %}
 }
 {% set cref = gen.classref(c) %}
@@ -125,6 +125,18 @@ class GolangGenerator(Generator):
         if isinstance(element, SlotDefinition) and element.alias:
             alias = element.alias
         return underscore(alias)
+
+    def json_opts(self, slot: SlotDefinition) -> list[str]:
+        """
+        Returns the JSON serialization options of the element.
+
+        :param element:
+        :return:
+        """
+        opts = [""]
+        if not slot.required:
+            opts.append("omitempty")
+        return opts
 
     def classref(self, cls: ClassDefinition) -> str | None:
         """
