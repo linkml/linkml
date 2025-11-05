@@ -546,20 +546,16 @@ classes:
     yg = YarrrmlGenerator(str(schema_path))
     yobj = yaml.safe_load(yg.serialize())
 
-    # --- ensure default prefix assigned ---
     assert "ex" in yobj["prefixes"]
     assert "mappings" in yobj
 
-    # --- correct class and slot URIs ---
     m = yobj["mappings"]["Human"]
     type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
     assert type_po["o"] == "ex:Person"
 
-    # slot with slot_uri
     pred_names = [p["p"] for p in m["po"]]
     assert "ex:fullName" in pred_names
 
-    # object link treated as IRI (sanity)
     iri_obj = next(p for p in m["po"] if p["p"].endswith("friend"))
     assert iri_obj["o"]["type"] == "iri"
 
@@ -584,11 +580,9 @@ classes:
     yg = YarrrmlGenerator(str(schema_path))
     yobj = yaml.safe_load(yg.serialize())
 
-    # default prefix inserted
     assert "ex" in yobj["prefixes"]
     assert yobj["prefixes"]["ex"] == "https://example.org/default#"
 
-    # mappings section always present
     assert "mappings" in yobj and isinstance(yobj["mappings"], dict)
 
 
@@ -616,14 +610,11 @@ classes:
     yg = YarrrmlGenerator(str(schema_path))
     yobj = yaml.safe_load(yg.serialize())
 
-    # ex не подсовываем, у нас свой data-префикс
     assert "ex" not in yobj["prefixes"]
     assert "my" in yobj["prefixes"]
 
     m = yobj["mappings"]["Thing"]
-    # subject использует my:, а не ex:
     assert m["s"] == "my:$(id)"
-    # rdf:type тоже в my:Namespace
     type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
     assert type_po["o"] == "my:Thing"
 
@@ -661,12 +652,10 @@ classes:
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
 
-    # сначала проверим YAML
     m = yarrrml["mappings"]["Human"]
     preds = [po["p"] for po in m["po"]]
     assert "https://example.org/vocab/fullName" in preds
 
-    # а теперь e2e: материализуем и смотрим трипл
     g = _materialize_with_morph(tmp_path, yarrrml)
     FULL = rdflib.URIRef("https://example.org/vocab/fullName")
     EXNS = rdflib.Namespace("https://ex.org/ns#")
@@ -696,16 +685,13 @@ classes:
     yg = YarrrmlGenerator(str(schema_path))
     yobj = yaml.safe_load(yg.serialize())
 
-    # mappings есть и содержит Lonely
     assert "mappings" in yobj
     assert "Lonely" in yobj["mappings"]
 
     m = yobj["mappings"]["Lonely"]
 
-    # subject построен по fallback-схеме с default_prefix
     assert m["s"].startswith("ex:Lonely/$(")
 
-    # rdf:type присутствует и с нормальным URI/curie
     type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
     assert isinstance(type_po["o"], str)
     assert type_po["o"]
