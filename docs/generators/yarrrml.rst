@@ -25,6 +25,9 @@ The generator produces YARRRML like:
 
 .. code-block:: yaml
 
+   prefixes:
+     ex: https://example.org/test#
+     rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
    mappings:
      Person:
        sources:
@@ -98,12 +101,22 @@ Overview
 --------
 
 - one mapping per LinkML class
-- prefixes come from the schema
+- prefixes come from the schema (``prefixes`` always emitted)
+- if the schema has **no default prefix**, the generator automatically adds:
+
+  .. code-block:: yaml
+
+     ex: https://example.org/default#
+
+  ensuring that all CURIEs can expand correctly
+- when ``class_uri`` or ``slot_uri`` are defined, they are used **verbatim** for
+  ``rdf:type`` and predicate IRIs (including full IRIs if present)
 - subject from identifier slot (else key; else safe fallback)
 - ``po`` for all class attributes (slot aliases respected)
-- emits ``rdf:type`` as CURIEs (e.g., ``ex:Person``)
+- emits ``rdf:type`` as CURIEs or IRIs (depending on availability)
 - JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
 - CSV/TSV: ``sources: [[path~csv]]`` (no iterator), values via ``$(column)``
+- a top-level ``mappings:`` section is **always** included, even for minimal schemas
 
 Command Line
 ------------
