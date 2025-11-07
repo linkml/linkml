@@ -5,7 +5,8 @@ class ClassGeneratorMixin:
     def enum_or_class(self, cn):
         if cn in self.schemaview.all_enums():
             return self.schemaview.get_enum(cn, strict=True)
-        elif cn in self.schemaview.all_classes():
+
+        if cn in self.schemaview.all_classes():
             return self.schemaview.get_class(cn, strict=True)
 
         raise Exception(f"Unknown class or enum {cn}")
