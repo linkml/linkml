@@ -492,6 +492,17 @@
   "generation_date": "2000-01-01T00:00:00",
   "@type": "SchemaDefinition",
   "@context": [
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "bar": {
+        "@id": "http://samples.r.us/bar_",
+        "@prefix": true
+      },
+      "foo": "http://samples.r.us/foo#",
+      "linkml": "https://w3id.org/linkml/",
+      "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
+    },
     "https://w3id.org/linkml/extensions.context.jsonld",
     "simple_slots.context.jsonld",
     "includes/simple_types.context.jsonld",
