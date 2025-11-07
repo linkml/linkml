@@ -1,0 +1,1151 @@
+// an attributed description
+message AltDescription
+ {
+  string source = 0
+  string description = 0
+ }
+// a tag/value pair with the semantics of OWL Annotation
+message Annotation
+ {
+  uriorcurie tag = 0
+  anyValue value = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+ }
+message AnonymousClassExpression
+ {
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  definition isA = 11
+ repeated  anonymousClassExpression anyOf = 101
+ repeated  anonymousClassExpression exactlyOneOf = 103
+ repeated  anonymousClassExpression noneOf = 105
+ repeated  anonymousClassExpression allOf = 107
+ repeated  slotDefinition slotConditions = 0
+ }
+// An enum_expression that is not named
+message AnonymousEnumExpression
+ {
+  uriorcurie codeSet = 0
+  string codeSetTag = 0
+  string codeSetVersion = 0
+  pvFormulaOptions pvFormula = 0
+ repeated  permissibleValue permissibleValues = 0
+ repeated  anonymousEnumExpression include = 0
+ repeated  anonymousEnumExpression minus = 0
+ repeated  enumDefinition inherits = 0
+  reachabilityQuery reachableFrom = 0
+  matchQuery matches = 0
+ repeated  uriorcurie concepts = 0
+ }
+message AnonymousSlotExpression
+ {
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  element range = 0
+  anonymousClassExpression rangeExpression = 0
+  enumExpression enumRange = 0
+ repeated  enumBinding bindings = 0
+  boolean required = 8
+  boolean recommended = 9
+  boolean multivalued = 7
+  boolean inlined = 25
+  boolean inlinedAsList = 27
+  anything minimumValue = 0
+  anything maximumValue = 0
+  string pattern = 35
+  patternExpression structuredPattern = 0
+  unitOfMeasure unit = 0
+  string implicitPrefix = 0
+  presenceEnum valuePresence = 0
+  string equalsString = 0
+ repeated  string equalsStringIn = 0
+  integer equalsNumber = 0
+  string equalsExpression = 0
+  integer exactCardinality = 0
+  integer minimumCardinality = 0
+  integer maximumCardinality = 0
+  anonymousSlotExpression hasMember = 0
+  anonymousSlotExpression allMembers = 0
+ repeated  anonymousSlotExpression noneOf = 105
+ repeated  anonymousSlotExpression exactlyOneOf = 103
+ repeated  anonymousSlotExpression anyOf = 101
+ repeated  anonymousSlotExpression allOf = 107
+ }
+// A type expression that is not a top-level named type definition. Used for nesting.
+message AnonymousTypeExpression
+ {
+  string pattern = 35
+  patternExpression structuredPattern = 0
+  unitOfMeasure unit = 0
+  string implicitPrefix = 0
+  string equalsString = 0
+ repeated  string equalsStringIn = 0
+  integer equalsNumber = 0
+  anything minimumValue = 0
+  anything maximumValue = 0
+ repeated  anonymousTypeExpression noneOf = 105
+ repeated  anonymousTypeExpression exactlyOneOf = 103
+ repeated  anonymousTypeExpression anyOf = 101
+ repeated  anonymousTypeExpression allOf = 107
+ }
+// defines the dimensions of an array
+message ArrayExpression
+ {
+  integer exactNumberDimensions = 0
+  integer minimumNumberDimensions = 0
+  anything maximumNumberDimensions = 0
+ repeated  dimensionExpression dimensions = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// an element whose instances are complex objects that may have slot-value assignments
+message ClassDefinition
+ {
+  string name = 1
+ repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
+  uriorcurie definitionUri = 0
+ repeated  localName localNames = 0
+  string conformsTo = 0
+ repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  boolean abstract = 0
+  boolean mixin = 0
+ repeated  uriorcurie valuesFrom = 0
+  string stringSerialization = 0
+ repeated  slotDefinition slots = 19
+ repeated  slotDefinition slotUsage = 23
+ repeated  slotDefinition attributes = 29
+  uriorcurie classUri = 2
+  uriorcurie subclassOf = 0
+ repeated  classDefinition unionOf = 0
+ repeated  slotDefinition definingSlots = 0
+  boolean treeRoot = 31
+ repeated  uniqueKey uniqueKeys = 0
+ repeated  classRule rules = 0
+ repeated  anonymousClassExpression classificationRules = 0
+  boolean slotNamesUnique = 0
+  boolean representsRelationship = 0
+ repeated  classDefinition disjointWith = 0
+  boolean childrenAreMutuallyDisjoint = 0
+  classDefinition isA = 11
+ repeated  classDefinition mixins = 13
+ repeated  classDefinition applyTo = 0
+ repeated  anonymousClassExpression anyOf = 101
+ repeated  anonymousClassExpression exactlyOneOf = 103
+ repeated  anonymousClassExpression noneOf = 105
+ repeated  anonymousClassExpression allOf = 107
+ repeated  slotDefinition slotConditions = 0
+ }
+// A rule that applies to instances of a class
+message ClassRule
+ {
+  anonymousClassExpression preconditions = 111
+  anonymousClassExpression postconditions = 113
+  anonymousClassExpression elseconditions = 115
+  boolean bidirectional = 0
+  boolean openWorld = 0
+  integer rank = 51
+  boolean deactivated = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// defines one of the dimensions of an array
+message DimensionExpression
+ {
+  string alias = 6
+  integer maximumCardinality = 0
+  integer minimumCardinality = 0
+  integer exactCardinality = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// A binding of a slot or a class to a permissible value from an enumeration.
+message EnumBinding
+ {
+  enumDefinition range = 0
+  obligationLevelEnum obligationLevel = 0
+  string bindsValueOf = 0
+  pvFormulaOptions pvFormula = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// an element whose instances must be drawn from a specified set of permissible values
+message EnumDefinition
+ {
+  string name = 1
+ repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
+  uriorcurie definitionUri = 0
+ repeated  localName localNames = 0
+  string conformsTo = 0
+ repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  definition isA = 11
+  boolean abstract = 0
+  boolean mixin = 0
+ repeated  definition mixins = 13
+ repeated  definition applyTo = 0
+ repeated  uriorcurie valuesFrom = 0
+  string stringSerialization = 0
+  uriorcurie enumUri = 0
+  uriorcurie codeSet = 0
+  string codeSetTag = 0
+  string codeSetVersion = 0
+  pvFormulaOptions pvFormula = 0
+ repeated  permissibleValue permissibleValues = 0
+ repeated  anonymousEnumExpression include = 0
+ repeated  anonymousEnumExpression minus = 0
+ repeated  enumDefinition inherits = 0
+  reachabilityQuery reachableFrom = 0
+  matchQuery matches = 0
+ repeated  uriorcurie concepts = 0
+ }
+// An expression that constrains the range of a slot
+message EnumExpression
+ {
+  uriorcurie codeSet = 0
+  string codeSetTag = 0
+  string codeSetVersion = 0
+  pvFormulaOptions pvFormula = 0
+ repeated  permissibleValue permissibleValues = 0
+ repeated  anonymousEnumExpression include = 0
+ repeated  anonymousEnumExpression minus = 0
+ repeated  enumDefinition inherits = 0
+  reachabilityQuery reachableFrom = 0
+  matchQuery matches = 0
+ repeated  uriorcurie concepts = 0
+ }
+// usage example and description
+message Example
+ {
+  string value = 0
+  string description = 0
+  anything object = 0
+ }
+// a tag/value pair used to add non-model information to an entry
+message Extension
+ {
+  uriorcurie tag = 0
+  anyValue value = 0
+ repeated  extension extensions = 0
+ }
+// an expression describing an import
+message ImportExpression
+ {
+  uriorcurie importFrom = 0
+  ncname importAs = 0
+ repeated  setting importMap = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// an attributed label
+message LocalName
+ {
+  ncname localNameSource = 0
+  string localNameValue = 0
+ }
+// A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+message MatchQuery
+ {
+  string identifierPattern = 0
+  uriorcurie sourceOntology = 0
+ }
+// An expression that describes an abstract path from an object to another through a sequence of slot lookups
+message PathExpression
+ {
+  pathExpression followedBy = 0
+ repeated  pathExpression noneOf = 105
+ repeated  pathExpression anyOf = 101
+ repeated  pathExpression allOf = 107
+ repeated  pathExpression exactlyOneOf = 103
+  boolean reversed = 0
+  slotDefinition traverse = 0
+  anonymousClassExpression rangeExpression = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// a regular expression pattern used to evaluate conformance of a string
+message PatternExpression
+ {
+  string syntax = 0
+  boolean interpolated = 0
+  boolean partialMatch = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// a permissible value, accompanied by intended text and an optional mapping to a concept URI
+message PermissibleValue
+ {
+  string text = 21
+  string description = 5
+  uriorcurie meaning = 23
+  unitOfMeasure unit = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  uriorcurie implements = 0
+  permissibleValue isA = 11
+ repeated  permissibleValue mixins = 13
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// prefix URI tuple
+message Prefix
+ {
+  ncname prefixPrefix = 1
+  uri prefixReference = 2
+ }
+// A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+message ReachabilityQuery
+ {
+  uriorcurie sourceOntology = 0
+ repeated  uriorcurie sourceNodes = 0
+ repeated  uriorcurie relationshipTypes = 0
+  boolean isDirect = 0
+  boolean includeSelf = 0
+  boolean traverseUp = 0
+ }
+// A collection of definitions that make up a schema or a data model.
+message SchemaDefinition
+ {
+ repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
+  uriorcurie definitionUri = 0
+ repeated  localName localNames = 0
+  string conformsTo = 0
+ repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  uri id = 0
+  string version = 0
+ repeated  uriorcurie imports = 21
+  string license = 31
+ repeated  prefix prefixes = 10
+ repeated  ncname emitPrefixes = 0
+ repeated  string defaultCuriMaps = 0
+  string defaultPrefix = 11
+  typeDefinition defaultRange = 13
+ repeated  subsetDefinition subsets = 8
+ repeated  typeDefinition types = 6
+ repeated  enumDefinition enums = 5
+ repeated  slotDefinition slots = 4
+ repeated  classDefinition classes = 3
+  string metamodelVersion = 0
+  string sourceFile = 0
+  datetime sourceFileDate = 0
+  integer sourceFileSize = 0
+  datetime generationDate = 0
+  boolean slotNamesUnique = 0
+ repeated  setting settings = 20
+ repeated  enumBinding bindings = 0
+  ncname name = 1
+ }
+// assignment of a key to a value
+message Setting
+ {
+  ncname settingKey = 0
+  string settingValue = 0
+ }
+// an element that describes how instances are related to other instances
+message SlotDefinition
+ {
+  string name = 1
+ repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
+  uriorcurie definitionUri = 0
+ repeated  localName localNames = 0
+  string conformsTo = 0
+ repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  boolean abstract = 0
+  boolean mixin = 0
+ repeated  uriorcurie valuesFrom = 0
+  string stringSerialization = 0
+  string singularName = 0
+  classDefinition domain = 0
+  uriorcurie slotUri = 2
+  arrayExpression array = 0
+  boolean inherited = 0
+  string readonly = 0
+  string ifabsent = 0
+  boolean listElementsUnique = 0
+  boolean listElementsOrdered = 0
+  boolean shared = 0
+  boolean key = 0
+  boolean identifier = 5
+  boolean designatesType = 0
+  string alias = 6
+  definition owner = 0
+ repeated  classDefinition domainOf = 0
+  slotDefinition subpropertyOf = 0
+  boolean symmetric = 0
+  boolean reflexive = 0
+  boolean locallyReflexive = 0
+  boolean irreflexive = 0
+  boolean asymmetric = 0
+  boolean transitive = 0
+  slotDefinition inverse = 0
+  boolean isClassField = 0
+  slotDefinition transitiveFormOf = 0
+  slotDefinition reflexiveTransitiveFormOf = 0
+  string role = 0
+  boolean isUsageSlot = 0
+  string usageSlotName = 0
+  relationalRoleEnum relationalRole = 0
+  slotDefinition slotGroup = 0
+  boolean isGroupingSlot = 0
+  pathExpression pathRule = 0
+ repeated  slotDefinition disjointWith = 0
+  boolean childrenAreMutuallyDisjoint = 0
+ repeated  slotDefinition unionOf = 0
+ repeated  typeMapping typeMappings = 0
+  slotDefinition isA = 11
+ repeated  slotDefinition mixins = 13
+ repeated  slotDefinition applyTo = 0
+  element range = 0
+  anonymousClassExpression rangeExpression = 0
+  enumExpression enumRange = 0
+ repeated  enumBinding bindings = 0
+  boolean required = 8
+  boolean recommended = 9
+  boolean multivalued = 7
+  boolean inlined = 25
+  boolean inlinedAsList = 27
+  anything minimumValue = 0
+  anything maximumValue = 0
+  string pattern = 35
+  patternExpression structuredPattern = 0
+  unitOfMeasure unit = 0
+  string implicitPrefix = 0
+  presenceEnum valuePresence = 0
+  string equalsString = 0
+ repeated  string equalsStringIn = 0
+  integer equalsNumber = 0
+  string equalsExpression = 0
+  integer exactCardinality = 0
+  integer minimumCardinality = 0
+  integer maximumCardinality = 0
+  anonymousSlotExpression hasMember = 0
+  anonymousSlotExpression allMembers = 0
+ repeated  anonymousSlotExpression noneOf = 105
+ repeated  anonymousSlotExpression exactlyOneOf = 103
+ repeated  anonymousSlotExpression anyOf = 101
+ repeated  anonymousSlotExpression allOf = 107
+ }
+// object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
+message StructuredAlias
+ {
+  string literalForm = 0
+  aliasPredicateEnum predicate = 0
+ repeated  uriorcurie categories = 0
+ repeated  uri contexts = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  string keywords = 0
+ }
+// an element that can be used to group other metamodel elements
+message SubsetDefinition
+ {
+  string name = 1
+ repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
+  uriorcurie definitionUri = 0
+ repeated  localName localNames = 0
+  string conformsTo = 0
+ repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// an element that whose instances are atomic scalar values that can be mapped to primitive types
+message TypeDefinition
+ {
+  string name = 1
+ repeated  ncname idPrefixes = 0
+  boolean idPrefixesAreClosed = 0
+  uriorcurie definitionUri = 0
+ repeated  localName localNames = 0
+  string conformsTo = 0
+ repeated  uriorcurie implements = 0
+ repeated  uriorcurie instantiates = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+  typeDefinition typeof = 7
+  string base = 8
+  uriorcurie uri = 2
+  string repr = 10
+ repeated  typeDefinition unionOf = 0
+  string pattern = 35
+  patternExpression structuredPattern = 0
+  unitOfMeasure unit = 0
+  string implicitPrefix = 0
+  string equalsString = 0
+ repeated  string equalsStringIn = 0
+  integer equalsNumber = 0
+  anything minimumValue = 0
+  anything maximumValue = 0
+ repeated  anonymousTypeExpression noneOf = 105
+ repeated  anonymousTypeExpression exactlyOneOf = 103
+ repeated  anonymousTypeExpression anyOf = 101
+ repeated  anonymousTypeExpression allOf = 107
+ }
+// Represents how a slot or type can be serialized to a format.
+message TypeMapping
+ {
+  string framework = 0
+  typeDefinition type = 0
+  string stringSerialization = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// a collection of slots whose values uniquely identify an instance of a class
+message UniqueKey
+ {
+  string uniqueKeyName = 0
+ repeated  slotDefinition uniqueKeySlots = 0
+  boolean considerNullsInequal = 0
+ repeated  extension extensions = 0
+ repeated  annotation annotations = 0
+  string description = 5
+ repeated  altDescription altDescriptions = 0
+  string title = 3
+  string deprecated = 0
+ repeated  string todos = 0
+ repeated  string notes = 0
+ repeated  string comments = 0
+ repeated  example examples = 0
+ repeated  subsetDefinition inSubset = 0
+  uri fromSchema = 0
+  string importedFrom = 0
+  uriorcurie source = 0
+  string inLanguage = 0
+ repeated  uriorcurie seeAlso = 0
+  uriorcurie deprecatedElementHasExactReplacement = 0
+  uriorcurie deprecatedElementHasPossibleReplacement = 0
+ repeated  string aliases = 0
+ repeated  structuredAlias structuredAliases = 0
+ repeated  uriorcurie mappings = 0
+ repeated  uriorcurie exactMappings = 0
+ repeated  uriorcurie closeMappings = 0
+ repeated  uriorcurie relatedMappings = 0
+ repeated  uriorcurie narrowMappings = 0
+ repeated  uriorcurie broadMappings = 0
+  uriorcurie createdBy = 0
+ repeated  uriorcurie contributors = 0
+  datetime createdOn = 0
+  datetime lastUpdatedOn = 0
+  uriorcurie modifiedBy = 0
+  uriorcurie status = 0
+  integer rank = 51
+ repeated  uriorcurie categories = 0
+ repeated  string keywords = 0
+ }
+// A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
+message UnitOfMeasure
+ {
+  string symbol = 0
+  string abbreviation = 0
+  string descriptiveName = 0
+ repeated  uriorcurie exactMappings = 0
+  string ucumCode = 0
+  string derivation = 0
+  uriorcurie hasQuantityKind = 0
+  string iec61360code = 0
+ }

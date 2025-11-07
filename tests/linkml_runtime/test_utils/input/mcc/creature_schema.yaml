@@ -1,0 +1,86 @@
+# yaml-language-server: $schema=https://linkml.io/linkml-model/linkml_model/jsonschema/meta.schema.json
+id: https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc/creature_schema
+name: creature_schema
+description: A schema for representing mythical creatures and their magical traits.
+default_prefix: mcc
+default_range: string
+version: 1.0.0
+
+prefixes:
+  mcc: https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc/
+
+imports:
+  - creature_basics
+  - creature_types
+  - creature_subsets
+
+slots:
+  creature_class:
+    range: CreatureClass
+  magical_abilities:
+    range: MagicalAbility
+    multivalued: true
+    inlined: true
+  level_of_magic:
+    range: MagicLevel
+
+classes:
+  MythicalCreature:
+    is_a: Creature
+    in_subset:
+    - mythical_creature
+    mixins:
+      - HasMagic
+    slots:
+      - creature_class
+
+  # mixin
+  HasMagic:
+    is_a: CreatureAttribute
+    slots:
+      - magical_abilities
+
+  # class used as a range
+  MagicalAbility:
+    description: A magical power possessed by a creature
+    in_subset:
+    - mythical_creature
+    slots:
+      - name
+      - level_of_magic
+
+  # some creatures
+  Dragon:
+    is_a: MythicalCreature
+    description: A reptilian creature, usually possessing wings, horns, and the ability to breathe fire.
+    in_subset:
+    - mythical_creature
+
+  Phoenix:
+    is_a: MythicalCreature
+    description: An immortal bird that cyclically regenerates or is otherwise born again.
+    in_subset:
+    - mythical_creature
+
+  Unicorn:
+    is_a: MythicalCreature
+    description: A beast with a single large, pointed, spiraling horn projecting from its forehead.
+    in_subset:
+    - mythical_creature
+
+types:
+  MagicLevel:
+    base: int
+    uri: mcc:magic
+    minimum_value: 1
+    maximum_value: 10
+    description: Scale of magical power from 1 to 10
+
+enums:
+  CreatureClass:
+    permissible_values:
+      Fire:
+      Air:
+      Earth:
+      Water:
+      Spirit:

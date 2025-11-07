@@ -2,6 +2,12 @@
 requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
 
+[tool.uv.workspace]
+members = [".", "packages/linkml_runtime"]
+
+[tool.uv.sources]
+linkml-runtime = { workspace = true }
+
 [project]
 name = "linkml"
 description = "Linked Open Data Modeling Language"

@@ -1,0 +1,36 @@
+# metamodel_version: 1.7.0
+# version: 2.0.0
+BASE <https://w3id.org/linkml/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+
+<String> xsd:string
+
+<Integer> xsd:integer
+
+<Boolean> xsd:boolean
+
+<Float> xsd:float
+
+<Double> xsd:double
+
+<Decimal> xsd:decimal
+
+<Time> xsd:dateTime
+
+<Date> xsd:date
+
+<Datetime> xsd:dateTime
+
+<Uriorcurie> IRI
+
+<Uri> IRI
+
+<Ncname> xsd:string
+
+<Objectidentifier> IRI
+
+<Nodeidentifier> NONLITERAL
+
+
+

@@ -1,0 +1,155 @@
+id: https://w3id.org/linkml/examples/inference
+title: inference example
+name: inference
+description: This demonstrates the use of inference
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/inference/
+  skos: http://www.w3.org/2004/02/skos/core#
+  pav: http://purl.org/pav/
+  schema: http://schema.org/
+  sh: https://w3id.org/shacl/
+
+default_prefix: ex
+default_range: string
+
+default_curi_maps:
+    - semweb_context
+
+imports:
+  - linkml:types
+
+
+#==================================
+# Slots                           #
+#==================================
+slots:
+  id:
+  name:
+    description: name
+  synonyms:
+    multivalued: true
+  full_name:
+    string_serialization: "{first_name} {last_name}"
+  first_name:
+  last_name:
+  age_in_years:
+    range: decimal
+    minimum_value: 0
+    maximum_value: 999
+    equals_expression: "{age_in_months} / 12"
+  age_in_months:
+    range: decimal
+    equals_expression: "{age_in_years} * 12"
+  is_juvenile:
+    range: boolean
+    equals_expression: "{age_in_years} < 18"
+  age_category:
+    range: AgeEnum
+    equals_expression: "case( ({age_in_years} < 2, 'infant'), ({age_in_years} < 18, 'juvenile'), ({age_in_years} > 18, 'adult') )"
+  prohibited:
+    equals_expression: "__import__('os').listdir()"
+  street:
+  city:
+  verbatim:
+  primary_address:
+    range: Address
+  description:
+  summary:
+  slot with spaces:
+  derived slot with spaces:
+    string_serialization: "{slot_with_spaces}"
+  derived expression from spaces:
+    equals_expression: "{slot_with_spaces}"
+
+
+
+#==================================
+# Classes                         #
+#==================================
+
+classes:
+  Term:
+    slots:
+      - id
+      - name
+      - synonyms
+
+  Person:
+    slots:
+      - id
+      - first_name
+      - last_name
+      - full_name
+      - age_in_years
+      - age_in_months
+      - primary_address
+      - description
+      - is_juvenile
+      - age_category
+      - slot with spaces
+      - derived slot with spaces
+      - derived expression from spaces
+    slot_usage:
+      description:
+        string_serialization: |-
+          {last_name}, {first_name}, {primary_address}
+      summary:
+        equals_expression: |-
+          {first_name} + {last_name} + ' ' + ('AGE: '+str(age_in_years) if age_in_years else 'NO AGE SPECIFIED')
+    rules:
+      preconditions:
+        slot_conditions:
+          primary_address:
+      postconditions:
+        slot_conditions:
+          description:
+            string_serialization: |-
+              {last_name}, {first_name}, {primary_address}
+              {primary_address.street}
+              {primary_address.city}
+
+  Evil:
+    slots:
+      - prohibited
+
+  Relationship:
+    attributes:
+      person1:
+        range: Person
+        inlined: true
+      person2:
+        range: Person
+        inlined: true
+      type:
+      description:
+        string_serialization: |-
+          "{person1.last_name}, {person1.first_name}" IS {type} "{person2.last_name}, {person2.first_name}"
+      description2:
+        string_serialization: |-
+          "{person1.full_name}" IS {type} "{person2.full_name}"
+
+  Address:
+    slots:
+      - street
+      - city
+    string_serialization: |-
+      {street}
+      {city}
+
+  Container:
+    tree_root: true
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        multivalued: true
+
+enums:
+  AgeEnum:
+    permissible_values:
+      infant:
+      juvenile:
+      adult:

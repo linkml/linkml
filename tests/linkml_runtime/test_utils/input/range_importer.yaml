@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://linkml.io/linkml-model/linkml_model/jsonschema/meta.schema.json
+id: https://w3id.org/linkml/examples/range_importer
+title: Range Importer
+name: range_importer
+description: |
+  Schema for testing ranges.
+  Imports the "range_local" schema.
+
+imports:
+- range_local
