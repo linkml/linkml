@@ -52,6 +52,7 @@ from linkml_runtime.utils.namespaces import Namespaces
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
+from linkml.utils.deprecation import METADATA_FLAG, deprecation_warning
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -202,8 +203,6 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(schema, Path):
             schema = str(schema)
 
-        # TODO: remove aliasing
-        self.emit_metadata = self.metadata
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
@@ -248,7 +247,7 @@ class Generator(metaclass=abc.ABCMeta):
                 importmap=self.importmap,
                 logger=self.logger,
                 mergeimports=self.mergeimports,
-                emit_metadata=self.metadata,
+                metadata=self.metadata,
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
             )
@@ -286,6 +285,14 @@ class Generator(metaclass=abc.ABCMeta):
         :return: Generated output
         """
         out = ""
+
+        deprecation_map = {"emit_metadata": "metadata", "head": "metadata"}
+        for flag in deprecation_map:
+            if flag in kwargs:
+                deprecation_warning(METADATA_FLAG)
+                new_flag = deprecation_map[flag]
+                kwargs[new_flag] = flag
+                del kwargs[flag]
 
         # the default is to use the Visitor Pattern; each individual generator may
         # choose to override methods {visit,end}_{element}.
