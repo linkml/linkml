@@ -1,0 +1,18 @@
+id: https://example.org/nullable-id
+name: nullable-id
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ni: https://example.org/nullable-id/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  MyClass:
+    attributes:
+      id:
+        identifier: true
+      needed:
+        required: true
+      name:
+
