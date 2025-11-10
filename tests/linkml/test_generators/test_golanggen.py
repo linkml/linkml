@@ -29,6 +29,11 @@ type Place struct {
     Name *string `json:"name,omitempty"`
 }
 """)
+    assert_in("""
+import (
+    "time" // for time.Time
+)
+""")
 
     # for reproducible codegen, we check that the generated structs are in sorted order
     matches = re.findall(r"^type\s+(\w+)\s+struct", code, re.MULTILINE)

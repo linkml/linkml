@@ -28,21 +28,20 @@ default_template = """
 {%- endif -%}
 package {{package_name}}
 
-{% for c in view.all_classes().values() -%}
+{%- set ns = namespace(usesTime=false) -%}
+{%- for c in view.all_classes().values() -%}
     {%- for sn in view.class_slots(c.name, direct=False) %}
         {%- set s = view.induced_slot(sn, c.name) -%}
         {%- if "time." in gen.range(s) -%}
-            {%- set usesTime = True %}
-        {%- else -%}
-            {%- set usesTime = False %}
+            {%- set ns.usesTime = true -%}
         {%- endif -%}
     {%- endfor -%}
 {%- endfor -%}
-{%- if usesTime -%}
+{% if ns.usesTime %}
 import (
     "time" // for time.Time
 )
-{%- endif -%}
+{% endif %}
 
 {% for c in view.all_classes().values()|sort(attribute='name') -%}
 {%- if c.description -%}
