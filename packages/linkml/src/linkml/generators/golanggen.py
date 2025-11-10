@@ -17,7 +17,7 @@ type_map = {
     "int": "int",
     "Bool": "bool",
     "float": "float64",
-    "XSDDate": "time.Date",
+    "XSDDate": "time.Time",
 }
 
 default_template = """
@@ -40,7 +40,7 @@ package {{package_name}}
 {%- endfor -%}
 {%- if usesTime -%}
 import (
-    "time" // for time.Date
+    "time" // for time.Time
 )
 {%- endif -%}
 
