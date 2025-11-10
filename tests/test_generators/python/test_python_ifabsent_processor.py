@@ -11,6 +11,7 @@ name: ifabsent_tests
 prefixes:
   ex: https://example.org/
 default_prefix: ex
+default_range: float
 
 classes:
   Student:
@@ -470,6 +471,52 @@ def test_bnode_default_value():
     )
 
 
+@pytest.mark.parametrize("range", ["uri", "curie", "uriorcurie"])
+@pytest.mark.parametrize(
+    "ifabsent,expected",
+    [
+        ["class_uri", '"https://example.org/Student"'],
+        ["slot_uri", '"https://example.org/default_urilike"'],
+        ["class_curie", '"ex:Student"'],
+        ["slot_curie", '"ex:default_urilike"'],
+    ],
+)
+def test_uriorcurie_default_value(ifabsent, expected, range):
+    schema = (
+        base_schema
+        + f"""
+      - name: default_urilike
+        range: {range}
+        ifabsent: {ifabsent}
+        """
+    )
+    sv = SchemaView(schema)
+    cls = sv.all_classes()["Student"]
+    slot = cls.attributes["default_urilike"]
+    processor = PythonIfAbsentProcessor(sv)
+    result = processor.process_slot(slot, cls)
+    if range != "uriorcurie" and ifabsent.split("_")[1] != range:
+        assert result is None
+    else:
+        assert result == expected
+
+
+def test_default_range_default_value():
+    schema = (
+        base_schema
+        + """
+      - name: default_range_slot
+        range: string
+        ifabsent: default_range
+        """
+    )
+    sv = SchemaView(schema)
+    cls = sv.all_classes()["Student"]
+    slot = cls.attributes["default_range_slot"]
+    processor = PythonIfAbsentProcessor(sv)
+    result = processor.process_slot(slot, cls)
+    assert result == '"float"'
+
 @pytest.mark.parametrize("cls_name", ["Inheritance", "Base"])
 def test_custom_types(cls_name, input_path):
     """
@@ -486,3 +533,4 @@ def test_custom_types(cls_name, input_path):
         if "value" not in attr.annotations:
             continue
         assert default == attr.annotations["value"].value
+

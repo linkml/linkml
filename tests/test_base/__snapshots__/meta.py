@@ -975,7 +975,7 @@ class EnumDefinition(Definition):
     class_model_uri: ClassVar[URIRef] = LINKML.EnumDefinition
 
     name: Union[str, EnumDefinitionName] = None
-    enum_uri: Optional[Union[str, URIorCURIE]] = None
+    enum_uri: Optional[Union[str, URIorCURIE]] = "linkml:EnumDefinition"
     code_set: Optional[Union[str, URIorCURIE]] = None
     code_set_tag: Optional[str] = None
     code_set_version: Optional[str] = None
@@ -1048,7 +1048,7 @@ class EnumBinding(YAMLRoot):
     class_name: ClassVar[str] = "enum_binding"
     class_model_uri: ClassVar[URIRef] = LINKML.EnumBinding
 
-    range: Optional[Union[str, EnumDefinitionName]] = None
+    range: Optional[Union[str, EnumDefinitionName]] = "string"
     obligation_level: Optional[Union[str, "ObligationLevelEnum"]] = None
     binds_value_of: Optional[str] = None
     pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
@@ -2014,7 +2014,7 @@ class SlotExpression(Expression):
     class_name: ClassVar[str] = "slot_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.SlotExpression
 
-    range: Optional[Union[str, ElementName]] = None
+    range: Optional[Union[str, ElementName]] = "string"
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     enum_range: Optional[Union[dict, EnumExpression]] = None
     bindings: Optional[Union[Union[dict, EnumBinding], list[Union[dict, EnumBinding]]]] = empty_list()
@@ -2144,7 +2144,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     class_name: ClassVar[str] = "anonymous_slot_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
 
-    range: Optional[Union[str, ElementName]] = None
+    range: Optional[Union[str, ElementName]] = "string"
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     enum_range: Optional[Union[dict, EnumExpression]] = None
     bindings: Optional[Union[Union[dict, EnumBinding], list[Union[dict, EnumBinding]]]] = empty_list()
@@ -2280,7 +2280,7 @@ class SlotDefinition(Definition):
     name: Union[str, SlotDefinitionName] = None
     singular_name: Optional[str] = None
     domain: Optional[Union[str, ClassDefinitionName]] = None
-    slot_uri: Optional[Union[str, URIorCURIE]] = None
+    slot_uri: Optional[Union[str, URIorCURIE]] = "linkml:slot_uri"
     array: Optional[Union[dict, "ArrayExpression"]] = None
     inherited: Optional[Union[bool, Bool]] = None
     readonly: Optional[str] = None
