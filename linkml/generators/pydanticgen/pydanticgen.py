@@ -77,6 +77,7 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
+    + Import(module="uuid")
     + Import(module="sys")
     + Import(
         module="typing",
@@ -586,6 +587,65 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         :return: Dictionary of dictionaries with predefined slot values for each class
         """
+        sv = self.schemaview
+        slot_values = defaultdict(dict)
+        ifabsent_processor = PythonIfAbsentProcessor(sv)
+        for class_def in sv.all_classes().values():
+            for slot_name in sv.class_slots(class_def.name):
+                slot = sv.induced_slot(slot_name, class_def.name)
+                if slot.designates_type:
+                    target_value = get_type_designator_value(sv, slot, class_def)
+                    slot_values[camelcase(class_def.name)][slot.name] = f'"{target_value}"'
+                    if slot.multivalued:
+                        slot_values[camelcase(class_def.name)][slot.name] = (
+                            "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
+                        )
+                    slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][
+                        slot.name
+                    ]
+                elif slot.ifabsent is not None:
+                    if slot.ifabsent == "bnode":
+                        value = 'default_factory=lambda: "_:" + uuid.uuid4().hex'
+                    else:
+                        value = ifabsent_processor.process_slot(slot, class_def)
+                    slot_values[camelcase(class_def.name)][slot.name] = value
+                # Multivalued slots that are either not inlined (just an identifier) or are
+                # inlined as lists should get default_factory list, if they're inlined but
+                # not as a list, that means a dictionary
+                elif "linkml:elements" in slot.implements:
+                    slot_values[camelcase(class_def.name)][slot.name] = None
+                elif slot.multivalued:
+                    has_identifier_slot = self.range_class_has_identifier_slot(slot)
+
+                    if slot.inlined and not slot.inlined_as_list and has_identifier_slot:
+                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=dict"
+                    else:
+                        slot_values[camelcase(class_def.name)][slot.name] = "default_factory=list"
+
+        return slot_values
+
+    def range_class_has_identifier_slot(self, slot):
+        """
+        Check if the range class of a slot has an identifier slot, via both slot.any_of and slot.range
+        Should return False if the range is not a class, and also if the range is a class but has no
+        identifier slot
+
+        :param slot: SlotDefinition
+        :return: bool
+        """
+        sv = self.schemaview
+        has_identifier_slot = False
+        if slot.any_of:
+            for slot_range in slot.any_of:
+                any_of_range = slot_range.range
+                if any_of_range in sv.all_classes() and sv.get_identifier_slot(any_of_range, use_key=True) is not None:
+                    has_identifier_slot = True
+        if slot.range in sv.all_classes() and sv.get_identifier_slot(slot.range, use_key=True) is not None:
+            has_identifier_slot = True
+        return has_identifier_slot
+
+    def get_class_isa_plus_mixins(self) -> dict[str, list[str]]:
+
         if self._predefined_slot_values is None:
             sv = self.schemaview
             ifabsent_processor = PydanticIfAbsentProcessor(sv)
@@ -611,7 +671,6 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         return self._predefined_slot_values
 
-    @property
     def class_bases(self) -> dict[str, list[str]]:
         """
         Generate the inheritance list for each class from is_a plus mixins
