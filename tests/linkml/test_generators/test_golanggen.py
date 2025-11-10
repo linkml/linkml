@@ -34,6 +34,7 @@ import (
     "time" // for time.Time
 )
 """)
+    assert_in("Altitude *float64")
 
     # for reproducible codegen, we check that the generated structs are in sorted order
     matches = re.findall(r"^type\s+(\w+)\s+struct", code, re.MULTILINE)

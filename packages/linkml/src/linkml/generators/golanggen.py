@@ -16,6 +16,7 @@ type_map = {
     "str": "string",
     "int": "int",
     "Bool": "bool",
+    "Decimal": "float64",
     "float": "float64",
     "XSDDate": "time.Time",
 }
@@ -195,7 +196,7 @@ class GolangGenerator(Generator):
                     else:
                         return typ if slot.required else f"*{typ}"
                 else:
-                    logger.warning(f"Unknown type.base: {t.name}")
+                    logger.warning(f"Unknown type.base: {t.base}")
             if slot.multivalued:
                 return "[]string"
             else:
