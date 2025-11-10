@@ -20,7 +20,7 @@ class DependencySorter:
         Explicitly represent nodes with no dependencies as having an empty dependency list.
         This is for easier lookup when visiting nodes.
         """
-        nodes_with_dependencies = set(self.dependency_dict.keys())
+        nodes_with_dependencies = set(self.dependency_dict)
         all_nodes = set(sum(self.dependency_dict.values(), []))
         no_dependency_nodes = all_nodes - nodes_with_dependencies
         leaf_dependency_graph = {n: [] for n in no_dependency_nodes}
