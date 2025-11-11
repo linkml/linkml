@@ -52,6 +52,6 @@ The LinkML registry collects some existing schemas and allows for basic browsing
 
 ## Presentations about LinkML
 
- * Tutorial (ICBO 2025): [Annotating Data with Ontologies: LinkML Can Help](https://zenodo.org/records/15186182) ([slides](https://go.lbl.gov/ICBO-LinkML-slides); [video, 2hr 25min](https://youtu.be/ijCXDGO-NTU?si=xO32Ed5bVe1LQrsa) 2025-11-05
+ * Tutorial (ICBO 2025): [Annotating Data with Ontologies: LinkML Can Help] ([slides](https://go.lbl.gov/ICBO-LinkML-slides); [video, 2hr 25min](https://youtu.be/ijCXDGO-NTU?si=xO32Ed5bVe1LQrsa) 2025-11-05
  * [AI-assisted workflows for integrating data using LinkML](https://zenodo.org/records/15186182) (slides) 2025-04-10
  * [Introduction to LinkML by Sierra Moxon](https://www.youtube.com/watch?v=nyNp09WYLzw&t=183s) (video, 47 min) 2023-10-04
