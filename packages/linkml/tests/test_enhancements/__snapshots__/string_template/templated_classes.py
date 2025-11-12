@@ -6,25 +6,70 @@
 # description: Test cases for the string_template model
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot
-from rdflib import URIRef
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+from linkml_runtime.linkml_model.types import Integer, String
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 DEFAULT_ = LINKML
 
 
 # Types
 
 # Class references
+
 
 
 @dataclass(repr=False)
@@ -62,30 +107,11 @@ class FirstClass(YAMLRoot):
 class slots:
     pass
 
+slots.firstClass__name = Slot(uri=LINKML.name, name="firstClass__name", curie=LINKML.curie('name'),
+                   model_uri=LINKML.firstClass__name, domain=None, range=str)
 
-slots.firstClass__name = Slot(
-    uri=LINKML.name,
-    name="firstClass__name",
-    curie=LINKML.curie("name"),
-    model_uri=LINKML.firstClass__name,
-    domain=None,
-    range=str,
-)
+slots.firstClass__age = Slot(uri=LINKML.age, name="firstClass__age", curie=LINKML.curie('age'),
+                   model_uri=LINKML.firstClass__age, domain=None, range=Optional[int])
 
-slots.firstClass__age = Slot(
-    uri=LINKML.age,
-    name="firstClass__age",
-    curie=LINKML.curie("age"),
-    model_uri=LINKML.firstClass__age,
-    domain=None,
-    range=Optional[int],
-)
-
-slots.firstClass__gender = Slot(
-    uri=LINKML.gender,
-    name="firstClass__gender",
-    curie=LINKML.curie("gender"),
-    model_uri=LINKML.firstClass__gender,
-    domain=None,
-    range=Optional[str],
-)
+slots.firstClass__gender = Slot(uri=LINKML.gender, name="firstClass__gender", curie=LINKML.curie('gender'),
+                   model_uri=LINKML.firstClass__gender, domain=None, range=Optional[str])

@@ -6,27 +6,70 @@
 # description: Very simple enumeration
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, Union
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+from linkml_runtime.linkml_model.types import String
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-CS = CurieNamespace("CS", "http://ontologies-r.us/codesystem/")
-SCT = CurieNamespace("SCT", "http://snomed.info/id/")
-LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-PLAY = CurieNamespace("play", "http://example.org/test/play/")
+CS = CurieNamespace('CS', 'http://ontologies-r.us/codesystem/')
+SCT = CurieNamespace('SCT', 'http://snomed.info/id/')
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+PLAY = CurieNamespace('play', 'http://example.org/test/play/')
 DEFAULT_ = PLAY
 
 
 # Types
-
 
 # Class references
 class FavoriteColorId(extended_str):
@@ -57,7 +100,6 @@ class Colors(EnumDefinitionImpl):
     """
     Color values, mapped to SNOMED CT
     """
-
     _defn = EnumDefinition(
         name="Colors",
         description="Color values, mapped to SNOMED CT",
@@ -66,11 +108,28 @@ class Colors(EnumDefinitionImpl):
 
     @classmethod
     def _addvals(cls):
-        setattr(cls, "1", PermissibleValue(text="1", description="Red", meaning=SCT["371240000"]))
-        setattr(cls, "2", PermissibleValue(text="2", description="Yellow", meaning=SCT["371244009"]))
-        setattr(cls, "3", PermissibleValue(text="3", meaning=SCT["405738005"]))
-        setattr(cls, "4", PermissibleValue(text="4", description="Muted", meaning=SCT["abcde"]))
-        setattr(cls, "9", PermissibleValue(text="9", description="Muddy"))
-
+        setattr(cls, "1",
+            PermissibleValue(
+                text="1",
+                description="Red",
+                meaning=SCT["371240000"]))
+        setattr(cls, "2",
+            PermissibleValue(
+                text="2",
+                description="Yellow",
+                meaning=SCT["371244009"]))
+        setattr(cls, "3",
+            PermissibleValue(
+                text="3",
+                meaning=SCT["405738005"]))
+        setattr(cls, "4",
+            PermissibleValue(
+                text="4",
+                description="Muted",
+                meaning=SCT["abcde"]))
+        setattr(cls, "9",
+            PermissibleValue(
+                text="9",
+                description="Muddy"))
 
 # Slots

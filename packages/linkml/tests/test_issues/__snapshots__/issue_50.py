@@ -6,20 +6,64 @@
 # description:
 # license:
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
-from rdflib import URIRef
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
-DEFAULT_ = CurieNamespace("", "http://example.com/")
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+DEFAULT_ = CurieNamespace('', 'http://example.com/')
 
 
 # Types
@@ -130,43 +174,17 @@ class TestClass3(YAMLRoot):
 class slots:
     pass
 
+slots.id = Slot(uri=DEFAULT_.id, name="id", curie=DEFAULT_.curie('id'),
+                   model_uri=DEFAULT_.id, domain=None, range=URIRef)
 
-slots.id = Slot(
-    uri=DEFAULT_.id, name="id", curie=DEFAULT_.curie("id"), model_uri=DEFAULT_.id, domain=None, range=URIRef
-)
+slots.optional_mixin_slot = Slot(uri=DEFAULT_.optional_mixin_slot, name="optional_mixin_slot", curie=DEFAULT_.curie('optional_mixin_slot'),
+                   model_uri=DEFAULT_.optional_mixin_slot, domain=None, range=Optional[str])
 
-slots.optional_mixin_slot = Slot(
-    uri=DEFAULT_.optional_mixin_slot,
-    name="optional_mixin_slot",
-    curie=DEFAULT_.curie("optional_mixin_slot"),
-    model_uri=DEFAULT_.optional_mixin_slot,
-    domain=None,
-    range=Optional[str],
-)
+slots.required_mixin_slot = Slot(uri=DEFAULT_.required_mixin_slot, name="required_mixin_slot", curie=DEFAULT_.curie('required_mixin_slot'),
+                   model_uri=DEFAULT_.required_mixin_slot, domain=None, range=str)
 
-slots.required_mixin_slot = Slot(
-    uri=DEFAULT_.required_mixin_slot,
-    name="required_mixin_slot",
-    curie=DEFAULT_.curie("required_mixin_slot"),
-    model_uri=DEFAULT_.required_mixin_slot,
-    domain=None,
-    range=str,
-)
+slots.optional_domain_slot = Slot(uri=DEFAULT_.optional_domain_slot, name="optional_domain_slot", curie=DEFAULT_.curie('optional_domain_slot'),
+                   model_uri=DEFAULT_.optional_domain_slot, domain=TestClass3, range=Optional[str])
 
-slots.optional_domain_slot = Slot(
-    uri=DEFAULT_.optional_domain_slot,
-    name="optional_domain_slot",
-    curie=DEFAULT_.curie("optional_domain_slot"),
-    model_uri=DEFAULT_.optional_domain_slot,
-    domain=TestClass3,
-    range=Optional[str],
-)
-
-slots.required_domain_slot = Slot(
-    uri=DEFAULT_.required_domain_slot,
-    name="required_domain_slot",
-    curie=DEFAULT_.curie("required_domain_slot"),
-    model_uri=DEFAULT_.required_domain_slot,
-    domain=TestClass3,
-    range=str,
-)
+slots.required_domain_slot = Slot(uri=DEFAULT_.required_domain_slot, name="required_domain_slot", curie=DEFAULT_.curie('required_domain_slot'),
+                   model_uri=DEFAULT_.required_domain_slot, domain=TestClass3, range=str)

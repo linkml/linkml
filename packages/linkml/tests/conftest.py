@@ -30,6 +30,11 @@ def normalize_line_endings(string: str):
     return string.replace("\r\n", "\n").replace("\r", "\n")
 
 
+def _no_highlighting(source: str, lexer: str = "python") -> str:
+    """Simple highlighter function that returns source unchanged for _diff_text."""
+    return source
+
+
 class Snapshot(ABC):
     def __init__(self, path: Path, config: pytest.Config) -> None:
         self.path = Path(path)
@@ -101,7 +106,9 @@ class SnapshotFile(Snapshot):
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(_diff_text(actual, expected, getattr(self.config.option, "verbose", 0)))
+                self.eq_state = "\n".join(
+                    _diff_text(actual, expected, _no_highlighting, getattr(self.config.option, "verbose", 0))
+                )
             return is_eq
 
 

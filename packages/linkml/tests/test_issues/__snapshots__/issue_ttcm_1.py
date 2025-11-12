@@ -6,33 +6,74 @@
 # description: ResourceDescription represents the shared characteristics common to both abstract and resource version descriptions. ResourceDescription is an abstract type and, as such, cannot be directly created. Resource descriptions are Changeable, meaning that they have identity and can be created, updated, and deleted.
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
-from jsonasobj2 import as_dict
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
 from linkml_runtime.linkml_model.annotations import Annotation, AnnotationTag
 from linkml_runtime.linkml_model.extensions import Extension, ExtensionTag
 from linkml_runtime.linkml_model.types import String
-from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.metamodelcore import URI, Curie, NCName, URIorCURIE, XSDDateTime, empty_dict, empty_list
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot
-from rdflib import URIRef
+from linkml_runtime.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, XSDDateTime
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-TCCM = CurieNamespace("tccm", "https://hotecosystem.org/tccm/")
-XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+TCCM = CurieNamespace('tccm', 'https://hotecosystem.org/tccm/')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = TCCM
 
 
 # Types
 class DateAndTime(XSDDateTime):
-    """Represents an “Instant” as defined in the OWL Time Specification . Implementations must be able to support temporal units of second, minute, hour, day, month, and year, and be able to represent and compare instances represented in any of these units. DateAndTime can only provide a partial ordering and, as a consequence, i s never used as an index, unique identifier, or to sequence data or events."""
-
+    """ Represents an “Instant” as defined in the OWL Time Specification . Implementations must be able to support temporal units of second, minute, hour, day, month, and year, and be able to represent and compare instances represented in any of these units. DateAndTime can only provide a partial ordering and, as a consequence, i s never used as an index, unique identifier, or to sequence data or events. """
     type_class_uri = XSD["dateTime"]
     type_class_curie = "xsd:dateTime"
     type_name = "DateAndTime"
@@ -40,8 +81,7 @@ class DateAndTime(XSDDateTime):
 
 
 class NaturalNumber(int):
-    """A non-negative integer (N). NatrualNumber is used exclusively for representing quantities."""
-
+    """ A non-negative integer (N). NatrualNumber is used exclusively for representing quantities. """
     type_class_uri = XSD["nonNegativeInteger"]
     type_class_curie = "xsd:nonNegativeInteger"
     type_name = "NaturalNumber"
@@ -49,8 +89,7 @@ class NaturalNumber(int):
 
 
 class NamespaceIdentifier(NCName):
-    """An identifier that uniquely references the scoping namespace of an Entity (class, role, or individual) within the context of a TCCM service. NameSpaceIdentifier syntax must match the PNAME NS production as defined in the SPARQL Query Specification - meaning that it must begin with an alphabetic character"""
-
+    """ An identifier that uniquely references the scoping namespace of an Entity (class, role, or individual) within the context of a TCCM service. NameSpaceIdentifier syntax must match the PNAME NS production as defined in the SPARQL Query Specification - meaning that it must begin with an alphabetic character """
     type_class_uri = XSD["NMTOKEN"]
     type_class_curie = "xsd:NMTOKEN"
     type_name = "NamespaceIdentifier"
@@ -58,8 +97,7 @@ class NamespaceIdentifier(NCName):
 
 
 class URI(URI):
-    """A Universal Resource Identifier (URI) as defined in IETF RFC 3986. TCCM implementations are encouraged to consider implementing this data type using the IRI (RFC3987) specification"""
-
+    """ A Universal Resource Identifier (URI) as defined in IETF RFC 3986. TCCM implementations are encouraged to consider implementing this data type using the IRI (RFC3987) specification """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "URI"
@@ -74,8 +112,7 @@ class CURIE(Curie):
 
 
 class URIorCurie(URIorCURIE):
-    """a URI or a CURIE"""
-
+    """ a URI or a CURIE """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "URIorCurie"
@@ -83,8 +120,7 @@ class URIorCurie(URIorCURIE):
 
 
 class LocalIdentifier(String):
-    """An identifier that uniquely references a class, individual, property, or other resource within the context of a specific TCCM service implementation. LocalIdentifier syntax must match the PNAME production as defined in the SPARQL Query Specification . LocalIdentifiers may begin with leading digits, where XML Local Identifiers and NameSpaceIdentifiers may not."""
-
+    """ An identifier that uniquely references a class, individual, property, or other resource within the context of a specific TCCM service implementation. LocalIdentifier syntax must match the PNAME production as defined in the SPARQL Query Specification . LocalIdentifiers may begin with leading digits, where XML Local Identifiers and NameSpaceIdentifiers may not. """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "LocalIdentifier"
@@ -92,8 +128,7 @@ class LocalIdentifier(String):
 
 
 class PersistentURI(URIorCurie):
-    """A Universal Resource Identifier (URI) that persists across service instances. PersistentURIs have enduring reference and meaning."""
-
+    """ A Universal Resource Identifier (URI) that persists across service instances. PersistentURIs have enduring reference and meaning. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "PersistentURI"
@@ -101,8 +136,7 @@ class PersistentURI(URIorCurie):
 
 
 class LocalURI(URIorCurie):
-    """A URI or handle whose scope is local to the implementing service. LocalURI cannot be used as a permanent identifier in a message or a data record."""
-
+    """ A URI or handle whose scope is local to the implementing service. LocalURI cannot be used as a permanent identifier in a message or a data record. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "LocalURI"
@@ -110,8 +144,7 @@ class LocalURI(URIorCurie):
 
 
 class ValueSet(URIorCurie):
-    """A URI that can be indirectly resolved to a set of entity descriptions"""
-
+    """ A URI that can be indirectly resolved to a set of entity descriptions """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ValueSet"
@@ -119,8 +152,7 @@ class ValueSet(URIorCurie):
 
 
 class ChangeSetURI(PersistentURI):
-    """The unique identifier of a set of change instructions that can potentially transform the contents of a TCCM service instance from one state to another."""
-
+    """ The unique identifier of a set of change instructions that can potentially transform the contents of a TCCM service instance from one state to another. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ChangeSetURI"
@@ -128,8 +160,7 @@ class ChangeSetURI(PersistentURI):
 
 
 class DocumentURI(PersistentURI):
-    """A reference to a “work” in the bibliographic sense. It is not necessary that a Document URI be directly or indirectly resolvable to a digital resource - it may simply be the name of a book, publication, or other abstraction."""
-
+    """ A reference to a “work” in the bibliographic sense. It is not necessary that a Document URI be directly or indirectly resolvable to a digital resource - it may simply be the name of a book, publication, or other abstraction. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DocumentURI"
@@ -137,8 +168,7 @@ class DocumentURI(PersistentURI):
 
 
 class ExternalURI(PersistentURI):
-    """A URI that names a unique resource. CTS2 implementations should never assume that ExternalURI is resolvable via an http: GET operation - ExternalURIs should always be passed as parameters to service implementations to get the sanctioned equivalent in a given service context."""
-
+    """ A URI that names a unique resource. CTS2 implementations should never assume that ExternalURI is resolvable via an http: GET operation - ExternalURIs should always be passed as parameters to service implementations to get the sanctioned equivalent in a given service context. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ExternalURI"
@@ -146,8 +176,7 @@ class ExternalURI(PersistentURI):
 
 
 class ServiceURI(LocalURI):
-    """The URI or CURIE of a service implementation"""
-
+    """ The URI or CURIE of a service implementation """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ServiceURI"
@@ -155,8 +184,7 @@ class ServiceURI(LocalURI):
 
 
 class RenderingURI(LocalURI):
-    """A URI or handle that is directly readable by a specific instance of a TCCM service implementation. RenderingURI must resolve to Changeable CTS2 element."""
-
+    """ A URI or handle that is directly readable by a specific instance of a TCCM service implementation. RenderingURI must resolve to Changeable CTS2 element. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "RenderingURI"
@@ -164,8 +192,7 @@ class RenderingURI(LocalURI):
 
 
 class DirectoryURI(LocalURI):
-    """The unique name of a query that when executed results in a list of resources that, in the context of a given service, satisfy the query."""
-
+    """ The unique name of a query that when executed results in a list of resources that, in the context of a given service, satisfy the query. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DirectoryURI"
@@ -173,8 +200,7 @@ class DirectoryURI(LocalURI):
 
 
 class ASSOCIATION(ValueSet):
-    """A formal “semantic” assertion about a named entity, in the form of subject, predicate, and object including any provenance, qualifiers, or internal BNODEs."""
-
+    """ A formal “semantic” assertion about a named entity, in the form of subject, predicate, and object including any provenance, qualifiers, or internal BNODEs. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ASSOCIATION"
@@ -182,9 +208,8 @@ class ASSOCIATION(ValueSet):
 
 
 class BINDINGQUALIFIER(ValueSet):
-    """An assertion about the semantics of a concept domain / value set binding. This model element exists specifically to address section 2.4.2.23 of the HL7 SFM14, which needs a qualifier that indicates whether the binding is “overall,” “minimal,” or “maximum.”
-    The TCCM specification does not formally define the semantics of the various possible BINDING_QUALIFIER elements: it is up to specific implementations and service clients to interpret the meaning of the specific binding qualifiers that may be represented in references of this type."""
-
+    """ An assertion about the semantics of a concept domain / value set binding. This model element exists specifically to address section 2.4.2.23 of the HL7 SFM14, which needs a qualifier that indicates whether the binding is “overall,” “minimal,” or “maximum.”
+The TCCM specification does not formally define the semantics of the various possible BINDING_QUALIFIER elements: it is up to specific implementations and service clients to interpret the meaning of the specific binding qualifiers that may be represented in references of this type. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "BINDING_QUALIFIER"
@@ -192,8 +217,7 @@ class BINDINGQUALIFIER(ValueSet):
 
 
 class CASESIGNIFICANCE(ValueSet):
-    """Identifies the significance of case in a term or designation."""
-
+    """ Identifies the significance of case in a term or designation. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CASE_SIGNIFICANCE"
@@ -201,8 +225,7 @@ class CASESIGNIFICANCE(ValueSet):
 
 
 class CODESYSTEMCATEGORY(ValueSet):
-    """The general category of a code system (flat list, subject heading system, taxonomy, thesaurus, classification, terminology, description logic ontology, first order predicate logic, etc.) (same as KnowledgeRepresentationParadigm: OMV 5.8)."""
-
+    """ The general category of a code system (flat list, subject heading system, taxonomy, thesaurus, classification, terminology, description logic ontology, first order predicate logic, etc.) (same as KnowledgeRepresentationParadigm: OMV 5.8). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CODE_SYSTEM_CATEGORY"
@@ -210,8 +233,7 @@ class CODESYSTEMCATEGORY(ValueSet):
 
 
 class CODESYSTEM(ValueSet):
-    """A collection of metadata about the provenance, use, and distribution of a code system or ontology."""
-
+    """ A collection of metadata about the provenance, use, and distribution of a code system or ontology. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CODE_SYSTEM"
@@ -219,8 +241,7 @@ class CODESYSTEM(ValueSet):
 
 
 class CODESYSTEMVERSION(ValueSet):
-    """A collection of metadata about content and distribution format of a particular version or release of a code system."""
-
+    """ A collection of metadata about content and distribution format of a particular version or release of a code system. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CODE_SYSTEM_VERSION"
@@ -228,8 +249,7 @@ class CODESYSTEMVERSION(ValueSet):
 
 
 class CONCEPTDOMAIN(ValueSet):
-    """The description of the conceptual domain of a field in a message, column in a database, field on a form, etc. Equivalent to the ISO 11179-3 “Data Element Concept.”"""
-
+    """ The description of the conceptual domain of a field in a message, column in a database, field on a form, etc. Equivalent to the ISO 11179-3 “Data Element Concept.” """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CONCEPT_DOMAIN"
@@ -237,8 +257,7 @@ class CONCEPTDOMAIN(ValueSet):
 
 
 class CONTEXT(ValueSet):
-    """External and environmental factors that serve to discriminate among multiple possible selections. While it is assumed that the specific contexts referenced by CONTEXT are represented by entity descriptions contained in some ontology or coding scheme, the CTS2 specification does not recommend any targets. Note, however, the TCCM context is intended to represent the notion of “jurisdictional domain” or “realm” as described in the HL7 CTS2 SFM ."""
-
+    """ External and environmental factors that serve to discriminate among multiple possible selections. While it is assumed that the specific contexts referenced by CONTEXT are represented by entity descriptions contained in some ontology or coding scheme, the CTS2 specification does not recommend any targets. Note, however, the TCCM context is intended to represent the notion of “jurisdictional domain” or “realm” as described in the HL7 CTS2 SFM . """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "CONTEXT"
@@ -246,8 +265,7 @@ class CONTEXT(ValueSet):
 
 
 class DESIGNATIONFIDELITY(ValueSet):
-    """Identifies how well a particular designation represents the intended meaning of the referenced entity. TCCM implementations may consider using the SKOS16 semantic relations to represent this relationship."""
-
+    """ Identifies how well a particular designation represents the intended meaning of the referenced entity. TCCM implementations may consider using the SKOS16 semantic relations to represent this relationship. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DESIGNATION_FIDELITY"
@@ -255,8 +273,7 @@ class DESIGNATIONFIDELITY(ValueSet):
 
 
 class DESIGNATIONTYPE(ValueSet):
-    """The particular form or type of a given designation: can be “short name,” “long name,” “abbreviation,” “eponym.”"""
-
+    """ The particular form or type of a given designation: can be “short name,” “long name,” “abbreviation,” “eponym.” """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "DESIGNATION_TYPE"
@@ -264,8 +281,7 @@ class DESIGNATIONTYPE(ValueSet):
 
 
 class FORMALITYLEVEL(ValueSet):
-    """The level of formality of an ontology (OMV 5.9)."""
-
+    """ The level of formality of an ontology (OMV 5.9). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "FORMALITY_LEVEL"
@@ -273,8 +289,7 @@ class FORMALITYLEVEL(ValueSet):
 
 
 class FORMAT(ValueSet):
-    """A particular way that information is encoded for storage in a computer file"""
-
+    """ A particular way that information is encoded for storage in a computer file """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "FORMAT"
@@ -282,8 +297,7 @@ class FORMAT(ValueSet):
 
 
 class LANGUAGE(ValueSet):
-    """A spoken or written language intended for human consumption."""
-
+    """ A spoken or written language intended for human consumption. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "LANGUAGE"
@@ -291,8 +305,7 @@ class LANGUAGE(ValueSet):
 
 
 class MATCHALGORITHM(ValueSet):
-    """A predicate that determines whether an entity resource qualities for membership in a set based on supplied matching criteria."""
-
+    """ A predicate that determines whether an entity resource qualities for membership in a set based on supplied matching criteria. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MATCH_ALGORITHM"
@@ -300,8 +313,7 @@ class MATCHALGORITHM(ValueSet):
 
 
 class MAP(ValueSet):
-    """A set of rules that associate a set of entity references from one domain into those in another."""
-
+    """ A set of rules that associate a set of entity references from one domain into those in another. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MAP"
@@ -309,8 +321,7 @@ class MAP(ValueSet):
 
 
 class MAPCORRELATION(ValueSet):
-    """An assertion about the strength or significance of a specific rule in a Map."""
-
+    """ An assertion about the strength or significance of a specific rule in a Map. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MAP_CORRELATION"
@@ -318,8 +329,7 @@ class MAPCORRELATION(ValueSet):
 
 
 class MAPVERSION(ValueSet):
-    """The state of a Map at a given point in time."""
-
+    """ The state of a Map at a given point in time. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MAP_VERSION"
@@ -327,8 +337,7 @@ class MAPVERSION(ValueSet):
 
 
 class MODELATTRIBUTE(ValueSet):
-    """An attribute defined in CTS2 information model."""
-
+    """ An attribute defined in CTS2 information model. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "MODEL_ATTRIBUTE"
@@ -336,8 +345,7 @@ class MODELATTRIBUTE(ValueSet):
 
 
 class NAMESPACE(ValueSet):
-    """A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but different meanings."""
-
+    """ A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but different meanings. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "NAMESPACE"
@@ -345,8 +353,7 @@ class NAMESPACE(ValueSet):
 
 
 class ONTOLOGYENGINEERINGMETHODOLOGY(ValueSet):
-    """Information about the ontology engineering methodology (OMV 5.4) (sic)."""
-
+    """ Information about the ontology engineering methodology (OMV 5.4) (sic). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_ENGINEERING_METHODOLOGY"
@@ -354,8 +361,7 @@ class ONTOLOGYENGINEERINGMETHODOLOGY(ValueSet):
 
 
 class ONTOLOGYENGINEERINGTOOL(ValueSet):
-    """A tool used to create the ontology (OMV 5.5)."""
-
+    """ A tool used to create the ontology (OMV 5.5). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_ENGINEERING_TOOL"
@@ -363,8 +369,7 @@ class ONTOLOGYENGINEERINGTOOL(ValueSet):
 
 
 class ONTOLOGYDOMAIN(ValueSet):
-    """While the domain can refer to any topic ontology it is advised to use one of the established general purpose topic hierarchy like DMOZ or domain specific topic like ACM for the computer science domain. Only this way it can be ensured that meaningful information about the relation of the domains of two separate ontologies can be deduced (OMV 5.1 1)(sic)."""
-
+    """ While the domain can refer to any topic ontology it is advised to use one of the established general purpose topic hierarchy like DMOZ or domain specific topic like ACM for the computer science domain. Only this way it can be ensured that meaningful information about the relation of the domains of two separate ontologies can be deduced (OMV 5.1 1)(sic). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_DOMAIN"
@@ -372,8 +377,7 @@ class ONTOLOGYDOMAIN(ValueSet):
 
 
 class ONTOLOGYLANGUAGE(ValueSet):
-    """Information about the language in which the ontology is implemented (OMV 5.7)."""
-
+    """ Information about the language in which the ontology is implemented (OMV 5.7). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_LANGUAGE"
@@ -381,8 +385,7 @@ class ONTOLOGYLANGUAGE(ValueSet):
 
 
 class ONTOLOGYSYNTAX(ValueSet):
-    """Information about the syntax used by an ontology (OMV 5.6)."""
-
+    """ Information about the syntax used by an ontology (OMV 5.6). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_SYNTAX"
@@ -390,8 +393,7 @@ class ONTOLOGYSYNTAX(ValueSet):
 
 
 class ONTOLOGYTASK(ValueSet):
-    """Information about the task the ontology was intended to be used for (OMV 5.10)."""
-
+    """ Information about the task the ontology was intended to be used for (OMV 5.10). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_TASK"
@@ -399,8 +401,7 @@ class ONTOLOGYTASK(ValueSet):
 
 
 class ONTOLOGYTYPE(ValueSet):
-    """Categorizes ontologies (OMV 5.2)."""
-
+    """ Categorizes ontologies (OMV 5.2). """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ONTOLOGY_TYPE"
@@ -408,8 +409,7 @@ class ONTOLOGYTYPE(ValueSet):
 
 
 class PREDICATE(ValueSet):
-    """A property or relation between entities."""
-
+    """ A property or relation between entities. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "PREDICATE"
@@ -417,8 +417,7 @@ class PREDICATE(ValueSet):
 
 
 class REASONINGALGORITHM(ValueSet):
-    """A set of formal rules that allow the deduction of additional assertions from a supplied list of axioms."""
-
+    """ A set of formal rules that allow the deduction of additional assertions from a supplied list of axioms. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "REASONING_ALGORITHM"
@@ -426,8 +425,7 @@ class REASONINGALGORITHM(ValueSet):
 
 
 class RESOURCETYPE(ValueSet):
-    """A class of which a referencing resource is an instance of."""
-
+    """ A class of which a referencing resource is an instance of. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "RESOURCE TYPE"
@@ -435,8 +433,7 @@ class RESOURCETYPE(ValueSet):
 
 
 class ROLE(ValueSet):
-    """A role that a SOURCE can play in the construction or dissemination of a terminological resource."""
-
+    """ A role that a SOURCE can play in the construction or dissemination of a terminological resource. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "ROLE"
@@ -444,8 +441,7 @@ class ROLE(ValueSet):
 
 
 class SOURCE(ValueSet):
-    """An individual, organization, or bibliographic reference."""
-
+    """ An individual, organization, or bibliographic reference. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "SOURCE"
@@ -453,8 +449,7 @@ class SOURCE(ValueSet):
 
 
 class STATEMENT(ValueSet):
-    """An atomic assertion about a CTS2 resource."""
-
+    """ An atomic assertion about a CTS2 resource. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "STATEMENT"
@@ -462,8 +457,7 @@ class STATEMENT(ValueSet):
 
 
 class STATUS(ValueSet):
-    """The state of a resource or other entry in an external workflow."""
-
+    """ The state of a resource or other entry in an external workflow. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "STATUS"
@@ -471,8 +465,7 @@ class STATUS(ValueSet):
 
 
 class VALUESET(ValueSet):
-    """A set of entity references."""
-
+    """ A set of entity references. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "VALUE_SET"
@@ -480,8 +473,7 @@ class VALUESET(ValueSet):
 
 
 class VALUESETDEFINITION(ValueSet):
-    """A set of rules that can be applied to specified versions or one or more code systems to yield a set of entity references."""
-
+    """ A set of rules that can be applied to specified versions or one or more code systems to yield a set of entity references. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "VALUE_SET_DEFINITION"
@@ -489,8 +481,7 @@ class VALUESETDEFINITION(ValueSet):
 
 
 class VERSIONTAG(ValueSet):
-    """An identifier that can be assigned to resource versions by a service implementation to identify their state in the service workflow. Examples might include “development,” “test,” “production,” etc."""
-
+    """ An identifier that can be assigned to resource versions by a service implementation to identify their state in the service workflow. Examples might include “development,” “test,” “production,” etc. """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "VERSION_TAG"
@@ -500,6 +491,7 @@ class VERSIONTAG(ValueSet):
 # Class references
 
 
+
 @dataclass(repr=False)
 class ResourceDescription(YAMLRoot):
     """
@@ -507,7 +499,6 @@ class ResourceDescription(YAMLRoot):
     descriptions. ResourceDescription is an abstract type and, as such, cannot be directly created. Resource
     descriptions are Changeable, meaning that they have identity and can be created, updated, and deleted.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ResourceDescription"]
@@ -523,12 +514,8 @@ class ResourceDescription(YAMLRoot):
     additionalDocumentation: Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]] = empty_list()
     rights: Optional[str] = None
     alternateID: Optional[str] = None
-    extensions: Optional[
-        Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]
-    ] = empty_dict()
-    annotations: Optional[
-        Union[dict[Union[str, AnnotationTag], Union[dict, Annotation]], list[Union[dict, Annotation]]]
-    ] = empty_dict()
+    extensions: Optional[Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]] = empty_dict()
+    annotations: Optional[Union[dict[Union[str, AnnotationTag], Union[dict, Annotation]], list[Union[dict, Annotation]]]] = empty_dict()
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.about):
@@ -552,12 +539,8 @@ class ResourceDescription(YAMLRoot):
             self.resourceSynopsis = str(self.resourceSynopsis)
 
         if not isinstance(self.additionalDocumentation, list):
-            self.additionalDocumentation = (
-                [self.additionalDocumentation] if self.additionalDocumentation is not None else []
-            )
-        self.additionalDocumentation = [
-            v if isinstance(v, PersistentURI) else PersistentURI(v) for v in self.additionalDocumentation
-        ]
+            self.additionalDocumentation = [self.additionalDocumentation] if self.additionalDocumentation is not None else []
+        self.additionalDocumentation = [v if isinstance(v, PersistentURI) else PersistentURI(v) for v in self.additionalDocumentation]
 
         if self.rights is not None and not isinstance(self.rights, str):
             self.rights = str(self.rights)
@@ -577,7 +560,6 @@ class SourceAndNotation(YAMLRoot):
     """
     Format and notation that some or all the releases (versions) of this resource are published in
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["SourceAndNotation"]
@@ -611,7 +593,6 @@ class AbstractResourceDescription(ResourceDescription):
     """
     The description of the characteristics of a resource that are independent of the resource content.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["AbstractResourceDescription"]
@@ -630,9 +611,7 @@ class AbstractResourceDescription(ResourceDescription):
 
         if not isinstance(self.releaseFormat, list):
             self.releaseFormat = [self.releaseFormat] if self.releaseFormat is not None else []
-        self.releaseFormat = [
-            v if isinstance(v, SourceAndNotation) else SourceAndNotation(**as_dict(v)) for v in self.releaseFormat
-        ]
+        self.releaseFormat = [v if isinstance(v, SourceAndNotation) else SourceAndNotation(**as_dict(v)) for v in self.releaseFormat]
 
         super().__post_init__(**kwargs)
 
@@ -643,7 +622,6 @@ class ResourceVersionDescription(ResourceDescription):
     Information about the source, format, release date, version identifier, etc. of a specific version of an abstract
     resource.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ResourceVersionDescription"]
@@ -689,7 +667,6 @@ class NameAndMeaningReference(YAMLRoot):
     given domain in a TCCM service instance and a globally unique URI that identifies the intended meaning of the
     identifier.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["NameAndMeaningReference"]
@@ -721,7 +698,6 @@ class AssociationReference(NameAndMeaningReference):
     """
     A name or identifier that uniquely names an association instance in a code system.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["AssociationReference"]
@@ -731,7 +707,6 @@ class AssociationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class BindingQualifierReference(NameAndMeaningReference):
     """
@@ -739,7 +714,6 @@ class BindingQualifierReference(NameAndMeaningReference):
     ypical values represent “overall,” “minimum” or “maximum,” the significance of which can be found in H L7 Version
     3 documentation.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["BindingQualifierReference"]
@@ -749,13 +723,11 @@ class BindingQualifierReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class CaseSignificanceReference(NameAndMeaningReference):
     """
     A reference to an entity that describes significance of the case in term or designation.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CaseSignificanceReference"]
@@ -765,14 +737,12 @@ class CaseSignificanceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class CodeSystemCategoryReference(NameAndMeaningReference):
     """
     A reference to information about a paradigm model used to create an ontology (a.k.a. knowledge representation
     paradigm).
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemCategoryReference"]
@@ -782,13 +752,11 @@ class CodeSystemCategoryReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class CodeSystemReference(NameAndMeaningReference):
     """
     A reference to a code system or ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemReference"]
@@ -798,13 +766,11 @@ class CodeSystemReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class CodeSystemVersionReference(NameAndMeaningReference):
     """
     A reference to a specific version of code system and, if known, the code system which it is a version of.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["CodeSystemVersionReference"]
@@ -827,7 +793,6 @@ class ConceptDomainReference(NameAndMeaningReference):
     """
     A reference to a concept domain.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ConceptDomainReference"]
@@ -837,13 +802,11 @@ class ConceptDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class ContextReference(NameAndMeaningReference):
     """
     A reference to a realm or context.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ContextReference"]
@@ -853,13 +816,11 @@ class ContextReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class DesignationFidelityReference(NameAndMeaningReference):
     """
     A reference to a description about designation faithfulness or accuracy.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["DesignationFidelityReference"]
@@ -869,13 +830,11 @@ class DesignationFidelityReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class DesignationTypeReference(NameAndMeaningReference):
     """
     A reference to a designation type or form such as “short name,” “abbreviation,” “eponym.”
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["DesignationTypeReference"]
@@ -885,13 +844,11 @@ class DesignationTypeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class FormalityLevelReference(NameAndMeaningReference):
     """
     A reference to a description of the relative formality an ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["FormalityLevelReference"]
@@ -901,13 +858,11 @@ class FormalityLevelReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class FormatReference(NameAndMeaningReference):
     """
     A reference to a particular way that information is encoded for storage or transmission.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["FormatReference"]
@@ -917,13 +872,11 @@ class FormatReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class LanguageReference(NameAndMeaningReference):
     """
     A reference to a spoken or written human language.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["LanguageReference"]
@@ -933,13 +886,11 @@ class LanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class MapCorrelationReference(NameAndMeaningReference):
     """
     A reference to a way that the source and target in a map can be related or assessed.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MapCorrelationReference"]
@@ -949,13 +900,11 @@ class MapCorrelationReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class MapReference(NameAndMeaningReference):
     """
     A reference to an abstract map.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MapReference"]
@@ -965,13 +914,11 @@ class MapReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class MapVersionReference(NameAndMeaningReference):
     """
     A reference to a map version and the corresponding map, if known.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MapVersionReference"]
@@ -994,7 +941,6 @@ class MatchAlgorithmReference(NameAndMeaningReference):
     """
     A reference to an algorithm used for selecting and filtering data.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["MatchAlgorithmReference"]
@@ -1004,13 +950,11 @@ class MatchAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class ModelAttributeReference(NameAndMeaningReference):
     """
     A reference to an attribute defined in the CTS2 specification.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ModelAttributeReference"]
@@ -1020,14 +964,12 @@ class ModelAttributeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class NamespaceReference(NameAndMeaningReference):
     """
     A reference to a conceptual space that groups identifiers to avoid conflict with items that have the same name but
     different meanings.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["NamespaceReference"]
@@ -1037,13 +979,11 @@ class NamespaceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologyDomainReference(NameAndMeaningReference):
     """
     A reference to a subject domain for an ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyDomainReference"]
@@ -1053,13 +993,11 @@ class OntologyDomainReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
     """
     A reference to a method model that can be used to create an ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyEngineeringMethodologyReference"]
@@ -1069,13 +1007,11 @@ class OntologyEngineeringMethodologyReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologyEngineeringToolReference(NameAndMeaningReference):
     """
     A reference to a tool that can be used to create an ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyEngineeringToolReference"]
@@ -1085,13 +1021,11 @@ class OntologyEngineeringToolReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologyLanguageReference(NameAndMeaningReference):
     """
     A reference to a language in which an ontology may be implemented.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyLanguageReference"]
@@ -1101,13 +1035,11 @@ class OntologyLanguageReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologySyntaxReference(NameAndMeaningReference):
     """
     A reference to a syntax in which an ontology may be represented.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologySyntaxReference"]
@@ -1117,13 +1049,11 @@ class OntologySyntaxReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologyTaskReference(NameAndMeaningReference):
     """
     A reference to a purpose for which an ontology can be designed.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyTaskReference"]
@@ -1133,13 +1063,11 @@ class OntologyTaskReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class OntologyTypeReference(NameAndMeaningReference):
     """
     A reference to the nature of the content of an ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["OntologyTypeReference"]
@@ -1149,7 +1077,6 @@ class OntologyTypeReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class PredicateReference(YAMLRoot):
     """
@@ -1157,7 +1084,6 @@ class PredicateReference(YAMLRoot):
     NameAndMeaningReference because the name attribute is a namespace/name combination rather than a simple name
     scoped exclusively by the domain.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["PredicateReference"]
@@ -1195,7 +1121,6 @@ class ReasoningAlgorithmReference(NameAndMeaningReference):
     """
     A reference to a formal algorithm for making inferences about an ontology.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ReasoningAlgorithmReference"]
@@ -1205,14 +1130,12 @@ class ReasoningAlgorithmReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class RoleReference(NameAndMeaningReference):
     """
     A reference to a role that an individual, organization, or bibliographic reference can play in the construction of
     a resource or resource component.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["RoleReference"]
@@ -1222,14 +1145,12 @@ class RoleReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class SourceAndRoleReference(NameAndMeaningReference):
     """
     A reference to a source that also includes the role that the source played and/or fixes the particular chapter,
     page, or other element within the reference.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["SourceAndRoleReference"]
@@ -1252,7 +1173,6 @@ class SourceReference(NameAndMeaningReference):
     """
     A reference to an individual, organization of bibliographic reference.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["SourceReference"]
@@ -1262,13 +1182,11 @@ class SourceReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class StatusReference(NameAndMeaningReference):
     """
     A reference to a state in an external ontology authoring workflow.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["StatusReference"]
@@ -1278,13 +1196,11 @@ class StatusReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class ValueSetDefinitionReference(NameAndMeaningReference):
     """
     A reference to a set of rules for constructing a value set along with the corresponding value set if known.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ValueSetDefinitionReference"]
@@ -1294,13 +1210,11 @@ class ValueSetDefinitionReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class ValueSetReference(NameAndMeaningReference):
     """
     A reference to a named set of entity references.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["ValueSetReference"]
@@ -1310,13 +1224,11 @@ class ValueSetReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 @dataclass(repr=False)
 class VersionTagReference(NameAndMeaningReference):
     """
     A reference to a tag that can be assigned to versionable resources within the context of a service implementation.
     """
-
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = TCCM["VersionTagReference"]
@@ -1326,7 +1238,6 @@ class VersionTagReference(NameAndMeaningReference):
 
     name: Union[str, LocalIdentifier] = None
 
-
 # Enumerations
 
 
@@ -1334,511 +1245,173 @@ class VersionTagReference(NameAndMeaningReference):
 class slots:
     pass
 
+slots.about = Slot(uri=TCCM.about, name="about", curie=TCCM.curie('about'),
+                   model_uri=TCCM.about, domain=None, range=Union[str, ExternalURI])
 
-slots.about = Slot(
-    uri=TCCM.about,
-    name="about",
-    curie=TCCM.curie("about"),
-    model_uri=TCCM.about,
-    domain=None,
-    range=Union[str, ExternalURI],
-)
+slots.resourceID = Slot(uri=TCCM.resourceID, name="resourceID", curie=TCCM.curie('resourceID'),
+                   model_uri=TCCM.resourceID, domain=None, range=Union[str, LocalIdentifier])
 
-slots.resourceID = Slot(
-    uri=TCCM.resourceID,
-    name="resourceID",
-    curie=TCCM.curie("resourceID"),
-    model_uri=TCCM.resourceID,
-    domain=None,
-    range=Union[str, LocalIdentifier],
-)
+slots.formalName = Slot(uri=TCCM.formalName, name="formalName", curie=TCCM.curie('formalName'),
+                   model_uri=TCCM.formalName, domain=None, range=Optional[str])
 
-slots.formalName = Slot(
-    uri=TCCM.formalName,
-    name="formalName",
-    curie=TCCM.curie("formalName"),
-    model_uri=TCCM.formalName,
-    domain=None,
-    range=Optional[str],
-)
+slots.keyword = Slot(uri=TCCM.keyword, name="keyword", curie=TCCM.curie('keyword'),
+                   model_uri=TCCM.keyword, domain=None, range=Optional[Union[str, list[str]]])
 
-slots.keyword = Slot(
-    uri=TCCM.keyword,
-    name="keyword",
-    curie=TCCM.curie("keyword"),
-    model_uri=TCCM.keyword,
-    domain=None,
-    range=Optional[Union[str, list[str]]],
-)
+slots.resourceSynopsis = Slot(uri=TCCM.resourceSynopsis, name="resourceSynopsis", curie=TCCM.curie('resourceSynopsis'),
+                   model_uri=TCCM.resourceSynopsis, domain=None, range=Optional[str])
 
-slots.resourceSynopsis = Slot(
-    uri=TCCM.resourceSynopsis,
-    name="resourceSynopsis",
-    curie=TCCM.curie("resourceSynopsis"),
-    model_uri=TCCM.resourceSynopsis,
-    domain=None,
-    range=Optional[str],
-)
+slots.additionalDocumentation = Slot(uri=TCCM.additionalDocumentation, name="additionalDocumentation", curie=TCCM.curie('additionalDocumentation'),
+                   model_uri=TCCM.additionalDocumentation, domain=None, range=Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]])
 
-slots.additionalDocumentation = Slot(
-    uri=TCCM.additionalDocumentation,
-    name="additionalDocumentation",
-    curie=TCCM.curie("additionalDocumentation"),
-    model_uri=TCCM.additionalDocumentation,
-    domain=None,
-    range=Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]],
-)
+slots.rights = Slot(uri=TCCM.rights, name="rights", curie=TCCM.curie('rights'),
+                   model_uri=TCCM.rights, domain=None, range=Optional[str])
 
-slots.rights = Slot(
-    uri=TCCM.rights, name="rights", curie=TCCM.curie("rights"), model_uri=TCCM.rights, domain=None, range=Optional[str]
-)
+slots.alternateID = Slot(uri=TCCM.alternateID, name="alternateID", curie=TCCM.curie('alternateID'),
+                   model_uri=TCCM.alternateID, domain=None, range=Optional[str])
 
-slots.alternateID = Slot(
-    uri=TCCM.alternateID,
-    name="alternateID",
-    curie=TCCM.curie("alternateID"),
-    model_uri=TCCM.alternateID,
-    domain=None,
-    range=Optional[str],
-)
+slots.sourceAndNotationDescription = Slot(uri=TCCM.sourceAndNotationDescription, name="sourceAndNotationDescription", curie=TCCM.curie('sourceAndNotationDescription'),
+                   model_uri=TCCM.sourceAndNotationDescription, domain=None, range=Optional[str])
 
-slots.sourceAndNotationDescription = Slot(
-    uri=TCCM.sourceAndNotationDescription,
-    name="sourceAndNotationDescription",
-    curie=TCCM.curie("sourceAndNotationDescription"),
-    model_uri=TCCM.sourceAndNotationDescription,
-    domain=None,
-    range=Optional[str],
-)
+slots.sourceDocument = Slot(uri=TCCM.sourceDocument, name="sourceDocument", curie=TCCM.curie('sourceDocument'),
+                   model_uri=TCCM.sourceDocument, domain=None, range=Optional[Union[str, PersistentURI]])
 
-slots.sourceDocument = Slot(
-    uri=TCCM.sourceDocument,
-    name="sourceDocument",
-    curie=TCCM.curie("sourceDocument"),
-    model_uri=TCCM.sourceDocument,
-    domain=None,
-    range=Optional[Union[str, PersistentURI]],
-)
+slots.sourceLanguage = Slot(uri=TCCM.sourceLanguage, name="sourceLanguage", curie=TCCM.curie('sourceLanguage'),
+                   model_uri=TCCM.sourceLanguage, domain=None, range=Optional[Union[dict, OntologyLanguageReference]])
 
-slots.sourceLanguage = Slot(
-    uri=TCCM.sourceLanguage,
-    name="sourceLanguage",
-    curie=TCCM.curie("sourceLanguage"),
-    model_uri=TCCM.sourceLanguage,
-    domain=None,
-    range=Optional[Union[dict, OntologyLanguageReference]],
-)
+slots.sourceDocumentSyntax = Slot(uri=TCCM.sourceDocumentSyntax, name="sourceDocumentSyntax", curie=TCCM.curie('sourceDocumentSyntax'),
+                   model_uri=TCCM.sourceDocumentSyntax, domain=None, range=Optional[Union[dict, OntologySyntaxReference]])
 
-slots.sourceDocumentSyntax = Slot(
-    uri=TCCM.sourceDocumentSyntax,
-    name="sourceDocumentSyntax",
-    curie=TCCM.curie("sourceDocumentSyntax"),
-    model_uri=TCCM.sourceDocumentSyntax,
-    domain=None,
-    range=Optional[Union[dict, OntologySyntaxReference]],
-)
+slots.releaseDocumentation = Slot(uri=TCCM.releaseDocumentation, name="releaseDocumentation", curie=TCCM.curie('releaseDocumentation'),
+                   model_uri=TCCM.releaseDocumentation, domain=None, range=Optional[str])
 
-slots.releaseDocumentation = Slot(
-    uri=TCCM.releaseDocumentation,
-    name="releaseDocumentation",
-    curie=TCCM.curie("releaseDocumentation"),
-    model_uri=TCCM.releaseDocumentation,
-    domain=None,
-    range=Optional[str],
-)
+slots.releaseFormat = Slot(uri=TCCM.releaseFormat, name="releaseFormat", curie=TCCM.curie('releaseFormat'),
+                   model_uri=TCCM.releaseFormat, domain=None, range=Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]])
 
-slots.releaseFormat = Slot(
-    uri=TCCM.releaseFormat,
-    name="releaseFormat",
-    curie=TCCM.curie("releaseFormat"),
-    model_uri=TCCM.releaseFormat,
-    domain=None,
-    range=Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]],
-)
+slots.documentURI = Slot(uri=TCCM.documentURI, name="documentURI", curie=TCCM.curie('documentURI'),
+                   model_uri=TCCM.documentURI, domain=None, range=Optional[Union[str, DocumentURI]])
 
-slots.documentURI = Slot(
-    uri=TCCM.documentURI,
-    name="documentURI",
-    curie=TCCM.curie("documentURI"),
-    model_uri=TCCM.documentURI,
-    domain=None,
-    range=Optional[Union[str, DocumentURI]],
-)
+slots.sourceAndNotation = Slot(uri=TCCM.sourceAndNotation, name="sourceAndNotation", curie=TCCM.curie('sourceAndNotation'),
+                   model_uri=TCCM.sourceAndNotation, domain=None, range=Optional[Union[dict, SourceAndNotation]])
 
-slots.sourceAndNotation = Slot(
-    uri=TCCM.sourceAndNotation,
-    name="sourceAndNotation",
-    curie=TCCM.curie("sourceAndNotation"),
-    model_uri=TCCM.sourceAndNotation,
-    domain=None,
-    range=Optional[Union[dict, SourceAndNotation]],
-)
+slots.predecessor = Slot(uri=TCCM.predecessor, name="predecessor", curie=TCCM.curie('predecessor'),
+                   model_uri=TCCM.predecessor, domain=None, range=Optional[Union[dict, NameAndMeaningReference]])
 
-slots.predecessor = Slot(
-    uri=TCCM.predecessor,
-    name="predecessor",
-    curie=TCCM.curie("predecessor"),
-    model_uri=TCCM.predecessor,
-    domain=None,
-    range=Optional[Union[dict, NameAndMeaningReference]],
-)
+slots.officialResourceVersionID = Slot(uri=TCCM.officialResourceVersionID, name="officialResourceVersionID", curie=TCCM.curie('officialResourceVersionID'),
+                   model_uri=TCCM.officialResourceVersionID, domain=None, range=Optional[str])
 
-slots.officialResourceVersionID = Slot(
-    uri=TCCM.officialResourceVersionID,
-    name="officialResourceVersionID",
-    curie=TCCM.curie("officialResourceVersionID"),
-    model_uri=TCCM.officialResourceVersionID,
-    domain=None,
-    range=Optional[str],
-)
+slots.officialReleaseDate = Slot(uri=TCCM.officialReleaseDate, name="officialReleaseDate", curie=TCCM.curie('officialReleaseDate'),
+                   model_uri=TCCM.officialReleaseDate, domain=None, range=Optional[Union[str, XSDDateTime]])
 
-slots.officialReleaseDate = Slot(
-    uri=TCCM.officialReleaseDate,
-    name="officialReleaseDate",
-    curie=TCCM.curie("officialReleaseDate"),
-    model_uri=TCCM.officialReleaseDate,
-    domain=None,
-    range=Optional[Union[str, XSDDateTime]],
-)
+slots.officialActivationDate = Slot(uri=TCCM.officialActivationDate, name="officialActivationDate", curie=TCCM.curie('officialActivationDate'),
+                   model_uri=TCCM.officialActivationDate, domain=None, range=Optional[Union[str, XSDDateTime]])
 
-slots.officialActivationDate = Slot(
-    uri=TCCM.officialActivationDate,
-    name="officialActivationDate",
-    curie=TCCM.curie("officialActivationDate"),
-    model_uri=TCCM.officialActivationDate,
-    domain=None,
-    range=Optional[Union[str, XSDDateTime]],
-)
+slots.name = Slot(uri=TCCM.name, name="name", curie=TCCM.curie('name'),
+                   model_uri=TCCM.name, domain=None, range=Union[str, LocalIdentifier])
 
-slots.name = Slot(
-    uri=TCCM.name,
-    name="name",
-    curie=TCCM.curie("name"),
-    model_uri=TCCM.name,
-    domain=None,
-    range=Union[str, LocalIdentifier],
-)
+slots.uri = Slot(uri=TCCM.uri, name="uri", curie=TCCM.curie('uri'),
+                   model_uri=TCCM.uri, domain=None, range=Optional[Union[str, ExternalURI]])
 
-slots.uri = Slot(
-    uri=TCCM.uri,
-    name="uri",
-    curie=TCCM.curie("uri"),
-    model_uri=TCCM.uri,
-    domain=None,
-    range=Optional[Union[str, ExternalURI]],
-)
+slots.href = Slot(uri=TCCM.href, name="href", curie=TCCM.curie('href'),
+                   model_uri=TCCM.href, domain=None, range=Optional[Union[str, RenderingURI]])
 
-slots.href = Slot(
-    uri=TCCM.href,
-    name="href",
-    curie=TCCM.curie("href"),
-    model_uri=TCCM.href,
-    domain=None,
-    range=Optional[Union[str, RenderingURI]],
-)
+slots.codeSystem = Slot(uri=TCCM.codeSystem, name="codeSystem", curie=TCCM.curie('codeSystem'),
+                   model_uri=TCCM.codeSystem, domain=None, range=Optional[Union[dict, CodeSystemReference]])
 
-slots.codeSystem = Slot(
-    uri=TCCM.codeSystem,
-    name="codeSystem",
-    curie=TCCM.curie("codeSystem"),
-    model_uri=TCCM.codeSystem,
-    domain=None,
-    range=Optional[Union[dict, CodeSystemReference]],
-)
+slots.map = Slot(uri=TCCM.map, name="map", curie=TCCM.curie('map'),
+                   model_uri=TCCM.map, domain=None, range=Optional[Union[dict, MapReference]])
 
-slots.map = Slot(
-    uri=TCCM.map,
-    name="map",
-    curie=TCCM.curie("map"),
-    model_uri=TCCM.map,
-    domain=None,
-    range=Optional[Union[dict, MapReference]],
-)
+slots.designation = Slot(uri=TCCM.designation, name="designation", curie=TCCM.curie('designation'),
+                   model_uri=TCCM.designation, domain=None, range=Optional[str])
 
-slots.designation = Slot(
-    uri=TCCM.designation,
-    name="designation",
-    curie=TCCM.curie("designation"),
-    model_uri=TCCM.designation,
-    domain=None,
-    range=Optional[str],
-)
+slots.role = Slot(uri=TCCM.role, name="role", curie=TCCM.curie('role'),
+                   model_uri=TCCM.role, domain=None, range=Optional[Union[dict, RoleReference]])
 
-slots.role = Slot(
-    uri=TCCM.role,
-    name="role",
-    curie=TCCM.curie("role"),
-    model_uri=TCCM.role,
-    domain=None,
-    range=Optional[Union[dict, RoleReference]],
-)
+slots.ResourceDescription_about = Slot(uri=TCCM.about, name="ResourceDescription_about", curie=TCCM.curie('about'),
+                   model_uri=TCCM.ResourceDescription_about, domain=ResourceDescription, range=Union[str, ExternalURI])
 
-slots.ResourceDescription_about = Slot(
-    uri=TCCM.about,
-    name="ResourceDescription_about",
-    curie=TCCM.curie("about"),
-    model_uri=TCCM.ResourceDescription_about,
-    domain=ResourceDescription,
-    range=Union[str, ExternalURI],
-)
+slots.ResourceDescription_resourceID = Slot(uri=TCCM.resourceID, name="ResourceDescription_resourceID", curie=TCCM.curie('resourceID'),
+                   model_uri=TCCM.ResourceDescription_resourceID, domain=ResourceDescription, range=Union[str, LocalIdentifier])
 
-slots.ResourceDescription_resourceID = Slot(
-    uri=TCCM.resourceID,
-    name="ResourceDescription_resourceID",
-    curie=TCCM.curie("resourceID"),
-    model_uri=TCCM.ResourceDescription_resourceID,
-    domain=ResourceDescription,
-    range=Union[str, LocalIdentifier],
-)
+slots.ResourceDescription_formalName = Slot(uri=TCCM.formalName, name="ResourceDescription_formalName", curie=TCCM.curie('formalName'),
+                   model_uri=TCCM.ResourceDescription_formalName, domain=ResourceDescription, range=Optional[str])
 
-slots.ResourceDescription_formalName = Slot(
-    uri=TCCM.formalName,
-    name="ResourceDescription_formalName",
-    curie=TCCM.curie("formalName"),
-    model_uri=TCCM.ResourceDescription_formalName,
-    domain=ResourceDescription,
-    range=Optional[str],
-)
+slots.ResourceDescription_keyword = Slot(uri=TCCM.keyword, name="ResourceDescription_keyword", curie=TCCM.curie('keyword'),
+                   model_uri=TCCM.ResourceDescription_keyword, domain=ResourceDescription, range=Optional[Union[str, list[str]]])
 
-slots.ResourceDescription_keyword = Slot(
-    uri=TCCM.keyword,
-    name="ResourceDescription_keyword",
-    curie=TCCM.curie("keyword"),
-    model_uri=TCCM.ResourceDescription_keyword,
-    domain=ResourceDescription,
-    range=Optional[Union[str, list[str]]],
-)
+slots.ResourceDescription_resourceSynopsis = Slot(uri=TCCM.resourceSynopsis, name="ResourceDescription_resourceSynopsis", curie=TCCM.curie('resourceSynopsis'),
+                   model_uri=TCCM.ResourceDescription_resourceSynopsis, domain=ResourceDescription, range=Optional[str])
 
-slots.ResourceDescription_resourceSynopsis = Slot(
-    uri=TCCM.resourceSynopsis,
-    name="ResourceDescription_resourceSynopsis",
-    curie=TCCM.curie("resourceSynopsis"),
-    model_uri=TCCM.ResourceDescription_resourceSynopsis,
-    domain=ResourceDescription,
-    range=Optional[str],
-)
+slots.ResourceDescription_additionalDocumentation = Slot(uri=TCCM.additionalDocumentation, name="ResourceDescription_additionalDocumentation", curie=TCCM.curie('additionalDocumentation'),
+                   model_uri=TCCM.ResourceDescription_additionalDocumentation, domain=ResourceDescription, range=Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]])
 
-slots.ResourceDescription_additionalDocumentation = Slot(
-    uri=TCCM.additionalDocumentation,
-    name="ResourceDescription_additionalDocumentation",
-    curie=TCCM.curie("additionalDocumentation"),
-    model_uri=TCCM.ResourceDescription_additionalDocumentation,
-    domain=ResourceDescription,
-    range=Optional[Union[Union[str, PersistentURI], list[Union[str, PersistentURI]]]],
-)
+slots.ResourceDescription_rights = Slot(uri=TCCM.rights, name="ResourceDescription_rights", curie=TCCM.curie('rights'),
+                   model_uri=TCCM.ResourceDescription_rights, domain=ResourceDescription, range=Optional[str])
 
-slots.ResourceDescription_rights = Slot(
-    uri=TCCM.rights,
-    name="ResourceDescription_rights",
-    curie=TCCM.curie("rights"),
-    model_uri=TCCM.ResourceDescription_rights,
-    domain=ResourceDescription,
-    range=Optional[str],
-)
+slots.ResourceDescription_alternateID = Slot(uri=TCCM.alternateID, name="ResourceDescription_alternateID", curie=TCCM.curie('alternateID'),
+                   model_uri=TCCM.ResourceDescription_alternateID, domain=ResourceDescription, range=Optional[str])
 
-slots.ResourceDescription_alternateID = Slot(
-    uri=TCCM.alternateID,
-    name="ResourceDescription_alternateID",
-    curie=TCCM.curie("alternateID"),
-    model_uri=TCCM.ResourceDescription_alternateID,
-    domain=ResourceDescription,
-    range=Optional[str],
-)
+slots.SourceAndNotation_sourceAndNotationDescription = Slot(uri=TCCM.sourceAndNotationDescription, name="SourceAndNotation_sourceAndNotationDescription", curie=TCCM.curie('sourceAndNotationDescription'),
+                   model_uri=TCCM.SourceAndNotation_sourceAndNotationDescription, domain=SourceAndNotation, range=Optional[str])
 
-slots.SourceAndNotation_sourceAndNotationDescription = Slot(
-    uri=TCCM.sourceAndNotationDescription,
-    name="SourceAndNotation_sourceAndNotationDescription",
-    curie=TCCM.curie("sourceAndNotationDescription"),
-    model_uri=TCCM.SourceAndNotation_sourceAndNotationDescription,
-    domain=SourceAndNotation,
-    range=Optional[str],
-)
+slots.SourceAndNotation_sourceDocument = Slot(uri=TCCM.sourceDocument, name="SourceAndNotation_sourceDocument", curie=TCCM.curie('sourceDocument'),
+                   model_uri=TCCM.SourceAndNotation_sourceDocument, domain=SourceAndNotation, range=Optional[Union[str, PersistentURI]])
 
-slots.SourceAndNotation_sourceDocument = Slot(
-    uri=TCCM.sourceDocument,
-    name="SourceAndNotation_sourceDocument",
-    curie=TCCM.curie("sourceDocument"),
-    model_uri=TCCM.SourceAndNotation_sourceDocument,
-    domain=SourceAndNotation,
-    range=Optional[Union[str, PersistentURI]],
-)
+slots.SourceAndNotation_sourceLanguage = Slot(uri=TCCM.sourceLanguage, name="SourceAndNotation_sourceLanguage", curie=TCCM.curie('sourceLanguage'),
+                   model_uri=TCCM.SourceAndNotation_sourceLanguage, domain=SourceAndNotation, range=Optional[Union[dict, "OntologyLanguageReference"]])
 
-slots.SourceAndNotation_sourceLanguage = Slot(
-    uri=TCCM.sourceLanguage,
-    name="SourceAndNotation_sourceLanguage",
-    curie=TCCM.curie("sourceLanguage"),
-    model_uri=TCCM.SourceAndNotation_sourceLanguage,
-    domain=SourceAndNotation,
-    range=Optional[Union[dict, "OntologyLanguageReference"]],
-)
+slots.SourceAndNotation_sourceDocumentSyntax = Slot(uri=TCCM.sourceDocumentSyntax, name="SourceAndNotation_sourceDocumentSyntax", curie=TCCM.curie('sourceDocumentSyntax'),
+                   model_uri=TCCM.SourceAndNotation_sourceDocumentSyntax, domain=SourceAndNotation, range=Optional[Union[dict, "OntologySyntaxReference"]])
 
-slots.SourceAndNotation_sourceDocumentSyntax = Slot(
-    uri=TCCM.sourceDocumentSyntax,
-    name="SourceAndNotation_sourceDocumentSyntax",
-    curie=TCCM.curie("sourceDocumentSyntax"),
-    model_uri=TCCM.SourceAndNotation_sourceDocumentSyntax,
-    domain=SourceAndNotation,
-    range=Optional[Union[dict, "OntologySyntaxReference"]],
-)
+slots.AbstractResourceDescription_releaseDocumentation = Slot(uri=TCCM.releaseDocumentation, name="AbstractResourceDescription_releaseDocumentation", curie=TCCM.curie('releaseDocumentation'),
+                   model_uri=TCCM.AbstractResourceDescription_releaseDocumentation, domain=AbstractResourceDescription, range=Optional[str])
 
-slots.AbstractResourceDescription_releaseDocumentation = Slot(
-    uri=TCCM.releaseDocumentation,
-    name="AbstractResourceDescription_releaseDocumentation",
-    curie=TCCM.curie("releaseDocumentation"),
-    model_uri=TCCM.AbstractResourceDescription_releaseDocumentation,
-    domain=AbstractResourceDescription,
-    range=Optional[str],
-)
+slots.AbstractResourceDescription_releaseFormat = Slot(uri=TCCM.releaseFormat, name="AbstractResourceDescription_releaseFormat", curie=TCCM.curie('releaseFormat'),
+                   model_uri=TCCM.AbstractResourceDescription_releaseFormat, domain=AbstractResourceDescription, range=Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]])
 
-slots.AbstractResourceDescription_releaseFormat = Slot(
-    uri=TCCM.releaseFormat,
-    name="AbstractResourceDescription_releaseFormat",
-    curie=TCCM.curie("releaseFormat"),
-    model_uri=TCCM.AbstractResourceDescription_releaseFormat,
-    domain=AbstractResourceDescription,
-    range=Optional[Union[Union[dict, SourceAndNotation], list[Union[dict, SourceAndNotation]]]],
-)
+slots.ResourceVersionDescription_documentURI = Slot(uri=TCCM.documentURI, name="ResourceVersionDescription_documentURI", curie=TCCM.curie('documentURI'),
+                   model_uri=TCCM.ResourceVersionDescription_documentURI, domain=ResourceVersionDescription, range=Optional[Union[str, DocumentURI]])
 
-slots.ResourceVersionDescription_documentURI = Slot(
-    uri=TCCM.documentURI,
-    name="ResourceVersionDescription_documentURI",
-    curie=TCCM.curie("documentURI"),
-    model_uri=TCCM.ResourceVersionDescription_documentURI,
-    domain=ResourceVersionDescription,
-    range=Optional[Union[str, DocumentURI]],
-)
+slots.ResourceVersionDescription_sourceAndNotation = Slot(uri=TCCM.sourceAndNotation, name="ResourceVersionDescription_sourceAndNotation", curie=TCCM.curie('sourceAndNotation'),
+                   model_uri=TCCM.ResourceVersionDescription_sourceAndNotation, domain=ResourceVersionDescription, range=Optional[Union[dict, SourceAndNotation]])
 
-slots.ResourceVersionDescription_sourceAndNotation = Slot(
-    uri=TCCM.sourceAndNotation,
-    name="ResourceVersionDescription_sourceAndNotation",
-    curie=TCCM.curie("sourceAndNotation"),
-    model_uri=TCCM.ResourceVersionDescription_sourceAndNotation,
-    domain=ResourceVersionDescription,
-    range=Optional[Union[dict, SourceAndNotation]],
-)
+slots.ResourceVersionDescription_predecessor = Slot(uri=TCCM.predecessor, name="ResourceVersionDescription_predecessor", curie=TCCM.curie('predecessor'),
+                   model_uri=TCCM.ResourceVersionDescription_predecessor, domain=ResourceVersionDescription, range=Optional[Union[dict, "NameAndMeaningReference"]])
 
-slots.ResourceVersionDescription_predecessor = Slot(
-    uri=TCCM.predecessor,
-    name="ResourceVersionDescription_predecessor",
-    curie=TCCM.curie("predecessor"),
-    model_uri=TCCM.ResourceVersionDescription_predecessor,
-    domain=ResourceVersionDescription,
-    range=Optional[Union[dict, "NameAndMeaningReference"]],
-)
+slots.ResourceVersionDescription_officialResourceVersionID = Slot(uri=TCCM.officialResourceVersionID, name="ResourceVersionDescription_officialResourceVersionID", curie=TCCM.curie('officialResourceVersionID'),
+                   model_uri=TCCM.ResourceVersionDescription_officialResourceVersionID, domain=ResourceVersionDescription, range=Optional[str])
 
-slots.ResourceVersionDescription_officialResourceVersionID = Slot(
-    uri=TCCM.officialResourceVersionID,
-    name="ResourceVersionDescription_officialResourceVersionID",
-    curie=TCCM.curie("officialResourceVersionID"),
-    model_uri=TCCM.ResourceVersionDescription_officialResourceVersionID,
-    domain=ResourceVersionDescription,
-    range=Optional[str],
-)
+slots.ResourceVersionDescription_officialReleaseDate = Slot(uri=TCCM.officialReleaseDate, name="ResourceVersionDescription_officialReleaseDate", curie=TCCM.curie('officialReleaseDate'),
+                   model_uri=TCCM.ResourceVersionDescription_officialReleaseDate, domain=ResourceVersionDescription, range=Optional[Union[str, XSDDateTime]])
 
-slots.ResourceVersionDescription_officialReleaseDate = Slot(
-    uri=TCCM.officialReleaseDate,
-    name="ResourceVersionDescription_officialReleaseDate",
-    curie=TCCM.curie("officialReleaseDate"),
-    model_uri=TCCM.ResourceVersionDescription_officialReleaseDate,
-    domain=ResourceVersionDescription,
-    range=Optional[Union[str, XSDDateTime]],
-)
+slots.ResourceVersionDescription_officialActivationDate = Slot(uri=TCCM.officialActivationDate, name="ResourceVersionDescription_officialActivationDate", curie=TCCM.curie('officialActivationDate'),
+                   model_uri=TCCM.ResourceVersionDescription_officialActivationDate, domain=ResourceVersionDescription, range=Optional[Union[str, XSDDateTime]])
 
-slots.ResourceVersionDescription_officialActivationDate = Slot(
-    uri=TCCM.officialActivationDate,
-    name="ResourceVersionDescription_officialActivationDate",
-    curie=TCCM.curie("officialActivationDate"),
-    model_uri=TCCM.ResourceVersionDescription_officialActivationDate,
-    domain=ResourceVersionDescription,
-    range=Optional[Union[str, XSDDateTime]],
-)
+slots.NameAndMeaningReference_name = Slot(uri=TCCM.name, name="NameAndMeaningReference_name", curie=TCCM.curie('name'),
+                   model_uri=TCCM.NameAndMeaningReference_name, domain=NameAndMeaningReference, range=Union[str, LocalIdentifier])
 
-slots.NameAndMeaningReference_name = Slot(
-    uri=TCCM.name,
-    name="NameAndMeaningReference_name",
-    curie=TCCM.curie("name"),
-    model_uri=TCCM.NameAndMeaningReference_name,
-    domain=NameAndMeaningReference,
-    range=Union[str, LocalIdentifier],
-)
+slots.NameAndMeaningReference_uri = Slot(uri=TCCM.uri, name="NameAndMeaningReference_uri", curie=TCCM.curie('uri'),
+                   model_uri=TCCM.NameAndMeaningReference_uri, domain=NameAndMeaningReference, range=Optional[Union[str, ExternalURI]])
 
-slots.NameAndMeaningReference_uri = Slot(
-    uri=TCCM.uri,
-    name="NameAndMeaningReference_uri",
-    curie=TCCM.curie("uri"),
-    model_uri=TCCM.NameAndMeaningReference_uri,
-    domain=NameAndMeaningReference,
-    range=Optional[Union[str, ExternalURI]],
-)
+slots.NameAndMeaningReference_href = Slot(uri=TCCM.href, name="NameAndMeaningReference_href", curie=TCCM.curie('href'),
+                   model_uri=TCCM.NameAndMeaningReference_href, domain=NameAndMeaningReference, range=Optional[Union[str, RenderingURI]])
 
-slots.NameAndMeaningReference_href = Slot(
-    uri=TCCM.href,
-    name="NameAndMeaningReference_href",
-    curie=TCCM.curie("href"),
-    model_uri=TCCM.NameAndMeaningReference_href,
-    domain=NameAndMeaningReference,
-    range=Optional[Union[str, RenderingURI]],
-)
+slots.CodeSystemVersionReference_codeSystem = Slot(uri=TCCM.codeSystem, name="CodeSystemVersionReference_codeSystem", curie=TCCM.curie('codeSystem'),
+                   model_uri=TCCM.CodeSystemVersionReference_codeSystem, domain=CodeSystemVersionReference, range=Optional[Union[dict, CodeSystemReference]])
 
-slots.CodeSystemVersionReference_codeSystem = Slot(
-    uri=TCCM.codeSystem,
-    name="CodeSystemVersionReference_codeSystem",
-    curie=TCCM.curie("codeSystem"),
-    model_uri=TCCM.CodeSystemVersionReference_codeSystem,
-    domain=CodeSystemVersionReference,
-    range=Optional[Union[dict, CodeSystemReference]],
-)
+slots.MapVersionReference_map = Slot(uri=TCCM.map, name="MapVersionReference_map", curie=TCCM.curie('map'),
+                   model_uri=TCCM.MapVersionReference_map, domain=MapVersionReference, range=Optional[Union[dict, MapReference]])
 
-slots.MapVersionReference_map = Slot(
-    uri=TCCM.map,
-    name="MapVersionReference_map",
-    curie=TCCM.curie("map"),
-    model_uri=TCCM.MapVersionReference_map,
-    domain=MapVersionReference,
-    range=Optional[Union[dict, MapReference]],
-)
+slots.PredicateReference_uri = Slot(uri=TCCM.uri, name="PredicateReference_uri", curie=TCCM.curie('uri'),
+                   model_uri=TCCM.PredicateReference_uri, domain=PredicateReference, range=Union[str, ExternalURI])
 
-slots.PredicateReference_uri = Slot(
-    uri=TCCM.uri,
-    name="PredicateReference_uri",
-    curie=TCCM.curie("uri"),
-    model_uri=TCCM.PredicateReference_uri,
-    domain=PredicateReference,
-    range=Union[str, ExternalURI],
-)
+slots.PredicateReference_name = Slot(uri=TCCM.name, name="PredicateReference_name", curie=TCCM.curie('name'),
+                   model_uri=TCCM.PredicateReference_name, domain=PredicateReference, range=Curie)
 
-slots.PredicateReference_name = Slot(
-    uri=TCCM.name,
-    name="PredicateReference_name",
-    curie=TCCM.curie("name"),
-    model_uri=TCCM.PredicateReference_name,
-    domain=PredicateReference,
-    range=Curie,
-)
+slots.PredicateReference_href = Slot(uri=TCCM.href, name="PredicateReference_href", curie=TCCM.curie('href'),
+                   model_uri=TCCM.PredicateReference_href, domain=PredicateReference, range=Optional[Union[str, RenderingURI]])
 
-slots.PredicateReference_href = Slot(
-    uri=TCCM.href,
-    name="PredicateReference_href",
-    curie=TCCM.curie("href"),
-    model_uri=TCCM.PredicateReference_href,
-    domain=PredicateReference,
-    range=Optional[Union[str, RenderingURI]],
-)
+slots.PredicateReference_designation = Slot(uri=TCCM.designation, name="PredicateReference_designation", curie=TCCM.curie('designation'),
+                   model_uri=TCCM.PredicateReference_designation, domain=PredicateReference, range=Optional[str])
 
-slots.PredicateReference_designation = Slot(
-    uri=TCCM.designation,
-    name="PredicateReference_designation",
-    curie=TCCM.curie("designation"),
-    model_uri=TCCM.PredicateReference_designation,
-    domain=PredicateReference,
-    range=Optional[str],
-)
-
-slots.SourceAndRoleReference_role = Slot(
-    uri=TCCM.role,
-    name="SourceAndRoleReference_role",
-    curie=TCCM.curie("role"),
-    model_uri=TCCM.SourceAndRoleReference_role,
-    domain=SourceAndRoleReference,
-    range=Optional[Union[dict, RoleReference]],
-)
+slots.SourceAndRoleReference_role = Slot(uri=TCCM.role, name="SourceAndRoleReference_role", curie=TCCM.curie('role'),
+                   model_uri=TCCM.SourceAndRoleReference_role, domain=SourceAndRoleReference, range=Optional[Union[dict, RoleReference]])

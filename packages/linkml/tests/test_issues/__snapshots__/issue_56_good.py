@@ -6,20 +6,64 @@
 # description:
 # license:
 
+import dataclasses
+import re
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
 
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
 from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str
-from rdflib import URIRef
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
-DEFAULT_ = CurieNamespace("", "http://example.com/")
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+DEFAULT_ = CurieNamespace('', 'http://example.com/')
 
 
 # Types
@@ -118,15 +162,11 @@ class C3(C2):
 class slots:
     pass
 
+slots.id = Slot(uri=DEFAULT_.id, name="id", curie=DEFAULT_.curie('id'),
+                   model_uri=DEFAULT_.id, domain=None, range=URIRef)
 
-slots.id = Slot(
-    uri=DEFAULT_.id, name="id", curie=DEFAULT_.curie("id"), model_uri=DEFAULT_.id, domain=None, range=URIRef
-)
+slots.s1 = Slot(uri=DEFAULT_.s1, name="s1", curie=DEFAULT_.curie('s1'),
+                   model_uri=DEFAULT_.s1, domain=C1, range=Optional[str])
 
-slots.s1 = Slot(
-    uri=DEFAULT_.s1, name="s1", curie=DEFAULT_.curie("s1"), model_uri=DEFAULT_.s1, domain=C1, range=Optional[str]
-)
-
-slots.s2 = Slot(
-    uri=DEFAULT_.s2, name="s2", curie=DEFAULT_.curie("s2"), model_uri=DEFAULT_.s2, domain=C1, range=Optional[str]
-)
+slots.s2 = Slot(uri=DEFAULT_.s2, name="s2", curie=DEFAULT_.curie('s2'),
+                   model_uri=DEFAULT_.s2, domain=C1, range=Optional[str])

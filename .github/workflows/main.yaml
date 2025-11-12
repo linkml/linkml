@@ -87,6 +87,7 @@ jobs:
       - name: Generate coverage results
         run: |
           uv run coverage run -m pytest --with-network
+          uv run coverage run -a -m pytest packages/linkml_runtime/tests
           uv run coverage xml
           uv run coverage report -m
         shell: bash
