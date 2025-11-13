@@ -1266,6 +1266,115 @@ def test_classrule_to_dict_view_method(input_path, tmp_path):
     assert rule_dict["elseconditions"] is None
 
 
+def test_common_metadata_properties(input_path, tmp_path):
+    """Test that common metadata properties are displayed in documentation (Issue #3004)
+
+    This tests that common metadata properties are rendered in generated docs:
+    - status
+    - rank
+    - categories
+    - keywords
+    - in_subset
+    - title (when different from name)
+    - definition_uri
+    - notes
+    - alt_descriptions
+    """
+    schema_path = str(input_path("metadata_properties_coverage.yaml"))
+    gen = DocGenerator(schema_path, mergeimports=True, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    # Test Class with metadata properties
+    class_file = tmp_path / "TestClassWithPhase1Props.md"
+
+    # Test status
+    assert_mdfile_contains(class_file, "## Status", after="Class: Test Class With Metadata Properties")
+    assert_mdfile_contains(class_file, "testing", after="## Status")
+
+    # Test rank
+    assert_mdfile_contains(class_file, "## Rank", after="## Status")
+    assert_mdfile_contains(class_file, "100", after="## Rank")
+
+    # Test categories
+    assert_mdfile_contains(class_file, "## Categories", after="## Rank")
+    assert_mdfile_contains(class_file, "* test_category", after="## Categories")
+    assert_mdfile_contains(class_file, "* metadata_test", after="* test_category")
+
+    # Test keywords
+    assert_mdfile_contains(class_file, "## Keywords", after="## Categories")
+    assert_mdfile_contains(class_file, "* metadata", after="## Keywords")
+    assert_mdfile_contains(class_file, "* documentation", after="* metadata")
+    assert_mdfile_contains(class_file, "* coverage", after="* documentation")
+
+    # Test in_subset
+    assert_mdfile_contains(class_file, "## In Subsets", after="## Keywords")
+    assert_mdfile_contains(class_file, "[SubsetA](SubsetA.md)", after="## In Subsets")
+
+    # Test notes
+    assert_mdfile_contains(class_file, "## Notes", after="## In Subsets")
+    assert_mdfile_contains(class_file, "* This is a test note for metadata coverage", after="## Notes")
+    assert_mdfile_contains(class_file, "* Multiple notes can be added", after="* This is a test note")
+
+    # Test alt_descriptions
+    assert_mdfile_contains(class_file, "## Alternative Descriptions", after="## Notes")
+    assert_mdfile_contains(
+        class_file, "* **source1**: Alternative description from source 1", after="## Alternative Descriptions"
+    )
+    assert_mdfile_contains(class_file, "* **source2**: Alternative description from source 2", after="source1")
+
+    # Test title display (when different from name)
+    assert_mdfile_contains(class_file, "# Class: Test Class With Metadata Properties (TestClassWithPhase1Props)")
+
+    # Test definition_uri (in common_metadata or element-specific area)
+    # This might be in a different location - we'll need to verify where it appears
+
+    # Test Slot with metadata properties
+    slot_file = tmp_path / "test_slot.md"
+
+    assert_mdfile_contains(slot_file, "## Status", after="Slot: Test Slot Title")
+    assert_mdfile_contains(slot_file, "stable", after="## Status")
+    assert_mdfile_contains(slot_file, "## Rank", after="## Status")
+    assert_mdfile_contains(slot_file, "50", after="## Rank")
+    assert_mdfile_contains(slot_file, "## Categories", after="## Rank")
+    assert_mdfile_contains(slot_file, "* slot_category", after="## Categories")
+    assert_mdfile_contains(slot_file, "## Keywords", after="## Categories")
+    assert_mdfile_contains(slot_file, "* test_keyword", after="## Keywords")
+    assert_mdfile_contains(slot_file, "## In Subsets", after="## Keywords")
+    assert_mdfile_contains(slot_file, "## Notes", after="## In Subsets")
+    assert_mdfile_contains(slot_file, "* Slot note 1", after="## Notes")
+
+    # Test Enum with metadata properties
+    enum_file = tmp_path / "TestEnum.md"
+
+    assert_mdfile_contains(enum_file, "## Status", after="Enum: Test Enumeration")
+    assert_mdfile_contains(enum_file, "draft", after="## Status")
+    assert_mdfile_contains(enum_file, "## Rank", after="## Status")
+    assert_mdfile_contains(enum_file, "200", after="## Rank")
+    assert_mdfile_contains(enum_file, "## Categories", after="## Rank")
+    assert_mdfile_contains(enum_file, "* enum_category", after="## Categories")
+    assert_mdfile_contains(enum_file, "## Keywords", after="## Categories")
+    assert_mdfile_contains(enum_file, "* enum_test", after="## Keywords")
+
+    # Test Type with metadata properties
+    type_file = tmp_path / "TestType.md"
+
+    assert_mdfile_contains(type_file, "## Status", after="Type: Test Type Title")
+    assert_mdfile_contains(type_file, "production", after="## Status")
+    assert_mdfile_contains(type_file, "## Rank", after="## Status")
+    assert_mdfile_contains(type_file, "10", after="## Rank")
+    assert_mdfile_contains(type_file, "## Categories", after="## Rank")
+    assert_mdfile_contains(type_file, "* type_category", after="## Categories")
+    assert_mdfile_contains(type_file, "## Keywords", after="## Categories")
+    assert_mdfile_contains(type_file, "* custom_type", after="## Keywords")
+
+    # Test that minimal elements WITHOUT metadata properties don't show these sections
+    minimal_class_file = tmp_path / "MinimalClass.md"
+    assert_mdfile_does_not_contain(minimal_class_file, "## Status")
+    assert_mdfile_does_not_contain(minimal_class_file, "## Rank")
+    assert_mdfile_does_not_contain(minimal_class_file, "## Categories")
+    assert_mdfile_does_not_contain(minimal_class_file, "## Keywords")
+
+
 def test_preserve_names(tmp_path):
     """Test preserve_names option preserves original LinkML names in documentation output"""
     schema = SchemaDefinition(

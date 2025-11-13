@@ -1,4 +1,10 @@
-# Type: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
+{%- if element.title and element.title != element.name %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- set title = gen.name(element) -%}
+{%- endif -%}
+
+# Type: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
 
 {% if element.description %}
 {% set element_description_lines = element.description.split('\n') %}
