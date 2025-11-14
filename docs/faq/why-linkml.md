@@ -403,7 +403,7 @@ We are currently planning on writing a generator for CSVW JSON-LD.
 
 ## Why should I use LinkML over Frictionless Data
 
-[Frictionless Data](https://frictionlessdata.io/) [MAGO](https://github.com/brain-bican/mago) is a framework for describing tabular and other datasets with metadata.
+[Frictionless Data](https://frictionlessdata.io/) is a framework for describing tabular and other datasets with metadata.
 
 **Frictionless Data** provides Table Schema for describing the structure of tabular data, along with Data Package 
 for bundling datasets with metadata. It's excellent for lightweight data publishing and validation of CSVs and 
