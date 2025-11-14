@@ -51,4 +51,45 @@ URI: {{ gen.uri_link(element) }}
 
 {% endif %}
 
+{%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of or element.none_of %}
+
+{%- if has_expressions %}
+<details>
+<summary>Type Expressions</summary>
+
+{%- if element.any_of %}
+**Any Of:** Value must satisfy at least one of these expressions
+
+{%- for expr in element.any_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.all_of %}
+**All Of:** Value must satisfy all of these expressions
+
+{%- for expr in element.all_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.exactly_one_of %}
+**Exactly One Of:** Value must satisfy exactly one of these expressions
+
+{%- for expr in element.exactly_one_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.none_of %}
+**None Of:** Value must not satisfy any of these expressions
+
+{%- for expr in element.none_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+</details>
+{% endif %}
+
 {% include "common_metadata.md.jinja2" %}

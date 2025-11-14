@@ -20,6 +20,53 @@ URI: {{ gen.uri_link(element) }}
 **Enum URI:** {{ gen.uri_link(element.enum_uri) }}
 {% endif %}
 
+{%- set has_enum_source = element.code_set or element.pv_formula or element.reachable_from
+    or element.matches or element.concepts %}
+
+{%- if has_enum_source %}
+## Enumeration Source
+
+{%- if element.code_set %}
+**Code Set:** {{ gen.uri_link(element.code_set) }}
+
+{%- if element.code_set_tag %}
+- **Tag:** {{ element.code_set_tag }}
+{%- endif %}
+{%- if element.code_set_version %}
+- **Version:** {{ element.code_set_version }}
+{%- endif %}
+{%- endif %}
+
+{%- if element.pv_formula %}
+**Permissible Value Formula:** {{ element.pv_formula }}
+{%- endif %}
+
+{%- if element.reachable_from %}
+**Reachable From:**
+
+{%- if element.reachable_from.source_ontology %}
+- **Source:** {{ gen.link(element.reachable_from.source_ontology) }}
+{%- endif %}
+{%- if element.reachable_from.source_nodes %}
+- **Nodes:** {{ element.reachable_from.source_nodes | join(', ') }}
+{%- endif %}
+{%- if element.reachable_from.relationship_types %}
+- **Via:** {{ element.reachable_from.relationship_types | join(', ') }}
+{%- endif %}
+{%- endif %}
+
+{%- if element.matches %}
+**Matches:**
+
+- **Expression:** `{{ element.matches.string_expression }}`
+{%- endif %}
+
+{%- if element.concepts %}
+**Concepts:** {{ gen.uri_links(element.concepts) | join(', ') }}
+{%- endif %}
+
+{% endif %}
+
 {% if element.permissible_values -%}
 ## Permissible Values
 
@@ -30,6 +77,25 @@ URI: {{ gen.uri_link(element) }}
 {% endfor %}
 {% else %}
 _This is a dynamic enum_
+{% endif %}
+
+{%- set has_enum_ops = element.inherits or element.include or element.minus %}
+
+{%- if has_enum_ops %}
+## Enumeration Operations
+
+{%- if element.inherits %}
+**Inherits From:** {{ gen.links(element.inherits) | join(', ') }}
+{%- endif %}
+
+{%- if element.include %}
+**Includes:** {{ gen.links(element.include) | join(', ') }}
+{%- endif %}
+
+{%- if element.minus %}
+**Excludes:** {{ gen.links(element.minus) | join(', ') }}
+{%- endif %}
+
 {% endif %}
 
 {% set slots_for_enum = schemaview.get_slots_by_enum(element.name) %}
