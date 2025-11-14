@@ -459,13 +459,8 @@ projects in life sciences.
 catalogs published on the web. It enables publishers to describe datasets and data services in a standardized way 
 that catalog aggregators can consume.
 
-DCAT describes catalog metadata; LinkML models, validates and maps the actual data within datasets. LinkML models can 
-also be used for modeling dataset metadata. DCAT describes datasets as black boxes; LinkML describes the structure
-and constraints of the data inside those datasets as well.
-
-Use DCAT when you need to publish dataset-level metadata to data catalogs, describe distributions and access points, 
-or integrate with open data portals.  Use LinkML when you need to define the internal structure of your datasets, 
-validate data quality, generate code for data processing, or create data standards. 
+DCAT describes catalog metadata; LinkML models, validates and maps the actual data within datasets. But LinkML can 
+also be used for modeling dataset metadata.
 
 ## Why should I use LinkML over XML Schema (XSD)?
 
