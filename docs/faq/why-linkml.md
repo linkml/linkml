@@ -427,12 +427,12 @@ If you're specifically working with ML datasets and need schema.org compatibilit
 
 ## Why should I use LinkML over Schema.org?
 
-[Schema.org](https://schema.org) is a collaborative initiative that provides a collection of schemas (structured data vocabularies) 
-used to mark up web pages so that search engines can better understand their content. It's supported by major search 
+[Schema.org](https://schema.org) is a collaborative initiative that provides a collection of schemas (structured data vocabularies)
+used to mark up web pages so that search engines can better understand their content. It's supported by major search
 engines including Google and Microsoft and is used by over 45 million websites.
 
-Schema.org is, at heart, a vocabulary that you can use to annotate data for use on the web. LinkML, in contrast, provides rich 
-validation rules, required fields, patterns, ranges, and cardinality constraints.  Use Schema.org when you primarily 
+Schema.org is, at heart, a vocabulary that you can use to annotate data for use on the web. LinkML, in contrast, provides rich
+validation rules, required fields, patterns, ranges, and cardinality constraints.  Use Schema.org when you primarily
 need to mark up web pages for SEO or are describing common web entities with standard vocabularies. Use LinkML when you
 need to validate data, generate code, work across multiple formats, or require domain-specific modeling with
 constraints. You can still map your LinkML models to Schema.org terms for compatibility.
