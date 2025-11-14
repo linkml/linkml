@@ -1,0 +1,47 @@
+id: http://example.org/test_multivalued_slot_constraints
+name: test_multivalued_slot_constraints
+
+imports:
+  - https://w3id.org/linkml/types
+
+slots:
+  int_list:
+    range: integer
+    multivalued: true
+    minimum_cardinality: 2
+    maximum_cardinality: 5
+
+  int_inlined_list:
+    range: KeyedInt
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+    minimum_cardinality: 3
+    maximum_cardinality: 4
+
+  int_dict:
+    range: KeyedInt
+    multivalued: true
+    inlined: true
+    inlined_as_list: false
+    minimum_cardinality: 3
+    maximum_cardinality: 4
+
+  id:
+    range: string
+    identifier: true
+
+  value:
+    range: integer
+    required: true
+
+classes:
+  KeyedInt:
+    slots:
+      - id
+      - value
+  Test:
+    tree_root: true
+    slots:
+      - int_list
+      - int_dict
