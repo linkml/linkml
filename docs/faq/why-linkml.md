@@ -401,7 +401,7 @@ semantically describe JSON files with LinkML too.
 
 We are currently planning on writing a generator for CSVW JSON-LD.
 
-## Why should I use LinkML over Frictionless Data
+## Why should I use LinkML over Frictionless Data?
 
 [Frictionless Data](https://frictionlessdata.io/) is a framework for describing tabular and other datasets with metadata.
 
