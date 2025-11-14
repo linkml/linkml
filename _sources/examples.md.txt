@@ -52,8 +52,7 @@ The LinkML registry collects some existing schemas and allows for basic browsing
 
 ## Presentations about LinkML
 
+ * Intro to LinkML, with LLM help for basic setup: presentation for Automated Image Management and Metadata Annotation (AMIM) User Group, BioImaging North America ([video, 47min](https://www.youtube.com/watch?v=NJcd8b5BP50&t=144s)) 2025-11-07
+ * Tutorial (ICBO 2025): Annotating Data with Ontologies: LinkML Can Help ([slides](https://go.lbl.gov/ICBO-LinkML-slides); [video, 2hr 25min](https://youtu.be/ijCXDGO-NTU?si=xO32Ed5bVe1LQrsa)) 2025-11-05
  * [AI-assisted workflows for integrating data using LinkML](https://zenodo.org/records/15186182) (slides) 2025-04-10
  * [Introduction to LinkML by Sierra Moxon](https://www.youtube.com/watch?v=nyNp09WYLzw&t=183s) (video, 47 min) 2023-10-04
- * [An introduction to LinkML](https://zenodo.org/records/7778641) (slides) 2022-07-01
- * [Yosemite Project Webinar](https://www.youtube.com/watch?v=1cZu4kZ2ufQ) (video) - April 2021
- * [ICBO 2021 talk](http://ceur-ws.org/Vol-3073/paper24.pdf) (proceedings) Sept 2021
