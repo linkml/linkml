@@ -406,25 +406,25 @@ We are currently planning on writing a generator for CSVW JSON-LD.
 [Frictionless Data](https://frictionlessdata.io/) is a framework for describing tabular and other datasets with metadata.
 
 **Frictionless Data** provides Table Schema for describing the structure of tabular data, along with Data Package 
-for bundling datasets with metadata. It's excellent for lightweight data publishing and validation of CSVs and 
-spreadsheets.
+for bundling datasets with metadata. It's excellent for data publishing and validation of CSVs and 
+spreadsheets. If your primary use case is lightweight tabular data publishing, Frictionless may be simpler. 
+
+LinkML works across JSON, YAML, RDF, SQL databases, and graph databases.  LinkML also provides built-in 
+support for ontology mappings, IRIs, and semantic web integration beyond basic metadata. LinkML supports 
+object-oriented modeling features.
 
 ## Why should I use LinkML over Croissant?
 
 [Croissant](https://github.com/mlcommons/croissant) is a framework for describing tabular and other datasets with metadata.
 
-**Croissant** is a metadata format developed by MLCommons for describing machine learning datasets, including their structure, provenance, and content. It builds on schema.org and is designed for dataset discovery and reuse in ML contexts.
+Croissant is a metadata format developed by MLCommons for describing machine learning datasets, including 
+their structure, provenance, and content. It builds on schema.org and is designed for dataset discovery and 
+reuse in machine learning contexts.
 
-LinkML offers several advantages over these frameworks:
-
-While Frictionless focuses primarily on tabular data and Croissant on ML datasets, LinkML works seamlessly across 
-JSON, YAML, RDF, SQL databases, and graph databases.  LinkML also provides built-in support for ontology mappings, 
-IRIs, and semantic web integration beyond basic metadata. LinkML supports object-oriented modeling features.
 LinkML offers sophisticated validation rules including patterns, ranges, and dynamic enumerations linked to ontologies, 
 and can generate Python dataclasses, TypeScript interfaces, JSON-Schema, SQL DDL, and more from a single schema.
 
-If your primary use case is lightweight tabular data publishing, Frictionless may be simpler. If you're 
-specifically working with ML datasets and need schema.org compatibility, Croissant may be appropriate.
+If you're specifically working with ML datasets and need schema.org compatibility, Croissant may be appropriate.
 
 ## Why should I use LinkML over Schema.org?
 
