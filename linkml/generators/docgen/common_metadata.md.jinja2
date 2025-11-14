@@ -1,15 +1,3 @@
-{% if element.status %}
-## Status
-
-{{ element.status }}
-
-{% endif %}
-{% if element.rank is not none and element.rank != 1000 %}
-## Rank
-
-{{ element.rank }}
-
-{% endif %}
 {% if element.categories %}
 ## Categories
 
@@ -94,6 +82,19 @@
 
 ## Identifier and Mapping Information
 
+{%- set has_admin_metadata = element.status or (element.rank is not none and element.rank != 1000) %}
+
+{%- if has_admin_metadata %}
+### Administrative Metadata
+
+{% if element.status -%}
+**Status:** {{ element.status }}
+{% endif -%}
+{% if element.rank is not none and element.rank != 1000 -%}
+**Rank:** {{ element.rank }}
+{% endif -%}
+
+{% endif %}
 {% if element.id_prefixes %}
 ### Valid ID Prefixes
 
