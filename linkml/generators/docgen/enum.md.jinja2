@@ -68,13 +68,32 @@ URI: {{ gen.uri_link(element) }}
 {% endif %}
 
 {% if element.permissible_values -%}
+{%- set has_pv_extras = namespace(found=false) -%}
+{%- for pv in element.permissible_values.values() -%}
+  {%- if pv.title or pv.is_a or pv.mixins or pv.deprecated -%}
+    {%- set has_pv_extras.found = true -%}
+  {%- endif -%}
+{%- endfor -%}
 ## Permissible Values
 
+{%- if has_pv_extras.found %}
+| Value | Meaning | Description | Additional Info |
+| --- | --- | --- | --- |
+{% for pv in element.permissible_values.values() -%}
+| {{ pv.text }} | {{ pv.meaning }} | {{ pv.description|enshorten }} |
+{%- if pv.title %} Title: {{ pv.title }}<br>{% endif -%}
+{%- if pv.is_a %} Is-A: {{ gen.link(pv.is_a) }}<br>{% endif -%}
+{%- if pv.mixins %} Mixins: {{ gen.links(pv.mixins) | join(', ') }}<br>{% endif -%}
+{%- if pv.deprecated %} **DEPRECATED**{% if pv.deprecated_element_has_exact_replacement %} (use {{ gen.link(pv.deprecated_element_has_exact_replacement) }}){% endif %}{% endif -%}
+ |
+{% endfor %}
+{%- else %}
 | Value | Meaning | Description |
 | --- | --- | --- |
 {% for pv in element.permissible_values.values() -%}
 | {{ pv.text }} | {{ pv.meaning }} | {{ pv.description|enshorten }} |
 {% endfor %}
+{%- endif %}
 {% else %}
 _This is a dynamic enum_
 {% endif %}

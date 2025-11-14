@@ -185,9 +185,9 @@ Alias: {{ element.alias }}
 {%- endif %}
 
 {% endif %}
-{%- set has_value_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+{%- set has_basic_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
 
-{%- if has_value_constraints %}
+{%- if has_basic_constraints %}
 ### Value Constraints
 
 | Property | Value |
@@ -202,6 +202,163 @@ Alias: {{ element.alias }}
 | Regex Pattern | `{{ element.pattern }}` |
 {%- endif %}
 
+{% endif %}
+{%- set has_advanced_constraints = element.structured_pattern or element.equals_string
+    or element.equals_string_in or element.equals_number or element.enum_range
+    or element.unit or element.implicit_prefix %}
+
+{%- if has_advanced_constraints %}
+<details>
+<summary>Additional Constraints</summary>
+
+{%- if element.structured_pattern %}
+**Structured Pattern:**
+
+- **Syntax:** `{{ element.structured_pattern.syntax }}`
+- **Interpolated:** {{ element.structured_pattern.interpolated }}
+{%- if element.structured_pattern.partial_match %}
+- **Partial Match:** Yes
+{%- endif %}
+{%- endif %}
+
+{%- if element.equals_string %}
+**Must Equal:** `{{ element.equals_string }}`
+{%- endif %}
+
+{%- if element.equals_string_in %}
+**Must Be One Of:** {{ element.equals_string_in | join(', ') }}
+{%- endif %}
+
+{%- if element.equals_number %}
+**Must Equal:** {{ element.equals_number }}
+{%- endif %}
+
+{%- if element.enum_range %}
+**Enumeration Range:** {{ gen.link(element.enum_range) }}
+{%- endif %}
+
+{%- if element.unit %}
+**Unit:** {{ gen.uri_link(element.unit) }}
+{%- endif %}
+
+{%- if element.implicit_prefix %}
+**Implicit Prefix:** {{ element.implicit_prefix }}
+{%- endif %}
+
+</details>
+{% endif %}
+
+{%- set has_rel_props = element.symmetric or element.asymmetric or element.reflexive
+    or element.locally_reflexive or element.irreflexive or element.transitive
+    or element.inverse or element.transitive_form_of or element.reflexive_transitive_form_of
+    or element.role or element.relational_role %}
+
+{%- if has_rel_props %}
+<details>
+<summary>Relationship Properties</summary>
+
+| Property | Value |
+| --- | --- |
+{%- if element.symmetric %}
+| Symmetric | Yes |
+{%- endif %}
+{%- if element.asymmetric %}
+| Asymmetric | Yes |
+{%- endif %}
+{%- if element.reflexive %}
+| Reflexive | Yes |
+{%- endif %}
+{%- if element.locally_reflexive %}
+| Locally Reflexive | Yes |
+{%- endif %}
+{%- if element.irreflexive %}
+| Irreflexive | Yes |
+{%- endif %}
+{%- if element.transitive %}
+| Transitive | Yes |
+{%- endif %}
+{%- if element.inverse %}
+| Inverse | {{ gen.link(element.inverse) }} |
+{%- endif %}
+{%- if element.transitive_form_of %}
+| Transitive Form Of | {{ gen.link(element.transitive_form_of) }} |
+{%- endif %}
+{%- if element.reflexive_transitive_form_of %}
+| Reflexive Transitive Form Of | {{ gen.link(element.reflexive_transitive_form_of) }} |
+{%- endif %}
+{%- if element.role %}
+| Role | {{ element.role }} |
+{%- endif %}
+{%- if element.relational_role %}
+| Relational Role | {{ element.relational_role }} |
+{%- endif %}
+
+</details>
+{% endif %}
+
+{%- set has_advanced = element.path_rule or element.disjoint_with
+    or element.children_are_mutually_disjoint or element.subproperty_of
+    or element.array or element.bindings or element.type_mappings
+    or element.value_presence or element.range_expression %}
+
+{%- if has_advanced %}
+<details>
+<summary>Advanced Properties</summary>
+
+{%- if element.subproperty_of %}
+**Subproperty Of:** {{ gen.link(element.subproperty_of) }}
+{%- endif %}
+
+{%- if element.path_rule %}
+**Path Rule:**
+
+```
+{{ element.path_rule }}
+```
+{%- endif %}
+
+{%- if element.disjoint_with %}
+**Disjoint With:** {{ gen.links(element.disjoint_with) | join(', ') }}
+{%- endif %}
+
+{%- if element.children_are_mutually_disjoint %}
+**Children Are Mutually Disjoint:** Yes
+{%- endif %}
+
+{%- if element.array %}
+**Array Configuration:**
+
+- **Dimensions:** {{ element.array.dimensions | join(' x ') }}
+{%- if element.array.exact_number_dimensions %}
+- **Exact Dimensions Required:** Yes
+{%- endif %}
+{%- endif %}
+
+{%- if element.range_expression %}
+**Range Expression:** {{ element.range_expression }}
+{%- endif %}
+
+{%- if element.value_presence %}
+**Value Presence:** {{ element.value_presence }}
+{%- endif %}
+
+{%- if element.bindings %}
+**Term Bindings:**
+
+{%- for binding in element.bindings %}
+- {{ binding }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.type_mappings %}
+**Type Mappings:**
+
+{%- for tm in element.type_mappings %}
+- **Framework:** {{ tm.framework }}, **Mapping:** {{ tm.mapping }}
+{%- endfor %}
+{%- endif %}
+
+</details>
 {% endif %}
 
 {%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of

@@ -35,9 +35,9 @@ URI: {{ gen.uri_link(element) }}
 | Union Of | {{ gen.links(element.union_of) | join(', ') }} |
 {%- endif %}
 
-{%- set has_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+{%- set has_basic_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
 
-{%- if has_constraints %}
+{%- if has_basic_constraints %}
 ## Value Constraints
 
 | Property | Value |
@@ -49,6 +49,45 @@ URI: {{ gen.uri_link(element) }}
 | Regex Pattern | `{{ element.pattern }}` |
 {%- endif %}
 
+{% endif %}
+{%- set has_advanced_constraints = element.structured_pattern or element.equals_string
+    or element.equals_string_in or element.equals_number or element.unit or element.implicit_prefix %}
+
+{%- if has_advanced_constraints %}
+<details>
+<summary>Additional Constraints</summary>
+
+{%- if element.structured_pattern %}
+**Structured Pattern:**
+
+- **Syntax:** `{{ element.structured_pattern.syntax }}`
+- **Interpolated:** {{ element.structured_pattern.interpolated }}
+{%- if element.structured_pattern.partial_match %}
+- **Partial Match:** Yes
+{%- endif %}
+{%- endif %}
+
+{%- if element.equals_string %}
+**Must Equal:** `{{ element.equals_string }}`
+{%- endif %}
+
+{%- if element.equals_string_in %}
+**Must Be One Of:** {{ element.equals_string_in | join(', ') }}
+{%- endif %}
+
+{%- if element.equals_number %}
+**Must Equal:** {{ element.equals_number }}
+{%- endif %}
+
+{%- if element.unit %}
+**Unit:** {{ gen.uri_link(element.unit) }}
+{%- endif %}
+
+{%- if element.implicit_prefix %}
+**Implicit Prefix:** {{ element.implicit_prefix }}
+{%- endif %}
+
+</details>
 {% endif %}
 
 {%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of or element.none_of %}
