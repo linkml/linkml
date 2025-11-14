@@ -1,20 +1,52 @@
-from linkml_runtime.linkml_model import ClassDefinitionName
+from .dependency_sorter import DependencySorter
 
 
 class ClassGeneratorMixin:
+    def enum_or_class(self, cn):
+        if cn in self.schemaview.all_enums():
+            return self.schemaview.get_enum(cn, strict=True)
+
+        if cn in self.schemaview.all_classes():
+            return self.schemaview.get_class(cn, strict=True)
+
+        raise Exception(f"Unknown class or enum {cn}")
+
     def ordered_classes(self):
-        return [self.schemaview.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy()]
+        sorter = DependencySorter()
 
-    def order_classes_by_hierarchy(self) -> list[ClassDefinitionName]:
+        self.add_dependencies_by_association(sorter)
+        self.add_dependencies_for_hierarchy(sorter)
+        sorted_class_names = sorter.sort_dependencies()
+
+        ordered = [self.enum_or_class(cn) for cn in sorted_class_names]
+
+        return ordered
+
+    def add_dependencies_for_hierarchy(self, sorter: DependencySorter) -> None:
+        """
+        Add dependencies based on class hierarchy.
+        """
         sv = self.schemaview
-        olist = sv.class_roots()
-        unprocessed = [cn for cn in sv.all_classes() if cn not in olist]
 
-        while len(unprocessed) > 0:
-            ext_list = [cn for cn in unprocessed if not any(p for p in sv.class_parents(cn) if p not in olist)]
-            if len(ext_list) == 0:
-                raise ValueError(f"Cycle in hierarchy, cannot process: {unprocessed}")
-            olist += ext_list
-            unprocessed = [cn for cn in unprocessed if cn not in olist]
+        for cn in sv.all_classes():
+            sorter.add_dependency(cn, None)
+            parents = sv.class_parents(cn)
 
-        return olist
+            for p in parents:
+                sorter.add_dependency(cn, p)
+
+    def add_dependencies_by_association(self, sorter: DependencySorter) -> None:
+        """
+        Add dependencies based on associations.
+        """
+        sv = self.schemaview
+
+        for cn in sv.all_classes():
+            for slot_name in sv.class_slots(cn):
+                slot = sv.induced_slot(slot_name, cn)
+                if slot.range and slot.range in sv.all_classes() and slot.range not in sv.all_enums():
+                    # Only add dependency if slot is inlined or range has no identifier
+                    if slot.inlined or slot.inlined_as_list or sv.get_identifier_slot(slot.range) is None:
+                        sorter.add_dependency(cn, slot.range)
+                    else:
+                        sorter.add_dependency(cn, None)
