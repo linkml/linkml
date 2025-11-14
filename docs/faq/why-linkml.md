@@ -401,6 +401,29 @@ semantically describe JSON files with LinkML too.
 
 We are currently planning on writing a generator for CSVW JSON-LD.
 
+## Why should I use LinkML over Frictionless Data, Croissant, or MAGO?
+
+[Frictionless Data](https://frictionlessdata.io/), [Croissant](https://github.com/mlcommons/croissant), and [MAGO](https://github.com/brain-bican/mago) are frameworks for describing tabular and other datasets with metadata.
+
+**Frictionless Data** provides Table Schema for describing the structure of tabular data, along with Data Package for bundling datasets with metadata. It's excellent for lightweight data publishing and validation of CSVs and spreadsheets.
+
+**Croissant** is a metadata format developed by MLCommons for describing machine learning datasets, including their structure, provenance, and content. It builds on schema.org and is designed for dataset discovery and reuse in ML contexts.
+
+**MAGO** (Metadata Application for Genetic Observations) is a LinkML-based framework specifically designed for describing genetic and genomic datasets with rich biological context.
+
+LinkML offers several advantages over these frameworks:
+
+* **Multi-format support**: While Frictionless focuses primarily on tabular data and Croissant on ML datasets, LinkML works seamlessly across JSON, YAML, RDF, SQL databases, and graph databases
+* **Rich semantic modeling**: LinkML provides built-in support for ontology mappings, IRIs, and semantic web integration beyond basic metadata
+* **Inheritance and polymorphism**: LinkML supports object-oriented modeling features not available in Frictionless or Croissant
+* **Extensible validation**: LinkML offers sophisticated validation rules including patterns, ranges, and dynamic enumerations linked to ontologies
+* **Code generation**: LinkML can generate Python dataclasses, TypeScript interfaces, JSON-Schema, SQL DDL, and more from a single schema
+* **Interoperability**: LinkML schemas can be compiled to Frictionless Table Schema, making it a superset rather than an alternative
+
+If your primary use case is lightweight tabular data publishing, Frictionless may be simpler. If you're specifically working with ML datasets and need schema.org compatibility, Croissant may be appropriate. If you're working with genetic data, MAGO (which is built on LinkML) provides domain-specific patterns.
+
+However, if you need a flexible, semantic-aware modeling language that works across multiple data formats and can generate artifacts for various target frameworks, LinkML is the better choice. You can always compile your LinkML schema to these other formats when needed.
+
 ## Why should I use LinkML over ISO-11179?
 
 [ISO-11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) is an ISO standard for metadata and metadata registries. It
