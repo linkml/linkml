@@ -401,28 +401,83 @@ semantically describe JSON files with LinkML too.
 
 We are currently planning on writing a generator for CSVW JSON-LD.
 
-## Why should I use LinkML over Frictionless Data, Croissant, or MAGO?
+## Why should I use LinkML over Frictionless Data
 
-[Frictionless Data](https://frictionlessdata.io/), [Croissant](https://github.com/mlcommons/croissant), and [MAGO](https://github.com/brain-bican/mago) are frameworks for describing tabular and other datasets with metadata.
+[Frictionless Data](https://frictionlessdata.io/) [MAGO](https://github.com/brain-bican/mago) is a framework for describing tabular and other datasets with metadata.
 
-**Frictionless Data** provides Table Schema for describing the structure of tabular data, along with Data Package for bundling datasets with metadata. It's excellent for lightweight data publishing and validation of CSVs and spreadsheets.
+**Frictionless Data** provides Table Schema for describing the structure of tabular data, along with Data Package 
+for bundling datasets with metadata. It's excellent for lightweight data publishing and validation of CSVs and 
+spreadsheets.
+
+## Why should I use LinkML over Croissant?
+
+[Croissant](https://github.com/mlcommons/croissant) is a framework for describing tabular and other datasets with metadata.
 
 **Croissant** is a metadata format developed by MLCommons for describing machine learning datasets, including their structure, provenance, and content. It builds on schema.org and is designed for dataset discovery and reuse in ML contexts.
 
-**MAGO** (Metadata Application for Genetic Observations) is a LinkML-based framework specifically designed for describing genetic and genomic datasets with rich biological context.
-
 LinkML offers several advantages over these frameworks:
 
-* **Multi-format support**: While Frictionless focuses primarily on tabular data and Croissant on ML datasets, LinkML works seamlessly across JSON, YAML, RDF, SQL databases, and graph databases
-* **Rich semantic modeling**: LinkML provides built-in support for ontology mappings, IRIs, and semantic web integration beyond basic metadata
-* **Inheritance and polymorphism**: LinkML supports object-oriented modeling features not available in Frictionless or Croissant
-* **Extensible validation**: LinkML offers sophisticated validation rules including patterns, ranges, and dynamic enumerations linked to ontologies
-* **Code generation**: LinkML can generate Python dataclasses, TypeScript interfaces, JSON-Schema, SQL DDL, and more from a single schema
-* **Interoperability**: LinkML schemas can be compiled to Frictionless Table Schema, making it a superset rather than an alternative
+While Frictionless focuses primarily on tabular data and Croissant on ML datasets, LinkML works seamlessly across 
+JSON, YAML, RDF, SQL databases, and graph databases.  LinkML also provides built-in support for ontology mappings, 
+IRIs, and semantic web integration beyond basic metadata. LinkML supports object-oriented modeling features.
+LinkML offers sophisticated validation rules including patterns, ranges, and dynamic enumerations linked to ontologies, 
+and can generate Python dataclasses, TypeScript interfaces, JSON-Schema, SQL DDL, and more from a single schema.
 
-If your primary use case is lightweight tabular data publishing, Frictionless may be simpler. If you're specifically working with ML datasets and need schema.org compatibility, Croissant may be appropriate. If you're working with genetic data, MAGO (which is built on LinkML) provides domain-specific patterns.
+If your primary use case is lightweight tabular data publishing, Frictionless may be simpler. If you're 
+specifically working with ML datasets and need schema.org compatibility, Croissant may be appropriate.
 
-However, if you need a flexible, semantic-aware modeling language that works across multiple data formats and can generate artifacts for various target frameworks, LinkML is the better choice. You can always compile your LinkML schema to these other formats when needed.
+## Why should I use LinkML over Schema.org?
+
+[Schema.org](https://schema.org) is a collaborative initiative that provides a collection of schemas (structured data vocabularies) 
+used to mark up web pages so that search engines can better understand their content. It's supported by major search 
+engines including Google, Microsoft, Yahoo, and Yandex, and is used by over 45 million websites.
+
+However, Schema.org is a vocabulary that you can use to annotate data for use on the web.  LinkML provides rich 
+validation rules, required fields, patterns, ranges, and cardinality constraints.  Use Schema.org when you primarily 
+need to mark up web pages for SEO or are describing common web entities with standard vocabularies. Use LinkML when you 
+need to validate data, generate code, work across multiple formats, or require domain-specific modeling with
+constraints. You can still map your LinkML models to Schema.org terms for compatibility.
+
+## Why should I use LinkML over Bioschemas?
+
+[Bioschemas](https://bioschemas.org) is a community initiative that extends Schema.org with life sciences-specific types and properties. 
+It creates profiles (usage guidelines) for Schema.org types to improve findability of biological datasets, tools, 
+training materials, and other resources.
+Bioschemas profiles are guidelines; LinkML enforces constraints through validation. Bioschemas focuses on JSON-LD for 
+web; LinkML supports TSV, SQL, RDF, and other formats common in bioinformatics pipelines. LinkML has sophisticated 
+support for dynamic enumerations from ontologies (e.g., pulling terms from GO, MONDO, UBERON) and ontology-based 
+validation.
+
+Use Bioschemas when your primary goal is to mark up biological web resources for improved search engine 
+indexing and discoverability. Use LinkML when building biological data standards, databases, APIs, or analytical pipelines that require validation, 
+code generation, and complex data modeling. LinkML is particularly strong for multi-institutional data integration 
+projects in life sciences.
+
+## Why should I use LinkML over DCAT?
+
+[DCAT (Data Catalog Vocabulary)](https://www.w3.org/TR/vocab-dcat-3/) is a W3C RDF vocabulary designed to facilitate interoperability between data 
+catalogs published on the web. It enables publishers to describe datasets and data services in a standardized way 
+that catalog aggregators can consume.
+
+DCAT describes catalog metadata; LinkML models, validates and maps the actual data within datasets. LinkML models can 
+also be used for modeling dataset metadata. DCAT describes datasets as black boxes; LinkML describes the structure
+and constraints of the data inside those datasets as well.
+
+Use DCAT when you need to publish dataset-level metadata to data catalogs, describe distributions and access points, 
+or integrate with open data portals.  Use LinkML when you need to define the internal structure of your datasets, 
+validate data quality, generate code for data processing, or create data standards. 
+
+## Why should I use LinkML over XML Schema (XSD)?
+
+[XML Schema](https://www.w3.org/TR/xmlschema11-1/) (XSD) is a W3C specification for defining the structure, content, and semantics of XML documents. 
+It provides a type system, validation rules, and documentation for XML-based data exchange.LinkML uses YAML instead of 
+verbose XML, making schemas much more human-friendly to author and maintain. XML Schema only works with XML. LinkML 
+handles JSON, YAML, TSV, RDF, SQL, and more from a single schema definition.
+
+Use XML Schema when you're working in an XML-centric environment, integrating with legacy systems that require XSD, 
+or in industries with established XSD-based standards. Use LinkML when building new data standards, working with 
+modern data formats (JSON, YAML), need multi-format support, or want developer-friendly schema authoring. 
+If you need XML support, compile your LinkML schema to XSD.
 
 ## Why should I use LinkML over ISO-11179?
 
