@@ -474,6 +474,25 @@ or in industries with established XSD-based standards. Use LinkML when building 
 modern data formats (JSON, YAML), need multi-format support, or want developer-friendly schema authoring. 
 If you need XML support, compile your LinkML schema to XSD.
 
+## Why should I use LinkML over ISA-Tools?
+
+[ISA-Tools](https://isa-tools.org) is an open-source framework built around a three-level data model: 
+Investigation (project context), Study (unit of research), and Assay (analytical measurement). 
+It provides rich description of experimental metadata for life sciences, environmental, and biomedical 
+experiments using ISA-Tab (tab-delimited), ISA-JSON, and RDF serializations.
+
+ISA is prescriptive with its three-level hierarchy; LinkML allows arbitrary domain models tailored to your specific needs
+and works for any type of data. LinkML is domain-agnostic and used across biomedicine, environmental science, 
+materials science, and other fields
+
+Use ISA-Tools when you're submitting to repositories that require ISA-Tab format, working in metabolomics or other 
+communities with established ISA adoption, or need tools specifically designed for experimental metadata management.
+
+Use LinkML when you need flexible data modeling beyond the Investigation-Study-Assay hierarchy, want to generate 
+code and schemas for multiple targets, require sophisticated validation, or are building domain-specific data standards. 
+LinkML is particularly strong when your data doesn't fit the experimental metadata pattern or when you need a schema
+that serves multiple purposes (validation, documentation, code generation, and transformation).
+
 ## Why should I use LinkML over ISO-11179?
 
 [ISO-11179](https://en.wikipedia.org/wiki/ISO/IEC_11179) is an ISO standard for metadata and metadata registries. It
