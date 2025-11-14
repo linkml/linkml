@@ -10,7 +10,12 @@ This document tracks the work in progress for improving gen-doc coverage of Link
 
 ## Current Status
 
-**Phase**: Planning / Setup
+**Phase**: Phase 2 Complete
+
+- ✅ Phase 1: Common metadata properties (completed)
+- ✅ Phase 2: Core element-specific properties (completed)
+- ⏳ Phase 3: Expressions & Logic (pending)
+- ⏳ Phase 4: Advanced Features (pending)
 
 See the PR description for the complete implementation plan organized into 4 phases.
 

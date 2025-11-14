@@ -60,6 +60,45 @@ URI: {{ gen.uri_link(element) }}
 <!-- no inheritance hierarchy -->
 {% endif %}
 
+{%- set has_class_props = element.class_uri or element.tree_root or element.mixin
+    or element.subclass_of or element.union_of or element.disjoint_with
+    or element.slot_names_unique or element.represents_relationship
+    or element.children_are_mutually_disjoint %}
+
+{%- if has_class_props %}
+## Class Properties
+
+| Property | Value |
+| --- | --- |
+{%- if element.class_uri %}
+| Class URI | {{ gen.uri_link(element.class_uri) }} |
+{%- endif %}
+{%- if element.mixin %}
+| Mixin | Yes |
+{%- endif %}
+{%- if element.tree_root %}
+| Tree Root | Yes |
+{%- endif %}
+{%- if element.slot_names_unique %}
+| Slot Names Unique | Yes |
+{%- endif %}
+{%- if element.represents_relationship %}
+| Represents Relationship | Yes |
+{%- endif %}
+{%- if element.subclass_of %}
+| Subclass Of | {{ gen.links(element.subclass_of) | join(', ') }} |
+{%- endif %}
+{%- if element.union_of %}
+| Union Of | {{ gen.links(element.union_of) | join(', ') }} |
+{%- endif %}
+{%- if element.disjoint_with %}
+| Disjoint With | {{ gen.links(element.disjoint_with) | join(', ') }} |
+{%- endif %}
+{%- if element.children_are_mutually_disjoint %}
+| Children Are Mutually Disjoint | Yes |
+{%- endif %}
+
+{% endif %}
 ## Slots
 
 | Name | Cardinality and Range | Description | Inheritance |
@@ -73,6 +112,30 @@ URI: {{ gen.uri_link(element) }}
 {%- for slot in gen.get_indirect_slots(element) -%}
 | {{ gen.link(slot) }} | {{ gen.cardinality(slot) }} <br/> {{ compute_range(slot) }} | {{ slot.description|enshorten }} | {{ gen.links(gen.get_slot_inherited_from(element.name, slot.name))|join(', ') }} |
 {% endfor -%}
+{% endif %}
+
+{%- if element.unique_keys %}
+## Unique Keys
+
+{% for uk in element.unique_keys.values() %}
+### {{ uk.unique_key_name }}
+
+**Unique key slots:** {{ uk.unique_key_slots | join(', ') }}
+{%- if uk.consider_nulls_inequal %}
+
+Considers null values as inequal
+{%- endif %}
+{% endfor %}
+{% endif %}
+
+{%- if element.defining_slots %}
+## Defining Slots
+
+This class is defined by the following slots:
+
+{% for slot_name in element.defining_slots %}
+* {{ gen.link(slot_name) }}
+{%- endfor %}
 {% endif %}
 
 {% if schemaview.is_mixin(element.name) %}

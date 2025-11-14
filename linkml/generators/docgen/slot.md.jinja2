@@ -78,27 +78,131 @@ Alias: {{ element.alias }}
 
 ## Properties
 
-* Range: {{ compute_range(element) }}
-{% if element.multivalued %}
-* Multivalued: {{ element.multivalued }}
-{% endif -%}
-{% if element.required %}
-* Required: {{ element.required }}
-{% elif element.recommended %}
-* Recommended: {{ element.recommended }}
-{% endif -%}
-{% if element.minimum_value is not none %}
-* Minimum Value: {{ element.minimum_value|int }}
-{% endif -%}
-{% if element.maximum_value is not none %}
-* Maximum Value: {{ element.maximum_value|int }}
-{% endif -%}
-{% if element.pattern %}
-* Regex pattern: {{ '`' }}{{ element.pattern }}{{ '`' }}
-{% endif -%}
-{% if schemaview.is_mixin(element.name) %}
-* Mixin: {{ element.mixin }}
-{% endif -%}
+### Type and Range
+
+| Property | Value |
+| --- | --- |
+| Range | {{ compute_range(element) }} |
+{%- if element.domain %}
+| Domain | {{ gen.link(element.domain) }} |
+{%- endif %}
+{%- if element.domain_of %}
+| Domain Of | {{ gen.links(element.domain_of) | join(', ') }} |
+{%- endif %}
+{%- if element.slot_uri %}
+| Slot URI | {{ gen.uri_link(element.slot_uri) }} |
+{%- endif %}
+{%- if element.slot_group %}
+| Slot Group | {{ gen.link(element.slot_group) }} |
+{%- endif %}
+{%- if element.is_grouping_slot %}
+| Is Grouping Slot | Yes |
+{%- endif %}
+
+### Cardinality and Requirements
+
+| Property | Value |
+| --- | --- |
+{%- if element.required %}
+| Required | Yes |
+{%- elif element.recommended %}
+| Recommended | Yes |
+{%- endif %}
+{%- if element.multivalued %}
+| Multivalued | Yes |
+{%- endif %}
+{%- if element.minimum_cardinality is not none %}
+| Minimum Cardinality | {{ element.minimum_cardinality }} |
+{%- endif %}
+{%- if element.maximum_cardinality is not none %}
+| Maximum Cardinality | {{ element.maximum_cardinality }} |
+{%- endif %}
+{%- if element.exact_cardinality is not none %}
+| Exact Cardinality | {{ element.exact_cardinality }} |
+{%- endif %}
+
+{%- if element.multivalued and (element.list_elements_unique is not none or element.list_elements_ordered is not none) %}
+### List/Collection Properties
+
+| Property | Value |
+| --- | --- |
+{%- if element.list_elements_unique is not none %}
+| Elements Must Be Unique | {% if element.list_elements_unique %}Yes{% else %}No{% endif %} |
+{%- endif %}
+{%- if element.list_elements_ordered is not none %}
+| Elements Are Ordered | {% if element.list_elements_ordered %}Yes{% else %}No{% endif %} |
+{%- endif %}
+
+{% endif %}
+{%- set has_slot_chars = element.key or element.identifier or element.designates_type
+    or element.inherited or element.readonly or element.ifabsent or element.owner
+    or element.shared or element.is_class_field or element.is_usage_slot
+    or element.usage_slot_name or element.singular_name or schemaview.is_mixin(element.name) %}
+
+{%- if has_slot_chars %}
+### Slot Characteristics
+
+| Property | Value |
+| --- | --- |
+{%- if element.singular_name %}
+| Singular Name | {{ element.singular_name }} |
+{%- endif %}
+{%- if element.key %}
+| Key | Yes |
+{%- endif %}
+{%- if element.identifier %}
+| Identifier | Yes |
+{%- endif %}
+{%- if element.designates_type %}
+| Designates Type | Yes |
+{%- endif %}
+{%- if element.inherited %}
+| Inherited | Yes |
+{%- endif %}
+{%- if element.readonly %}
+| Readonly | Yes |
+{%- endif %}
+{%- if element.ifabsent %}
+| If Absent | `{{ element.ifabsent }}` |
+{%- endif %}
+{%- if element.owner %}
+| Owner | {{ gen.link(element.owner) }} |
+{%- endif %}
+{%- if element.shared %}
+| Shared | Yes |
+{%- endif %}
+{%- if element.is_class_field %}
+| Is Class Field | Yes |
+{%- endif %}
+{%- if element.is_usage_slot %}
+| Is Usage Slot | Yes |
+{%- endif %}
+{%- if element.usage_slot_name %}
+| Usage Slot Name | {{ element.usage_slot_name }} |
+{%- endif %}
+{%- if schemaview.is_mixin(element.name) %}
+| Mixin | Yes |
+{%- endif %}
+
+{% endif %}
+{%- set has_value_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+
+{%- if has_value_constraints %}
+### Value Constraints
+
+| Property | Value |
+| --- | --- |
+{%- if element.minimum_value is not none %}
+| Minimum Value | {{ element.minimum_value|int }} |
+{%- endif %}
+{%- if element.maximum_value is not none %}
+| Maximum Value | {{ element.maximum_value|int }} |
+{%- endif %}
+{%- if element.pattern %}
+| Regex Pattern | `{{ element.pattern }}` |
+{%- endif %}
+
+{% endif %}
 
 {% if schemaview.usage_index().get(element.name) %}
 ## Usages

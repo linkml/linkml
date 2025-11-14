@@ -237,7 +237,7 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     assert_mdfile_does_not_contain(tmp_path / "SubsetB.md", "## Enumerations in subset")
 
     # test internal links
-    assert_mdfile_contains(tmp_path / "ceo.md", "Range: [Person](Person.md)", after="Properties")
+    assert_mdfile_contains(tmp_path / "ceo.md", "| Range | [Person](Person.md) |", after="Properties")
     # TODO: external links
 
     # test slot hierarchy
@@ -310,13 +310,13 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="## Examples",
     )
     # Minimum Value showing up even if value is 0
-    assert_mdfile_contains(tmp_path / "age_in_years.md", "Minimum Value: 0", after="## Properties")
+    assert_mdfile_contains(tmp_path / "age_in_years.md", "| Minimum Value | 0 |", after="## Properties")
     # Maximum Value
-    assert_mdfile_contains(tmp_path / "age_in_years.md", "Maximum Value: 999", after="## Properties")
+    assert_mdfile_contains(tmp_path / "age_in_years.md", "| Maximum Value | 999 |", after="## Properties")
     #
     assert_mdfile_contains(
         tmp_path / "species_name.md",
-        r"Regex pattern: `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$`",
+        r"| Regex Pattern | `^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\.[A-Z]+(-[0-9]{4})?$` |",
         after="## Properties",
     )
 
@@ -693,14 +693,14 @@ def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
         tmp_path / "type.md",
         "[FamilialRelationship](FamilialRelationship.md) |  |  yes  |",
         after="## Applicable Classes",
-        followed_by=["## Properties", "* Range"],
+        followed_by=["## Properties", "### Type and Range"],
     )
 
     assert_mdfile_contains(
         tmp_path / "type.md",
         "[EmploymentEvent](EmploymentEvent.md) |  |  yes  |",
         after="## Applicable Classes",
-        followed_by=["## Properties", "* Range"],
+        followed_by=["## Properties", "### Type and Range"],
     )
 
 
@@ -1459,3 +1459,174 @@ def test_preserve_names(tmp_path):
     # Test mappings edge cases
     for test_input in [None, "", "NonExistent"]:
         gen_preserve.schemaview.get_mappings(test_input)
+
+
+def test_core_element_properties(input_path, tmp_path):
+    """Test that core element-specific properties are displayed in documentation (Phase 2 of Issue #3004)
+
+    This tests that core element-specific properties are rendered in generated docs:
+    Classes:
+    - class_uri, tree_root, mixin, slot_names_unique, represents_relationship
+    - subclass_of, union_of, disjoint_with, children_are_mutually_disjoint
+    - unique_keys, defining_slots
+
+    Slots:
+    - domain, domain_of, slot_uri, slot_group, is_grouping_slot
+    - minimum_cardinality, maximum_cardinality, exact_cardinality
+    - list_elements_unique, list_elements_ordered
+    - key, identifier, designates_type, inherited, readonly, ifabsent
+    - owner, shared, is_class_field, is_usage_slot, usage_slot_name, singular_name
+
+    Enums:
+    - enum_uri
+
+    Types:
+    - type_uri (uri field), union_of
+    """
+    schema_path = str(input_path("core_element_properties_coverage.yaml"))
+    gen = DocGenerator(schema_path, mergeimports=True, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    # ===== Test Class Properties =====
+    class_file = tmp_path / "TestClassWithCoreProps.md"
+
+    # Test Class Properties section
+    assert_mdfile_contains(class_file, "## Class Properties", after="Class: TestClassWithCoreProps")
+    assert_mdfile_contains(class_file, "| Class URI | [schema:Thing]", after="## Class Properties")
+    assert_mdfile_contains(class_file, "| Tree Root | Yes |", after="Class URI")
+    assert_mdfile_contains(class_file, "| Slot Names Unique | Yes |", after="Tree Root")
+
+    # Test Unique Keys section
+    assert_mdfile_contains(class_file, "## Unique Keys", after="## Slots")
+    assert_mdfile_contains(class_file, "### name_key", after="## Unique Keys")
+    assert_mdfile_contains(class_file, "**Unique key slots:** name_slot", after="### name_key")
+    assert_mdfile_contains(class_file, "### compound_key", after="### name_key")
+    assert_mdfile_contains(class_file, "**Unique key slots:** identifier_slot, name_slot", after="### compound_key")
+    assert_mdfile_contains(class_file, "Considers null values as inequal", after="identifier_slot, name_slot")
+
+    # Test Defining Slots section
+    assert_mdfile_contains(class_file, "## Defining Slots", after="## Unique Keys")
+    assert_mdfile_contains(class_file, "This class is defined by the following slots:", after="## Defining Slots")
+    assert_mdfile_contains(class_file, "* [identifier_slot](identifier_slot.md)", after="defined by the following")
+
+    # Test Mixin class
+    mixin_file = tmp_path / "IdentifiableMixin.md"
+    assert_mdfile_contains(mixin_file, "## Class Properties", after="Class: IdentifiableMixin")
+    assert_mdfile_contains(mixin_file, "| Mixin | Yes |", after="## Class Properties")
+
+    # Test Relationship class
+    relationship_file = tmp_path / "RelationshipClass.md"
+    assert_mdfile_contains(relationship_file, "| Represents Relationship | Yes |", after="## Class Properties")
+
+    # Test Union class
+    union_file = tmp_path / "UnionClass.md"
+    assert_mdfile_contains(union_file, "| Union Of |", after="## Class Properties")
+    assert_mdfile_contains(union_file, "[ConcreteClass](ConcreteClass.md)")
+
+    # Test Disjoint class
+    disjoint_file = tmp_path / "DisjointClass.md"
+    assert_mdfile_contains(disjoint_file, "| Disjoint With |", after="## Class Properties")
+    assert_mdfile_contains(disjoint_file, "| Children Are Mutually Disjoint | Yes |", after="Disjoint With")
+
+    # ===== Test Slot Properties =====
+
+    # Test identifier slot with key, identifier, readonly
+    identifier_slot_file = tmp_path / "identifier_slot.md"
+    assert_mdfile_contains(identifier_slot_file, "## Properties", after="Slot: identifier_slot")
+    assert_mdfile_contains(identifier_slot_file, "### Type and Range", after="## Properties")
+    assert_mdfile_contains(identifier_slot_file, "| Slot URI | [schema:identifier]", after="Type and Range")
+
+    assert_mdfile_contains(identifier_slot_file, "### Cardinality and Requirements", after="Type and Range")
+    assert_mdfile_contains(identifier_slot_file, "| Required | Yes |", after="Cardinality and Requirements")
+    assert_mdfile_contains(identifier_slot_file, "| Minimum Cardinality | 1 |", after="Required")
+    assert_mdfile_contains(identifier_slot_file, "| Maximum Cardinality | 1 |", after="Minimum Cardinality")
+
+    assert_mdfile_contains(identifier_slot_file, "### Slot Characteristics", after="Cardinality and Requirements")
+    assert_mdfile_contains(identifier_slot_file, "| Key | Yes |", after="Slot Characteristics")
+    assert_mdfile_contains(identifier_slot_file, "| Identifier | Yes |", after="Key")
+    assert_mdfile_contains(identifier_slot_file, "| Readonly | Yes |", after="Identifier")
+
+    # Test name slot with pattern and value constraints
+    name_slot_file = tmp_path / "name_slot.md"
+    assert_mdfile_contains(name_slot_file, "| Singular Name | name |", after="Slot Characteristics")
+    assert_mdfile_contains(name_slot_file, "### Value Constraints", after="Slot Characteristics")
+    assert_mdfile_contains(name_slot_file, "| Minimum Value | 1 |", after="Value Constraints")
+    assert_mdfile_contains(name_slot_file, "| Maximum Value | 100 |", after="Minimum Value")
+    assert_mdfile_contains(name_slot_file, "| Regex Pattern | `^[A-Za-z0-9_]+$` |", after="Maximum Value")
+
+    # Test multivalued slot with list properties
+    tags_file = tmp_path / "tags.md"
+    assert_mdfile_contains(tags_file, "| Multivalued | Yes |", after="Cardinality and Requirements")
+    assert_mdfile_contains(tags_file, "| Minimum Cardinality | 0 |", after="Multivalued")
+    assert_mdfile_contains(tags_file, "| Maximum Cardinality | 10 |", after="Minimum Cardinality")
+    assert_mdfile_contains(tags_file, "### List/Collection Properties", after="Cardinality and Requirements")
+    assert_mdfile_contains(tags_file, "| Elements Must Be Unique | Yes |", after="List/Collection Properties")
+    assert_mdfile_contains(tags_file, "| Elements Are Ordered | No |", after="Elements Must Be Unique")
+
+    # Test slot with domain
+    subject_file = tmp_path / "subject.md"
+    assert_mdfile_contains(subject_file, "| Domain | [RelationshipClass]", after="Type and Range")
+
+    # Test complex slot with characteristics
+    complex_slot_file = tmp_path / "complex_slot.md"
+    assert_mdfile_contains(complex_slot_file, "| Recommended | Yes |", after="Cardinality and Requirements")
+    assert_mdfile_contains(complex_slot_file, "| Slot Group | [metadata_group]", after="Type and Range")
+    assert_mdfile_contains(complex_slot_file, "| If Absent | `string(default_value)` |", after="Slot Characteristics")
+    assert_mdfile_contains(complex_slot_file, "| Owner | [TestClassWithCoreProps]", after="If Absent")
+    assert_mdfile_contains(complex_slot_file, "| Shared | Yes |", after="Owner")
+
+    # Test exact cardinality slot
+    exact_cardinality_file = tmp_path / "exact_cardinality_slot.md"
+    assert_mdfile_contains(exact_cardinality_file, "| Exact Cardinality | 3 |", after="Cardinality and Requirements")
+
+    # Test grouping slot
+    metadata_group_file = tmp_path / "metadata_group.md"
+    assert_mdfile_contains(metadata_group_file, "| Is Grouping Slot | Yes |", after="Type and Range")
+
+    # Test usage slot
+    specialized_identifier_file = tmp_path / "specialized_identifier.md"
+    assert_mdfile_contains(specialized_identifier_file, "| Is Usage Slot | Yes |", after="Slot Characteristics")
+    assert_mdfile_contains(specialized_identifier_file, "| Usage Slot Name | specialized_id |", after="Is Usage Slot")
+
+    # Test class field
+    class_level_file = tmp_path / "class_level_property.md"
+    assert_mdfile_contains(class_level_file, "| Is Class Field | Yes |", after="Slot Characteristics")
+
+    # Test inherited slot
+    base_property_file = tmp_path / "base_property.md"
+    assert_mdfile_contains(base_property_file, "| Inherited | Yes |", after="Slot Characteristics")
+
+    # Test designates_type slot
+    type_designator_file = tmp_path / "type_designator.md"
+    assert_mdfile_contains(type_designator_file, "| Designates Type | Yes |", after="Slot Characteristics")
+
+    # ===== Test Enum Properties =====
+
+    # Test enum with enum_uri
+    status_enum_file = tmp_path / "StatusEnum.md"
+    assert_mdfile_contains(status_enum_file, "**Enum URI:** [schema:status]", after="Enum: StatusEnum")
+
+    # Test enum without enum_uri doesn't show it
+    simple_enum_file = tmp_path / "SimpleEnum.md"
+    assert_mdfile_does_not_contain(simple_enum_file, "**Enum URI:**")
+
+    # ===== Test Type Properties =====
+
+    # Test type with type_uri (uri field) and constraints
+    positive_int_file = tmp_path / "PositiveInteger.md"
+    assert_mdfile_contains(positive_int_file, "## Type Properties", after="Type: PositiveInteger")
+    assert_mdfile_contains(positive_int_file, "| Type URI | [schema:PositiveInteger]", after="Type Properties")
+    assert_mdfile_contains(positive_int_file, "## Value Constraints", after="Type Properties")
+    assert_mdfile_contains(positive_int_file, "| Numeric Range |", after="Value Constraints")
+    assert_mdfile_contains(positive_int_file, "| Regex Pattern | `^[1-9][0-9]*$` |", after="Numeric Range")
+
+    # Test type with union_of
+    string_or_int_file = tmp_path / "StringOrInteger.md"
+    assert_mdfile_contains(string_or_int_file, "| Union Of |", after="Type Properties")
+    assert_mdfile_contains(string_or_int_file, "[String]")
+    assert_mdfile_contains(string_or_int_file, "[Integer]")
+
+    # Test type with repr
+    formatted_string_file = tmp_path / "FormattedString.md"
+    assert_mdfile_contains(formatted_string_file, "| Base | `str` |", after="Type Properties")
+    assert_mdfile_contains(formatted_string_file, "| Representation | `str` |", after="Base")

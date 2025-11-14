@@ -15,13 +15,40 @@ _{{ element_description_line }}_
 
 URI: {{ gen.uri_link(element) }}
 
-{{ gen.bullet(element, "base") }}
-{{ gen.bullet(element, "uri") }}
-{{ gen.bullet(element, "repr") }}
-{{ gen.bullet(element, "typeof") }}
-{{ gen.bullet(element, "pattern", backquote=True) }}
-{% if gen.number_value_range(element) %}
-* Numeric Value Range: {{ gen.number_value_range(element) }}
+## Type Properties
+
+| Property | Value |
+| --- | --- |
+{%- if element.typeof %}
+| Type Of | {{ gen.link(element.typeof) }} |
+{%- endif %}
+{%- if element.base %}
+| Base | `{{ element.base }}` |
+{%- endif %}
+{%- if element.uri %}
+| Type URI | {{ gen.uri_link(element.uri) }} |
+{%- endif %}
+{%- if element.repr %}
+| Representation | `{{ element.repr }}` |
+{%- endif %}
+{%- if element.union_of %}
+| Union Of | {{ gen.links(element.union_of) | join(', ') }} |
+{%- endif %}
+
+{%- set has_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+
+{%- if has_constraints %}
+## Value Constraints
+
+| Property | Value |
+| --- | --- |
+{%- if element.minimum_value is not none or element.maximum_value is not none %}
+| Numeric Range | {{ gen.number_value_range(element) }} |
+{%- endif %}
+{%- if element.pattern %}
+| Regex Pattern | `{{ element.pattern }}` |
+{%- endif %}
+
 {% endif %}
 
 {% include "common_metadata.md.jinja2" %}

@@ -15,6 +15,11 @@ _{{ element_description_line }}_
 
 URI: {{ gen.uri_link(element) }}
 
+{%- if element.enum_uri %}
+
+**Enum URI:** {{ gen.uri_link(element.enum_uri) }}
+{% endif %}
+
 {% if element.permissible_values -%}
 ## Permissible Values
 
