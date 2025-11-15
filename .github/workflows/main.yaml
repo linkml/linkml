@@ -133,7 +133,7 @@ jobs:
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          uv run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
+          uv run coverage run -m pytest --with-slow --with-biolink -m slow -n auto packages/linkml/tests
           uv run coverage xml
           uv run coverage report -m
       - name: Upload coverage report
@@ -166,4 +166,6 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
-        run: uv build
+        run: |
+          uv build --package linkml
+          uv build --package linkml-runtime
