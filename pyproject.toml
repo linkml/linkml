@@ -2,7 +2,7 @@
 members = ["packages/*"]
 
 [tool.pytest.ini_options]
-testpaths = ["packages/linkml/tests"]
+testpaths = ["packages/linkml/tests", "packages/linkml_runtime/tests"]
 filterwarnings = [
   # https://github.com/RDFLib/rdflib/issues/1830
   "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
