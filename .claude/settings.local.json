@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(uv sync:*)"
+      "Bash(uv sync:*)",
+      "Bash(uv run pytest:*)",
+      "Bash(pre-commit run:*)"
     ],
     "deny": [],
     "ask": []

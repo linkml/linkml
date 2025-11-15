@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from click.testing import CliRunner
 
@@ -27,6 +29,10 @@ def test_metamodel(arguments, snapshot_file, snapshot):
     assert result.output == snapshot(f"genyuml/{snapshot_file}")
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="SVG snapshot differences on Windows. See https://github.com/linkml/linkml/issues/2988",
+)
 @pytest.mark.network
 @pytest.mark.parametrize(
     "arguments,snapshot_dir",
@@ -49,6 +55,10 @@ def test_invalid_classname():
     assert "noclass" in str(result.exception)
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="SVG snapshot differences on Windows. See https://github.com/linkml/linkml/issues/2988",
+)
 @pytest.mark.parametrize("format", YumlGenerator.valid_formats)
 @pytest.mark.network
 def test_formats(format, tmp_path, snapshot):
@@ -58,6 +68,10 @@ def test_formats(format, tmp_path, snapshot):
     assert tmp_path == snapshot(f"genyuml/meta_{format}")
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="SVG snapshot differences on Windows. See https://github.com/linkml/linkml/issues/2988",
+)
 @pytest.mark.network
 def test_specified_diagram_name(tmp_path, snapshot):
     runner = CliRunner()

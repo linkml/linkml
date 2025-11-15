@@ -5,7 +5,7 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_area_auto_adjustable
 from importlib.metadata import PackageNotFoundError
 import warnings
 
-from linkml.utils.deprecation import DEPRECATIONS, SemVer, Deprecation
+from linkml.utils.deprecation import DEPRECATIONS, SemVer
 
 theme = {
     "bg": "#202020",

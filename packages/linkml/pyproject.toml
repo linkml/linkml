@@ -17,6 +17,7 @@ authors = [
   {name = "Kevin Schaper", email = "kevin@tislab.org"},
 ]
 license = "Apache-2.0"
+license-files = ["LICENSE"]
 homepage = "https://linkml.io/"
 repository = "https://github.com/linkml/linkml"
 documentation = "https://linkml.io/linkml/"
@@ -166,6 +167,7 @@ gen-typescript = "linkml.generators.typescriptgen:cli"
 gen-terminusdb = "linkml.generators.terminusdbgen:cli"
 gen-yuml = "linkml.generators.yumlgen:cli"
 gen-yaml = "linkml.generators.yamlgen:cli"
+gen-yarrrml = "linkml.generators.yarrrmlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
 gen-rust = "linkml.generators.rustgen.cli:cli"
 gen-sqla = "linkml.generators.sqlalchemygen:cli"
@@ -186,6 +188,94 @@ gen-sssom = "linkml.generators.sssomgen:cli"
 gen-linkml = "linkml.generators.linkmlgen:cli"
 gen-mermaid-class-diagram = "linkml.generators.mermaidclassdiagramgen:cli"
 linkml-schema-fixer = "linkml.utils.schema_fixer:main"
+
+
+[tool.black]
+line-length = 120
+target-version = ["py39", "py310", "py311", "py312", "py313"]
+force-exclude = '''
+/(
+  # default exclude
+  \.direnv|\.eggs|\.git|\.hg|\.ipynb_checkpoints|\.mypy_cache|\.nox|\.pytest_cache|\.ruff_cache|\.tox|\.svn|\.venv|\.vscode|__pypackages__|_build|buck-out|build|dist|venv
+  # additional exclude
+  | tests.*/output
+  | __snapshots__
+  | src/linkml/linter/config/datamodel
+)/
+'''
+
+[tool.ruff]
+extend-exclude = [
+    "tests/output",
+    "tests/**/output",
+    "tests/**/__snapshots__",
+    # Auto-generated files that may not conform to current linting rules
+    "src/linkml/linter/config/datamodel/config.py"
+]
+force-exclude = true
+line-length = 120
+# Assume Python 3.9
+target-version = "py39"
+
+[tool.ruff.lint]
+extend-ignore = ["E203"]
+select = [
+  "E",  # pycodestyle errors
+  "F",  # Pyflakes
+  "I",  # isort
+  "UP", # pyupgrade
+]
+
+[tool.ruff.lint.per-file-ignores]
+# These templates can have long lines
+"src/linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
+"src/linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
+"src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
+
+# Notebooks can have unsorted imports
+"tests/test_notebooks/input/*" = ["E402"]
+
+[tool.tox]
+requires = ["tox>=4", "tox-uv"]
+env_list = ["lint", "py{39,310,311,312,313}"]
+
+[tool.tox.env_run_base]
+runner = "uv-venv-lock-runner"
+deps = ["pytest"]
+commands = [
+  ["pytest", "{posargs}"],
+]
+
+[tool.tox.env.codespell]
+description = "Run spell checkers."
+runner = "uv-venv-runner"
+skip_install = true
+deps = [
+  "codespell",
+  "tomli", # required for getting config from pyproject.toml
+]
+commands = [
+  ["codespell", "{posargs}"]
+]
+
+[tool.tox.env.format]
+description = "Run code formatter and code-fixing linter."
+runner = "uv-venv-runner"
+skip_install = true
+deps = ["pre-commit"]
+commands = [
+  ["pre-commit", "run", "--all-files", "--show-diff-on-failure", { replace = "posargs", extend = true }]
+]
+
+[tool.tox.env.lint]
+description = "Run code linter and formatter (no fixes)."
+runner = "uv-venv-runner"
+skip_install = true
+deps = ["ruff==0.11.13"]
+commands = [
+  ["ruff", "check", "{posargs:.}"],
+  ["ruff", "format", "{posargs:.}"],
+]
 
 [tool.uv-dynamic-versioning]
 vcs = "git"
