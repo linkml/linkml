@@ -43,7 +43,16 @@ extend-exclude = [
     "examples/",
     "docs/",
     "notebooks/",
+    "**/__snapshots__",
+    "**/output",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# Test files can have imports in various places and unused imports for fixtures
+"tests/**/__init__.py" = ["F401"]
+"tests/**/test_*.py" = ["E402", "E741", "F811", "F401"]
+"tests/**/input/*.py" = ["E402", "F811"]
+"tests/**/models/*.py" = ["F811"]
 
 # Codespell config at root for workspace-level excludes
 [tool.codespell]
@@ -71,6 +80,7 @@ ignore-words-list = [
   "CrossReference",
   "crossReference",
   "connexion",
+  "disjointness",  # valid term in logic/set theory
   "EHR",
   "infarction",
   "linke",

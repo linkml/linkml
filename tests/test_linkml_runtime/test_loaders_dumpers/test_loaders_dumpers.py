@@ -82,7 +82,7 @@ def test_load_from_list(loader_dumper_setup):
     """
     Tests the load_any loader method, which can be used to load directly to a list
     """
-    view = SchemaView(SCHEMA)
+    SchemaView(SCHEMA)
     with open(DATA, encoding="UTF-8") as stream:
         data = yaml.safe_load(stream)
     person_dicts = data["persons"]
@@ -141,7 +141,7 @@ def _check_objs(view: SchemaView, container: Container):
     p2: Person
     emp = p2.has_employment_history[0]
     assert emp.started_at_time == "2019-01-01"
-    assert emp.is_current == True
+    assert emp.is_current
     assert emp.employed_at == o1.id
     frel = p2.has_familial_relationships[0]
     assert frel.related_to == p1.id

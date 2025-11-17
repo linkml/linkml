@@ -231,7 +231,10 @@ class TestEnvironment:
         """
         # If no filter, default to identity function
         if not filtr:
-            filtr = lambda s: s
+
+            def filtr(s):
+                return s
+
         filename = filename if isinstance(filename, list) else [filename]
         actual_file = (
             self.root_temp_file_path(*filename)

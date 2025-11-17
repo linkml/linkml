@@ -1183,9 +1183,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         sdc = derived_schema.classes["schema_definition"]
         prefixes_slot = sdc.attributes["prefixes"]
         cf = validator.infer_slot_collection_form(prefixes_slot)
-        simple_dict_value_slot = validator._slot_as_simple_dict_value_slot(
-            sdc.attributes["prefixes"]
-        )
+        validator._slot_as_simple_dict_value_slot(sdc.attributes["prefixes"])
         # print(simple_dict_value_slot.name)
         # print(cf)
         self.assertEqual(CollectionForm.SimpleDict, cf)
@@ -1194,7 +1192,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         sb.add_class("C", ["s1", "s2"])
         sb.add_defaults()
         for s in ["imports", "prefixes", "slot_definitions", "classes"]:
-            att = sdc.attributes[s]
+            sdc.attributes[s]
             # print(yaml_dumper.dumps(att))
         self.assertFalse(sdc.attributes["prefixes"].inlined_as_list)
         schema_dict = json_dumper.to_dict(sb.schema)
