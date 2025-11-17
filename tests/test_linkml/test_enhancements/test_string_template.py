@@ -12,7 +12,8 @@ from linkml.generators.pythongen import PythonGenerator
 def test_template_basics(input_path, snapshot):
     """Test the basics of a string template"""
     generated = PythonGenerator(
-        Path(input_path("string_template")) / "templated_classes.yaml", mergeimports=False
+        Path(input_path("string_template")) / "templated_classes.yaml",
+        mergeimports=False,
     ).serialize()
     assert generated == snapshot(Path("string_template") / "templated_classes.py")
 

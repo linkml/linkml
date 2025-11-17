@@ -5,12 +5,13 @@ from typing import Optional, TextIO, Union
 import pytest
 from hbreader import FileInfo
 
-from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import RDFLoader, json_loader, rdf_loader, yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from test_linkml_runtime.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
 from test_linkml_runtime.test_loaders_dumpers.environment import env
-from test_linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
+from test_linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import (
+    LoaderDumperTestCase,
+)
 from test_linkml_runtime.test_loaders_dumpers.models.termci_schema import Package
 
 
@@ -29,7 +30,9 @@ def loader_test(filename: str, model: Union[type[YAMLRoot], type], loader) -> No
 def context_server():
     """Set up context server for testing."""
     # Check context servers - this mimics the original setUpClass logic
-    context_server = LoaderDumperTestCase.check_context_servers([LD_11_SVR, LD_11_SSL_SVR])
+    context_server = LoaderDumperTestCase.check_context_servers(
+        [LD_11_SVR, LD_11_SSL_SVR]
+    )
     if not context_server:
         context_server = LD_11_DIR
     return context_server
@@ -67,11 +70,15 @@ def test_yaml_load_to_dict():
     assert "system" in data
 
 
-@pytest.mark.skip(reason="This test will not work until https://github.com/digitalbazaar/pyld/issues/149 is fixed")
+@pytest.mark.skip(
+    reason="This test will not work until https://github.com/digitalbazaar/pyld/issues/149 is fixed"
+)
 def test_rdf_loader(context_server):
     """Load obo_sample.ttl and obo_sample.jsonld, emit yaml and check the results"""
     if context_server == LD_11_DIR:
-        pytest.skip("*****> Loading skipped until JSON-LD processor can handle non-http files")
+        pytest.skip(
+            "*****> Loading skipped until JSON-LD processor can handle non-http files"
+        )
 
     contexts = os.path.join(context_server, "termci_schema_inlined.context.jsonld")
     fmt = "turtle"
@@ -96,9 +103,16 @@ def test_rdf_loader(context_server):
             )
 
         def loads(
-            self, source: str, target_class: type[YAMLRoot], *, metadata: Optional[FileInfo] = None, **_
+            self,
+            source: str,
+            target_class: type[YAMLRoot],
+            *,
+            metadata: Optional[FileInfo] = None,
+            **_,
         ) -> YAMLRoot:
-            return rdf_loader.loads(source, target_class, contexts=contexts, fmt=fmt, metadata=metadata)
+            return rdf_loader.loads(
+                source, target_class, contexts=contexts, fmt=fmt, metadata=metadata
+            )
 
     loader_test("obo_sample.ttl", Package, RDFLoaderWrapper())
     fmt = "json-ld"

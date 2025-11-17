@@ -24,7 +24,9 @@ version = None
 
 # Namespaces
 LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-PERSONINFO = CurieNamespace("personinfo", "https://w3id.org/linkml/examples/personinfo/")
+PERSONINFO = CurieNamespace(
+    "personinfo", "https://w3id.org/linkml/examples/personinfo/"
+)
 RDF = CurieNamespace("rdf", "http://example.org/UNKNOWN/rdf/")
 RDFS = CurieNamespace("rdfs", "http://example.org/UNKNOWN/rdfs/")
 SKOS = CurieNamespace("skos", "http://example.org/UNKNOWN/skos/")
@@ -62,7 +64,9 @@ class Person(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if self.vital_status is not None and not isinstance(self.vital_status, VitalStatusEnum):
+        if self.vital_status is not None and not isinstance(
+            self.vital_status, VitalStatusEnum
+        ):
             self.vital_status = VitalStatusEnum(self.vital_status)
 
         super().__post_init__(**kwargs)
@@ -84,7 +88,9 @@ class PersonNoId(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if self.vital_status is not None and not isinstance(self.vital_status, VitalStatusEnum):
+        if self.vital_status is not None and not isinstance(
+            self.vital_status, VitalStatusEnum
+        ):
             self.vital_status = VitalStatusEnum(self.vital_status)
 
         super().__post_init__(**kwargs)
@@ -100,35 +106,54 @@ class Container(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Container
 
     name: Optional[str] = None
-    persons_as_list: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = (
-        empty_dict()
-    )
-    persons_as_dict: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = (
-        empty_dict()
-    )
+    persons_as_list: Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ] = empty_dict()
+    persons_as_dict: Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ] = empty_dict()
     single_person_inlined: Optional[Union[dict, Person]] = None
-    noidobj_as_list: Optional[Union[Union[dict, PersonNoId], list[Union[dict, PersonNoId]]]] = empty_list()
+    noidobj_as_list: Optional[
+        Union[Union[dict, PersonNoId], list[Union[dict, PersonNoId]]]
+    ] = empty_list()
     single_noidobj_inlined: Optional[Union[dict, PersonNoId]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        self._normalize_inlined_as_list(slot_name="persons_as_list", slot_type=Person, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="persons_as_list", slot_type=Person, key_name="id", keyed=True
+        )
 
-        self._normalize_inlined_as_dict(slot_name="persons_as_dict", slot_type=Person, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="persons_as_dict", slot_type=Person, key_name="id", keyed=True
+        )
 
-        if self.single_person_inlined is not None and not isinstance(self.single_person_inlined, Person):
+        if self.single_person_inlined is not None and not isinstance(
+            self.single_person_inlined, Person
+        ):
             self.single_person_inlined = Person(**as_dict(self.single_person_inlined))
 
         if not isinstance(self.noidobj_as_list, list):
-            self.noidobj_as_list = [self.noidobj_as_list] if self.noidobj_as_list is not None else []
+            self.noidobj_as_list = (
+                [self.noidobj_as_list] if self.noidobj_as_list is not None else []
+            )
         self.noidobj_as_list = [
-            v if isinstance(v, PersonNoId) else PersonNoId(**as_dict(v)) for v in self.noidobj_as_list
+            v if isinstance(v, PersonNoId) else PersonNoId(**as_dict(v))
+            for v in self.noidobj_as_list
         ]
 
-        if self.single_noidobj_inlined is not None and not isinstance(self.single_noidobj_inlined, PersonNoId):
-            self.single_noidobj_inlined = PersonNoId(**as_dict(self.single_noidobj_inlined))
+        if self.single_noidobj_inlined is not None and not isinstance(
+            self.single_noidobj_inlined, PersonNoId
+        ):
+            self.single_noidobj_inlined = PersonNoId(
+                **as_dict(self.single_noidobj_inlined)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -149,7 +174,12 @@ class slots:
 
 
 slots.id = Slot(
-    uri=PERSONINFO.id, name="id", curie=PERSONINFO.curie("id"), model_uri=PERSONINFO.id, domain=None, range=URIRef
+    uri=PERSONINFO.id,
+    name="id",
+    curie=PERSONINFO.curie("id"),
+    model_uri=PERSONINFO.id,
+    domain=None,
+    range=URIRef,
 )
 
 slots.name = Slot(
@@ -167,7 +197,11 @@ slots.persons_as_list = Slot(
     curie=PERSONINFO.curie("persons_as_list"),
     model_uri=PERSONINFO.persons_as_list,
     domain=None,
-    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ],
 )
 
 slots.persons_as_dict = Slot(
@@ -176,7 +210,11 @@ slots.persons_as_dict = Slot(
     curie=PERSONINFO.curie("persons_as_dict"),
     model_uri=PERSONINFO.persons_as_dict,
     domain=None,
-    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ],
 )
 
 slots.single_person_inlined = Slot(

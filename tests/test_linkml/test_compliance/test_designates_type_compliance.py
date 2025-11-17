@@ -30,8 +30,22 @@ from test_linkml.test_compliance.test_compliance import (
         ("t1a", "string", {SLOT_TYPE: CLASS_C1a}, True, False, [CLASS_C1]),
         ("t1a2", "string", {SLOT_TYPE: CLASS_C1a}, False, False, [CLASS_C1, CLASS_C1a]),
         ("t2", "string", {SLOT_TYPE: "fake"}, False, False, []),
-        ("t2 generic A", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1a: "..."}, False, False, []),
-        ("t2 generic B", "string", {SLOT_TYPE: CLASS_C1, SLOT_S1b: "..."}, False, False, []),
+        (
+            "t2 generic A",
+            "string",
+            {SLOT_TYPE: CLASS_C1, SLOT_S1a: "..."},
+            False,
+            False,
+            [],
+        ),
+        (
+            "t2 generic B",
+            "string",
+            {SLOT_TYPE: CLASS_C1, SLOT_S1b: "..."},
+            False,
+            False,
+            [],
+        ),
         ("t3", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1a: "..."}, True, False, []),
         ("t3b", "string", {SLOT_TYPE: CLASS_C1a1, SLOT_S1a: "..."}, True, False, []),
         ("t4", "string", {SLOT_TYPE: CLASS_C1a, SLOT_S1b: "..."}, False, False, []),
@@ -39,11 +53,20 @@ from test_linkml.test_compliance.test_compliance import (
         ("t6", "uriorcurie", {SLOT_TYPE: f"ex:{CLASS_C1a}"}, True, False, []),
         ("t6", "uriorcurie", {SLOT_TYPE: f"altns:{CLASS_C1a}"}, True, True, []),
         ("t7", "uri", {SLOT_TYPE: f"http://example.org/{CLASS_C1a}"}, True, False, []),
-        ("t7", "uri", {SLOT_TYPE: f"http://example.org/altns/{CLASS_C1a}"}, True, True, []),
+        (
+            "t7",
+            "uri",
+            {SLOT_TYPE: f"http://example.org/altns/{CLASS_C1a}"},
+            True,
+            True,
+            [],
+        ),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_designates_type(framework, description, type_range, object, is_valid, override_uri, abstract_classes):
+def test_designates_type(
+    framework, description, type_range, object, is_valid, override_uri, abstract_classes
+):
     """
     Tests behavior of designates_type.
 
@@ -126,7 +149,11 @@ def test_designates_type(framework, description, type_range, object, is_valid, o
         core_elements=["designates_type"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
-    if framework != PYDANTIC and framework != JSON_SCHEMA and framework != PYTHON_DATACLASSES:
+    if (
+        framework != PYDANTIC
+        and framework != JSON_SCHEMA
+        and framework != PYTHON_DATACLASSES
+    ):
         expected_behavior = ValidationBehavior.INCOMPLETE
     if override_uri and framework in [PYDANTIC, PYTHON_DATACLASSES]:
         # Pydantic and dataclasses don't support using class_uri to override the type

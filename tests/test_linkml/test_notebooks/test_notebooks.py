@@ -39,7 +39,11 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
 )
 @pytest.mark.parametrize(
     "nbname",
-    [filename for filename in os.listdir(NBBASEDIR) if not filename.startswith(".") and filename.endswith(".ipynb")],
+    [
+        filename
+        for filename in os.listdir(NBBASEDIR)
+        if not filename.startswith(".") and filename.endswith(".ipynb")
+    ],
 )
 def test_redo_notebook(nbname, ep):
     # The information on how to do this comes from: http://tritemio.github.io/smbits/2016/01/02/execute-notebooks/

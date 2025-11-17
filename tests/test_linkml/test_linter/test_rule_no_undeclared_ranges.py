@@ -140,8 +140,14 @@ types:
     problems = check_schema(test_schema)
     assert len(problems) == 2
 
-    assert problems[0].message == "Class 'SomeClass' slot 'some_int' range 'None' is not defined."
-    assert problems[1].message == "Class 'SomeClass' slot 'some_string' range 'None' is not defined."
+    assert (
+        problems[0].message
+        == "Class 'SomeClass' slot 'some_int' range 'None' is not defined."
+    )
+    assert (
+        problems[1].message
+        == "Class 'SomeClass' slot 'some_string' range 'None' is not defined."
+    )
 
 
 def test_default_range_type_not_defined_default_unused() -> None:
@@ -198,7 +204,10 @@ types:
 
     assert len(problems) == 2
     assert problems[0].message == "Schema default_range 'made_up' is not defined."
-    assert problems[1].message == "Class 'SomeClass' slot 'some_integer' range 'made_up' is not defined."
+    assert (
+        problems[1].message
+        == "Class 'SomeClass' slot 'some_integer' range 'made_up' is not defined."
+    )
 
 
 def test_undeclared_ranges():
@@ -217,7 +226,10 @@ classes:
     problems = check_schema(test_schema)
 
     assert len(problems) == 1
-    assert problems[0].message == "Class 'SomeClass' slot 'some_slot' range 'integer' is not defined."
+    assert (
+        problems[0].message
+        == "Class 'SomeClass' slot 'some_slot' range 'integer' is not defined."
+    )
 
 
 def test_no_declared_range_Any() -> None:
@@ -358,7 +370,10 @@ types:
     test_schema = "".join([schema_start, range_declaration, schema_end])
     problems = check_schema(test_schema)
     assert len(problems) == 1
-    assert problems[0].message == "Class 'SomeClass' slot 'some_slot' range 'spreadsheet' is not defined."
+    assert (
+        problems[0].message
+        == "Class 'SomeClass' slot 'some_slot' range 'spreadsheet' is not defined."
+    )
 
 
 @pytest.mark.parametrize("range_type", ["any_of", "exactly_one_of"])
@@ -395,4 +410,7 @@ types:
     test_schema = "".join([schema_start, range_declaration, schema_end])
     problems = check_schema(test_schema)
     assert len(problems) == 1
-    assert problems[0].message == "Class 'SomeClass' slot 'some_slot' range 'spreadsheet' is not defined."
+    assert (
+        problems[0].message
+        == "Class 'SomeClass' slot 'some_slot' range 'spreadsheet' is not defined."
+    )

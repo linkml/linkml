@@ -9,13 +9,21 @@ import tests.environment as test_base
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from test_linkml_runtime.support.test_environment import TestEnvironment, TestEnvironmentTestCase
+from test_linkml_runtime.support.test_environment import (
+    TestEnvironment,
+    TestEnvironmentTestCase,
+)
 
 
 class LoaderDumperTestCase(TestEnvironmentTestCase):
     env = TestEnvironment(__file__)
 
-    def dump_test(self, filename: str, dumper: Callable[[str], None], comparator: Callable[[str], str] = None) -> bool:
+    def dump_test(
+        self,
+        filename: str,
+        dumper: Callable[[str], None],
+        comparator: Callable[[str], str] = None,
+    ) -> bool:
         """
         Invoke the dumper passing it the output file name and then compare the result to an expected output
         :param filename: non-pathed file name to dump to and test
@@ -32,7 +40,12 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
             actual = actual_f.read()
         return self.env.eval_single_file(expected_file, actual, comparator=comparator)
 
-    def dumps_test(self, filename: str, dumper: Callable[[], str], comparator: Callable[[], str] = None) -> bool:
+    def dumps_test(
+        self,
+        filename: str,
+        dumper: Callable[[], str],
+        comparator: Callable[[], str] = None,
+    ) -> bool:
         """
         Invoke the string dumper and evaluate the results
         :param filename: filename to test
@@ -44,7 +57,12 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
 
         return self.env.eval_single_file(expected_file, actual, comparator=comparator)
 
-    def loader_test(self, filename: str, model: Union[type[YAMLRoot], type[BaseModel]], loader: Loader) -> None:
+    def loader_test(
+        self,
+        filename: str,
+        model: Union[type[YAMLRoot], type[BaseModel]],
+        loader: Loader,
+    ) -> None:
         """
         Test the various permutations of the supplied loader using the input file 'filename' -- both load and loads
 
@@ -56,9 +74,13 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
         name, typ = filename.rsplit(".", 1)
         expected_yaml = self.env.expected_path("load", name + "_" + typ + ".yaml")
         if issubclass(model, YAMLRoot):
-            python_obj: YAMLRoot = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
+            python_obj: YAMLRoot = loader.load(
+                filename, model, metadata=metadata, base_dir=self.env.indir
+            )
         elif issubclass(model, BaseModel):
-            python_obj: BaseModel = loader.load(filename, model, metadata=metadata, base_dir=self.env.indir)
+            python_obj: BaseModel = loader.load(
+                filename, model, metadata=metadata, base_dir=self.env.indir
+            )
         else:
             raise TypeError(f"Unknown target class: {model}")
         self.env.eval_single_file(expected_yaml, yaml_dumper.dumps(python_obj))
@@ -81,9 +103,13 @@ class LoaderDumperTestCase(TestEnvironmentTestCase):
         # Load from a string
         expected = hbread(filename, base_path=self.env.indir)
         if model == YAMLRoot:
-            python_obj: YAMLRoot = loader.loads(expected, model, metadata=metadata.clear())
+            python_obj: YAMLRoot = loader.loads(
+                expected, model, metadata=metadata.clear()
+            )
         elif model == BaseModel:
-            python_obj: BaseModel = loader.loads(expected, model, metadata=metadata.clear())
+            python_obj: BaseModel = loader.loads(
+                expected, model, metadata=metadata.clear()
+            )
         self.env.eval_single_file(expected_yaml, yaml_dumper.dumps(python_obj))
 
     @staticmethod

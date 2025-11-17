@@ -6,7 +6,11 @@ import pytest
 from jsonasobj2 import JsonObj, loads
 from rdflib import URIRef
 
-from linkml_runtime.utils.context_utils import map_import, merge_contexts, parse_import_map
+from linkml_runtime.utils.context_utils import (
+    map_import,
+    merge_contexts,
+    parse_import_map,
+)
 from linkml_runtime.utils.namespaces import Namespaces
 from test_linkml_runtime.test_utils import META_BASE_URI, METAMODEL_CONTEXT_URI
 
@@ -38,25 +42,42 @@ def test_merge_contexts() -> None:
     assert merge_contexts(["local.jsonld"])["@context"] == "file://local.jsonld"
     assert merge_contexts(METAMODEL_CONTEXT_URI)["@context"] == METAMODEL_CONTEXT_URI
     assert merge_contexts([METAMODEL_CONTEXT_URI])["@context"] == METAMODEL_CONTEXT_URI
-    assert JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/") == merge_contexts(json_1)["@context"]
     assert (
-        JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/") == merge_contexts([json_1])["@context"]
+        JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/")
+        == merge_contexts(json_1)["@context"]
     )
     assert (
-        JsonObj(ex="http://example.org/test3/", ex2=JsonObj(**{"@id": "http://example.org/test4/"}))
+        JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/")
+        == merge_contexts([json_1])["@context"]
+    )
+    assert (
+        JsonObj(
+            ex="http://example.org/test3/",
+            ex2=JsonObj(**{"@id": "http://example.org/test4/"}),
+        )
         == merge_contexts(json_2)["@context"]
     )
     assert (
-        JsonObj(ex="http://example.org/test3/", ex2=JsonObj(**{"@id": "http://example.org/test4/"}))
+        JsonObj(
+            ex="http://example.org/test3/",
+            ex2=JsonObj(**{"@id": "http://example.org/test4/"}),
+        )
         == merge_contexts([json_2])["@context"]
     )
     assert [
         "file://local.jsonld",
         "https://w3id.org/linkml/meta.context.jsonld",
         JsonObj(ex="http://example.org/test/", ex2="http://example.org/test2/"),
-        JsonObj(ex="http://example.org/test3/", ex2=JsonObj(**{"@id": "http://example.org/test4/"})),
-    ] == merge_contexts(["local.jsonld", METAMODEL_CONTEXT_URI, json_1, json_2])["@context"]
-    assert loads(context_output) == merge_contexts(["local.jsonld", METAMODEL_CONTEXT_URI, json_1, json_2])
+        JsonObj(
+            ex="http://example.org/test3/",
+            ex2=JsonObj(**{"@id": "http://example.org/test4/"}),
+        ),
+    ] == merge_contexts(["local.jsonld", METAMODEL_CONTEXT_URI, json_1, json_2])[
+        "@context"
+    ]
+    assert loads(context_output) == merge_contexts(
+        ["local.jsonld", METAMODEL_CONTEXT_URI, json_1, json_2]
+    )
     # Dups are not removed
     assert JsonObj(
         **{
@@ -69,8 +90,12 @@ def test_merge_contexts() -> None:
 
 
 def test_merge_contexts_base() -> None:
-    assert JsonObj(**{"@context": JsonObj(**{"@base": "file://relloc"})}) == merge_contexts(base="file://relloc")
-    assert loads(f'{{"@context": {{"@base": "{META_BASE_URI}"}}}}') == merge_contexts(base=META_BASE_URI)
+    assert JsonObj(
+        **{"@context": JsonObj(**{"@base": "file://relloc"})}
+    ) == merge_contexts(base="file://relloc")
+    assert loads(f'{{"@context": {{"@base": "{META_BASE_URI}"}}}}') == merge_contexts(
+        base=META_BASE_URI
+    )
     assert loads("""
 {"@context": [
       "https://w3id.org/linkml/meta.context.jsonld",

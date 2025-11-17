@@ -23,7 +23,13 @@ from test_linkml.test_compliance.helper import (
     generate_tree,
     validated_schema,
 )
-from test_linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, ENUM_E, EXAMPLE_NS, SLOT_S1
+from test_linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    ENUM_E,
+    EXAMPLE_NS,
+    SLOT_S1,
+)
 
 
 @pytest.mark.parametrize("include_meaning", [True, False])
@@ -37,7 +43,11 @@ from test_linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS
             "curies_enum",
             [("schema:A", "schema:A", "An A"), ("schema:B", "schema:B", "A B")],
         ),
-        ("ENUM_C", "ws_enum", [("A B", "schema:AB", "An A B"), ("B-%", "schema:Bpct", "A B%")]),
+        (
+            "ENUM_C",
+            "ws_enum",
+            [("A B", "schema:AB", "An A B"), ("B-%", "schema:Bpct", "A B%")],
+        ),
         ("EMPTY_ENUM", "empty", []),
     ],
 )
@@ -72,7 +82,9 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
             "description": enum_desc,
             "permissible_values": {pv[0]: _make_pv(*pv) for pv in pvs},
             "_mappings": {
-                PYDANTIC: f"class {safe_enum_name}(str, Enum)" if pvs else f"class {safe_enum_name}(str)",
+                PYDANTIC: f"class {safe_enum_name}(str, Enum)"
+                if pvs
+                else f"class {safe_enum_name}(str)",
                 PYTHON_DATACLASSES: f"class {safe_enum_name}(EnumDefinitionImpl)",
                 SQL_DDL_POSTGRES: f'CREATE TYPE "{enum_name}" AS ENUM',
             },
@@ -291,7 +303,9 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_permissible_value_typing(framework, enum_name, enums, data_name, data, is_valid):
+def test_permissible_value_typing(
+    framework, enum_name, enums, data_name, data, is_valid
+):
     """
     Tests typing of permissible values.
 
@@ -364,7 +378,9 @@ def test_permissible_value_typing(framework, enum_name, enums, data_name, data, 
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, data_name, data, is_valid):
+def test_enum_hierarchy(
+    framework, use_mixins, include_meaning, propagate_down, data_name, data, is_valid
+):
     """
     Tests behavior of is_a and mixin with enums.
 
@@ -416,7 +432,9 @@ def test_enum_hierarchy(framework, use_mixins, include_meaning, propagate_down, 
         # Note: assumes tree is ordered
         for child, parents in tree:
             for parent in parents:
-                enums[child]["permissible_values"].update(deepcopy(enums[parent]["permissible_values"]))
+                enums[child]["permissible_values"].update(
+                    deepcopy(enums[parent]["permissible_values"])
+                )
     else:
         pytest.skip("validation of inference of permissible values not yet implemented")
 

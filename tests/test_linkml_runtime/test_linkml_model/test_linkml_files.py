@@ -22,7 +22,9 @@ from linkml_runtime.linkml_model.linkml_files import (
 )
 
 EXPECTED_FORMATS = [
-    (source, fmt) for source, fmt in product(Source, Format) if (fmt not in META_ONLY or source == Source.META)
+    (source, fmt)
+    for source, fmt in product(Source, Format)
+    if (fmt not in META_ONLY or source == Source.META)
 ]
 
 W3ID_EXTENSIONS = (
@@ -39,7 +41,11 @@ W3ID_EXTENSIONS = (
     "shexc",
     "shexj",
 )
-W3ID_FORMATS = [(source, fmt) for source, fmt in EXPECTED_FORMATS if _Path.get(fmt.name).extension in W3ID_EXTENSIONS]
+W3ID_FORMATS = [
+    (source, fmt)
+    for source, fmt in EXPECTED_FORMATS
+    if _Path.get(fmt.name).extension in W3ID_EXTENSIONS
+]
 """The formats that have rewrite rules at https://github.com/perma-id/w3id.org/blob/master/linkml/.htaccess"""
 
 
@@ -65,7 +71,11 @@ def test_no_unmapped_dirs():
     expected = {LOCAL_BASE / _Path.get(fmt.name).path for fmt in Format}
     expected.add(LOCAL_BASE / "model")
 
-    actual = {a_dir for a_dir in LOCAL_BASE.iterdir() if a_dir.is_dir() and a_dir.name not in EXCLUDES}
+    actual = {
+        a_dir
+        for a_dir in LOCAL_BASE.iterdir()
+        if a_dir.is_dir() and a_dir.name not in EXCLUDES
+    }
     # Special case the root directory
     actual.add(LOCAL_BASE)
     # Special case YAML which is in a subdirectory - we've checked for existence above
@@ -78,7 +88,9 @@ def test_no_unmapped_dirs():
 # --------------------------------------------------
 
 
-@pytest.mark.skip("github paths largely unused and expensive to test due to ratelimiting")
+@pytest.mark.skip(
+    "github paths largely unused and expensive to test due to ratelimiting"
+)
 @pytest.mark.parametrize("release_type", ReleaseTag.__iter__())
 @pytest.mark.parametrize("source,fmt", EXPECTED_FORMATS)
 def test_github_path_exists(source, fmt, release_type):
@@ -121,4 +133,7 @@ def test_fixed_meta_url():
     One fixed canary value - the METAMODEL_URI as used in linkml main shouldn't change
     """
     assert URL_FOR(Source.META, Format.YAML) == "https://w3id.org/linkml/meta.yaml"
-    assert URL_FOR(Source.META, Format.JSONLD) == "https://w3id.org/linkml/meta.context.jsonld"
+    assert (
+        URL_FOR(Source.META, Format.JSONLD)
+        == "https://w3id.org/linkml/meta.context.jsonld"
+    )

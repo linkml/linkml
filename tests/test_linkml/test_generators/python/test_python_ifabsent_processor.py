@@ -18,7 +18,9 @@ classes:
 """
 
 
-@pytest.mark.parametrize("default_value", PythonIfAbsentProcessor.UNIMPLEMENTED_DEFAULT_VALUES)
+@pytest.mark.parametrize(
+    "default_value", PythonIfAbsentProcessor.UNIMPLEMENTED_DEFAULT_VALUES
+)
 def test_unimplemented_default_value(default_value):
     schema = (
         base_schema

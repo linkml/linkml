@@ -12,7 +12,11 @@ from typing import Any, Optional, Union
 import yaml
 
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.linkml_model import PermissibleValue, SlotDefinition, SlotDefinitionName
+from linkml_runtime.linkml_model import (
+    PermissibleValue,
+    SlotDefinition,
+    SlotDefinitionName,
+)
 from linkml_runtime.processing.referencevalidator import (
     CollectionForm,
     ConstraintType,
@@ -84,7 +88,9 @@ OUTPUT_DIRECTORY = Path(__file__).parent / "output" / "suite"
 TEST_TIME = datetime.datetime(2023, 1, 21, 17, 24, 36, 385155)
 
 
-def _add_core_schema_elements(sb: SchemaBuilder, test_slot: Optional[SlotDefinition] = None):
+def _add_core_schema_elements(
+    sb: SchemaBuilder, test_slot: Optional[SlotDefinition] = None
+):
     sb.add_slot("id", range="string", identifier=True)
     sb.add_class("Identified", slots=["id", "name", "description"])
     sb.add_class("NonIdentified", slots=["name", "description"])
@@ -110,7 +116,12 @@ def _serialize(obj: Any) -> str:
 
 
 def _normalizations(report: Report) -> str:
-    return ", ".join([f"{f1.value}->{f2.value}" for f1, f2 in report.collection_form_normalizations()])
+    return ", ".join(
+        [
+            f"{f1.value}->{f2.value}"
+            for f1, f2 in report.collection_form_normalizations()
+        ]
+    )
 
 
 def _errors(report: Report) -> str:
@@ -144,10 +155,18 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         sb = SchemaBuilder()
         _add_core_schema_elements(sb)
         doc.object(yaml_dumper.dumps(sb.schema))
-        doc.text("The 3 classes used here are to define different kinds of *references*:")
-        doc.li("Identified: has an `identifier` slot (*referenced* rather than inlined)")
-        doc.li("NonIdentified: does not have an `identifier` slot (*necessarily* inlined)")
-        doc.li("Simple: has a single non-identifier slot which is atomic (default *CompactDict* form)")
+        doc.text(
+            "The 3 classes used here are to define different kinds of *references*:"
+        )
+        doc.li(
+            "Identified: has an `identifier` slot (*referenced* rather than inlined)"
+        )
+        doc.li(
+            "NonIdentified: does not have an `identifier` slot (*necessarily* inlined)"
+        )
+        doc.li(
+            "Simple: has a single non-identifier slot which is atomic (default *CompactDict* form)"
+        )
         cls.doc = doc
 
     def setUp(self) -> None:
@@ -235,7 +254,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 CollectionForm.CompactDict,
             ),
             (
-                SlotDefinition("s", multivalued=True, inlined=True, range="NonIdentified"),
+                SlotDefinition(
+                    "s", multivalued=True, inlined=True, range="NonIdentified"
+                ),
                 CollectionForm.CompactDict,
             ),
             (
@@ -243,19 +264,27 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 CollectionForm.SimpleDict,
             ),
             (
-                SlotDefinition("s", multivalued=True, inlined_as_list=True, range="Identified"),
+                SlotDefinition(
+                    "s", multivalued=True, inlined_as_list=True, range="Identified"
+                ),
                 CollectionForm.List,
             ),
             (
-                SlotDefinition("s", multivalued=True, inlined_as_list=True, range="NonIdentified"),
+                SlotDefinition(
+                    "s", multivalued=True, inlined_as_list=True, range="NonIdentified"
+                ),
                 CollectionForm.List,
             ),
             (
-                SlotDefinition("s", multivalued=True, inlined_as_list=True, range="Simple"),
+                SlotDefinition(
+                    "s", multivalued=True, inlined_as_list=True, range="Simple"
+                ),
                 CollectionForm.List,
             ),
         ]
-        doc.text("Expected collection form for different combinations of slot properties:")
+        doc.text(
+            "Expected collection form for different combinations of slot properties:"
+        )
         doc.th(METASLOTS + ["CollectionForm"])
         for slot, expected in cases:
             sb = SchemaBuilder()
@@ -271,7 +300,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             inferred_form = normalizer.infer_slot_collection_form(slot)
             if expected in [CollectionForm.SimpleDict, CollectionForm.CompactDict]:
                 expected = CollectionForm.ExpandedDict
-            self.assertEqual(expected, inferred_form, f"expand_all={normalizer.expand_all}")
+            self.assertEqual(
+                expected, inferred_form, f"expand_all={normalizer.expand_all}"
+            )
 
     def test_02_ensure_collection_forms(self):
         """Test normalization into a collection form."""
@@ -356,7 +387,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             ),
             (
                 CollectionForm.List,
-                SlotDefinition("s", range="NonIdentified", multivalued=True),  # inlined is inferred
+                SlotDefinition(
+                    "s", range="NonIdentified", multivalued=True
+                ),  # inlined is inferred
                 [
                     (
                         [obj_non_identified_minimal],
@@ -391,7 +424,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             ),
             (
                 CollectionForm.List,
-                SlotDefinition("s", range="Identified", multivalued=True, inlined=False),
+                SlotDefinition(
+                    "s", range="Identified", multivalued=True, inlined=False
+                ),
                 [
                     (["id1"], [], [], ["id1"]),
                 ],
@@ -512,15 +547,23 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 input, expected_repairs, expected_unrepaired, expected_output = example
                 report = Report()
                 if form == CollectionForm.NonCollection:
-                    output = normalizer.ensure_non_collection(input, slot, pk_slot_name, report)
+                    output = normalizer.ensure_non_collection(
+                        input, slot, pk_slot_name, report
+                    )
                 elif form == CollectionForm.List:
                     output = normalizer.ensure_list(input, slot, pk_slot_name, report)
                 elif form == CollectionForm.ExpandedDict:
-                    output = normalizer.ensure_expanded_dict(input, slot, pk_slot_name, report)
+                    output = normalizer.ensure_expanded_dict(
+                        input, slot, pk_slot_name, report
+                    )
                 elif form == CollectionForm.CompactDict:
-                    output = normalizer.ensure_compact_dict(input, slot, pk_slot_name, report)
+                    output = normalizer.ensure_compact_dict(
+                        input, slot, pk_slot_name, report
+                    )
                 elif form == CollectionForm.SimpleDict:
-                    output = normalizer.ensure_simple_dict(input, slot, pk_slot_name, report)
+                    output = normalizer.ensure_simple_dict(
+                        input, slot, pk_slot_name, report
+                    )
                 else:
                     raise AssertionError(f"{form} unrecognized")
                 doc.tr(
@@ -548,7 +591,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         doc = self.doc
         doc.h2("Slot Value Tests")
         doc.text("Validation and normalization of collection forms.")
-        doc.text("These tests use the core schema above, with different combinations of slots.")
+        doc.text(
+            "These tests use the core schema above, with different combinations of slots."
+        )
         Inst_nt = namedtuple(
             "Inst",
             [
@@ -573,8 +618,12 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 ),
                 [
                     Inst_nt("empty parent object", {}, [], [], {}),
-                    Inst_nt("slot value is valid empty list", {"s": []}, [], [], {"s": []}),
-                    Inst_nt("slot value is valid list", {"s": [ref1]}, [], [], {"s": [ref1]}),
+                    Inst_nt(
+                        "slot value is valid empty list", {"s": []}, [], [], {"s": []}
+                    ),
+                    Inst_nt(
+                        "slot value is valid list", {"s": [ref1]}, [], [], {"s": [ref1]}
+                    ),
                     Inst_nt(
                         "slot value is expanded dict",
                         {"s": {ref1["id"]: ref1}},
@@ -616,7 +665,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 ),
                 [
                     Inst_nt("parent object is empty", {}, [], [], {}),
-                    Inst_nt("slot value is valid empty list", {"s": []}, [], [], {"s": []}),
+                    Inst_nt(
+                        "slot value is valid empty list", {"s": []}, [], [], {"s": []}
+                    ),
                     Inst_nt(
                         "slot value is object list",
                         {"s": [ref1ni]},
@@ -646,7 +697,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 ),
                 [
                     Inst_nt("parent object is empty", {}, [], [], {}),
-                    Inst_nt("slot value is empty dictionary", {"s": {}}, [], [], {"s": {}}),
+                    Inst_nt(
+                        "slot value is empty dictionary", {"s": {}}, [], [], {"s": {}}
+                    ),
                     Inst_nt(
                         "slot value is inlined list",
                         {"s": [ref1]},
@@ -778,7 +831,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                 ),
                 [
                     Inst_nt("empty object", {}, [], [], {}),
-                    Inst_nt("inlined singleton object", {"s": ref1}, [], [], {"s": ref1}),
+                    Inst_nt(
+                        "inlined singleton object", {"s": ref1}, [], [], {"s": ref1}
+                    ),
                     Inst_nt(
                         "inlined list of objects",
                         {"s": [ref1]},
@@ -840,7 +895,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
                     len(report.normalized_results()),
                     f"Mismatch for {slot.description} =>  => {inst_description} . {report.normalized_results()}",
                 )
-                self._assert_unrepaired_types_the_same(report, expected_unrepaired, inst, output_object)
+                self._assert_unrepaired_types_the_same(
+                    report, expected_unrepaired, inst, output_object
+                )
                 # doc.h4("Example")
 
                 if False:
@@ -927,7 +984,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             cn, inst, expected_problems = case
             report = Report()
             normalizer.normalize_object(inst, derived_schema.classes[cn], report)
-            self._assert_unrepaired_types_the_same(report, expected_problems, inst, inst)
+            self._assert_unrepaired_types_the_same(
+                report, expected_problems, inst, inst
+            )
 
     def test_07_normalize_enums(self):
         sb = SchemaBuilder()
@@ -946,10 +1005,14 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             expected_output,
         ) in cases:
             report = Report()
-            output = normalizer.normalize_enum(input_object, derived_schema.enums["TestEnum"], report)
+            output = normalizer.normalize_enum(
+                input_object, derived_schema.enums["TestEnum"], report
+            )
             self.assertEqual(expected_output, output)
             self.assertCountEqual(expected_repairs, report.normalized_results())
-            self._assert_unrepaired_types_the_same(report, expected_unrepaired, input_object, output)
+            self._assert_unrepaired_types_the_same(
+                report, expected_unrepaired, input_object, output
+            )
 
     def test_08_normalize_types(self):
         doc = self.doc
@@ -1058,20 +1121,32 @@ class ReferenceValidatorTestCase(unittest.TestCase):
             for v, expected_repairs, expected_unrepaired, expected_value in examples:
                 # test with custom type
                 report = Report()
-                normalized_value = normalizer.normalize_type(v, derived_schema.types[f"my_{t}"], report)
-                self.assertEqual(expected_value, normalized_value, f"Failed to normalize {v} to {t}")
+                normalized_value = normalizer.normalize_type(
+                    v, derived_schema.types[f"my_{t}"], report
+                )
+                self.assertEqual(
+                    expected_value, normalized_value, f"Failed to normalize {v} to {t}"
+                )
                 self.assertEqual(
                     len(report.normalized_results()),
                     len(expected_repairs),
                     f"{v} -> {expected_value} type {t}: Expected {expected_repairs} repairs, got {report.normalized_results()}",
                 )
-                self._assert_unrepaired_types_the_same(report, expected_unrepaired, v, expected_value)
+                self._assert_unrepaired_types_the_same(
+                    report, expected_unrepaired, v, expected_value
+                )
                 # test with built-in type
                 report = Report()
-                normalized_value = normalizer.normalize_type(v, derived_schema.types[t], report)
+                normalized_value = normalizer.normalize_type(
+                    v, derived_schema.types[t], report
+                )
                 self.assertEqual(expected_value, normalized_value)
-                self.assertEqual(len(report.normalized_results()), len(expected_repairs))
-                self._assert_unrepaired_types_the_same(report, expected_unrepaired, v, expected_value)
+                self.assertEqual(
+                    len(report.normalized_results()), len(expected_repairs)
+                )
+                self._assert_unrepaired_types_the_same(
+                    report, expected_unrepaired, v, expected_value
+                )
 
     def test_derived_schema_for_metadata(self):
         view = package_schemaview("linkml_runtime.linkml_model.meta")
@@ -1108,7 +1183,9 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         sdc = derived_schema.classes["schema_definition"]
         prefixes_slot = sdc.attributes["prefixes"]
         cf = validator.infer_slot_collection_form(prefixes_slot)
-        simple_dict_value_slot = validator._slot_as_simple_dict_value_slot(sdc.attributes["prefixes"])
+        simple_dict_value_slot = validator._slot_as_simple_dict_value_slot(
+            sdc.attributes["prefixes"]
+        )
         # print(simple_dict_value_slot.name)
         # print(cf)
         self.assertEqual(CollectionForm.SimpleDict, cf)

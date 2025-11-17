@@ -8,7 +8,10 @@ from linkml.generators.linkmlgen import LinkmlGenerator, cli
 
 def test_linkmlgen_prefixes():
     schema = SchemaDefinition(
-        name="EquipmentSchema", description="", id="equipment_schema", default_prefix="equipment_schema"
+        name="EquipmentSchema",
+        description="",
+        id="equipment_schema",
+        default_prefix="equipment_schema",
     )
 
     schema.default_range = "string"
@@ -77,8 +80,14 @@ def test_structured_pattern(input_path):
     assert pattern_gen.schemaview.get_slot("id").pattern == r"^P\d{7}"
     assert pattern_gen.schemaview.get_slot("name").pattern == r"^[A-Z0-9]\w+.*$"
     assert pattern_gen.schemaview.get_slot("nicknames").pattern == r"^[A-Z0-9]\w+.*$"
-    assert pattern_gen.schemaview.get_slot("height").pattern == "\\d+[\\.\\d+] (centimeter|meter|inch)"
-    assert pattern_gen.schemaview.get_slot("weight").pattern == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    assert (
+        pattern_gen.schemaview.get_slot("height").pattern
+        == "\\d+[\\.\\d+] (centimeter|meter|inch)"
+    )
+    assert (
+        pattern_gen.schemaview.get_slot("weight").pattern
+        == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
+    )
 
 
 def test_default_pattern_materialization_true(input_path, tmp_path):

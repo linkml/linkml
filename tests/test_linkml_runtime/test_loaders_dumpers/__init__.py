@@ -15,9 +15,20 @@ LD_11_DIR = os.path.join(TESTING_DIR, "jsonld_context/jsonld_11/")
 
 
 GITHUB_DIR = "https://raw.githubusercontent.com/HOT-Ecosystem/TermCI-model/main/"
-GITHUB_INPUT_DIR = GITHUB_DIR + Path(os.path.relpath(INPUT_DIR, os.path.dirname(TESTING_DIR))).as_posix()
-GITHUB_LD10_CONTEXT = GITHUB_DIR + Path(os.path.relpath(LD_10_DIR, os.path.dirname(TESTING_DIR))).as_posix() + "/"
-GITHUB_LD11_CONTEXT = GITHUB_DIR + Path(os.path.relpath(LD_11_DIR, os.path.dirname(TESTING_DIR))).as_posix() + "/"
+GITHUB_INPUT_DIR = (
+    GITHUB_DIR
+    + Path(os.path.relpath(INPUT_DIR, os.path.dirname(TESTING_DIR))).as_posix()
+)
+GITHUB_LD10_CONTEXT = (
+    GITHUB_DIR
+    + Path(os.path.relpath(LD_10_DIR, os.path.dirname(TESTING_DIR))).as_posix()
+    + "/"
+)
+GITHUB_LD11_CONTEXT = (
+    GITHUB_DIR
+    + Path(os.path.relpath(LD_11_DIR, os.path.dirname(TESTING_DIR))).as_posix()
+    + "/"
+)
 
 SCT = Namespace("http://snomed.info/id/")
 OBO = Namespace("http://purl.obolibrary.org/obo/")

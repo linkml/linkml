@@ -32,10 +32,14 @@ DEFAULT_ = CurieNamespace("", "https://microbiomedata/schema/")
 class SampleClass(ParentClass):
     _inherited_slots: ClassVar[list[str]] = []
 
-    class_class_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/SampleClass")
+    class_class_uri: ClassVar[URIRef] = URIRef(
+        "https://microbiomedata/schema/SampleClass"
+    )
     class_class_curie: ClassVar[str] = None
     class_name: ClassVar[str] = "SampleClass"
-    class_model_uri: ClassVar[URIRef] = URIRef("https://microbiomedata/schema/SampleClass")
+    class_model_uri: ClassVar[URIRef] = URIRef(
+        "https://microbiomedata/schema/SampleClass"
+    )
 
     slot_1: Optional[Union[str, "SampleEnum"]] = None
 

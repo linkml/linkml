@@ -16,7 +16,15 @@ from test_linkml.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from test_linkml.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, ENUM_E, PV_1, SLOT_ID, SLOT_S1
+from test_linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CLASS_D,
+    CORE_FRAMEWORKS,
+    ENUM_E,
+    PV_1,
+    SLOT_ID,
+    SLOT_S1,
+)
 
 FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 
@@ -30,7 +38,17 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
         ("float", "float", "float(5.0)", "no_value", None, 5.0, True, True, []),
         ("boolT", "boolean", "true", "no_value", None, True, True, True, []),
         ("boolF", "boolean", "false", "no_value", None, False, True, True, []),
-        ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True, []),
+        (
+            "class_curie",
+            "uriorcurie",
+            "class_curie",
+            "no_value",
+            None,
+            "ex:C",
+            True,
+            True,
+            [],
+        ),
         ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True, []),
         # Skip Python, Pydantic and Shacl frameworks because this incompatibility is not possible with the processor
         (
@@ -66,13 +84,32 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
             False,
             [PYTHON_DATACLASSES, PYDANTIC, SHACL, PANDERA_POLARS_CLASS],
         ),
-        ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True, []),
+        (
+            "fuzz_str",
+            "string",
+            f"string({FUZZ_STR})",
+            "has_value",
+            None,
+            FUZZ_STR,
+            True,
+            True,
+            [],
+        ),
         # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_ifabsent(
-    framework, schema_name, range, ifabsent, data_name, initial_value, expected, schema_valid, valid, skip_for
+    framework,
+    schema_name,
+    range,
+    ifabsent,
+    data_name,
+    initial_value,
+    expected,
+    schema_valid,
+    valid,
+    skip_for,
 ):
     """
     Tests behavior of ifabsent (defaults).
@@ -104,10 +141,17 @@ def test_ifabsent(
     if range == ENUM_E:
         enums = {ENUM_E: {"permissible_values": {PV_1: {}}}}
     if range == CLASS_D:
-        classes[CLASS_D] = {"attributes": {SLOT_ID: {"range": "string", "identifier": True}}}
+        classes[CLASS_D] = {
+            "attributes": {SLOT_ID: {"range": "string", "identifier": True}}
+        }
     try:
         schema = validated_schema(
-            test_ifabsent, schema_name, framework, classes=classes, enums=enums, core_elements=["ifabsent"]
+            test_ifabsent,
+            schema_name,
+            framework,
+            classes=classes,
+            enums=enums,
+            core_elements=["ifabsent"],
         )
     except ValueError as e:
         if schema_valid:
@@ -124,7 +168,9 @@ def test_ifabsent(
             # validation in dataclasses only happens at the time of assignment
             implementation_status = ValidationBehavior.COERCES
         if framework == OWL:
-            pytest.skip("this fails at the RDF generation stage, due to incompatible types")
+            pytest.skip(
+                "this fails at the RDF generation stage, due to incompatible types"
+            )
     check_data(
         schema,
         data_name,

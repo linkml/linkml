@@ -58,9 +58,9 @@ class ConceptReference(YAMLRoot):
     designation: Optional[str] = None
     definition: Optional[str] = None
     reference: Optional[Union[Union[str, URI], list[Union[str, URI]]]] = empty_list()
-    narrower_than: Optional[Union[Union[str, ConceptReferenceUri], list[Union[str, ConceptReferenceUri]]]] = (
-        empty_list()
-    )
+    narrower_than: Optional[
+        Union[Union[str, ConceptReferenceUri], list[Union[str, ConceptReferenceUri]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.uri is None:
@@ -95,7 +95,8 @@ class ConceptReference(YAMLRoot):
         if not isinstance(self.narrower_than, list):
             self.narrower_than = [self.narrower_than]
         self.narrower_than = [
-            v if isinstance(v, ConceptReferenceUri) else ConceptReferenceUri(v) for v in self.narrower_than
+            v if isinstance(v, ConceptReferenceUri) else ConceptReferenceUri(v)
+            for v in self.narrower_than
         ]
 
         super().__post_init__(**kwargs)
@@ -118,9 +119,14 @@ class ConceptSystem(YAMLRoot):
     prefix: str = None
     description: Optional[str] = None
     reference: Optional[Union[Union[str, URI], list[Union[str, URI]]]] = empty_list()
-    root_concept: Optional[Union[Union[str, ConceptReferenceUri], list[Union[str, ConceptReferenceUri]]]] = empty_list()
+    root_concept: Optional[
+        Union[Union[str, ConceptReferenceUri], list[Union[str, ConceptReferenceUri]]]
+    ] = empty_list()
     contents: Optional[
-        Union[dict[Union[str, ConceptReferenceUri], Union[dict, ConceptReference]], list[Union[dict, ConceptReference]]]
+        Union[
+            dict[Union[str, ConceptReferenceUri], Union[dict, ConceptReference]],
+            list[Union[dict, ConceptReference]],
+        ]
     ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -148,7 +154,8 @@ class ConceptSystem(YAMLRoot):
         if not isinstance(self.root_concept, list):
             self.root_concept = [self.root_concept]
         self.root_concept = [
-            v if isinstance(v, ConceptReferenceUri) else ConceptReferenceUri(v) for v in self.root_concept
+            v if isinstance(v, ConceptReferenceUri) else ConceptReferenceUri(v)
+            for v in self.root_concept
         ]
 
         if self.contents is None:
@@ -156,7 +163,11 @@ class ConceptSystem(YAMLRoot):
         if not isinstance(self.contents, (list, dict)):
             self.contents = [self.contents]
         self._normalize_inlined_slot(
-            slot_name="contents", slot_type=ConceptReference, key_name="uri", inlined_as_list=True, keyed=True
+            slot_name="contents",
+            slot_type=ConceptReference,
+            key_name="uri",
+            inlined_as_list=True,
+            keyed=True,
         )
 
         super().__post_init__(**kwargs)
@@ -176,7 +187,10 @@ class Package(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = TERMCI.Package
 
     system: Optional[
-        Union[dict[Union[str, ConceptSystemNamespace], Union[dict, ConceptSystem]], list[Union[dict, ConceptSystem]]]
+        Union[
+            dict[Union[str, ConceptSystemNamespace], Union[dict, ConceptSystem]],
+            list[Union[dict, ConceptSystem]],
+        ]
     ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -185,7 +199,11 @@ class Package(YAMLRoot):
         if not isinstance(self.system, (list, dict)):
             self.system = [self.system]
         self._normalize_inlined_slot(
-            slot_name="system", slot_type=ConceptSystem, key_name="namespace", inlined_as_list=True, keyed=True
+            slot_name="system",
+            slot_type=ConceptSystem,
+            key_name="namespace",
+            inlined_as_list=True,
+            keyed=True,
         )
 
         super().__post_init__(**kwargs)

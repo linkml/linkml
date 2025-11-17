@@ -205,7 +205,12 @@ def test_rdfs_profile(kitchen_sink_path):
     ],
 )
 def test_definition_uris(
-    description, metadata_profiles, use_native_uris, metaclasses, assert_equivalent_classes, expected
+    description,
+    metadata_profiles,
+    use_native_uris,
+    metaclasses,
+    assert_equivalent_classes,
+    expected,
 ):
     """
     Tests behavior of assigning URIs to classes and slots.
@@ -248,11 +253,23 @@ class PermissibleValueURIMixture(Enum):
     MIXTURE = "mixture"
 
 
-@pytest.mark.parametrize("default_permissible_value_type", ["owl:Class", "rdfs:Literal", "owl:NamedIndividual"])
 @pytest.mark.parametrize(
-    "pv_implements", [None, "owl:Class", "rdfs:Literal", "owl:NamedIndividual", ("owl:Class", "rdfs:Literal")]
+    "default_permissible_value_type",
+    ["owl:Class", "rdfs:Literal", "owl:NamedIndividual"],
 )
-@pytest.mark.parametrize("permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture])
+@pytest.mark.parametrize(
+    "pv_implements",
+    [
+        None,
+        "owl:Class",
+        "rdfs:Literal",
+        "owl:NamedIndividual",
+        ("owl:Class", "rdfs:Literal"),
+    ],
+)
+@pytest.mark.parametrize(
+    "permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture]
+)
 def test_permissible_values(
     default_permissible_value_type: str,
     pv_implements: Union[str, None, tuple[str, str]],
@@ -358,7 +375,10 @@ def test_permissible_values(
             disj_list = list(Collection(g, o))
             assert p not in disjunction_targets
             disjunction_targets[p] = disj_list
-    if isinstance(pv_implements, tuple) and permissible_value_uri_mixture == PermissibleValueURIMixture.MIXTURE:
+    if (
+        isinstance(pv_implements, tuple)
+        and permissible_value_uri_mixture == PermissibleValueURIMixture.MIXTURE
+    ):
         pytest.skip("mixture of URIs and literals is undefined behavior")
     assert len(disjunction_targets) == 1
     disj_pred, disj_list = tuple(list(disjunction_targets.items())[0])

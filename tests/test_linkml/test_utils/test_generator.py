@@ -95,14 +95,18 @@ class GeneratorTest(Generator):
     def end_class(self, cls: ClassDefinition) -> None:
         self.visited.append(f"end_class: {cls.name}")
 
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def visit_class_slot(
+        self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition
+    ) -> None:
         self.visited.append(
-            f"  slot: {slot.name}" + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
+            f"  slot: {slot.name}"
+            + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
         )
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         self.visited.append(
-            f"slot: {slot.name}" + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
+            f"slot: {slot.name}"
+            + (f" ({aliased_slot_name})" if slot.name != aliased_slot_name else "")
         )
 
     def visit_type(self, typ: TypeDefinition) -> None:
@@ -492,22 +496,34 @@ classes:
     assert "Overlapping subset and slot names: dup name" in gentext
     assert "Overlapping subset and type names: dup name" in gentext
 
-    assert "dup_name" == gen.formatted_element_name(cast(ElementName, "dup name"), False)
+    assert "dup_name" == gen.formatted_element_name(
+        cast(ElementName, "dup name"), False
+    )
     assert "int" == gen.formatted_element_name(cast(ElementName, "dup name"), True)
     assert "str" == gen.formatted_element_name(cast(ElementName, "str"), True)
     assert gen.formatted_element_name(cast(ElementName, "class c1"), False) is None
     assert "ClassC1" == gen.formatted_element_name(cast(ElementName, "class c1"), True)
-    assert "SubsetSs1" == gen.formatted_element_name(cast(ElementName, "subset ss1"), False)
+    assert "SubsetSs1" == gen.formatted_element_name(
+        cast(ElementName, "subset ss1"), False
+    )
     assert "Unknown_ClassC2" == gen.class_or_type_name(cast(ElementName, "class c2"))
     assert "int" == gen.class_or_type_name(cast(ElementName, "dup name"))
     assert "int" == gen.class_or_type_name(cast(ElementName, "type t1"))
     assert "unknown_slot_s2" == gen.slot_name(cast(SlotDefinitionName, "slot s2"))
     assert "Unknown_SS" == gen.subset_name(cast(ElementName, "s s"))
 
-    assert "dup_name" == gen.formatted_element_name(gen.schema.slots[cast(ElementName, "dup name")])
-    assert "int" == gen.formatted_element_name(gen.schema.types[cast(ElementName, "dup name")])
-    assert "DupName" == gen.formatted_element_name(gen.schema.subsets[cast(ElementName, "dup name")])
-    assert "ClassC1" == gen.formatted_element_name(gen.schema.classes[cast(ElementName, "class c1")])
+    assert "dup_name" == gen.formatted_element_name(
+        gen.schema.slots[cast(ElementName, "dup name")]
+    )
+    assert "int" == gen.formatted_element_name(
+        gen.schema.types[cast(ElementName, "dup name")]
+    )
+    assert "DupName" == gen.formatted_element_name(
+        gen.schema.subsets[cast(ElementName, "dup name")]
+    )
+    assert "ClassC1" == gen.formatted_element_name(
+        gen.schema.classes[cast(ElementName, "class c1")]
+    )
     assert gen.formatted_element_name(cast(Element, gen)) is None
 
 
@@ -519,46 +535,82 @@ def test_own_slots(input_path):
 
     assert ["s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "at1"))]
     assert ["s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "at1"))]
-    assert ["s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "at1"), cls_slots_first=True)]
+    assert ["s6"] == [
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "at1"), cls_slots_first=True)
+    ]
 
-    assert ["s5", "s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "m2"))]
-    assert ["s5", "s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"))]
-    assert ["s5", "s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"), cls_slots_first=True)]
+    assert ["s5", "s6"] == [
+        s.name for s in gen.own_slots(cast(ClassDefinitionName, "m2"))
+    ]
+    assert ["s5", "s6"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "m2"))
+    ]
+    assert ["s5", "s6"] == [
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "m2"), cls_slots_first=True)
+    ]
 
     assert ["s4"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "m1"))]
     assert ["s4"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m1"))]
-    assert ["s4"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "m1"), cls_slots_first=True)]
+    assert ["s4"] == [
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "m1"), cls_slots_first=True)
+    ]
 
-    assert ["s1", "s3"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c1"))]
-    assert ["s1", "s3"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"))]
-    assert ["s1", "s3"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"), cls_slots_first=True)]
+    assert ["s1", "s3"] == [
+        s.name for s in gen.own_slots(cast(ClassDefinitionName, "c1"))
+    ]
+    assert ["s1", "s3"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c1"))
+    ]
+    assert ["s1", "s3"] == [
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "c1"), cls_slots_first=True)
+    ]
 
-    assert ["s2", "s4"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c2"))]
-    assert ["s1", "s2", "s3", "s4"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"))]
+    assert ["s2", "s4"] == [
+        s.name for s in gen.own_slots(cast(ClassDefinitionName, "c2"))
+    ]
+    assert ["s1", "s2", "s3", "s4"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"))
+    ]
     assert ["s2", "s4", "s1", "s3"] == [
-        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c2"), cls_slots_first=True)
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "c2"), cls_slots_first=True)
     ]
 
-    assert ["s5", "s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c3"))]
-    assert ["s1", "s2", "s3", "s4", "s5", "s6"] == [s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"))]
+    assert ["s5", "s6"] == [
+        s.name for s in gen.own_slots(cast(ClassDefinitionName, "c3"))
+    ]
+    assert ["s1", "s2", "s3", "s4", "s5", "s6"] == [
+        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"))
+    ]
     assert ["s5", "s6", "s2", "s4", "s1", "s3"] == [
-        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c3"), cls_slots_first=True)
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "c3"), cls_slots_first=True)
     ]
 
-    assert ["c4_s1", "c4_s5", "c4_s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c4"))]
+    assert ["c4_s1", "c4_s5", "c4_s6"] == [
+        s.name for s in gen.own_slots(cast(ClassDefinitionName, "c4"))
+    ]
     assert ["c4_s1", "c4_s5", "c4_s6", "s2", "s3", "s4"] == [
         s.name for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
     ]
     assert ["c4_s1", "c4_s5", "c4_s6", "s2", "s4", "s3"] == [
-        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c4"), cls_slots_first=True)
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "c4"), cls_slots_first=True)
     ]
 
-    assert ["c5_s1", "c5_s6"] == [s.name for s in gen.own_slots(cast(ClassDefinitionName, "c5"))]
+    assert ["c5_s1", "c5_s6"] == [
+        s.name for s in gen.own_slots(cast(ClassDefinitionName, "c5"))
+    ]
     assert ["c4_s5", "c5_s1", "c5_s6", "s2", "s3", "s4"] == [
         s.name for s in gen.all_slots(cast(ClassDefinitionName, "c5"))
     ]
     assert ["c5_s1", "c5_s6", "c4_s5", "s2", "s4", "s3"] == [
-        s.name for s in gen.all_slots(cast(ClassDefinitionName, "c5"), cls_slots_first=True)
+        s.name
+        for s in gen.all_slots(cast(ClassDefinitionName, "c5"), cls_slots_first=True)
     ]
 
 
@@ -568,7 +620,8 @@ def test_slot_class_paths(input_path):
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
     gen.sort_class_slots = True
     assert ["s1", "s5", "s6", "s2", "s3", "s4"] == [
-        gen.aliased_slot_name(s.name) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
+        gen.aliased_slot_name(s.name)
+        for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
     ]
     assert ["s5", "s1", "s6", "s2", "s3", "s4"] == [
         gen.aliased_slot_name(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))
@@ -580,7 +633,10 @@ def test_slot_class_paths(input_path):
         "s2": ["int", "C1S1"],
         "s3": ["int", "T2", "T3"],
         "s4": ["Bool"],
-    } == {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c4"))}
+    } == {
+        s.name: gen.slot_range_path(s)
+        for s in gen.all_slots(cast(ClassDefinitionName, "c4"))
+    }
     assert {
         "c4_s5": ["Bool", "T5"],
         "c5_s1": ["int"],
@@ -588,9 +644,13 @@ def test_slot_class_paths(input_path):
         "s2": ["int", "C1S1"],
         "s3": ["int", "T2", "T3"],
         "s4": ["Bool"],
-    } == {s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c5"))}
+    } == {
+        s.name: gen.slot_range_path(s)
+        for s in gen.all_slots(cast(ClassDefinitionName, "c5"))
+    }
     assert {"s1": ["int"], "s3": ["int", "T2", "T3"]} == {
-        s.name: gen.slot_range_path(s) for s in gen.all_slots(cast(ClassDefinitionName, "c1"))
+        s.name: gen.slot_range_path(s)
+        for s in gen.all_slots(cast(ClassDefinitionName, "c1"))
     }
 
 
@@ -631,14 +691,22 @@ classes:
 """
 
     gen = GeneratorTest(model)
-    assert "Overlapping slot and class names: slot s1" in gen.logstream.getvalue().strip()
+    assert (
+        "Overlapping slot and class names: slot s1" in gen.logstream.getvalue().strip()
+    )
     gen.logstream.truncate(0)
     gen.logstream.seek(0)
 
     assert ["slot s1"] == gen.ancestors(gen.schema.slots["slot s1"])
-    assert ["slot s2", "slot s1"] == gen.ancestors(gen.schema.slots[cast(ElementName, "slot s2")])
-    assert ["slot s3", "slot s2", "slot s1"] == gen.ancestors(gen.schema.slots["slot s3"])
-    assert ["slot s4", "slot s2", "slot s1"] == gen.ancestors(gen.schema.slots["slot s4"])
+    assert ["slot s2", "slot s1"] == gen.ancestors(
+        gen.schema.slots[cast(ElementName, "slot s2")]
+    )
+    assert ["slot s3", "slot s2", "slot s1"] == gen.ancestors(
+        gen.schema.slots["slot s3"]
+    )
+    assert ["slot s4", "slot s2", "slot s1"] == gen.ancestors(
+        gen.schema.slots["slot s4"]
+    )
     assert ["slot s1"] == gen.ancestors(gen.schema.classes["slot s1"])
     assert ["class c2", "slot s1"] == gen.ancestors(gen.schema.classes["class c2"])
 
@@ -698,7 +766,9 @@ classes:
 
 """
     gen = GeneratorTest(model)
-    assert {"s1": ["dict", "C2"], "s2": ["str"]} == {s.name: gen.slot_range_path(s) for s in gen.schema.slots.values()}
+    assert {"s1": ["dict", "C2"], "s2": ["str"]} == {
+        s.name: gen.slot_range_path(s) for s in gen.schema.slots.values()
+    }
 
 
 # TODO: rewrite to be less rigid. See https://github.com/linkml/linkml/issues/562
@@ -706,7 +776,10 @@ def test_meta_neighborhood():
     """Test the neighborhood function in the metamodel"""
     gen = GeneratorTest(LOCAL_METAMODEL_YAML_FILE)
     gen.neighborhood([cast(ElementName, "Definition")])
-    assert "neighborhood(Definition) - Definition is undefined" == gen.logstream.getvalue().strip()
+    assert (
+        "neighborhood(Definition) - Definition is undefined"
+        == gen.logstream.getvalue().strip()
+    )
     gen.logstream.truncate(0)
     gen.logstream.seek(0)
 

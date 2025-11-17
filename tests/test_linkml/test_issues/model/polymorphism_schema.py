@@ -1,7 +1,9 @@
 import json
 
 
-def gen_person_and_organisation_schema(type_descriptor_range: str = "uriorcurie") -> str:
+def gen_person_and_organisation_schema(
+    type_descriptor_range: str = "uriorcurie",
+) -> str:
     return f"""
 id: http://example.org
 name: inline-dict-test
@@ -68,7 +70,9 @@ slots:
 """
 
 
-def gen_person_and_organisation_example_data(type_descriptor_range: str = "uriorcurie") -> str:
+def gen_person_and_organisation_example_data(
+    type_descriptor_range: str = "uriorcurie",
+) -> str:
     person_td = "http://testbreaker/not-the-uri-you-expect"
     pfx = "x:"
     if type_descriptor_range == "string":
@@ -79,7 +83,12 @@ def gen_person_and_organisation_example_data(type_descriptor_range: str = "urior
 
     data = {
         "things": [
-            {"id": "1", "thingtype": f"{person_td}", "full_name": "phoebe", "height": 10},
+            {
+                "id": "1",
+                "thingtype": f"{person_td}",
+                "full_name": "phoebe",
+                "height": 10,
+            },
             {
                 "id": "2",
                 "thingtype": f"{pfx}Organisation",

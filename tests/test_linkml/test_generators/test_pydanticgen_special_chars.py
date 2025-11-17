@@ -92,7 +92,9 @@ def test_validation_with_at_symbols():
         range: string
     """
     test_data = {"@graph": [{"@id": "entity1", "@type": "Entity"}]}
-    validator = Validator(schema=schema_text, validation_plugins=[PydanticValidationPlugin()])
+    validator = Validator(
+        schema=schema_text, validation_plugins=[PydanticValidationPlugin()]
+    )
     report = validator.validate(test_data)
     assert len(report.results) == 0, f"Validation failed: {report.results}"
 
@@ -128,6 +130,8 @@ def test_validation_with_python_field_names():
         range: string
     """
     test_data = {"graph": [{"id": "entity1", "type": "Entity"}]}
-    validator = Validator(schema=schema_text, validation_plugins=[PydanticValidationPlugin()])
+    validator = Validator(
+        schema=schema_text, validation_plugins=[PydanticValidationPlugin()]
+    )
     report = validator.validate(test_data)
     assert len(report.results) == 0, f"Validation failed: {report.results}"

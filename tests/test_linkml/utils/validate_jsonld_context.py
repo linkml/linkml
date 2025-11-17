@@ -63,16 +63,24 @@ class RdfExpectations:
         if "name" in self._schema_yaml:
             if ":" in self._schema_yaml["name"]:
                 prefix = self._schema_yaml["name"].split(":")[0]
-                self._schema_uri = self._schema_yaml["prefixes"][prefix] + self._schema_yaml["name"].split(":")[1]
+                self._schema_uri = (
+                    self._schema_yaml["prefixes"][prefix]
+                    + self._schema_yaml["name"].split(":")[1]
+                )
             elif "default_prefix" in self._schema_yaml:
                 self._schema_uri = (
-                    self._schema_yaml["prefixes"][self._schema_yaml["default_prefix"]] + self._schema_yaml["name"]
+                    self._schema_yaml["prefixes"][self._schema_yaml["default_prefix"]]
+                    + self._schema_yaml["name"]
                 )
             else:
-                self._schema_uri = self._schema_yaml["id"] + "/" + self._schema_yaml["name"]
+                self._schema_uri = (
+                    self._schema_yaml["id"] + "/" + self._schema_yaml["name"]
+                )
         else:
             self._schema_uri = self._schema_yaml["id"]
-        for subject, predicate in self._g.subject_predicates(object=term.URIRef(f"{LINKML_URI}/SchemaDefinition")):
+        for subject, predicate in self._g.subject_predicates(
+            object=term.URIRef(f"{LINKML_URI}/SchemaDefinition")
+        ):
             assert str(subject) == self._schema_uri
             assert str(predicate) == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
         return self._schema_uri
@@ -81,7 +89,9 @@ class RdfExpectations:
         if "prefixes" in self._schema_yaml:
             rdf_namespaces = {
                 str(ns)
-                for _, ns in self._g.subject_objects(predicate=term.URIRef("http://www.w3.org/ns/shacl#namespace"))
+                for _, ns in self._g.subject_objects(
+                    predicate=term.URIRef("http://www.w3.org/ns/shacl#namespace")
+                )
             }
             assert rdf_namespaces == set(self._schema_yaml["prefixes"].values())
 
@@ -92,10 +102,15 @@ class RdfExpectations:
                 if cls and "class_uri" in cls:
                     if ":" in cls["class_uri"]:
                         prefix = cls["class_uri"].split(":")[0]
-                        class_uri = self._schema_yaml["prefixes"][prefix] + cls["class_uri"].split(":")[1]
+                        class_uri = (
+                            self._schema_yaml["prefixes"][prefix]
+                            + cls["class_uri"].split(":")[1]
+                        )
                     elif "default_prefix" in self._schema_yaml:
                         class_uri = (
-                            self._schema_yaml["prefixes"][self._schema_yaml["default_prefix"]]
+                            self._schema_yaml["prefixes"][
+                                self._schema_yaml["default_prefix"]
+                            ]
                             + cls["class_uri"].split(":")[1]
                         )
                     else:
@@ -105,12 +120,20 @@ class RdfExpectations:
                         )
                 else:
                     if "default_prefix" in self._schema_yaml:
-                        class_uri = self._schema_yaml["prefixes"][self._schema_yaml["default_prefix"]] + class_name
+                        class_uri = (
+                            self._schema_yaml["prefixes"][
+                                self._schema_yaml["default_prefix"]
+                            ]
+                            + class_name
+                        )
                     else:
                         class_uri = self._schema_yaml["id"] + "/" + class_name
                 schema_classes.add(class_uri)
             assert schema_classes == {
-                str(cls_name) for _, cls_name in self._g.subject_objects(predicate=term.URIRef(f"{LINKML_URI}/classes"))
+                str(cls_name)
+                for _, cls_name in self._g.subject_objects(
+                    predicate=term.URIRef(f"{LINKML_URI}/classes")
+                )
             }
 
     def expected_slots(self):
@@ -120,10 +143,15 @@ class RdfExpectations:
                 if slot and "slot_uri" in slot:
                     if ":" in slot["slot_uri"]:
                         prefix = slot["slot_uri"].split(":")[0]
-                        slot_uri = self._schema_yaml["prefixes"][prefix] + slot["slot_uri"].split(":")[1]
+                        slot_uri = (
+                            self._schema_yaml["prefixes"][prefix]
+                            + slot["slot_uri"].split(":")[1]
+                        )
                     elif "default_prefix" in self._schema_yaml:
                         slot_uri = (
-                            self._schema_yaml["prefixes"][self._schema_yaml["default_prefix"]]
+                            self._schema_yaml["prefixes"][
+                                self._schema_yaml["default_prefix"]
+                            ]
                             + slot["slot_uri"].split(":")[1]
                         )
                     else:
@@ -133,10 +161,18 @@ class RdfExpectations:
                         )
                 else:
                     if "default_prefix" in self._schema_yaml:
-                        slot_uri = self._schema_yaml["prefixes"][self._schema_yaml["default_prefix"]] + slot_name
+                        slot_uri = (
+                            self._schema_yaml["prefixes"][
+                                self._schema_yaml["default_prefix"]
+                            ]
+                            + slot_name
+                        )
                     else:
                         slot_uri = self._schema_yaml["id"] + slot_name
                 schema_slots.add(slot_uri)
             assert schema_slots == {
-                str(slot_name) for _, slot_name in self._g.subject_objects(predicate=term.URIRef(f"{LINKML_URI}/slots"))
+                str(slot_name)
+                for _, slot_name in self._g.subject_objects(
+                    predicate=term.URIRef(f"{LINKML_URI}/slots")
+                )
             }

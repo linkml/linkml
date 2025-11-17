@@ -12,9 +12,20 @@ from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.loaders import rdflib_loader, yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
 from test_linkml_runtime.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
-from test_linkml_runtime.test_loaders_dumpers.models.node_object import NodeObject, Triple
-from test_linkml_runtime.test_loaders_dumpers.models.personinfo import Address, Container, Organization, OrganizationType, Person
-from test_linkml_runtime.test_loaders_dumpers.models.personinfo_test_issue_429 import Container as Container_429
+from test_linkml_runtime.test_loaders_dumpers.models.node_object import (
+    NodeObject,
+    Triple,
+)
+from test_linkml_runtime.test_loaders_dumpers.models.personinfo import (
+    Address,
+    Container,
+    Organization,
+    OrganizationType,
+    Person,
+)
+from test_linkml_runtime.test_loaders_dumpers.models.personinfo_test_issue_429 import (
+    Container as Container_429,
+)
 from test_linkml_runtime.test_loaders_dumpers.models.phenopackets import (
     MetaData,
     OntologyClass,
@@ -82,13 +93,17 @@ def issue_429_graph():
     return g
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_rdflib_dumper(prefix_map):
     """Test the RDFLib dumper functionality."""
     view = SchemaView(str(SCHEMA))
     container = yaml_loader.load(str(DATA), target_class=Container)
     _check_objs(view, container)
-    rdflib_dumper.dump(container, schemaview=view, to_file=str(OUT), prefix_map=prefix_map)
+    rdflib_dumper.dump(
+        container, schemaview=view, to_file=str(OUT), prefix_map=prefix_map
+    )
     g = Graph()
     g.parse(str(OUT), format="ttl")
 
@@ -97,8 +112,16 @@ def test_rdflib_dumper(prefix_map):
     assert (P["001"], SDO.email, Literal("fred.bloggs@example.com")) in g
     assert (P["001"], INFO.age_in_years, Literal(33)) in g
     assert (P["001"], SDO.gender, GSSO["000371"]) in g
-    assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.anyURI)) in g
-    assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.string)) not in g
+    assert (
+        P["001"],
+        INFO.depicted_by,
+        Literal("https://example.org/pictures/fred.jpg", datatype=XSD.anyURI),
+    ) in g
+    assert (
+        P["001"],
+        INFO.depicted_by,
+        Literal("https://example.org/pictures/fred.jpg", datatype=XSD.string),
+    ) not in g
     assert (CODE["D0001"], RDF.type, INFO.DiagnosisConcept) in g
     assert (CODE["D0001"], RDF.type, INFO.DiagnosisConcept) in g
     assert (CODE["D0001"], SKOS.exactMatch, HP["0002315"]) in g
@@ -110,11 +133,15 @@ def test_rdflib_dumper(prefix_map):
     assert (container, INFO.organizations, ROR["2"]) in g
     assert (container, INFO.persons, P["001"]) in g
     assert (container, INFO.persons, P["002"]) in g
-    container: Container = rdflib_loader.load(str(OUT), target_class=Container, schemaview=view, prefix_map=prefix_map)
+    container: Container = rdflib_loader.load(
+        str(OUT), target_class=Container, schemaview=view, prefix_map=prefix_map
+    )
     _check_objs(view, container)
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_enums(prefix_map):
     """Test enum handling in RDFLib dumper."""
     view = SchemaView(str(SCHEMA))
@@ -128,7 +155,9 @@ def test_enums(prefix_map):
     print(g)
     cats = list(g.objects(ROR["1"], INFO["categories"]))
     print(cats)
-    assert sorted(cats) == sorted([Literal("non profit"), URIRef("https://example.org/bizcodes/001")])
+    assert sorted(cats) == sorted(
+        [Literal("non profit"), URIRef("https://example.org/bizcodes/001")]
+    )
     orgs = rdflib_loader.from_rdf_graph(g, target_class=Organization, schemaview=view)
     assert len(orgs) == 1
     [org1x] = orgs
@@ -156,7 +185,9 @@ def test_base_prefix():
     assert (URIRef("http://example.org/foo"), RDF.type, SDO.Organization) in g
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_rdflib_loader(prefix_map):
     """
     tests loading from an RDF graph
@@ -169,7 +200,9 @@ def test_rdflib_loader(prefix_map):
     yaml_dumper.dump(container, to_file=str(DATA_ROUNDTRIP))
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_unmapped_predicates(prefix_map):
     """
     By default, the presence of predicates in rdf that have no mapping to slots
@@ -178,7 +211,12 @@ def test_unmapped_predicates(prefix_map):
     view = SchemaView(str(SCHEMA))
     # default behavior is to raise error on unmapped predicates
     with pytest.raises(MappingError):
-        rdflib_loader.load(str(UNMAPPED_PREDICATES_TTL), target_class=Person, schemaview=view, prefix_map=prefix_map)
+        rdflib_loader.load(
+            str(UNMAPPED_PREDICATES_TTL),
+            target_class=Person,
+            schemaview=view,
+            prefix_map=prefix_map,
+        )
     # called can explicitly allow unmapped predicates to be dropped
     person: Person = rdflib_loader.load(
         str(UNMAPPED_PREDICATES_TTL),
@@ -193,14 +231,21 @@ def test_unmapped_predicates(prefix_map):
     yaml_dumper.dump(person, to_file=str(UNMAPPED_ROUNDTRIP))
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_any_of_enum(prefix_map):
     """
     Tests https://github.com/linkml/linkml/issues/1023
     """
     view = SchemaView(str(SCHEMA))
     # default behavior is to raise error on unmapped predicates
-    person = rdflib_loader.load(str(ENUM_UNION_TYPE_TTL), target_class=Person, schemaview=view, prefix_map=prefix_map)
+    person = rdflib_loader.load(
+        str(ENUM_UNION_TYPE_TTL),
+        target_class=Person,
+        schemaview=view,
+        prefix_map=prefix_map,
+    )
     assert person.id == "P:001"
     assert person.age_in_years == 33
     yaml_dumper.dump(person, to_file=str(UNMAPPED_ROUNDTRIP))
@@ -214,7 +259,9 @@ def test_any_of_enum(prefix_map):
     assert sorted(cases) == sorted(tups)
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_unmapped_type(prefix_map):
     """
     If a type cannot be mapped then no objects will be returned by load/from_rdf_graph
@@ -222,14 +269,23 @@ def test_unmapped_type(prefix_map):
     view = SchemaView(str(SCHEMA))
     # default behavior is to raise error on unmapped predicates
     with pytest.raises(DataNotFoundError):
-        rdflib_loader.load(str(UNMAPPED_TYPE_TTL), target_class=Person, schemaview=view, prefix_map=prefix_map)
+        rdflib_loader.load(
+            str(UNMAPPED_TYPE_TTL),
+            target_class=Person,
+            schemaview=view,
+            prefix_map=prefix_map,
+        )
     graph = Graph()
     graph.parse(str(UNMAPPED_TYPE_TTL), format="ttl")
-    objs = rdflib_loader.from_rdf_graph(graph, target_class=Person, schemaview=view, prefix_map=prefix_map)
+    objs = rdflib_loader.from_rdf_graph(
+        graph, target_class=Person, schemaview=view, prefix_map=prefix_map
+    )
     assert len(objs) == 0
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_blank_node(prefix_map):
     """
     blank nodes should be retrievable
@@ -325,10 +381,19 @@ def test_edge_cases():
         assert x.object is not None
         logger.info(f"  x={x}")
     # ranges that are objects are contracted
-    assert Triple(subject=None, predicate="rdfs:subClassOf", object="owl:Thing") in obj.statements
-    assert Triple(subject=None, predicate="rdfs:subClassOf", object="NCBITaxon:1") in obj.statements
+    assert (
+        Triple(subject=None, predicate="rdfs:subClassOf", object="owl:Thing")
+        in obj.statements
+    )
+    assert (
+        Triple(subject=None, predicate="rdfs:subClassOf", object="NCBITaxon:1")
+        in obj.statements
+    )
     # string ranges
-    assert Triple(subject=None, predicate="rdfs:label", object="Bacteria") in obj.statements
+    assert (
+        Triple(subject=None, predicate="rdfs:label", object="Bacteria")
+        in obj.statements
+    )
     with pytest.raises(ValueError):
         rdflib_loader.from_rdf_graph(
             graph,
@@ -359,10 +424,14 @@ def test_edge_cases():
             allow_unprocessed_triples=True,
             prefix_map=taxon_prefix_map,
         )
-        logger.error("Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
+        logger.error(
+            "Passed unexpectedly: rdf:object is known to have a mix of literals and nodes"
+        )
 
 
-@pytest.mark.parametrize("prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)])
+@pytest.mark.parametrize(
+    "prefix_map", [PREFIX_MAP, Converter.from_prefix_map(PREFIX_MAP)]
+)
 def test_phenopackets(prefix_map):
     """Test phenopackets functionality."""
     view = SchemaView(str(INPUT_PATH / "phenopackets" / "phenopackets.yaml"))
@@ -421,6 +490,13 @@ def test_output_prefixes():
     """Test output prefixes for issue 429."""
     with open(str(OUT_429), encoding="UTF-8") as file:
         file_string = file.read()
-    prefixes = ["prefix ORCID:", "prefix personinfo:", "prefix sdo:", "sdo:Person", "personinfo:age", "ORCID:1234"]
+    prefixes = [
+        "prefix ORCID:",
+        "prefix personinfo:",
+        "prefix sdo:",
+        "sdo:Person",
+        "personinfo:age",
+        "ORCID:1234",
+    ]
     for prefix in prefixes:
         assert prefix in file_string

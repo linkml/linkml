@@ -7,7 +7,12 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
 from test_linkml_runtime.test_loaders_dumpers import INPUT_DIR
-from test_linkml_runtime.test_loaders_dumpers.models.model_817 import Container, Person, PersonNoId, VitalStatusEnum
+from test_linkml_runtime.test_loaders_dumpers.models.model_817 import (
+    Container,
+    Person,
+    PersonNoId,
+    VitalStatusEnum,
+)
 
 
 def test_normalise_inline_as_list() -> None:

@@ -18,8 +18,12 @@ def test_projectgen(kitchen_sink_path, tmp_path):
     gen.generate(kitchen_sink_path, config)
     # some of these tests may be quite rigid as they make assumptions about formatting
     check_contains("CREATE TABLE", "sqlschema", "kitchen_sink.sql")
-    check_contains("ks:age_in_years a owl:DatatypeProperty", "owl", "kitchen_sink.owl.ttl")
+    check_contains(
+        "ks:age_in_years a owl:DatatypeProperty", "owl", "kitchen_sink.owl.ttl"
+    )
     # TODO: restore this test
     # self.check_contains("Address.md", "docs", "index.md")
     check_contains("ks:Address", "docs", "Address.md")
-    check_contains('"additionalProperties": false', "jsonschema", "kitchen_sink.schema.json")
+    check_contains(
+        '"additionalProperties": false', "jsonschema", "kitchen_sink.schema.json"
+    )

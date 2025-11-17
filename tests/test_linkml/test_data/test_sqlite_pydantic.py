@@ -13,7 +13,9 @@ def test_enums(person_pydantic):
     See https://github.com/linkml/linkml/issues/817
     """
     person_pydantic.FamilialRelationship(type="SIBLING_OF", related_to="x")
-    p = person_pydantic.Person(id="x", name="Bob", gender=person_pydantic.GenderType("cisgender man"))
+    p = person_pydantic.Person(
+        id="x", name="Bob", gender=person_pydantic.GenderType("cisgender man")
+    )
     assert isinstance(p.gender, str)
 
 
@@ -25,7 +27,11 @@ def test_sqlite_store(person, person_pydantic, tmp_outputs):
     # TODO: currently it is necessary to pass the actual yaml rather than a schema object
     # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
     mod = person_pydantic
-    endpoint = SQLStore(person["schema"], database_path=tmp_outputs["db"], include_schema_in_database=False)
+    endpoint = SQLStore(
+        person["schema"],
+        database_path=tmp_outputs["db"],
+        include_schema_in_database=False,
+    )
     endpoint.native_module = mod
     endpoint.db_exists(force=True)
 

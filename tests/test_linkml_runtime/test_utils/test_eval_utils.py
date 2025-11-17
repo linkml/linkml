@@ -60,14 +60,19 @@ def test_eval_expressions():
     assert eval_expr("p.address.street", p=p) == "1 x street"
     assert eval_expr("len(p.aliases)", p=p) == 3
     assert eval_expr("p.aliases", p=p) == p.aliases
-    p2 = Person(name="x2", aliases=["a2", "b2", "c2"], address=Address(street="2 x street"))
+    p2 = Person(
+        name="x2", aliases=["a2", "b2", "c2"], address=Address(street="2 x street")
+    )
     c = Container(persons=[p, p2])
     assert eval_expr("c.persons.name", c=c) == ["x", "x2"]
     assert eval_expr("c.persons.address.street", c=c) == ["1 x street", "2 x street"]
     assert eval_expr("strlen(c.persons.address.street)", c=c) == [10, 10]
     c = Container(person_index={p.name: p, p2.name: p2})
     assert eval_expr("c.person_index.name", c=c) == ["x", "x2"]
-    assert eval_expr("c.person_index.address.street", c=c) == ["1 x street", "2 x street"]
+    assert eval_expr("c.person_index.address.street", c=c) == [
+        "1 x street",
+        "2 x street",
+    ]
     assert eval_expr("strlen(c.person_index.name)", c=c) == [1, 2]
     pd = dict(name="x", aliases=["a", "b", "c"], address=Address(street="1 x street"))
     assert eval_expr("p.name", p=pd, _distribute=False) == "x"

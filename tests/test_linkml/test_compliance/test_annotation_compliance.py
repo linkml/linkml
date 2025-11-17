@@ -16,7 +16,11 @@ from test_linkml.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from test_linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+from test_linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    SLOT_S1,
+)
 
 # use rdflib to create a namespace
 EX = rdflib.Namespace("http://example.org/")
@@ -75,7 +79,9 @@ def test_annotation(
             if expand == "partial":
                 return {k: {"value": v if v else {}} for k, v in tvs.items()}
             else:
-                return {k: {"tag": k, **{"value": v if v else {}}} for k, v in tvs.items()}
+                return {
+                    k: {"tag": k, **{"value": v if v else {}}} for k, v in tvs.items()
+                }
         else:
             return tvs
 

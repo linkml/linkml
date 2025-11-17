@@ -28,7 +28,13 @@ def test_list_of_keys():
 
 def test_list_of_key_object_pairs():
     """Test Form 4: list of key/object pairs"""
-    v = E([{"k1": {"s1": "k1", "s2": "v21", "s3": "v23"}}, {"k2": {"s2": "v22", "s3": "v23"}}, {"k3": {}}])
+    v = E(
+        [
+            {"k1": {"s1": "k1", "s2": "v21", "s3": "v23"}},
+            {"k2": {"s2": "v22", "s3": "v23"}},
+            {"k3": {}},
+        ]
+    )
     assert v.ev == {
         "k1": EInst(s1="k1", s2="v21", s3="v23"),
         "k2": EInst(s1="k2", s2="v22", s3="v23"),
@@ -52,7 +58,13 @@ def test_key_mismatch_error():
 
 def test_form5_variations():
     """Test Form 5 variations with different object types"""
-    v = E([{"k1": EInst(s1="k1", s2="v21", s3="v23")}, {"k2": JsonObj({"s2": "v22", "s3": "v23"})}, {"k3": None}])
+    v = E(
+        [
+            {"k1": EInst(s1="k1", s2="v21", s3="v23")},
+            {"k2": JsonObj({"s2": "v22", "s3": "v23"})},
+            {"k3": None},
+        ]
+    )
     assert v.ev == {
         "k1": EInst(s1="k1", s2="v21", s3="v23"),
         "k2": EInst(s1="k2", s2="v22", s3="v23"),
@@ -85,7 +97,10 @@ def test_positional_object_values():
 def test_list_of_kv_dictionaries():
     """Test Form 7: list of key-value dictionaries"""
     v = E([{"s1": "v11", "s2": "v12"}, {"s1": "v21", "s2": "v22", "s3": "v23"}])
-    assert v.ev == {"v11": EInst(s1="v11", s2="v12", s3=None), "v21": EInst(s1="v21", s2="v22", s3="v23")}
+    assert v.ev == {
+        "v11": EInst(s1="v11", s2="v12", s3=None),
+        "v21": EInst(s1="v21", s2="v22", s3="v23"),
+    }
 
 
 def test_dict_key_object_form():

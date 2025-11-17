@@ -7,8 +7,12 @@ from pydantic import BaseModel
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import json_loader, yaml_loader
 from test_linkml_runtime.test_loaders_dumpers.environment import env
-from test_linkml_runtime.test_loaders_dumpers.models.books_normalized_pydantic import BookSeries
-from test_linkml_runtime.test_loaders_dumpers.models.kitchen_sink_pydantic import Dataset
+from test_linkml_runtime.test_loaders_dumpers.models.books_normalized_pydantic import (
+    BookSeries,
+)
+from test_linkml_runtime.test_loaders_dumpers.models.kitchen_sink_pydantic import (
+    Dataset,
+)
 
 
 @pytest.mark.parametrize(
@@ -27,7 +31,9 @@ def test_loader_basemodel(filename, model, loader):
 
     metadata = FileInfo()
 
-    python_obj: BaseModel = loader.load(filename, model, metadata=metadata, base_dir=env.indir)
+    python_obj: BaseModel = loader.load(
+        filename, model, metadata=metadata, base_dir=env.indir
+    )
 
     # Load expected output
     with open(expected_yaml_file) as expf:

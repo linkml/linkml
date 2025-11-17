@@ -13,7 +13,9 @@ def test_default_merged_context():
     builder.add_prefix("WRONG", "http://identifiers.org/orcid/")
 
     schema_view = SchemaView(builder.schema)
-    config = CanonicalPrefixesConfig(level=RuleLevel.error, prefixmaps_contexts=["merged"])
+    config = CanonicalPrefixesConfig(
+        level=RuleLevel.error, prefixmaps_contexts=["merged"]
+    )
 
     rule = CanonicalPrefixesRule(config)
     problems = list(rule.check(schema_view))

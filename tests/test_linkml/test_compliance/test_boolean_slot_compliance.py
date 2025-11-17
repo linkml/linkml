@@ -49,11 +49,17 @@ from test_linkml.test_compliance.test_compliance import (
         ("int", 1, True),
         ("str", "abc", False),
         ("obj", {SLOT_S2: "abc"}, True),
-        ("bad_obj", {SLOT_S1: "abc"}, False),  # neither an integer nor a valid instance of D
+        (
+            "bad_obj",
+            {SLOT_S1: "abc"},
+            False,
+        ),  # neither an integer nor a valid instance of D
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_default_range):
+def test_slot_any_of(
+    framework, data_name, value, is_valid, use_any_type, use_default_range
+):
     """
     Tests behavior of any_of at the slot level.
 
@@ -89,7 +95,9 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     :param use_default_range: if True, the default range will be included in addition to any_of.
     :return:
     """
-    expected_json_schema = {"s1": {"anyOf": [{"$ref": "#/$defs/D"}, {"type": "integer"}, {"type": "null"}]}}
+    expected_json_schema = {
+        "s1": {"anyOf": [{"$ref": "#/$defs/D"}, {"type": "integer"}, {"type": "null"}]}
+    }
     if use_default_range and not use_any_type:
         # default_range is set to string, any no explicit range set.
         # in this case the schema is violating monotonicity.
@@ -131,7 +139,9 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
             "class_uri": "linkml:Any",
         }
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
-        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "@id"
+        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1][
+            "@type"
+        ] = "@id"
     if framework == PANDERA_POLARS_CLASS:
         pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
@@ -588,7 +598,13 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
         # frameworks that haven't implemented equals_string
         pytest.skip(f"{framework} has not implemented equals_string")
 
-    slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string": EQUALS_STRING}}
+    slots = {
+        SLOT_S1: {
+            "range": range,
+            "multivalued": multivalued,
+            "equals_string": EQUALS_STRING,
+        }
+    }
     classes = {CLASS_C: {"slots": [SLOT_S1]}}
     key = f"equals_string-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
 
@@ -694,7 +710,13 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
         if multivalued and not value_is_multivalued:
             expected_behavior = ValidationBehavior.INCOMPLETE
 
-    slots = {SLOT_S1: {"range": range, "multivalued": multivalued, "equals_string_in": EQUALS_STRING_IN}}
+    slots = {
+        SLOT_S1: {
+            "range": range,
+            "multivalued": multivalued,
+            "equals_string_in": EQUALS_STRING_IN,
+        }
+    }
     classes = {CLASS_C: {"slots": [SLOT_S1]}}
     key = f"equals_string_in-multivalued{multivalued}-value_is_multivalued{value_is_multivalued}-range{range}"
 
@@ -1278,7 +1300,17 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_class_boolean_with_expressions(
-    framework, schema_name, s1_range, s2_range, op, s1_expression, s2_expression, data_name, s1value, s2value, is_valid
+    framework,
+    schema_name,
+    s1_range,
+    s2_range,
+    op,
+    s1_expression,
+    s2_expression,
+    data_name,
+    s1value,
+    s2value,
+    is_valid,
 ):
     """
     Tests behavior of multiple kinds of boolean quantifiers.
@@ -1448,7 +1480,17 @@ def test_class_boolean_with_expressions(
             False,
             False,
         ),
-        ("mixed_cls_int", "Any", "any_of", {"range": CLASS_D}, {"range": "integer"}, "matches_int", 1, True, False),
+        (
+            "mixed_cls_int",
+            "Any",
+            "any_of",
+            {"range": CLASS_D},
+            {"range": "integer"},
+            "matches_int",
+            1,
+            True,
+            False,
+        ),
         (
             "mixed_cls_int",
             "Any",
@@ -1460,9 +1502,39 @@ def test_class_boolean_with_expressions(
             True,
             False,
         ),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_int", 1, True, False),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_pv", PV_1, True, False),
-        ("mixed_enum_int", "Any", "any_of", {"range": ENUM_E}, {"range": "integer"}, "matches_none", "z", False, False),
+        (
+            "mixed_enum_int",
+            "Any",
+            "any_of",
+            {"range": ENUM_E},
+            {"range": "integer"},
+            "matches_int",
+            1,
+            True,
+            False,
+        ),
+        (
+            "mixed_enum_int",
+            "Any",
+            "any_of",
+            {"range": ENUM_E},
+            {"range": "integer"},
+            "matches_pv",
+            PV_1,
+            True,
+            False,
+        ),
+        (
+            "mixed_enum_int",
+            "Any",
+            "any_of",
+            {"range": ENUM_E},
+            {"range": "integer"},
+            "matches_none",
+            "z",
+            False,
+            False,
+        ),
         (
             "mixed_all_of_enum_enum",
             "Any",
@@ -1511,7 +1583,17 @@ def test_class_boolean_with_expressions(
         # ("todo, "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_sv", "x", True),
         # ("todo", "string", "any_of", {"multivalued": True}, {"multivalued": False}, "match_mv", ["x"], True),
         # strings
-        ("any_of_streq", "string", "any_of", {"equals_string": "x"}, {"equals_string": "y"}, "none", None, True, False),
+        (
+            "any_of_streq",
+            "string",
+            "any_of",
+            {"equals_string": "x"},
+            {"equals_string": "y"},
+            "none",
+            None,
+            True,
+            False,
+        ),
         (
             "any_of_streq",
             "string",
@@ -1741,7 +1823,16 @@ def test_class_boolean_with_expressions(
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_slot_boolean_with_expressions(
-    framework, schema_name, range, op, expression1, expression2, data_name, value, is_valid, unsatisfiable
+    framework,
+    schema_name,
+    range,
+    op,
+    expression1,
+    expression2,
+    data_name,
+    value,
+    is_valid,
+    unsatisfiable,
 ):
     """
     Tests behavior of boolean operators for slot expressions.
@@ -1796,11 +1887,17 @@ def test_slot_boolean_with_expressions(
         },
     }
     enums = {}
-    if expression1.get("range", None) == ENUM_E or expression2.get("range", None) == ENUM_E:
+    if (
+        expression1.get("range", None) == ENUM_E
+        or expression2.get("range", None) == ENUM_E
+    ):
         enums[ENUM_E] = {
             "permissible_values": {PV_1: {}, PV_2: {}},
         }
-    if expression1.get("range", None) == ENUM_F or expression2.get("range", None) == ENUM_F:
+    if (
+        expression1.get("range", None) == ENUM_F
+        or expression2.get("range", None) == ENUM_F
+    ):
         enums[ENUM_F] = {
             "permissible_values": {PV_2: {}, PV_3: {}},
         }
@@ -1853,20 +1950,56 @@ def test_slot_boolean_with_expressions(
 @pytest.mark.parametrize(
     "schema_name,slot1_expression,slot2_expression,data_name,value,is_valid",
     [
-        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t1", {SLOT_S1: "x"}, True),
-        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t2", {SLOT_S1: [1, 2]}, True),
-        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t1", {SLOT_S1: ["x"]}, False),
-        ("mixed", {"range": "string"}, {"range": "integer", "multivalued": True}, "t2", {SLOT_S1: 1}, False),
+        (
+            "mixed",
+            {"range": "string"},
+            {"range": "integer", "multivalued": True},
+            "t1",
+            {SLOT_S1: "x"},
+            True,
+        ),
+        (
+            "mixed",
+            {"range": "string"},
+            {"range": "integer", "multivalued": True},
+            "t2",
+            {SLOT_S1: [1, 2]},
+            True,
+        ),
+        (
+            "mixed",
+            {"range": "string"},
+            {"range": "integer", "multivalued": True},
+            "t1",
+            {SLOT_S1: ["x"]},
+            False,
+        ),
+        (
+            "mixed",
+            {"range": "string"},
+            {"range": "integer", "multivalued": True},
+            "t2",
+            {SLOT_S1: 1},
+            False,
+        ),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_any_of_mixed_cardinality(
-    framework, schema_name, slot1_expression, slot2_expression, data_name, value, is_valid
+    framework,
+    schema_name,
+    slot1_expression,
+    slot2_expression,
+    data_name,
+    value,
+    is_valid,
 ):
     """
     Tests behavior of any_of when cardinality is mixed.
     """
-    pytest.skip("not yet implemented - see https://github.com/orgs/linkml/discussions/2154")
+    pytest.skip(
+        "not yet implemented - see https://github.com/orgs/linkml/discussions/2154"
+    )
     classes = {
         CLASS_ANY: {
             "class_uri": "linkml:Any",
@@ -2171,7 +2304,11 @@ def test_preconditions(framework, s1, s2, is_valid):
             "Disjunctive",
             {"range": "integer"},
             {"range": "integer"},
-            {SLOT_S1: {"exactly_one_of": [{"minimum_value": 1}, {"maximum_value": 10}]}},
+            {
+                SLOT_S1: {
+                    "exactly_one_of": [{"minimum_value": 1}, {"maximum_value": 10}]
+                }
+            },
             {SLOT_S2: {"equals_number": 3}},
             "11-1",
             {SLOT_S1: 11, SLOT_S2: 1},
@@ -2221,7 +2358,15 @@ def test_preconditions(framework, s1, s2, is_valid):
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_preconditions_combos(
-    framework, schema_name, s1def, s2def, preconditions, postconditions, data_name, object, is_valid
+    framework,
+    schema_name,
+    s1def,
+    s2def,
+    preconditions,
+    postconditions,
+    data_name,
+    object,
+    is_valid,
 ):
     """
     Tests behavior of rules (preconditions and postconditions).
@@ -2542,7 +2687,12 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
         f"MV{multivalued}",
         framework,
         classes=classes,
-        core_elements=["preconditions", "postconditions", "slot_conditions", "value_presence"],
+        core_elements=[
+            "preconditions",
+            "postconditions",
+            "slot_conditions",
+            "value_presence",
+        ],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework != JSON_SCHEMA:
@@ -2579,23 +2729,125 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
             ["X:1"],
             True,
         ),
-        ("all_obj_members_equals_string", "all_members", {"range": CLASS_D, "equals_string": "foo"}, ["X:1"], False),
-        ("has_member_equals_string", "has_member", {"range": "string", "equals_string": "x"}, ["x"], True),
-        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [10], True),
-        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [10, 20], True),
-        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [], False),
-        ("has_member_equals_number", "has_member", {"range": "integer", "equals_number": 10}, [9], False),
-        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [10, 11, 12], True),
-        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [9, 10], False),
-        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [9], False),
-        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [10], True),
-        ("all_members_min_10", "all_members", {"range": "integer", "minimum_value": 10}, [], True),
-        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [10, 11, 12], True),
-        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [9, 10], True),
-        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [8, 9], False),
-        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [9], False),
-        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [10], True),
-        ("has_member_min_10", "has_member", {"range": "integer", "minimum_value": 10}, [], False),
+        (
+            "all_obj_members_equals_string",
+            "all_members",
+            {"range": CLASS_D, "equals_string": "foo"},
+            ["X:1"],
+            False,
+        ),
+        (
+            "has_member_equals_string",
+            "has_member",
+            {"range": "string", "equals_string": "x"},
+            ["x"],
+            True,
+        ),
+        (
+            "has_member_equals_number",
+            "has_member",
+            {"range": "integer", "equals_number": 10},
+            [10],
+            True,
+        ),
+        (
+            "has_member_equals_number",
+            "has_member",
+            {"range": "integer", "equals_number": 10},
+            [10, 20],
+            True,
+        ),
+        (
+            "has_member_equals_number",
+            "has_member",
+            {"range": "integer", "equals_number": 10},
+            [],
+            False,
+        ),
+        (
+            "has_member_equals_number",
+            "has_member",
+            {"range": "integer", "equals_number": 10},
+            [9],
+            False,
+        ),
+        (
+            "all_members_min_10",
+            "all_members",
+            {"range": "integer", "minimum_value": 10},
+            [10, 11, 12],
+            True,
+        ),
+        (
+            "all_members_min_10",
+            "all_members",
+            {"range": "integer", "minimum_value": 10},
+            [9, 10],
+            False,
+        ),
+        (
+            "all_members_min_10",
+            "all_members",
+            {"range": "integer", "minimum_value": 10},
+            [9],
+            False,
+        ),
+        (
+            "all_members_min_10",
+            "all_members",
+            {"range": "integer", "minimum_value": 10},
+            [10],
+            True,
+        ),
+        (
+            "all_members_min_10",
+            "all_members",
+            {"range": "integer", "minimum_value": 10},
+            [],
+            True,
+        ),
+        (
+            "has_member_min_10",
+            "has_member",
+            {"range": "integer", "minimum_value": 10},
+            [10, 11, 12],
+            True,
+        ),
+        (
+            "has_member_min_10",
+            "has_member",
+            {"range": "integer", "minimum_value": 10},
+            [9, 10],
+            True,
+        ),
+        (
+            "has_member_min_10",
+            "has_member",
+            {"range": "integer", "minimum_value": 10},
+            [8, 9],
+            False,
+        ),
+        (
+            "has_member_min_10",
+            "has_member",
+            {"range": "integer", "minimum_value": 10},
+            [9],
+            False,
+        ),
+        (
+            "has_member_min_10",
+            "has_member",
+            {"range": "integer", "minimum_value": 10},
+            [10],
+            True,
+        ),
+        (
+            "has_member_min_10",
+            "has_member",
+            {"range": "integer", "minimum_value": 10},
+            [],
+            False,
+        ),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)

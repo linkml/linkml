@@ -22,4 +22,3 @@ ncit:C147557 skos:broader ncit:C91102 ;
 
 [] a termci:dict ;
     termci:system <http://purl.obolibrary.org/obo/> .
-

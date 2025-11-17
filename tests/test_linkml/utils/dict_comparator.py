@@ -20,7 +20,9 @@ def compare_dicts(expected: dict[str, Any], actual: dict[str, Any]) -> Optional[
 
 
 def compare_yaml(
-    expected: Union[str, dict, Path], actual: Union[str, dict, Path], remove_empty: bool = False
+    expected: Union[str, dict, Path],
+    actual: Union[str, dict, Path],
+    remove_empty: bool = False,
 ) -> Optional[str]:
     if isinstance(expected, (str, Path)):
         with open(expected) as expected_stream:

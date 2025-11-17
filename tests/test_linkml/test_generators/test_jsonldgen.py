@@ -48,7 +48,9 @@ def test_class_uri(input_path):
     #   "@type": "ClassDefinition"
     # }
     # [...]
-    schema_jsonld = json.loads(JSONLDGenerator(schema_path, format="jsonld").serialize())
+    schema_jsonld = json.loads(
+        JSONLDGenerator(schema_path, format="jsonld").serialize()
+    )
     # get all the schema classes according the generated JSON-LD
     classes_jsonld = {cls["definition_uri"]: cls for cls in schema_jsonld["classes"]}
     logger.info(classes_jsonld)
@@ -57,7 +59,10 @@ def test_class_uri(input_path):
         assert class_info["uri"] in classes_jsonld.keys()
         assert "class_uri" not in classes_jsonld[class_info["uri"]].keys()
         assert "exact_mappings" in classes_jsonld[class_info["uri"]].keys()
-        assert class_info["class_uri"] in classes_jsonld[class_info["uri"]]["exact_mappings"]
+        assert (
+            class_info["class_uri"]
+            in classes_jsonld[class_info["uri"]]["exact_mappings"]
+        )
 
     # check generated RDF against following expectation:
     # [...]
@@ -89,7 +94,9 @@ def test_class_uri(input_path):
                     class_properties[str(p)] = [single_item]
                 class_properties[str(p)].append(str(o))
         assert "https://w3id.org/linkml/class_uri" not in class_properties.keys()
-        assert "http://www.w3.org/2004/02/skos/core#exactMatch" in class_properties.keys()
+        assert (
+            "http://www.w3.org/2004/02/skos/core#exactMatch" in class_properties.keys()
+        )
         assert (
             schema_view.expand_curie(class_info["class_uri"])
             == class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]

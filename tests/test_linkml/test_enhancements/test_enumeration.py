@@ -30,7 +30,10 @@ def test_evidence(input_path, snapshot):
         ("enum_error_2", 'Enum: "error2" cannot have both version and tag'),
         ("enum_error_3", 'Enum: "error3" needs a code set to have a tag'),
         ("enum_error_4", 'Enum: "error4" needs a code set to have a formula'),
-        ("enum_error_5", 'Enum: "error5" can have a formula or permissible values but not both'),
+        (
+            "enum_error_5",
+            'Enum: "error5" can have a formula or permissible values but not both',
+        ),
         ("enum_error_6a", 'Slot: "classError1__slot_1" enumerations cannot be inlined'),
         ("enum_error_6b", 'Slot: "classError1__slot_1" enumerations cannot be inlined'),
         ("enum_error_7", "Unknown PvFormulaOptions enumeration code: FOO"),
@@ -101,7 +104,9 @@ def test_notebook_model_1(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_1.yaml"
     python_path = Path("enumeration") / "notebook_model_1.py"
 
-    generated = PythonGenerator(schema_path, mergeimports=False, gen_classvars=False, gen_slots=False).serialize()
+    generated = PythonGenerator(
+        schema_path, mergeimports=False, gen_classvars=False, gen_slots=False
+    ).serialize()
 
     assert generated == snapshot(python_path)
 
@@ -126,7 +131,9 @@ def test_notebook_model_2(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_2.yaml"
     python_path = Path("enumeration") / "notebook_model_2.py"
 
-    generated = PythonGenerator(schema_path, mergeimports=False, gen_classvars=False, gen_slots=False).serialize()
+    generated = PythonGenerator(
+        schema_path, mergeimports=False, gen_classvars=False, gen_slots=False
+    ).serialize()
 
     assert generated == snapshot(python_path)
 
@@ -143,7 +150,9 @@ def test_notebook_model_3(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_3.yaml"
     python_path = Path("enumeration") / "notebook_model_3.py"
 
-    generated = PythonGenerator(schema_path, mergeimports=False, gen_classvars=False, gen_slots=False).serialize()
+    generated = PythonGenerator(
+        schema_path, mergeimports=False, gen_classvars=False, gen_slots=False
+    ).serialize()
 
     assert generated == snapshot(python_path)
 
@@ -158,7 +167,9 @@ def test_notebook_model_4(input_path, snapshot):
     schema_path = Path(input_path("enumeration")) / "notebook_model_4.yaml"
     python_path = Path("enumeration") / "notebook_model_4.py"
 
-    generated = PythonGenerator(schema_path, mergeimports=False, gen_classvars=False, gen_slots=False).serialize()
+    generated = PythonGenerator(
+        schema_path, mergeimports=False, gen_classvars=False, gen_slots=False
+    ).serialize()
 
     assert generated == snapshot(python_path)
 

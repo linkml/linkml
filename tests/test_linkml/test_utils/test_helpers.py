@@ -1,4 +1,8 @@
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.utils.helpers import is_simple_dict
@@ -42,13 +46,25 @@ def test_is_simple_dict():
         use_attributes=True,
     )
     simple_dict_slot = SlotDefinition(
-        "simple_dict", inlined=True, inlined_as_list=False, multivalued=True, range="SimpleDictItem"
+        "simple_dict",
+        inlined=True,
+        inlined_as_list=False,
+        multivalued=True,
+        range="SimpleDictItem",
     )
     no_simple_dict_slot_1 = SlotDefinition(
-        "no_simple_dict1", inlined=True, inlined_as_list=False, multivalued=True, range="DictionaryItem1"
+        "no_simple_dict1",
+        inlined=True,
+        inlined_as_list=False,
+        multivalued=True,
+        range="DictionaryItem1",
     )
     no_simple_dict_slot_2 = SlotDefinition(
-        "no_simple_dict2", inlined=True, inlined_as_list=False, multivalued=True, range="DictionaryItem2"
+        "no_simple_dict2",
+        inlined=True,
+        inlined_as_list=False,
+        multivalued=True,
+        range="DictionaryItem2",
     )
     sb.add_class("C", [simple_dict_slot, no_simple_dict_slot_1, no_simple_dict_slot_2])
 

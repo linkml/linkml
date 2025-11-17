@@ -142,14 +142,19 @@ def test_initialized_enums(pythongen_module, schemaview):
     # they are created as Enum instances, NOT permissible value instances
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
     assert p.status != mod.VitalStatus.ALIVE
-    tc.assertCountEqual(p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)])
+    tc.assertCountEqual(
+        p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)]
+    )
     assert type(p.status) is mod.VitalStatus
     assert type(p.status) is not PermissibleValue
     assert type(p.roles[0]) is mod.Role
     g = rdflib_dumper.as_rdf_graph(p, schemaview=schemaview)
     [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
     assert list(g.objects(subj, EXAMPLE.status)) == [EXAMPLE.Alive]
-    tc.assertCountEqual(list(g.objects(subj, EXAMPLE.roles)), [Literal("INVESTIGATOR"), Literal("ANALYST")])
+    tc.assertCountEqual(
+        list(g.objects(subj, EXAMPLE.roles)),
+        [Literal("INVESTIGATOR"), Literal("ANALYST")],
+    )
 
 
 def test_assigned_enum(pythongen_module):
@@ -233,7 +238,9 @@ def test_assigned_wrapped_enums(pythongen_module, schemaview):
     assert p_roundtrip == p
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
     assert p.status != mod.VitalStatus.ALIVE
-    tc.assertCountEqual(p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)])
+    tc.assertCountEqual(
+        p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)]
+    )
     assert type(p.status) is mod.VitalStatus
     assert type(p.status) is not PermissibleValue
     assert type(p.roles[0]) is mod.Role

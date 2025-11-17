@@ -1,7 +1,10 @@
 import pytest
 from linkml_runtime import SchemaView
 
-from linkml.linter.config.datamodel.config import PermissibleValuesFormatRuleConfig, RuleLevel
+from linkml.linter.config.datamodel.config import (
+    PermissibleValuesFormatRuleConfig,
+    RuleLevel,
+)
 from linkml.linter.rules import PermissibleValuesFormatRule
 from linkml.utils.schema_builder import SchemaBuilder
 
@@ -40,7 +43,9 @@ def test_format_snake(schema_view):
 
 
 def test_format_upper_snake(schema_view):
-    config = PermissibleValuesFormatRuleConfig(level=RuleLevel.error, format="uppersnake")
+    config = PermissibleValuesFormatRuleConfig(
+        level=RuleLevel.error, format="uppersnake"
+    )
     rule = PermissibleValuesFormatRule(config)
     problems = list(rule.check(schema_view))
 

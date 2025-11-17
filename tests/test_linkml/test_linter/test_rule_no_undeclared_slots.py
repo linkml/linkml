@@ -34,7 +34,10 @@ classes:
     # `id` from class_1 is not declared in `slots`
     # `description` from class_2 is an attribute so it doesn't need to be in `slots`
     assert len(problems) == 1
-    assert problems[0].message == "Slot 'id' from class 'class_1' not found in schema 'slots' declaration."
+    assert (
+        problems[0].message
+        == "Slot 'id' from class 'class_1' not found in schema 'slots' declaration."
+    )
 
 
 def test_valid_slot_usage() -> None:

@@ -62,7 +62,9 @@ def test_simple(default_range, preserve_class_is_a, abstract, force_any_of):
             assert person.attributes["name"].range == actual_default_range
             assert person.attributes["name"].required is True
     sb.add_class("Organization", is_a="Thing")
-    sb.add_class("Container", slots=[SlotDefinition("entities", range="Thing", multivalued=True)])
+    sb.add_class(
+        "Container", slots=[SlotDefinition("entities", range="Thing", multivalued=True)]
+    )
     tr.set_schema(sb.schema)
     flat_schema = tr.transform()
     container = flat_schema.classes["Container"]
@@ -105,8 +107,14 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
     sb.add_class("Any", class_uri="linkml:Any")
     sb.add_slot("id", identifier=True, replace_if_present=True)
     sb.add_slot("name", required=True, range="Any", replace_if_present=True)
-    sb.add_slot("a_number", replace_if_present=True, any_of=[{"range": "integer"}, {"range": "float"}])
-    sb.add_slot("foo", replace_if_present=True, any_of=[{"range": "string"}, {"range": "Any"}])
+    sb.add_slot(
+        "a_number",
+        replace_if_present=True,
+        any_of=[{"range": "integer"}, {"range": "float"}],
+    )
+    sb.add_slot(
+        "foo", replace_if_present=True, any_of=[{"range": "string"}, {"range": "Any"}]
+    )
     tr = LogicalModelTransformer(preserve_class_is_a=preserve_class_is_a)
     sb.schema.default_range = default_range
     tr.set_schema(sb.schema)
@@ -114,7 +122,9 @@ def test_unrestricted_range(default_range, preserve_class_is_a):
     thing = flat_schema.classes["Thing"]
     person = flat_schema.classes["Person"]
     assert person.attributes["age"].range == "integer", "direct assertion"
-    assert person.attributes["name"].range == "string", "range is restricted by slot_usage"
+    assert person.attributes["name"].range == "string", (
+        "range is restricted by slot_usage"
+    )
     assert thing.attributes["name"].range is None, "Any is eliminated"
     assert thing.attributes["foo"].range is None, "the union of Any and string is Any"
     if preserve_class_is_a:
@@ -155,7 +165,11 @@ def test_unsatisfiable():
     """
     sb = SchemaBuilder()
     sb.add_class("Thing", slots=["id", "name"])
-    sb.add_class("Person", slots={"age": {"range": "integer"}, "pets": {"multivalued": True}}, is_a="Thing")
+    sb.add_class(
+        "Person",
+        slots={"age": {"range": "integer"}, "pets": {"multivalued": True}},
+        is_a="Thing",
+    )
     sb.add_class("Person2", is_a="Person", slot_usage={"age": {"range": "string"}})
     tr = LogicalModelTransformer()
     sb.add_defaults()
@@ -195,13 +209,24 @@ def test_cardinality(person_min, person_max, person2_min, person2_max):
     sb.add_class("Thing", slots=["id", "name"])
     sb.add_class(
         "Person",
-        slots={"pets": {"multivalued": True, "minimum_cardinality": person_min, "maximum_cardinality": person_max}},
+        slots={
+            "pets": {
+                "multivalued": True,
+                "minimum_cardinality": person_min,
+                "maximum_cardinality": person_max,
+            }
+        },
         is_a="Thing",
     )
     sb.add_class(
         "Person2",
         is_a="Person",
-        slot_usage={"pets": {"minimum_cardinality": person2_min, "maximum_cardinality": person2_max}},
+        slot_usage={
+            "pets": {
+                "minimum_cardinality": person2_min,
+                "maximum_cardinality": person2_max,
+            }
+        },
     )
     tr = LogicalModelTransformer()
     sb.add_defaults()
@@ -272,7 +297,9 @@ def test_type_inheritance():
     id_slot = p.attributes["id"]
     assert id_slot.range == "PersonCodeType"
     assert id_slot.identifier is True
-    assert {r"^P[A-Z][a-z]+$", r"^[A-Z][a-z]+$"} == {t.pattern for t in id_slot.all_of}.union({id_slot.pattern})
+    assert {r"^P[A-Z][a-z]+$", r"^[A-Z][a-z]+$"} == {
+        t.pattern for t in id_slot.all_of
+    }.union({id_slot.pattern})
     age_slot = p.attributes["age"]
     assert age_slot.range == "AgeType"
     assert (age_slot.minimum_value, age_slot.maximum_value) == (0, 200)
@@ -286,7 +313,9 @@ def test_type_inheritance():
 @pytest.mark.parametrize("multivalued", [False, True])
 @pytest.mark.parametrize("pattern", [None, "^[A-Z][a-z]+$"])
 @pytest.mark.parametrize("preserve_class_is_a", [False, True])
-def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined, inlined_as_list):
+def test_any_of_with_required(
+    preserve_class_is_a, pattern, multivalued, inlined, inlined_as_list
+):
     """
     Test a schema that uses any_of.
 
@@ -360,7 +389,9 @@ def test_any_of_with_required(preserve_class_is_a, pattern, multivalued, inlined
             ], "unexpected for multivalued=False"
         else:
             # assert py_field == "xx"
-            assert "Collection" in py_field, f"expected Collection for multivalued; attr={manufactured_by.multivalued}"
+            assert "Collection" in py_field, (
+                f"expected Collection for multivalued; attr={manufactured_by.multivalued}"
+            )
     else:
         assert {"Organization", "Company"} == {c.range for c in required_expr.any_of}
         assert {"Person", "Employee"} == {c.range for c in non_required_expr.any_of}
@@ -372,7 +403,8 @@ def test_simple_union_with_constraint():
     sb = SchemaBuilder()
     sb.add_slot(
         SlotDefinition(
-            name="string_and_min_number", any_of=[{"range": "string"}, {"range": "integer", "minimum_value": 5}]
+            name="string_and_min_number",
+            any_of=[{"range": "string"}, {"range": "integer", "minimum_value": 5}],
         )
     )
     sb.add_class("A", slots=["id", "string_and_min_number"])
@@ -382,7 +414,9 @@ def test_simple_union_with_constraint():
     new_schema = flattener.transform()
     print("## NEW SCHEMA")
     print(yaml_dumper.dumps(new_schema))
-    py_def = flattener.attribute_as_python_field(new_schema.classes["A"].attributes["string_and_min_number"])
+    py_def = flattener.attribute_as_python_field(
+        new_schema.classes["A"].attributes["string_and_min_number"]
+    )
     print(py_def)
 
 
@@ -475,9 +509,13 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
             mixins = [cn.replace("C", "M"), cn.replace("C", "N")]
         else:
             # D classes are ints with progressively more constrained numeric ranges
-            slot_usage = SlotDefinition(main_t, minimum_value=len(cn), maximum_value=10 - len(cn))
+            slot_usage = SlotDefinition(
+                main_t, minimum_value=len(cn), maximum_value=10 - len(cn)
+            )
             mixins = []
-        sb.add_class(cn, is_a=p, slot_usage=[slot_usage], mixins=mixins, slots=slots, **extra)
+        sb.add_class(
+            cn, is_a=p, slot_usage=[slot_usage], mixins=mixins, slots=slots, **extra
+        )
     sb.add_defaults()
     schema = sb.schema
     # local_id = f"SR{specify_redundant}-PCI{preserve_class_is_a}"
@@ -498,7 +536,9 @@ def test_deep_schema(specify_redundant, preserve_class_is_a):
     c1_s2a = class_C1.attributes["s2a"]
     c1a_u1a = class_C1a.attributes["u1a"]
     if not preserve_class_is_a:
-        assert {"D", "D1", "D2", "D1a", "D1b", "D2a", "D2b"} == {c.range for c in c_s2a.any_of}
+        assert {"D", "D1", "D2", "D1a", "D1b", "D2a", "D2b"} == {
+            c.range for c in c_s2a.any_of
+        }
         assert {"D1", "D1a", "D1b"} == {c.range for c in c1_s2a.any_of}
         assert c_s2a.range is None
         assert c1_s2a.range is None

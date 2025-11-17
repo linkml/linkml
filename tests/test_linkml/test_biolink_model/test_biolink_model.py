@@ -27,7 +27,13 @@ pytestmark = pytest.mark.biolink
     "generator,extension,gen_kwargs,serialize_kwargs",
     [
         # (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
-        pytest.param(OwlSchemaGenerator, ".owl.ttl", {"useuris": False}, {}, marks=[pytest.mark.owlgen]),
+        pytest.param(
+            OwlSchemaGenerator,
+            ".owl.ttl",
+            {"useuris": False},
+            {},
+            marks=[pytest.mark.owlgen],
+        ),
         pytest.param(
             RDFGenerator,
             ".ttl",
@@ -40,22 +46,40 @@ pytestmark = pytest.mark.biolink
                 pytest.mark.rdfgen,
             ],
         ),
-        pytest.param(ContextGenerator, ".context.jsonld", {"useuris": False}, {}, marks=pytest.mark.jsonldcontextgen),
+        pytest.param(
+            ContextGenerator,
+            ".context.jsonld",
+            {"useuris": False},
+            {},
+            marks=pytest.mark.jsonldcontextgen,
+        ),
         (JSONLDGenerator, ".json", {}, {}),
         pytest.param(PythonGenerator, ".py", {}, {}, marks=pytest.mark.pythongen),
         (CsvGenerator, ".tsv", {"format": "tsv"}, {}),
         # (DotGenerator, "graphviz", {}, {}),
         (GolrSchemaGenerator, "golr", {}, {}),
         (GraphqlGenerator, ".graphql", {}, {}),
-        pytest.param(JsonSchemaGenerator, ".schema.json", {}, {}, marks=pytest.mark.jsonschemagen),
+        pytest.param(
+            JsonSchemaGenerator, ".schema.json", {}, {}, marks=pytest.mark.jsonschemagen
+        ),
         (ProtoGenerator, ".proto", {}, {}),
         (NamespaceGenerator, ".namespace.py", {"emit_metadata": True}, {}),
         pytest.param(ShExGenerator, ".shex", {}, {}, marks=pytest.mark.shexgen),
-        pytest.param(ShExGenerator, ".shexj", {"format": "json"}, {}, marks=pytest.mark.shexgen),
-        pytest.param(ShExGenerator, ".native.shex", {"useuris": False}, {}, marks=pytest.mark.shexgen),
+        pytest.param(
+            ShExGenerator, ".shexj", {"format": "json"}, {}, marks=pytest.mark.shexgen
+        ),
+        pytest.param(
+            ShExGenerator,
+            ".native.shex",
+            {"useuris": False},
+            {},
+            marks=pytest.mark.shexgen,
+        ),
     ],
 )
-def test_biolink(generator, extension, gen_kwargs, serialize_kwargs, temp_dir, snapshot, input_path):
+def test_biolink(
+    generator, extension, gen_kwargs, serialize_kwargs, temp_dir, snapshot, input_path
+):
     BIOLINK_YAML = input_path("biolink-model.yaml")
     if not extension.startswith("."):
         # is a directory!

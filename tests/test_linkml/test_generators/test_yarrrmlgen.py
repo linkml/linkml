@@ -15,7 +15,9 @@ jsonschema = pytest.importorskip("jsonschema")
 rdflib = pytest.importorskip("rdflib")
 pyshacl = pytest.importorskip("pyshacl")
 
-pytestmark = pytest.mark.skipif(sys.version_info < (3, 10), reason="YARRRML e2e require Morph-KGC (Python >= 3.10)")
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 10), reason="YARRRML e2e require Morph-KGC (Python >= 3.10)"
+)
 
 if sys.version_info >= (3, 10):
     morph_kgc = pytest.importorskip("morph_kgc")
@@ -191,8 +193,16 @@ classes:
 """
 DATA_INLINED = {
     "items": [
-        {"pid": "A1", "name": "WorkerX", "address": {"street": "Main", "city": "CityA"}},
-        {"pid": "A2", "name": "WorkerY", "address": {"street": "High", "city": "CityB"}},
+        {
+            "pid": "A1",
+            "name": "WorkerX",
+            "address": {"street": "Main", "city": "CityA"},
+        },
+        {
+            "pid": "A2",
+            "name": "WorkerY",
+            "address": {"street": "High", "city": "CityB"},
+        },
     ]
 }
 
@@ -226,7 +236,9 @@ classes:
         identifier: true
       title: {}
 """
-DATA_PREFIXES = {"items": [{"aid": "X1", "name": "AlphaUnit", "bid": "Y1", "title": "BetaTitle"}]}
+DATA_PREFIXES = {
+    "items": [{"aid": "X1", "name": "AlphaUnit", "bid": "Y1", "title": "BetaTitle"}]
+}
 
 SCHEMA_MISSING = """id: https://ex.org/neg
 name: neg
@@ -433,7 +445,9 @@ def test_yarrrml_e2e_prefixes_and_multiple_classes(tmp_path: Path):
 
 
 @pytest.mark.yarrrml
-@pytest.mark.xfail(reason="SHACL should fail when target instances are missing", strict=False)
+@pytest.mark.xfail(
+    reason="SHACL should fail when target instances are missing", strict=False
+)
 def test_yarrrml_e2e_missing_target_instances(tmp_path: Path):
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -467,11 +481,27 @@ def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
     g = _materialize_with_morph(tmp_path, yarrrml)
     EX, RDF = rdflib.Namespace("https://ex.org/mini#"), rdflib.RDF
     assert (EX.P1, RDF.type, EX.Person) in g
-    assert (EX.P1, rdflib.URIRef("https://ex.org/mini#name"), rdflib.Literal("WorkerA")) in g
-    assert (EX.P2, rdflib.URIRef("https://ex.org/mini#name"), rdflib.Literal("WorkerB")) in g
-    assert (EX.P1, rdflib.URIRef("https://ex.org/mini#employer"), rdflib.URIRef("https://ex.org/mini#O1")) in g
+    assert (
+        EX.P1,
+        rdflib.URIRef("https://ex.org/mini#name"),
+        rdflib.Literal("WorkerA"),
+    ) in g
+    assert (
+        EX.P2,
+        rdflib.URIRef("https://ex.org/mini#name"),
+        rdflib.Literal("WorkerB"),
+    ) in g
+    assert (
+        EX.P1,
+        rdflib.URIRef("https://ex.org/mini#employer"),
+        rdflib.URIRef("https://ex.org/mini#O1"),
+    ) in g
     assert (EX.O1, RDF.type, EX.Organization) in g
-    assert (EX.O1, rdflib.URIRef("https://ex.org/mini#org_name"), rdflib.Literal("Org_A")) in g
+    assert (
+        EX.O1,
+        rdflib.URIRef("https://ex.org/mini#org_name"),
+        rdflib.Literal("Org_A"),
+    ) in g
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed for CSV:\n{results_text}"
 

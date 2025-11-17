@@ -1,5 +1,8 @@
 from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.introspection import object_class_definition, package_schemaview
+from linkml_runtime.utils.introspection import (
+    object_class_definition,
+    package_schemaview,
+)
 
 
 def test_introspection_on_metamodel():
@@ -7,7 +10,9 @@ def test_introspection_on_metamodel():
     view = package_schemaview("linkml_runtime.linkml_model.meta")
 
     # Test that expected classes are present
-    assert {"class_definition", "type_definition", "slot_definition"}.issubset(set(view.all_classes()))
+    assert {"class_definition", "type_definition", "slot_definition"}.issubset(
+        set(view.all_classes())
+    )
 
     # Test that expected types are present
     assert {"uriorcurie", "string", "float"}.issubset(set(view.all_types()))

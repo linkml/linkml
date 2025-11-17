@@ -26,6 +26,8 @@ def test_validate_yaml(input_path, snapshot):
     assert result.exit_code == 0
     assert result.output == snapshot("genyaml/clean.yaml")
 
-    result = runner.invoke(cli, [input_path("yaml_validate_invalid.yaml"), "-v"], standalone_mode=False)
+    result = runner.invoke(
+        cli, [input_path("yaml_validate_invalid.yaml"), "-v"], standalone_mode=False
+    )
     assert result.exit_code != 0
     assert "slot: k - unrecognized range (none)" in str(result.exception)

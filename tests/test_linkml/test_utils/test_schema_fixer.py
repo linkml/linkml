@@ -72,7 +72,9 @@ def test_merge_slot_usage():
     s = b.schema
     fixer = SchemaFixer()
     c = s.classes[MY_CLASS]
-    fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc1", range="string"))
+    fixer.merge_slot_usage(
+        s, c, SlotDefinition(FULL_NAME, description="desc1", range="string")
+    )
     su = c.slot_usage[FULL_NAME]
     assert "desc1" == su.description
     assert "string" == su.range
@@ -91,7 +93,9 @@ def test_merge_slot_usage():
     with pytest.raises(ValueError):
         fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc2"))
     assert "desc1" == su.description
-    fixer.merge_slot_usage(s, c, SlotDefinition(FULL_NAME, description="desc2"), overwrite=True)
+    fixer.merge_slot_usage(
+        s, c, SlotDefinition(FULL_NAME, description="desc2"), overwrite=True
+    )
     su = c.slot_usage[FULL_NAME]
     assert "desc2" == su.description
 
@@ -116,10 +120,14 @@ def test_remove_redundant():
         description="unique identifier",
     )
     # add a slot usage for full_name that is intentionally partially redundant with the main slot
-    c.slot_usage[FULL_NAME] = SlotDefinition(FULL_NAME, range="string", description="full name", pattern="^.*$")
+    c.slot_usage[FULL_NAME] = SlotDefinition(
+        FULL_NAME, range="string", description="full name", pattern="^.*$"
+    )
     # add a slot usage that is fully redundant
     c.slot_usage[DESC] = SlotDefinition(DESC, range="string")
-    b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(deepcopy(slot2), replace_if_present=True)
+    b.add_slot(deepcopy(slot1), replace_if_present=True).add_slot(
+        deepcopy(slot2), replace_if_present=True
+    )
     b.add_defaults()
     fixer = SchemaFixer()
     fixer.remove_redundant_slot_usage(s)
@@ -181,7 +189,9 @@ def test_fix_element_names(preserve_original_using):
     b.add_defaults()
     fixer = SchemaFixer()
     schema = b.schema
-    fixed_schema = fixer.fix_element_names(schema, preserve_original_using=preserve_original_using)
+    fixed_schema = fixer.fix_element_names(
+        schema, preserve_original_using=preserve_original_using
+    )
     for v in slots.values():
         assert v in fixed_schema.slots
     for v in classes.values():

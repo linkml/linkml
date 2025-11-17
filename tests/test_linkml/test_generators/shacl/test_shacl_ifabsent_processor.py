@@ -210,7 +210,9 @@ def test_process_ifabsent_uri():
     assert processor.process_slot(
         schema_view.all_slots()[SlotDefinitionName("definition")],
         schema_view.all_classes()[ClassDefinitionName("Student")],
-    ) == Literal("https://en.wikipedia.org/wiki/Student", datatype=ShaclDataType.URI.uri_ref)
+    ) == Literal(
+        "https://en.wikipedia.org/wiki/Student", datatype=ShaclDataType.URI.uri_ref
+    )
 
 
 def test_process_ifabsent_uriorcurie():
@@ -234,7 +236,9 @@ def test_process_ifabsent_uriorcurie():
     assert processor.process_slot(
         schema_view.all_slots()[SlotDefinitionName("definition_A")],
         schema_view.all_classes()[ClassDefinitionName("Student")],
-    ) == Literal("https://en.wikipedia.org/wiki/Student", datatype=ShaclDataType.URI.uri_ref)
+    ) == Literal(
+        "https://en.wikipedia.org/wiki/Student", datatype=ShaclDataType.URI.uri_ref
+    )
 
     assert processor.process_slot(
         schema_view.all_slots()[SlotDefinitionName("definition_B")],
@@ -325,7 +329,8 @@ def test_process_empty_ifabsent_attribute():
     processor = ShaclIfAbsentProcessor(schema_view)
 
     assert processor.process_slot(
-        schema_view.all_slots()[SlotDefinitionName("empty")], schema_view.all_classes()[ClassDefinitionName("Student")]
+        schema_view.all_slots()[SlotDefinitionName("empty")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
     ) == Literal("", datatype=ShaclDataType.STRING.uri_ref)
 
 
@@ -403,7 +408,9 @@ def test_process_object_identifier_ifabsent_attribute():
 
     with pytest.raises(NotImplementedError):
         processor.process_slot(
-            schema_view.all_slots()[SlotDefinitionName("unimplementedObjectIdentifier")],
+            schema_view.all_slots()[
+                SlotDefinitionName("unimplementedObjectIdentifier")
+            ],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
 

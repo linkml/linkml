@@ -11,7 +11,9 @@ from ..conftest import KITCHEN_SINK_PATH
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
-    assert re.search("Generate documentation folder from a LinkML YAML schema", result.output)
+    assert re.search(
+        "Generate documentation folder from a LinkML YAML schema", result.output
+    )
 
 
 def test_metamodel(tmp_path):

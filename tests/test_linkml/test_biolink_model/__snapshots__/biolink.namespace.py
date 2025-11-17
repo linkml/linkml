@@ -31,7 +31,9 @@ class BiolinkNameSpace:
     _namespaces = [
         CurieNamespace("AGRKB", "https://www.alliancegenome.org/"),
         CurieNamespace("APO", "http://purl.obolibrary.org/obo/APO_"),
-        CurieNamespace("AspGD", "http://www.aspergillusgenome.org/cgi-bin/locus.pl?dbid="),
+        CurieNamespace(
+            "AspGD", "http://www.aspergillusgenome.org/cgi-bin/locus.pl?dbid="
+        ),
         CurieNamespace("BFO", "http://purl.obolibrary.org/obo/BFO_"),
         CurieNamespace("BIGG_METABOLITE", "http://identifiers.org/bigg.metabolite/"),
         CurieNamespace("BIGG_REACTION", "http://identifiers.org/bigg.reaction/"),
@@ -40,7 +42,8 @@ class BiolinkNameSpace:
         CurieNamespace("BSPO", "http://purl.obolibrary.org/obo/BSPO_"),
         CurieNamespace("BTO", "http://purl.obolibrary.org/obo/BTO_"),
         CurieNamespace(
-            "CAID", "http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid="
+            "CAID",
+            "http://reg.clinicalgenome.org/redmine/projects/registry/genboree_registry/by_caid?caid=",
         ),
         CurieNamespace("CARO", "http://purl.obolibrary.org/obo/CARO_"),
         CurieNamespace("CAS", "http://identifiers.org/cas/"),
@@ -50,7 +53,9 @@ class BiolinkNameSpace:
         CurieNamespace("CHADO", "http://gmod.org/wiki/Chado/"),
         CurieNamespace("CHEBI", "http://purl.obolibrary.org/obo/CHEBI_"),
         CurieNamespace("CHEMBL_COMPOUND", "http://identifiers.org/chembl.compound/"),
-        CurieNamespace("CHEMBL_MECHANISM", "https://www.ebi.ac.uk/chembl/mechanism/inspect/"),
+        CurieNamespace(
+            "CHEMBL_MECHANISM", "https://www.ebi.ac.uk/chembl/mechanism/inspect/"
+        ),
         CurieNamespace("CHEMBL_TARGET", "http://identifiers.org/chembl.target/"),
         CurieNamespace("CID", "http://pubchem.ncbi.nlm.nih.gov/compound/"),
         CurieNamespace("CIO", "http://purl.obolibrary.org/obo/CIO_"),
@@ -62,9 +67,14 @@ class BiolinkNameSpace:
         CurieNamespace("CPT", "https://www.ama-assn.org/practice-management/cpt/"),
         CurieNamespace("CTD", "http://ctdbase.org/"),
         CurieNamespace("CTD_CHEMICAL", "http://ctdbase.org/detail.go?type=chem&acc="),
-        CurieNamespace("CTD_DISEASE", "http://ctdbase.org/detail.go?type=disease&db=MESH&acc="),
+        CurieNamespace(
+            "CTD_DISEASE", "http://ctdbase.org/detail.go?type=disease&db=MESH&acc="
+        ),
         CurieNamespace("CTD_GENE", "http://ctdbase.org/detail.go?type=gene&acc="),
-        CurieNamespace("ChemBank", "http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid="),
+        CurieNamespace(
+            "ChemBank",
+            "http://chembank.broadinstitute.org/chemistry/viewMolecule.htm?cbid=",
+        ),
         CurieNamespace("ComplexPortal", "https://www.ebi.ac.uk/complexportal/complex/"),
         CurieNamespace("DBSNP", "http://identifiers.org/dbsnp/"),
         CurieNamespace("DDANAT", "http://purl.obolibrary.org/obo/DDANAT_"),
@@ -103,7 +113,10 @@ class BiolinkNameSpace:
         CurieNamespace("GOREL", "http://purl.obolibrary.org/obo/GOREL_"),
         CurieNamespace("GSID", "https://scholar.google.com/citations?user="),
         CurieNamespace("GTEx", "https://www.gtexportal.org/home/gene/"),
-        CurieNamespace("GTOPDB", "https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId="),
+        CurieNamespace(
+            "GTOPDB",
+            "https://www.guidetopharmacology.org/GRAC/LigandDisplayForward?ligandId=",
+        ),
         CurieNamespace("HAMAP", "http://identifiers.org/hamap/"),
         CurieNamespace("HANCESTRO", "http://www.ebi.ac.uk/ancestro/ancestro_"),
         CurieNamespace("HCPCS", "http://purl.bioontology.org/ontology/HCPCS/"),
@@ -164,7 +177,9 @@ class BiolinkNameSpace:
         CurieNamespace("OMIM_PS", "https://www.omim.org/phenotypicSeries/"),
         CurieNamespace("OMIT", "http://purl.obolibrary.org/obo/OMIT_"),
         CurieNamespace("ORCID", "https://orcid.org/"),
-        CurieNamespace("PANTHER_FAMILY", "http://www.pantherdb.org/panther/family.do?clsAccession="),
+        CurieNamespace(
+            "PANTHER_FAMILY", "http://www.pantherdb.org/panther/family.do?clsAccession="
+        ),
         CurieNamespace("PANTHER_PATHWAY", "http://identifiers.org/panther.pathway/"),
         CurieNamespace("PATO", "http://purl.obolibrary.org/obo/PATO_"),
         CurieNamespace("PCO", "http://purl.obolibrary.org/obo/PCO_"),
@@ -185,7 +200,9 @@ class BiolinkNameSpace:
         CurieNamespace("PRODOM", "http://identifiers.org/prodom/"),
         CurieNamespace("PROSITE", "http://identifiers.org/prosite/"),
         CurieNamespace("PUBCHEM_COMPOUND", "http://identifiers.org/pubchem.compound/"),
-        CurieNamespace("PUBCHEM_SUBSTANCE", "http://identifiers.org/pubchem.substance/"),
+        CurieNamespace(
+            "PUBCHEM_SUBSTANCE", "http://identifiers.org/pubchem.substance/"
+        ),
         CurieNamespace("PW", "http://purl.obolibrary.org/obo/PW_"),
         CurieNamespace("PathWhiz", "http://smpdb.ca/pathways/#"),
         CurieNamespace("PomBase", "https://www.pombase.org/gene/"),
@@ -196,7 +213,9 @@ class BiolinkNameSpace:
         CurieNamespace("RHEA", "http://identifiers.org/rhea/"),
         CurieNamespace("RNACENTRAL", "http://identifiers.org/rnacentral/"),
         CurieNamespace("RO", "http://purl.obolibrary.org/obo/RO_"),
-        CurieNamespace("RXCUI", "https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm="),
+        CurieNamespace(
+            "RXCUI", "https://mor.nlm.nih.gov/RxNav/search?searchBy=RXCUI&searchTerm="
+        ),
         CurieNamespace("RXNORM", "http://purl.bioontology.org/ontology/RXNORM/"),
         CurieNamespace("ResearchID", "https://publons.com/researcher/"),
         CurieNamespace("SEED_REACTION", "https://modelseed.org/biochem/reactions/"),
@@ -214,24 +233,34 @@ class BiolinkNameSpace:
         CurieNamespace("STATO", "http://purl.obolibrary.org/obo/STATO_"),
         CurieNamespace("STY", "http://purl.bioontology.org/ontology/STY/"),
         CurieNamespace("SUPFAM", "http://identifiers.org/supfam/"),
-        CurieNamespace("ScopusID", "https://www.scopus.com/authid/detail.uri?authorId="),
+        CurieNamespace(
+            "ScopusID", "https://www.scopus.com/authid/detail.uri?authorId="
+        ),
         CurieNamespace("TAXRANK", "http://purl.obolibrary.org/obo/TAXRANK_"),
         CurieNamespace("TCDB", "http://identifiers.org/tcdb/"),
         CurieNamespace("TIGRFAM", "http://identifiers.org/tigrfam/"),
         CurieNamespace("TO", "http://purl.obolibrary.org/obo/TO_"),
-        CurieNamespace("UBERGRAPH", "http://translator.renci.org/ubergraph-axioms.ofn#"),
+        CurieNamespace(
+            "UBERGRAPH", "http://translator.renci.org/ubergraph-axioms.ofn#"
+        ),
         CurieNamespace("UBERON", "http://purl.obolibrary.org/obo/UBERON_"),
         CurieNamespace("UBERON_CORE", "http://purl.obolibrary.org/obo/uberon/core#"),
         CurieNamespace("UBERON_NONAMESPACE", "http://purl.obolibrary.org/obo/core#"),
         CurieNamespace("UMLS", "http://identifiers.org/umls/"),
-        CurieNamespace("UMLSSG", "https://lhncbc.nlm.nih.gov/semanticnetwork/download/sg_archive/SemGroups-v04.txt"),
+        CurieNamespace(
+            "UMLSSG",
+            "https://lhncbc.nlm.nih.gov/semanticnetwork/download/sg_archive/SemGroups-v04.txt",
+        ),
         CurieNamespace("UNII", "http://identifiers.org/unii/"),
         CurieNamespace("UNIPROT_ISOFORM", "http://purl.uniprot.org/isoforms/"),
         CurieNamespace("UO", "http://purl.obolibrary.org/obo/UO_"),
         CurieNamespace("UO-PROPERTY", "http://purl.obolibrary.org/obo/uo#"),
         CurieNamespace("UPHENO", "http://purl.obolibrary.org/obo/UPHENO_"),
         CurieNamespace("UniProtKB", "http://purl.uniprot.org/uniprot/"),
-        CurieNamespace("VANDF", "https://www.nlm.nih.gov/research/umls/sourcereleasedocs/current/VANDF/"),
+        CurieNamespace(
+            "VANDF",
+            "https://www.nlm.nih.gov/research/umls/sourcereleasedocs/current/VANDF/",
+        ),
         CurieNamespace("VMC", "https://github.com/ga4gh/vr-spec/"),
         CurieNamespace("WB", "http://identifiers.org/wb/"),
         CurieNamespace("WBPhenotype", "http://purl.obolibrary.org/obo/WBPhenotype_"),
@@ -245,7 +274,9 @@ class BiolinkNameSpace:
         CurieNamespace("XAO", "http://purl.obolibrary.org/obo/XAO_"),
         CurieNamespace("XCO", "http://purl.obolibrary.org/obo/XCO_"),
         CurieNamespace("XPO", "http://purl.obolibrary.org/obo/XPO_"),
-        CurieNamespace("Xenbase", "http://www.xenbase.org/gene/showgene.do?method=display&geneId="),
+        CurieNamespace(
+            "Xenbase", "http://www.xenbase.org/gene/showgene.do?method=display&geneId="
+        ),
         CurieNamespace("ZFA", "http://purl.obolibrary.org/obo/ZFA_"),
         CurieNamespace("ZFIN", "http://identifiers.org/zfin/"),
         CurieNamespace("ZFS", "http://purl.obolibrary.org/obo/ZFS_"),
@@ -264,8 +295,14 @@ class BiolinkNameSpace:
         CurieNamespace("foaf", "http://xmlns.com/foaf/0.1/"),
         CurieNamespace("foodb_compound", "http://foodb.ca/compounds/"),
         CurieNamespace("foodb_food", "http://foodb.ca/foods/"),
-        CurieNamespace("gff3", "https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#"),
-        CurieNamespace("gpi", "https://github.com/geneontology/go-annotation/blob/master/specs/gpad-gpi-2-0.md#"),
+        CurieNamespace(
+            "gff3",
+            "https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#",
+        ),
+        CurieNamespace(
+            "gpi",
+            "https://github.com/geneontology/go-annotation/blob/master/specs/gpad-gpi-2-0.md#",
+        ),
         CurieNamespace("gtpo", "https://rdf.guidetopharmacology.org/ns/gtpo#"),
         CurieNamespace("interpro", "https://www.ebi.ac.uk/interpro/entry/"),
         CurieNamespace("isbn", "https://www.isbn-international.org/identifier/"),
@@ -276,11 +313,15 @@ class BiolinkNameSpace:
         CurieNamespace("metacyc_reaction", "http://identifiers.org/metacyc.reaction:"),
         CurieNamespace("mirbase", "http://identifiers.org/mirbase"),
         CurieNamespace("mmmp_biomaps", "https://bioregistry.io/mmmp.biomaps:"),
-        CurieNamespace("ncats_bioplanet", "https://tripod.nih.gov/bioplanet/detail.jsp?pid="),
+        CurieNamespace(
+            "ncats_bioplanet", "https://tripod.nih.gov/bioplanet/detail.jsp?pid="
+        ),
         CurieNamespace("ncats_drug", "https://drugs.ncats.io/drug/"),
         CurieNamespace("oboInOwl", "http://www.geneontology.org/formats/oboInOwl#"),
         CurieNamespace("orphanet", "http://www.orpha.net/ORDO/Orphanet_"),
-        CurieNamespace("os", "https://github.com/cmungall/owlstar/blob/master/owlstar.ttl"),
+        CurieNamespace(
+            "os", "https://github.com/cmungall/owlstar/blob/master/owlstar.ttl"
+        ),
         CurieNamespace("owl", "http://www.w3.org/2002/07/owl#"),
         CurieNamespace("pav", "http://purl.org/pav/"),
         CurieNamespace("prov", "http://www.w3.org/ns/prov#"),
@@ -313,7 +354,10 @@ class BiolinkNameSpace:
         :param curie: candidate curie string
         :return: CURIE namespace and object_id
         """
-        found = CurieNamespace("", ""), curie  # default value if not a CURIE or unknown XMLNS prefix
+        found = (
+            CurieNamespace("", ""),
+            curie,
+        )  # default value if not a CURIE or unknown XMLNS prefix
         if ":" in curie:
             part = curie.split(":")
             # Normalize retrieval with upper case of prefix for lookup
@@ -329,7 +373,10 @@ class BiolinkNameSpace:
         :param uri: candidate URI string
         :return: namespace and object_id
         """
-        found = CurieNamespace("", ""), uri  # default value returned if unknown URI namespace
+        found = (
+            CurieNamespace("", ""),
+            uri,
+        )  # default value returned if unknown URI namespace
 
         # TODO: is there a more efficient lookup scheme here than a linear search of namespaces?
         for ns in cls._namespaces:
@@ -393,7 +440,9 @@ def fix_curies(identifiers, prefix=""):
     if isinstance(identifiers, dict):
         curie_dict = defaultdict(dict)
         for key in identifiers.keys():
-            curie_dict[prefix + ":" + object_id(key, keep_version=True)] = identifiers[key]
+            curie_dict[prefix + ":" + object_id(key, keep_version=True)] = identifiers[
+                key
+            ]
         return curie_dict
 
     # identifiers assumed to be just a single object identifier
@@ -405,7 +454,10 @@ def fix_curies(identifiers, prefix=""):
         return [prefix + ":" + object_id(x, keep_version=True) for x in identifiers]
 
     else:
-        raise RuntimeError("fix_curie() is not sure how to fix an instance of data type '", type(identifiers))
+        raise RuntimeError(
+            "fix_curie() is not sure how to fix an instance of data type '",
+            type(identifiers),
+        )
 
 
 def curie(identifier) -> str:

@@ -11,7 +11,13 @@ from linkml_runtime.utils.inference_utils import (
 )
 from linkml_runtime.utils.schemaview import SchemaView
 from test_linkml_runtime.test_utils import INPUT_DIR
-from test_linkml_runtime.test_utils.model.inference_example import AgeEnum, Container, Evil, Person, Relationship
+from test_linkml_runtime.test_utils.model.inference_example import (
+    AgeEnum,
+    Container,
+    Evil,
+    Person,
+    Relationship,
+)
 
 SCHEMA = os.path.join(INPUT_DIR, "inference-example.yaml")
 
@@ -96,10 +102,14 @@ class InferenceUtilsTestCase(unittest.TestCase):
         self.assertEqual(p.age_in_months, p.age_in_years * 12)
         self.assertEqual(p.age_in_years, AGE_IN_YEARS)
         # inconsistency
-        p = Person(age_in_years=Decimal(AGE_IN_YEARS), age_in_months=Decimal(AGE_IN_YEARS))
+        p = Person(
+            age_in_years=Decimal(AGE_IN_YEARS), age_in_months=Decimal(AGE_IN_YEARS)
+        )
         with self.assertRaises(ValueError):
             infer_all_slot_values(p, schemaview=sv, config=config, policy=Policy.STRICT)
-        p = Person(age_in_years=Decimal(AGE_IN_YEARS), age_in_months=Decimal(AGE_IN_YEARS))
+        p = Person(
+            age_in_years=Decimal(AGE_IN_YEARS), age_in_months=Decimal(AGE_IN_YEARS)
+        )
         infer_all_slot_values(p, schemaview=sv, config=config, policy=Policy.OVERRIDE)
         # final answer should be consistent
         self.assertEqual(p.age_in_months, p.age_in_years * 12)
@@ -137,8 +147,12 @@ class InferenceUtilsTestCase(unittest.TestCase):
 
     def test_custom_function(self):
         sv = SchemaView(SCHEMA)
-        p = Person(first_name="abc", last_name="def", age_in_years=Decimal(AGE_IN_YEARS))
-        config = Config(resolve_function=lambda x, _: f'"{x.upper()}"' if isinstance(x, str) else x)
+        p = Person(
+            first_name="abc", last_name="def", age_in_years=Decimal(AGE_IN_YEARS)
+        )
+        config = Config(
+            resolve_function=lambda x, _: f'"{x.upper()}"' if isinstance(x, str) else x
+        )
         infer_all_slot_values(p, schemaview=sv, config=config)
         self.assertEqual(p.full_name, '"ABC" "DEF"')
         self.assertEqual(p.age_in_years, Decimal(AGE_IN_YEARS))

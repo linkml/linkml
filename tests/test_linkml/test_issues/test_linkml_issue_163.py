@@ -82,5 +82,9 @@ def test_issue_mappings_namespace(input_path, snapshot):
         SKOS.exactMatch,
         URIRef("http://example.org/UNKNOWN/UNKNOWN_PREFIX/1234567"),
     ) in g
-    assert (SNV, SKOS.exactMatch, URIRef("http://purl.obolibrary.org/obo/SO_0001483")) in g
+    assert (
+        SNV,
+        SKOS.exactMatch,
+        URIRef("http://purl.obolibrary.org/obo/SO_0001483"),
+    ) in g
     assert (NAME, SKOS.narrowMatch, URIRef("http://purl.org/dc/terms/title")) in g

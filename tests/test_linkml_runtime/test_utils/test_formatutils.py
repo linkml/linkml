@@ -16,7 +16,17 @@ from linkml_runtime.utils.formatutils import (
 )
 
 empty_things = [None, dict(), list(), JsonObj(), JsonObj({}), JsonObj([])]
-non_empty_things = [0, False, "", {"k": None}, {0: 0}, [None], JsonObj(k=None), JsonObj(**{"k": None}), JsonObj([None])]
+non_empty_things = [
+    0,
+    False,
+    "",
+    {"k": None},
+    {0: 0},
+    [None],
+    JsonObj(k=None),
+    JsonObj(**{"k": None}),
+    JsonObj([None]),
+]
 
 things_removed: list[tuple[Any, Any]] = [
     (None, None),
@@ -170,7 +180,9 @@ def test_remove_empty_items():
         assert not isinstance(actual, JsonObj), "JSON objects are never returned"
         if isinstance(expected, (dict, list)):
             assert id(expected) != id(actual), f"Copy of {thing} was not returned"
-            assert id(actual) not in seen, "remove_empty_items should always return a new thing"
+            assert id(actual) not in seen, (
+                "remove_empty_items should always return a new thing"
+            )
             save.append(actual)
             seen.add(id(actual))
 

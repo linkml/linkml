@@ -34,14 +34,22 @@ def check_generated_module(module: ModuleType, module_name: str) -> None:
     assert module.fun(3) == "known value 3"
 
 
-@pytest.mark.parametrize(("name_arg", "module_name"), [(None, "test"), ("", "test"), ("base_module", "base_module")])
-def test_compile_python_module_name(base_module: str, name_arg: str | None, module_name: str) -> None:
+@pytest.mark.parametrize(
+    ("name_arg", "module_name"),
+    [(None, "test"), ("", "test"), ("base_module", "base_module")],
+)
+def test_compile_python_module_name(
+    base_module: str, name_arg: str | None, module_name: str
+) -> None:
     """Test the compilation of python code to create a module."""
     m = compile_python(base_module, module_name=name_arg)
     check_generated_module(m, module_name)
 
 
-@pytest.mark.parametrize(("name_arg", "module_name"), [(None, "test"), ("", "test"), ("base_module", "base_module")])
+@pytest.mark.parametrize(
+    ("name_arg", "module_name"),
+    [(None, "test"), ("", "test"), ("base_module", "base_module")],
+)
 def test_compile_python_importing_module_local_module(
     base_module: str,
     importing_module: str,

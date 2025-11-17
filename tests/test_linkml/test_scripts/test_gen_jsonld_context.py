@@ -14,7 +14,8 @@ def test_help():
 
 
 @pytest.mark.parametrize(
-    "arguments,snapshot_file", [([], "meta.context.jsonld"), (["--metauris"], "meta_context.jsonld")]
+    "arguments,snapshot_file",
+    [([], "meta.context.jsonld"), (["--metauris"], "meta_context.jsonld")],
 )
 def test_metamodel(arguments, snapshot_file, snapshot):
     runner = CliRunner()
@@ -26,20 +27,38 @@ def test_metamodel(arguments, snapshot_file, snapshot):
 @pytest.mark.parametrize(
     "arguments,snapshot_file",
     [
-        (["--no-metadata", "--no-mergeimports", "--no-model"], "simple_uri_test.no_merge.prefixes_only.context.jsonld"),
+        (
+            ["--no-metadata", "--no-mergeimports", "--no-model"],
+            "simple_uri_test.no_merge.prefixes_only.context.jsonld",
+        ),
         (
             ["--no-metadata", "--no-mergeimports", "--no-model", "--flatprefixes"],
             "simple_uri_test.no_merge.flatprefixes_only.context.jsonld",
         ),
-        (["--no-metadata", "--no-mergeimports", "--no-prefixes"], "simple_uri_test.no_merge.model_only.context.jsonld"),
-        (["--no-metadata", "--no-mergeimports", "--model", "--prefixes"], "simple_uri_test.no_merge.context.jsonld"),
-        (["--no-metadata", "--mergeimports", "--no-model"], "simple_uri_test.merge.prefixes_only.context.jsonld"),
+        (
+            ["--no-metadata", "--no-mergeimports", "--no-prefixes"],
+            "simple_uri_test.no_merge.model_only.context.jsonld",
+        ),
+        (
+            ["--no-metadata", "--no-mergeimports", "--model", "--prefixes"],
+            "simple_uri_test.no_merge.context.jsonld",
+        ),
+        (
+            ["--no-metadata", "--mergeimports", "--no-model"],
+            "simple_uri_test.merge.prefixes_only.context.jsonld",
+        ),
         (
             ["--no-metadata", "--mergeimports", "--no-model", "--flatprefixes"],
             "simple_uri_test.merge.flatprefixes_only.context.jsonld",
         ),
-        (["--no-metadata", "--mergeimports", "--no-prefixes"], "simple_uri_test.merge.model_only.context.jsonld"),
-        (["--no-metadata", "--mergeimports", "--model", "--prefixes"], "simple_uri_test.merge.context.jsonld"),
+        (
+            ["--no-metadata", "--mergeimports", "--no-prefixes"],
+            "simple_uri_test.merge.model_only.context.jsonld",
+        ),
+        (
+            ["--no-metadata", "--mergeimports", "--model", "--prefixes"],
+            "simple_uri_test.merge.context.jsonld",
+        ),
     ],
 )
 def test_prefix_options(input_path, arguments, snapshot_file, snapshot):
@@ -67,10 +86,15 @@ def test_slot_class_uri(input_path, snapshot):
     [
         pytest.param(
             "simple_uri_test.yaml",
-            marks=pytest.mark.xfail(reason="Bug linkml#2625: different context between class or cli"),
+            marks=pytest.mark.xfail(
+                reason="Bug linkml#2625: different context between class or cli"
+            ),
         ),
         pytest.param(
-            "uri_tests.yaml", marks=pytest.mark.xfail(reason="Bug linkml#2625: different context between class or cli")
+            "uri_tests.yaml",
+            marks=pytest.mark.xfail(
+                reason="Bug linkml#2625: different context between class or cli"
+            ),
         ),
     ],
 )

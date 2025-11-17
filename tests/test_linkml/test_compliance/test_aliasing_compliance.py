@@ -54,7 +54,9 @@ OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, instance, is_valid):
+def test_alias(
+    framework, class_uri, slot_uri, slot_alias, type_uri, data_name, instance, is_valid
+):
     """
     Tests ability to alias slots.
 

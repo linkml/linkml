@@ -33,6 +33,8 @@ def test_sparql_validation_load_schema(validator):
 @pytest.mark.skipif(SKIP_REMOTE_SPARQL_TESTS, reason="Skipping ontobee test")
 def test_remote_sparql_validation(validator):
     """Validate a schema"""
-    results = validator.validate_endpoint("http://sparql.hegroup.org/sparql", named_graphs=NGS)
+    results = validator.validate_endpoint(
+        "http://sparql.hegroup.org/sparql", named_graphs=NGS
+    )
     logger.info(results)
     yaml_dumper.dump(results, to_file=REPORT)

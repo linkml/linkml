@@ -104,10 +104,14 @@ class Person(YAMLRoot):
         if self.age_in_years is not None and not isinstance(self.age_in_years, Decimal):
             self.age_in_years = Decimal(self.age_in_years)
 
-        if self.age_in_months is not None and not isinstance(self.age_in_months, Decimal):
+        if self.age_in_months is not None and not isinstance(
+            self.age_in_months, Decimal
+        ):
             self.age_in_months = Decimal(self.age_in_months)
 
-        if self.primary_address is not None and not isinstance(self.primary_address, Address):
+        if self.primary_address is not None and not isinstance(
+            self.primary_address, Address
+        ):
             self.primary_address = Address(**as_dict(self.primary_address))
 
         if self.description is not None and not isinstance(self.description, str):
@@ -119,14 +123,22 @@ class Person(YAMLRoot):
         if self.age_category is not None and not isinstance(self.age_category, AgeEnum):
             self.age_category = AgeEnum(self.age_category)
 
-        if self.slot_with_spaces is not None and not isinstance(self.slot_with_spaces, str):
+        if self.slot_with_spaces is not None and not isinstance(
+            self.slot_with_spaces, str
+        ):
             self.slot_with_spaces = str(self.slot_with_spaces)
 
-        if self.derived_slot_with_spaces is not None and not isinstance(self.derived_slot_with_spaces, str):
+        if self.derived_slot_with_spaces is not None and not isinstance(
+            self.derived_slot_with_spaces, str
+        ):
             self.derived_slot_with_spaces = str(self.derived_slot_with_spaces)
 
-        if self.derived_expression_from_spaces is not None and not isinstance(self.derived_expression_from_spaces, str):
-            self.derived_expression_from_spaces = str(self.derived_expression_from_spaces)
+        if self.derived_expression_from_spaces is not None and not isinstance(
+            self.derived_expression_from_spaces, str
+        ):
+            self.derived_expression_from_spaces = str(
+                self.derived_expression_from_spaces
+            )
 
         if self.summary is not None and not isinstance(self.summary, str):
             self.summary = str(self.summary)
@@ -217,12 +229,16 @@ class Container(YAMLRoot):
     class_name: ClassVar[str] = "Container"
     class_model_uri: ClassVar[URIRef] = EX.Container
 
-    persons: Optional[Union[Union[dict, Person], list[Union[dict, Person]]]] = empty_list()
+    persons: Optional[Union[Union[dict, Person], list[Union[dict, Person]]]] = (
+        empty_list()
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.persons, list):
             self.persons = [self.persons] if self.persons is not None else []
-        self.persons = [v if isinstance(v, Person) else Person(**as_dict(v)) for v in self.persons]
+        self.persons = [
+            v if isinstance(v, Person) else Person(**as_dict(v)) for v in self.persons
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -243,9 +259,23 @@ class slots:
     pass
 
 
-slots.id = Slot(uri=EX.id, name="id", curie=EX.curie("id"), model_uri=EX.id, domain=None, range=Optional[str])
+slots.id = Slot(
+    uri=EX.id,
+    name="id",
+    curie=EX.curie("id"),
+    model_uri=EX.id,
+    domain=None,
+    range=Optional[str],
+)
 
-slots.name = Slot(uri=EX.name, name="name", curie=EX.curie("name"), model_uri=EX.name, domain=None, range=Optional[str])
+slots.name = Slot(
+    uri=EX.name,
+    name="name",
+    curie=EX.curie("name"),
+    model_uri=EX.name,
+    domain=None,
+    range=Optional[str],
+)
 
 slots.synonyms = Slot(
     uri=EX.synonyms,
@@ -329,10 +359,22 @@ slots.prohibited = Slot(
 )
 
 slots.street = Slot(
-    uri=EX.street, name="street", curie=EX.curie("street"), model_uri=EX.street, domain=None, range=Optional[str]
+    uri=EX.street,
+    name="street",
+    curie=EX.curie("street"),
+    model_uri=EX.street,
+    domain=None,
+    range=Optional[str],
 )
 
-slots.city = Slot(uri=EX.city, name="city", curie=EX.curie("city"), model_uri=EX.city, domain=None, range=Optional[str])
+slots.city = Slot(
+    uri=EX.city,
+    name="city",
+    curie=EX.curie("city"),
+    model_uri=EX.city,
+    domain=None,
+    range=Optional[str],
+)
 
 slots.verbatim = Slot(
     uri=EX.verbatim,
@@ -362,7 +404,12 @@ slots.description = Slot(
 )
 
 slots.summary = Slot(
-    uri=EX.summary, name="summary", curie=EX.curie("summary"), model_uri=EX.summary, domain=None, range=Optional[str]
+    uri=EX.summary,
+    name="summary",
+    curie=EX.curie("summary"),
+    model_uri=EX.summary,
+    domain=None,
+    range=Optional[str],
 )
 
 slots.slot_with_spaces = Slot(

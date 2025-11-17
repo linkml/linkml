@@ -20,6 +20,10 @@ def test_metamodel_valid_call(tmp_path, snapshot):
 
 def test_metamodel_invalid_call(tmp_path):
     runner = CliRunner()
-    result = runner.invoke(golrgen.cli, ["-f", "xsv", "-d", tmp_path, KITCHEN_SINK_PATH], standalone_mode=False)
+    result = runner.invoke(
+        golrgen.cli,
+        ["-f", "xsv", "-d", tmp_path, KITCHEN_SINK_PATH],
+        standalone_mode=False,
+    )
     assert result.exit_code != 0
     assert "xsv" in str(result.exception)

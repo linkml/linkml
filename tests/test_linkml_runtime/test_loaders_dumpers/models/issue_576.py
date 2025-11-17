@@ -63,7 +63,9 @@ class Person(YAMLRoot):
 
     id: Union[str, PersonId] = None
     name: Optional[str] = None
-    friends: Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]] = empty_list()
+    friends: Optional[Union[Union[str, PersonId], list[Union[str, PersonId]]]] = (
+        empty_list()
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
@@ -76,7 +78,9 @@ class Person(YAMLRoot):
 
         if not isinstance(self.friends, list):
             self.friends = [self.friends] if self.friends is not None else []
-        self.friends = [v if isinstance(v, PersonId) else PersonId(v) for v in self.friends]
+        self.friends = [
+            v if isinstance(v, PersonId) else PersonId(v) for v in self.friends
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -120,7 +124,9 @@ class Organization(YAMLRoot):
 
     id: Union[str, OrganizationId] = None
     name: Optional[str] = None
-    part_of: Optional[Union[Union[str, OrganizationId], list[Union[str, OrganizationId]]]] = empty_list()
+    part_of: Optional[
+        Union[Union[str, OrganizationId], list[Union[str, OrganizationId]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
@@ -133,7 +139,10 @@ class Organization(YAMLRoot):
 
         if not isinstance(self.part_of, list):
             self.part_of = [self.part_of] if self.part_of is not None else []
-        self.part_of = [v if isinstance(v, OrganizationId) else OrganizationId(v) for v in self.part_of]
+        self.part_of = [
+            v if isinstance(v, OrganizationId) else OrganizationId(v)
+            for v in self.part_of
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -148,21 +157,36 @@ class Dataset(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Dataset
 
     source: Optional[Union[str, URIorCURIE]] = None
-    persons: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = empty_dict()
-    organizations: Optional[
-        Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]
+    persons: Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
     ] = empty_dict()
-    pets: Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]] = empty_dict()
+    organizations: Optional[
+        Union[
+            dict[Union[str, OrganizationId], Union[dict, Organization]],
+            list[Union[dict, Organization]],
+        ]
+    ] = empty_dict()
+    pets: Optional[
+        Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]
+    ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.source is not None and not isinstance(self.source, URIorCURIE):
             self.source = URIorCURIE(self.source)
 
-        self._normalize_inlined_as_dict(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="persons", slot_type=Person, key_name="id", keyed=True
+        )
 
-        self._normalize_inlined_as_dict(slot_name="organizations", slot_type=Organization, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="organizations", slot_type=Organization, key_name="id", keyed=True
+        )
 
-        self._normalize_inlined_as_dict(slot_name="pets", slot_type=Pet, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="pets", slot_type=Pet, key_name="id", keyed=True
+        )
 
         super().__post_init__(**kwargs)
 
@@ -271,7 +295,11 @@ slots.dataset__persons = Slot(
     curie=PERSONINFO.curie("persons"),
     model_uri=PERSONINFO.dataset__persons,
     domain=None,
-    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ],
 )
 
 slots.dataset__organizations = Slot(
@@ -280,7 +308,12 @@ slots.dataset__organizations = Slot(
     curie=PERSONINFO.curie("organizations"),
     model_uri=PERSONINFO.dataset__organizations,
     domain=None,
-    range=Optional[Union[dict[Union[str, OrganizationId], Union[dict, Organization]], list[Union[dict, Organization]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, OrganizationId], Union[dict, Organization]],
+            list[Union[dict, Organization]],
+        ]
+    ],
 )
 
 slots.dataset__pets = Slot(
@@ -289,5 +322,7 @@ slots.dataset__pets = Slot(
     curie=PERSONINFO.curie("pets"),
     model_uri=PERSONINFO.dataset__pets,
     domain=None,
-    range=Optional[Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]],
+    range=Optional[
+        Union[dict[Union[str, PetId], Union[dict, Pet]], list[Union[dict, Pet]]]
+    ],
 )

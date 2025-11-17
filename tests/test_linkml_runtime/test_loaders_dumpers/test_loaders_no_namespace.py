@@ -19,14 +19,18 @@ def view() -> SchemaView:
 @pytest.fixture(scope="module")
 def inst() -> Dataset:
     """Create a Dataset object with the data from issue_576_data.yaml."""
-    return yaml_loader.load(os.path.join(INPUT_DIR, "issue_576_data.yaml"), target_class=Dataset)
+    return yaml_loader.load(
+        os.path.join(INPUT_DIR, "issue_576_data.yaml"), target_class=Dataset
+    )
 
 
 @pytest.fixture(scope="module")
 def graph(inst: Dataset, view: SchemaView) -> rdflib.Graph:
     """Create an rdflib Graph object using the issue_576_data.yaml."""
     # dump the Dataset object in turtle format
-    s = rdflib_dumper.dumps(inst, view, "turtle", prefix_map={"@base": "http://example.org/default/"})
+    s = rdflib_dumper.dumps(
+        inst, view, "turtle", prefix_map={"@base": "http://example.org/default/"}
+    )
     assert "@base <http://example.org/default/> ." in s
     # load the turtle into an rdflib Graph
     return rdflib.Graph().parse(data=s, format="turtle")
@@ -38,7 +42,10 @@ def graph(inst: Dataset, view: SchemaView) -> rdflib.Graph:
         (
             None,
             rdflib.term.URIRef("https://w3id.org/linkml/personinfo/source"),
-            rdflib.term.Literal("ex:source", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#anyURI")),
+            rdflib.term.Literal(
+                "ex:source",
+                datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#anyURI"),
+            ),
         ),
         (
             None,
@@ -62,7 +69,9 @@ def graph(inst: Dataset, view: SchemaView) -> rdflib.Graph:
         ),
     ],
 )
-def test_schema_load_no_namespace(graph: rdflib.Graph, subject, predicate, object) -> None:
+def test_schema_load_no_namespace(
+    graph: rdflib.Graph, subject, predicate, object
+) -> None:
     """Test loading schema and dataset with no namespace using rdflib.
 
     https://github.com/linkml/linkml/issues/576
@@ -73,7 +82,9 @@ def test_schema_load_no_namespace(graph: rdflib.Graph, subject, predicate, objec
         assert (subject, predicate, object) in graph
 
 
-def test_schema_load_no_ns_compare(view: SchemaView, inst: Dataset, graph: rdflib.Graph) -> None:
+def test_schema_load_no_ns_compare(
+    view: SchemaView, inst: Dataset, graph: rdflib.Graph
+) -> None:
     """Load a dataset object from the RDF graph and ensure it is the same as the yaml dataset."""
     inst2: Dataset = rdflib_loader.load(graph, target_class=Dataset, schemaview=view)
 

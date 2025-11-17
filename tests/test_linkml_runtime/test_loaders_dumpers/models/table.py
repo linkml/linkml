@@ -7,22 +7,18 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 import dataclasses
-import sys
-import re
-from jsonasobj2 import JsonObj, as_dict
+from jsonasobj2 import as_dict
 from typing import Optional, List, Union, Dict, ClassVar, Any
 from dataclasses import dataclass
-from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue, PvFormulaOptions
 
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.metamodelcore import empty_list, empty_dict, bnode
-from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str, extended_float, extended_int
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
-from linkml_runtime.utils.formatutils import camelcase, underscore, sfx
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from rdflib import Namespace, URIRef
+from linkml_runtime.utils.metamodelcore import empty_dict
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from linkml_runtime.utils.dataclass_extensions_376 import (
+    dataclasses_init_fn_with_kwargs,
+)
+from rdflib import URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.linkml_model.types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
 metamodel_version = "1.7.0"
@@ -116,10 +112,14 @@ class Table(YAMLRoot):
     class_name: ClassVar[str] = "Table"
     class_model_uri: ClassVar[URIRef] = TABLE.Table
 
-    rows: Optional[Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]] = empty_dict()
+    rows: Optional[
+        Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]
+    ] = empty_dict()
 
     def __post_init__(self, *_: List[str], **kwargs: Dict[str, Any]):
-        self._normalize_inlined_as_list(slot_name="rows", slot_type=Row, key_name="columnA", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="rows", slot_type=Row, key_name="columnA", keyed=True
+        )
 
         super().__post_init__(**kwargs)
 
@@ -138,11 +138,18 @@ slots.rows = Slot(
     curie=TABLE.curie("rows"),
     model_uri=TABLE.rows,
     domain=None,
-    range=Optional[Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]],
+    range=Optional[
+        Union[Dict[Union[str, RowColumnA], Union[dict, Row]], List[Union[dict, Row]]]
+    ],
 )
 
 slots.columnA = Slot(
-    uri=TABLE.columnA, name="columnA", curie=TABLE.curie("columnA"), model_uri=TABLE.columnA, domain=None, range=URIRef
+    uri=TABLE.columnA,
+    name="columnA",
+    curie=TABLE.curie("columnA"),
+    model_uri=TABLE.columnA,
+    domain=None,
+    range=URIRef,
 )
 
 slots.objectB = Slot(
@@ -164,9 +171,19 @@ slots.columnC = Slot(
 )
 
 slots.name = Slot(
-    uri=TABLE.name, name="name", curie=TABLE.curie("name"), model_uri=TABLE.name, domain=None, range=Optional[str]
+    uri=TABLE.name,
+    name="name",
+    curie=TABLE.curie("name"),
+    model_uri=TABLE.name,
+    domain=None,
+    range=Optional[str],
 )
 
 slots.value = Slot(
-    uri=TABLE.value, name="value", curie=TABLE.curie("value"), model_uri=TABLE.value, domain=None, range=Optional[str]
+    uri=TABLE.value,
+    name="value",
+    curie=TABLE.curie("value"),
+    model_uri=TABLE.value,
+    domain=None,
+    range=Optional[str],
 )

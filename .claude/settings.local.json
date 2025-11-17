@@ -3,7 +3,24 @@
     "allow": [
       "Bash(uv sync:*)",
       "Bash(uv run pytest:*)",
-      "Bash(pre-commit run:*)"
+      "Bash(pre-commit run:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh api:*)",
+      "Bash(python3:*)",
+      "Bash(pytest:*)",
+      "Bash(/tmp/slow_test_failed.log)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(/tmp/slow_test_ubuntu_313.log)",
+      "Bash(/tmp/build_package_failed.log)",
+      "Bash(uv build:*)",
+      "Bash(uv run:*)",
+      "Bash(cat:*)",
+      "Bash(md5:*)",
+      "Bash(uv python list:*)",
+      "Bash(find:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

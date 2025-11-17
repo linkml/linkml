@@ -1,6 +1,10 @@
 import pytest
 
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from test_linkml_runtime.test_issues.environment import env

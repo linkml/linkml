@@ -36,7 +36,9 @@ def test_jsonschema_integration(kitchen_sink_path, input_path):
     able to validate the instance data.
     """
 
-    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
+    generator = JsonSchemaGenerator(
+        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
+    )
     kitchen_sink_json_schema = json.loads(generator.serialize())
 
     kitchen_module = make_python(kitchen_sink_path)
@@ -77,7 +79,9 @@ def test_class_uri_any(kitchen_sink_path, subtests):
     See also https://github.com/linkml/linkml/issues/579
     """
 
-    expected_json_schema_subset = {"$defs": {"AnyObject": {"additionalProperties": True}}}
+    expected_json_schema_subset = {
+        "$defs": {"AnyObject": {"additionalProperties": True}}
+    }
     data_cases = [
         {"data": {"metadata": {"anything": {"goes": "here"}}}},
         {"data": {"metadata": "anything goes here"}},
@@ -89,7 +93,9 @@ def test_class_uri_any(kitchen_sink_path, subtests):
             "error_message": "is not valid under any of the given schemas",
         },
     ]
-    assert_schema_validates(subtests, kitchen_sink_path, expected_json_schema_subset, data_cases)
+    assert_schema_validates(
+        subtests, kitchen_sink_path, expected_json_schema_subset, data_cases
+    )
 
 
 def test_compliance_cases(kitchen_sink_path, input_path, subtests):
@@ -101,7 +107,9 @@ def test_compliance_cases(kitchen_sink_path, input_path, subtests):
     validation, but cases can also be marked with valid: true if validation should pass.
     """
 
-    generator = JsonSchemaGenerator(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
+    generator = JsonSchemaGenerator(
+        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
+    )
     kitchen_sink_json_schema = json.loads(generator.serialize())
 
     generator.not_closed = True
@@ -163,7 +171,11 @@ def test_class_inheritance_multivalued(subtests, input_path):
     external_file_test(
         subtests,
         input_path("jsonschema_class_inheritance_multivalued.yaml"),
-        {"not_closed": False, "include_range_class_descendants": True, "include_null": False},
+        {
+            "not_closed": False,
+            "include_range_class_descendants": True,
+            "include_null": False,
+        },
     )
 
 
@@ -223,7 +235,9 @@ def test_rules(subtests, input_path):
                 },
             )
 
-            assert_schema_validates(subtests, schema, case["json_schema"], case.get("data_cases", []))
+            assert_schema_validates(
+                subtests, schema, case["json_schema"], case.get("data_cases", [])
+            )
 
 
 def test_rules_in_non_root_class(subtests, input_path):
@@ -249,13 +263,17 @@ def test_range_unions(subtests, input_path):
 def test_multivalued_slot_cardinality(subtests, input_path):
     """Tests that cardinality constrains on multivalued slots are translated correctly."""
 
-    external_file_test(subtests, input_path("jsonschema_multivalued_slot_cardinality.yaml"))
+    external_file_test(
+        subtests, input_path("jsonschema_multivalued_slot_cardinality.yaml")
+    )
 
 
 def test_multivalued_element_constraints(subtests, input_path):
     """Tests that atomic checks on instances are applied to elements of multivalued slots."""
 
-    external_file_test(subtests, input_path("jsonschema_multivalued_element_constraints.yaml"))
+    external_file_test(
+        subtests, input_path("jsonschema_multivalued_element_constraints.yaml")
+    )
 
 
 def test_collection_forms(subtests, input_path):
@@ -267,13 +285,17 @@ def test_collection_forms(subtests, input_path):
 def test_empty_inlined_as_dict_objects(subtests, input_path):
     """Tests that inlined objects with no non-key required slots can be null/empty"""
 
-    external_file_test(subtests, input_path("jsonschema_empty_inlined_as_dict_objects.yaml"))
+    external_file_test(
+        subtests, input_path("jsonschema_empty_inlined_as_dict_objects.yaml")
+    )
 
 
 def test_required_slot_condition_in_rule(subtests, input_path):
     """Tests required: true/false on slot conditions in rules"""
 
-    external_file_test(subtests, input_path("jsonschema_required_slot_condition_in_rule.yaml"))
+    external_file_test(
+        subtests, input_path("jsonschema_required_slot_condition_in_rule.yaml")
+    )
 
 
 def test_missing_top_class(input_path, caplog):
@@ -294,27 +316,47 @@ def test_title_from_name_slot(subtests, input_path):
 
 def test_title_from_name_slot_when_title_missing(subtests, input_path):
     """Tests that the JSON Schema title is taken from name slot when title is missing."""
-    external_file_test(subtests, input_path("jsonschema_title_from_name_missing_title.yaml"), {"title_from": "title"})
+    external_file_test(
+        subtests,
+        input_path("jsonschema_title_from_name_missing_title.yaml"),
+        {"title_from": "title"},
+    )
 
 
 def test_schama_title_from_title_slot(subtests, input_path):
     """Tests that the JSON Schema title is taken from title slot if option specified."""
-    external_file_test(subtests, input_path("jsonschema_title_from_title.yaml"), {"title_from": "title"})
+    external_file_test(
+        subtests,
+        input_path("jsonschema_title_from_title.yaml"),
+        {"title_from": "title"},
+    )
 
 
 def test_class_title_from_title_slot(subtests, input_path):
     """Tests that the class-based sub-schema title is taken from title slot if option specified."""
-    external_file_test(subtests, input_path("jsonschema_class_title_from_title.yaml"), {"title_from": "title"})
+    external_file_test(
+        subtests,
+        input_path("jsonschema_class_title_from_title.yaml"),
+        {"title_from": "title"},
+    )
 
 
 def test_enum_title_from_title_slot(subtests, input_path):
     """Tests that the enum-based sub-schema title is taken from title slot if option specified."""
-    external_file_test(subtests, input_path("jsonschema_enum_title_from_title.yaml"), {"title_from": "title"})
+    external_file_test(
+        subtests,
+        input_path("jsonschema_enum_title_from_title.yaml"),
+        {"title_from": "title"},
+    )
 
 
 def test_slot_title_from_title_slot(subtests, input_path):
     """Tests that the slot-based sub-schema title is taken from title slot if option specified."""
-    external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
+    external_file_test(
+        subtests,
+        input_path("jsonschema_slot_title_from_title.yaml"),
+        {"title_from": "title"},
+    )
 
 
 @pytest.mark.parametrize("not_closed", [True, False])
@@ -327,7 +369,9 @@ def test_slot_not_required_nullability(input_path, not_closed):
         - https://github.com/linkml/linkml/issues/2155
     """
     schema = input_path("not_required.yaml")
-    generator = JsonSchemaGenerator(schema, mergeimports=True, top_class="Optionals", not_closed=not_closed)
+    generator = JsonSchemaGenerator(
+        schema, mergeimports=True, top_class="Optionals", not_closed=not_closed
+    )
     generated = json.loads(generator.serialize())
     properties = generated["$defs"]["Optionals"]["properties"]
     for key, prop in properties.items():
@@ -341,7 +385,9 @@ def test_lifecycle_classes(kitchen_sink_path):
     """We can modify the generation process by subclassing lifecycle hooks"""
 
     class TestJsonSchemaGen(JsonSchemaGenerator):
-        def before_generate_classes(self, cls: Iterable[ClassDefinition], sv: SchemaView) -> Iterable[ClassDefinition]:
+        def before_generate_classes(
+            self, cls: Iterable[ClassDefinition], sv: SchemaView
+        ) -> Iterable[ClassDefinition]:
             cls = [c for c in cls]
 
             # delete a class and make sure we don't get it in the output
@@ -349,7 +395,9 @@ def test_lifecycle_classes(kitchen_sink_path):
             del cls[0]
             return cls
 
-        def before_generate_class(self, cls: ClassDefinition, sv: SchemaView) -> ClassDefinition:
+        def before_generate_class(
+            self, cls: ClassDefinition, sv: SchemaView
+        ) -> ClassDefinition:
             # change all the descriptions, idk
             cls.description = "TEST MODIFYING CLASSES"
             return cls
@@ -359,7 +407,9 @@ def test_lifecycle_classes(kitchen_sink_path):
             cls.schema_["additionalProperties"] = True
             return cls
 
-    generator = TestJsonSchemaGen(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
+    generator = TestJsonSchemaGen(
+        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
+    )
     schema = json.loads(generator.serialize())
     assert "Activity" not in schema["$defs"]
     for cls in schema["$defs"].values():
@@ -378,10 +428,18 @@ def test_lifecycle_slots(kitchen_sink_path):
         ) -> Iterable[SlotDefinition]:
             # make a new slot that's the number of slots for some reason
             slot = [s for s in slot]
-            slot.append(SlotDefinition(name="number_of_slots", range="integer", ifabsent=f"integer({len(slot)})"))
+            slot.append(
+                SlotDefinition(
+                    name="number_of_slots",
+                    range="integer",
+                    ifabsent=f"integer({len(slot)})",
+                )
+            )
             return slot
 
-        def before_generate_class_slot(self, slot: SlotDefinition, cls, sv: SchemaView) -> SlotDefinition:
+        def before_generate_class_slot(
+            self, slot: SlotDefinition, cls, sv: SchemaView
+        ) -> SlotDefinition:
             slot.description = "TEST MODIFYING SLOTS"
             return slot
 
@@ -396,7 +454,9 @@ def test_lifecycle_slots(kitchen_sink_path):
 
             return slot
 
-    generator = TestJsonSchemaGen(kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False)
+    generator = TestJsonSchemaGen(
+        kitchen_sink_path, mergeimports=True, top_class="Dataset", not_closed=False
+    )
     schema = json.loads(generator.serialize())
 
     for cls in schema["$defs"].values():
@@ -423,7 +483,9 @@ def test_lifecycle_slots(kitchen_sink_path):
 # **********************************************************
 
 
-def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[dict] = None) -> None:
+def external_file_test(
+    subtests, file: Union[str, Path], generator_args: Optional[dict] = None
+) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False, "include_null": False}
 
@@ -462,7 +524,9 @@ def assert_schema_validates(
         data = data_case["data"]
         with subtests.test(data=data):
             if "error_message" in data_case:
-                with pytest.raises(jsonschema.ValidationError, match=data_case["error_message"]):
+                with pytest.raises(
+                    jsonschema.ValidationError, match=data_case["error_message"]
+                ):
                     jsonschema.validate(data, json_schema)
             else:
                 jsonschema.validate(data, json_schema)
@@ -533,7 +597,9 @@ def test_preserve_names():
     assert other_property["anyOf"][0]["$ref"] == "#/$defs/My_Class"
 
     # Test top-level schema selection with preserve_names
-    generator_preserve_top = JsonSchemaGenerator(schema=schema, preserve_names=True, top_class="My_Class")
+    generator_preserve_top = JsonSchemaGenerator(
+        schema=schema, preserve_names=True, top_class="My_Class"
+    )
     json_schema_preserve_top = json.loads(generator_preserve_top.serialize())
 
     # When preserve_names=True, top_class should match exactly with class name

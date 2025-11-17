@@ -39,7 +39,9 @@ def build_test_entry_set(input_url: Namespace, model: str) -> list[TestEntry]:
         TestEntry(input_url, f"linkml_model/rdf/{model}.ttl", "text/turtle"),
         TestEntry(input_url, f"linkml_model/json/{model}.json", "application/json"),
         TestEntry(input_url, f"linkml_model/shex/{model}.shex", "text/shex"),
-        TestEntry(input_url[".context.jsonld"], f"linkml_model/jsonld/{model}.context.jsonld"),
+        TestEntry(
+            input_url[".context.jsonld"], f"linkml_model/jsonld/{model}.context.jsonld"
+        ),
         TestEntry(input_url[".owl"], f"linkml_model/owl/{model}.owl.ttl"),
         TestEntry(input_url["/"], f"{model}/"),
     ]
@@ -67,9 +69,21 @@ def generate_fixture_lists():
 
     vocab_entries: list[TestEntry] = [
         TestEntry(type_["index"], "docs/type/index"),
-        TestEntry(type_.Element, "linkml_model/model/schema/type/Element.yaml/Element.yaml", "text/yaml"),
-        TestEntry(type_.Element, "linkml_model/rdf/type/Element.ttl/Element.ttl", "text/turtle"),
-        TestEntry(type_.slots, "linkml_model/json/type/slots.json/slots.json", "application/json"),
+        TestEntry(
+            type_.Element,
+            "linkml_model/model/schema/type/Element.yaml/Element.yaml",
+            "text/yaml",
+        ),
+        TestEntry(
+            type_.Element,
+            "linkml_model/rdf/type/Element.ttl/Element.ttl",
+            "text/turtle",
+        ),
+        TestEntry(
+            type_.slots,
+            "linkml_model/json/type/slots.json/slots.json",
+            "application/json",
+        ),
         TestEntry(mapping["index"], "docs/mapping/index"),
     ]
 
@@ -87,10 +101,24 @@ def generate_fixture_lists():
     meta_vocab_entries: list[TestEntry] = [
         TestEntry(meta.Element, "docs/meta/Element"),
         TestEntry(meta.slot, "docs/meta/slot"),
-        TestEntry(meta.Element, "linkml_model/model/schema/meta/Element.yaml/Element.yaml", "text/yaml"),
-        TestEntry(meta.Element, "linkml_model/rdf/meta/Element.ttl/Element.ttl", "text/turtle"),
-        TestEntry(meta.Element, "linkml_model/json/meta/Element.json/Element.json", "application/json"),
-        TestEntry(meta.Element, "linkml_model/shex/meta/Element.shex/Element.shex", "text/shex"),
+        TestEntry(
+            meta.Element,
+            "linkml_model/model/schema/meta/Element.yaml/Element.yaml",
+            "text/yaml",
+        ),
+        TestEntry(
+            meta.Element, "linkml_model/rdf/meta/Element.ttl/Element.ttl", "text/turtle"
+        ),
+        TestEntry(
+            meta.Element,
+            "linkml_model/json/meta/Element.json/Element.json",
+            "application/json",
+        ),
+        TestEntry(
+            meta.Element,
+            "linkml_model/shex/meta/Element.shex/Element.shex",
+            "text/shex",
+        ),
         TestEntry(meta.Element, "meta/Element", "text/foo"),
     ]
 
@@ -133,7 +161,9 @@ fixture_lists = generate_fixture_lists()
 def test_rewrite_rules(entries: list[TestEntry], results, fail_on_error) -> None:
     def test_it(e: TestEntry, accept_header: str) -> bool:
         expected = urljoin(GITHUB_IO_BASE, e.expected_url)
-        resp = requests.head(e.input_url, headers={"accept": accept_header}, verify=False)
+        resp = requests.head(
+            e.input_url, headers={"accept": accept_header}, verify=False
+        )
 
         # w3id.org uses a 301 to go from http: to https:
         if resp.status_code == 301 and "location" in resp.headers:
@@ -152,7 +182,9 @@ def test_rewrite_rules(entries: list[TestEntry], results, fail_on_error) -> None
             record_results(results, e.input_url, accept_header, actual)
             return True
         elif expected != actual:
-            logger.info(f"{e.input_url} ({accept_header}):\n expected {expected} - got {actual}")
+            logger.info(
+                f"{e.input_url} ({accept_header}):\n expected {expected} - got {actual}"
+            )
             return False
         record_results(results, e.input_url, accept_header, actual)
         return True

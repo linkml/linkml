@@ -114,7 +114,9 @@ def test_uri():
     x = URI("rdf:type")
     assert URI.is_valid(x)
     assert URI.is_valid("urn:abc:123")
-    assert URI.is_valid("https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top")
+    assert URI.is_valid(
+        "https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top"
+    )
     assert URI.is_valid("ldap://[2001:db8::7]/c=GB?objectClass?one")
     assert URI.is_valid("ldap://[2001:db8::7]/c=GB?objectClass?one")
     assert URI.is_valid("mailto:John.Doe@example.com")
@@ -155,7 +157,9 @@ def test_bool():
 def test_time():
     v = datetime.time(13, 17, 43, 279000)
     assert "13:17:43.279000" == XSDTime(v)  # A date can be a datetime
-    assert "13:17:43.279000" == XSDTime(Literal(v, datatype=XSD.time))  # An RDFLIB Literal
+    assert "13:17:43.279000" == XSDTime(
+        Literal(v, datatype=XSD.time)
+    )  # An RDFLIB Literal
     assert "13:17:43.279000" == v.isoformat()  # A string
     assert "13:17:43.279000" == XSDTime(XSDTime(v))  # An existing date
     strict()
@@ -202,7 +206,9 @@ def test_date():
 def test_datetime():
     v = datetime.datetime(2019, 7, 6, 17, 22, 39, 7300)
     assert "2019-07-06T17:22:39.007300" == XSDDateTime(v)
-    assert "2019-07-06T17:22:39.007300" == XSDDateTime(Literal(v, datatype=XSD.dateTime))
+    assert "2019-07-06T17:22:39.007300" == XSDDateTime(
+        Literal(v, datatype=XSD.dateTime)
+    )
     assert "2019-07-06T17:22:39.007300" == XSDDateTime(Literal(v).value)
     assert "2019-07-06T17:22:39.007300" == v.isoformat()
     assert "2019-07-06T17:22:39.007300" == XSDDateTime(XSDDateTime(v))

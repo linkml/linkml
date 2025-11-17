@@ -6,71 +6,37 @@
 # description:
 # license:
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
-from linkml_runtime.utils.metamodelcore import Curie, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE
+from linkml_runtime.utils.metamodelcore import (
+    Curie,
+    ElementIdentifier,
+    NCName,
+    NodeIdentifier,
+    URI,
+    URIorCURIE,
+)
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-M = CurieNamespace('m', 'http://example.org/test/uriandcurie')
-SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
-XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
+M = CurieNamespace("m", "http://example.org/test/uriandcurie")
+SHEX = CurieNamespace("shex", "http://www.w3.org/ns/shex#")
+XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
 DEFAULT_ = M
 
 
 # Types
 class String(str):
-    """ A character string """
+    """A character string"""
+
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
@@ -78,7 +44,8 @@ class String(str):
 
 
 class Uriorcurie(URIorCURIE):
-    """ a URI or a CURIE """
+    """a URI or a CURIE"""
+
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uriorcurie"
@@ -86,7 +53,8 @@ class Uriorcurie(URIorCURIE):
 
 
 class Uri(URI):
-    """ a complete URI """
+    """a complete URI"""
+
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
@@ -94,7 +62,8 @@ class Uri(URI):
 
 
 class Curie(Curie):
-    """ a CURIE """
+    """a CURIE"""
+
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "curie"
@@ -102,7 +71,8 @@ class Curie(Curie):
 
 
 class Ncname(NCName):
-    """ Prefix part of CURIE """
+    """Prefix part of CURIE"""
+
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "ncname"
@@ -110,7 +80,8 @@ class Ncname(NCName):
 
 
 class Objectidentifier(ElementIdentifier):
-    """ A URI or CURIE that represents an object in the model. """
+    """A URI or CURIE that represents an object in the model."""
+
     type_class_uri = SHEX["iri"]
     type_class_curie = "shex:iri"
     type_name = "objectidentifier"
@@ -118,7 +89,8 @@ class Objectidentifier(ElementIdentifier):
 
 
 class Nodeidentifier(NodeIdentifier):
-    """ A URI, CURIE or BNODE that represents a node in a model. """
+    """A URI, CURIE or BNODE that represents a node in a model."""
+
     type_class_uri = SHEX["nonliteral"]
     type_class_curie = "shex:nonliteral"
     type_name = "nodeidentifier"
@@ -173,17 +145,43 @@ class C1(YAMLRoot):
 class slots:
     pass
 
-slots.id = Slot(uri=M.id, name="id", curie=M.curie('id'),
-                   model_uri=M.id, domain=None, range=URIRef)
 
-slots.hasCurie = Slot(uri=M.hasCurie, name="hasCurie", curie=M.curie('hasCurie'),
-                   model_uri=M.hasCurie, domain=None, range=Optional[Union[str, Curie]])
+slots.id = Slot(
+    uri=M.id, name="id", curie=M.curie("id"), model_uri=M.id, domain=None, range=URIRef
+)
 
-slots.hasURI = Slot(uri=M.hasURI, name="hasURI", curie=M.curie('hasURI'),
-                   model_uri=M.hasURI, domain=None, range=Optional[Union[str, URI]])
+slots.hasCurie = Slot(
+    uri=M.hasCurie,
+    name="hasCurie",
+    curie=M.curie("hasCurie"),
+    model_uri=M.hasCurie,
+    domain=None,
+    range=Optional[Union[str, Curie]],
+)
 
-slots.hasNcName = Slot(uri=M.hasNcName, name="hasNcName", curie=M.curie('hasNcName'),
-                   model_uri=M.hasNcName, domain=None, range=Optional[Union[str, NCName]])
+slots.hasURI = Slot(
+    uri=M.hasURI,
+    name="hasURI",
+    curie=M.curie("hasURI"),
+    model_uri=M.hasURI,
+    domain=None,
+    range=Optional[Union[str, URI]],
+)
 
-slots.id2 = Slot(uri=M.id2, name="id2", curie=M.curie('id2'),
-                   model_uri=M.id2, domain=None, range=Optional[Union[str, NodeIdentifier]])
+slots.hasNcName = Slot(
+    uri=M.hasNcName,
+    name="hasNcName",
+    curie=M.curie("hasNcName"),
+    model_uri=M.hasNcName,
+    domain=None,
+    range=Optional[Union[str, NCName]],
+)
+
+slots.id2 = Slot(
+    uri=M.id2,
+    name="id2",
+    curie=M.curie("id2"),
+    model_uri=M.id2,
+    domain=None,
+    range=Optional[Union[str, NodeIdentifier]],
+)

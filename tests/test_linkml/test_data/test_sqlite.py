@@ -19,7 +19,11 @@ def test_sqlite_store(person, person_python, tmp_outputs):
     # step 1: setup
     # TODO: currently it is necessary to pass the actual yaml rather than a schema object
     # endpoint = SQLiteEndpoint(sv.schema, database_path=DB, include_schema_in_database=False)
-    endpoint = SQLStore(person["schema"], database_path=tmp_outputs["db"], include_schema_in_database=False)
+    endpoint = SQLStore(
+        person["schema"],
+        database_path=tmp_outputs["db"],
+        include_schema_in_database=False,
+    )
     endpoint.compile()
     endpoint.native_module = person_python
     endpoint.db_exists(force=True)

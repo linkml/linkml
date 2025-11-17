@@ -50,7 +50,9 @@ def test_metamodel_output_directory(arguments, snapshot_dir, snapshot, tmp_path)
 
 def test_invalid_classname():
     runner = CliRunner()
-    result = runner.invoke(cli, ["-c", "noclass", KITCHEN_SINK_PATH], standalone_mode=False)
+    result = runner.invoke(
+        cli, ["-c", "noclass", KITCHEN_SINK_PATH], standalone_mode=False
+    )
     assert result.exit_code != 0
     assert "noclass" in str(result.exception)
 
@@ -63,7 +65,9 @@ def test_invalid_classname():
 @pytest.mark.network
 def test_formats(format, tmp_path, snapshot):
     runner = CliRunner()
-    result = runner.invoke(cli, ["-f", format, "-c", "Person", "-d", str(tmp_path), KITCHEN_SINK_PATH])
+    result = runner.invoke(
+        cli, ["-f", format, "-c", "Person", "-d", str(tmp_path), KITCHEN_SINK_PATH]
+    )
     assert result.exit_code == 0
     assert tmp_path == snapshot(f"genyuml/meta_{format}")
 
@@ -75,7 +79,10 @@ def test_formats(format, tmp_path, snapshot):
 @pytest.mark.network
 def test_specified_diagram_name(tmp_path, snapshot):
     runner = CliRunner()
-    result = runner.invoke(cli, ["--diagram-name", "specified_name", "-d", str(tmp_path), KITCHEN_SINK_PATH])
+    result = runner.invoke(
+        cli,
+        ["--diagram-name", "specified_name", "-d", str(tmp_path), KITCHEN_SINK_PATH],
+    )
     assert result.exit_code == 0
     assert tmp_path == snapshot("genyuml/specified_name_dir")
 
@@ -89,7 +96,9 @@ def test_yumlgen_deprecation():
     # Skip test in development environment with version 0.0.0
     ver = SemVer.from_package("linkml")
     if ver.major == 0 and ver.minor == 0 and ver.patch == 0:
-        pytest.skip("Deprecation warnings not tested in development environment (version 0.0.0)")
+        pytest.skip(
+            "Deprecation warnings not tested in development environment (version 0.0.0)"
+        )
 
     print(KITCHEN_SINK_PATH)
 

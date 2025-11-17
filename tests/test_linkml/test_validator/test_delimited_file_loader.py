@@ -14,7 +14,12 @@ def test_load(delimiter, loader_cls, tmp_file_factory):
     f = tmp_file_factory("data", data)
     loader = loader_cls(f)
     instances = loader.iter_instances()
-    assert next(instances) == {"one": 1, "two": 2.0001, "three": "three", "four": "4.4.4"}
+    assert next(instances) == {
+        "one": 1,
+        "two": 2.0001,
+        "three": "three",
+        "four": "4.4.4",
+    }
     with pytest.raises(StopIteration):
         next(instances)
 

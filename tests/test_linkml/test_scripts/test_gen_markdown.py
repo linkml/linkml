@@ -21,7 +21,9 @@ def test_metamodel(tmp_path):
 @pytest.mark.network
 def test_issue_2(tmp_path):
     runner = CliRunner()
-    result = runner.invoke(cli, ["-d", tmp_path, "-c", "Person", "-i", KITCHEN_SINK_PATH])
+    result = runner.invoke(
+        cli, ["-d", tmp_path, "-c", "Person", "-i", KITCHEN_SINK_PATH]
+    )
     assert result.exit_code == 0
     assert (tmp_path / "images/Person.svg").exists()
 
@@ -30,6 +32,15 @@ def test_no_types(tmp_path):
     """Test the no types directory setting"""
     runner = CliRunner()
     result = runner.invoke(
-        cli, ["-d", tmp_path, "--notypesdir", "--warnonexist", "--log_level", "WARNING", KITCHEN_SINK_PATH]
+        cli,
+        [
+            "-d",
+            tmp_path,
+            "--notypesdir",
+            "--warnonexist",
+            "--log_level",
+            "WARNING",
+            KITCHEN_SINK_PATH,
+        ],
     )
     assert result.exit_code == 0

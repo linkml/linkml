@@ -10,4 +10,7 @@ def test_issue_202(input_path, snapshot):
     assert output == snapshot("issue_202.json.schema")
 
     json_schema = loads(output)
-    assert "number" in json_schema["$defs"].GeospatialDDCoordLocation.properties.latitude.type
+    assert (
+        "number"
+        in json_schema["$defs"].GeospatialDDCoordLocation.properties.latitude.type
+    )

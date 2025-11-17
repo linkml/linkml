@@ -18,7 +18,13 @@ from test_linkml.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from test_linkml.test_compliance.test_compliance import CLASS_C, CLASS_D, CORE_FRAMEWORKS, SLOT_ID, SLOT_S1
+from test_linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CLASS_D,
+    CORE_FRAMEWORKS,
+    SLOT_ID,
+    SLOT_S1,
+)
 
 
 @pytest.mark.parametrize(
@@ -76,7 +82,12 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
     if framework == PANDERA_POLARS_CLASS and range == CLASS_D:
         pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
-        test_pattern, schema_name, framework, classes=classes, prefixes=prefixes, core_elements=["pattern"]
+        test_pattern,
+        schema_name,
+        framework,
+        classes=classes,
+        prefixes=prefixes,
+        core_elements=["pattern"],
     )
     implementation_status = ValidationBehavior.IMPLEMENTS
     is_valid = bool(re.match(pattern, str(value)))
@@ -90,7 +101,9 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
     if framework == OWL:
         pytest.skip("Hermit reasoning over xsd regular expressions is broken")
     if framework == SHACL and range == CLASS_D:
-        pytest.skip("SHACL correctly notices integrity violations, but that's not the subject of this test")
+        pytest.skip(
+            "SHACL correctly notices integrity violations, but that's not the subject of this test"
+        )
     check_data(
         schema,
         data_name,
@@ -118,7 +131,9 @@ def test_pattern(framework, range, schema_name, pattern, data_name, value):
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.skip(reason="https://github.com/linkml/linkml/issues/1557")
-def test_structured_pattern(framework, interpolated, partial_match, value: str, is_valid):
+def test_structured_pattern(
+    framework, interpolated, partial_match, value: str, is_valid
+):
     """
     Tests behavior of structured pattern slots.
 

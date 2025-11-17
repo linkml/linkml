@@ -16,7 +16,11 @@ def person(input_path) -> dict[str, Path]:
 
 @pytest.fixture(scope="function")
 def tmp_outputs(tmp_path) -> dict[str, Path]:
-    return {"db": tmp_path / "tmp.db", "tsv": tmp_path / "tmp.tsv", "data": tmp_path / "tmp.yaml"}
+    return {
+        "db": tmp_path / "tmp.db",
+        "tsv": tmp_path / "tmp.tsv",
+        "data": tmp_path / "tmp.yaml",
+    }
 
 
 @pytest.fixture(scope="module")

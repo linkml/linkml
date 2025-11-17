@@ -156,7 +156,8 @@ def test_python_complex_ranges(input_path, snapshot):
     """description"""
 
     generated = PythonGenerator(
-        Path(input_path("python_generation")) / "python_complex_ranges.yaml", mergeimports=False
+        Path(input_path("python_generation")) / "python_complex_ranges.yaml",
+        mergeimports=False,
     ).serialize()
     assert generated == snapshot(Path("python_generation") / "python_complex_ranges.py")
 
@@ -167,6 +168,7 @@ def test_python_lists_and_keys(input_path, snapshot):
     """description"""
 
     generated = PythonGenerator(
-        Path(input_path("python_generation")) / "python_lists_and_keys.yaml", mergeimports=False
+        Path(input_path("python_generation")) / "python_lists_and_keys.yaml",
+        mergeimports=False,
     ).serialize()
     assert generated == snapshot(Path("python_generation") / "python_lists_and_keys.py")

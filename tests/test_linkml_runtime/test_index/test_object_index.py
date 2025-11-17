@@ -112,7 +112,10 @@ def test_object_index(schema_view, container, object_index):
     assert isinstance(oix.bless(container).persons[0], ProxyObject)
     assert isinstance(person, ProxyObject)
     assert oix.eval_expr("current_address.street", person) == "1 oak street"
-    assert oix.eval_expr("has_familial_relationships[0].related_to.name", person) == "Alison Wu"
+    assert (
+        oix.eval_expr("has_familial_relationships[0].related_to.name", person)
+        == "Alison Wu"
+    )
 
     # Test experimental reverse direction
     assert oix.eval_expr("persons[0]._parents[0][1].persons[0].id") == "P:001"
@@ -120,5 +123,11 @@ def test_object_index(schema_view, container, object_index):
 
     # Test inference
     config = Config(use_expressions=True)
-    infer_slot_value(person, "description", schemaview=schema_view, class_name="Person", config=config)
+    infer_slot_value(
+        person,
+        "description",
+        schemaview=schema_view,
+        class_name="Person",
+        config=config,
+    )
     assert person.description == "name: fred bloggs address: 1 oak street"

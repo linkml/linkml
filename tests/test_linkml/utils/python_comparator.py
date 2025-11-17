@@ -5,7 +5,9 @@ from linkml_runtime.utils.compile_python import compile_python
 from test_linkml.utils.filters import metadata_filter
 
 
-def compare_python(expected: str, actual: str, expected_path: Optional[str] = None) -> Optional[str]:
+def compare_python(
+    expected: str, actual: str, expected_path: Optional[str] = None
+) -> Optional[str]:
     """
     Make sure that actual is valid python and, if it is, compare it with expected
     :param expected: expected python -- can either be python text or a file name
@@ -39,7 +41,9 @@ def compare_python(expected: str, actual: str, expected_path: Optional[str] = No
     return msg
 
 
-def validate_python(text: str, fail_on_error: bool = False, expected_path: str = None) -> Optional[str]:
+def validate_python(
+    text: str, fail_on_error: bool = False, expected_path: str = None
+) -> Optional[str]:
     """
     Validate the python in text
     :param text: Input python

@@ -9,7 +9,11 @@ from linkml.generators.pydanticgen import cli
 def test_template_dir(input_path):
     """Override templates from a template directory"""
     pydantic_dir = input_path("pydantic")
-    args = [str(Path(pydantic_dir) / "simple.yaml"), "--template-dir", str(pydantic_dir)]
+    args = [
+        str(Path(pydantic_dir) / "simple.yaml"),
+        "--template-dir",
+        str(pydantic_dir),
+    ]
 
     runner = CliRunner()
     result = runner.invoke(cli, args)

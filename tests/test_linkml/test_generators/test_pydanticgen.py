@@ -17,7 +17,12 @@ import yaml
 from jinja2 import DictLoader, Environment, Template
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    Definition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
@@ -33,7 +38,11 @@ from linkml.generators.pydanticgen import (
     pydanticgen,
     template,
 )
-from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation, ArrayValidator
+from linkml.generators.pydanticgen.array import (
+    AnyShapeArray,
+    ArrayRepresentation,
+    ArrayValidator,
+)
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -116,7 +125,10 @@ enums:
     assert enum
     assert enum["values"]["number_123"]["value"] == "123"
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
-    assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
+    assert (
+        enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"]
+        == "This & that, plus maybe a 🎩"
+    )
     assert enum["values"]["Ohio"]["value"] == "Ohio"
     gen_output = gen.serialize()
     expected_lines = [
@@ -214,11 +226,20 @@ enums:
     DESCRIPTION = {
         "single_line": ["A single line description. Easy!"],
         "multi_line": ["Sometimes", "one line", "isn't enough", 'for a "description".'],
-        "multi_line_preserve_whitespace": ["Multi", "", f"{' ' * 10}Line", "", f"{INDENT}Madness!", ""],
+        "multi_line_preserve_whitespace": [
+            "Multi",
+            "",
+            f"{' ' * 10}Line",
+            "",
+            f"{INDENT}Madness!",
+            "",
+        ],
     }
 
     for line_type in DESCRIPTION:
-        assert enum["values"][line_type]["description"] == "\n".join(DESCRIPTION[line_type])
+        assert enum["values"][line_type]["description"] == "\n".join(
+            DESCRIPTION[line_type]
+        )
 
     gen_output = gen.serialize()
     assert "\nclass TestEnum(str, Enum):\n" in gen_output
@@ -243,7 +264,9 @@ enums:
 
 
 def test_pydantic_unmasked_keywords(input_path):
-    gen = PydanticGenerator(input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE)
+    gen = PydanticGenerator(
+        input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE
+    )
     code = gen.serialize()
     try:
         mod = compile_python(code, PACKAGE)
@@ -306,8 +329,12 @@ slots:
         """
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
-    assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
+    assert (
+        "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
+    )
+    assert (
+        "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
+    )
     assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
 
 
@@ -385,7 +412,9 @@ slots:
         ("B", True, False, False, True, "Optional[list[str]]", ""),
     ],
 )
-def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
+def test_pydantic_inlining(
+    range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes
+):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
         "Optional[list[str]]": "Field(default=[]",
@@ -465,7 +494,10 @@ classes:
     assert "attr3: Optional[bool] = Field(default=True" in code
     assert "attr4: Optional[float] = Field(default=1.0" in code
     assert "attr5: Optional[date] = Field(default=date(2020, 1, 1)" in code
-    assert "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)" in code
+    assert (
+        "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)"
+        in code
+    )
 
 
 def test_equals_string():
@@ -505,8 +537,16 @@ classes:
 
 
 def test_equals_string_in():
-    equals_string_in = ["THIS_IS_THE_ONLY_VALUE", "THAT WAS A LIE", "THERE ARE MULTIPLE"]
-    another_string_in = ["ANY OTHER STRING THOUGH", "STRICTLY NOT ALLOWED", "WE ARE SERIOUS"]
+    equals_string_in = [
+        "THIS_IS_THE_ONLY_VALUE",
+        "THAT WAS A LIE",
+        "THERE ARE MULTIPLE",
+    ]
+    another_string_in = [
+        "ANY OTHER STRING THOUGH",
+        "STRICTLY NOT ALLOWED",
+        "WE ARE SERIOUS",
+    ]
     schema_str = f"""
 id: test_schema
 name: test_info
@@ -562,7 +602,10 @@ def test_multiline_descriptions(input_path):
             "",
         ]
     )
-    assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums["EmploymentEventType"].permissible_values
+    assert (
+        'INTERNAL "REORGANIZATION"'
+        in gen.schema.enums["EmploymentEventType"].permissible_values
+    )
 
 
 def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
@@ -609,7 +652,9 @@ def test_pydantic_pattern_multivalued(input_path) -> None:
 
     # the first entry encountered raises the error
     with pytest.raises(ValidationError, match="Invalid nicknames format: __JDoe__"):
-        module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=["Jay", "__JDoe__", " J Doe "])
+        module.PersonInfo(
+            id="P1234321", name="Jane Doe", nicknames=["Jay", "__JDoe__", " J Doe "]
+        )
 
 
 def test_pydantic_template_1666():
@@ -820,11 +865,25 @@ classes:
         (None, False, 1, None, None, True),
         (None, False, None, 1, None, True),
         (None, False, None, None, 1, True),
-        (None, True, None, None, None, False),  # if it is required, None should not be valid
+        (
+            None,
+            True,
+            None,
+            None,
+            None,
+            False,
+        ),  # if it is required, None should not be valid
         (None, True, 1, None, None, False),
         (None, True, None, 1, None, False),
         (None, True, None, None, 1, False),
-        ([], False, None, None, None, True),  # empty arrays should be treated like regular array values nevertheless
+        (
+            [],
+            False,
+            None,
+            None,
+            None,
+            True,
+        ),  # empty arrays should be treated like regular array values nevertheless
         ([], False, 1, None, None, False),
         ([], False, None, 1, None, True),
         ([], False, None, None, 1, False),
@@ -860,7 +919,9 @@ classes:
         ([1, 2, 3], True, 3, 3, 3, True),
     ),
 )
-def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid):
+def test_pydantic_cardinality(
+    value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid
+):
     """
     Ensure that the cardinality constraints for list length are correctly applied
     to the generated pydantic model, using SchemaBuilder.
@@ -893,8 +954,16 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
     assert field.annotation == list[float] if required else Optional[list[float]]
 
     # filter down the metadata to only min_length and max_length entries
-    min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
-    max_length = [entry.max_length for entry in field.metadata if getattr(entry, "max_length", None) is not None]
+    min_length = [
+        entry.min_length
+        for entry in field.metadata
+        if getattr(entry, "min_length", None) is not None
+    ]
+    max_length = [
+        entry.max_length
+        for entry in field.metadata
+        if getattr(entry, "max_length", None) is not None
+    ]
 
     if exact_cardinality:
         assert len(min_length) == 1
@@ -958,13 +1027,46 @@ classes:
     code = gen.serialize()
 
     mod = compile_python(code)
-    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation == list[float]
-    assert mod.CardinalityArray.model_fields["minimum_cardinality_array"].metadata[0].min_length == 1
-    assert mod.CardinalityArray.model_fields["maximum_cardinality_array"].metadata[0].max_length == 10
-    assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[0].min_length == 5
-    assert mod.CardinalityArray.model_fields["exact_cardinality_array"].metadata[1].max_length == 5
-    assert mod.CardinalityArray.model_fields["min_max_cardinality_array"].metadata[0].min_length == 0
-    assert mod.CardinalityArray.model_fields["min_max_cardinality_array"].metadata[1].max_length == 8
+    assert (
+        mod.CardinalityArray.model_fields["minimum_cardinality_array"].annotation
+        == list[float]
+    )
+    assert (
+        mod.CardinalityArray.model_fields["minimum_cardinality_array"]
+        .metadata[0]
+        .min_length
+        == 1
+    )
+    assert (
+        mod.CardinalityArray.model_fields["maximum_cardinality_array"]
+        .metadata[0]
+        .max_length
+        == 10
+    )
+    assert (
+        mod.CardinalityArray.model_fields["exact_cardinality_array"]
+        .metadata[0]
+        .min_length
+        == 5
+    )
+    assert (
+        mod.CardinalityArray.model_fields["exact_cardinality_array"]
+        .metadata[1]
+        .max_length
+        == 5
+    )
+    assert (
+        mod.CardinalityArray.model_fields["min_max_cardinality_array"]
+        .metadata[0]
+        .min_length
+        == 0
+    )
+    assert (
+        mod.CardinalityArray.model_fields["min_max_cardinality_array"]
+        .metadata[1]
+        .max_length
+        == 8
+    )
 
 
 @pytest.mark.skip("this format of arrays is not yet implemented in the metamodel??")
@@ -1010,7 +1112,10 @@ classes:
             [
                 Import(
                     module="collections.abc",
-                    objects=[ObjectImport(name="Iterable"), ObjectImport(name="Sequence")],
+                    objects=[
+                        ObjectImport(name="Iterable"),
+                        ObjectImport(name="Sequence"),
+                    ],
                 )
             ],
             (("Iterable", Iterable), ("Sequence", Sequence)),
@@ -1040,13 +1145,15 @@ def test_inject_imports(kitchen_sink_path, tmp_path, input_path, imports, expect
         assert getattr(module, condition[0]) is condition[1]
 
 
-_StringClass = (
-    """class MyInjectedClass:\n    field: str = 'field'\n    def __init__(self):\n        self.apple = 'banana'"""
-)
+_StringClass = """class MyInjectedClass:\n    field: str = 'field'\n    def __init__(self):\n        self.apple = 'banana'"""
 
 
 @pytest.mark.parametrize(
-    "inject,expected", ((MyInjectedClass, inspect.getsource(MyInjectedClass)), (_StringClass, _StringClass))
+    "inject,expected",
+    (
+        (MyInjectedClass, inspect.getsource(MyInjectedClass)),
+        (_StringClass, _StringClass),
+    ),
 )
 def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expected):
     gen = PydanticGenerator(
@@ -1073,8 +1180,12 @@ def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expecte
         ),
     ),
 )
-def test_inject_field(kitchen_sink_path, tmp_path, input_path, inject, name, type, default, description):
-    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, injected_fields=[inject])
+def test_inject_field(
+    kitchen_sink_path, tmp_path, input_path, inject, name, type, default, description
+):
+    gen = PydanticGenerator(
+        kitchen_sink_path, package=PACKAGE, injected_fields=[inject]
+    )
     code = gen.serialize()
     module = compile_python(code, PACKAGE)
 
@@ -1139,16 +1250,24 @@ def test_class_validators():
     assert no_attrs.validators is None
 
     # no pattern makes no validators
-    no_validator = PydanticAttribute(name="no_validator", annotations={"python_range": {"value": "str"}})
-    no_valid_class = PydanticClass(name="no_validator_class", attributes={"no_validator": no_validator})
+    no_validator = PydanticAttribute(
+        name="no_validator", annotations={"python_range": {"value": "str"}}
+    )
+    no_valid_class = PydanticClass(
+        name="no_validator_class", attributes={"no_validator": no_validator}
+    )
     assert not no_valid_class.validators
 
     # a pattern makes a validator!
     validator = PydanticAttribute(
-        name="validator", annotations={"python_range": {"value": "str"}}, pattern="word.*other"
+        name="validator",
+        annotations={"python_range": {"value": "str"}},
+        pattern="word.*other",
     )
     valid_class = PydanticClass(name="valid_class", attributes={"validator": validator})
-    assert valid_class.validators["validator"] == PydanticValidator(**validator.model_dump())
+    assert valid_class.validators["validator"] == PydanticValidator(
+        **validator.model_dump()
+    )
 
     # Adding a validator after object instantiation should still result in a generated validator
     no_valid_class.attributes["validator"] = validator
@@ -1158,16 +1277,31 @@ def test_class_validators():
 def test_import_merge():
     import_a = Import(module="module_a")
     import_b = Import(module="module_b")
-    import_cond_a = ConditionalImport(module="module_a", condition="1 == 1", alternative=Import(module="module_b"))
-    import_cond_b = ConditionalImport(module="module_a", condition="2 == 2", alternative=Import(module="module_c"))
+    import_cond_a = ConditionalImport(
+        module="module_a", condition="1 == 1", alternative=Import(module="module_b")
+    )
+    import_cond_b = ConditionalImport(
+        module="module_a", condition="2 == 2", alternative=Import(module="module_c")
+    )
     import_a_alias = Import(module="module_a", alias="alias_a")
-    import_a_objects = Import(module="module_a", objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2")])
-    import_a_objects_2 = Import(module="module_a", objects=[ObjectImport(name="object_3")])
+    import_a_objects = Import(
+        module="module_a",
+        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2")],
+    )
+    import_a_objects_2 = Import(
+        module="module_a", objects=[ObjectImport(name="object_3")]
+    )
     import_a_objects_combined = Import(
         module="module_a",
-        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2"), ObjectImport(name="object_3")],
+        objects=[
+            ObjectImport(name="object_1"),
+            ObjectImport(name="object_2"),
+            ObjectImport(name="object_3"),
+        ],
     )
-    import_a_objects_alias = Import(module="module_a", objects=[ObjectImport(name="object_2", alias="alias_2")])
+    import_a_objects_alias = Import(
+        module="module_a", objects=[ObjectImport(name="object_2", alias="alias_2")]
+    )
 
     # orthogonal merges just return both
     assert import_a.merge(import_b) == [import_a, import_b]
@@ -1201,8 +1335,12 @@ def test_imports_add():
     """
     import_a = Import(module="module_a")
     import_b = Import(module="module_b")
-    import_cond_a = ConditionalImport(module="module_a", condition="1 == 1", alternative=Import(module="module_b"))
-    import_cond_b = ConditionalImport(module="module_a", condition="2 == 2", alternative=Import(module="module_c"))
+    import_cond_a = ConditionalImport(
+        module="module_a", condition="1 == 1", alternative=Import(module="module_b")
+    )
+    import_cond_b = ConditionalImport(
+        module="module_a", condition="2 == 2", alternative=Import(module="module_c")
+    )
 
     imports = Imports(render_sorted=False) + import_a
 
@@ -1267,7 +1405,10 @@ def test_imports_future():
         alias="module_c_alias",
         objects=[ObjectImport(name="module_c_obj")],
         condition="1 == 1",
-        alternative=Import(module="module_d", objects=[ObjectImport(name="module_d_obj", alias="module_c_obj")]),
+        alternative=Import(
+            module="module_d",
+            objects=[ObjectImport(name="module_d_obj", alias="module_c_obj")],
+        ),
     )
     future = Import(module="__future__", objects=[ObjectImport(name="annotations")])
 
@@ -1282,13 +1423,21 @@ def test_imports_future():
     # this should also work if we add two imports objects together - they should be merged down to one statement
     # we DONT currently handle merging when `Imports` is instantiated, it's intended to be used iteratively
     # but when we add two imports together, the first should iterate over the second term
-    future_2 = Import(module="__future__", objects=[ObjectImport(name="unicode_literals")])
-    future_3 = Import(module="__future__", objects=[ObjectImport(name="generator_stop")])
+    future_2 = Import(
+        module="__future__", objects=[ObjectImport(name="unicode_literals")]
+    )
+    future_3 = Import(
+        module="__future__", objects=[ObjectImport(name="generator_stop")]
+    )
     imports_2 = Imports(imports=[future_2, future_3])
     # Declaring as a list should merge
     assert imports_2.imports == [
         Import(
-            module="__future__", objects=[ObjectImport(name="unicode_literals"), ObjectImport(name="generator_stop")]
+            module="__future__",
+            objects=[
+                ObjectImport(name="unicode_literals"),
+                ObjectImport(name="generator_stop"),
+            ],
         )
     ]
 
@@ -1309,7 +1458,10 @@ def test_imports_getitem():
     """
     import_a = Import(module="module_a.submodule")
     import_b = Import(module="module_b")
-    import_a_objects = Import(module="module_a", objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2")])
+    import_a_objects = Import(
+        module="module_a",
+        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2")],
+    )
     imports = Imports(imports=[import_a, import_b, import_a_objects])
 
     assert imports[1] == import_b
@@ -1333,9 +1485,16 @@ def test_imports_contains():
     import_c = Import(module="module_c", alias="WhackyNamedModule")
     import_a_objects = Import(
         module="module_a",
-        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_2"), ObjectImport(name="object_3")],
+        objects=[
+            ObjectImport(name="object_1"),
+            ObjectImport(name="object_2"),
+            ObjectImport(name="object_3"),
+        ],
     )
-    import_d_objects = Import(module="module_d", objects=[ObjectImport(name="object_1", alias="WhackyObjectName")])
+    import_d_objects = Import(
+        module="module_d",
+        objects=[ObjectImport(name="object_1", alias="WhackyObjectName")],
+    )
     all_imports = [import_a, import_b, import_c, import_a_objects, import_d_objects]
     imports = Imports(imports=all_imports)
 
@@ -1344,7 +1503,10 @@ def test_imports_contains():
         assert an_import in imports
 
     # a subset of objects
-    import_a_subset = Import(module="module_a", objects=[ObjectImport(name="object_1"), ObjectImport(name="object_3")])
+    import_a_subset = Import(
+        module="module_a",
+        objects=[ObjectImport(name="object_1"), ObjectImport(name="object_3")],
+    )
     assert import_a_subset in imports
 
     # Imports and lists of imports succeed too
@@ -1360,9 +1522,24 @@ def test_imports_contains():
     assert Import(module="module_c") not in imports
     assert Import(module="module_d", alias="WhackyNamedModule") not in imports
     assert Import(module="module_d", alias="WhackyObjectName") not in imports
-    assert Import(module="module_d", objects=[ObjectImport(name="object_1")]) not in imports
-    assert Import(module="module_d", objects=[ObjectImport(name="object_2", alias="WhackyObjectName")]) not in imports
-    assert Import(module="module_a", objects=[ObjectImport(name="object_1", alias="WhackyObjectName")]) not in imports
+    assert (
+        Import(module="module_d", objects=[ObjectImport(name="object_1")])
+        not in imports
+    )
+    assert (
+        Import(
+            module="module_d",
+            objects=[ObjectImport(name="object_2", alias="WhackyObjectName")],
+        )
+        not in imports
+    )
+    assert (
+        Import(
+            module="module_a",
+            objects=[ObjectImport(name="object_1", alias="WhackyObjectName")],
+        )
+        not in imports
+    )
 
     # supersets fail
     superset_a = Import(
@@ -1430,7 +1607,9 @@ def test_imports_sort():
     imports = Imports(
         imports=[
             # ConditionalImports come last
-            ConditionalImport(module="aaa", condition="True", alternative=Import(module="bbb")),
+            ConditionalImport(
+                module="aaa", condition="True", alternative=Import(module="bbb")
+            ),
             # local modules come after thirdparty
             Import(module=".mymodule"),
             # thirdparty come after stdlib
@@ -1439,7 +1618,10 @@ def test_imports_sort():
             Import(module="__future__", objects=[ObjectImport(name="print")]),
             Import(module="typing", objects=[ObjectImport(name="List")]),
             # objects should be sorted within an Import
-            Import(module="datetime", objects=[ObjectImport(name="time"), ObjectImport(name="datetime")]),
+            Import(
+                module="datetime",
+                objects=[ObjectImport(name="time"), ObjectImport(name="datetime")],
+            ),
             # imports without objects come first within a group
             Import(module="sys"),
             Import(module="enum"),
@@ -1447,7 +1629,16 @@ def test_imports_sort():
     )
     imports.sort()
     module_order = [i.module for i in imports.imports]
-    assert module_order == ["__future__", "enum", "sys", "datetime", "typing", "numpy", ".mymodule", "aaa"]
+    assert module_order == [
+        "__future__",
+        "enum",
+        "sys",
+        "datetime",
+        "typing",
+        "numpy",
+        ".mymodule",
+        "aaa",
+    ]
     assert [o.name for o in imports["datetime"].objects] == ["datetime", "time"]
 
 
@@ -1456,7 +1647,9 @@ def test_imports_groups_rendering(kitchen_sink_path):
     When rendering, python import groups should be rendered by newline-delimited groups
     """
     gen = PydanticGenerator(
-        kitchen_sink_path, imports=[Import(module=".mymodule"), Import(module="numpy")], sort_imports=True
+        kitchen_sink_path,
+        imports=[Import(module=".mymodule"), Import(module="numpy")],
+        sort_imports=True,
     )
     rendered = gen.render()
     rendered_imports = rendered.python_imports.render()
@@ -1528,7 +1721,10 @@ def test_template_render():
     class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
         a_list: list[InnerTemplate] = [InnerTemplate(value=1), InnerTemplate(value=2)]
-        a_dict: dict[str, InnerTemplate] = {"one": InnerTemplate(value="one"), "two": InnerTemplate(value="two")}
+        a_dict: dict[str, InnerTemplate] = {
+            "one": InnerTemplate(value="one"),
+            "two": InnerTemplate(value="two"),
+        }
         a_value: int = 1
         plain_model: PlainModel = PlainModel()
         recursive: Optional["TestTemplate"] = None
@@ -1727,7 +1923,11 @@ def array_validator_errors(input_path) -> ClassDefinition:
     scope="function",
     params=[
         pytest.param([ArrayRepresentation.LIST], id="list-of-lists"),
-        pytest.param([ArrayRepresentation.NUMPYDANTIC], marks=pytest.mark.pydanticgen_npd, id="numpydantic"),
+        pytest.param(
+            [ArrayRepresentation.NUMPYDANTIC],
+            marks=pytest.mark.pydanticgen_npd,
+            id="numpydantic",
+        ),
     ],
 )
 def array_representation(request) -> list[ArrayRepresentation]:
@@ -1752,19 +1952,29 @@ class TestCase:
 
 @pytest.mark.parametrize(
     "case",
-    [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
+    [
+        TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt))
+        for dt in (int, float, str)
+    ]
     + [TestCase(type="fail-scalar", array=a) for a in (4, 3.0, "three")],
 )
 def test_generate_array_anyshape(case, array_representation, array_anyshape):
     """
     Any array shape, any dtype!
     """
-    if ArrayRepresentation.LIST in array_representation and isinstance(case.array, np.ndarray):
+    if ArrayRepresentation.LIST in array_representation and isinstance(
+        case.array, np.ndarray
+    ):
         case.array = case.array.tolist()
-    if ArrayRepresentation.NUMPYDANTIC in array_representation and case.type == "fail-scalar":
+    if (
+        ArrayRepresentation.NUMPYDANTIC in array_representation
+        and case.type == "fail-scalar"
+    ):
         pytest.skip("numpydantic coerces scalars rather than failing validation")
 
-    generated = PydanticGenerator(array_anyshape, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_anyshape, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "AnyType")
     with case.expectation(array_representation):
@@ -1775,7 +1985,10 @@ def test_generate_array_anyshape(case, array_representation, array_anyshape):
     "case",
     [
         TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
-        TestCase(type="fail-dtype", array=np.random.default_rng().random((2, 3, 4), dtype=float)),
+        TestCase(
+            type="fail-dtype",
+            array=np.random.default_rng().random((2, 3, 4), dtype=float),
+        ),
         TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
     ],
 )
@@ -1786,7 +1999,9 @@ def test_generate_array_anyshape_typed(case, array_representation, array_anyshap
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_anyshape, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_anyshape, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "Typed")
     with case.expectation(array_representation):
@@ -1810,7 +2025,9 @@ def test_generate_array_dtype_union(case, array_representation, array_dtype):
 
     imports = Imports(imports=[Import(module="numpy", alias="np")])
 
-    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    generated = PydanticGenerator(
+        array_dtype, array_representations=array_representation, imports=imports
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "UnionDtype")
     with case.expectation(array_representation):
@@ -1833,7 +2050,9 @@ def test_generate_array_dtype_numpy(case, array_representation, array_dtype):
 
     imports = Imports(imports=[Import(module="numpy", alias="np")])
 
-    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    generated = PydanticGenerator(
+        array_dtype, array_representations=array_representation, imports=imports
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "NumpyDtype")
     with case.expectation(array_representation):
@@ -1847,7 +2066,9 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
 
     imports = Imports(imports=[Import(module="numpy", alias="np")])
 
-    generated = PydanticGenerator(array_dtype, array_representations=array_representation, imports=imports).serialize()
+    generated = PydanticGenerator(
+        array_dtype, array_representations=array_representation, imports=imports
+    ).serialize()
     mod = compile_python(generated)
     cls: type[BaseModel] = getattr(mod, "ClassDtype")
     target_cls: type[BaseModel] = getattr(mod, "MyClass")
@@ -1881,7 +2102,9 @@ def test_generate_array_bounded_min(case, array_representation, array_bounded):
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_bounded, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "MinDimensions")
     with case.expectation(array_representation):
@@ -1905,7 +2128,9 @@ def test_generate_array_bounded_max(case, array_representation, array_bounded):
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_bounded, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "MaxDimensions")
     with case.expectation(array_representation):
@@ -1933,7 +2158,9 @@ def test_generate_array_bounded_range(case, array_representation, array_bounded)
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_bounded, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "RangeDimensions")
     with case.expectation(array_representation):
@@ -1959,7 +2186,9 @@ def test_generate_array_bounded_exact(case, array_representation, array_bounded)
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_bounded, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_bounded, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ExactDimensions")
     with case.expectation(array_representation):
@@ -1978,14 +2207,18 @@ def test_generate_array_bounded_exact(case, array_representation, array_bounded)
         # FIXME: Add a float testcase back in here when https://github.com/linkml/linkml/issues/1955 is resolved
     ],
 )
-def test_generate_array_parameterized_min(case, array_representation, array_parameterized):
+def test_generate_array_parameterized_min(
+    case, array_representation, array_parameterized
+):
     """
     Any 4 dimensional integer array, the first dimension is equal to or greater than cardinality 2
     """
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_parameterized, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation(array_representation):
@@ -2001,14 +2234,18 @@ def test_generate_array_parameterized_min(case, array_representation, array_para
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
-def test_generate_array_parameterized_max(case, array_representation, array_parameterized):
+def test_generate_array_parameterized_max(
+    case, array_representation, array_parameterized
+):
     """
     Any 4 dimensional integer array, the second dimension is equal to or less than cardinality 5
     """
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_parameterized, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation(array_representation):
@@ -2025,14 +2262,18 @@ def test_generate_array_parameterized_max(case, array_representation, array_para
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
-def test_generate_array_parameterized_range(case, array_representation, array_parameterized):
+def test_generate_array_parameterized_range(
+    case, array_representation, array_parameterized
+):
     """
     Any 4 dimensional integer array, the third dimension has a cardinality between 2 and 5, inclusive
     """
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_parameterized, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation(array_representation):
@@ -2048,14 +2289,18 @@ def test_generate_array_parameterized_range(case, array_representation, array_pa
         # this is the same field, so dtype failures only need to be tested in one case
     ],
 )
-def test_generate_array_parameterized_exact(case, array_representation, array_parameterized):
+def test_generate_array_parameterized_exact(
+    case, array_representation, array_parameterized
+):
     """
     Any 4 dimensional integer array, the fourch dimension has a cardinality of exactly 6
     """
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_parameterized, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_parameterized, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ParameterizedArray")
     with case.expectation(array_representation):
@@ -2088,7 +2333,9 @@ def test_generate_array_complex_any(case, array_representation, array_complex):
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_complex, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexAnyShapeArray")
     with case.expectation(array_representation):
@@ -2122,7 +2369,9 @@ def test_generate_array_complex_max(case, array_representation, array_complex):
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_complex, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexMaxShapeArray")
     with case.expectation(array_representation):
@@ -2144,7 +2393,9 @@ def test_generate_array_complex_min(case, array_representation, array_complex):
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_complex, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexMinShapeArray")
     with case.expectation(array_representation):
@@ -2158,7 +2409,9 @@ def test_generate_array_complex_min(case, array_representation, array_complex):
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
         TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
-        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1, 1), dtype=int)),
+        TestCase(
+            type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1, 1), dtype=int)
+        ),
         TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
         TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
         TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
@@ -2179,7 +2432,9 @@ def test_generate_array_complex_range(case, array_representation, array_complex)
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_complex, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexRangeShapeArray")
     with case.expectation(array_representation):
@@ -2212,7 +2467,9 @@ def test_generate_array_complex_exact(case, array_representation, array_complex)
     if ArrayRepresentation.LIST in array_representation:
         case.array = case.array.tolist()
 
-    generated = PydanticGenerator(array_complex, array_representations=array_representation).serialize()
+    generated = PydanticGenerator(
+        array_complex, array_representations=array_representation
+    ).serialize()
     mod = compile_python(generated)
     cls = getattr(mod, "ComplexExactShapeArray")
     with case.expectation(array_representation):
@@ -2247,7 +2504,9 @@ def test_generate_array_complex_implicit_exact(array_representation, array_compl
     assert explicit.render() == implicit.render()
 
 
-def test_generate_array_complex_noop_exact(array_representation, array_complex, array_parameterized):
+def test_generate_array_complex_noop_exact(
+    array_representation, array_complex, array_parameterized
+):
     """
     When the exact number of dimensions is equal to the number of parameterized dimensions,
     the representation should be equivalent to if it hadn't been specified
@@ -2257,32 +2516,51 @@ def test_generate_array_complex_noop_exact(array_representation, array_complex, 
         array_complex, array_representations=array_representation, metadata_mode=None
     ).render()
     generated_parameterized = PydanticGenerator(
-        array_parameterized, array_representations=array_representation, metadata_mode=None
+        array_parameterized,
+        array_representations=array_representation,
+        metadata_mode=None,
     ).render()
-    complex = generated_complex.classes["ComplexNoOpExactShapeArray"].attributes["array"]
-    parameterized = generated_parameterized.classes["ParameterizedArray"].attributes["array"]
+    complex = generated_complex.classes["ComplexNoOpExactShapeArray"].attributes[
+        "array"
+    ]
+    parameterized = generated_parameterized.classes["ParameterizedArray"].attributes[
+        "array"
+    ]
     assert complex.render() == parameterized.render()
 
 
-def test_generate_array_error_complex_exact_shape(array_representation, array_error_complex_dimensions):
+def test_generate_array_error_complex_exact_shape(
+    array_representation, array_error_complex_dimensions
+):
     """
     When we try and make a complex array where the exact number of dimensions are lower than the parameterized
     dimensions, we should throw an error
     """
 
-    with pytest.raises(ValueError, match=".*must be greater than the parameterized dimensions.*"):
-        _ = PydanticGenerator(array_error_complex_dimensions, array_representations=array_representation).serialize()
+    with pytest.raises(
+        ValueError, match=".*must be greater than the parameterized dimensions.*"
+    ):
+        _ = PydanticGenerator(
+            array_error_complex_dimensions, array_representations=array_representation
+        ).serialize()
 
 
-def test_generate_array_error_complex_unbounded_shape(array_representation, array_error_complex_unbounded):
+def test_generate_array_error_complex_unbounded_shape(
+    array_representation, array_error_complex_unbounded
+):
     """
     When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
     we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
     explicitly false.
     """
 
-    with pytest.raises(ValueError, match=".*Cannot specify a minimum_number_dimensions while maximum is None.*"):
-        _ = PydanticGenerator(array_error_complex_unbounded, array_representations=array_representation).serialize()
+    with pytest.raises(
+        ValueError,
+        match=".*Cannot specify a minimum_number_dimensions while maximum is None.*",
+    ):
+        _ = PydanticGenerator(
+            array_error_complex_unbounded, array_representations=array_representation
+        ).serialize()
 
 
 @pytest.mark.parametrize(
@@ -2338,9 +2616,15 @@ def test_template_black(array_complex):
     When black is installed, we should format template models with black :)
     """
     generated = PydanticGenerator(
-        array_complex, array_representations=[ArrayRepresentation.LIST], metadata_mode=None
+        array_complex,
+        array_representations=[ArrayRepresentation.LIST],
+        metadata_mode=None,
     ).render()
-    array_repr = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
+    array_repr = (
+        generated.classes["ComplexRangeShapeArray"]
+        .attributes["array"]
+        .render(black=True)
+    )
     assert (
         array_repr
         == """array: Optional[
@@ -2385,9 +2669,15 @@ def test_template_noblack(array_complex, mock_black_import):
     from linkml.generators.pydanticgen.array import ArrayRepresentation
 
     generated = PydanticGenerator(
-        array_complex, array_representations=[ArrayRepresentation.LIST], metadata_mode=None
+        array_complex,
+        array_representations=[ArrayRepresentation.LIST],
+        metadata_mode=None,
     ).render()
-    array_repr = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=False)
+    array_repr = (
+        generated.classes["ComplexRangeShapeArray"]
+        .attributes["array"]
+        .render(black=False)
+    )
 
     assert (
         array_repr
@@ -2396,7 +2686,11 @@ def test_template_noblack(array_complex, mock_black_import):
 
     # trying to render with black when we don't have it should raise a ValueError
     with pytest.raises(ValueError):
-        _ = generated.classes["ComplexRangeShapeArray"].attributes["array"].render(black=True)
+        _ = (
+            generated.classes["ComplexRangeShapeArray"]
+            .attributes["array"]
+            .render(black=True)
+        )
 
 
 # --------------------------------------------------
@@ -2404,7 +2698,9 @@ def test_template_noblack(array_complex, mock_black_import):
 # --------------------------------------------------
 
 
-def _test_meta(linkml_meta, definition: Definition, model: type[PydanticTemplateModel], mode: str):
+def _test_meta(
+    linkml_meta, definition: Definition, model: type[PydanticTemplateModel], mode: str
+):
     def_clean = remove_empty_items(definition)
     for k, v in def_clean.items():
         if mode == "auto":
@@ -2475,9 +2771,16 @@ def test_generate_split(input_path):
     should_have = [
         Import(
             module=".schema_1",
-            objects=[ObjectImport(name="S1"), ObjectImport(name="S1Any"), ObjectImport(name="S1Mixin")],
+            objects=[
+                ObjectImport(name="S1"),
+                ObjectImport(name="S1Any"),
+                ObjectImport(name="S1Mixin"),
+            ],
         ),
-        Import(module=".schema_2", objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")]),
+        Import(
+            module=".schema_2",
+            objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")],
+        ),
     ]
     shouldnt_have = [
         Import(module=".schema_3"),
@@ -2512,7 +2815,9 @@ def test_generate_split_full(input_path):
     unused classes
     """
     schema = input_path("split/main.yaml")
-    generator = PydanticGenerator(schema, split=True, split_mode=pydanticgen.SplitMode.FULL)
+    generator = PydanticGenerator(
+        schema, split=True, split_mode=pydanticgen.SplitMode.FULL
+    )
     rendered = generator.render()
     imports = Imports(imports=rendered.python_imports)
 
@@ -2529,7 +2834,11 @@ def test_generate_split_full(input_path):
         ),
         Import(
             module=".schema_2",
-            objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any"), ObjectImport(name="S2Unused")],
+            objects=[
+                ObjectImport(name="S2"),
+                ObjectImport(name="S2Any"),
+                ObjectImport(name="S2Unused"),
+            ],
         ),
         Import(module=".schema_3", objects=[ObjectImport(name="S3")]),
     ]
@@ -2556,9 +2865,13 @@ def test_generate_split_pattern(input_path):
     I can customize the module part of the import to use attributes from the imported schema
     """
     context_val = {"context_val": "A_CONTEXT_VALUE"}
-    custom_pattern = "...{{ schema.name }}.{{ schema.annotations.custom.value }}.{{ context_val }}"
+    custom_pattern = (
+        "...{{ schema.name }}.{{ schema.annotations.custom.value }}.{{ context_val }}"
+    )
     schema = input_path("split/main.yaml")
-    generator = PydanticGenerator(schema, split=True, split_pattern=custom_pattern, split_context=context_val)
+    generator = PydanticGenerator(
+        schema, split=True, split_pattern=custom_pattern, split_context=context_val
+    )
     rendered = generator.render()
     imports = Imports(imports=rendered.python_imports)
 
@@ -2583,13 +2896,22 @@ def test_generate_split_pattern(input_path):
         Import(module=".schema_2", objects=[ObjectImport(name="S2Unused")]),
         Import(
             module=".schema_1",
-            objects=[ObjectImport(name="S1"), ObjectImport(name="S1Any"), ObjectImport(name="S1Mixin")],
+            objects=[
+                ObjectImport(name="S1"),
+                ObjectImport(name="S1Any"),
+                ObjectImport(name="S1Mixin"),
+            ],
         ),
-        Import(module=".schema_2", objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")]),
+        Import(
+            module=".schema_2",
+            objects=[ObjectImport(name="S2"), ObjectImport(name="S2Any")],
+        ),
     ]
 
     for an_import in should_have:
-        assert an_import in imports, "Missed a necessary import when generating from a pattern"
+        assert an_import in imports, (
+            "Missed a necessary import when generating from a pattern"
+        )
     for an_import in shouldnt_have:
         assert an_import not in imports, (
             "Got one of the imports with the default template instead of the supplied pattern"
@@ -2601,12 +2923,16 @@ def test_generate_split_directory(input_path, tmp_path):
     schema = input_path("split/main.yaml")
     pattern = "..{{ schema.version | replace('.', '_') }}.{{ schema.name }}"
     output_file = tmp_path / "test_module" / "v1_2_3" / "main.py"
-    result = PydanticGenerator.generate_split(schema, output_file, split_pattern=pattern)
+    result = PydanticGenerator.generate_split(
+        schema, output_file, split_pattern=pattern
+    )
 
     # should be possible to import the main module
     # (this checks that relative imports resolve correctly!)
     main = [r for r in result if r.main][0]
-    imported_spec = importlib.util.spec_from_file_location("test_module.v1_2_3.main", main.path)
+    imported_spec = importlib.util.spec_from_file_location(
+        "test_module.v1_2_3.main", main.path
+    )
     _ = importlib.util.module_from_spec(imported_spec)
 
     # all expected files should exist in the places we expect them to be
@@ -2628,7 +2954,12 @@ def test_generate_split_directory(input_path, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "test,expected", [("Schema 1", "schema_1"), ("SchemaOneTwo", "schema_one_two"), ("Schema! One", "schema__one")]
+    "test,expected",
+    [
+        ("Schema 1", "schema_1"),
+        ("SchemaOneTwo", "schema_one_two"),
+        ("Schema! One", "schema__one"),
+    ],
 )
 @pytest.mark.pydanticgen_split
 def test_snake_case_regex(test, expected):
@@ -2644,7 +2975,9 @@ def test_lifecycle_classes(kitchen_sink_path):
     """We can modify the generation process by subclassing lifecycle hooks"""
 
     class TestPydanticGenerator(PydanticGenerator):
-        def before_generate_classes(self, cls: Iterable[ClassDefinition], sv: SchemaView) -> Iterable[ClassDefinition]:
+        def before_generate_classes(
+            self, cls: Iterable[ClassDefinition], sv: SchemaView
+        ) -> Iterable[ClassDefinition]:
             all_classes = sv.all_classes()
             assert len(cls) == len(all_classes) - 1
 
@@ -2656,12 +2989,18 @@ def test_lifecycle_classes(kitchen_sink_path):
             del cls[0]
             return cls
 
-        def after_generate_classes(self, cls: Iterable[TClass], sv: SchemaView) -> Iterable[TClass]:
+        def after_generate_classes(
+            self, cls: Iterable[TClass], sv: SchemaView
+        ) -> Iterable[TClass]:
             for a_cls in cls:
-                a_cls.cls.attributes["test"] = PydanticAttribute(name="test", range="str")
+                a_cls.cls.attributes["test"] = PydanticAttribute(
+                    name="test", range="str"
+                )
             return cls
 
-        def before_generate_class(self, cls: ClassDefinition, sv: SchemaView) -> ClassDefinition:
+        def before_generate_class(
+            self, cls: ClassDefinition, sv: SchemaView
+        ) -> ClassDefinition:
             # change all the descriptions, idk
             cls.description = "TEST MODIFYING CLASSES"
             return cls
@@ -2683,17 +3022,29 @@ def test_lifecycle_slots(kitchen_sink_path):
     """We can modify the generation process by subclassing lifecycle hooks"""
 
     class TestPydanticGenerator(PydanticGenerator):
-        def before_generate_slots(self, slot: Iterable[SlotDefinition], sv: SchemaView) -> Iterable[SlotDefinition]:
+        def before_generate_slots(
+            self, slot: Iterable[SlotDefinition], sv: SchemaView
+        ) -> Iterable[SlotDefinition]:
             # make a new slot that's the number of slots for some reason
-            slot.append(SlotDefinition(name="number_of_slots", range="integer", ifabsent=f"integer({len(slot)})"))
+            slot.append(
+                SlotDefinition(
+                    name="number_of_slots",
+                    range="integer",
+                    ifabsent=f"integer({len(slot)})",
+                )
+            )
             return slot
 
-        def after_generate_slots(self, slot: Iterable[TSlot], sv: SchemaView) -> Iterable[TSlot]:
+        def after_generate_slots(
+            self, slot: Iterable[TSlot], sv: SchemaView
+        ) -> Iterable[TSlot]:
             for a_slot in slot:
                 a_slot.attribute.meta["extra_meta_field"] = True
             return slot
 
-        def before_generate_slot(self, slot: SlotDefinition, sv: SchemaView) -> SlotDefinition:
+        def before_generate_slot(
+            self, slot: SlotDefinition, sv: SchemaView
+        ) -> SlotDefinition:
             slot.description = "TEST MODIFYING SLOTS"
             return slot
 

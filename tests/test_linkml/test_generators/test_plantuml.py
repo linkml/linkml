@@ -5,7 +5,11 @@ from xml.dom import minidom
 
 import pytest
 from docker.errors import ImageNotFound
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
@@ -129,7 +133,9 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
     # have no defined relationships with classes like `FamilialRelationship`
     # have crept into class-selected diagrams
     if input_class == "FamilialRelationship":
-        assert 'class "MarriageEvent"' not in plantuml, f"MarriageEvent not reachable from {input_class}"
+        assert 'class "MarriageEvent"' not in plantuml, (
+            f"MarriageEvent not reachable from {input_class}"
+        )
 
 
 @pytest.mark.network
@@ -202,13 +208,21 @@ def test_preserve_names():
         imports=["linkml:types"],
         prefixes={"linkml": "https://w3id.org/linkml/"},
         classes={
-            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
-            "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
+            "My_Class": ClassDefinition(
+                name="My_Class", slots=["my_slot", "related_object"]
+            ),
+            "Another_Class_Name": ClassDefinition(
+                name="Another_Class_Name", slots=["class_specific_slot"]
+            ),
         },
         slots={
             "my_slot": SlotDefinition(name="my_slot", range="string"),
-            "class_specific_slot": SlotDefinition(name="class_specific_slot", range="string"),
-            "related_object": SlotDefinition(name="related_object", range="Another_Class_Name"),
+            "class_specific_slot": SlotDefinition(
+                name="class_specific_slot", range="string"
+            ),
+            "related_object": SlotDefinition(
+                name="related_object", range="Another_Class_Name"
+            ),
         },
     )
 
@@ -235,7 +249,10 @@ def test_preserve_names():
     mock_response.ok = True
     mock_response.iter_content.return_value = [b"svg"]
 
-    with tempfile.TemporaryDirectory() as temp_dir, patch("requests.get", return_value=mock_response):
+    with (
+        tempfile.TemporaryDirectory() as temp_dir,
+        patch("requests.get", return_value=mock_response),
+    ):
         gen = PlantumlGenerator(schema=schema, preserve_names=True, dry_run=False)
         gen.visit_schema(classes={"My_Class"}, directory=temp_dir)
         assert gen.output_file_name.endswith("My_Class.svg")

@@ -11,7 +11,9 @@ def test_inheritance(input_path, snapshot, snapshot_path):
 
     # Added test for issue #183, where sex_qualifier disappeared from MixinOwner class
     module = compile_python(str(snapshot_path("issue_14.py")))
-    module.SubjectRange1(id="sr1", name="SubjectRange1", subject="thing1", object="thing2")
+    module.SubjectRange1(
+        id="sr1", name="SubjectRange1", subject="thing1", object="thing2"
+    )
     module.MixinOwner(
         id="mo1",
         subject="sr1",

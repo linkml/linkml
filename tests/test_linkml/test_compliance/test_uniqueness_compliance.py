@@ -74,7 +74,12 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
     if framework == PANDERA_POLARS_CLASS:
         pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
-        test_identifier, "default", framework, classes=classes, core_elements=["identifier"], prefixes=prefixes
+        test_identifier,
+        "default",
+        framework,
+        classes=classes,
+        core_elements=["identifier"],
+        prefixes=prefixes,
     )
     obj = {"entities": [{"id": id, SLOT_S1: additional_slot_values} for id in ids]}
     expected_behavior = ValidationBehavior.IMPLEMENTS
@@ -150,7 +155,14 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_unique_keys(framework, description, objects, is_valid, is_valid_if_nulls_inequal, consider_nulls_inequal):
+def test_unique_keys(
+    framework,
+    description,
+    objects,
+    is_valid,
+    is_valid_if_nulls_inequal,
+    consider_nulls_inequal,
+):
     """
     Tests unique keys
 
@@ -201,7 +213,9 @@ def test_unique_keys(framework, description, objects, is_valid, is_valid_if_null
         classes=classes,
         core_elements=["identifier"],
     )
-    obj = {"entities": [{SLOT_S1: s1, SLOT_S2: s2, SLOT_S3: s3} for s1, s2, s3 in objects]}
+    obj = {
+        "entities": [{SLOT_S1: s1, SLOT_S2: s2, SLOT_S3: s3} for s1, s2, s3 in objects]
+    }
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if not is_valid:
         if framework == SQL_DDL_SQLITE:
@@ -315,7 +329,9 @@ D_INST_2 = {SLOT_ID: "ex:d2", SLOT_S3: "t"}
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_inlined_unique_keys(framework, schema_name, d_has_id, s1def, s2def, ddl, valid_objs, invalid_objs):
+def test_inlined_unique_keys(
+    framework, schema_name, d_has_id, s1def, s2def, ddl, valid_objs, invalid_objs
+):
     """
     Tests unique keys where some slots may be inlined
 

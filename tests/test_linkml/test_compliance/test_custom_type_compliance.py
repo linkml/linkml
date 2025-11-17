@@ -16,12 +16,18 @@ from test_linkml.test_compliance.helper import (
     metamodel_schemaview,
     validated_schema,
 )
-from test_linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+from test_linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    SLOT_S1,
+)
 
 
 # TODO: consider merging into normal type test
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False])
-@pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
+@pytest.mark.parametrize(
+    "linkml_type", ["string", "integer", "float", "double", "boolean"]
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_typeof(framework, linkml_type, example_value):
     """
@@ -86,7 +92,12 @@ def test_typeof(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
+        if (
+            sys.version_info < (3, 10)
+            and framework == PYDANTIC
+            and linkml_type == "boolean"
+            and isinstance(v, float)
+        ):
             # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
             # what their docs say should happen or why it only affects older Python version.
             expected_behavior = ValidationBehavior.COERCES

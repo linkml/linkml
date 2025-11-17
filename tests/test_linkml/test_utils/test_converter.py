@@ -70,11 +70,17 @@ def test_convert(input_path, cli_runner, tmp_path):
     rdf_out = tmp_path / "data_example.out.ttl"
     result = cli_runner.invoke(cli, ["--infer", "-s", schema, data_in, "-o", json_out])
     assert result.exit_code == 0
-    result = cli_runner.invoke(cli, ["-s", schema, json_out, "-t", "yaml", "-o", yaml_out])
+    result = cli_runner.invoke(
+        cli, ["-s", schema, json_out, "-t", "yaml", "-o", yaml_out]
+    )
     assert result.exit_code == 0
-    result = cli_runner.invoke(cli, ["-s", schema, yaml_out, "-t", "rdf", "-o", rdf_out])
+    result = cli_runner.invoke(
+        cli, ["-s", schema, yaml_out, "-t", "rdf", "-o", rdf_out]
+    )
     assert result.exit_code == 0
-    result = cli_runner.invoke(cli, ["-s", schema, rdf_out, "-t", "json", "-o", json_out])
+    result = cli_runner.invoke(
+        cli, ["-s", schema, rdf_out, "-t", "json", "-o", json_out]
+    )
     assert result.exit_code == 0
     check_output(json_out)
 
@@ -85,12 +91,26 @@ def test_prefix_file(input_path, cli_runner, tmp_path):
     rdf_out = tmp_path / "data_example.out.ttl"
     prefix_file = input_path("data_example_prefix_map.yaml")
     result = cli_runner.invoke(
-        cli, ["-s", schema, data_in, "-t", "rdf", "-o", rdf_out, "--prefix-file", prefix_file], catch_exceptions=True
+        cli,
+        [
+            "-s",
+            schema,
+            data_in,
+            "-t",
+            "rdf",
+            "-o",
+            rdf_out,
+            "--prefix-file",
+            prefix_file,
+        ],
+        catch_exceptions=True,
     )
     assert result.exit_code == 0
     rdf_graph = Graph()
     rdf_graph.parse(rdf_out, format="turtle")
-    namespaces = {str(prefix): str(namespace) for prefix, namespace in rdf_graph.namespaces()}
+    namespaces = {
+        str(prefix): str(namespace) for prefix, namespace in rdf_graph.namespaces()
+    }
     assert "P" in namespaces
     assert namespaces["P"] == "http://www.example.com/personinfo/"
 

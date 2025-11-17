@@ -37,10 +37,16 @@ def test_markdowngen(kitchen_sink_path, tmp_path):
     )
 
     assert_mdfile_contains(tmp_path / "Person.md", "has medical history", after="Own")
-    assert_mdfile_contains(tmp_path / "Person.md", "aliases", after="Mixed in from HasAliases")
+    assert_mdfile_contains(
+        tmp_path / "Person.md", "aliases", after="Mixed in from HasAliases"
+    )
 
-    assert_mdfile_contains(tmp_path / "has_medical_history.md", "MedicalEvent", after="Domain and Range")
-    assert_mdfile_contains(tmp_path / "has_medical_history.md", "subset B", after="Other properties")
+    assert_mdfile_contains(
+        tmp_path / "has_medical_history.md", "MedicalEvent", after="Domain and Range"
+    )
+    assert_mdfile_contains(
+        tmp_path / "has_medical_history.md", "subset B", after="Other properties"
+    )
 
 
 def test_slot_name_mapping(kitchen_sink_path, tmp_path):
@@ -71,7 +77,9 @@ def test_markdowngen_deprecation(kitchen_sink_path):
     # Skip test in development environment with version 0.0.0
     ver = SemVer.from_package("linkml")
     if ver.major == 0 and ver.minor == 0 and ver.patch == 0:
-        pytest.skip("Deprecation warnings not tested in development environment (version 0.0.0)")
+        pytest.skip(
+            "Deprecation warnings not tested in development environment (version 0.0.0)"
+        )
 
     # clear any previously emitted warnings for this test
     if "gen-markdown" in EMITTED:

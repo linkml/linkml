@@ -29,7 +29,9 @@ def test_required_slots():
     description = SlotDefinition(name="description", multivalued=False, range="string")
     sb.add_class("Person", slots=[id, description])
     schema = sb.schema
-    tss = TypescriptGenerator(schema, gen_type_utils=True, mergeimports=True).serialize()
+    tss = TypescriptGenerator(
+        schema, gen_type_utils=True, mergeimports=True
+    ).serialize()
     assert "id: string" in tss
     assert "'id' in o" in tss
     assert "description?: string" in tss
@@ -48,10 +50,14 @@ def test_mutlivalued_string():
     sb = SchemaBuilder("test")
     sb.add_defaults()
     aliases = SlotDefinition(name="aliases", multivalued=True, range="string")
-    descriptions = SlotDefinition(name="descriptions", multivalued=True, range="string", required=True)
+    descriptions = SlotDefinition(
+        name="descriptions", multivalued=True, range="string", required=True
+    )
     sb.add_class("Person", slots=[aliases, descriptions])
     schema = sb.schema
-    tss = TypescriptGenerator(schema, gen_type_utils=True, mergeimports=True).serialize()
+    tss = TypescriptGenerator(
+        schema, gen_type_utils=True, mergeimports=True
+    ).serialize()
     assert "aliases?: string[]" in tss
     assert "descriptions: string[]" in tss
     assert "'descriptions' in o" in tss
@@ -90,7 +96,10 @@ enums:
     assert enum
     assert enum["values"]["number_123"]["value"] == "123"
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
-    assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
+    assert (
+        enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"]
+        == "This & that, plus maybe a 🎩"
+    )
     assert enum["values"]["Ohio"]["value"] == "Ohio"
 
 
@@ -116,6 +125,8 @@ def test_cli_no_print_with_output(kitchen_sink_path, tmp_path):
 
     runner = CliRunner()
     with patch("builtins.print") as mock_print:
-        result = runner.invoke(cli, [kitchen_sink_path, "--output", tmp_path / "kitchen_sink.ts"])
+        result = runner.invoke(
+            cli, [kitchen_sink_path, "--output", tmp_path / "kitchen_sink.ts"]
+        )
         assert result.exit_code == 0
         mock_print.assert_not_called()

@@ -42,14 +42,19 @@ class Container(YAMLRoot):
     class_name: ClassVar[str] = "container"
     class_model_uri: ClassVar[URIRef] = SCT.Container
 
-    entry: Optional[Union[dict[Union[str, ContaineeId], Union[dict, "Containee"]], list[Union[dict, "Containee"]]]] = (
-        empty_dict()
-    )
+    entry: Optional[
+        Union[
+            dict[Union[str, ContaineeId], Union[dict, "Containee"]],
+            list[Union[dict, "Containee"]],
+        ]
+    ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.entry, (list, dict, JsonObj)):
             self.entry = [self.entry]
-        self._normalize_inlined_as_dict(slot_name="entry", slot_type=Containee, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="entry", slot_type=Containee, key_name="id", keyed=True
+        )
 
         super().__post_init__(**kwargs)
 
@@ -92,11 +97,21 @@ slots.container__entry = Slot(
     curie=SCT.curie("entry"),
     model_uri=SCT.container__entry,
     domain=None,
-    range=Optional[Union[dict[Union[str, ContaineeId], Union[dict, Containee]], list[Union[dict, Containee]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, ContaineeId], Union[dict, Containee]],
+            list[Union[dict, Containee]],
+        ]
+    ],
 )
 
 slots.containee__id = Slot(
-    uri=SCT.id, name="containee__id", curie=SCT.curie("id"), model_uri=SCT.containee__id, domain=None, range=URIRef
+    uri=SCT.id,
+    name="containee__id",
+    curie=SCT.curie("id"),
+    model_uri=SCT.containee__id,
+    domain=None,
+    range=URIRef,
 )
 
 slots.containee__value = Slot(

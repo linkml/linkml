@@ -43,7 +43,11 @@ def print_triples(g: Graph) -> None:
     print(g_text)
 
 
-def compare_rdf(expected: Union[Graph, str], actual: Union[Graph, str], fmt: Optional[str] = "turtle") -> Optional[str]:
+def compare_rdf(
+    expected: Union[Graph, str],
+    actual: Union[Graph, str],
+    fmt: Optional[str] = "turtle",
+) -> Optional[str]:
     """
     Compare expected to actual, returning a string if there is a difference
     :param expected: expected RDF. Can be Graph, file name, uri or text

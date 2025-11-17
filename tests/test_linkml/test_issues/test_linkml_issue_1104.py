@@ -58,7 +58,9 @@ def test_dump_json(paths):
 
 
 def test_prepare_dump_sqlite(paths):
-    endpoint = SQLStore(paths.SCHEMA, database_path=paths.DB, include_schema_in_database=False)
+    endpoint = SQLStore(
+        paths.SCHEMA, database_path=paths.DB, include_schema_in_database=False
+    )
     endpoint.native_module = tests.test_issues.model.issue_1104_classes
     endpoint.db_exists(force=True)
     endpoint.compile()
@@ -67,7 +69,9 @@ def test_prepare_dump_sqlite(paths):
 
 
 def test_do_dump_sqlite(paths):
-    endpoint = SQLStore(paths.SCHEMA, database_path=paths.DB, include_schema_in_database=False)
+    endpoint = SQLStore(
+        paths.SCHEMA, database_path=paths.DB, include_schema_in_database=False
+    )
     endpoint.native_module = tests.test_issues.model.issue_1104_classes
     endpoint.db_exists(force=True)
     endpoint.compile()

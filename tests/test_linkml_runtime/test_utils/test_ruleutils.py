@@ -23,7 +23,10 @@ def test_disjunction_analyte_slot(rules_schema):
 @pytest.mark.parametrize(
     "slot_name,expected_disjunction",
     [
-        ("vital_status", {"MissingValueEnum", "VitalStatusEnum"}),  # any_of with two enums
+        (
+            "vital_status",
+            {"MissingValueEnum", "VitalStatusEnum"},
+        ),  # any_of with two enums
         ("primary_address", {"Address"}),  # explicit range to class
         ("age", {"int"}),  # int range
         ("encodes", {"SeqFeature"}),  # class range

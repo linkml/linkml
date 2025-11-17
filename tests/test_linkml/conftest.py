@@ -18,7 +18,9 @@ import tests
 from test_linkml.utils.compare_rdf import compare_rdf
 from test_linkml.utils.dirutils import are_dir_trees_equal
 
-KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "kitchen_sink.yaml")
+KITCHEN_SINK_PATH = str(
+    Path(__file__).parent / "test_generators" / "input" / "kitchen_sink.yaml"
+)
 
 # avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
@@ -63,7 +65,9 @@ class Snapshot(ABC):
 
 
 class SnapshotFile(Snapshot):
-    def __init__(self, path: Path, config: pytest.Config, *, rdf_format: Optional[str] = None) -> None:
+    def __init__(
+        self, path: Path, config: pytest.Config, *, rdf_format: Optional[str] = None
+    ) -> None:
         super().__init__(path, config)
         self.rdf_format: Optional[bool] = rdf_format
 
@@ -99,7 +103,9 @@ class SnapshotFile(Snapshot):
             raise TypeError(f"cannot compare snapshot to {other}")
 
         if self.rdf_format or self.path.suffix in (".ttl", ".owl", ".n3"):
-            self.eq_state = compare_rdf(expected, actual, fmt=self.rdf_format if self.rdf_format else "turtle")
+            self.eq_state = compare_rdf(
+                expected, actual, fmt=self.rdf_format if self.rdf_format else "turtle"
+            )
             return self.eq_state is None
         else:
             is_eq = normalize_line_endings(actual) == expected
@@ -107,7 +113,12 @@ class SnapshotFile(Snapshot):
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
                 self.eq_state = "\n".join(
-                    _diff_text(actual, expected, _no_highlighting, getattr(self.config.option, "verbose", 0))
+                    _diff_text(
+                        actual,
+                        expected,
+                        _no_highlighting,
+                        getattr(self.config.option, "verbose", 0),
+                    )
                 )
             return is_eq
 
@@ -144,7 +155,9 @@ def snapshot_path(request) -> Callable[[Union[str, Path]], Path]:
 
 
 @pytest.fixture
-def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, Path]], Snapshot]:
+def snapshot(
+    snapshot_path, pytestconfig, monkeypatch
+) -> Callable[[Union[str, Path]], Snapshot]:
     # Patching SchemaDefinition's setter here prevents metadata that can be variable
     # between systems from entering the snapshot files. This could be part of its own
     # fixture but it's not clear if it would be useful outside of tests that
@@ -228,14 +241,18 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
 
     # numpydantic only supported python>=3.9
     if sys.version_info.minor < 9 or version("pydantic").startswith("1"):
-        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2")
+        skip_npd = pytest.mark.skip(
+            reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2"
+        )
         for item in items:
             if item.get_closest_marker("pydanticgen_npd"):
                 item.add_marker(skip_npd)
 
     # skip docker tests when docker server not present on the system
     if not _docker_server_running():
-        skip_docker = pytest.mark.skip(reason="Docker server not running on host machine")
+        skip_docker = pytest.mark.skip(
+            reason="Docker server not running on host machine"
+        )
         for item in items:
             if item.get_closest_marker("docker"):
                 item.add_marker(skip_docker)

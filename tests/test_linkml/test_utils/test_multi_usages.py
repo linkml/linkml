@@ -38,7 +38,9 @@ def test_multi_usages(input_path, snapshot):
     """Slot usage chain without starting alias"""
     schema = SchemaLoader(input_path("multi_usages.yaml")).resolve()
     _eval_expected(schema, "s1", None, "root_class", None, None, "string")
-    _eval_expected(schema, "child_class1_s1", "s1", "child_class1", "s1", "s1", "boolean")
+    _eval_expected(
+        schema, "child_class1_s1", "s1", "child_class1", "s1", "s1", "boolean"
+    )
     _eval_expected(
         schema,
         "child_class2_s1",
@@ -64,7 +66,9 @@ def test_multi_usages_2(input_path, snapshot):
     """Slot usage chain with starting alias"""
     schema = SchemaLoader(input_path("multi_usages_2.yaml")).resolve()
     _eval_expected(schema, "s1", "value", "root_class", None, None, "string")
-    _eval_expected(schema, "child_class1_s1", "value", "child_class1", "s1", "s1", "boolean")
+    _eval_expected(
+        schema, "child_class1_s1", "value", "child_class1", "s1", "s1", "boolean"
+    )
     _eval_expected(
         schema,
         "child_class2_s1",
@@ -88,6 +92,8 @@ def test_multi_usages_2(input_path, snapshot):
 
 def test_multi_usages_3(input_path):
     """Illegal alias usage"""
-    expected_message = 'Class: "child_class1" - alias not permitted in slot_usage slot: foo'
+    expected_message = (
+        'Class: "child_class1" - alias not permitted in slot_usage slot: foo'
+    )
     with pytest.raises(ValueError, match=expected_message):
         SchemaLoader(input_path("multi_usages_3.yaml")).resolve()

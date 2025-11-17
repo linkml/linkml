@@ -4,9 +4,18 @@ import yaml
 
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.utils.formatutils import remove_empty_items
-from test_linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
-from test_linkml_runtime.test_loaders_dumpers.models.books_normalized_pydantic import Author, Book, BookSeries
-from test_linkml_runtime.test_loaders_dumpers.models.kitchen_sink_pydantic import BirthEvent, Person
+from test_linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import (
+    LoaderDumperTestCase,
+)
+from test_linkml_runtime.test_loaders_dumpers.models.books_normalized_pydantic import (
+    Author,
+    Book,
+    BookSeries,
+)
+from test_linkml_runtime.test_loaders_dumpers.models.kitchen_sink_pydantic import (
+    BirthEvent,
+    Person,
+)
 
 
 class PydanticDumpersTestCase(LoaderDumperTestCase):
@@ -16,18 +25,36 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
     def setUpClass(cls) -> None:
         """Generate a small sample Books instance for testing purposes"""
         LoaderDumperTestCase.setUpClass()
-        b1 = Book(name="Fellowship of the Ring", id="S001.1", price="5.99", summary="Hobbits")
-        b2 = Book(name="The Two Towers", id="S001.2", price="5.99", summary="More hobbits")
-        b3 = Book(name="Return of the King", id="S001.3", price="6.99", summary="Yet more hobbits")
+        b1 = Book(
+            name="Fellowship of the Ring", id="S001.1", price="5.99", summary="Hobbits"
+        )
+        b2 = Book(
+            name="The Two Towers", id="S001.2", price="5.99", summary="More hobbits"
+        )
+        b3 = Book(
+            name="Return of the King",
+            id="S001.3",
+            price="6.99",
+            summary="Yet more hobbits",
+        )
         jrr = Author(name="JRR Tolkien", from_country="England")
         cls.bookseries = BookSeries(
-            name="Lord of the Rings", id="S001", genres=["fantasy"], creator=jrr, books=[b1, b2, b3]
+            name="Lord of the Rings",
+            id="S001",
+            genres=["fantasy"],
+            creator=jrr,
+            books=[b1, b2, b3],
         )
 
     def test_yaml_dumper(self):
         """Test the yaml emitter"""
-        self.dump_test("book_series_lotr.yaml", lambda out_fname: yaml_dumper.dump(self.bookseries, out_fname))
-        self.dumps_test("book_series_lotr.yaml", lambda: yaml_dumper.dumps(self.bookseries))
+        self.dump_test(
+            "book_series_lotr.yaml",
+            lambda out_fname: yaml_dumper.dump(self.bookseries, out_fname),
+        )
+        self.dumps_test(
+            "book_series_lotr.yaml", lambda: yaml_dumper.dumps(self.bookseries)
+        )
 
         # test contents of yaml file with cleaned dict made from bookseries instance in setup
         with open(self.env.input_path("book_series_lotr.yaml")) as f:
@@ -41,8 +68,13 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
 
     def test_json_dumper(self):
         """Test the json emitter"""
-        self.dump_test("book_series_lotr.json", lambda out_fname: json_dumper.dump(self.bookseries, out_fname))
-        self.dumps_test("book_series_lotr.json", lambda: json_dumper.dumps(self.bookseries))
+        self.dump_test(
+            "book_series_lotr.json",
+            lambda out_fname: json_dumper.dump(self.bookseries, out_fname),
+        )
+        self.dumps_test(
+            "book_series_lotr.json", lambda: json_dumper.dumps(self.bookseries)
+        )
 
         # test contents of json file with cleaned dict made from bookseries instance in setup
         with open(self.env.input_path("book_series_lotr.json")) as f:
@@ -55,12 +87,16 @@ class PydanticDumpersTestCase(LoaderDumperTestCase):
             self.assertEqual(data, remove_empty_items(self.bookseries.model_dump()))
 
         # test @type is added to the top level and is assigned correct type when inject_type is True
-        bookseries_with_type = json.loads(json_dumper.dumps(self.bookseries, inject_type=True))
+        bookseries_with_type = json.loads(
+            json_dumper.dumps(self.bookseries, inject_type=True)
+        )
         self.assertIn("@type", bookseries_with_type)
         self.assertEqual("BookSeries", bookseries_with_type.get("@type"))
 
         # test @type is not added to the top level when inject_type is False
-        bookseries_without_type = json.loads(json_dumper.dumps(self.bookseries, inject_type=False))
+        bookseries_without_type = json.loads(
+            json_dumper.dumps(self.bookseries, inject_type=False)
+        )
         self.assertNotIn("@type", bookseries_without_type)
         self.assertEqual(None, bookseries_without_type.get("@type"))
 
@@ -83,10 +119,20 @@ class PydanticDumpersDateTestCase(LoaderDumperTestCase):
         #     # write the json file
         #     f.write(json_dumper.dumps(self.person, inject_type=False))
 
-        self.dump_test("kitchen_sink_person_01.yaml", lambda out_fname: yaml_dumper.dump(self.person, out_fname))
-        self.dumps_test("kitchen_sink_person_01.yaml", lambda: yaml_dumper.dumps(self.person))
+        self.dump_test(
+            "kitchen_sink_person_01.yaml",
+            lambda out_fname: yaml_dumper.dump(self.person, out_fname),
+        )
+        self.dumps_test(
+            "kitchen_sink_person_01.yaml", lambda: yaml_dumper.dumps(self.person)
+        )
 
     def test_json_dumper(self):
         """Test the json emitter"""
-        self.dump_test("kitchen_sink_person_01.json", lambda out_fname: json_dumper.dump(self.person, out_fname))
-        self.dumps_test("kitchen_sink_person_01.json", lambda: json_dumper.dumps(self.person))
+        self.dump_test(
+            "kitchen_sink_person_01.json",
+            lambda out_fname: json_dumper.dump(self.person, out_fname),
+        )
+        self.dumps_test(
+            "kitchen_sink_person_01.json", lambda: json_dumper.dumps(self.person)
+        )

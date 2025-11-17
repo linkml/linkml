@@ -16,6 +16,8 @@ def test_rdflib_string_handling():
 
     Eg. :class:`rdflib.Namespace` inherits from ``str`` , but overrides the ``contains`` method
     """
-    generated = ContextGenerator(LOCAL_TYPES_YAML_FILE).serialize(base=METAMODEL_NAMESPACE)
+    generated = ContextGenerator(LOCAL_TYPES_YAML_FILE).serialize(
+        base=METAMODEL_NAMESPACE
+    )
     assert not re.search(r"http:/[^/]", generated)
     assert not re.search(r"https:/[^/]", generated)

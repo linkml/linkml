@@ -1,5 +1,9 @@
 import linkml_runtime.utils.yamlutils as yutils
-from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName, SlotDefinition
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ElementName,
+    SlotDefinition,
+)
 from linkml_runtime.utils.dictutils import as_simple_dict
 
 
@@ -16,7 +20,9 @@ def _signature(d):
 
 def _is_python_type(obj):
     t = type(obj)
-    return t in [dict, list, str, int, float, type(None)] or isinstance(obj, ElementName)
+    return t in [dict, list, str, int, float, type(None)] or isinstance(
+        obj, ElementName
+    )
 
 
 def _is_basic_type(obj):
@@ -25,7 +31,9 @@ def _is_basic_type(obj):
 
 def test_as_dict():
     obj = ClassDefinition("test class")
-    obj2 = ClassDefinition("test class", slot_usage={"foo": SlotDefinition(name="foo", range="bar")})
+    obj2 = ClassDefinition(
+        "test class", slot_usage={"foo": SlotDefinition(name="foo", range="bar")}
+    )
     # obj2.slot_usage = {'foo': SlotDefinition(name='foo', range='bar')}
 
     # as dict preserves nones and empty lists
@@ -54,7 +62,10 @@ def test_as_dict():
     d2 = as_simple_dict(obj2)
     print(d2)
     assert isinstance(d2, dict)
-    assert d2 == {"name": "test class", "slot_usage": {"foo": {"name": "foo", "range": "bar"}}}
+    assert d2 == {
+        "name": "test class",
+        "slot_usage": {"foo": {"name": "foo", "range": "bar"}},
+    }
 
     s = yutils.as_yaml(obj)
     print(s)

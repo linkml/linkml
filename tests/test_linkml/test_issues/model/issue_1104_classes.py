@@ -84,9 +84,13 @@ class NamedThing(YAMLRoot):
 
         if not isinstance(self.alternative_identifiers, list):
             self.alternative_identifiers = (
-                [self.alternative_identifiers] if self.alternative_identifiers is not None else []
+                [self.alternative_identifiers]
+                if self.alternative_identifiers is not None
+                else []
             )
-        self.alternative_identifiers = [v if isinstance(v, str) else str(v) for v in self.alternative_identifiers]
+        self.alternative_identifiers = [
+            v if isinstance(v, str) else str(v) for v in self.alternative_identifiers
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -124,10 +128,14 @@ class Agent(YAMLRoot):
     was_informed_by: Optional[Union[str, ActivityId]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.acted_on_behalf_of is not None and not isinstance(self.acted_on_behalf_of, Agent):
+        if self.acted_on_behalf_of is not None and not isinstance(
+            self.acted_on_behalf_of, Agent
+        ):
             self.acted_on_behalf_of = Agent(**as_dict(self.acted_on_behalf_of))
 
-        if self.was_informed_by is not None and not isinstance(self.was_informed_by, ActivityId):
+        if self.was_informed_by is not None and not isinstance(
+            self.was_informed_by, ActivityId
+        ):
             self.was_informed_by = ActivityId(self.was_informed_by)
 
         super().__post_init__(**kwargs)
@@ -157,10 +165,14 @@ class Activity(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if self.was_informed_by is not None and not isinstance(self.was_informed_by, ActivityId):
+        if self.was_informed_by is not None and not isinstance(
+            self.was_informed_by, ActivityId
+        ):
             self.was_informed_by = ActivityId(self.was_informed_by)
 
-        if self.was_associated_with is not None and not isinstance(self.was_associated_with, Agent):
+        if self.was_associated_with is not None and not isinstance(
+            self.was_associated_with, Agent
+        ):
             self.was_associated_with = Agent(**as_dict(self.was_associated_with))
 
         if self.used is not None and not isinstance(self.used, str):
@@ -184,7 +196,9 @@ class WorkflowExecutionActivity(Activity):
     has_output: Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]] = None
     was_informed_by: Union[str, ActivityId] = None
     raw_type: Optional[str] = None
-    part_of: Optional[Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]]] = empty_list()
+    part_of: Optional[
+        Union[Union[str, NamedThingId], list[Union[str, NamedThingId]]]
+    ] = empty_list()
     type: Optional[str] = None
     was_associated_with: Optional[Union[str, WorkflowExecutionActivityId]] = None
 
@@ -203,13 +217,19 @@ class WorkflowExecutionActivity(Activity):
             self.MissingRequiredField("has_input")
         if not isinstance(self.has_input, list):
             self.has_input = [self.has_input] if self.has_input is not None else []
-        self.has_input = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_input]
+        self.has_input = [
+            v if isinstance(v, NamedThingId) else NamedThingId(v)
+            for v in self.has_input
+        ]
 
         if self._is_empty(self.has_output):
             self.MissingRequiredField("has_output")
         if not isinstance(self.has_output, list):
             self.has_output = [self.has_output] if self.has_output is not None else []
-        self.has_output = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.has_output]
+        self.has_output = [
+            v if isinstance(v, NamedThingId) else NamedThingId(v)
+            for v in self.has_output
+        ]
 
         if self._is_empty(self.was_informed_by):
             self.MissingRequiredField("was_informed_by")
@@ -221,7 +241,9 @@ class WorkflowExecutionActivity(Activity):
 
         if not isinstance(self.part_of, list):
             self.part_of = [self.part_of] if self.part_of is not None else []
-        self.part_of = [v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.part_of]
+        self.part_of = [
+            v if isinstance(v, NamedThingId) else NamedThingId(v) for v in self.part_of
+        ]
 
         if self.type is not None and not isinstance(self.type, str):
             self.type = str(self.type)
@@ -229,7 +251,9 @@ class WorkflowExecutionActivity(Activity):
         if self.was_associated_with is not None and not isinstance(
             self.was_associated_with, WorkflowExecutionActivityId
         ):
-            self.was_associated_with = WorkflowExecutionActivityId(self.was_associated_with)
+            self.was_associated_with = WorkflowExecutionActivityId(
+                self.was_associated_with
+            )
 
         super().__post_init__(**kwargs)
 
@@ -256,7 +280,9 @@ class MetatranscriptomeAssembly(WorkflowExecutionActivity):
         if not isinstance(self.id, MetatranscriptomeAssemblyId):
             self.id = MetatranscriptomeAssemblyId(self.id)
 
-        if self.insdc_assembly_identifiers is not None and not isinstance(self.insdc_assembly_identifiers, str):
+        if self.insdc_assembly_identifiers is not None and not isinstance(
+            self.insdc_assembly_identifiers, str
+        ):
             self.insdc_assembly_identifiers = str(self.insdc_assembly_identifiers)
 
         super().__post_init__(**kwargs)
@@ -301,13 +327,19 @@ class Database(YAMLRoot):
 
     activity_set: Optional[
         Union[
-            dict[Union[str, WorkflowExecutionActivityId], Union[dict, WorkflowExecutionActivity]],
+            dict[
+                Union[str, WorkflowExecutionActivityId],
+                Union[dict, WorkflowExecutionActivity],
+            ],
             list[Union[dict, WorkflowExecutionActivity]],
         ]
     ] = empty_dict()
     metatranscriptome_activity_set: Optional[
         Union[
-            dict[Union[str, MetatranscriptomeActivityId], Union[dict, MetatranscriptomeActivity]],
+            dict[
+                Union[str, MetatranscriptomeActivityId],
+                Union[dict, MetatranscriptomeActivity],
+            ],
             list[Union[dict, MetatranscriptomeActivity]],
         ]
     ] = empty_dict()
@@ -320,7 +352,10 @@ class Database(YAMLRoot):
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_list(
-            slot_name="activity_set", slot_type=WorkflowExecutionActivity, key_name="id", keyed=True
+            slot_name="activity_set",
+            slot_type=WorkflowExecutionActivity,
+            key_name="id",
+            keyed=True,
         )
 
         self._normalize_inlined_as_list(
@@ -331,7 +366,10 @@ class Database(YAMLRoot):
         )
 
         self._normalize_inlined_as_list(
-            slot_name="concrete_thing_set", slot_type=ConcreteThing, key_name="id", keyed=True
+            slot_name="concrete_thing_set",
+            slot_type=ConcreteThing,
+            key_name="id",
+            keyed=True,
         )
 
         super().__post_init__(**kwargs)
@@ -421,7 +459,10 @@ slots.activity_set = Slot(
     domain=Database,
     range=Optional[
         Union[
-            dict[Union[str, WorkflowExecutionActivityId], Union[dict, WorkflowExecutionActivity]],
+            dict[
+                Union[str, WorkflowExecutionActivityId],
+                Union[dict, WorkflowExecutionActivity],
+            ],
             list[Union[dict, WorkflowExecutionActivity]],
         ]
     ],
@@ -435,13 +476,23 @@ slots.metatranscriptome_activity_set = Slot(
     domain=Database,
     range=Optional[
         Union[
-            dict[Union[str, MetatranscriptomeActivityId], Union[dict, MetatranscriptomeActivity]],
+            dict[
+                Union[str, MetatranscriptomeActivityId],
+                Union[dict, MetatranscriptomeActivity],
+            ],
             list[Union[dict, MetatranscriptomeActivity]],
         ]
     ],
 )
 
-slots.id = Slot(uri=NMDC.id, name="id", curie=NMDC.curie("id"), model_uri=NMDC.id, domain=None, range=URIRef)
+slots.id = Slot(
+    uri=NMDC.id,
+    name="id",
+    curie=NMDC.curie("id"),
+    model_uri=NMDC.id,
+    domain=None,
+    range=URIRef,
+)
 
 slots.name = Slot(
     uri=NMDC.name,

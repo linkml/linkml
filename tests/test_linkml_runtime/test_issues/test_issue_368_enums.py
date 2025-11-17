@@ -30,4 +30,9 @@ def test_issue_368_enums() -> None:
 
     dump_and_load(json_dumper.dump, "json")
     dump_and_load(yaml_dumper.dump, "yaml")
-    dump_and_load(lambda obj, fname: rdf_dumper.dump(obj, fname, env.input_path("issue_368.context.jsonld")), "ttl")
+    dump_and_load(
+        lambda obj, fname: rdf_dumper.dump(
+            obj, fname, env.input_path("issue_368.context.jsonld")
+        ),
+        "ttl",
+    )

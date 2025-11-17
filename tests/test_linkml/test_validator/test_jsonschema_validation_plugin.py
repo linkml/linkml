@@ -2,7 +2,11 @@ import json
 from pathlib import Path
 
 import pytest
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model import (
+    ClassDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 from linkml_runtime.loaders import yaml_loader
 
 from linkml.validator.loaders import default_loader_for_file
@@ -111,7 +115,9 @@ def test_null_for_optional_slots(input_path, closed):
     data_loader = default_loader_for_file(data)
 
     # borrow the schema from the generator tests
-    schema_file = str(Path(__file__).parents[1] / "test_generators" / "input" / "not_required.yaml")
+    schema_file = str(
+        Path(__file__).parents[1] / "test_generators" / "input" / "not_required.yaml"
+    )
     schema = yaml_loader.load(schema_file, SchemaDefinition)
     ctx = ValidationContext(schema, "Optionals")
 

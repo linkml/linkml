@@ -135,7 +135,11 @@ def test_get_identifier_get_key_slot(
     sv = SchemaView(identifier_key_schema)
     test_class_slots = sv.class_slots("TestClass")
     # ensure that the correct slots are in the schema
-    assert set(test_class_slots) == {"slot_a", "slot_b", *[s for s in [*all_id_slots, *all_key_slots] if s]}
+    assert set(test_class_slots) == {
+        "slot_a",
+        "slot_b",
+        *[s for s in [*all_id_slots, *all_key_slots] if s],
+    }
 
     # Collect the expected slots to be returned by `get_***_slot` for identifiers and keys.
     # Note that id_slot_false and key_slot_false have `identifier` and `key` set to `false`,

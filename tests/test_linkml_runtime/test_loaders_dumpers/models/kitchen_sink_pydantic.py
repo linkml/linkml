@@ -71,7 +71,9 @@ class Person(HasAliases):
     has_employment_history: Optional[list[EmploymentEvent]] = Field(None)
     has_familial_relationships: Optional[list[FamilialRelationship]] = Field(None)
     has_medical_history: Optional[list[MedicalEvent]] = Field(None)
-    age_in_years: Optional[int] = Field(None, description="""number of years since birth""", ge=0, le=999)
+    age_in_years: Optional[int] = Field(
+        None, description="""number of years since birth""", ge=0, le=999
+    )
     addresses: Optional[list[Address]] = Field(default_factory=list)
     has_birth_event: Optional[BirthEvent] = Field(None)
     species_name: Optional[str] = Field(None)
@@ -132,7 +134,9 @@ class Event(ConfiguredBaseModel):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    metadata: Optional[Any] = Field(
+        None, description="""Example of a slot that has an unconstrained range"""
+    )
 
 
 class Relationship(ConfiguredBaseModel):
@@ -154,7 +158,9 @@ class BirthEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    metadata: Optional[Any] = Field(
+        None, description="""Example of a slot that has an unconstrained range"""
+    )
 
 
 class EmploymentEvent(Event):
@@ -163,7 +169,9 @@ class EmploymentEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    metadata: Optional[Any] = Field(
+        None, description="""Example of a slot that has an unconstrained range"""
+    )
 
 
 class MedicalEvent(Event):
@@ -173,7 +181,9 @@ class MedicalEvent(Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    metadata: Optional[Any] = Field(
+        None, description="""Example of a slot that has an unconstrained range"""
+    )
 
 
 class WithLocation(ConfiguredBaseModel):
@@ -186,7 +196,9 @@ class MarriageEvent(WithLocation, Event):
     started_at_time: Optional[date] = Field(None)
     ended_at_time: Optional[date] = Field(None)
     is_current: Optional[bool] = Field(None)
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    metadata: Optional[Any] = Field(
+        None, description="""Example of a slot that has an unconstrained range"""
+    )
 
 
 class Company(Organization):
@@ -202,7 +214,9 @@ class CodeSystem(ConfiguredBaseModel):
 
 
 class Dataset(ConfiguredBaseModel):
-    metadata: Optional[Any] = Field(None, description="""Example of a slot that has an unconstrained range""")
+    metadata: Optional[Any] = Field(
+        None, description="""Example of a slot that has an unconstrained range"""
+    )
     persons: Optional[list[Person]] = Field(default_factory=list)
     companies: Optional[list[Company]] = Field(default_factory=list)
     activities: Optional[list[Activity]] = Field(default_factory=list)

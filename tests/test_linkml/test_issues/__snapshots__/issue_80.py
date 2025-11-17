@@ -6,71 +6,29 @@
 # description: Example identifier
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
-from linkml_runtime.linkml_model.types import Integer, Objectidentifier, String
 from linkml_runtime.utils.metamodelcore import ElementIdentifier
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-BIOLINK = CurieNamespace('biolink', 'https://w3id.org/biolink/vocab/')
-EX = CurieNamespace('ex', 'http://example.org/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-MODEL = CurieNamespace('model', 'https://w3id.org/biolink/')
+BIOLINK = CurieNamespace("biolink", "https://w3id.org/biolink/vocab/")
+EX = CurieNamespace("ex", "http://example.org/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+MODEL = CurieNamespace("model", "https://w3id.org/biolink/")
 DEFAULT_ = BIOLINK
 
 
 # Types
+
 
 # Class references
 class PersonId(ElementIdentifier):
@@ -82,6 +40,7 @@ class Person(YAMLRoot):
     """
     A person, living or dead
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["PERSON"]
@@ -117,11 +76,30 @@ class Person(YAMLRoot):
 class slots:
     pass
 
-slots.id = Slot(uri=BIOLINK.id, name="id", curie=BIOLINK.curie('id'),
-                   model_uri=BIOLINK.id, domain=None, range=URIRef)
 
-slots.name = Slot(uri=BIOLINK.name, name="name", curie=BIOLINK.curie('name'),
-                   model_uri=BIOLINK.name, domain=None, range=str)
+slots.id = Slot(
+    uri=BIOLINK.id,
+    name="id",
+    curie=BIOLINK.curie("id"),
+    model_uri=BIOLINK.id,
+    domain=None,
+    range=URIRef,
+)
 
-slots.age = Slot(uri=BIOLINK.age, name="age", curie=BIOLINK.curie('age'),
-                   model_uri=BIOLINK.age, domain=None, range=Optional[int])
+slots.name = Slot(
+    uri=BIOLINK.name,
+    name="name",
+    curie=BIOLINK.curie("name"),
+    model_uri=BIOLINK.name,
+    domain=None,
+    range=str,
+)
+
+slots.age = Slot(
+    uri=BIOLINK.age,
+    name="age",
+    curie=BIOLINK.curie("age"),
+    model_uri=BIOLINK.age,
+    domain=None,
+    range=Optional[int],
+)

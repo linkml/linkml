@@ -1,6 +1,10 @@
 from linkml_runtime import SchemaView
 
-from linkml.linter.config.datamodel.config import NoEmptyTitleConfig, RuleConfig, RuleLevel
+from linkml.linter.config.datamodel.config import (
+    NoEmptyTitleConfig,
+    RuleConfig,
+    RuleLevel,
+)
 from linkml.linter.rules import NoEmptyTitleRule
 from linkml.utils.schema_builder import SchemaBuilder
 

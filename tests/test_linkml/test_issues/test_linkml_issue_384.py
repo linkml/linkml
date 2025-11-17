@@ -33,7 +33,9 @@ def _test_other(name: str, input_path, snapshot) -> None:
     assert output == snapshot(f"{name}.py")
 
 
-def _test_owl(name: str, input_path, snapshot, metaclasses=False, type_objects=False) -> Graph:
+def _test_owl(
+    name: str, input_path, snapshot, metaclasses=False, type_objects=False
+) -> Graph:
     infile = input_path(f"{name}.yaml")
     outpath = f"{name}-{metaclasses}-{type_objects}.owl"
 
@@ -51,7 +53,9 @@ def _test_owl(name: str, input_path, snapshot, metaclasses=False, type_objects=F
     return g
 
 
-def _contains_restriction(g: Graph, c: URIRef, prop: URIRef, pred: URIRef, filler: URIRef) -> bool:
+def _contains_restriction(
+    g: Graph, c: URIRef, prop: URIRef, pred: URIRef, filler: URIRef
+) -> bool:
     for r in g.objects(c, RDFS.subClassOf):
         if prop in g.objects(r, OWL.onProperty):
             if filler in g.objects(r, pred):
@@ -88,10 +92,12 @@ def test_issue_owl_properties(input_path, snapshot):
         for p in props:
             assert (p, RDF.type, OWL.ObjectProperty) in g
         assert _contains_restriction(g, Person, parent, OWL.allValuesFrom, Person)
-        assert _contains_restriction(g, Organization, parent, OWL.allValuesFrom, Organization)
-        assert _contains_restriction(g, Person, aliases, OWL.allValuesFrom, string_rep), (
-            f"expected {string_rep} for {conf}"
+        assert _contains_restriction(
+            g, Organization, parent, OWL.allValuesFrom, Organization
         )
+        assert _contains_restriction(
+            g, Person, aliases, OWL.allValuesFrom, string_rep
+        ), f"expected {string_rep} for {conf}"
         # TODO: also validate cardinality restrictions
         # assert self._contains_restriction(g, Thing, full_name, OWL.allValuesFrom, string_rep)
 

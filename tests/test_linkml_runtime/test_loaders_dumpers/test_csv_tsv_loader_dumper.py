@@ -11,8 +11,14 @@ from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import as_json_object
-from test_linkml_runtime.test_loaders_dumpers.models.books_normalized import Author, Review, Shop, Book, GenreEnum, BookSeries
-from test_linkml_runtime.test_loaders_dumpers.models.table import Table, Row
+from test_linkml_runtime.test_loaders_dumpers.models.books_normalized import (
+    Author,
+    Review,
+    Shop,
+    Book,
+    BookSeries,
+)
+from test_linkml_runtime.test_loaders_dumpers.models.table import Table
 
 logger = logging.getLogger(__name__)
 
@@ -46,24 +52,37 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
         assert book.genres[0].code.text == "fantasy"
         processed = remove_empty_items(book.genres)
         assert processed[0] == "fantasy"
-        series = BookSeries(id="S1", creator=Author(name="Q. Writer"), reviews=[Review(rating=5)])
+        series = BookSeries(
+            id="S1", creator=Author(name="Q. Writer"), reviews=[Review(rating=5)]
+        )
         series.books.append(book)
         schemaview = SchemaView(SCHEMA)
         shop = Shop()
         shop.all_book_series.append(series)
 
-        csvstr = csv_dumper.dumps(shop, index_slot="all_book_series", schemaview=schemaview)
+        csvstr = csv_dumper.dumps(
+            shop, index_slot="all_book_series", schemaview=schemaview
+        )
         assert "," in csvstr
         assert "\t" not in csvstr
 
-        tsvstr = tsv_dumper.dumps(shop, index_slot="all_book_series", schemaview=schemaview)
+        tsvstr = tsv_dumper.dumps(
+            shop, index_slot="all_book_series", schemaview=schemaview
+        )
         assert "\t" in tsvstr
 
     def test_csvgen_roundtrip(self):
         schemaview = SchemaView(SCHEMA)
         data = yaml_loader.load(DATA, target_class=Shop)
-        csv_dumper.dump(data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview)
-        roundtrip = csv_loader.load(OUTPUT, target_class=Shop, index_slot="all_book_series", schemaview=schemaview)
+        csv_dumper.dump(
+            data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview
+        )
+        roundtrip = csv_loader.load(
+            OUTPUT,
+            target_class=Shop,
+            index_slot="all_book_series",
+            schemaview=schemaview,
+        )
         logger.debug(json_dumper.dumps(roundtrip))
         logger.debug(f"COMPARE 1: {roundtrip}")
         logger.debug(f"COMPARE 2: {data}")
@@ -72,22 +91,37 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
     def test_csvgen_roundtrip_to_dict(self):
         schemaview = SchemaView(SCHEMA)
         data = yaml_loader.load(DATA, target_class=Shop)
-        csv_dumper.dump(data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview)
-        roundtrip = csv_loader.load_as_dict(OUTPUT, index_slot="all_book_series", schemaview=schemaview)
+        csv_dumper.dump(
+            data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview
+        )
+        roundtrip = csv_loader.load_as_dict(
+            OUTPUT, index_slot="all_book_series", schemaview=schemaview
+        )
         assert roundtrip == json_dumper.to_dict(data)
 
     def test_tsvgen_roundtrip(self):
         schemaview = SchemaView(SCHEMA)
         data = yaml_loader.load(DATA, target_class=Shop)
-        tsv_dumper.dump(data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview)
-        roundtrip = tsv_loader.load(OUTPUT, target_class=Shop, index_slot="all_book_series", schemaview=schemaview)
+        tsv_dumper.dump(
+            data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview
+        )
+        roundtrip = tsv_loader.load(
+            OUTPUT,
+            target_class=Shop,
+            index_slot="all_book_series",
+            schemaview=schemaview,
+        )
         assert roundtrip == data
 
     def test_tsvgen_roundtrip_to_dict(self):
         schemaview = SchemaView(SCHEMA)
         data = yaml_loader.load(DATA, target_class=Shop)
-        tsv_dumper.dump(data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview)
-        roundtrip = tsv_loader.load_as_dict(OUTPUT, index_slot="all_book_series", schemaview=schemaview)
+        tsv_dumper.dump(
+            data, to_file=OUTPUT, index_slot="all_book_series", schemaview=schemaview
+        )
+        roundtrip = tsv_loader.load_as_dict(
+            OUTPUT, index_slot="all_book_series", schemaview=schemaview
+        )
         assert roundtrip == json_dumper.to_dict(data)
 
     def test_csvgen_unroundtrippable(self):
@@ -108,16 +142,28 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
         logger.debug(s0)
         logger.debug(json_dumper.dumps(data))
         # logger.debug(csv_dumper.dumps(data, index_slot='all_book_series', schema=schema))
-        csv_dumper.dump(data, to_file=OUTPUT2, index_slot="all_book_series", schemaview=schemaview)
+        csv_dumper.dump(
+            data, to_file=OUTPUT2, index_slot="all_book_series", schemaview=schemaview
+        )
         # assert False
-        roundtrip = csv_loader.load(OUTPUT2, target_class=Shop, index_slot="all_book_series", schemaview=schemaview)
+        roundtrip = csv_loader.load(
+            OUTPUT2,
+            target_class=Shop,
+            index_slot="all_book_series",
+            schemaview=schemaview,
+        )
         logger.debug(json_dumper.dumps(roundtrip))
         assert roundtrip == data
 
     @pytest.mark.skip(reason="json_flattener list bug in unflatten_from_csv()")
     def test_table_model(self):
         schemaview = SchemaView(SCHEMA)
-        table_json = csv_loader.load(TABLE_DATA_JSON, target_class=Table, index_slot="rows", schemaview=schemaview)
+        table_json = csv_loader.load(
+            TABLE_DATA_JSON,
+            target_class=Table,
+            index_slot="rows",
+            schemaview=schemaview,
+        )
         for row in table_json.rows:
             assert len(row["columnB"]) == 2
 
@@ -125,8 +171,15 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
         schemaview = SchemaView(SCHEMA)
         data = yaml_loader.load(DATA2, target_class=Shop)
         assert str(data.all_book_series[0].genres[0]) == "fantasy"
-        tsv_dumper.dump(data, to_file=OUTPUT2, index_slot="all_book_series", schemaview=schemaview)
-        roundtrip = tsv_loader.load(OUTPUT2, target_class=Shop, index_slot="all_book_series", schemaview=schemaview)
+        tsv_dumper.dump(
+            data, to_file=OUTPUT2, index_slot="all_book_series", schemaview=schemaview
+        )
+        roundtrip = tsv_loader.load(
+            OUTPUT2,
+            target_class=Shop,
+            index_slot="all_book_series",
+            schemaview=schemaview,
+        )
         assert roundtrip == data
 
 

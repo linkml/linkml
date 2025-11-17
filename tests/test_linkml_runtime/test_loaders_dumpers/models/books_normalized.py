@@ -58,10 +58,14 @@ class CreativeWork(YAMLRoot):
 
     id: Union[str, CreativeWorkId] = None
     name: Optional[str] = None
-    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = (
+        empty_list()
+    )
     creator: Optional[Union[dict, "Author"]] = None
     summary: Optional[str] = None
-    reviews: Optional[Union[Union[dict, "Review"], list[Union[dict, "Review"]]]] = empty_list()
+    reviews: Optional[Union[Union[dict, "Review"], list[Union[dict, "Review"]]]] = (
+        empty_list()
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
@@ -74,21 +78,27 @@ class CreativeWork(YAMLRoot):
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
+        self.genres = [
+            v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres
+        ]
 
         if self.creator is not None and not isinstance(self.creator, Author):
             self.creator = Author(**as_dict(self.creator))
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
+        self.genres = [
+            v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres
+        ]
 
         if self.summary is not None and not isinstance(self.summary, str):
             self.summary = str(self.summary)
 
         if not isinstance(self.reviews, list):
             self.reviews = [self.reviews] if self.reviews is not None else []
-        self.reviews = [v if isinstance(v, Review) else Review(**as_dict(v)) for v in self.reviews]
+        self.reviews = [
+            v if isinstance(v, Review) else Review(**as_dict(v)) for v in self.reviews
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -131,8 +141,12 @@ class BookSeries(CreativeWork):
     class_model_uri: ClassVar[URIRef] = EXAMPLE.BookSeries
 
     id: Union[str, BookSeriesId] = None
-    books: Optional[Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]] = empty_dict()
-    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = empty_list()
+    books: Optional[
+        Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]
+    ] = empty_dict()
+    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = (
+        empty_list()
+    )
     price: Optional[float] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -141,11 +155,15 @@ class BookSeries(CreativeWork):
         if not isinstance(self.id, BookSeriesId):
             self.id = BookSeriesId(self.id)
 
-        self._normalize_inlined_as_list(slot_name="books", slot_type=Book, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="books", slot_type=Book, key_name="id", keyed=True
+        )
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
+        self.genres = [
+            v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres
+        ]
 
         if self.price is not None and not isinstance(self.price, float):
             self.price = float(self.price)
@@ -163,7 +181,9 @@ class Author(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EXAMPLE.Author
 
     name: Optional[str] = None
-    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = empty_list()
+    genres: Optional[Union[Union[str, "GenreEnum"], list[Union[str, "GenreEnum"]]]] = (
+        empty_list()
+    )
     from_country: Optional[Union[str, CountryName]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -172,9 +192,13 @@ class Author(YAMLRoot):
 
         if not isinstance(self.genres, list):
             self.genres = [self.genres] if self.genres is not None else []
-        self.genres = [v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres]
+        self.genres = [
+            v if isinstance(v, GenreEnum) else GenreEnum(v) for v in self.genres
+        ]
 
-        if self.from_country is not None and not isinstance(self.from_country, CountryName):
+        if self.from_country is not None and not isinstance(
+            self.from_country, CountryName
+        ):
             self.from_country = CountryName(self.from_country)
 
         super().__post_init__(**kwargs)
@@ -190,11 +214,16 @@ class Shop(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = EXAMPLE.Shop
 
     all_book_series: Optional[
-        Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]
+        Union[
+            dict[Union[str, BookSeriesId], Union[dict, BookSeries]],
+            list[Union[dict, BookSeries]],
+        ]
     ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        self._normalize_inlined_as_list(slot_name="all_book_series", slot_type=BookSeries, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="all_book_series", slot_type=BookSeries, key_name="id", keyed=True
+        )
 
         super().__post_init__(**kwargs)
 
@@ -263,7 +292,14 @@ class slots:
     pass
 
 
-slots.id = Slot(uri=EXAMPLE.id, name="id", curie=EXAMPLE.curie("id"), model_uri=EXAMPLE.id, domain=None, range=URIRef)
+slots.id = Slot(
+    uri=EXAMPLE.id,
+    name="id",
+    curie=EXAMPLE.curie("id"),
+    model_uri=EXAMPLE.id,
+    domain=None,
+    range=URIRef,
+)
 
 slots.book_category = Slot(
     uri=EXAMPLE.book_category,
@@ -275,7 +311,12 @@ slots.book_category = Slot(
 )
 
 slots.name = Slot(
-    uri=EXAMPLE.name, name="name", curie=EXAMPLE.curie("name"), model_uri=EXAMPLE.name, domain=None, range=Optional[str]
+    uri=EXAMPLE.name,
+    name="name",
+    curie=EXAMPLE.curie("name"),
+    model_uri=EXAMPLE.name,
+    domain=None,
+    range=Optional[str],
 )
 
 slots.price = Slot(
@@ -329,7 +370,9 @@ slots.books = Slot(
     curie=EXAMPLE.curie("books"),
     model_uri=EXAMPLE.books,
     domain=None,
-    range=Optional[Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]],
+    range=Optional[
+        Union[dict[Union[str, BookId], Union[dict, Book]], list[Union[dict, Book]]]
+    ],
 )
 
 slots.all_book_series = Slot(
@@ -338,7 +381,12 @@ slots.all_book_series = Slot(
     curie=EXAMPLE.curie("all_book_series"),
     model_uri=EXAMPLE.all_book_series,
     domain=None,
-    range=Optional[Union[dict[Union[str, BookSeriesId], Union[dict, BookSeries]], list[Union[dict, BookSeries]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, BookSeriesId], Union[dict, BookSeries]],
+            list[Union[dict, BookSeries]],
+        ]
+    ],
 )
 
 slots.summary = Slot(

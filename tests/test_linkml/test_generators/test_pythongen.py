@@ -38,9 +38,14 @@ def test_pythongen(kitchen_sink_path):
     # however, inline in a non-list context does not
     p2dict = {"id": "P:2", "has_birth_event": {"started_at_time": "1981-01-01"}}
     json_loader.loads(p2dict, kitchen_module.Person)
-    assert str(p) == "Person({'id': 'P:1', 'has_employment_history': [EmploymentEvent({'employed_at': 'ROR:1'})]})"
+    assert (
+        str(p)
+        == "Person({'id': 'P:1', 'has_employment_history': [EmploymentEvent({'employed_at': 'ROR:1'})]})"
+    )
 
-    f = kitchen_module.FamilialRelationship(related_to="me", type="SIBLING_OF", cordialness="heartfelt")
+    f = kitchen_module.FamilialRelationship(
+        related_to="me", type="SIBLING_OF", cordialness="heartfelt"
+    )
     assert (
         str(f)
         == """FamilialRelationship({
@@ -99,7 +104,9 @@ types:
         source_file_date="August 10, 2020",
         source_file_size=173,
     ).serialize()
-    assert output.startswith(f"# Auto generated from None by pythongen.py version: {PythonGenerator.generatorversion}")
+    assert output.startswith(
+        f"# Auto generated from None by pythongen.py version: {PythonGenerator.generatorversion}"
+    )
 
     output = PythonGenerator(yaml, format="py", metadata=False).serialize()
     assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")

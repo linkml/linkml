@@ -7,9 +7,23 @@ from linkml_runtime.linkml_model.meta import Annotation, SlotDefinition, UniqueK
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy.dialects.oracle import VARCHAR2
-from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Numeric, Text, Time
+from sqlalchemy.sql.sqltypes import (
+    Boolean,
+    Date,
+    DateTime,
+    Enum,
+    Float,
+    Integer,
+    Numeric,
+    Text,
+    Time,
+)
 
-from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator, cli
+from linkml.generators.sqltablegen import (
+    ORACLE_MAX_VARCHAR_LENGTH,
+    SQLTableGenerator,
+    cli,
+)
 from linkml.utils.schema_builder import SchemaBuilder
 
 # from test_linkml.test_generators.environment import env
@@ -63,7 +77,9 @@ def test_no_injection(schema: str) -> None:
 def test_dialect() -> None:
     """Test dialect options."""
     b = SchemaBuilder()
-    b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
+    b.add_slot(
+        SlotDefinition("age", range="integer", description="age of person in years")
+    )
     slots = ["full name", "description", "age"]
     b.add_class(DUMMY_CLASS, slots, description="My dummy class")
     b.add_defaults()
@@ -81,7 +97,10 @@ def test_dialect() -> None:
         if dialect == "mysql":
             # TODO: make this test stricter
             # newer versions of linkml-runtime enforce required for identifier slots
-            assert "id INTEGER NOT NULL AUTO_INCREMENT" in ddl or "id INTEGER AUTO_INCREMENT" in ddl
+            assert (
+                "id INTEGER NOT NULL AUTO_INCREMENT" in ddl
+                or "id INTEGER AUTO_INCREMENT" in ddl
+            )
             assert "COMMENT" in ddl
 
 
@@ -140,24 +159,45 @@ def test_abstract_class():
 
 def test_index_sqlddl():
     b = SchemaBuilder()
-    b.add_slot(SlotDefinition("age", range="integer", description="age of person in years"))
-    b.add_slot(SlotDefinition("dummy_foreign_key", range="Class With Nowt", description="foreign key test"))
+    b.add_slot(
+        SlotDefinition("age", range="integer", description="age of person in years")
+    )
+    b.add_slot(
+        SlotDefinition(
+            "dummy_foreign_key", range="Class With Nowt", description="foreign key test"
+        )
+    )
     b.add_slot("identifier_slot", identifier=True)
     slots = ["full name", "description", "dummy_foreign_key", "age"]
     # Simple Multicolumn index defined in annotation
-    test_index = Annotation(tag="index", value={"index2": ["id", "age"], "index_desc": ["description"]})
+    test_index = Annotation(
+        tag="index", value={"index2": ["id", "age"], "index_desc": ["description"]}
+    )
     # Duplicate Index Name
-    test_index_2 = Annotation(tag="index", value={"ix_Class_With_Id_identifier_slot": ["identifier_slot", "name"]})
-    test_index_3 = Annotation(tag="index", value={"Class_With_Nowt_slot_1_slot_2_idx": ["slot_1"]})
+    test_index_2 = Annotation(
+        tag="index",
+        value={"ix_Class_With_Id_identifier_slot": ["identifier_slot", "name"]},
+    )
+    test_index_3 = Annotation(
+        tag="index", value={"Class_With_Nowt_slot_1_slot_2_idx": ["slot_1"]}
+    )
     test_index_dict = {"index": test_index}
     test_index_dict_2 = {"index": test_index_2}
     test_index_dict_3 = {"index": test_index_3}
     # testing to ensure
-    b.add_class(DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict)
+    b.add_class(
+        DUMMY_CLASS, slots, description="My dummy class", annotations=test_index_dict
+    )
     # testing to ensure the duplicated index isn't generated
-    b.add_class("Class_With_Id", slots=["identifier_slot", "name", "whatever"], annotations=test_index_dict_2)
+    b.add_class(
+        "Class_With_Id",
+        slots=["identifier_slot", "name", "whatever"],
+        annotations=test_index_dict_2,
+    )
     # Testing Unique Constraint
-    slot_1_2_UK = UniqueKey(unique_key_name="unique_keys", unique_key_slots=["slot_1", "slot_2"])
+    slot_1_2_UK = UniqueKey(
+        unique_key_name="unique_keys", unique_key_slots=["slot_1", "slot_2"]
+    )
     b.add_class(
         "Class_With_Nowt",
         slots=["slot_1", "slot_2"],
@@ -172,14 +212,26 @@ def test_index_sqlddl():
     assert 'CREATE INDEX index2 ON "dummy class" (id, age);' in ddl
     assert 'CREATE INDEX index_desc ON "dummy class" (description);' in ddl
     # Tests generation of unique key index
-    assert 'CREATE INDEX "Class_With_Nowt_slot_1_slot_2_idx" ON "Class_With_Nowt" (slot_1, slot_2);' in ddl
+    assert (
+        'CREATE INDEX "Class_With_Nowt_slot_1_slot_2_idx" ON "Class_With_Nowt" (slot_1, slot_2);'
+        in ddl
+    )
     # Tests to ensure that an index with a duplicate name as a previous index is not created
-    assert 'CREATE INDEX "Class_With_Nowt_slot_1_slot_2_idx" ON "Class_With_Nowt" (slot_1);' not in ddl
+    assert (
+        'CREATE INDEX "Class_With_Nowt_slot_1_slot_2_idx" ON "Class_With_Nowt" (slot_1);'
+        not in ddl
+    )
     # Test for the foreign key identifier slots
-    assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot);' in ddl
+    assert (
+        'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot);'
+        in ddl
+    )
     assert 'CREATE INDEX "ix_Class_With_Nowt_id" ON "Class_With_Nowt" (id)' in ddl
     # Tests to ensure the duplicate index name isn't created
-    assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
+    assert (
+        'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);'
+        not in ddl
+    )
 
 
 def test_cli_index(schema: str) -> None:
@@ -218,7 +270,9 @@ def test_cli_index(schema: str) -> None:
     assert "ix_Person_id" not in output_false
 
     # Check for the multi-column index still being present
-    assert 'CREATE INDEX birth_date_index ON "Person" (birth_date, gender)' in output_false
+    assert (
+        'CREATE INDEX birth_date_index ON "Person" (birth_date, gender)' in output_false
+    )
 
 
 @pytest.mark.parametrize(
@@ -262,7 +316,9 @@ def test_varchar_sql_range(capsys) -> None:
     slots = [
         SlotDefinition(name="str_column", range="str"),
         SlotDefinition(name="string_column", range="String"),
-        SlotDefinition(name="std_string_column", range="string"),  # the standard string type
+        SlotDefinition(
+            name="std_string_column", range="string"
+        ),  # the standard string type
         SlotDefinition(name="varchar_column", range="VARCHAR"),
         SlotDefinition(name="varchar2_column_no_len", range="VARCHAR2"),
         SlotDefinition(name="varchar2_length_column", range="VARCHAR2(128)"),
@@ -272,7 +328,14 @@ def test_varchar_sql_range(capsys) -> None:
     sb = SchemaBuilder()
     sb.add_class(DUMMY_CLASS, slots, description="My dummy class")
     # add in the ranges as types to ensure that the schema will validate
-    for varchar in ["str", "String", "VARCHAR", "VARCHAR2", "VARCHAR2(128)", "VARCHAR2(4097)"]:
+    for varchar in [
+        "str",
+        "String",
+        "VARCHAR",
+        "VARCHAR2",
+        "VARCHAR2(128)",
+        "VARCHAR2(4097)",
+    ]:
         sb.add_type(varchar, typeof="string")
     sb.add_defaults()
 
@@ -329,7 +392,9 @@ def test_get_id_or_key() -> None:
     sb.add_class("ClassWithId", slots=["identifier_slot", "name", "whatever"])
     sb.add_class("ClassWithKey", slots=["key_slot", "key_hole", "Torquay"])
     sb.add_class("ClassWithNowt", slots=["slot_1", "slot_2"])
-    sb.add_class("ClassWithItAll", slots=["identifier_slot", "key_slot", "name", "miscellany"])
+    sb.add_class(
+        "ClassWithItAll", slots=["identifier_slot", "key_slot", "name", "miscellany"]
+    )
     gen = SQLTableGenerator(sb.schema)
     sv = SchemaView(schema=sb.schema)
 

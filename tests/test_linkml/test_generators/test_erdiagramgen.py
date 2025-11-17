@@ -4,7 +4,11 @@ Tests generation of mermaidfrom LinkML schemas
 
 import pytest
 from click.testing import CliRunner
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    SchemaDefinition,
+    SlotDefinition,
+)
 
 from linkml.generators.erdiagramgen import ERDiagram, ERDiagramGenerator, cli
 
@@ -101,7 +105,9 @@ def test_serialize_selected(kitchen_sink_path):
     gen = ERDiagramGenerator(kitchen_sink_path)
     mermaid = remove_whitespace(gen.serialize_classes(["FamilialRelationship"]))
     assert "Person{" not in mermaid, "Person not reachable from selected"
-    assert FAMILIALRELATIONSHIP2PERSON in mermaid, "dangling references should be included"
+    assert FAMILIALRELATIONSHIP2PERSON in mermaid, (
+        "dangling references should be included"
+    )
 
 
 def test_serialize_selected_with_neighbors(kitchen_sink_path):
@@ -116,16 +122,26 @@ def test_serialize_selected_with_neighbors(kitchen_sink_path):
     )
     assert "Person{" in mermaid, "Person is directly upstream from selected"
     assert "MedicalEvent{" in mermaid, "Medical Event is selected"
-    assert "ProcedureConcept:" in mermaid, "Procedure is directly downstream from Medical Event"
-    assert "DiagnosisConcept:" in mermaid, "Diagnosis is directly downstream from Medical Event"
-    assert "CodeSystem" not in mermaid, "Place is too many hops away downstream from selected"
-    assert "Organization" not in mermaid, "Organization is not reachable either way from selected"
+    assert "ProcedureConcept:" in mermaid, (
+        "Procedure is directly downstream from Medical Event"
+    )
+    assert "DiagnosisConcept:" in mermaid, (
+        "Diagnosis is directly downstream from Medical Event"
+    )
+    assert "CodeSystem" not in mermaid, (
+        "Place is too many hops away downstream from selected"
+    )
+    assert "Organization" not in mermaid, (
+        "Organization is not reachable either way from selected"
+    )
 
 
 def test_follow_references(kitchen_sink_path):
     """Test serialization of selected elements following non-inlined references"""
     gen = ERDiagramGenerator(kitchen_sink_path)
-    mermaid = remove_whitespace(gen.serialize_classes(["FamilialRelationship"], follow_references=True))
+    mermaid = remove_whitespace(
+        gen.serialize_classes(["FamilialRelationship"], follow_references=True)
+    )
     assert PERSON in mermaid
     assert FAMILIALRELATIONSHIP2PERSON in mermaid
 
@@ -139,7 +155,9 @@ def test_max_hops(kitchen_sink_path):
 
     mermaid = remove_whitespace(gen.serialize_classes(["Dataset"], max_hops=1))
     assert PERSON in mermaid, "Person reachable from selected in one hop"
-    assert "FamilialRelationship{" not in mermaid, "FamilialRelationship not reachable from selected in zero hops"
+    assert "FamilialRelationship{" not in mermaid, (
+        "FamilialRelationship not reachable from selected in zero hops"
+    )
 
 
 def test_format_option_markdown(runner, kitchen_sink_path):
@@ -166,7 +184,9 @@ def test_exclude_abstract_classes(kitchen_sink_path):
     assert "Friend{" in mermaid, "Friend abstract class should be included by default"
 
     # Test with abstract classes excluded
-    gen = ERDiagramGenerator(kitchen_sink_path, structural=False, exclude_abstract_classes=True)
+    gen = ERDiagramGenerator(
+        kitchen_sink_path, structural=False, exclude_abstract_classes=True
+    )
     mermaid = remove_whitespace(gen.serialize())
     assert "Friend{" not in mermaid, "Friend abstract class should be excluded"
     assert "Person{" in mermaid, "Person concrete class should still be included"
@@ -180,13 +200,21 @@ def test_preserve_names():
         id="https://example.com/test_schema",
         name="test_underscore_schema",
         classes={
-            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot", "related_object"]),
-            "Another_Class_Name": ClassDefinition(name="Another_Class_Name", slots=["class_specific_slot"]),
+            "My_Class": ClassDefinition(
+                name="My_Class", slots=["my_slot", "related_object"]
+            ),
+            "Another_Class_Name": ClassDefinition(
+                name="Another_Class_Name", slots=["class_specific_slot"]
+            ),
         },
         slots={
             "my_slot": SlotDefinition(name="my_slot", range="string"),
-            "class_specific_slot": SlotDefinition(name="class_specific_slot", range="string"),
-            "related_object": SlotDefinition(name="related_object", range="Another_Class_Name"),
+            "class_specific_slot": SlotDefinition(
+                name="class_specific_slot", range="string"
+            ),
+            "related_object": SlotDefinition(
+                name="related_object", range="Another_Class_Name"
+            ),
         },
     )
 
@@ -197,7 +225,10 @@ def test_preserve_names():
     assert "MyClass {" in diagram_default
     assert "AnotherClassName {" in diagram_default
     assert "string my_slot" in diagram_default
-    assert "MyClass ||--" in diagram_default and 'AnotherClassName : "related_object"' in diagram_default
+    assert (
+        "MyClass ||--" in diagram_default
+        and 'AnotherClassName : "related_object"' in diagram_default
+    )
 
     # Test preserve_names behavior (names are preserved)
     gen_preserve = ERDiagramGenerator(schema=schema, preserve_names=True)
@@ -206,7 +237,10 @@ def test_preserve_names():
     assert "My_Class {" in diagram_preserve
     assert "Another_Class_Name {" in diagram_preserve
     assert "string my_slot" in diagram_preserve
-    assert "My_Class ||--" in diagram_preserve and 'Another_Class_Name : "related_object"' in diagram_preserve
+    assert (
+        "My_Class ||--" in diagram_preserve
+        and 'Another_Class_Name : "related_object"' in diagram_preserve
+    )
 
     # Test add_upstream_class method for branch coverage
     gen_test = ERDiagramGenerator(schema=schema, preserve_names=True)

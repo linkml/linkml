@@ -51,16 +51,22 @@ def test_multi_id(input_path, snapshot):
 
 def test_timepoint(input_path, snapshot):
     """Test an issue with the biolink-model timepoint rendering"""
-    gen_and_comp_python(input_path("timepoint.yaml"), snapshot("genpython/timepoint.py"))
+    gen_and_comp_python(
+        input_path("timepoint.yaml"), snapshot("genpython/timepoint.py")
+    )
 
 
 def test_type_inheritance(input_path, snapshot):
     """Make sure that typeof's get represented correctly"""
-    gen_and_comp_python(input_path("testtypes.yaml"), snapshot("genpython/testtypes.py"))
+    gen_and_comp_python(
+        input_path("testtypes.yaml"), snapshot("genpython/testtypes.py")
+    )
 
 
 def test_inherited_identifiers(input_path, snapshot):
-    gen_and_comp_python(input_path("inheritedid.yaml"), snapshot("genpython/inheritedid.py"))
+    gen_and_comp_python(
+        input_path("inheritedid.yaml"), snapshot("genpython/inheritedid.py")
+    )
 
 
 def test_ordering(input_path, snapshot):
@@ -69,10 +75,14 @@ def test_ordering(input_path, snapshot):
 
 def test_default_namespace(input_path, snapshot):
     """Test that curie_for replaces '@default' with a blank"""
-    gen_and_comp_python(input_path("default_namespace.yaml"), snapshot("genpython/default_namespace.py"))
+    gen_and_comp_python(
+        input_path("default_namespace.yaml"), snapshot("genpython/default_namespace.py")
+    )
 
 
 def test_gen_classvars_slots(input_path, snapshot):
     gen_and_comp_python(
-        input_path("inheritedid.yaml"), snapshot("genpython/inheritedid_ncvs.py"), ["--no-classvars", "--no-slots"]
+        input_path("inheritedid.yaml"),
+        snapshot("genpython/inheritedid_ncvs.py"),
+        ["--no-classvars", "--no-slots"],
     )

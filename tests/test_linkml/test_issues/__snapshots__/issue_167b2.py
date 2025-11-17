@@ -6,64 +6,19 @@
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-import dataclasses
-import re
-from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import ClassVar
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
 from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
-from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-EX = CurieNamespace('ex', 'http://example.org/')
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+EX = CurieNamespace("ex", "http://example.org/")
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
 DEFAULT_ = EX
 
 
@@ -72,11 +27,11 @@ DEFAULT_ = EX
 # Class references
 
 
-
 class MyClass(YAMLRoot):
     """
     Annotations as tag value pairs. Note that altLabel is defined in the default namespace, not in the SKOS namespace
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["MyClass"]
@@ -90,6 +45,7 @@ class MyClass2(YAMLRoot):
     -> This form of annotations is a tag/value format, which allows annotations to be annotated. Note, however, that
     the annotation source is NOT a CURIE, rather just a string.
     """
+
     _inherited_slots: ClassVar[list[str]] = []
 
     class_class_uri: ClassVar[URIRef] = EX["MyClass2"]

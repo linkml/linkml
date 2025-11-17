@@ -90,7 +90,9 @@ from test_linkml.test_compliance.test_compliance import (
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_basic_class_inheritance(framework, description, cls: str, object, is_valid, parent_is_abstract):
+def test_basic_class_inheritance(
+    framework, description, cls: str, object, is_valid, parent_is_abstract
+):
     """
     Tests behavior is_a in class hierarchies.
 
@@ -301,7 +303,13 @@ def test_mixins(framework, description, cls, object, is_valid):
             "class_uri": "linkml:Any",
         },
     }
-    schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
+    schema = validated_schema(
+        test_mixins,
+        "default",
+        framework,
+        classes=classes,
+        core_elements=["mixins", "mixin"],
+    )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
         if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
@@ -562,12 +570,66 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
 @pytest.mark.parametrize(
     "description,schema_name,default_range,s1def,s2def,cls,object,is_valid",
     [
-        ("object may be empty", "rX", "string", {"range": CLASS_X}, {}, CLASS_C, {}, True),
-        ("inherits basic type", "rINT", CLASS_ANY, {"range": "integer"}, {}, CLASS_C, {SLOT_S2: 5}, True),
-        ("inherits Any type 1", "rANY", "string", {"range": CLASS_ANY}, {}, CLASS_C, {SLOT_S2: 5}, True),
-        ("inherits Any type 2", "rANY", "string", {"range": CLASS_ANY}, {}, CLASS_C, {SLOT_S2: {SLOT_S3: "..."}}, True),
-        ("inherits constraints", "rMAX", "integer", {"maximum_value": 10}, {}, CLASS_C, {SLOT_S2: 5}, True),
-        ("inherits constraints invalid", "rMAX", "integer", {"maximum_value": 10}, {}, CLASS_C, {SLOT_S2: 15}, False),
+        (
+            "object may be empty",
+            "rX",
+            "string",
+            {"range": CLASS_X},
+            {},
+            CLASS_C,
+            {},
+            True,
+        ),
+        (
+            "inherits basic type",
+            "rINT",
+            CLASS_ANY,
+            {"range": "integer"},
+            {},
+            CLASS_C,
+            {SLOT_S2: 5},
+            True,
+        ),
+        (
+            "inherits Any type 1",
+            "rANY",
+            "string",
+            {"range": CLASS_ANY},
+            {},
+            CLASS_C,
+            {SLOT_S2: 5},
+            True,
+        ),
+        (
+            "inherits Any type 2",
+            "rANY",
+            "string",
+            {"range": CLASS_ANY},
+            {},
+            CLASS_C,
+            {SLOT_S2: {SLOT_S3: "..."}},
+            True,
+        ),
+        (
+            "inherits constraints",
+            "rMAX",
+            "integer",
+            {"maximum_value": 10},
+            {},
+            CLASS_C,
+            {SLOT_S2: 5},
+            True,
+        ),
+        (
+            "inherits constraints invalid",
+            "rMAX",
+            "integer",
+            {"maximum_value": 10},
+            {},
+            CLASS_C,
+            {SLOT_S2: 15},
+            False,
+        ),
         (
             "slots are inherited",
             "rX",

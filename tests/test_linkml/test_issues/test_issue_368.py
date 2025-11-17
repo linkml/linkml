@@ -11,10 +11,14 @@ from linkml.generators.pythongen import PythonGenerator
 @pytest.mark.pythongen
 def test_issue_368(input_path, snapshot, tmp_path):
     """Make sure that types are generated as part of the output"""
-    output = PythonGenerator(input_path("issue_368_imports.yaml"), mergeimports=False).serialize()
+    output = PythonGenerator(
+        input_path("issue_368_imports.yaml"), mergeimports=False
+    ).serialize()
     assert output == snapshot("issue_368_imports.py")
 
-    python = PythonGenerator(input_path("issue_368.yaml"), mergeimports=False).serialize()
+    python = PythonGenerator(
+        input_path("issue_368.yaml"), mergeimports=False
+    ).serialize()
     py_snapshot = snapshot("issue_368.py")
     assert python == py_snapshot
 
@@ -41,7 +45,9 @@ def test_issue_368(input_path, snapshot, tmp_path):
     dump_and_load(json_dumper.dump, "json")
     dump_and_load(yaml_dumper.dump, "yaml")
 
-    context = ContextGenerator(input_path("issue_368.yaml"), emit_metadata=False).serialize()
+    context = ContextGenerator(
+        input_path("issue_368.yaml"), emit_metadata=False
+    ).serialize()
     assert context == snapshot("issue_368.context.jsonld")
 
     dump_and_load(

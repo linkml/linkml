@@ -117,7 +117,13 @@ def test_attributes(framework, description, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_attributes, "attributes", framework, classes=classes, core_elements=["attributes"])
+    schema = validated_schema(
+        test_attributes,
+        "attributes",
+        framework,
+        classes=classes,
+        core_elements=["attributes"],
+    )
     check_data(
         schema,
         description.replace(" ", "_"),
@@ -129,8 +135,12 @@ def test_attributes(framework, description, object, is_valid):
     )
 
 
-@pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4")])
-@pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
+@pytest.mark.parametrize(
+    "example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4")]
+)
+@pytest.mark.parametrize(
+    "linkml_type", ["string", "integer", "float", "double", "boolean"]
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_type_range(framework, linkml_type, example_value):
     """
@@ -156,7 +166,9 @@ def test_type_range(framework, linkml_type, example_value):
     :return:
     """
     if isinstance(example_value, Decimal):
-        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+        pytest.skip(
+            "Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255"
+        )
     metamodel = metamodel_schemaview()
     type_elt = metamodel.get_type(linkml_type)
     type_py_cls = eval(type_elt.repr if type_elt.repr else type_elt.base)
@@ -177,7 +189,13 @@ def test_type_range(framework, linkml_type, example_value):
             }
         },
     }
-    schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
+    schema = validated_schema(
+        test_type_range,
+        linkml_type,
+        framework,
+        classes=classes,
+        core_elements=["range"],
+    )
     expected_behavior = None
     v = example_value
     is_valid = isinstance(v, (type_py_cls, type(None)))
@@ -192,7 +210,12 @@ def test_type_range(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
+        if (
+            sys.version_info < (3, 10)
+            and framework == PYDANTIC
+            and linkml_type == "boolean"
+            and isinstance(v, float)
+        ):
             # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
             # what their docs say should happen or why it only affects older Python version.
             expected_behavior = ValidationBehavior.COERCES
@@ -251,7 +274,9 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
     :return:
     """
     if isinstance(value, Decimal):
-        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+        pytest.skip(
+            "Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255"
+        )
     classes = {
         CLASS_C: {
             "attributes": {
@@ -264,7 +289,11 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
         },
     }
     schema = validated_schema(
-        test_min_max_values, name, framework, classes=classes, core_elements=["minimum_value", "maximum_value"]
+        test_min_max_values,
+        name,
+        framework,
+        classes=classes,
+        core_elements=["minimum_value", "maximum_value"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework in [SQL_DDL_SQLITE, PYTHON_DATACLASSES]:
@@ -283,7 +312,10 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
     )
 
 
-@pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
+@pytest.mark.parametrize(
+    "example_value",
+    ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}],
+)
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_any_type(framework, example_value):
     """
@@ -294,7 +326,9 @@ def test_any_type(framework, example_value):
     :return:
     """
     if isinstance(example_value, Decimal):
-        pytest.skip("Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255")
+        pytest.skip(
+            "Decimal not supported by YAML - https://github.com/yaml/pyyaml/issues/255"
+        )
     if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
         pytest.skip("TODO: add support in sqlgen")
     if framework == PANDERA_POLARS_CLASS:
@@ -316,7 +350,9 @@ def test_any_type(framework, example_value):
             }
         },
     }
-    schema = validated_schema(test_any_type, "linkml_any", framework, classes=classes, core_elements=["Any"])
+    schema = validated_schema(
+        test_any_type, "linkml_any", framework, classes=classes, core_elements=["Any"]
+    )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     check_data(
         schema,
@@ -464,7 +500,11 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
             expected_behavior = ValidationBehavior.COERCES
         if linkml_type == "time" and is_valid is False:
             expected_behavior = ValidationBehavior.INCOMPLETE
-        if linkml_type == "date" and is_valid is False and example_value.startswith("2021"):
+        if (
+            linkml_type == "date"
+            and is_valid is False
+            and example_value.startswith("2021")
+        ):
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == PANDERA_POLARS_CLASS:
         if linkml_type == "datetime" and is_valid and "T" in example_value:
@@ -563,7 +603,11 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl_mv = (
+        ""
+        if multivalued
+        else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    )
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -602,7 +646,9 @@ def test_cardinality(framework, multivalued, required, data_name, value):
                     "multivalued": multivalued,
                     "_mappings": {
                         PYDANTIC: choices[(PYDANTIC, multivalued, required)],
-                        PYTHON_DATACLASSES: choices[(PYTHON_DATACLASSES, multivalued, required)],
+                        PYTHON_DATACLASSES: choices[
+                            (PYTHON_DATACLASSES, multivalued, required)
+                        ],
                         SHACL: shacl,
                         SHEX: shex,
                         OWL: owl,
@@ -677,7 +723,9 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         ("present", {SLOT_ID: "x"}, True),
     ],
 )
-def test_identifier_is_required(framework, required_asserted, data_name, instance, is_valid):
+def test_identifier_is_required(
+    framework, required_asserted, data_name, instance, is_valid
+):
     """
     Tests that when identifiers are specified they are treated as required.
 
@@ -749,7 +797,9 @@ def ensafeify(name: str):
         ("C", "C", "1s", "1s", "T1"),
     ],
 )
-def test_non_standard_names(framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name):
+def test_non_standard_names(
+    framework, class_name, safe_class_name, slot_name, safe_slot_name, type_name
+):
     """
     Tests that non-standard class and slot names are handled gracefully.
 
@@ -778,15 +828,29 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
             "typeof": "string",
         },
     }
-    name = ensafeify(f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}")
-    schema = validated_schema(test_cardinality, name, framework, classes=classes, types=types, core_elements=["name"])
+    name = ensafeify(
+        f"ClassNameEQ_{class_name}__SlotNameEQ_{slot_name}__TypeNameEQ_{type_name}"
+    )
+    schema = validated_schema(
+        test_cardinality,
+        name,
+        framework,
+        classes=classes,
+        types=types,
+        core_elements=["name"],
+    )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     instance = {
         safe_slot_name: "x",
     }
     exclude_rdf = False
     if slot_name.startswith("1"):
-        if framework in [PYTHON_DATACLASSES, PYDANTIC, SQL_DDL_SQLITE, PANDERA_POLARS_CLASS]:
+        if framework in [
+            PYTHON_DATACLASSES,
+            PYDANTIC,
+            SQL_DDL_SQLITE,
+            PANDERA_POLARS_CLASS,
+        ]:
             expected_behavior = ValidationBehavior.INCOMPLETE
         exclude_rdf = True
     if class_name == "c" and framework in [JSON_SCHEMA, SHACL]:

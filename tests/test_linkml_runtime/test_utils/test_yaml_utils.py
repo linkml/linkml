@@ -8,7 +8,12 @@ import pytest
 import yaml
 
 from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode, YAMLRoot, from_yaml
+from linkml_runtime.utils.yamlutils import (
+    DupCheckYamlLoader,
+    TypedNode,
+    YAMLRoot,
+    from_yaml,
+)
 from test_linkml_runtime.test_utils.environment import env
 
 
@@ -29,7 +34,10 @@ def test_dupcheck_loader_no_dupes() -> None:
 @pytest.mark.parametrize("file_name", ["yaml1.yaml", "yaml2.yaml"])
 def test_dupcheck_loader_has_dupes(file_name: str) -> None:
     """Ensure that files with duplicates throw an error."""
-    with open(env.input_path(file_name)) as f, pytest.raises(ValueError, match="Duplicate key:"):
+    with (
+        open(env.input_path(file_name)) as f,
+        pytest.raises(ValueError, match="Duplicate key:"),
+    ):
         yaml.load(f, DupCheckYamlLoader)
 
 
@@ -53,7 +61,9 @@ def test_line_numbers() -> None:
     assert cases == key_to_lines
 
 
-@pytest.mark.xfail(reason="Reporting line numbers should happen at load time not when instantiating dataclasses")
+@pytest.mark.xfail(
+    reason="Reporting line numbers should happen at load time not when instantiating dataclasses"
+)
 def test_issue_38() -> None:
     # The goal is to provide line numbers on error messages.   We've tweaked the parser so that it returns augmented
     # str's and int's with the line numbers on them.  The problem we are trying to address now is that the dataclass
@@ -97,23 +107,40 @@ foo:
 def test_loc_function() -> None:
     """Test the TypedNode.yaml_loc function."""
     inp = yaml.load(hbreader.hbread(inp_yaml), DupCheckYamlLoader)
-    assert TypedNode.yaml_loc(inp["foo"]["x"]) == 'File "<unicode string>", line 3, col 8: '
-    assert TypedNode.yaml_loc(inp["foo"]["x"], suffix="") == 'File "<unicode string>", line 3, col 8'
-    assert TypedNode.yaml_loc(inp["foo"]["y"]) == 'File "<unicode string>", line 4, col 8: '
+    assert (
+        TypedNode.yaml_loc(inp["foo"]["x"])
+        == 'File "<unicode string>", line 3, col 8: '
+    )
+    assert (
+        TypedNode.yaml_loc(inp["foo"]["x"], suffix="")
+        == 'File "<unicode string>", line 3, col 8'
+    )
+    assert (
+        TypedNode.yaml_loc(inp["foo"]["y"])
+        == 'File "<unicode string>", line 4, col 8: '
+    )
     assert (
         TypedNode.yaml_loc(inp["foo"]["y"], suffix=inp["foo"]["y"])
         == 'File "<unicode string>", line 4, col 8I yam that I yam'
     )
-    assert TypedNode.yaml_loc(inp["foo"]["z"]) == 'File "<unicode string>", line 5, col 8: '
+    assert (
+        TypedNode.yaml_loc(inp["foo"]["z"])
+        == 'File "<unicode string>", line 5, col 8: '
+    )
 
 
 def test_yaml_loc_warning() -> None:
     """Test that a warning is emitted when using the `loc` method."""
     inp = yaml.load(hbreader.hbread(inp_yaml), DupCheckYamlLoader)
     with pytest.warns(DeprecationWarning) as warning_list:
-        assert TypedNode.loc(inp["foo"]["x"]) == 'File "<unicode string>", line 3, col 8'
+        assert (
+            TypedNode.loc(inp["foo"]["x"]) == 'File "<unicode string>", line 3, col 8'
+        )
     assert len(warning_list) == 1
-    assert str(warning_list[0].message) == "Call to deprecated method loc. (Use yaml_loc instead)"
+    assert (
+        str(warning_list[0].message)
+        == "Call to deprecated method loc. (Use yaml_loc instead)"
+    )
 
 
 @pytest.mark.parametrize("loc", [None, "abc", ["a", "b"]])

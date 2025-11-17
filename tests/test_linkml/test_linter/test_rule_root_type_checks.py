@@ -39,8 +39,13 @@ imports:
     assert check_schema(test_schema) == []
 
 
-@pytest.mark.parametrize(("lines", "errs"), [([], ["base", "uri"]), ([BASE_LINE], ["uri"]), ([URI_LINE], ["base"])])
-def test_root_type_missing_required_attributes(lines: list[str], errs: list[str]) -> None:
+@pytest.mark.parametrize(
+    ("lines", "errs"),
+    [([], ["base", "uri"]), ([BASE_LINE], ["uri"]), ([URI_LINE], ["base"])],
+)
+def test_root_type_missing_required_attributes(
+    lines: list[str], errs: list[str]
+) -> None:
     """Ensure that a root type with missing attributes throws errors.
 
     :param lines: extra lines for the type declaration
@@ -51,15 +56,26 @@ def test_root_type_missing_required_attributes(lines: list[str], errs: list[str]
     test_schema = "".join(f"{line}\n" for line in [*SCHEMA_HEAD, *FAKE_TYPE, *lines])
     problems = check_schema(test_schema)
     assert len(problems) == len(errs)
-    expected_err_msgs = {f"Root type 'char_str' is missing the required '{attr}' attribute" for attr in errs}
+    expected_err_msgs = {
+        f"Root type 'char_str' is missing the required '{attr}' attribute"
+        for attr in errs
+    }
     assert expected_err_msgs == {p.message for p in problems}
 
 
 def test_child_type_invalid_typeof() -> None:
     """Ensure that types with invalid typeof parents throw errors."""
-    BAD_TYPES = ["  child_char_str:", "    typeof: something", "  circular_type:", "    typeof: circular_type"]
+    BAD_TYPES = [
+        "  child_char_str:",
+        "    typeof: something",
+        "  circular_type:",
+        "    typeof: circular_type",
+    ]
 
-    test_schema = "".join(f"{line}\n" for line in [*SCHEMA_HEAD, *FAKE_TYPE, BASE_LINE, URI_LINE, *BAD_TYPES])
+    test_schema = "".join(
+        f"{line}\n"
+        for line in [*SCHEMA_HEAD, *FAKE_TYPE, BASE_LINE, URI_LINE, *BAD_TYPES]
+    )
     problems = check_schema(test_schema)
     assert len(problems) == 2
     assert {

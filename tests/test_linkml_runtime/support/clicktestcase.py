@@ -6,7 +6,10 @@ from warnings import warn
 
 from test_linkml_runtime.support.compare_rdf import compare_rdf
 from test_linkml_runtime.support.dirutils import make_and_clear_directory
-from test_linkml_runtime.support.test_environment import TestEnvironment, TestEnvironmentTestCase
+from test_linkml_runtime.support.test_environment import (
+    TestEnvironment,
+    TestEnvironmentTestCase,
+)
 
 
 class ClickTestCase(TestEnvironmentTestCase):
@@ -33,7 +36,9 @@ class ClickTestCase(TestEnvironmentTestCase):
     def temp_file_path(self, *path: str, is_dir: bool = False) -> str:
         """Create subdirectory in the temp directory to hold path"""
         full_path = self.env.temp_file_path(self.testdir, *path)
-        self.env.make_testing_directory(full_path if is_dir else os.path.dirname(full_path))
+        self.env.make_testing_directory(
+            full_path if is_dir else os.path.dirname(full_path)
+        )
         return full_path
 
     @staticmethod
@@ -47,7 +52,9 @@ class ClickTestCase(TestEnvironmentTestCase):
         return compare_rdf(expected_data, actual_data, "n3")
 
     @staticmethod
-    def rdf_comparator(expected_data: str, actual_data: str, fmt: Optional[str] = "turtle") -> str:
+    def rdf_comparator(
+        expected_data: str, actual_data: str, fmt: Optional[str] = "turtle"
+    ) -> str:
         """compare expected_data to actual_data using basic RDF comparator method"""
         return compare_rdf(expected_data, actual_data, fmt=fmt)
 
@@ -112,7 +119,9 @@ class ClickTestCase(TestEnvironmentTestCase):
         arg_list = shlex.split(args) if isinstance(args, str) else args
 
         if is_directory and (filtr or comparator):
-            warn("filtr and comparator parameters aren't implemented for directory generation")
+            warn(
+                "filtr and comparator parameters aren't implemented for directory generation"
+            )
 
         if add_yaml and (not arg_list or arg_list[0] != "--help"):
             raise NotImplementedError("This is an artifact from elsewhere")
@@ -127,13 +136,17 @@ class ClickTestCase(TestEnvironmentTestCase):
                 self.env.generate_directory(
                     target,
                     lambda target_dir: self.click_ep(
-                        arg_list + ["-d", target_dir], prog_name=self.prog_name, standalone_mode=False
+                        arg_list + ["-d", target_dir],
+                        prog_name=self.prog_name,
+                        standalone_mode=False,
                     ),
                 )
             else:
                 self.env.generate_single_file(
                     target,
-                    lambda: self.click_ep(arg_list, prog_name=self.prog_name, standalone_mode=False),
+                    lambda: self.click_ep(
+                        arg_list, prog_name=self.prog_name, standalone_mode=False
+                    ),
                     filtr=filtr,
                     comparator=comparator,
                 )

@@ -33,6 +33,8 @@ def test_javagen_with_date_slots(tmp_path):
     See https://github.com/linkml/linkml/issues/1525.
     """
     JavaGenerator(schema_str).serialize(directory=str(tmp_path))
-    assert_file_contains(tmp_path / "SomethingWithDate.java", "ZonedDateTime dateAndTime")
+    assert_file_contains(
+        tmp_path / "SomethingWithDate.java", "ZonedDateTime dateAndTime"
+    )
     assert_file_contains(tmp_path / "SomethingWithDate.java", "LocalDate dateOnly")
     assert_file_contains(tmp_path / "SomethingWithDate.java", "Instant timeOnly")

@@ -28,7 +28,9 @@ def test_flatten_simple():
     """
     sb = SchemaBuilder()
     # Base class: Association with basic properties.
-    sb.add_class("Association", slots=["id", "subject", "predicate", "object", "category"])
+    sb.add_class(
+        "Association", slots=["id", "subject", "predicate", "object", "category"]
+    )
     # Descendant 1: GeneticAssociation adds gene-specific slots.
     sb.add_class(
         "GeneticAssociation",
@@ -45,7 +47,12 @@ def test_flatten_simple():
     sb.add_slot("subject", replace_if_present=True, range="str")
     sb.add_slot("predicate", replace_if_present=True, range="str")
     sb.add_slot("object", replace_if_present=True, range="str")
-    sb.add_slot("category", replace_if_present=True, range="str", description="Original class designator")
+    sb.add_slot(
+        "category",
+        replace_if_present=True,
+        range="str",
+        description="Original class designator",
+    )
     sb.add_slot("gene_variant", replace_if_present=True, range="str")
     sb.add_slot("inheritance_mode", replace_if_present=True, range="str")
     sb.add_slot("drug_dosage", replace_if_present=True, range="float")
@@ -54,7 +61,9 @@ def test_flatten_simple():
     sb.add_defaults()
     schema = sb.schema
     config = FlattenTransformerConfiguration(
-        preserve_class_designator=True, class_designator_slot="category", include_all_classes=False
+        preserve_class_designator=True,
+        class_designator_slot="category",
+        include_all_classes=False,
     )
     transformer = RollupTransformer(target_class="Association", config=config)
     transformer.set_schema(schema)
@@ -89,7 +98,9 @@ def test_multi_level_inheritance():
     sb.add_class("Entity", slots=["id", "name"])
     sb.add_class("Association", is_a="Entity", slots=["subject", "object"])
     sb.add_class("GeneAssociation", is_a="Association", slots=["gene"])
-    sb.add_class("SpecificGeneAssociation", is_a="GeneAssociation", slots=["specificity"])
+    sb.add_class(
+        "SpecificGeneAssociation", is_a="GeneAssociation", slots=["specificity"]
+    )
 
     for slot in ["id", "name", "subject", "object", "gene", "specificity"]:
         sb.add_slot(slot, replace_if_present=True, range="str")
@@ -174,11 +185,16 @@ def test_designator_slot_handling():
     sb.add_slot("id", replace_if_present=True, range="str")
     sb.add_slot("gene", replace_if_present=True, range="str")
     sb.add_slot(
-        "category", replace_if_present=True, range="str", description="Indicates the specific type of association"
+        "category",
+        replace_if_present=True,
+        range="str",
+        description="Indicates the specific type of association",
     )
 
     # Transform with preserve_class_designator=True
-    config = FlattenTransformerConfiguration(preserve_class_designator=True, class_designator_slot="category")
+    config = FlattenTransformerConfiguration(
+        preserve_class_designator=True, class_designator_slot="category"
+    )
     transformer = RollupTransformer(target_class="Association", config=config)
     transformer.set_schema(sb.schema)
     flattened_schema = transformer.transform()
@@ -275,7 +291,9 @@ def test_slot_merging_with_multiple_descendants():
     sb.add_class("Child2", is_a="Base", slots=["common"])
 
     sb.add_slot("id", replace_if_present=True, range="string")
-    sb.add_slot("common", replace_if_present=True, range="string", description="A common slot")
+    sb.add_slot(
+        "common", replace_if_present=True, range="string", description="A common slot"
+    )
 
     transformer = RollupTransformer(target_class="Base")
     transformer.set_schema(sb.schema)

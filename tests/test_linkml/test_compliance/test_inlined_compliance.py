@@ -39,7 +39,9 @@ from test_linkml.test_compliance.test_compliance import (
 @pytest.mark.parametrize("inlined_as_list", [0, "IAL"])
 @pytest.mark.parametrize("inlined", [0, "INL"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)  ## TODO: consider limiting this
-def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, data, request):
+def test_inlined(
+    framework, inlined, inlined_as_list, multivalued, foreign_key, data, request
+):
     """
     Tests behavior of inlined slots.
 
@@ -77,7 +79,13 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
         (PYDANTIC, True, False, False, False): "D",
         (PYDANTIC, True, False, False, True): "D",
         (PYDANTIC, True, False, True, False): "list[D]",
-        (PYDANTIC, True, False, True, True): "dict[str, D]",  ## TODO: relax for CompactDict
+        (
+            PYDANTIC,
+            True,
+            False,
+            True,
+            True,
+        ): "dict[str, D]",  ## TODO: relax for CompactDict
         (PYDANTIC, True, True, False, False): "D",  # odd but valid combo
         (PYDANTIC, True, True, False, True): "D",
         (PYDANTIC, True, True, True, False): "list[D]",
@@ -98,8 +106,20 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             True,
             True,
         ): "Union[Union[str, DId], list[Union[str, DId]]]",
-        (PYTHON_DATACLASSES, False, True, False, False): 'Union[dict, "D"]',  # odd but valid combo
-        (PYTHON_DATACLASSES, False, True, False, True): 'Union[dict, "D"]',  # odd but valid combo
+        (
+            PYTHON_DATACLASSES,
+            False,
+            True,
+            False,
+            False,
+        ): 'Union[dict, "D"]',  # odd but valid combo
+        (
+            PYTHON_DATACLASSES,
+            False,
+            True,
+            False,
+            True,
+        ): 'Union[dict, "D"]',  # odd but valid combo
         (
             PYTHON_DATACLASSES,
             False,
@@ -130,7 +150,13 @@ def test_inlined(framework, inlined, inlined_as_list, multivalued, foreign_key, 
             True,
             True,
         ): 'Union[dict[Union[str, DId], Union[dict, "D"]], list[Union[dict, "D"]]]',
-        (PYTHON_DATACLASSES, True, True, False, False): 'Union[dict, "D"]',  # odd but valid combo
+        (
+            PYTHON_DATACLASSES,
+            True,
+            True,
+            False,
+            False,
+        ): 'Union[dict, "D"]',  # odd but valid combo
         (PYTHON_DATACLASSES, True, True, False, True): 'Union[dict, "D"]',
         (
             PYTHON_DATACLASSES,
@@ -305,13 +331,37 @@ ANNOTATED_ATTRS = {
         ("extra", EXTRA_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S1: "y"}}, True),
         ("extra", EXTRA_ATTRS, "empty", {}, True),
         ("implicit", IMPLICIT_ATTRS, "t1", {"x": "y"}, True),
-        ("implicit", IMPLICIT_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
-        ("implicit", IMPLICIT_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
+        (
+            "implicit",
+            IMPLICIT_ATTRS,
+            "expanded",
+            {"x": {SLOT_ID: "x", SLOT_S2: "y"}},
+            True,
+        ),
+        (
+            "implicit",
+            IMPLICIT_ATTRS,
+            "expanded2",
+            {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}},
+            True,
+        ),
         ("implicit", IMPLICIT_ATTRS, "expanded_noreqval", {"x": {}}, False),
         ("implicit", IMPLICIT_ATTRS, "empty", {}, True),
         ("annotated", ANNOTATED_ATTRS, "t1", {"x": "y"}, True),
-        ("annotated", ANNOTATED_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
-        ("annotated", ANNOTATED_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
+        (
+            "annotated",
+            ANNOTATED_ATTRS,
+            "expanded",
+            {"x": {SLOT_ID: "x", SLOT_S2: "y"}},
+            True,
+        ),
+        (
+            "annotated",
+            ANNOTATED_ATTRS,
+            "expanded2",
+            {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}},
+            True,
+        ),
         ("annotated", ANNOTATED_ATTRS, "empty", {}, True),
     ],
 )
@@ -351,7 +401,9 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
         if framework != JSON_SCHEMA:
             pytest.skip("TODO: dataclasses-based methods are permissive")
     if data_name == "expanded_noval" and framework != JSON_SCHEMA:
-        pytest.skip("TODO: dataclasses-based methods dislike empty values for simpledict")
+        pytest.skip(
+            "TODO: dataclasses-based methods dislike empty values for simpledict"
+        )
     coerced = None
     classes = {
         CLASS_D: {
@@ -368,7 +420,12 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
         },
     }
     schema = validated_schema(
-        test_inlined_as_simple_dict, name, framework, classes=classes, description=name, core_elements=["inlined"]
+        test_inlined_as_simple_dict,
+        name,
+        framework,
+        classes=classes,
+        description=name,
+        core_elements=["inlined"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if data_name == "wrong_type":

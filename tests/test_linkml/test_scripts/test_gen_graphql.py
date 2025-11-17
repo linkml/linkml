@@ -20,7 +20,9 @@ def test_metamodel_valid_call_1(snapshot):
 
 def test_metamodel_valid_call_2():
     runner = CliRunner()
-    result = runner.invoke(graphqlgen.cli, ["--strict-naming", KITCHEN_SINK_PATH], catch_exceptions=True)
+    result = runner.invoke(
+        graphqlgen.cli, ["--strict-naming", KITCHEN_SINK_PATH], catch_exceptions=True
+    )
     assert result.exit_code != 0
     assert result.output == ""
     assert isinstance(result.exception, ValueError)
@@ -28,6 +30,8 @@ def test_metamodel_valid_call_2():
 
 def test_metamodel_invalid_call():
     runner = CliRunner()
-    result = runner.invoke(graphqlgen.cli, ["-f", "xsv", KITCHEN_SINK_PATH], standalone_mode=False)
+    result = runner.invoke(
+        graphqlgen.cli, ["-f", "xsv", KITCHEN_SINK_PATH], standalone_mode=False
+    )
     assert result.exit_code != 0
     assert "xsv" in str(result.exception)

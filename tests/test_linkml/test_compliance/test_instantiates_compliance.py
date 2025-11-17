@@ -10,7 +10,11 @@ from test_linkml.test_compliance.helper import (
     check_data,
     validated_schema,
 )
-from test_linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
+from test_linkml.test_compliance.test_compliance import (
+    CLASS_C,
+    CORE_FRAMEWORKS,
+    SLOT_S1,
+)
 
 
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)

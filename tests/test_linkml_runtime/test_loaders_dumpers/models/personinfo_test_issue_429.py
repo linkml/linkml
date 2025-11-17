@@ -22,7 +22,9 @@ version = None
 # Namespaces
 ORCID = CurieNamespace("ORCID", "https://orcid.org/")
 LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-PERSONINFO = CurieNamespace("personinfo", "https://w3id.org/linkml/examples/personinfo/")
+PERSONINFO = CurieNamespace(
+    "personinfo", "https://w3id.org/linkml/examples/personinfo/"
+)
 SDO = CurieNamespace("sdo", "http://schema.org/")
 DEFAULT_ = PERSONINFO
 
@@ -76,10 +78,16 @@ class Container(YAMLRoot):
     class_name: ClassVar[str] = "Container"
     class_model_uri: ClassVar[URIRef] = PERSONINFO.Container
 
-    persons: Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]] = empty_dict()
+    persons: Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        self._normalize_inlined_as_list(slot_name="persons", slot_type=Person, key_name="id", keyed=True)
+        self._normalize_inlined_as_list(
+            slot_name="persons", slot_type=Person, key_name="id", keyed=True
+        )
 
         super().__post_init__(**kwargs)
 
@@ -93,7 +101,12 @@ class slots:
 
 
 slots.id = Slot(
-    uri=PERSONINFO.id, name="id", curie=PERSONINFO.curie("id"), model_uri=PERSONINFO.id, domain=None, range=URIRef
+    uri=PERSONINFO.id,
+    name="id",
+    curie=PERSONINFO.curie("id"),
+    model_uri=PERSONINFO.id,
+    domain=None,
+    range=URIRef,
 )
 
 slots.full_name = Slot(
@@ -129,5 +142,9 @@ slots.container__persons = Slot(
     curie=PERSONINFO.curie("persons"),
     model_uri=PERSONINFO.container__persons,
     domain=None,
-    range=Optional[Union[dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]]],
+    range=Optional[
+        Union[
+            dict[Union[str, PersonId], Union[dict, Person]], list[Union[dict, Person]]
+        ]
+    ],
 )

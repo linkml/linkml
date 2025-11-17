@@ -17,7 +17,11 @@ from test_linkml_runtime.test_loaders_dumpers import (
     LD_11_SVR,
 )
 from test_linkml_runtime.test_loaders_dumpers.environment import env
-from test_linkml_runtime.test_loaders_dumpers.models.termci_schema import ConceptReference, ConceptSystem, Package
+from test_linkml_runtime.test_loaders_dumpers.models.termci_schema import (
+    ConceptReference,
+    ConceptSystem,
+    Package,
+)
 
 OBO = Namespace("http://purl.obolibrary.org/obo/")
 NCIT = Namespace("http://purl.obolibrary.org/obo/NCI_")
@@ -75,14 +79,18 @@ def dumps_test(filename: str, dumper, comparator=None) -> bool:
 def test_yaml_dumper(test_package):
     """Test the yaml emitter"""
     # TODO: Once this is entered into the BiolinkML test package, compare this to input/obo_test.yaml
-    dump_test("obo_sample.yaml", lambda out_fname: yaml_dumper.dump(test_package, out_fname))
+    dump_test(
+        "obo_sample.yaml", lambda out_fname: yaml_dumper.dump(test_package, out_fname)
+    )
     dumps_test("obo_sample.yaml", lambda: yaml_dumper.dumps(test_package))
 
 
 def test_json_dumper(test_package):
     """Test the json emitter"""
     # TODO: Same as test_yaml_dumper
-    dump_test("obo_sample.json", lambda out_fname: json_dumper.dump(test_package, out_fname))
+    dump_test(
+        "obo_sample.json", lambda out_fname: json_dumper.dump(test_package, out_fname)
+    )
 
     obo_json_obj = cast(Package, as_json_object(test_package))
     assert obo_json_obj.system[0].namespace == OBO
@@ -92,16 +100,22 @@ def test_json_dumper(test_package):
     dump_test(
         "obo_sample_context.json",
         lambda out_fname: json_dumper.dump(
-            test_package, out_fname, GITHUB_LD10_CONTEXT + "termci_schema.context.jsonld"
+            test_package,
+            out_fname,
+            GITHUB_LD10_CONTEXT + "termci_schema.context.jsonld",
         ),
     )
     dumps_test(
         "obo_sample_context.json",
-        lambda: json_dumper.dumps(test_package, GITHUB_LD11_CONTEXT + "termci_schema_inlined.context.jsonld"),
+        lambda: json_dumper.dumps(
+            test_package, GITHUB_LD11_CONTEXT + "termci_schema_inlined.context.jsonld"
+        ),
     )
 
 
-@pytest.mark.skip(reason="This needs an enhanced (https://github.com/hsolbrig/pyld) version of pyld")
+@pytest.mark.skip(
+    reason="This needs an enhanced (https://github.com/hsolbrig/pyld) version of pyld"
+)
 def test_rdf_dumper(test_package):
     """Test the rdf dumper"""
     contexts = os.path.join(LD_11_DIR, "termci_schema_inlined.context.jsonld")
@@ -126,7 +140,9 @@ def test_rdf_dumper(test_package):
     fname = "obo_sample.jsonld"
     dump_test(
         fname,
-        lambda out_file: rdf_dumper.dump(test_package, out_file, contexts, fmt="json-ld"),
+        lambda out_file: rdf_dumper.dump(
+            test_package, out_file, contexts, fmt="json-ld"
+        ),
         comparator=lambda e, a: ClickTestCase.rdf_comparator(e, a, fmt="json-ld"),
     )
     with open(env.expected_path("dump", fname)) as f:
@@ -138,7 +154,9 @@ def test_rdf_dumper(test_package):
 @pytest.mark.skip(reason="Waiting until PyLD learns to handle relative context URI's")
 def test_nested_contexts(test_package):
     """Test JSON-LD with fully nested contexts"""
-    from test_linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
+    from test_linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import (
+        LoaderDumperTestCase,
+    )
 
     context_servers = []
     for possible_server in [LD_11_SVR, LD_11_SSL_SVR]:
@@ -153,5 +171,11 @@ def test_nested_contexts(test_package):
 
     for context_base in context_servers:
         nested_context = context_base + "Package.context.jsonld"
-        dump_test("obo_sample_nested.ttl", lambda out_file: rdf_dumper.dump(test_package, out_file, nested_context))
-        dumps_test("obo_sample_nested.ttl", lambda: rdf_dumper.dumps(test_package, nested_context))
+        dump_test(
+            "obo_sample_nested.ttl",
+            lambda out_file: rdf_dumper.dump(test_package, out_file, nested_context),
+        )
+        dumps_test(
+            "obo_sample_nested.ttl",
+            lambda: rdf_dumper.dumps(test_package, nested_context),
+        )

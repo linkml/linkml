@@ -36,7 +36,9 @@ classes:
         )
 
 
-def write_config_file(name: str, extends_recommended: bool = False, tree_root_level: str = "error") -> None:
+def write_config_file(
+    name: str, extends_recommended: bool = False, tree_root_level: str = "error"
+) -> None:
     with open(name, "w") as f:
         if extends_recommended:
             f.write(
@@ -65,8 +67,14 @@ def test_no_config(runner):
 
         result = runner.invoke(main, [SCHEMA_FILE])
         assert result.exit_code == 2
-        assert "warning  Class 'Adult' does not have recommended slot 'description'  (recommended)" in result.stdout
-        assert "error    Slot 'age_in_yeas' not found on class 'Adult'  (no_invalid_slot_usage)" in result.stdout
+        assert (
+            "warning  Class 'Adult' does not have recommended slot 'description'  (recommended)"
+            in result.stdout
+        )
+        assert (
+            "error    Slot 'age_in_yeas' not found on class 'Adult'  (no_invalid_slot_usage)"
+            in result.stdout
+        )
         assert "warning  Class has name 'person'  (standard_naming)" in result.stdout
 
 
@@ -77,7 +85,10 @@ def test_implicit_config_file(runner):
 
         result = runner.invoke(main, [SCHEMA_FILE])
         assert result.exit_code == 2
-        assert "error    Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "error    Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
         assert "Class has name 'person'" not in result.stdout
 
 
@@ -89,7 +100,10 @@ def test_explicit_config_file(runner):
 
         result = runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
         assert result.exit_code == 2
-        assert "error    Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "error    Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
         assert "Class has name 'person'" not in result.stdout
 
 
@@ -101,7 +115,10 @@ def test_config_extends_recommended(runner):
 
         result = runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
         assert result.exit_code == 2
-        assert "error    Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "error    Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
         assert "warning  Class has name 'person'  (standard_naming)" in result.stdout
 
 
@@ -109,44 +126,70 @@ def test_warning_exit_code(runner):
     config_file = "config.yaml"
     with runner.isolated_filesystem():
         write_schema_file()
-        write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
+        write_config_file(
+            config_file, extends_recommended=False, tree_root_level="warning"
+        )
 
         result = runner.invoke(main, ["--config", config_file, SCHEMA_FILE])
         assert result.exit_code == 1
-        assert "warning  Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "warning  Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
 
 
 def test_ignore_warnings_flag(runner):
     config_file = "config.yaml"
     with runner.isolated_filesystem():
         write_schema_file()
-        write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
+        write_config_file(
+            config_file, extends_recommended=False, tree_root_level="warning"
+        )
 
-        result = runner.invoke(main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE])
+        result = runner.invoke(
+            main, ["--config", config_file, "--ignore-warnings", SCHEMA_FILE]
+        )
         assert result.exit_code == 0
-        assert "warning  Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "warning  Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
 
 
 def test_max_warnings_flag(runner):
     config_file = "config.yaml"
     with runner.isolated_filesystem():
         write_schema_file()
-        write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
+        write_config_file(
+            config_file, extends_recommended=False, tree_root_level="warning"
+        )
 
-        result = runner.invoke(main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE])
+        result = runner.invoke(
+            main, ["--config", config_file, "--max-warnings", 1, SCHEMA_FILE]
+        )
         assert result.exit_code == 0
-        assert "warning  Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "warning  Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
 
 
 def test_exceeded_max_warnings_flag(runner):
     config_file = "config.yaml"
     with runner.isolated_filesystem():
         write_schema_file()
-        write_config_file(config_file, extends_recommended=False, tree_root_level="warning")
+        write_config_file(
+            config_file, extends_recommended=False, tree_root_level="warning"
+        )
 
-        result = runner.invoke(main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE])
+        result = runner.invoke(
+            main, ["--config", config_file, "--max-warnings", 0, SCHEMA_FILE]
+        )
         assert result.exit_code == 1
-        assert "warning  Schema does not have class with `tree_root: true`  (tree_root_class)" in result.stdout
+        assert (
+            "warning  Schema does not have class with `tree_root: true`  (tree_root_class)"
+            in result.stdout
+        )
 
 
 def test_no_schema_errors(runner):
@@ -321,7 +364,10 @@ classes:
 
         result = runner.invoke(main, ["--validate", SCHEMA_FILE])
         assert result.exit_code == 2
-        assert "error    In <root>: 'name' is a required property  (valid-schema)" in result.stdout
+        assert (
+            "error    In <root>: 'name' is a required property  (valid-schema)"
+            in result.stdout
+        )
         assert "warning  Class has name 'person'  (standard_naming)" in result.stdout
 
 
@@ -339,5 +385,8 @@ classes:
 
         result = runner.invoke(main, ["--validate-only", SCHEMA_FILE])
         assert result.exit_code == 2
-        assert "error    In <root>: 'name' is a required property  (valid-schema)" in result.stdout
+        assert (
+            "error    In <root>: 'name' is a required property  (valid-schema)"
+            in result.stdout
+        )
         assert "(standard_naming)" not in result.stdout

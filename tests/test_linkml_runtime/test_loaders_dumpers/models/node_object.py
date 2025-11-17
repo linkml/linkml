@@ -100,7 +100,9 @@ class NodeObject(Node):
     class_model_uri: ClassVar[URIRef] = EX.NodeObject
 
     id: Union[str, NodeObjectId] = None
-    statements: Optional[Union[Union[dict, Triple], list[Union[dict, Triple]]]] = empty_list()
+    statements: Optional[Union[Union[dict, Triple], list[Union[dict, Triple]]]] = (
+        empty_list()
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.id):
@@ -110,7 +112,10 @@ class NodeObject(Node):
 
         if not isinstance(self.statements, list):
             self.statements = [self.statements] if self.statements is not None else []
-        self.statements = [v if isinstance(v, Triple) else Triple(**as_dict(v)) for v in self.statements]
+        self.statements = [
+            v if isinstance(v, Triple) else Triple(**as_dict(v))
+            for v in self.statements
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -123,7 +128,14 @@ class slots:
     pass
 
 
-slots.id = Slot(uri=EX.id, name="id", curie=EX.curie("id"), model_uri=EX.id, domain=None, range=URIRef)
+slots.id = Slot(
+    uri=EX.id,
+    name="id",
+    curie=EX.curie("id"),
+    model_uri=EX.id,
+    domain=None,
+    range=URIRef,
+)
 
 slots.subject = Slot(
     uri=RDF.subject,
@@ -144,7 +156,12 @@ slots.predicate = Slot(
 )
 
 slots.object = Slot(
-    uri=RDF.object, name="object", curie=RDF.curie("object"), model_uri=EX.object, domain=None, range=Optional[str]
+    uri=RDF.object,
+    name="object",
+    curie=RDF.curie("object"),
+    model_uri=EX.object,
+    domain=None,
+    range=Optional[str],
 )
 
 slots.graph = Slot(
@@ -166,5 +183,10 @@ slots.statements = Slot(
 )
 
 slots.type = Slot(
-    uri=EX.type, name="type", curie=EX.curie("type"), model_uri=EX.type, domain=None, range=Optional[Union[str, NodeId]]
+    uri=EX.type,
+    name="type",
+    curie=EX.curie("type"),
+    model_uri=EX.type,
+    domain=None,
+    range=Optional[Union[str, NodeId]],
 )

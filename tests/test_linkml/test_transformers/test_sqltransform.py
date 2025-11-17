@@ -92,7 +92,10 @@ def test_injection_clash(c_has_pk: bool, d_has_pk: bool) -> None:  # noqa: FBT00
     c_id_col = "id" if c_has_pk else "uid"
     d_id_col = "id" if d_has_pk else "uid"
     assert set(c_has_d.attributes.keys()) == {f"c_{c_id_col}", f"has_d_{d_id_col}"}
-    assert set(get_primary_key_attributes(c_has_d)) == {f"c_{c_id_col}", f"has_d_{d_id_col}"}
+    assert set(get_primary_key_attributes(c_has_d)) == {
+        f"c_{c_id_col}",
+        f"has_d_{d_id_col}",
+    }
 
 
 def test_no_inject_primary_key() -> None:
@@ -111,7 +114,9 @@ def test_no_inject_primary_key() -> None:
 def test_multivalued_literal() -> None:
     """Test translation of lists of strings."""
     b = SchemaBuilder()
-    b.add_class("c", ["name", "description", "aliases"]).set_slot("aliases", multivalued=True, singular_name="alias")
+    b.add_class("c", ["name", "description", "aliases"]).set_slot(
+        "aliases", multivalued=True, singular_name="alias"
+    )
     rel_schema = _translate(b).schema
     rsv = SchemaView(rel_schema)
     c = rsv.get_class("c")
@@ -180,7 +185,9 @@ def test_inject_many_to_many(add_id_to_c: bool, add_id_to_d: bool) -> None:  # n
     b = SchemaBuilder()
     b.add_class("c", slots_c + (["id"] if add_id_to_c else []))
     b = b.add_class("d", slots_d + (["id"] if add_id_to_d else []))
-    b = b.set_slot("has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False)
+    b = b.set_slot(
+        "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
+    )
     if add_id_to_c or add_id_to_d:
         b = b.set_slot("id", identifier=True)
     rel_schema = _translate(b).schema
@@ -206,7 +213,9 @@ def test_inject_many_to_many_with_inheritance() -> None:
     b.add_class("c", slots).add_class("d", ["name"]).set_slot(
         "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
     )
-    b.add_class("c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")})
+    b.add_class(
+        "c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")}
+    )
     b.add_class("d1", is_a="d")
     rel_schema = _translate(b).schema
     rsv = SchemaView(rel_schema)
@@ -235,10 +244,14 @@ def test_no_foreign_keys() -> None:
     b.add_class("c", slots).add_class("d", ["name"]).set_slot(
         "has_ds", singular_name="has_d", range="d", multivalued=True, inlined=False
     )
-    b.add_class("c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")})
+    b.add_class(
+        "c1", is_a="c", slot_usage={"has_ds": SlotDefinition("has_ds", range="d1")}
+    )
     b.add_class("d1", is_a="d")
     sv = SchemaView(b.schema)
-    sqltr = RelationalModelTransformer(sv, foreign_key_policy=ForeignKeyPolicy.NO_FOREIGN_KEYS)
+    sqltr = RelationalModelTransformer(
+        sv, foreign_key_policy=ForeignKeyPolicy.NO_FOREIGN_KEYS
+    )
     result = sqltr.transform()
     rel_schema = result.schema
     rsv = SchemaView(rel_schema)
@@ -312,7 +325,12 @@ def test_sqlt_complete_example(input_path: Path) -> None:
 
     # check multivalued are preserved as slots;
     # these are referenced from inverses
-    for s in ["aliases", "has_medical_history", "has_familial_relationships", "has_employment_history"]:
+    for s in [
+        "aliases",
+        "has_medical_history",
+        "has_familial_relationships",
+        "has_employment_history",
+    ]:
         assert sv.get_slot(s).multivalued
 
     c = sv.get_class("Person")
@@ -331,7 +349,11 @@ def test_sqlt_complete_example(input_path: Path) -> None:
         "MedicalEvent",
     ]:
         c = sv.get_class(relationship_class)
-        assert any(a for a in c.attributes.values() if a.range == "Person" and a.name == "Person_id")
+        assert any(
+            a
+            for a in c.attributes.values()
+            if a.range == "Person" and a.name == "Person_id"
+        )
         pk = sv.get_identifier_slot(cn)
         assert pk is not None
         assert pk.name == "id"

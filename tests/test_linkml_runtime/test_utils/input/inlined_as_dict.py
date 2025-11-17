@@ -84,10 +84,14 @@ class E(YAMLRoot):
     class_name: ClassVar[str] = "E"
     class_model_uri: ClassVar[URIRef] = EX.E
 
-    ev: Optional[Union[dict[Union[str, EInstS1], Union[dict, EInst]], list[Union[dict, EInst]]]] = empty_dict()
+    ev: Optional[
+        Union[dict[Union[str, EInstS1], Union[dict, EInst]], list[Union[dict, EInst]]]
+    ] = empty_dict()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        self._normalize_inlined_as_dict(slot_name="ev", slot_type=EInst, key_name="s1", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="ev", slot_type=EInst, key_name="s1", keyed=True
+        )
         super().__post_init__(**kwargs)
 
 

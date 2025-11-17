@@ -12,13 +12,17 @@ def test_validate_person_instance_from_personinfo(input_path, personinfo_path):
     instance_path = input_path("personinfo_person_inst_01.yaml")
 
     # Load Person instance
-    instance_data = yaml_loader.load(instance_path, target_class=personinfo_python.Person)
+    instance_data = yaml_loader.load(
+        instance_path, target_class=personinfo_python.Person
+    )
 
     # Initialize validator with personinfo schema
     validator = Validator(personinfo_path)
 
     # Validate Person instance against personinfo schema using validator
-    validation_results = validator.validate(instance_data, target_class=personinfo_python.Person)
+    validation_results = validator.validate(
+        instance_data, target_class=personinfo_python.Person
+    )
 
     # Check that no errors are captured in the returned ValidationReport
     assert validation_results.results == []

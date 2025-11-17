@@ -66,7 +66,9 @@ def test_multiple_excel_workbooks_generation(input_path, tmp_path):
     organization_schema = str(input_path("organization.yaml"))
     excel_files_folder = str(tmp_path)
 
-    ExcelGenerator(organization_schema, split_workbook_by_class=True, output=excel_files_folder).serialize()
+    ExcelGenerator(
+        organization_schema, split_workbook_by_class=True, output=excel_files_folder
+    ).serialize()
 
     _, _, files = next(os.walk(excel_files_folder))
     file_count = len(files)
@@ -126,7 +128,9 @@ def test_file_generation_for_mixins(input_path, tmp_path):
     excel_files_folder = str(tmp_path)
 
     # Call ExcelGenerator generator class without including mixins
-    ExcelGenerator(kitchen_sink_schema, split_workbook_by_class=True, output=excel_files_folder).serialize()
+    ExcelGenerator(
+        kitchen_sink_schema, split_workbook_by_class=True, output=excel_files_folder
+    ).serialize()
 
     _, _, files = next(os.walk(excel_files_folder))
     file_count = len(files)
@@ -139,7 +143,10 @@ def test_file_generation_for_mixins(input_path, tmp_path):
 
     # Call ExcelGenerator generator class with mixins
     ExcelGenerator(
-        kitchen_sink_schema, split_workbook_by_class=True, output=excel_files_folder, include_mixins=True
+        kitchen_sink_schema,
+        split_workbook_by_class=True,
+        output=excel_files_folder,
+        include_mixins=True,
     ).serialize()
 
     _, _, files = next(os.walk(excel_files_folder))

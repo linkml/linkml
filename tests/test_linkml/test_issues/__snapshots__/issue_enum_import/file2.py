@@ -6,71 +6,29 @@
 # description:
 # license:
 
-import dataclasses
-import re
 from dataclasses import dataclass
-from datetime import (
-    date,
-    datetime,
-    time
-)
-from typing import (
-    Any,
-    ClassVar,
-    Dict,
-    List,
-    Optional,
-    Union
-)
+from typing import Any, ClassVar, Union
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
-from linkml_runtime.linkml_model.meta import (
-    EnumDefinition,
-    PermissibleValue,
-    PvFormulaOptions
-)
+from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import (
-    camelcase,
-    sfx,
-    underscore
-)
-from linkml_runtime.utils.metamodelcore import (
-    bnode,
-    empty_dict,
-    empty_list
-)
 from linkml_runtime.utils.slot import Slot
-from linkml_runtime.utils.yamlutils import (
-    YAMLRoot,
-    extended_float,
-    extended_int,
-    extended_str
-)
-from rdflib import (
-    Namespace,
-    URIRef
-)
-
+from linkml_runtime.utils.yamlutils import YAMLRoot
+from rdflib import URIRef
 
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
-TCCM = CurieNamespace('tccm', 'https://hotecosystem.org/tccm/')
+LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
+TCCM = CurieNamespace("tccm", "https://hotecosystem.org/tccm/")
 DEFAULT_ = TCCM
 
 
 # Types
 
 # Class references
-
 
 
 @dataclass(repr=False)
@@ -115,21 +73,30 @@ class Directory(YAMLRoot):
 
 # Enumerations
 class CompleteDirectory(EnumDefinitionImpl):
-
     COMPLETE = PermissibleValue(
         text="COMPLETE",
-        description="The Directory contains all of the qualifying entries")
+        description="The Directory contains all of the qualifying entries",
+    )
     PARTIAL = PermissibleValue(
         text="PARTIAL",
-        description="The directory contains only a partial listing of the qualifying entries.")
+        description="The directory contains only a partial listing of the qualifying entries.",
+    )
 
     _defn = EnumDefinition(
         name="CompleteDirectory",
     )
 
+
 # Slots
 class slots:
     pass
 
-slots.directory__complete = Slot(uri=TCCM['directories_and_lists/complete'], name="directory__complete", curie=TCCM.curie('directories_and_lists/complete'),
-                   model_uri=TCCM.directory__complete, domain=None, range=Union[str, "CompleteDirectory"])
+
+slots.directory__complete = Slot(
+    uri=TCCM["directories_and_lists/complete"],
+    name="directory__complete",
+    curie=TCCM.curie("directories_and_lists/complete"),
+    model_uri=TCCM.directory__complete,
+    domain=None,
+    range=Union[str, "CompleteDirectory"],
+)

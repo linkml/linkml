@@ -1,7 +1,6 @@
-import pytest
 import unittest
 
-from linkml_runtime.utils.csvutils import _get_key_config, get_configmap
+from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from test_linkml_runtime.support.test_environment import TestEnvironmentTestCase
 from test_linkml_runtime.test_utils.environment import env

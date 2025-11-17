@@ -33,4 +33,6 @@ def test_uniqueness_constraint_on_multivalued():
     assert "MyClass_my_slot" in output, "expected backref for multivalued"
     # the uniqueness constraint is necessarily dropped since it can't
     # be directly represented in SQL after relmodel transformation
-    assert "unique" not in output.lower(), "expected MV uniqueness constraint to be dropped"
+    assert "unique" not in output.lower(), (
+        "expected MV uniqueness constraint to be dropped"
+    )

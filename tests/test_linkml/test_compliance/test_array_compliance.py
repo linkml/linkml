@@ -117,7 +117,13 @@ def test_array(framework, description, ndim, object, is_valid):
             },
         },
     }
-    schema = validated_schema(test_array, f"array-ndim{ndim}", framework, classes=classes, core_elements=["array"])
+    schema = validated_schema(
+        test_array,
+        f"array-ndim{ndim}",
+        framework,
+        classes=classes,
+        core_elements=["array"],
+    )
     if framework in [PYTHON_DATACLASSES, SQL_DDL_SQLITE, SHACL, OWL]:
         pytest.skip("Not implemented yet")
     expected_behavior = ValidationBehavior.IMPLEMENTS

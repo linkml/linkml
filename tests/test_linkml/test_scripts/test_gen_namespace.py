@@ -10,8 +10,9 @@ from ..conftest import KITCHEN_SINK_PATH
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
-    assert "Generate a namespace manager for all of the prefixes represented in a LinkML model" in re.sub(
-        r"\s+", " ", result.output
+    assert (
+        "Generate a namespace manager for all of the prefixes represented in a LinkML model"
+        in re.sub(r"\s+", " ", result.output)
     )
 
 

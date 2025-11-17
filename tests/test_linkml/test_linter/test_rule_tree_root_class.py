@@ -24,7 +24,9 @@ def schema_view():
 
 def test_single_tree_root():
     sb = SchemaBuilder()
-    cd_org = ClassDefinition("Organization", slots=[SlotDefinition("name", range="string")], tree_root=True)
+    cd_org = ClassDefinition(
+        "Organization", slots=[SlotDefinition("name", range="string")], tree_root=True
+    )
     cd_dept = ClassDefinition("Department", slots=["name"], tree_root=True)
     sb.add_class(cd_org)
     sb.add_class(cd_dept)
@@ -42,7 +44,9 @@ def test_single_tree_root():
 
 def test_single_tree_root_with_valid_name():
     sb = SchemaBuilder()
-    cd_org = ClassDefinition("Organization", slots=[SlotDefinition("name", range="string")], tree_root=True)
+    cd_org = ClassDefinition(
+        "Organization", slots=[SlotDefinition("name", range="string")], tree_root=True
+    )
     cd_dept = ClassDefinition("Department", slots=["name"], tree_root=True)
     sb.add_class(cd_org)
     sb.add_class(cd_dept)

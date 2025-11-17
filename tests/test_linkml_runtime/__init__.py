@@ -25,7 +25,9 @@ test_settings = config["test.settings"]
 # Action on mismatch.  One of 'Ignore', 'Report' or 'Fail'
 #  If 'Fail', the expected file will be saved in the appropriate temp directory
 #  NOTE: Before setting this back to Report or Ignore, you need to run cleartemp.sh in this directory
-DEFAULT_MISMATCH_ACTION = eval(test_settings.get("DEFAULT_MISMATCH_ACTION", "MismatchAction.Report"))
+DEFAULT_MISMATCH_ACTION = eval(
+    test_settings.get("DEFAULT_MISMATCH_ACTION", "MismatchAction.Report")
+)
 
 # Use local import map.  If True, tests/input/local_import_map.json is used to create the test files.  Note that this
 #  will result in local path names being recorded in jsonld files.  This should always be set to False before generating
@@ -41,7 +43,8 @@ DEFAULT_LOG_LEVEL_TEXT = test_settings.get("DEFAULT_LOG_LEVEL_TEXT", "ERROR")
 # Skip RDF comparison, as it takes a lot of time
 SKIP_RDF_COMPARE = test_settings.getboolean("SKIP_RDF_COMPARE", False)
 SKIP_RDF_COMPARE_REASON = test_settings.get(
-    "SKIP_RDF_COMPARE_REASON", "tests/__init__.py RDF output not checked SKIP_RDF_COMPARE is True"
+    "SKIP_RDF_COMPARE_REASON",
+    "tests/__init__.py RDF output not checked SKIP_RDF_COMPARE is True",
 )
 
 

@@ -92,7 +92,12 @@ def test_eq(expr1, expr2, is_eq):
         (a & (b | ~c), None, (a & b) | (a & ~c), (a & b) | (a & ~c)),
         ((a & b) | c, None, (a & b) | c, (a & b) | c),
         ((a | b) & c, None, (a & c) | (b & c), (a & c) | (b & c)),
-        ((a | b) & (c | d), None, Or(a & c, a & d, b & c, b & d), Or(a & c, a & d, b & c, b & d)),
+        (
+            (a | b) & (c | d),
+            None,
+            Or(a & c, a & d, b & c, b & d),
+            Or(a & c, a & d, b & c, b & d),
+        ),
         (And(a, And(b, c)), None, And(a, b, c), And(a, b, c)),
         (a & (b & ~a), True, And(a, b, ~a), F),
         # (a & (b | (c & ~a)), None, ((c & ~a) & a) | (a & b), a),
@@ -130,7 +135,8 @@ def test_eq(expr1, expr2, is_eq):
         (
             IsIn(a, [1, 2, 3]) & (IsIn(a, [0, 1]) | IsIn(a, [3, 4])),
             None,
-            (IsIn(a, [1, 2, 3]) & IsIn(a, [0, 1])) | (IsIn(a, [1, 2, 3]) & IsIn(a, [3, 4])),
+            (IsIn(a, [1, 2, 3]) & IsIn(a, [0, 1]))
+            | (IsIn(a, [1, 2, 3]) & IsIn(a, [3, 4])),
             IsIn(a, [1, 3]),
         ),
         # (a < 5, None, a < 5, a < 5),

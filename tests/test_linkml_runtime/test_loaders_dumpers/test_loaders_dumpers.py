@@ -11,7 +11,10 @@ from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
 from linkml_runtime.loaders import json_loader, rdflib_loader, yaml_loader
 from linkml_runtime.utils.schemaview import SchemaView
 from test_linkml_runtime.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
-from test_linkml_runtime.test_loaders_dumpers.models.node_object import NodeObject, Triple
+from test_linkml_runtime.test_loaders_dumpers.models.node_object import (
+    NodeObject,
+    Triple,
+)
 from test_linkml_runtime.test_loaders_dumpers.models.personinfo import Container, Person
 
 logger = logging.getLogger(__name__)
@@ -51,8 +54,12 @@ def loader_dumper_setup():
 
     # Test RDF round-trip
     test_fn = OUT_TTL
-    rdflib_dumper.dump(container, schemaview=view, to_file=test_fn, prefix_map=prefix_map)
-    container = rdflib_loader.load(test_fn, target_class=Container, schemaview=view, prefix_map=prefix_map)
+    rdflib_dumper.dump(
+        container, schemaview=view, to_file=test_fn, prefix_map=prefix_map
+    )
+    container = rdflib_loader.load(
+        test_fn, target_class=Container, schemaview=view, prefix_map=prefix_map
+    )
     _check_objs(view, container)
 
     # Test JSON round-trip
@@ -79,7 +86,10 @@ def test_load_from_list(loader_dumper_setup):
     with open(DATA, encoding="UTF-8") as stream:
         data = yaml.safe_load(stream)
     person_dicts = data["persons"]
-    tuples = [(yaml_loader, yaml.dump(person_dicts)), (json_loader, json.dumps(person_dicts, default=str))]
+    tuples = [
+        (yaml_loader, yaml.dump(person_dicts)),
+        (json_loader, json.dumps(person_dicts, default=str)),
+    ]
     for loader, person_list_str in tuples:
         persons = loader.loads_any(person_list_str, target_class=Person)
         assert isinstance(persons, list)
@@ -187,10 +197,19 @@ def test_edge_cases(loader_dumper_setup):
         assert x.object is not None
         logger.info(f"  x={x}")
     # ranges that are objects are contracted
-    assert Triple(subject=None, predicate="rdfs:subClassOf", object="owl:Thing") in obj.statements
-    assert Triple(subject=None, predicate="rdfs:subClassOf", object="NCBITaxon:1") in obj.statements
+    assert (
+        Triple(subject=None, predicate="rdfs:subClassOf", object="owl:Thing")
+        in obj.statements
+    )
+    assert (
+        Triple(subject=None, predicate="rdfs:subClassOf", object="NCBITaxon:1")
+        in obj.statements
+    )
     # string ranges
-    assert Triple(subject=None, predicate="rdfs:label", object="Bacteria") in obj.statements
+    assert (
+        Triple(subject=None, predicate="rdfs:label", object="Bacteria")
+        in obj.statements
+    )
     with pytest.raises(ValueError):
         rdflib_loader.from_rdf_graph(
             graph,
@@ -221,4 +240,6 @@ def test_edge_cases(loader_dumper_setup):
             allow_unprocessed_triples=True,
             prefix_map=taxon_prefix_map,
         )
-        logger.error("Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")
+        logger.error(
+            "Passed unexpectedly: rdf:object is known to have a mix of literals and nodes"
+        )

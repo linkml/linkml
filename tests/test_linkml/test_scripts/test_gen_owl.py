@@ -44,7 +44,9 @@ def test_metamodel(arguments, snapshot_file, rdf_format, snapshot):
         (["-f", "n3"], "meta_owl_custom_enum_separator.n3", "n3"),
     ],
 )
-def test_metamodel_with_enum_iri_separator(arguments, snapshot_file, rdf_format, snapshot):
+def test_metamodel_with_enum_iri_separator(
+    arguments, snapshot_file, rdf_format, snapshot
+):
     runner = CliRunner()
     result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
     assert result.exit_code == 0

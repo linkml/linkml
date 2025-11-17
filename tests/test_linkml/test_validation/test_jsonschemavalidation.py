@@ -68,7 +68,9 @@ def test_validate_dict(_generate_jsonschema_cache):
 
 
 def test_validate_dict_including_descendants(_generate_jsonschema_cache):
-    validator = JsonSchemaDataValidator(schema=SCHEMA, include_range_class_descendants=True)
+    validator = JsonSchemaDataValidator(
+        schema=SCHEMA, include_range_class_descendants=True
+    )
 
     with open(PERSON_1) as file:
         obj = yaml.safe_load(file)

@@ -23,5 +23,8 @@ def test_pattern_resolver():
 
     resolver = PatternResolver(sv)
 
-    assert resolver.resolve("{float} {unit.length}") == "\\d+[\\.\\d+] (centimeter|meter|inch)"
+    assert (
+        resolver.resolve("{float} {unit.length}")
+        == "\\d+[\\.\\d+] (centimeter|meter|inch)"
+    )
     assert resolver.resolve("{float} {unit.weight}") == "\\d+[\\.\\d+] (kg|g|lbs|stone)"

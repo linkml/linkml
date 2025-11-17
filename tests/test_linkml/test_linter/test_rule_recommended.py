@@ -46,7 +46,9 @@ def test_include():
     builder.add_enum("MyEnum")
 
     schema_view = SchemaView(builder.schema)
-    config = RecommendedRuleConfig(level=RuleLevel.error.text, include=["my_slot"], exclude=[])
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text, include=["my_slot"], exclude=[]
+    )
 
     rule = RecommendedRule(config)
     problems = list(rule.check(schema_view))
@@ -63,7 +65,9 @@ def test_exclude():
     builder.add_enum("MyEnum")
 
     schema_view = SchemaView(builder.schema)
-    config = RecommendedRuleConfig(level=RuleLevel.error.text, include=[], exclude=["my_slot"])
+    config = RecommendedRuleConfig(
+        level=RuleLevel.error.text, include=[], exclude=["my_slot"]
+    )
 
     rule = RecommendedRule(config)
     problems = list(rule.check(schema_view))

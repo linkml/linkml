@@ -35,18 +35,36 @@ UO = CurieNamespace("UO", "http://purl.obolibrary.org/obo/UO_")
 ANY = CurieNamespace("any", "https://w3id.org/linkml/phenopackets/any/")
 ARGO = CurieNamespace("argo", "https://docs.icgc-argo.org/dictionary/")
 BASE = CurieNamespace("base", "https://w3id.org/linkml/phenopackets/base/")
-BIOSAMPLE = CurieNamespace("biosample", "https://w3id.org/linkml/phenopackets/biosample/")
+BIOSAMPLE = CurieNamespace(
+    "biosample", "https://w3id.org/linkml/phenopackets/biosample/"
+)
 DISEASE = CurieNamespace("disease", "https://w3id.org/linkml/phenopackets/disease/")
-INDIVIDUAL = CurieNamespace("individual", "https://w3id.org/linkml/phenopackets/individual/")
-INTERPRETATION = CurieNamespace("interpretation", "https://w3id.org/linkml/phenopackets/interpretation/")
+INDIVIDUAL = CurieNamespace(
+    "individual", "https://w3id.org/linkml/phenopackets/individual/"
+)
+INTERPRETATION = CurieNamespace(
+    "interpretation", "https://w3id.org/linkml/phenopackets/interpretation/"
+)
 LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-MEASUREMENT = CurieNamespace("measurement", "https://w3id.org/linkml/phenopackets/measurement/")
-MEDICAL_ACTION = CurieNamespace("medical_action", "https://w3id.org/linkml/phenopackets/medical_action/")
-META_DATA = CurieNamespace("meta_data", "https://w3id.org/linkml/phenopackets/meta_data/")
+MEASUREMENT = CurieNamespace(
+    "measurement", "https://w3id.org/linkml/phenopackets/measurement/"
+)
+MEDICAL_ACTION = CurieNamespace(
+    "medical_action", "https://w3id.org/linkml/phenopackets/medical_action/"
+)
+META_DATA = CurieNamespace(
+    "meta_data", "https://w3id.org/linkml/phenopackets/meta_data/"
+)
 PEDIGREE = CurieNamespace("pedigree", "https://w3id.org/linkml/phenopackets/pedigree/")
-PHENOPACKETS = CurieNamespace("phenopackets", "https://w3id.org/linkml/phenopackets/phenopackets/")
-PHENOTYPIC_FEATURE = CurieNamespace("phenotypic_feature", "https://w3id.org/linkml/phenopackets/phenotypic_feature/")
-TIMESTAMP = CurieNamespace("timestamp", "https://w3id.org/linkml/phenopackets/timestamp/")
+PHENOPACKETS = CurieNamespace(
+    "phenopackets", "https://w3id.org/linkml/phenopackets/phenopackets/"
+)
+PHENOTYPIC_FEATURE = CurieNamespace(
+    "phenotypic_feature", "https://w3id.org/linkml/phenopackets/phenotypic_feature/"
+)
+TIMESTAMP = CurieNamespace(
+    "timestamp", "https://w3id.org/linkml/phenopackets/timestamp/"
+)
 VRS = CurieNamespace("vrs", "https://w3id.org/linkml/phenopackets/vrs/")
 VRSATILE = CurieNamespace("vrsatile", "https://w3id.org/linkml/phenopackets/vrsatile/")
 DEFAULT_ = PHENOPACKETS
@@ -75,9 +93,13 @@ class Cohort(YAMLRoot):
 
     metaData: Union[dict, "MetaData"] = None
     description: Optional[str] = None
-    files: Optional[Union[Union[dict, "File"], list[Union[dict, "File"]]]] = empty_list()
+    files: Optional[Union[Union[dict, "File"], list[Union[dict, "File"]]]] = (
+        empty_list()
+    )
     id: Optional[str] = None
-    members: Optional[Union[Union[dict, "Phenopacket"], list[Union[dict, "Phenopacket"]]]] = empty_list()
+    members: Optional[
+        Union[Union[dict, "Phenopacket"], list[Union[dict, "Phenopacket"]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.metaData):
@@ -90,12 +112,16 @@ class Cohort(YAMLRoot):
 
         if not isinstance(self.files, list):
             self.files = [self.files] if self.files is not None else []
-        self.files = [v if isinstance(v, File) else File(**as_dict(v)) for v in self.files]
+        self.files = [
+            v if isinstance(v, File) else File(**as_dict(v)) for v in self.files
+        ]
 
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
-        self._normalize_inlined_as_dict(slot_name="members", slot_type=Phenopacket, key_name="metaData", keyed=False)
+        self._normalize_inlined_as_dict(
+            slot_name="members", slot_type=Phenopacket, key_name="metaData", keyed=False
+        )
 
         super().__post_init__(**kwargs)
 
@@ -117,11 +143,15 @@ class Family(YAMLRoot):
 
     metaData: Union[dict, "MetaData"] = None
     consanguinousParents: Optional[Union[bool, Bool]] = None
-    files: Optional[Union[Union[dict, "File"], list[Union[dict, "File"]]]] = empty_list()
+    files: Optional[Union[Union[dict, "File"], list[Union[dict, "File"]]]] = (
+        empty_list()
+    )
     id: Optional[str] = None
     pedigree: Optional[Union[dict, "Pedigree"]] = None
     proband: Optional[Union[dict, "Phenopacket"]] = None
-    relatives: Optional[Union[Union[dict, "Phenopacket"], list[Union[dict, "Phenopacket"]]]] = empty_list()
+    relatives: Optional[
+        Union[Union[dict, "Phenopacket"], list[Union[dict, "Phenopacket"]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self._is_empty(self.metaData):
@@ -129,12 +159,16 @@ class Family(YAMLRoot):
         if not isinstance(self.metaData, MetaData):
             self.metaData = MetaData(**as_dict(self.metaData))
 
-        if self.consanguinousParents is not None and not isinstance(self.consanguinousParents, Bool):
+        if self.consanguinousParents is not None and not isinstance(
+            self.consanguinousParents, Bool
+        ):
             self.consanguinousParents = Bool(self.consanguinousParents)
 
         if not isinstance(self.files, list):
             self.files = [self.files] if self.files is not None else []
-        self.files = [v if isinstance(v, File) else File(**as_dict(v)) for v in self.files]
+        self.files = [
+            v if isinstance(v, File) else File(**as_dict(v)) for v in self.files
+        ]
 
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
@@ -145,7 +179,12 @@ class Family(YAMLRoot):
         if self.proband is not None and not isinstance(self.proband, Phenopacket):
             self.proband = Phenopacket(**as_dict(self.proband))
 
-        self._normalize_inlined_as_dict(slot_name="relatives", slot_type=Phenopacket, key_name="metaData", keyed=False)
+        self._normalize_inlined_as_dict(
+            slot_name="relatives",
+            slot_type=Phenopacket,
+            key_name="metaData",
+            keyed=False,
+        )
 
         super().__post_init__(**kwargs)
 
@@ -167,16 +206,28 @@ class Phenopacket(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.Phenopacket
 
     metaData: Union[dict, "MetaData"] = None
-    biosamples: Optional[Union[Union[dict, "Biosample"], list[Union[dict, "Biosample"]]]] = empty_list()
-    diseases: Optional[Union[Union[dict, "Disease"], list[Union[dict, "Disease"]]]] = empty_list()
-    files: Optional[Union[Union[dict, "File"], list[Union[dict, "File"]]]] = empty_list()
-    id: Optional[str] = None
-    interpretations: Optional[Union[Union[dict, "Interpretation"], list[Union[dict, "Interpretation"]]]] = empty_list()
-    measurements: Optional[Union[Union[dict, "Measurement"], list[Union[dict, "Measurement"]]]] = empty_list()
-    medicalActions: Optional[Union[Union[dict, "MedicalAction"], list[Union[dict, "MedicalAction"]]]] = empty_list()
-    phenotypicFeatures: Optional[Union[Union[dict, "PhenotypicFeature"], list[Union[dict, "PhenotypicFeature"]]]] = (
+    biosamples: Optional[
+        Union[Union[dict, "Biosample"], list[Union[dict, "Biosample"]]]
+    ] = empty_list()
+    diseases: Optional[Union[Union[dict, "Disease"], list[Union[dict, "Disease"]]]] = (
         empty_list()
     )
+    files: Optional[Union[Union[dict, "File"], list[Union[dict, "File"]]]] = (
+        empty_list()
+    )
+    id: Optional[str] = None
+    interpretations: Optional[
+        Union[Union[dict, "Interpretation"], list[Union[dict, "Interpretation"]]]
+    ] = empty_list()
+    measurements: Optional[
+        Union[Union[dict, "Measurement"], list[Union[dict, "Measurement"]]]
+    ] = empty_list()
+    medicalActions: Optional[
+        Union[Union[dict, "MedicalAction"], list[Union[dict, "MedicalAction"]]]
+    ] = empty_list()
+    phenotypicFeatures: Optional[
+        Union[Union[dict, "PhenotypicFeature"], list[Union[dict, "PhenotypicFeature"]]]
+    ] = empty_list()
     subject: Optional[Union[dict, "Individual"]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -187,39 +238,61 @@ class Phenopacket(YAMLRoot):
 
         if not isinstance(self.biosamples, list):
             self.biosamples = [self.biosamples] if self.biosamples is not None else []
-        self.biosamples = [v if isinstance(v, Biosample) else Biosample(**as_dict(v)) for v in self.biosamples]
+        self.biosamples = [
+            v if isinstance(v, Biosample) else Biosample(**as_dict(v))
+            for v in self.biosamples
+        ]
 
         if not isinstance(self.diseases, list):
             self.diseases = [self.diseases] if self.diseases is not None else []
-        self.diseases = [v if isinstance(v, Disease) else Disease(**as_dict(v)) for v in self.diseases]
+        self.diseases = [
+            v if isinstance(v, Disease) else Disease(**as_dict(v))
+            for v in self.diseases
+        ]
 
         if not isinstance(self.files, list):
             self.files = [self.files] if self.files is not None else []
-        self.files = [v if isinstance(v, File) else File(**as_dict(v)) for v in self.files]
+        self.files = [
+            v if isinstance(v, File) else File(**as_dict(v)) for v in self.files
+        ]
 
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
         if not isinstance(self.interpretations, list):
-            self.interpretations = [self.interpretations] if self.interpretations is not None else []
+            self.interpretations = (
+                [self.interpretations] if self.interpretations is not None else []
+            )
         self.interpretations = [
-            v if isinstance(v, Interpretation) else Interpretation(**as_dict(v)) for v in self.interpretations
+            v if isinstance(v, Interpretation) else Interpretation(**as_dict(v))
+            for v in self.interpretations
         ]
 
         if not isinstance(self.measurements, list):
-            self.measurements = [self.measurements] if self.measurements is not None else []
-        self.measurements = [v if isinstance(v, Measurement) else Measurement(**as_dict(v)) for v in self.measurements]
+            self.measurements = (
+                [self.measurements] if self.measurements is not None else []
+            )
+        self.measurements = [
+            v if isinstance(v, Measurement) else Measurement(**as_dict(v))
+            for v in self.measurements
+        ]
 
         if not isinstance(self.medicalActions, list):
-            self.medicalActions = [self.medicalActions] if self.medicalActions is not None else []
+            self.medicalActions = (
+                [self.medicalActions] if self.medicalActions is not None else []
+            )
         self.medicalActions = [
-            v if isinstance(v, MedicalAction) else MedicalAction(**as_dict(v)) for v in self.medicalActions
+            v if isinstance(v, MedicalAction) else MedicalAction(**as_dict(v))
+            for v in self.medicalActions
         ]
 
         if not isinstance(self.phenotypicFeatures, list):
-            self.phenotypicFeatures = [self.phenotypicFeatures] if self.phenotypicFeatures is not None else []
+            self.phenotypicFeatures = (
+                [self.phenotypicFeatures] if self.phenotypicFeatures is not None else []
+            )
         self.phenotypicFeatures = [
-            v if isinstance(v, PhenotypicFeature) else PhenotypicFeature(**as_dict(v)) for v in self.phenotypicFeatures
+            v if isinstance(v, PhenotypicFeature) else PhenotypicFeature(**as_dict(v))
+            for v in self.phenotypicFeatures
         ]
 
         if self.subject is not None and not isinstance(self.subject, Individual):
@@ -245,7 +318,9 @@ class Age(YAMLRoot):
     iso8601duration: Optional[str] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.iso8601duration is not None and not isinstance(self.iso8601duration, str):
+        if self.iso8601duration is not None and not isinstance(
+            self.iso8601duration, str
+        ):
             self.iso8601duration = str(self.iso8601duration)
 
         super().__post_init__(**kwargs)
@@ -299,10 +374,14 @@ class Evidence(YAMLRoot):
     reference: Optional[Union[dict, "ExternalReference"]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.evidenceCode is not None and not isinstance(self.evidenceCode, OntologyClass):
+        if self.evidenceCode is not None and not isinstance(
+            self.evidenceCode, OntologyClass
+        ):
             self.evidenceCode = OntologyClass(**as_dict(self.evidenceCode))
 
-        if self.reference is not None and not isinstance(self.reference, ExternalReference):
+        if self.reference is not None and not isinstance(
+            self.reference, ExternalReference
+        ):
             self.reference = ExternalReference(**as_dict(self.reference))
 
         super().__post_init__(**kwargs)
@@ -352,7 +431,9 @@ class File(YAMLRoot):
     uri: Optional[str] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.fileAttributes is not None and not isinstance(self.fileAttributes, Dictionary):
+        if self.fileAttributes is not None and not isinstance(
+            self.fileAttributes, Dictionary
+        ):
             self.fileAttributes = Dictionary()
 
         if self.individualToFileIdentifiers is not None and not isinstance(
@@ -475,13 +556,17 @@ class TimeElement(YAMLRoot):
         if self.ageRange is not None and not isinstance(self.ageRange, AgeRange):
             self.ageRange = AgeRange(**as_dict(self.ageRange))
 
-        if self.gestationalAge is not None and not isinstance(self.gestationalAge, GestationalAge):
+        if self.gestationalAge is not None and not isinstance(
+            self.gestationalAge, GestationalAge
+        ):
             self.gestationalAge = GestationalAge(**as_dict(self.gestationalAge))
 
         if self.interval is not None and not isinstance(self.interval, TimeInterval):
             self.interval = TimeInterval(**as_dict(self.interval))
 
-        if self.ontologyClass is not None and not isinstance(self.ontologyClass, OntologyClass):
+        if self.ontologyClass is not None and not isinstance(
+            self.ontologyClass, OntologyClass
+        ):
             self.ontologyClass = OntologyClass(**as_dict(self.ontologyClass))
 
         if self.timestamp is not None and not isinstance(self.timestamp, str):
@@ -533,21 +618,29 @@ class Biosample(YAMLRoot):
     derivedFromId: Optional[str] = None
     description: Optional[str] = None
     diagnosticMarkers: Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ] = empty_dict()
     files: Optional[Union[Union[dict, File], list[Union[dict, File]]]] = empty_list()
     histologicalDiagnosis: Optional[Union[dict, OntologyClass]] = None
     id: Optional[str] = None
     individualId: Optional[str] = None
     materialSample: Optional[Union[dict, OntologyClass]] = None
-    measurements: Optional[Union[Union[dict, "Measurement"], list[Union[dict, "Measurement"]]]] = empty_list()
+    measurements: Optional[
+        Union[Union[dict, "Measurement"], list[Union[dict, "Measurement"]]]
+    ] = empty_list()
     pathologicalStage: Optional[Union[dict, OntologyClass]] = None
     pathologicalTnmFinding: Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ] = empty_dict()
-    phenotypicFeatures: Optional[Union[Union[dict, "PhenotypicFeature"], list[Union[dict, "PhenotypicFeature"]]]] = (
-        empty_list()
-    )
+    phenotypicFeatures: Optional[
+        Union[Union[dict, "PhenotypicFeature"], list[Union[dict, "PhenotypicFeature"]]]
+    ] = empty_list()
     procedure: Optional[Union[dict, Procedure]] = None
     sampleProcessing: Optional[Union[dict, OntologyClass]] = None
     sampleStorage: Optional[Union[dict, OntologyClass]] = None
@@ -566,15 +659,24 @@ class Biosample(YAMLRoot):
             self.description = str(self.description)
 
         self._normalize_inlined_as_dict(
-            slot_name="diagnosticMarkers", slot_type=OntologyClass, key_name="id", keyed=True
+            slot_name="diagnosticMarkers",
+            slot_type=OntologyClass,
+            key_name="id",
+            keyed=True,
         )
 
         if not isinstance(self.files, list):
             self.files = [self.files] if self.files is not None else []
-        self.files = [v if isinstance(v, File) else File(**as_dict(v)) for v in self.files]
+        self.files = [
+            v if isinstance(v, File) else File(**as_dict(v)) for v in self.files
+        ]
 
-        if self.histologicalDiagnosis is not None and not isinstance(self.histologicalDiagnosis, OntologyClass):
-            self.histologicalDiagnosis = OntologyClass(**as_dict(self.histologicalDiagnosis))
+        if self.histologicalDiagnosis is not None and not isinstance(
+            self.histologicalDiagnosis, OntologyClass
+        ):
+            self.histologicalDiagnosis = OntologyClass(
+                **as_dict(self.histologicalDiagnosis)
+            )
 
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
@@ -582,51 +684,80 @@ class Biosample(YAMLRoot):
         if self.individualId is not None and not isinstance(self.individualId, str):
             self.individualId = str(self.individualId)
 
-        if self.materialSample is not None and not isinstance(self.materialSample, OntologyClass):
+        if self.materialSample is not None and not isinstance(
+            self.materialSample, OntologyClass
+        ):
             self.materialSample = OntologyClass(**as_dict(self.materialSample))
 
         if not isinstance(self.measurements, list):
-            self.measurements = [self.measurements] if self.measurements is not None else []
-        self.measurements = [v if isinstance(v, Measurement) else Measurement(**as_dict(v)) for v in self.measurements]
+            self.measurements = (
+                [self.measurements] if self.measurements is not None else []
+            )
+        self.measurements = [
+            v if isinstance(v, Measurement) else Measurement(**as_dict(v))
+            for v in self.measurements
+        ]
 
-        if self.pathologicalStage is not None and not isinstance(self.pathologicalStage, OntologyClass):
+        if self.pathologicalStage is not None and not isinstance(
+            self.pathologicalStage, OntologyClass
+        ):
             self.pathologicalStage = OntologyClass(**as_dict(self.pathologicalStage))
 
         self._normalize_inlined_as_dict(
-            slot_name="pathologicalTnmFinding", slot_type=OntologyClass, key_name="id", keyed=True
+            slot_name="pathologicalTnmFinding",
+            slot_type=OntologyClass,
+            key_name="id",
+            keyed=True,
         )
 
         if not isinstance(self.phenotypicFeatures, list):
-            self.phenotypicFeatures = [self.phenotypicFeatures] if self.phenotypicFeatures is not None else []
+            self.phenotypicFeatures = (
+                [self.phenotypicFeatures] if self.phenotypicFeatures is not None else []
+            )
         self.phenotypicFeatures = [
-            v if isinstance(v, PhenotypicFeature) else PhenotypicFeature(**as_dict(v)) for v in self.phenotypicFeatures
+            v if isinstance(v, PhenotypicFeature) else PhenotypicFeature(**as_dict(v))
+            for v in self.phenotypicFeatures
         ]
 
         if self.procedure is not None and not isinstance(self.procedure, Procedure):
             self.procedure = Procedure(**as_dict(self.procedure))
 
-        if self.sampleProcessing is not None and not isinstance(self.sampleProcessing, OntologyClass):
+        if self.sampleProcessing is not None and not isinstance(
+            self.sampleProcessing, OntologyClass
+        ):
             self.sampleProcessing = OntologyClass(**as_dict(self.sampleProcessing))
 
-        if self.sampleStorage is not None and not isinstance(self.sampleStorage, OntologyClass):
+        if self.sampleStorage is not None and not isinstance(
+            self.sampleStorage, OntologyClass
+        ):
             self.sampleStorage = OntologyClass(**as_dict(self.sampleStorage))
 
-        if self.sampleType is not None and not isinstance(self.sampleType, OntologyClass):
+        if self.sampleType is not None and not isinstance(
+            self.sampleType, OntologyClass
+        ):
             self.sampleType = OntologyClass(**as_dict(self.sampleType))
 
-        if self.sampledTissue is not None and not isinstance(self.sampledTissue, OntologyClass):
+        if self.sampledTissue is not None and not isinstance(
+            self.sampledTissue, OntologyClass
+        ):
             self.sampledTissue = OntologyClass(**as_dict(self.sampledTissue))
 
         if self.taxonomy is not None and not isinstance(self.taxonomy, OntologyClass):
             self.taxonomy = OntologyClass(**as_dict(self.taxonomy))
 
-        if self.timeOfCollection is not None and not isinstance(self.timeOfCollection, TimeElement):
+        if self.timeOfCollection is not None and not isinstance(
+            self.timeOfCollection, TimeElement
+        ):
             self.timeOfCollection = TimeElement(**as_dict(self.timeOfCollection))
 
-        if self.tumorGrade is not None and not isinstance(self.tumorGrade, OntologyClass):
+        if self.tumorGrade is not None and not isinstance(
+            self.tumorGrade, OntologyClass
+        ):
             self.tumorGrade = OntologyClass(**as_dict(self.tumorGrade))
 
-        if self.tumorProgression is not None and not isinstance(self.tumorProgression, OntologyClass):
+        if self.tumorProgression is not None and not isinstance(
+            self.tumorProgression, OntologyClass
+        ):
             self.tumorProgression = OntologyClass(**as_dict(self.tumorProgression))
 
         super().__post_init__(**kwargs)
@@ -646,10 +777,16 @@ class Disease(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.Disease
 
     clinicalTnmFinding: Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ] = empty_dict()
     diseaseStage: Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ] = empty_dict()
     excluded: Optional[Union[bool, Bool]] = None
     laterality: Optional[Union[dict, OntologyClass]] = None
@@ -660,21 +797,30 @@ class Disease(YAMLRoot):
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_dict(
-            slot_name="clinicalTnmFinding", slot_type=OntologyClass, key_name="id", keyed=True
+            slot_name="clinicalTnmFinding",
+            slot_type=OntologyClass,
+            key_name="id",
+            keyed=True,
         )
 
-        self._normalize_inlined_as_dict(slot_name="diseaseStage", slot_type=OntologyClass, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="diseaseStage", slot_type=OntologyClass, key_name="id", keyed=True
+        )
 
         if self.excluded is not None and not isinstance(self.excluded, Bool):
             self.excluded = Bool(self.excluded)
 
-        if self.laterality is not None and not isinstance(self.laterality, OntologyClass):
+        if self.laterality is not None and not isinstance(
+            self.laterality, OntologyClass
+        ):
             self.laterality = OntologyClass(**as_dict(self.laterality))
 
         if self.onset is not None and not isinstance(self.onset, TimeElement):
             self.onset = TimeElement(**as_dict(self.onset))
 
-        if self.primarySite is not None and not isinstance(self.primarySite, OntologyClass):
+        if self.primarySite is not None and not isinstance(
+            self.primarySite, OntologyClass
+        ):
             self.primarySite = OntologyClass(**as_dict(self.primarySite))
 
         if self.resolution is not None and not isinstance(self.resolution, TimeElement):
@@ -697,7 +843,10 @@ class Diagnosis(YAMLRoot):
 
     disease: Optional[Union[dict, OntologyClass]] = None
     genomicInterpretations: Optional[
-        Union[Union[dict, "GenomicInterpretation"], list[Union[dict, "GenomicInterpretation"]]]
+        Union[
+            Union[dict, "GenomicInterpretation"],
+            list[Union[dict, "GenomicInterpretation"]],
+        ]
     ] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
@@ -706,10 +855,14 @@ class Diagnosis(YAMLRoot):
 
         if not isinstance(self.genomicInterpretations, list):
             self.genomicInterpretations = (
-                [self.genomicInterpretations] if self.genomicInterpretations is not None else []
+                [self.genomicInterpretations]
+                if self.genomicInterpretations is not None
+                else []
             )
         self.genomicInterpretations = [
-            v if isinstance(v, GenomicInterpretation) else GenomicInterpretation(**as_dict(v))
+            v
+            if isinstance(v, GenomicInterpretation)
+            else GenomicInterpretation(**as_dict(v))
             for v in self.genomicInterpretations
         ]
 
@@ -739,14 +892,22 @@ class GenomicInterpretation(YAMLRoot):
         if self.gene is not None and not isinstance(self.gene, GeneDescriptor):
             self.gene = GeneDescriptor(**as_dict(self.gene))
 
-        if self.interpretationStatus is not None and not isinstance(self.interpretationStatus, InterpretationStatus):
+        if self.interpretationStatus is not None and not isinstance(
+            self.interpretationStatus, InterpretationStatus
+        ):
             self.interpretationStatus = InterpretationStatus(self.interpretationStatus)
 
-        if self.subjectOrBiosampleId is not None and not isinstance(self.subjectOrBiosampleId, str):
+        if self.subjectOrBiosampleId is not None and not isinstance(
+            self.subjectOrBiosampleId, str
+        ):
             self.subjectOrBiosampleId = str(self.subjectOrBiosampleId)
 
-        if self.variantInterpretation is not None and not isinstance(self.variantInterpretation, VariantInterpretation):
-            self.variantInterpretation = VariantInterpretation(**as_dict(self.variantInterpretation))
+        if self.variantInterpretation is not None and not isinstance(
+            self.variantInterpretation, VariantInterpretation
+        ):
+            self.variantInterpretation = VariantInterpretation(
+                **as_dict(self.variantInterpretation)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -772,7 +933,9 @@ class Interpretation(YAMLRoot):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
-        if self.progressStatus is not None and not isinstance(self.progressStatus, ProgressStatus):
+        if self.progressStatus is not None and not isinstance(
+            self.progressStatus, ProgressStatus
+        ):
             self.progressStatus = ProgressStatus(self.progressStatus)
 
         if self.summary is not None and not isinstance(self.summary, str):
@@ -790,7 +953,9 @@ class VariantInterpretation(YAMLRoot):
     class_name: ClassVar[str] = "VariantInterpretation"
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.VariantInterpretation
 
-    acmgPathogenicityClassification: Optional[Union[str, "AcmgPathogenicityClassification"]] = None
+    acmgPathogenicityClassification: Optional[
+        Union[str, "AcmgPathogenicityClassification"]
+    ] = None
     therapeuticActionability: Optional[Union[str, "TherapeuticActionability"]] = None
     variationDescriptor: Optional[Union[dict, "VariationDescriptor"]] = None
 
@@ -798,15 +963,23 @@ class VariantInterpretation(YAMLRoot):
         if self.acmgPathogenicityClassification is not None and not isinstance(
             self.acmgPathogenicityClassification, AcmgPathogenicityClassification
         ):
-            self.acmgPathogenicityClassification = AcmgPathogenicityClassification(self.acmgPathogenicityClassification)
+            self.acmgPathogenicityClassification = AcmgPathogenicityClassification(
+                self.acmgPathogenicityClassification
+            )
 
         if self.therapeuticActionability is not None and not isinstance(
             self.therapeuticActionability, TherapeuticActionability
         ):
-            self.therapeuticActionability = TherapeuticActionability(self.therapeuticActionability)
+            self.therapeuticActionability = TherapeuticActionability(
+                self.therapeuticActionability
+            )
 
-        if self.variationDescriptor is not None and not isinstance(self.variationDescriptor, VariationDescriptor):
-            self.variationDescriptor = VariationDescriptor(**as_dict(self.variationDescriptor))
+        if self.variationDescriptor is not None and not isinstance(
+            self.variationDescriptor, VariationDescriptor
+        ):
+            self.variationDescriptor = VariationDescriptor(
+                **as_dict(self.variationDescriptor)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -837,8 +1010,12 @@ class Individual(YAMLRoot):
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.alternateIds, list):
-            self.alternateIds = [self.alternateIds] if self.alternateIds is not None else []
-        self.alternateIds = [v if isinstance(v, str) else str(v) for v in self.alternateIds]
+            self.alternateIds = (
+                [self.alternateIds] if self.alternateIds is not None else []
+            )
+        self.alternateIds = [
+            v if isinstance(v, str) else str(v) for v in self.alternateIds
+        ]
 
         if self.dateOfBirth is not None and not isinstance(self.dateOfBirth, str):
             self.dateOfBirth = str(self.dateOfBirth)
@@ -849,7 +1026,9 @@ class Individual(YAMLRoot):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
-        if self.karyotypicSex is not None and not isinstance(self.karyotypicSex, KaryotypicSex):
+        if self.karyotypicSex is not None and not isinstance(
+            self.karyotypicSex, KaryotypicSex
+        ):
             self.karyotypicSex = KaryotypicSex(self.karyotypicSex)
 
         if self.sex is not None and not isinstance(self.sex, Sex):
@@ -858,10 +1037,14 @@ class Individual(YAMLRoot):
         if self.taxonomy is not None and not isinstance(self.taxonomy, OntologyClass):
             self.taxonomy = OntologyClass(**as_dict(self.taxonomy))
 
-        if self.timeAtLastEncounter is not None and not isinstance(self.timeAtLastEncounter, TimeElement):
+        if self.timeAtLastEncounter is not None and not isinstance(
+            self.timeAtLastEncounter, TimeElement
+        ):
             self.timeAtLastEncounter = TimeElement(**as_dict(self.timeAtLastEncounter))
 
-        if self.vitalStatus is not None and not isinstance(self.vitalStatus, VitalStatus):
+        if self.vitalStatus is not None and not isinstance(
+            self.vitalStatus, VitalStatus
+        ):
             self.vitalStatus = VitalStatus(**as_dict(self.vitalStatus))
 
         super().__post_init__(**kwargs)
@@ -882,16 +1065,22 @@ class VitalStatus(YAMLRoot):
     timeOfDeath: Optional[Union[dict, TimeElement]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.causeOfDeath is not None and not isinstance(self.causeOfDeath, OntologyClass):
+        if self.causeOfDeath is not None and not isinstance(
+            self.causeOfDeath, OntologyClass
+        ):
             self.causeOfDeath = OntologyClass(**as_dict(self.causeOfDeath))
 
         if self.status is not None and not isinstance(self.status, Status):
             self.status = Status(self.status)
 
-        if self.survivalTimeInDays is not None and not isinstance(self.survivalTimeInDays, int):
+        if self.survivalTimeInDays is not None and not isinstance(
+            self.survivalTimeInDays, int
+        ):
             self.survivalTimeInDays = int(self.survivalTimeInDays)
 
-        if self.timeOfDeath is not None and not isinstance(self.timeOfDeath, TimeElement):
+        if self.timeOfDeath is not None and not isinstance(
+            self.timeOfDeath, TimeElement
+        ):
             self.timeOfDeath = TimeElement(**as_dict(self.timeOfDeath))
 
         super().__post_init__(**kwargs)
@@ -906,13 +1095,18 @@ class ComplexValue(YAMLRoot):
     class_name: ClassVar[str] = "ComplexValue"
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.ComplexValue
 
-    typedQuantities: Optional[Union[Union[dict, "TypedQuantity"], list[Union[dict, "TypedQuantity"]]]] = empty_list()
+    typedQuantities: Optional[
+        Union[Union[dict, "TypedQuantity"], list[Union[dict, "TypedQuantity"]]]
+    ] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.typedQuantities, list):
-            self.typedQuantities = [self.typedQuantities] if self.typedQuantities is not None else []
+            self.typedQuantities = (
+                [self.typedQuantities] if self.typedQuantities is not None else []
+            )
         self.typedQuantities = [
-            v if isinstance(v, TypedQuantity) else TypedQuantity(**as_dict(v)) for v in self.typedQuantities
+            v if isinstance(v, TypedQuantity) else TypedQuantity(**as_dict(v))
+            for v in self.typedQuantities
         ]
 
         super().__post_init__(**kwargs)
@@ -942,7 +1136,9 @@ class Measurement(YAMLRoot):
         if self.assay is not None and not isinstance(self.assay, OntologyClass):
             self.assay = OntologyClass(**as_dict(self.assay))
 
-        if self.complexValue is not None and not isinstance(self.complexValue, ComplexValue):
+        if self.complexValue is not None and not isinstance(
+            self.complexValue, ComplexValue
+        ):
             self.complexValue = ComplexValue(**as_dict(self.complexValue))
 
         if self.description is not None and not isinstance(self.description, str):
@@ -951,7 +1147,9 @@ class Measurement(YAMLRoot):
         if self.procedure is not None and not isinstance(self.procedure, Procedure):
             self.procedure = Procedure(**as_dict(self.procedure))
 
-        if self.timeObserved is not None and not isinstance(self.timeObserved, TimeElement):
+        if self.timeObserved is not None and not isinstance(
+            self.timeObserved, TimeElement
+        ):
             self.timeObserved = TimeElement(**as_dict(self.timeObserved))
 
         if self.value is not None and not isinstance(self.value, Value):
@@ -974,7 +1172,9 @@ class Quantity(YAMLRoot):
     value: Optional[float] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.referenceRange is not None and not isinstance(self.referenceRange, ReferenceRange):
+        if self.referenceRange is not None and not isinstance(
+            self.referenceRange, ReferenceRange
+        ):
             self.referenceRange = ReferenceRange(**as_dict(self.referenceRange))
 
         if self.unit is not None and not isinstance(self.unit, OntologyClass):
@@ -1052,7 +1252,9 @@ class Value(YAMLRoot):
     quantity: Optional[Union[dict, Quantity]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.ontologyClass is not None and not isinstance(self.ontologyClass, OntologyClass):
+        if self.ontologyClass is not None and not isinstance(
+            self.ontologyClass, OntologyClass
+        ):
             self.ontologyClass = OntologyClass(**as_dict(self.ontologyClass))
 
         if self.quantity is not None and not isinstance(self.quantity, Quantity):
@@ -1085,7 +1287,9 @@ class DoseInterval(YAMLRoot):
         if self.quantity is not None and not isinstance(self.quantity, Quantity):
             self.quantity = Quantity(**as_dict(self.quantity))
 
-        if self.scheduleFrequency is not None and not isinstance(self.scheduleFrequency, OntologyClass):
+        if self.scheduleFrequency is not None and not isinstance(
+            self.scheduleFrequency, OntologyClass
+        ):
             self.scheduleFrequency = OntologyClass(**as_dict(self.scheduleFrequency))
 
         super().__post_init__(**kwargs)
@@ -1105,7 +1309,10 @@ class MedicalAction(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.MedicalAction
 
     adverseEvents: Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ] = empty_dict()
     procedure: Optional[Union[dict, Procedure]] = None
     radiationTherapy: Optional[Union[dict, "RadiationTherapy"]] = None
@@ -1117,33 +1324,54 @@ class MedicalAction(YAMLRoot):
     treatmentTerminationReason: Optional[Union[dict, OntologyClass]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        self._normalize_inlined_as_dict(slot_name="adverseEvents", slot_type=OntologyClass, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="adverseEvents",
+            slot_type=OntologyClass,
+            key_name="id",
+            keyed=True,
+        )
 
         if self.procedure is not None and not isinstance(self.procedure, Procedure):
             self.procedure = Procedure(**as_dict(self.procedure))
 
-        if self.radiationTherapy is not None and not isinstance(self.radiationTherapy, RadiationTherapy):
+        if self.radiationTherapy is not None and not isinstance(
+            self.radiationTherapy, RadiationTherapy
+        ):
             self.radiationTherapy = RadiationTherapy(**as_dict(self.radiationTherapy))
 
-        if self.responseToTreatment is not None and not isinstance(self.responseToTreatment, OntologyClass):
-            self.responseToTreatment = OntologyClass(**as_dict(self.responseToTreatment))
+        if self.responseToTreatment is not None and not isinstance(
+            self.responseToTreatment, OntologyClass
+        ):
+            self.responseToTreatment = OntologyClass(
+                **as_dict(self.responseToTreatment)
+            )
 
-        if self.therapeuticRegimen is not None and not isinstance(self.therapeuticRegimen, TherapeuticRegimen):
-            self.therapeuticRegimen = TherapeuticRegimen(**as_dict(self.therapeuticRegimen))
+        if self.therapeuticRegimen is not None and not isinstance(
+            self.therapeuticRegimen, TherapeuticRegimen
+        ):
+            self.therapeuticRegimen = TherapeuticRegimen(
+                **as_dict(self.therapeuticRegimen)
+            )
 
         if self.treatment is not None and not isinstance(self.treatment, Treatment):
             self.treatment = Treatment(**as_dict(self.treatment))
 
-        if self.treatmentIntent is not None and not isinstance(self.treatmentIntent, OntologyClass):
+        if self.treatmentIntent is not None and not isinstance(
+            self.treatmentIntent, OntologyClass
+        ):
             self.treatmentIntent = OntologyClass(**as_dict(self.treatmentIntent))
 
-        if self.treatmentTarget is not None and not isinstance(self.treatmentTarget, OntologyClass):
+        if self.treatmentTarget is not None and not isinstance(
+            self.treatmentTarget, OntologyClass
+        ):
             self.treatmentTarget = OntologyClass(**as_dict(self.treatmentTarget))
 
         if self.treatmentTerminationReason is not None and not isinstance(
             self.treatmentTerminationReason, OntologyClass
         ):
-            self.treatmentTerminationReason = OntologyClass(**as_dict(self.treatmentTerminationReason))
+            self.treatmentTerminationReason = OntologyClass(
+                **as_dict(self.treatmentTerminationReason)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -1213,13 +1441,21 @@ class TherapeuticRegimen(YAMLRoot):
         if self.endTime is not None and not isinstance(self.endTime, TimeElement):
             self.endTime = TimeElement(**as_dict(self.endTime))
 
-        if self.externalReference is not None and not isinstance(self.externalReference, ExternalReference):
-            self.externalReference = ExternalReference(**as_dict(self.externalReference))
+        if self.externalReference is not None and not isinstance(
+            self.externalReference, ExternalReference
+        ):
+            self.externalReference = ExternalReference(
+                **as_dict(self.externalReference)
+            )
 
-        if self.ontologyClass is not None and not isinstance(self.ontologyClass, OntologyClass):
+        if self.ontologyClass is not None and not isinstance(
+            self.ontologyClass, OntologyClass
+        ):
             self.ontologyClass = OntologyClass(**as_dict(self.ontologyClass))
 
-        if self.regimenStatus is not None and not isinstance(self.regimenStatus, RegimenStatus):
+        if self.regimenStatus is not None and not isinstance(
+            self.regimenStatus, RegimenStatus
+        ):
             self.regimenStatus = RegimenStatus(self.regimenStatus)
 
         if self.startTime is not None and not isinstance(self.startTime, TimeElement):
@@ -1243,7 +1479,9 @@ class Treatment(YAMLRoot):
 
     agent: Optional[Union[dict, OntologyClass]] = None
     cumulativeDose: Optional[Union[dict, Quantity]] = None
-    doseIntervals: Optional[Union[Union[dict, DoseInterval], list[Union[dict, DoseInterval]]]] = empty_list()
+    doseIntervals: Optional[
+        Union[Union[dict, DoseInterval], list[Union[dict, DoseInterval]]]
+    ] = empty_list()
     drugType: Optional[Union[str, "DrugType"]] = None
     routeOfAdministration: Optional[Union[dict, OntologyClass]] = None
 
@@ -1251,20 +1489,29 @@ class Treatment(YAMLRoot):
         if self.agent is not None and not isinstance(self.agent, OntologyClass):
             self.agent = OntologyClass(**as_dict(self.agent))
 
-        if self.cumulativeDose is not None and not isinstance(self.cumulativeDose, Quantity):
+        if self.cumulativeDose is not None and not isinstance(
+            self.cumulativeDose, Quantity
+        ):
             self.cumulativeDose = Quantity(**as_dict(self.cumulativeDose))
 
         if not isinstance(self.doseIntervals, list):
-            self.doseIntervals = [self.doseIntervals] if self.doseIntervals is not None else []
+            self.doseIntervals = (
+                [self.doseIntervals] if self.doseIntervals is not None else []
+            )
         self.doseIntervals = [
-            v if isinstance(v, DoseInterval) else DoseInterval(**as_dict(v)) for v in self.doseIntervals
+            v if isinstance(v, DoseInterval) else DoseInterval(**as_dict(v))
+            for v in self.doseIntervals
         ]
 
         if self.drugType is not None and not isinstance(self.drugType, DrugType):
             self.drugType = DrugType(self.drugType)
 
-        if self.routeOfAdministration is not None and not isinstance(self.routeOfAdministration, OntologyClass):
-            self.routeOfAdministration = OntologyClass(**as_dict(self.routeOfAdministration))
+        if self.routeOfAdministration is not None and not isinstance(
+            self.routeOfAdministration, OntologyClass
+        ):
+            self.routeOfAdministration = OntologyClass(
+                **as_dict(self.routeOfAdministration)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -1280,13 +1527,17 @@ class MetaData(YAMLRoot):
 
     created: Optional[str] = None
     createdBy: Optional[str] = None
-    externalReferences: Optional[Union[Union[dict, ExternalReference], list[Union[dict, ExternalReference]]]] = (
+    externalReferences: Optional[
+        Union[Union[dict, ExternalReference], list[Union[dict, ExternalReference]]]
+    ] = empty_list()
+    phenopacketSchemaVersion: Optional[str] = None
+    resources: Optional[
+        Union[Union[dict, "Resource"], list[Union[dict, "Resource"]]]
+    ] = empty_list()
+    submittedBy: Optional[str] = None
+    updates: Optional[Union[Union[dict, "Update"], list[Union[dict, "Update"]]]] = (
         empty_list()
     )
-    phenopacketSchemaVersion: Optional[str] = None
-    resources: Optional[Union[Union[dict, "Resource"], list[Union[dict, "Resource"]]]] = empty_list()
-    submittedBy: Optional[str] = None
-    updates: Optional[Union[Union[dict, "Update"], list[Union[dict, "Update"]]]] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.created is not None and not isinstance(self.created, str):
@@ -1296,22 +1547,32 @@ class MetaData(YAMLRoot):
             self.createdBy = str(self.createdBy)
 
         if not isinstance(self.externalReferences, list):
-            self.externalReferences = [self.externalReferences] if self.externalReferences is not None else []
+            self.externalReferences = (
+                [self.externalReferences] if self.externalReferences is not None else []
+            )
         self.externalReferences = [
-            v if isinstance(v, ExternalReference) else ExternalReference(**as_dict(v)) for v in self.externalReferences
+            v if isinstance(v, ExternalReference) else ExternalReference(**as_dict(v))
+            for v in self.externalReferences
         ]
 
-        if self.phenopacketSchemaVersion is not None and not isinstance(self.phenopacketSchemaVersion, str):
+        if self.phenopacketSchemaVersion is not None and not isinstance(
+            self.phenopacketSchemaVersion, str
+        ):
             self.phenopacketSchemaVersion = str(self.phenopacketSchemaVersion)
 
         if not isinstance(self.resources, list):
             self.resources = [self.resources] if self.resources is not None else []
-        self.resources = [v if isinstance(v, Resource) else Resource(**as_dict(v)) for v in self.resources]
+        self.resources = [
+            v if isinstance(v, Resource) else Resource(**as_dict(v))
+            for v in self.resources
+        ]
 
         if self.submittedBy is not None and not isinstance(self.submittedBy, str):
             self.submittedBy = str(self.submittedBy)
 
-        self._normalize_inlined_as_dict(slot_name="updates", slot_type=Update, key_name="timestamp", keyed=False)
+        self._normalize_inlined_as_dict(
+            slot_name="updates", slot_type=Update, key_name="timestamp", keyed=False
+        )
 
         super().__post_init__(**kwargs)
 
@@ -1347,7 +1608,9 @@ class Resource(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if self.namespacePrefix is not None and not isinstance(self.namespacePrefix, str):
+        if self.namespacePrefix is not None and not isinstance(
+            self.namespacePrefix, str
+        ):
             self.namespacePrefix = str(self.namespacePrefix)
 
         if self.url is not None and not isinstance(self.url, str):
@@ -1405,12 +1668,16 @@ class Pedigree(YAMLRoot):
     class_name: ClassVar[str] = "Pedigree"
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.Pedigree
 
-    persons: Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]] = empty_list()
+    persons: Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]] = (
+        empty_list()
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.persons, list):
             self.persons = [self.persons] if self.persons is not None else []
-        self.persons = [v if isinstance(v, Person) else Person(**as_dict(v)) for v in self.persons]
+        self.persons = [
+            v if isinstance(v, Person) else Person(**as_dict(v)) for v in self.persons
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -1432,7 +1699,9 @@ class Person(YAMLRoot):
     sex: Optional[Union[str, "Sex"]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.affectedStatus is not None and not isinstance(self.affectedStatus, AffectedStatus):
+        if self.affectedStatus is not None and not isinstance(
+            self.affectedStatus, AffectedStatus
+        ):
             self.affectedStatus = AffectedStatus(self.affectedStatus)
 
         if self.familyId is not None and not isinstance(self.familyId, str):
@@ -1469,10 +1738,15 @@ class PhenotypicFeature(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = PHENOPACKETS.PhenotypicFeature
 
     description: Optional[str] = None
-    evidence: Optional[Union[Union[dict, Evidence], list[Union[dict, Evidence]]]] = empty_list()
+    evidence: Optional[Union[Union[dict, Evidence], list[Union[dict, Evidence]]]] = (
+        empty_list()
+    )
     excluded: Optional[Union[bool, Bool]] = None
     modifiers: Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ] = empty_dict()
     onset: Optional[Union[dict, TimeElement]] = None
     resolution: Optional[Union[dict, TimeElement]] = None
@@ -1485,12 +1759,17 @@ class PhenotypicFeature(YAMLRoot):
 
         if not isinstance(self.evidence, list):
             self.evidence = [self.evidence] if self.evidence is not None else []
-        self.evidence = [v if isinstance(v, Evidence) else Evidence(**as_dict(v)) for v in self.evidence]
+        self.evidence = [
+            v if isinstance(v, Evidence) else Evidence(**as_dict(v))
+            for v in self.evidence
+        ]
 
         if self.excluded is not None and not isinstance(self.excluded, Bool):
             self.excluded = Bool(self.excluded)
 
-        self._normalize_inlined_as_dict(slot_name="modifiers", slot_type=OntologyClass, key_name="id", keyed=True)
+        self._normalize_inlined_as_dict(
+            slot_name="modifiers", slot_type=OntologyClass, key_name="id", keyed=True
+        )
 
         if self.onset is not None and not isinstance(self.onset, TimeElement):
             self.onset = TimeElement(**as_dict(self.onset))
@@ -1618,7 +1897,9 @@ class Extension(YAMLRoot):
 
         if not isinstance(self.value, list):
             self.value = [self.value] if self.value is not None else []
-        self.value = [v if isinstance(v, Any) else Any(**as_dict(v)) for v in self.value]
+        self.value = [
+            v if isinstance(v, Any) else Any(**as_dict(v)) for v in self.value
+        ]
 
         super().__post_init__(**kwargs)
 
@@ -1645,12 +1926,20 @@ class GeneDescriptor(YAMLRoot):
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if not isinstance(self.alternateIds, list):
-            self.alternateIds = [self.alternateIds] if self.alternateIds is not None else []
-        self.alternateIds = [v if isinstance(v, str) else str(v) for v in self.alternateIds]
+            self.alternateIds = (
+                [self.alternateIds] if self.alternateIds is not None else []
+            )
+        self.alternateIds = [
+            v if isinstance(v, str) else str(v) for v in self.alternateIds
+        ]
 
         if not isinstance(self.alternateSymbols, list):
-            self.alternateSymbols = [self.alternateSymbols] if self.alternateSymbols is not None else []
-        self.alternateSymbols = [v if isinstance(v, str) else str(v) for v in self.alternateSymbols]
+            self.alternateSymbols = (
+                [self.alternateSymbols] if self.alternateSymbols is not None else []
+            )
+        self.alternateSymbols = [
+            v if isinstance(v, str) else str(v) for v in self.alternateSymbols
+        ]
 
         if self.description is not None and not isinstance(self.description, str):
             self.description = str(self.description)
@@ -1680,8 +1969,12 @@ class VariationDescriptor(YAMLRoot):
     allelicState: Optional[Union[dict, OntologyClass]] = None
     alternateLabels: Optional[Union[str, list[str]]] = empty_list()
     description: Optional[str] = None
-    expressions: Optional[Union[Union[dict, Expression], list[Union[dict, Expression]]]] = empty_list()
-    extensions: Optional[Union[Union[dict, Extension], list[Union[dict, Extension]]]] = empty_list()
+    expressions: Optional[
+        Union[Union[dict, Expression], list[Union[dict, Expression]]]
+    ] = empty_list()
+    extensions: Optional[
+        Union[Union[dict, Extension], list[Union[dict, Extension]]]
+    ] = empty_list()
     geneContext: Optional[Union[dict, GeneDescriptor]] = None
     id: Optional[str] = None
     label: Optional[str] = None
@@ -1693,25 +1986,41 @@ class VariationDescriptor(YAMLRoot):
     xrefs: Optional[Union[str, list[str]]] = empty_list()
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.allelicState is not None and not isinstance(self.allelicState, OntologyClass):
+        if self.allelicState is not None and not isinstance(
+            self.allelicState, OntologyClass
+        ):
             self.allelicState = OntologyClass(**as_dict(self.allelicState))
 
         if not isinstance(self.alternateLabels, list):
-            self.alternateLabels = [self.alternateLabels] if self.alternateLabels is not None else []
-        self.alternateLabels = [v if isinstance(v, str) else str(v) for v in self.alternateLabels]
+            self.alternateLabels = (
+                [self.alternateLabels] if self.alternateLabels is not None else []
+            )
+        self.alternateLabels = [
+            v if isinstance(v, str) else str(v) for v in self.alternateLabels
+        ]
 
         if self.description is not None and not isinstance(self.description, str):
             self.description = str(self.description)
 
         if not isinstance(self.expressions, list):
-            self.expressions = [self.expressions] if self.expressions is not None else []
-        self.expressions = [v if isinstance(v, Expression) else Expression(**as_dict(v)) for v in self.expressions]
+            self.expressions = (
+                [self.expressions] if self.expressions is not None else []
+            )
+        self.expressions = [
+            v if isinstance(v, Expression) else Expression(**as_dict(v))
+            for v in self.expressions
+        ]
 
         if not isinstance(self.extensions, list):
             self.extensions = [self.extensions] if self.extensions is not None else []
-        self.extensions = [v if isinstance(v, Extension) else Extension(**as_dict(v)) for v in self.extensions]
+        self.extensions = [
+            v if isinstance(v, Extension) else Extension(**as_dict(v))
+            for v in self.extensions
+        ]
 
-        if self.geneContext is not None and not isinstance(self.geneContext, GeneDescriptor):
+        if self.geneContext is not None and not isinstance(
+            self.geneContext, GeneDescriptor
+        ):
             self.geneContext = GeneDescriptor(**as_dict(self.geneContext))
 
         if self.id is not None and not isinstance(self.id, str):
@@ -1720,10 +2029,14 @@ class VariationDescriptor(YAMLRoot):
         if self.label is not None and not isinstance(self.label, str):
             self.label = str(self.label)
 
-        if self.moleculeContext is not None and not isinstance(self.moleculeContext, MoleculeContext):
+        if self.moleculeContext is not None and not isinstance(
+            self.moleculeContext, MoleculeContext
+        ):
             self.moleculeContext = MoleculeContext(self.moleculeContext)
 
-        if self.structuralType is not None and not isinstance(self.structuralType, OntologyClass):
+        if self.structuralType is not None and not isinstance(
+            self.structuralType, OntologyClass
+        ):
             self.structuralType = OntologyClass(**as_dict(self.structuralType))
 
         if self.variation is not None and not isinstance(self.variation, Variation):
@@ -1732,7 +2045,9 @@ class VariationDescriptor(YAMLRoot):
         if self.vcfRecord is not None and not isinstance(self.vcfRecord, VcfRecord):
             self.vcfRecord = VcfRecord(**as_dict(self.vcfRecord))
 
-        if self.vrsRefAlleleSeq is not None and not isinstance(self.vrsRefAlleleSeq, str):
+        if self.vrsRefAlleleSeq is not None and not isinstance(
+            self.vrsRefAlleleSeq, str
+        ):
             self.vrsRefAlleleSeq = str(self.vrsRefAlleleSeq)
 
         if not isinstance(self.xrefs, list):
@@ -1866,12 +2181,18 @@ class Allele(YAMLRoot):
     derivedSequenceExpression: Optional[Union[dict, "DerivedSequenceExpression"]] = None
     id: Optional[str] = None
     literalSequenceExpression: Optional[Union[dict, "LiteralSequenceExpression"]] = None
-    repeatedSequenceExpression: Optional[Union[dict, "RepeatedSequenceExpression"]] = None
+    repeatedSequenceExpression: Optional[Union[dict, "RepeatedSequenceExpression"]] = (
+        None
+    )
     sequenceLocation: Optional[Union[dict, "SequenceLocation"]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.chromosomeLocation is not None and not isinstance(self.chromosomeLocation, ChromosomeLocation):
-            self.chromosomeLocation = ChromosomeLocation(**as_dict(self.chromosomeLocation))
+        if self.chromosomeLocation is not None and not isinstance(
+            self.chromosomeLocation, ChromosomeLocation
+        ):
+            self.chromosomeLocation = ChromosomeLocation(
+                **as_dict(self.chromosomeLocation)
+            )
 
         if self.curie is not None and not isinstance(self.curie, str):
             self.curie = str(self.curie)
@@ -1879,7 +2200,9 @@ class Allele(YAMLRoot):
         if self.derivedSequenceExpression is not None and not isinstance(
             self.derivedSequenceExpression, DerivedSequenceExpression
         ):
-            self.derivedSequenceExpression = DerivedSequenceExpression(**as_dict(self.derivedSequenceExpression))
+            self.derivedSequenceExpression = DerivedSequenceExpression(
+                **as_dict(self.derivedSequenceExpression)
+            )
 
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
@@ -1887,14 +2210,20 @@ class Allele(YAMLRoot):
         if self.literalSequenceExpression is not None and not isinstance(
             self.literalSequenceExpression, LiteralSequenceExpression
         ):
-            self.literalSequenceExpression = LiteralSequenceExpression(**as_dict(self.literalSequenceExpression))
+            self.literalSequenceExpression = LiteralSequenceExpression(
+                **as_dict(self.literalSequenceExpression)
+            )
 
         if self.repeatedSequenceExpression is not None and not isinstance(
             self.repeatedSequenceExpression, RepeatedSequenceExpression
         ):
-            self.repeatedSequenceExpression = RepeatedSequenceExpression(**as_dict(self.repeatedSequenceExpression))
+            self.repeatedSequenceExpression = RepeatedSequenceExpression(
+                **as_dict(self.repeatedSequenceExpression)
+            )
 
-        if self.sequenceLocation is not None and not isinstance(self.sequenceLocation, SequenceLocation):
+        if self.sequenceLocation is not None and not isinstance(
+            self.sequenceLocation, SequenceLocation
+        ):
             self.sequenceLocation = SequenceLocation(**as_dict(self.sequenceLocation))
 
         super().__post_init__(**kwargs)
@@ -1921,7 +2250,9 @@ class ChromosomeLocation(YAMLRoot):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
-        if self.interval is not None and not isinstance(self.interval, CytobandInterval):
+        if self.interval is not None and not isinstance(
+            self.interval, CytobandInterval
+        ):
             self.interval = CytobandInterval(**as_dict(self.interval))
 
         if self.speciesId is not None and not isinstance(self.speciesId, str):
@@ -1949,7 +2280,9 @@ class CopyNumber(YAMLRoot):
     indefiniteRange: Optional[Union[dict, "IndefiniteRange"]] = None
     literalSequenceExpression: Optional[Union[dict, "LiteralSequenceExpression"]] = None
     number: Optional[Union[dict, "Number"]] = None
-    repeatedSequenceExpression: Optional[Union[dict, "RepeatedSequenceExpression"]] = None
+    repeatedSequenceExpression: Optional[Union[dict, "RepeatedSequenceExpression"]] = (
+        None
+    )
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.allele is not None and not isinstance(self.allele, Allele):
@@ -1958,13 +2291,17 @@ class CopyNumber(YAMLRoot):
         if self.curie is not None and not isinstance(self.curie, str):
             self.curie = str(self.curie)
 
-        if self.definiteRange is not None and not isinstance(self.definiteRange, DefiniteRange):
+        if self.definiteRange is not None and not isinstance(
+            self.definiteRange, DefiniteRange
+        ):
             self.definiteRange = DefiniteRange(**as_dict(self.definiteRange))
 
         if self.derivedSequenceExpression is not None and not isinstance(
             self.derivedSequenceExpression, DerivedSequenceExpression
         ):
-            self.derivedSequenceExpression = DerivedSequenceExpression(**as_dict(self.derivedSequenceExpression))
+            self.derivedSequenceExpression = DerivedSequenceExpression(
+                **as_dict(self.derivedSequenceExpression)
+            )
 
         if self.gene is not None and not isinstance(self.gene, Gene):
             self.gene = Gene(**as_dict(self.gene))
@@ -1975,13 +2312,17 @@ class CopyNumber(YAMLRoot):
         if self.id is not None and not isinstance(self.id, str):
             self.id = str(self.id)
 
-        if self.indefiniteRange is not None and not isinstance(self.indefiniteRange, IndefiniteRange):
+        if self.indefiniteRange is not None and not isinstance(
+            self.indefiniteRange, IndefiniteRange
+        ):
             self.indefiniteRange = IndefiniteRange(**as_dict(self.indefiniteRange))
 
         if self.literalSequenceExpression is not None and not isinstance(
             self.literalSequenceExpression, LiteralSequenceExpression
         ):
-            self.literalSequenceExpression = LiteralSequenceExpression(**as_dict(self.literalSequenceExpression))
+            self.literalSequenceExpression = LiteralSequenceExpression(
+                **as_dict(self.literalSequenceExpression)
+            )
 
         if self.number is not None and not isinstance(self.number, Number):
             self.number = Number(**as_dict(self.number))
@@ -1989,7 +2330,9 @@ class CopyNumber(YAMLRoot):
         if self.repeatedSequenceExpression is not None and not isinstance(
             self.repeatedSequenceExpression, RepeatedSequenceExpression
         ):
-            self.repeatedSequenceExpression = RepeatedSequenceExpression(**as_dict(self.repeatedSequenceExpression))
+            self.repeatedSequenceExpression = RepeatedSequenceExpression(
+                **as_dict(self.repeatedSequenceExpression)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -2051,10 +2394,14 @@ class DerivedSequenceExpression(YAMLRoot):
     reverseComplement: Optional[Union[bool, Bool]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.location is not None and not isinstance(self.location, SequenceLocation):
+        if self.location is not None and not isinstance(
+            self.location, SequenceLocation
+        ):
             self.location = SequenceLocation(**as_dict(self.location))
 
-        if self.reverseComplement is not None and not isinstance(self.reverseComplement, Bool):
+        if self.reverseComplement is not None and not isinstance(
+            self.reverseComplement, Bool
+        ):
             self.reverseComplement = Bool(self.reverseComplement)
 
         super().__post_init__(**kwargs)
@@ -2158,10 +2505,16 @@ class Location(YAMLRoot):
     sequenceLocation: Optional[Union[dict, "SequenceLocation"]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.chromosomeLocation is not None and not isinstance(self.chromosomeLocation, ChromosomeLocation):
-            self.chromosomeLocation = ChromosomeLocation(**as_dict(self.chromosomeLocation))
+        if self.chromosomeLocation is not None and not isinstance(
+            self.chromosomeLocation, ChromosomeLocation
+        ):
+            self.chromosomeLocation = ChromosomeLocation(
+                **as_dict(self.chromosomeLocation)
+            )
 
-        if self.sequenceLocation is not None and not isinstance(self.sequenceLocation, SequenceLocation):
+        if self.sequenceLocation is not None and not isinstance(
+            self.sequenceLocation, SequenceLocation
+        ):
             self.sequenceLocation = SequenceLocation(**as_dict(self.sequenceLocation))
 
         super().__post_init__(**kwargs)
@@ -2181,7 +2534,9 @@ class Member(YAMLRoot):
     curie: Optional[str] = None
     haplotype: Optional[Union[dict, Haplotype]] = None
     id: Optional[str] = None
-    members: Optional[Union[Union[dict, "Member"], list[Union[dict, "Member"]]]] = empty_list()
+    members: Optional[Union[Union[dict, "Member"], list[Union[dict, "Member"]]]] = (
+        empty_list()
+    )
     text: Optional[Union[dict, "Text"]] = None
     variationSet: Optional[Union[dict, "VariationSet"]] = None
 
@@ -2203,12 +2558,16 @@ class Member(YAMLRoot):
 
         if not isinstance(self.members, list):
             self.members = [self.members] if self.members is not None else []
-        self.members = [v if isinstance(v, Member) else Member(**as_dict(v)) for v in self.members]
+        self.members = [
+            v if isinstance(v, Member) else Member(**as_dict(v)) for v in self.members
+        ]
 
         if self.text is not None and not isinstance(self.text, Text):
             self.text = Text(**as_dict(self.text))
 
-        if self.variationSet is not None and not isinstance(self.variationSet, VariationSet):
+        if self.variationSet is not None and not isinstance(
+            self.variationSet, VariationSet
+        ):
             self.variationSet = VariationSet()
 
         super().__post_init__(**kwargs)
@@ -2270,21 +2629,29 @@ class RepeatedSequenceExpression(YAMLRoot):
     number: Optional[Union[dict, Number]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.definiteRange is not None and not isinstance(self.definiteRange, DefiniteRange):
+        if self.definiteRange is not None and not isinstance(
+            self.definiteRange, DefiniteRange
+        ):
             self.definiteRange = DefiniteRange(**as_dict(self.definiteRange))
 
         if self.derivedSequenceExpression is not None and not isinstance(
             self.derivedSequenceExpression, DerivedSequenceExpression
         ):
-            self.derivedSequenceExpression = DerivedSequenceExpression(**as_dict(self.derivedSequenceExpression))
+            self.derivedSequenceExpression = DerivedSequenceExpression(
+                **as_dict(self.derivedSequenceExpression)
+            )
 
-        if self.indefiniteRange is not None and not isinstance(self.indefiniteRange, IndefiniteRange):
+        if self.indefiniteRange is not None and not isinstance(
+            self.indefiniteRange, IndefiniteRange
+        ):
             self.indefiniteRange = IndefiniteRange(**as_dict(self.indefiniteRange))
 
         if self.literalSequenceExpression is not None and not isinstance(
             self.literalSequenceExpression, LiteralSequenceExpression
         ):
-            self.literalSequenceExpression = LiteralSequenceExpression(**as_dict(self.literalSequenceExpression))
+            self.literalSequenceExpression = LiteralSequenceExpression(
+                **as_dict(self.literalSequenceExpression)
+            )
 
         if self.number is not None and not isinstance(self.number, Number):
             self.number = Number(**as_dict(self.number))
@@ -2309,17 +2676,23 @@ class SequenceExpression(YAMLRoot):
         if self.derivedSequenceExpression is not None and not isinstance(
             self.derivedSequenceExpression, DerivedSequenceExpression
         ):
-            self.derivedSequenceExpression = DerivedSequenceExpression(**as_dict(self.derivedSequenceExpression))
+            self.derivedSequenceExpression = DerivedSequenceExpression(
+                **as_dict(self.derivedSequenceExpression)
+            )
 
         if self.literalSequenceExpression is not None and not isinstance(
             self.literalSequenceExpression, LiteralSequenceExpression
         ):
-            self.literalSequenceExpression = LiteralSequenceExpression(**as_dict(self.literalSequenceExpression))
+            self.literalSequenceExpression = LiteralSequenceExpression(
+                **as_dict(self.literalSequenceExpression)
+            )
 
         if self.repeatedSequenceExpression is not None and not isinstance(
             self.repeatedSequenceExpression, RepeatedSequenceExpression
         ):
-            self.repeatedSequenceExpression = RepeatedSequenceExpression(**as_dict(self.repeatedSequenceExpression))
+            self.repeatedSequenceExpression = RepeatedSequenceExpression(
+                **as_dict(self.repeatedSequenceExpression)
+            )
 
         super().__post_init__(**kwargs)
 
@@ -2341,20 +2714,32 @@ class SequenceInterval(YAMLRoot):
     startNumber: Optional[Union[dict, Number]] = None
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.endDefiniteRange is not None and not isinstance(self.endDefiniteRange, DefiniteRange):
+        if self.endDefiniteRange is not None and not isinstance(
+            self.endDefiniteRange, DefiniteRange
+        ):
             self.endDefiniteRange = DefiniteRange(**as_dict(self.endDefiniteRange))
 
-        if self.endIndefiniteRange is not None and not isinstance(self.endIndefiniteRange, IndefiniteRange):
-            self.endIndefiniteRange = IndefiniteRange(**as_dict(self.endIndefiniteRange))
+        if self.endIndefiniteRange is not None and not isinstance(
+            self.endIndefiniteRange, IndefiniteRange
+        ):
+            self.endIndefiniteRange = IndefiniteRange(
+                **as_dict(self.endIndefiniteRange)
+            )
 
         if self.endNumber is not None and not isinstance(self.endNumber, Number):
             self.endNumber = Number(**as_dict(self.endNumber))
 
-        if self.startDefiniteRange is not None and not isinstance(self.startDefiniteRange, DefiniteRange):
+        if self.startDefiniteRange is not None and not isinstance(
+            self.startDefiniteRange, DefiniteRange
+        ):
             self.startDefiniteRange = DefiniteRange(**as_dict(self.startDefiniteRange))
 
-        if self.startIndefiniteRange is not None and not isinstance(self.startIndefiniteRange, IndefiniteRange):
-            self.startIndefiniteRange = IndefiniteRange(**as_dict(self.startIndefiniteRange))
+        if self.startIndefiniteRange is not None and not isinstance(
+            self.startIndefiniteRange, IndefiniteRange
+        ):
+            self.startIndefiniteRange = IndefiniteRange(
+                **as_dict(self.startIndefiniteRange)
+            )
 
         if self.startNumber is not None and not isinstance(self.startNumber, Number):
             self.startNumber = Number(**as_dict(self.startNumber))
@@ -2382,7 +2767,9 @@ class SequenceLocation(YAMLRoot):
         if self.sequenceId is not None and not isinstance(self.sequenceId, str):
             self.sequenceId = str(self.sequenceId)
 
-        if self.sequenceInterval is not None and not isinstance(self.sequenceInterval, SequenceInterval):
+        if self.sequenceInterval is not None and not isinstance(
+            self.sequenceInterval, SequenceInterval
+        ):
             self.sequenceInterval = SequenceInterval(**as_dict(self.sequenceInterval))
 
         super().__post_init__(**kwargs)
@@ -2484,7 +2871,9 @@ class UtilityVariation(YAMLRoot):
         if self.text is not None and not isinstance(self.text, Text):
             self.text = Text(**as_dict(self.text))
 
-        if self.variationSet is not None and not isinstance(self.variationSet, VariationSet):
+        if self.variationSet is not None and not isinstance(
+            self.variationSet, VariationSet
+        ):
             self.variationSet = VariationSet()
 
         super().__post_init__(**kwargs)
@@ -2518,7 +2907,9 @@ class Variation(YAMLRoot):
         if self.text is not None and not isinstance(self.text, Text):
             self.text = Text(**as_dict(self.text))
 
-        if self.variationSet is not None and not isinstance(self.variationSet, VariationSet):
+        if self.variationSet is not None and not isinstance(
+            self.variationSet, VariationSet
+        ):
             self.variationSet = VariationSet()
 
         super().__post_init__(**kwargs)
@@ -2717,9 +3108,12 @@ class Sex(EnumDefinitionImpl):
     FEMALE = PermissibleValue(text="FEMALE", description="Female")
     MALE = PermissibleValue(text="MALE", description="Male")
     OTHER_SEX = PermissibleValue(
-        text="OTHER_SEX", description="It is not possible, to accurately assess the applicability of MALE/FEMALE."
+        text="OTHER_SEX",
+        description="It is not possible, to accurately assess the applicability of MALE/FEMALE.",
     )
-    UNKNOWN_SEX = PermissibleValue(text="UNKNOWN_SEX", description="Not assessed / available.")
+    UNKNOWN_SEX = PermissibleValue(
+        text="UNKNOWN_SEX", description="Not assessed / available."
+    )
 
     _defn = EnumDefinition(
         name="Sex",
@@ -2747,7 +3141,9 @@ class DrugType(EnumDefinitionImpl):
     A simplified version of ODHSI-DRUG_EXPOSURE
     """
 
-    ADMINISTRATION_RELATED_TO_PROCEDURE = PermissibleValue(text="ADMINISTRATION_RELATED_TO_PROCEDURE")
+    ADMINISTRATION_RELATED_TO_PROCEDURE = PermissibleValue(
+        text="ADMINISTRATION_RELATED_TO_PROCEDURE"
+    )
     EHR_MEDICATION_LIST = PermissibleValue(text="EHR_MEDICATION_LIST")
     PRESCRIPTION = PermissibleValue(text="PRESCRIPTION")
     UNKNOWN_DRUG_TYPE = PermissibleValue(text="UNKNOWN_DRUG_TYPE")
@@ -2780,9 +3176,15 @@ class AffectedStatus(EnumDefinitionImpl):
 
 
 class AllelicStateTerms(EnumDefinitionImpl):
-    HETEROZYGOUS = PermissibleValue(text="HETEROZYGOUS", description="heterozygous", meaning=GENO["0000135"])
-    HOMOZYGOUS = PermissibleValue(text="HOMOZYGOUS", description="homozygous", meaning=GENO["0000136"])
-    HEMIZYGOUS = PermissibleValue(text="HEMIZYGOUS", description="hemizygous", meaning=GENO["0000134"])
+    HETEROZYGOUS = PermissibleValue(
+        text="HETEROZYGOUS", description="heterozygous", meaning=GENO["0000135"]
+    )
+    HOMOZYGOUS = PermissibleValue(
+        text="HOMOZYGOUS", description="homozygous", meaning=GENO["0000136"]
+    )
+    HEMIZYGOUS = PermissibleValue(
+        text="HEMIZYGOUS", description="hemizygous", meaning=GENO["0000134"]
+    )
 
     _defn = EnumDefinition(
         name="AllelicStateTerms",
@@ -2803,23 +3205,37 @@ class AssaysTerms(EnumDefinitionImpl):
 
 class GenderTerms(EnumDefinitionImpl):
     IDENTIFIES_AS_MALE = PermissibleValue(
-        text="IDENTIFIES_AS_MALE", description="Identifies as male", meaning=LOINC["LA22878-5"]
+        text="IDENTIFIES_AS_MALE",
+        description="Identifies as male",
+        meaning=LOINC["LA22878-5"],
     )
     IDENTIFIES_AS_FEMALE = PermissibleValue(
-        text="IDENTIFIES_AS_FEMALE", description="Identifies as female", meaning=LOINC["LA22879-3"]
+        text="IDENTIFIES_AS_FEMALE",
+        description="Identifies as female",
+        meaning=LOINC["LA22879-3"],
     )
     FEMALE_TO_MALE_TRANSSEXUAL = PermissibleValue(
-        text="FEMALE_TO_MALE_TRANSSEXUAL", description="Female-to-male transsexual", meaning=LOINC["LA22880-1"]
+        text="FEMALE_TO_MALE_TRANSSEXUAL",
+        description="Female-to-male transsexual",
+        meaning=LOINC["LA22880-1"],
     )
     MALE_TO_FEMALE_TRANSSEXUAL = PermissibleValue(
-        text="MALE_TO_FEMALE_TRANSSEXUAL", description="Male-to-female transsexual", meaning=LOINC["LA22881-9"]
+        text="MALE_TO_FEMALE_TRANSSEXUAL",
+        description="Male-to-female transsexual",
+        meaning=LOINC["LA22881-9"],
     )
     IDENTIFIES_AS_NON_CONFORMING = PermissibleValue(
-        text="IDENTIFIES_AS_NON_CONFORMING", description="Identifies as non-conforming", meaning=LOINC["LA22882-7"]
+        text="IDENTIFIES_AS_NON_CONFORMING",
+        description="Identifies as non-conforming",
+        meaning=LOINC["LA22882-7"],
     )
-    OTHER_GENDER = PermissibleValue(text="OTHER_GENDER", description="other", meaning=LOINC["LA46-8"])
+    OTHER_GENDER = PermissibleValue(
+        text="OTHER_GENDER", description="other", meaning=LOINC["LA46-8"]
+    )
     ASKED_BUT_UNKNOWN = PermissibleValue(
-        text="ASKED_BUT_UNKNOWN", description="Asked but unknown", meaning=LOINC["LA20384-6"]
+        text="ASKED_BUT_UNKNOWN",
+        description="Asked but unknown",
+        meaning=LOINC["LA20384-6"],
     )
 
     _defn = EnumDefinition(
@@ -2830,8 +3246,12 @@ class GenderTerms(EnumDefinitionImpl):
 class LateralityTerms(EnumDefinitionImpl):
     RIGHT = PermissibleValue(text="RIGHT", description="Right", meaning=HP["0012834"])
     LEFT = PermissibleValue(text="LEFT", description="Left", meaning=HP["0012835"])
-    UNILATERAL = PermissibleValue(text="UNILATERAL", description="Unilateral", meaning=HP["0012833"])
-    BILATERAL = PermissibleValue(text="BILATERAL", description="Bilateral", meaning=HP["0012832"])
+    UNILATERAL = PermissibleValue(
+        text="UNILATERAL", description="Unilateral", meaning=HP["0012833"]
+    )
+    BILATERAL = PermissibleValue(
+        text="BILATERAL", description="Bilateral", meaning=HP["0012832"]
+    )
 
     _defn = EnumDefinition(
         name="LateralityTerms",
@@ -2839,21 +3259,37 @@ class LateralityTerms(EnumDefinitionImpl):
 
 
 class MedicalActionsTerms(EnumDefinitionImpl):
-    ADVERSE_EVENT = PermissibleValue(text="ADVERSE_EVENT", description="Adverse Event", meaning=NCIT.C41331)
-    FOUR_TIMES_DAILY = PermissibleValue(text="FOUR_TIMES_DAILY", description="Four Times Daily", meaning=NCIT.C64530)
+    ADVERSE_EVENT = PermissibleValue(
+        text="ADVERSE_EVENT", description="Adverse Event", meaning=NCIT.C41331
+    )
+    FOUR_TIMES_DAILY = PermissibleValue(
+        text="FOUR_TIMES_DAILY", description="Four Times Daily", meaning=NCIT.C64530
+    )
     INTRA_ARTERIAL = PermissibleValue(
-        text="INTRA_ARTERIAL", description="Intraarterial Route of Administration", meaning=NCIT.C38222
+        text="INTRA_ARTERIAL",
+        description="Intraarterial Route of Administration",
+        meaning=NCIT.C38222,
     )
     IV_ADMINISTRATION = PermissibleValue(
-        text="IV_ADMINISTRATION", description="Intravenous Route of Administration", meaning=NCIT.C38276
+        text="IV_ADMINISTRATION",
+        description="Intravenous Route of Administration",
+        meaning=NCIT.C38276,
     )
     ORAL_ADMINISTRATION = PermissibleValue(
-        text="ORAL_ADMINISTRATION", description="Oral Route of Administration", meaning=NCIT.C38288
+        text="ORAL_ADMINISTRATION",
+        description="Oral Route of Administration",
+        meaning=NCIT.C38288,
     )
     ONCE = PermissibleValue(text="ONCE", description="Once", meaning=NCIT.C64576)
-    ONCE_DAILY = PermissibleValue(text="ONCE_DAILY", description="Once Daily", meaning=NCIT.C125004)
-    THREE_TIMES_DAILY = PermissibleValue(text="THREE_TIMES_DAILY", description="Three Times Daily", meaning=NCIT.C64527)
-    TWICE_DAILY = PermissibleValue(text="TWICE_DAILY", description="Twice Daily", meaning=NCIT.C64496)
+    ONCE_DAILY = PermissibleValue(
+        text="ONCE_DAILY", description="Once Daily", meaning=NCIT.C125004
+    )
+    THREE_TIMES_DAILY = PermissibleValue(
+        text="THREE_TIMES_DAILY", description="Three Times Daily", meaning=NCIT.C64527
+    )
+    TWICE_DAILY = PermissibleValue(
+        text="TWICE_DAILY", description="Twice Daily", meaning=NCIT.C64496
+    )
 
     _defn = EnumDefinition(
         name="MedicalActionsTerms",
@@ -2861,38 +3297,72 @@ class MedicalActionsTerms(EnumDefinitionImpl):
 
 
 class OnsetTerms(EnumDefinitionImpl):
-    ANTENATAL_ONSET = PermissibleValue(text="ANTENATAL_ONSET", description="Antenatal onset", meaning=HP["0030674"])
-    EMBRYONAL_ONSET = PermissibleValue(text="EMBRYONAL_ONSET", description="Embryonal onset", meaning=HP["0011460"])
-    FETAL_ONSET = PermissibleValue(text="FETAL_ONSET", description="Fetal onset", meaning=HP["0011461"])
+    ANTENATAL_ONSET = PermissibleValue(
+        text="ANTENATAL_ONSET", description="Antenatal onset", meaning=HP["0030674"]
+    )
+    EMBRYONAL_ONSET = PermissibleValue(
+        text="EMBRYONAL_ONSET", description="Embryonal onset", meaning=HP["0011460"]
+    )
+    FETAL_ONSET = PermissibleValue(
+        text="FETAL_ONSET", description="Fetal onset", meaning=HP["0011461"]
+    )
     LATE_FIRST_TRIMESTER_ONSET = PermissibleValue(
-        text="LATE_FIRST_TRIMESTER_ONSET", description="Late first trimester onset", meaning=HP["0034199"]
+        text="LATE_FIRST_TRIMESTER_ONSET",
+        description="Late first trimester onset",
+        meaning=HP["0034199"],
     )
     SECOND_TRIMESTER_ONSET = PermissibleValue(
-        text="SECOND_TRIMESTER_ONSET", description="Second trimester onset", meaning=HP["0034198"]
+        text="SECOND_TRIMESTER_ONSET",
+        description="Second trimester onset",
+        meaning=HP["0034198"],
     )
     THIRD_TRIMESTER_ONSET = PermissibleValue(
-        text="THIRD_TRIMESTER_ONSET", description="Third trimester onset", meaning=HP["0034197"]
+        text="THIRD_TRIMESTER_ONSET",
+        description="Third trimester onset",
+        meaning=HP["0034197"],
     )
-    CONGENITAL_ONSET = PermissibleValue(text="CONGENITAL_ONSET", description="Congenital onset", meaning=HP["0003577"])
-    NEONATAL_ONSET = PermissibleValue(text="NEONATAL_ONSET", description="Neonatal onset", meaning=HP["0003623"])
-    INFANTILE_ONSET = PermissibleValue(text="INFANTILE_ONSET", description="Infantile onset", meaning=HP["0003593"])
-    CHILDHOOD_ONSET = PermissibleValue(text="CHILDHOOD_ONSET", description="Childhood onset", meaning=HP["0011463"])
-    JUVENILE_ONSET = PermissibleValue(text="JUVENILE_ONSET", description="Juvenile onset", meaning=HP["0003621"])
-    ADULT_ONSET = PermissibleValue(text="ADULT_ONSET", description="Adult onset", meaning=HP["0003581"])
+    CONGENITAL_ONSET = PermissibleValue(
+        text="CONGENITAL_ONSET", description="Congenital onset", meaning=HP["0003577"]
+    )
+    NEONATAL_ONSET = PermissibleValue(
+        text="NEONATAL_ONSET", description="Neonatal onset", meaning=HP["0003623"]
+    )
+    INFANTILE_ONSET = PermissibleValue(
+        text="INFANTILE_ONSET", description="Infantile onset", meaning=HP["0003593"]
+    )
+    CHILDHOOD_ONSET = PermissibleValue(
+        text="CHILDHOOD_ONSET", description="Childhood onset", meaning=HP["0011463"]
+    )
+    JUVENILE_ONSET = PermissibleValue(
+        text="JUVENILE_ONSET", description="Juvenile onset", meaning=HP["0003621"]
+    )
+    ADULT_ONSET = PermissibleValue(
+        text="ADULT_ONSET", description="Adult onset", meaning=HP["0003581"]
+    )
     YOUNG_ADULT_ONSET = PermissibleValue(
         text="YOUNG_ADULT_ONSET", description="Young adult onset", meaning=HP["0011462"]
     )
     EARLY_YOUNG_ADULT_ONSET = PermissibleValue(
-        text="EARLY_YOUNG_ADULT_ONSET", description="Early young adult onset", meaning=HP["0025708"]
+        text="EARLY_YOUNG_ADULT_ONSET",
+        description="Early young adult onset",
+        meaning=HP["0025708"],
     )
     INTERMEDIATE_YOUNG_ADULT_ONSET = PermissibleValue(
-        text="INTERMEDIATE_YOUNG_ADULT_ONSET", description="Intermediate young adult onset", meaning=HP["0025709"]
+        text="INTERMEDIATE_YOUNG_ADULT_ONSET",
+        description="Intermediate young adult onset",
+        meaning=HP["0025709"],
     )
     LATE_YOUNG_ADULT_ONSET = PermissibleValue(
-        text="LATE_YOUNG_ADULT_ONSET", description="Late young adult onset", meaning=HP["0025710"]
+        text="LATE_YOUNG_ADULT_ONSET",
+        description="Late young adult onset",
+        meaning=HP["0025710"],
     )
-    MIDDLE_AGE_ONSET = PermissibleValue(text="MIDDLE_AGE_ONSET", description="Middle age onset", meaning=HP["0003596"])
-    LATE_ONSET = PermissibleValue(text="LATE_ONSET", description="Late onset", meaning=HP["0003584"])
+    MIDDLE_AGE_ONSET = PermissibleValue(
+        text="MIDDLE_AGE_ONSET", description="Middle age onset", meaning=HP["0003596"]
+    )
+    LATE_ONSET = PermissibleValue(
+        text="LATE_ONSET", description="Late onset", meaning=HP["0003584"]
+    )
 
     _defn = EnumDefinition(
         name="OnsetTerms",
@@ -2900,21 +3370,43 @@ class OnsetTerms(EnumDefinitionImpl):
 
 
 class OrganTerms(EnumDefinitionImpl):
-    BRAIN = PermissibleValue(text="BRAIN", description="brain", meaning=UBERON["0000955"])
-    CEREBELLUM = PermissibleValue(text="CEREBELLUM", description="cerebellum", meaning=UBERON["0002037"])
+    BRAIN = PermissibleValue(
+        text="BRAIN", description="brain", meaning=UBERON["0000955"]
+    )
+    CEREBELLUM = PermissibleValue(
+        text="CEREBELLUM", description="cerebellum", meaning=UBERON["0002037"]
+    )
     EAR = PermissibleValue(text="EAR", description="ear", meaning=UBERON["0001690"])
     EYE = PermissibleValue(text="EYE", description="eye", meaning=UBERON["0000970"])
-    HEART = PermissibleValue(text="HEART", description="heart", meaning=UBERON["0002107"])
-    KIDNEY = PermissibleValue(text="KIDNEY", description="kidney", meaning=UBERON["0002113"])
-    LARGE_INTESTINE = PermissibleValue(text="LARGE_INTESTINE", description="large intestine", meaning=UBERON["0000059"])
-    LIVER = PermissibleValue(text="LIVER", description="liver", meaning=UBERON["0002107"])
+    HEART = PermissibleValue(
+        text="HEART", description="heart", meaning=UBERON["0002107"]
+    )
+    KIDNEY = PermissibleValue(
+        text="KIDNEY", description="kidney", meaning=UBERON["0002113"]
+    )
+    LARGE_INTESTINE = PermissibleValue(
+        text="LARGE_INTESTINE", description="large intestine", meaning=UBERON["0000059"]
+    )
+    LIVER = PermissibleValue(
+        text="LIVER", description="liver", meaning=UBERON["0002107"]
+    )
     LUNG = PermissibleValue(text="LUNG", description="lung", meaning=UBERON["0002048"])
     NOSE = PermissibleValue(text="NOSE", description="nose", meaning=UBERON["0000004"])
-    SMALL_INTESTINE = PermissibleValue(text="SMALL_INTESTINE", description="small intestine", meaning=UBERON["0002108"])
-    SPINAL_CORD = PermissibleValue(text="SPINAL_CORD", description="spinal cord", meaning=UBERON["0002240"])
-    SPLEEN = PermissibleValue(text="SPLEEN", description="spleen", meaning=UBERON["0002106"])
-    TONGUE = PermissibleValue(text="TONGUE", description="tongue", meaning=UBERON["0001723"])
-    THYMUS = PermissibleValue(text="THYMUS", description="thymus", meaning=UBERON["0002370"])
+    SMALL_INTESTINE = PermissibleValue(
+        text="SMALL_INTESTINE", description="small intestine", meaning=UBERON["0002108"]
+    )
+    SPINAL_CORD = PermissibleValue(
+        text="SPINAL_CORD", description="spinal cord", meaning=UBERON["0002240"]
+    )
+    SPLEEN = PermissibleValue(
+        text="SPLEEN", description="spleen", meaning=UBERON["0002106"]
+    )
+    TONGUE = PermissibleValue(
+        text="TONGUE", description="tongue", meaning=UBERON["0001723"]
+    )
+    THYMUS = PermissibleValue(
+        text="THYMUS", description="thymus", meaning=UBERON["0002370"]
+    )
 
     _defn = EnumDefinition(
         name="OrganTerms",
@@ -2922,8 +3414,12 @@ class OrganTerms(EnumDefinitionImpl):
 
 
 class ResponseTerms(EnumDefinitionImpl):
-    FAVORABLE = PermissibleValue(text="FAVORABLE", description="Favorable", meaning=NCIT.C102560)
-    UNFAVORABLE = PermissibleValue(text="UNFAVORABLE", description="Unfavorable", meaning=NCIT.C102561)
+    FAVORABLE = PermissibleValue(
+        text="FAVORABLE", description="Favorable", meaning=NCIT.C102560
+    )
+    UNFAVORABLE = PermissibleValue(
+        text="UNFAVORABLE", description="Unfavorable", meaning=NCIT.C102561
+    )
 
     _defn = EnumDefinition(
         name="ResponseTerms",
@@ -2936,49 +3432,105 @@ class SpatialPatternTerms(EnumDefinitionImpl):
         description="Predominant small joint localization",
         meaning=HP["0032544"],
     )
-    POLYCYCLIC = PermissibleValue(text="POLYCYCLIC", description="Polycyclic", meaning=HP["0031450"])
+    POLYCYCLIC = PermissibleValue(
+        text="POLYCYCLIC", description="Polycyclic", meaning=HP["0031450"]
+    )
     AXIAL = PermissibleValue(text="AXIAL", description="Axial", meaning=HP["0025287"])
-    PERILOBULAR = PermissibleValue(text="PERILOBULAR", description="Perilobular", meaning=HP["0033813"])
-    PARASEPTAL = PermissibleValue(text="PARASEPTAL", description="Paraseptal", meaning=HP["0033814"])
-    BRONCHOCENTRIC = PermissibleValue(text="BRONCHOCENTRIC", description="Bronchocentric", meaning=HP["0033815"])
-    CENTRILOBULAR = PermissibleValue(text="CENTRILOBULAR", description="Centrilobular", meaning=HP["0033816"])
-    MILIARY = PermissibleValue(text="MILIARY", description="Miliary", meaning=HP["0033817"])
-    GENERALIZED = PermissibleValue(text="GENERALIZED", description="Generalized", meaning=HP["0012837"])
-    PERILYMPHATIC = PermissibleValue(text="PERILYMPHATIC", description="Perilymphatic", meaning=HP["0033819"])
-    LOCALIZED = PermissibleValue(text="LOCALIZED", description="Localized", meaning=HP["0012838"])
-    RETICULAR = PermissibleValue(text="RETICULAR", description="Reticular", meaning=HP["0033818"])
-    DISTAL = PermissibleValue(text="DISTAL", description="Distal", meaning=HP["0012839"])
-    CENTRAL = PermissibleValue(text="CENTRAL", description="Central", meaning=HP["0030645"])
+    PERILOBULAR = PermissibleValue(
+        text="PERILOBULAR", description="Perilobular", meaning=HP["0033813"]
+    )
+    PARASEPTAL = PermissibleValue(
+        text="PARASEPTAL", description="Paraseptal", meaning=HP["0033814"]
+    )
+    BRONCHOCENTRIC = PermissibleValue(
+        text="BRONCHOCENTRIC", description="Bronchocentric", meaning=HP["0033815"]
+    )
+    CENTRILOBULAR = PermissibleValue(
+        text="CENTRILOBULAR", description="Centrilobular", meaning=HP["0033816"]
+    )
+    MILIARY = PermissibleValue(
+        text="MILIARY", description="Miliary", meaning=HP["0033817"]
+    )
+    GENERALIZED = PermissibleValue(
+        text="GENERALIZED", description="Generalized", meaning=HP["0012837"]
+    )
+    PERILYMPHATIC = PermissibleValue(
+        text="PERILYMPHATIC", description="Perilymphatic", meaning=HP["0033819"]
+    )
+    LOCALIZED = PermissibleValue(
+        text="LOCALIZED", description="Localized", meaning=HP["0012838"]
+    )
+    RETICULAR = PermissibleValue(
+        text="RETICULAR", description="Reticular", meaning=HP["0033818"]
+    )
+    DISTAL = PermissibleValue(
+        text="DISTAL", description="Distal", meaning=HP["0012839"]
+    )
+    CENTRAL = PermissibleValue(
+        text="CENTRAL", description="Central", meaning=HP["0030645"]
+    )
     UPPER_BODY_PREDOMINANCE = PermissibleValue(
-        text="UPPER_BODY_PREDOMINANCE", description="Upper-body predominance", meaning=HP["0025290"]
+        text="UPPER_BODY_PREDOMINANCE",
+        description="Upper-body predominance",
+        meaning=HP["0025290"],
     )
     JOINT_EXTENSOR_SURFACE_LOCALIZATION = PermissibleValue(
         text="JOINT_EXTENSOR_SURFACE_LOCALIZATION",
         description="Joint extensor surface localization",
         meaning=HP["0032539"],
     )
-    HERPETIFORM = PermissibleValue(text="HERPETIFORM", description="Herpetiform", meaning=HP["0025295"])
-    MORBILLIFORM = PermissibleValue(text="MORBILLIFORM", description="Morbilliform", meaning=HP["0025296"])
-    PERICENTRAL = PermissibleValue(text="PERICENTRAL", description="Pericentral", meaning=HP["0030649"])
-    DERMATOMAL = PermissibleValue(text="DERMATOMAL", description="Dermatomal", meaning=HP["0025294"])
-    MIDPERIPHERAL = PermissibleValue(text="MIDPERIPHERAL", description="Midperipheral", meaning=HP["0030648"])
+    HERPETIFORM = PermissibleValue(
+        text="HERPETIFORM", description="Herpetiform", meaning=HP["0025295"]
+    )
+    MORBILLIFORM = PermissibleValue(
+        text="MORBILLIFORM", description="Morbilliform", meaning=HP["0025296"]
+    )
+    PERICENTRAL = PermissibleValue(
+        text="PERICENTRAL", description="Pericentral", meaning=HP["0030649"]
+    )
+    DERMATOMAL = PermissibleValue(
+        text="DERMATOMAL", description="Dermatomal", meaning=HP["0025294"]
+    )
+    MIDPERIPHERAL = PermissibleValue(
+        text="MIDPERIPHERAL", description="Midperipheral", meaning=HP["0030648"]
+    )
     DISTRIBUTED_ALONG_BLASCHKO_LINES = PermissibleValue(
-        text="DISTRIBUTED_ALONG_BLASCHKO_LINES", description="Distributed along Blaschko lines", meaning=HP["0025293"]
+        text="DISTRIBUTED_ALONG_BLASCHKO_LINES",
+        description="Distributed along Blaschko lines",
+        meaning=HP["0025293"],
     )
     ACRAL = PermissibleValue(text="ACRAL", description="Acral", meaning=HP["0025292"])
-    PARACENTRAL = PermissibleValue(text="PARACENTRAL", description="Paracentral", meaning=HP["0030647"])
-    LATERAL = PermissibleValue(text="LATERAL", description="Lateral", meaning=HP["0025275"])
-    PERIPHERAL = PermissibleValue(text="PERIPHERAL", description="Peripheral", meaning=HP["0030646"])
-    LOWER_BODY_PREDOMINANCE = PermissibleValue(
-        text="LOWER_BODY_PREDOMINANCE", description="Lower-body predominance", meaning=HP["0025291"]
+    PARACENTRAL = PermissibleValue(
+        text="PARACENTRAL", description="Paracentral", meaning=HP["0030647"]
     )
-    DIFFUSE = PermissibleValue(text="DIFFUSE", description="Diffuse", meaning=HP["0020034"])
-    PROXIMAL = PermissibleValue(text="PROXIMAL", description="Proximal", meaning=HP["0012840"])
-    APICAL = PermissibleValue(text="APICAL", description="Apical", meaning=HP["0033820"])
+    LATERAL = PermissibleValue(
+        text="LATERAL", description="Lateral", meaning=HP["0025275"]
+    )
+    PERIPHERAL = PermissibleValue(
+        text="PERIPHERAL", description="Peripheral", meaning=HP["0030646"]
+    )
+    LOWER_BODY_PREDOMINANCE = PermissibleValue(
+        text="LOWER_BODY_PREDOMINANCE",
+        description="Lower-body predominance",
+        meaning=HP["0025291"],
+    )
+    DIFFUSE = PermissibleValue(
+        text="DIFFUSE", description="Diffuse", meaning=HP["0020034"]
+    )
+    PROXIMAL = PermissibleValue(
+        text="PROXIMAL", description="Proximal", meaning=HP["0012840"]
+    )
+    APICAL = PermissibleValue(
+        text="APICAL", description="Apical", meaning=HP["0033820"]
+    )
     FOCAL = PermissibleValue(text="FOCAL", description="Focal", meaning=HP["0030650"])
-    MULTIFOCAL = PermissibleValue(text="MULTIFOCAL", description="Multifocal", meaning=HP["0030651"])
+    MULTIFOCAL = PermissibleValue(
+        text="MULTIFOCAL", description="Multifocal", meaning=HP["0030651"]
+    )
     JOINT_FLEXOR_SURFACE_LOCALIZATION = PermissibleValue(
-        text="JOINT_FLEXOR_SURFACE_LOCALIZATION", description="Jointflexorsurfacelocalization", meaning=HP["0032540"]
+        text="JOINT_FLEXOR_SURFACE_LOCALIZATION",
+        description="Jointflexorsurfacelocalization",
+        meaning=HP["0032540"],
     )
 
     _defn = EnumDefinition(
@@ -2987,45 +3539,83 @@ class SpatialPatternTerms(EnumDefinitionImpl):
 
 
 class UnitTerms(EnumDefinitionImpl):
-    DEGREE = PermissibleValue(text="DEGREE", description="degree (plane angle)", meaning=UCUM.degree)
-    DIOPTER = PermissibleValue(text="DIOPTER", description="diopter", meaning=UCUM["%5Bdiop%5D"])
+    DEGREE = PermissibleValue(
+        text="DEGREE", description="degree (plane angle)", meaning=UCUM.degree
+    )
+    DIOPTER = PermissibleValue(
+        text="DIOPTER", description="diopter", meaning=UCUM["%5Bdiop%5D"]
+    )
     GRAM = PermissibleValue(text="GRAM", description="gram", meaning=UCUM.g)
-    GRAM_PER_KG = PermissibleValue(text="GRAM_PER_KG", description="gram per kilogram", meaning=UCUM["g/kg"])
-    KILIGRAM = PermissibleValue(text="KILIGRAM", description="kiligram", meaning=UCUM.kg)
+    GRAM_PER_KG = PermissibleValue(
+        text="GRAM_PER_KG", description="gram per kilogram", meaning=UCUM["g/kg"]
+    )
+    KILIGRAM = PermissibleValue(
+        text="KILIGRAM", description="kiligram", meaning=UCUM.kg
+    )
     LITER = PermissibleValue(text="LITER", description="liter", meaning=UCUM.L)
     METER = PermissibleValue(text="METER", description="meter", meaning=UCUM.m)
-    MICROGRAM = PermissibleValue(text="MICROGRAM", description="microgram", meaning=UCUM.ug)
+    MICROGRAM = PermissibleValue(
+        text="MICROGRAM", description="microgram", meaning=UCUM.ug
+    )
     MICROGRAM_PER_DECILITER = PermissibleValue(
-        text="MICROGRAM_PER_DECILITER", description="microgram per deciliter", meaning=UCUM["ug/dL"]
+        text="MICROGRAM_PER_DECILITER",
+        description="microgram per deciliter",
+        meaning=UCUM["ug/dL"],
     )
     MICROGRAM_PER_LITER = PermissibleValue(
-        text="MICROGRAM_PER_LITER", description="microgram per liter", meaning=UCUM["ug/L"]
+        text="MICROGRAM_PER_LITER",
+        description="microgram per liter",
+        meaning=UCUM["ug/L"],
     )
-    MICROLITER = PermissibleValue(text="MICROLITER", description="microliter", meaning=UCUM.uL)
-    MICROMETER = PermissibleValue(text="MICROMETER", description="micrometer", meaning=UCUM.um)
-    MILLIGRAM = PermissibleValue(text="MILLIGRAM", description="milligram", meaning=UCUM.mg)
+    MICROLITER = PermissibleValue(
+        text="MICROLITER", description="microliter", meaning=UCUM.uL
+    )
+    MICROMETER = PermissibleValue(
+        text="MICROMETER", description="micrometer", meaning=UCUM.um
+    )
+    MILLIGRAM = PermissibleValue(
+        text="MILLIGRAM", description="milligram", meaning=UCUM.mg
+    )
     MILLIGRAM_PER_DAY = PermissibleValue(
         text="MILLIGRAM_PER_DAY", description="milligram per day", meaning=UCUM["mg/dL"]
     )
     MILLIGRAM_PER_DL = PermissibleValue(
-        text="MILLIGRAM_PER_DL", description="milligram per deciliter", meaning=UCUM["mg/dL"]
+        text="MILLIGRAM_PER_DL",
+        description="milligram per deciliter",
+        meaning=UCUM["mg/dL"],
     )
     MILLIGRAM_PER_KG = PermissibleValue(
-        text="MILLIGRAM_PER_KG", description="milligram per kilogram", meaning=UCUM["mg.kg-1"]
+        text="MILLIGRAM_PER_KG",
+        description="milligram per kilogram",
+        meaning=UCUM["mg.kg-1"],
     )
-    MILLILITER = PermissibleValue(text="MILLILITER", description="milliliter", meaning=UCUM.mL)
-    MILLIMETER = PermissibleValue(text="MILLIMETER", description="millimeter", meaning=UCUM.mm)
+    MILLILITER = PermissibleValue(
+        text="MILLILITER", description="milliliter", meaning=UCUM.mL
+    )
+    MILLIMETER = PermissibleValue(
+        text="MILLIMETER", description="millimeter", meaning=UCUM.mm
+    )
     MILLIMETRES_OF_MERCURY = PermissibleValue(
-        text="MILLIMETRES_OF_MERCURY", description="millimetres of mercury", meaning=UCUM["mm%5BHg%5D"]
+        text="MILLIMETRES_OF_MERCURY",
+        description="millimetres of mercury",
+        meaning=UCUM["mm%5BHg%5D"],
     )
-    MILLIMOLE = PermissibleValue(text="MILLIMOLE", description="millimole", meaning=UCUM.mmol)
+    MILLIMOLE = PermissibleValue(
+        text="MILLIMOLE", description="millimole", meaning=UCUM.mmol
+    )
     MOLE = PermissibleValue(text="MOLE", description="mole", meaning=UCUM.mol)
-    MOLE_PER_LITER = PermissibleValue(text="MOLE_PER_LITER", description="mole per liter", meaning=UCUM["mol/L"])
+    MOLE_PER_LITER = PermissibleValue(
+        text="MOLE_PER_LITER", description="mole per liter", meaning=UCUM["mol/L"]
+    )
     MOLE_PER_MILLILITER = PermissibleValue(
-        text="MOLE_PER_MILLILITER", description="mole per milliliter", meaning=UCUM["mol/mL"]
+        text="MOLE_PER_MILLILITER",
+        description="mole per milliliter",
+        meaning=UCUM["mol/mL"],
     )
     ENZYME_UNIT_PER_LITER = PermissibleValue(
-        text="ENZYME_UNIT_PER_LITER", description="enzyme unit per liter", meaning=UCUM["U/L"]
+        text="ENZYME_UNIT_PER_LITER",
+        description="enzyme unit per liter",
+        meaning=UCUM["U/L"],
     )
 
     _defn = EnumDefinition(
@@ -3199,7 +3789,9 @@ slots.phenopacket__interpretations = Slot(
     curie=PHENOPACKETS.curie("interpretations"),
     model_uri=PHENOPACKETS.phenopacket__interpretations,
     domain=None,
-    range=Optional[Union[Union[dict, Interpretation], list[Union[dict, Interpretation]]]],
+    range=Optional[
+        Union[Union[dict, Interpretation], list[Union[dict, Interpretation]]]
+    ],
 )
 
 slots.phenopacket__measurements = Slot(
@@ -3235,7 +3827,9 @@ slots.phenopacket__phenotypicFeatures = Slot(
     curie=PHENOPACKETS.curie("phenotypicFeatures"),
     model_uri=PHENOPACKETS.phenopacket__phenotypicFeatures,
     domain=None,
-    range=Optional[Union[Union[dict, PhenotypicFeature], list[Union[dict, PhenotypicFeature]]]],
+    range=Optional[
+        Union[Union[dict, PhenotypicFeature], list[Union[dict, PhenotypicFeature]]]
+    ],
 )
 
 slots.phenopacket__subject = Slot(
@@ -3506,7 +4100,10 @@ slots.biosample__diagnosticMarkers = Slot(
     model_uri=PHENOPACKETS.biosample__diagnosticMarkers,
     domain=None,
     range=Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ],
 )
 
@@ -3580,7 +4177,10 @@ slots.biosample__pathologicalTnmFinding = Slot(
     model_uri=PHENOPACKETS.biosample__pathologicalTnmFinding,
     domain=None,
     range=Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ],
 )
 
@@ -3590,7 +4190,9 @@ slots.biosample__phenotypicFeatures = Slot(
     curie=PHENOPACKETS.curie("phenotypicFeatures"),
     model_uri=PHENOPACKETS.biosample__phenotypicFeatures,
     domain=None,
-    range=Optional[Union[Union[dict, PhenotypicFeature], list[Union[dict, PhenotypicFeature]]]],
+    range=Optional[
+        Union[Union[dict, PhenotypicFeature], list[Union[dict, PhenotypicFeature]]]
+    ],
 )
 
 slots.biosample__procedure = Slot(
@@ -3681,7 +4283,10 @@ slots.disease__clinicalTnmFinding = Slot(
     model_uri=PHENOPACKETS.disease__clinicalTnmFinding,
     domain=None,
     range=Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ],
 )
 
@@ -3692,7 +4297,10 @@ slots.disease__diseaseStage = Slot(
     model_uri=PHENOPACKETS.disease__diseaseStage,
     domain=None,
     range=Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ],
 )
 
@@ -3765,7 +4373,11 @@ slots.diagnosis__genomicInterpretations = Slot(
     curie=PHENOPACKETS.curie("genomicInterpretations"),
     model_uri=PHENOPACKETS.diagnosis__genomicInterpretations,
     domain=None,
-    range=Optional[Union[Union[dict, GenomicInterpretation], list[Union[dict, GenomicInterpretation]]]],
+    range=Optional[
+        Union[
+            Union[dict, GenomicInterpretation], list[Union[dict, GenomicInterpretation]]
+        ]
+    ],
 )
 
 slots.genomicInterpretation__gene = Slot(
@@ -4171,7 +4783,10 @@ slots.medicalAction__adverseEvents = Slot(
     model_uri=PHENOPACKETS.medicalAction__adverseEvents,
     domain=None,
     range=Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ],
 )
 
@@ -4397,7 +5012,9 @@ slots.metaData__externalReferences = Slot(
     curie=PHENOPACKETS.curie("externalReferences"),
     model_uri=PHENOPACKETS.metaData__externalReferences,
     domain=None,
-    range=Optional[Union[Union[dict, ExternalReference], list[Union[dict, ExternalReference]]]],
+    range=Optional[
+        Union[Union[dict, ExternalReference], list[Union[dict, ExternalReference]]]
+    ],
 )
 
 slots.metaData__phenopacketSchemaVersion = Slot(
@@ -4614,7 +5231,10 @@ slots.phenotypicFeature__modifiers = Slot(
     model_uri=PHENOPACKETS.phenotypicFeature__modifiers,
     domain=None,
     range=Optional[
-        Union[dict[Union[str, OntologyClassId], Union[dict, OntologyClass]], list[Union[dict, OntologyClass]]]
+        Union[
+            dict[Union[str, OntologyClassId], Union[dict, OntologyClass]],
+            list[Union[dict, OntologyClass]],
+        ]
     ],
 )
 

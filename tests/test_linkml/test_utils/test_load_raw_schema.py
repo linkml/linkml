@@ -56,7 +56,10 @@ def test_load_raw_file(input_path):
     _verify_schema1_content(load_raw_schema(input_path("schema1.yaml")), "schema1")
 
     # Verify that we can't pass source_file parameters when we've got a directory name
-    with pytest.raises(AssertionError, match="source_file_size parameter not allowed if data is a file or URL"):
+    with pytest.raises(
+        AssertionError,
+        match="source_file_size parameter not allowed if data is a file or URL",
+    ):
         load_raw_schema(input_path("schema1.yaml"), source_file_size=117)
 
 
@@ -88,17 +91,23 @@ def test_multi_schemas(input_path):
         assert expected == {k: as_dict(loads(as_json(v))) for k, v in s.types.items()}
         s.types = None
 
-    _verify_schema1_content(load_raw_schema(input_path("schema4.yaml")), "schema4", check_types)
+    _verify_schema1_content(
+        load_raw_schema(input_path("schema4.yaml")), "schema4", check_types
+    )
 
 
 def test_base_dir(input_path):
     """Test the base directory option"""
-    _verify_schema1_content(load_raw_schema("schema1.yaml", base_dir=str(input_path("."))), "schema1")
+    _verify_schema1_content(
+        load_raw_schema("schema1.yaml", base_dir=str(input_path("."))), "schema1"
+    )
 
 
 def test_schema_id(input_path):
     """Test loading a schema with just an id"""
-    _verify_schema1_content(load_raw_schema("schema3.yaml", base_dir=str(input_path("."))), "schema3")
+    _verify_schema1_content(
+        load_raw_schema("schema3.yaml", base_dir=str(input_path("."))), "schema3"
+    )
 
 
 def test_name_from_sourcefile(input_path):

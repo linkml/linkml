@@ -49,7 +49,9 @@ def test_add_existing_class(replace_if_present):
     ],
 )
 @pytest.mark.parametrize("use_attributes", [True, False])
-def test_add_class_with_slot_additions(slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool):
+def test_add_class_with_slot_additions(
+    slots: Optional[list[Union[str, SlotDefinition]]], use_attributes: bool
+):
     """
     Test adding a class with separate additional slots specification
     """

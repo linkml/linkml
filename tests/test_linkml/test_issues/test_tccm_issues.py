@@ -13,7 +13,9 @@ from linkml.utils.schemaloader import SchemaLoader
 
 def test_references_typeerror(input_path):
     """TypeError: sequence item 0: expected str instance, NoneType found is generated from schemasynopsis"""
-    SchemaLoader(input_path("issue_tccm/resourcedescription.yaml"), mergeimports=False).resolve()
+    SchemaLoader(
+        input_path("issue_tccm/resourcedescription.yaml"), mergeimports=False
+    ).resolve()
 
 
 @pytest.mark.pythongen
@@ -29,15 +31,31 @@ def test_slot_usage_only(input_path, snapshot):
 @pytest.mark.yamlgen
 def test_mapping_prefix(caplog, input_path):
     """Prefix validation fails in"""
-    YAMLGenerator(input_path("issue_tccm/illegal_mapping_prefix.yaml"), mergeimports=False).serialize(validateonly=True)
+    YAMLGenerator(
+        input_path("issue_tccm/illegal_mapping_prefix.yaml"), mergeimports=False
+    ).serialize(validateonly=True)
 
-    assert "Unrecognized prefix: DO" in caplog.text, "Basic slot mapping validation failure"
-    assert "Unrecognized prefix: RE" in caplog.text, "Basic class mapping validation failure"
-    assert "Unrecognized prefix: MI" in caplog.text, "Solo slot usage mapping validation failure"
-    assert "Unrecognized prefix: FA" in caplog.text, "Slot usage specialization validation failure"
-    assert "Unrecognized prefix: SO" in caplog.text, "Slot usage variant validation failure"
-    assert "Unrecognized prefix: LA" in caplog.text, "Inherited slot mapping validation failure"
-    assert "Unrecognized prefix: TI" in caplog.text, "Inherited class mapping mapping validation failure"
+    assert "Unrecognized prefix: DO" in caplog.text, (
+        "Basic slot mapping validation failure"
+    )
+    assert "Unrecognized prefix: RE" in caplog.text, (
+        "Basic class mapping validation failure"
+    )
+    assert "Unrecognized prefix: MI" in caplog.text, (
+        "Solo slot usage mapping validation failure"
+    )
+    assert "Unrecognized prefix: FA" in caplog.text, (
+        "Slot usage specialization validation failure"
+    )
+    assert "Unrecognized prefix: SO" in caplog.text, (
+        "Slot usage variant validation failure"
+    )
+    assert "Unrecognized prefix: LA" in caplog.text, (
+        "Inherited slot mapping validation failure"
+    )
+    assert "Unrecognized prefix: TI" in caplog.text, (
+        "Inherited class mapping mapping validation failure"
+    )
 
 
 @pytest.mark.pythongen
@@ -89,7 +107,9 @@ def test_minimal_model(input_path, snapshot, tmp_path, generator: type[Generator
             mergeimports=False,
             emit_metadata=False,
         ).serialize()
-        assert output == snapshot(f"issue_tccm/minimalmodel.{generator.valid_formats[0]}")
+        assert output == snapshot(
+            f"issue_tccm/minimalmodel.{generator.valid_formats[0]}"
+        )
     else:
         output_dir = str(tmp_path / "issue_tccm" / generator.__name__)
         generator(

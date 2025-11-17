@@ -21,7 +21,9 @@ pytestmark = [
 ]
 
 
-def _generate_rust_crate(schema_input, out_dir: Path, *, handwritten_lib: bool = False) -> Path:
+def _generate_rust_crate(
+    schema_input, out_dir: Path, *, handwritten_lib: bool = False
+) -> Path:
     """
     Generate a Rust crate with PyO3 bindings for the given schema input
     into the provided output directory and perform basic sanity checks.
@@ -54,7 +56,9 @@ def _build_rust_crate(out_dir: Path, context: str = "") -> list[Path]:
     build_cmd = ["maturin", "build"]
     env = os.environ.copy()
     env["RUST_BACKTRACE"] = "1"
-    result = subprocess.run(build_cmd, cwd=out_dir, capture_output=True, text=True, env=env)
+    result = subprocess.run(
+        build_cmd, cwd=out_dir, capture_output=True, text=True, env=env
+    )
     if result.returncode != 0:
         prefix = f" for {context}" if context else ""
         pytest.fail(
@@ -66,13 +70,19 @@ def _build_rust_crate(out_dir: Path, context: str = "") -> list[Path]:
         )
 
     wheels_dir = out_dir / "target" / "wheels"
-    assert wheels_dir.exists(), f"maturin did not produce target/wheels{(' for ' + context) if context else ''}"
+    assert wheels_dir.exists(), (
+        f"maturin did not produce target/wheels{(' for ' + context) if context else ''}"
+    )
     wheels = list(wheels_dir.glob("*.whl"))
-    assert wheels, f"no wheel produced by maturin{(' for ' + context) if context else ''}"
+    assert wheels, (
+        f"no wheel produced by maturin{(' for ' + context) if context else ''}"
+    )
     return wheels
 
 
-def _run_stubgen_binary(out_dir: Path, extra_args: Optional[list[str]] = None, context: str = "") -> None:
+def _run_stubgen_binary(
+    out_dir: Path, extra_args: Optional[list[str]] = None, context: str = ""
+) -> None:
     """Run the generated stub_gen binary to (re)generate or validate PyO3 stubs."""
 
     cmd = ["cargo", "run", "--bin", "stub_gen", "--features", "stubgen"]
@@ -94,7 +104,9 @@ def _run_stubgen_binary(out_dir: Path, extra_args: Optional[list[str]] = None, c
         )
 
 
-def _cargo_check(out_dir: Path, *, context: str = "") -> subprocess.CompletedProcess[str]:
+def _cargo_check(
+    out_dir: Path, *, context: str = ""
+) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env.setdefault("RUST_BACKTRACE", "1")
     result = subprocess.run(
@@ -116,7 +128,9 @@ def _import_built_wheel(out_dir: Path, module_name: str):
     """
 
     wheels_dir = out_dir / "target" / "wheels"
-    wheels = sorted(wheels_dir.glob("*.whl"), key=lambda p: p.stat().st_mtime, reverse=True)
+    wheels = sorted(
+        wheels_dir.glob("*.whl"), key=lambda p: p.stat().st_mtime, reverse=True
+    )
     assert wheels, "no wheel produced by maturin"
     wheel_path = wheels[0]
 
@@ -154,7 +168,12 @@ def test_rustgen_personschema_maturin(temp_dir):
     """
 
     # Resolve schema and output directory
-    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    schema_path = (
+        Path(__file__).resolve().parents[2]
+        / "examples"
+        / "PersonSchema"
+        / "personinfo.yaml"
+    )
     assert schema_path.exists(), f"Schema not found at {schema_path}"
     out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_rust")
 
@@ -195,9 +214,16 @@ def test_rustgen_personschema_maturin(temp_dir):
 def test_rustgen_personschema_stubgen(temp_dir):
     """Run the generated stub_gen binary and sanity-check emitted stub files."""
 
-    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    schema_path = (
+        Path(__file__).resolve().parents[2]
+        / "examples"
+        / "PersonSchema"
+        / "personinfo.yaml"
+    )
     assert schema_path.exists(), f"Schema not found at {schema_path}"
-    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_stubgen")
+    out_dir = _generate_rust_crate(
+        str(schema_path), Path(temp_dir) / "personinfo_stubgen"
+    )
 
     _run_stubgen_binary(out_dir, context="personschema stub generation")
 
@@ -210,16 +236,24 @@ def test_rustgen_personschema_stubgen(temp_dir):
         try:
             ast.parse(text)
         except SyntaxError as exc:  # pragma: no cover - executed only on failure
-            pytest.fail(f"Generated stub {stub_file} contains invalid Python syntax: {exc}")
+            pytest.fail(
+                f"Generated stub {stub_file} contains invalid Python syntax: {exc}"
+            )
         if "class Person" in text:
             class_signature_found = True
 
-    assert class_signature_found, "Generated stubs do not contain expected 'class Person' definition"
+    assert class_signature_found, (
+        "Generated stubs do not contain expected 'class Person' definition"
+    )
 
-    _run_stubgen_binary(out_dir, extra_args=["--check"], context="personschema stub check")
+    _run_stubgen_binary(
+        out_dir, extra_args=["--check"], context="personschema stub check"
+    )
 
     handwritten_dir = _generate_rust_crate(
-        str(schema_path), Path(temp_dir) / "personinfo_handwritten", handwritten_lib=True
+        str(schema_path),
+        Path(temp_dir) / "personinfo_handwritten",
+        handwritten_lib=True,
     )
     shim_path = handwritten_dir / "src" / "lib.rs"
     generated_mod = handwritten_dir / "src" / "generated" / "mod.rs"
@@ -241,16 +275,22 @@ def test_rustgen_metamodel_maturin(temp_dir):
 
     # Resolve SchemaDefinition for the runtime metamodel
     metamodel_sv = package_schemaview("linkml_runtime.linkml_model.meta")
-    out_dir = _generate_rust_crate(metamodel_sv.schema, Path(temp_dir) / "metamodel_rust")
+    out_dir = _generate_rust_crate(
+        metamodel_sv.schema, Path(temp_dir) / "metamodel_rust"
+    )
 
     _build_rust_crate(out_dir, context="metamodel")
     # Try importing the generated wheel/module and sanity-check a metamodel class
     mod = _import_built_wheel(out_dir, module_name=metamodel_sv.schema.name)
-    assert hasattr(mod, "ClassDefinition"), "Expected class 'ClassDefinition' not found in metamodel module"
+    assert hasattr(mod, "ClassDefinition"), (
+        "Expected class 'ClassDefinition' not found in metamodel module"
+    )
 
     # Verify Anything/AnyValue is accessible from Python via a field
     # Extension.value in the metamodel has range AnyValue.
-    assert hasattr(mod, "Extension"), "Expected class 'Extension' not found in metamodel module"
+    assert hasattr(mod, "Extension"), (
+        "Expected class 'Extension' not found in metamodel module"
+    )
     # Create an Extension with a simple string value. If Anything conversions work,
     # Python should see a native str for .value.
     # Constructor uses positional args only with current PyO3 generator
@@ -260,7 +300,12 @@ def test_rustgen_metamodel_maturin(temp_dir):
 
 
 def test_rustgen_file_mode_generation(temp_dir):
-    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    schema_path = (
+        Path(__file__).resolve().parents[2]
+        / "examples"
+        / "PersonSchema"
+        / "personinfo.yaml"
+    )
     out_file = Path(temp_dir) / "personinfo.rs"
     gen = RustGenerator(
         str(schema_path),
@@ -413,7 +458,9 @@ def test_rustgen_special_cases_roundtrip(temp_dir):
     rg.serialize(force=True)
 
     cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
-    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    crate_match = re.search(
+        r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE
+    )
     assert crate_match, "could not determine crate name from Cargo.toml"
     crate_ident = crate_match.group(1).replace("-", "_")
 

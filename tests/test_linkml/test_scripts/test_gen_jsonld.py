@@ -32,7 +32,9 @@ def test_metamodel_valid_calls(arguments, snapshot_file, snapshot):
     mock_context_path = "file:./context.jsonld"
 
     runner = CliRunner()
-    result = runner.invoke(cli, arguments + ["--context", mock_context_path, KITCHEN_SINK_PATH])
+    result = runner.invoke(
+        cli, arguments + ["--context", mock_context_path, KITCHEN_SINK_PATH]
+    )
     assert result.exit_code == 0
     assert result.output == snapshot(f"genjsonld/{snapshot_file}")
 
@@ -47,13 +49,19 @@ def test_metamodel_invalid_calls():
 def test_simple_uris(input_path, snapshot):
     """Test a simple schema that needs both LinkML AND Specific prefixes"""
     # Generate all of the required contexts
-    output = ContextGenerator(input_path("includes/simple_types.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(
+        input_path("includes/simple_types.yaml"), emit_metadata=False
+    ).serialize()
     assert output == snapshot("genjsonld/includes/simple_types.context.jsonld")
 
-    output = ContextGenerator(input_path("simple_slots.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(
+        input_path("simple_slots.yaml"), emit_metadata=False
+    ).serialize()
     assert output == snapshot("genjsonld/simple_slots.context.jsonld")
 
-    output = ContextGenerator(input_path("simple_uri_test.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(
+        input_path("simple_uri_test.yaml"), emit_metadata=False
+    ).serialize()
     assert output == snapshot("genjsonld/simple_uri_test.context.jsonld")
 
     runner = CliRunner()
@@ -92,14 +100,20 @@ def check_size(
         n_types = len(list(graph.objects(root, METAMODEL_NAMESPACE.types)))
         n_subsets = len(list(graph.objects(root, METAMODEL_NAMESPACE.subsets)))
         n_enums = len(list(graph.objects(root, METAMODEL_NAMESPACE.enums)))
-        assert expected_classes == n_classes, f"Expected {expected_classes} classes in {model}"
+        assert expected_classes == n_classes, (
+            f"Expected {expected_classes} classes in {model}"
+        )
         assert expected_slots == n_slots, f"Expected {expected_slots} slots in {model}"
         assert expected_types == n_types, f"Expected {expected_types} types in {model}"
-        assert expected_subsets == n_subsets, f"Expected {expected_subsets} subsets in {model}"
+        assert expected_subsets == n_subsets, (
+            f"Expected {expected_subsets} subsets in {model}"
+        )
         assert expected_enums == n_enums, f"Expected {expected_enums} enums in {model}"
 
 
-@pytest.mark.skip(reason="This test is too fragile, needs updated when metamodel changes")
+@pytest.mark.skip(
+    reason="This test is too fragile, needs updated when metamodel changes"
+)
 def test_meta_output(tmp_path_factory):
     """Generate a context AND a jsonld for the metamodel and make sure it parses as RDF"""
     tmp_path = tmp_path_factory.mktemp("meta")
