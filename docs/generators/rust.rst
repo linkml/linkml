@@ -105,12 +105,11 @@ Supported
 - Temporal scalars: ``date`` and ``datetime`` map to ``chrono``'s ``NaiveDate`` and ``NaiveDateTime`` respectively.
 - Traits for polymorphic access to class hierarchies, along with enums for class-or-subtype containers.
 - PyO3 bindings for the generated structs (behind a Cargo feature flag).
-- Basic ``serde`` deserialization (behind a Cargo feature flag).
+- Basic ``serde`` deserialization and serialization, including normalisation (behind a Cargo feature flag).
 
 Partially Supported
 ~~~~~~~~~~~~~~~~~~~
 - Many scalar types (e.g. ``time``, URI-related types) currently fall back to ``String`` representations.
-- ``serde`` deserialization works; serialization still lacks the normalisation, and will not always produce correct yaml.
 - Testing covers unit-level behaviour with a dedicated Rust CI workflow; dynamic compilation and compliance suites are
   still pending.
 

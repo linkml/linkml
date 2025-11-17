@@ -11,12 +11,15 @@ class ClassHandlerBase:
         self.generator = generator
 
     def enum_or_class(self, cn):
-        if cn in self.generator.schemaview.all_enums():
+        schemaview = self.generator.schemaview
+
+        if cn in schemaview.all_enums():
             return self.generator.schemaview.get_enum(cn, strict=True)
-        elif cn in self.generator.schemaview.all_classes():
-            return self.generator.schemaview.get_class(cn, strict=True)
-        else:
-            raise Exception(f"Unknown class or enum {cn}")
+
+        if cn in schemaview.all_classes():
+            return schemaview.get_class(cn, strict=True)
+
+        raise Exception(f"Unknown class or enum {cn}")
 
     def ordered_classes(self):
         sorter = DependencySorter()
