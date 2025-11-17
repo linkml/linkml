@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from click.testing import CliRunner
 from rdflib import Graph, URIRef
@@ -142,3 +144,45 @@ def test_meta_output(tmp_path_factory):
 
     # Make sure that both match the expected size (classes, slots, types, and model name for error reporting)
     check_size(g, new_g, URIRef(schema), 19, 126, 14, 1, 1, "meta")
+
+
+@pytest.mark.parametrize("prefixes", (True, False))
+@pytest.mark.parametrize("flatprefixes", (True, False))
+def test_context_kwargs(input_path, prefixes: bool, flatprefixes: bool):
+    """
+    kwargs can be forwarded to the context generator from the cli
+    """
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "-f",
+            "jsonld",
+            "-k",
+            "prefixes",
+            str(prefixes),
+            "-k",
+            "flatprefixes",
+            str(flatprefixes),
+            input_path("simple_uri_test.yaml"),
+        ],
+    )
+    assert result.exit_code == 0
+    output = json.loads(result.output)
+    context = output["@context"]
+
+    # find the dict with the prefixes
+    prefs = [p for p in context if isinstance(p, dict) and "@base" not in p]
+    assert len(prefs) == 1, "Should only be one dictionary of prefixes in the context"
+    pref_dict = prefs[0]
+
+    if prefixes:
+        assert len(pref_dict) > 1
+        if flatprefixes:
+            assert isinstance(pref_dict["bar"], str)
+        else:
+            assert isinstance(pref_dict["bar"], dict)
+            assert pref_dict["bar"]["@prefix"] is True
+    else:
+        assert len(pref_dict) == 1
+        assert "xsd" in pref_dict

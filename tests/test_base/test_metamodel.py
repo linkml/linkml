@@ -36,7 +36,12 @@ from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
         pytest.param(
             ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldcontextgen
         ),
-        pytest.param(JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldgen),
+        pytest.param(
+            JSONLDGenerator,
+            ".json",
+            {"base": METAMODEL_NAMESPACE, "context_kwargs": {"model": True}},
+            marks=pytest.mark.jsonldgen,
+        ),
         pytest.param(PythonGenerator, ".py", {}, marks=pytest.mark.pythongen),
         pytest.param(
             SQLAlchemyGenerator, ".sqla.py", {"template": TemplateEnum.DECLARATIVE}, marks=pytest.mark.sqlalchemygen
