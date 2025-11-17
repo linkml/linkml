@@ -62,6 +62,7 @@ slots:
     - C3
     range: C1
     inlined: true
+    inlined_as_list: true
 classes:
   C1:
     name: C1

@@ -11,86 +11,68 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 
-# defaults
 DEFAULT_SOURCE_JSON = "data.json~jsonpath"
-DEFAULT_SOURCE_CSV = "data.csv~csv"
-DEFAULT_ITERATOR = "$.items[*]"  # generic top-level array
-
-
-class _YamlDumper(yaml.Dumper):
-    # keep list indentation stable
-    def increase_indent(self, flow: bool = False, indentless: bool = False):
-        return super().increase_indent(flow, False)
+DEFAULT_ITERATOR = "$.items[*]"
 
 
 class YarrrmlGenerator(Generator):
-    """LinkML -> YARRRML exporter."""
-
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.2.0"
+    generatorversion = "0.2.1"
     valid_formats = ["yml", "yaml"]
     visit_all_class_slots = False
 
-    def __init__(self, schema: str | TextIO | SchemaDefinition, format: str = "yml", **kwargs):
-        def _infer_source_suffix(path: str) -> str:
-            p = (path or "").lower()
-            if "~" in p:
-                return path  # already has ~jsonpath or ~csv
-            if p.endswith(".json"):
-                return f"{path}~jsonpath"
-            if p.endswith(".csv") or p.endswith(".tsv"):
-                return f"{path}~csv"
-            return path
-
-        # in __init__ right after you read src:
+    def __init__(
+        self,
+        schema: str | TextIO | SchemaDefinition,
+        format: str = "yml",
+        **kwargs,
+    ):
         raw_src = kwargs.pop("source", None)
         it = kwargs.pop("iterator_template", None)
-
         super().__init__(schema, **kwargs)
 
         self.schemaview = SchemaView(schema)
         self.schema: SchemaDefinition = self.schemaview.schema
-
         self.format = format
-
-        # normalize source: if user passed file without "~csv/~jsonpath", infer it
-        if raw_src:
-            self.source = _infer_source_suffix(raw_src)
-        else:
-            self.source = DEFAULT_SOURCE_JSON
-
+        self.source: str = self._infer_source_suffix(raw_src) if raw_src else DEFAULT_SOURCE_JSON
         self.iterator_template: str = it or DEFAULT_ITERATOR
 
-    # public
+    def _infer_source_suffix(self, path: str) -> str:
+        p = (path or "").lower()
+        if "~" in p:
+            return path
+        if p.endswith(".json"):
+            return f"{path}~jsonpath"
+        if p.endswith(".csv") or p.endswith(".tsv"):
+            return f"{path}~csv"
+        return path
+
     def serialize(self, **args) -> str:
-        data = yaml.dump(
-            self.as_dict(),
-            Dumper=_YamlDumper,
-            sort_keys=False,
-            default_flow_style=False,
-            allow_unicode=True,
+        data = yaml.safe_dump(
+            self.as_dict(), sort_keys=False, allow_unicode=True, default_flow_style=False, indent=2, width=120
         )
         return data
 
     def as_dict(self) -> dict[str, Any]:
         sv = self.schemaview
-        mappings = {}
+        mappings: dict[str, Any] = {}
+
         for cls in sv.all_classes().values():
-            if not (sv.get_identifier_slot(cls.name) or sv.get_key_slot(cls.name)):
-                continue
+            mapping_dict = {}
 
-            mapping = {
-                "s": self._subject_template_for_class(cls),
-                "po": self._po_list_for_class(cls),
-            }
             if self._is_json_source():
-                mapping["sources"] = [[self.source, self._iterator_for_class(cls)]]
+                mapping_dict["sources"] = [[self.source, self._iterator_for_class(cls)]]
             else:
-                mapping["sources"] = [[self.source]]
+                mapping_dict["sources"] = [[self.source]]
 
-            mappings[str(cls.name)] = mapping
+            mapping_dict["s"] = self._subject_template_for_class(cls)
 
-        return {"prefixes": self._prefixes(), "mappings": mappings}
+            mapping_dict["po"] = self._po_list_for_class(cls)
+
+            mappings[str(cls.name)] = mapping_dict
+
+        result = {"prefixes": self._prefixes(), "mappings": mappings}
+        return result
 
     # helpers
     def _is_json_source(self) -> bool:
@@ -118,19 +100,22 @@ class YarrrmlGenerator(Generator):
         key_slot = sv.get_key_slot(c.name)
         if key_slot:
             return f"{default_prefix}:$({key_slot.name})"
-        return f"{default_prefix}:{c.name}/$(subject_id)"  # safe fallback
+        return f"{default_prefix}:{c.name}/$(subject_id)"
 
     def _po_list_for_class(self, c: ClassDefinition) -> list[dict[str, Any]]:
         sv = self.schemaview
-        po = []
+        po: list[dict[str, Any]] = []
+
         class_curie = sv.get_uri(c, expand=False)
-        if class_curie:
+        if class_curie is not None:
             po.append({"p": "rdf:type", "o": str(class_curie)})
 
         default_prefix = sv.schema.default_prefix or "ex"
 
         for s in sv.class_induced_slots(c.name):
-            pred = sv.get_uri(s, expand=False) or f"{default_prefix}:{s.name}"
+            pred_uri = sv.get_uri(s, expand=False)
+            pred = str(pred_uri) if pred_uri is not None else f"{default_prefix}:{s.name}"
+
             decl = sv.get_slot(s.name)
             alias = decl.alias if decl and decl.alias else s.alias
             var = alias or s.name

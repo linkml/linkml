@@ -165,6 +165,7 @@ gen-typescript = "linkml.generators.typescriptgen:cli"
 gen-terminusdb = "linkml.generators.terminusdbgen:cli"
 gen-yuml = "linkml.generators.yumlgen:cli"
 gen-yaml = "linkml.generators.yamlgen:cli"
+gen-yarrrml = "linkml.generators.yarrrmlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
 gen-rust = "linkml.generators.rustgen.cli:cli"
 gen-sqla = "linkml.generators.sqlalchemygen:cli"
@@ -214,6 +215,7 @@ ignore-words-list = [
   "linke",
   "mater",
   "mor",
+  "ser",
   "Stye",
   "TE",
   "thirdparty",

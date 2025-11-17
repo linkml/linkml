@@ -75,7 +75,7 @@ impl<'py> FromPyObject<'py> for Box<{{ enum_name }}> {
 {% if as_key_value %}
 #[cfg(feature = "serde")]
 impl serde_utils::InlinedPair for {{enum_name}} {
-    type Key       = String;
+    type Key       = {{ key_property_type }};
     type Value     = serde_value::Value;
     type Error     = String;
 
