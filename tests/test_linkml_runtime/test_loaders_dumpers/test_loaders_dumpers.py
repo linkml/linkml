@@ -1,0 +1,224 @@
+import json
+import logging
+import os
+from decimal import Decimal
+
+import pytest
+import yaml
+from rdflib import Graph, Namespace
+
+from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
+from linkml_runtime.loaders import json_loader, rdflib_loader, yaml_loader
+from linkml_runtime.utils.schemaview import SchemaView
+from test_linkml_runtime.test_loaders_dumpers import INPUT_DIR, OUTPUT_DIR
+from test_linkml_runtime.test_loaders_dumpers.models.node_object import NodeObject, Triple
+from test_linkml_runtime.test_loaders_dumpers.models.personinfo import Container, Person
+
+logger = logging.getLogger(__name__)
+
+
+SCHEMA = os.path.join(INPUT_DIR, "personinfo.yaml")
+DATA = os.path.join(INPUT_DIR, "example_personinfo_data.yaml")
+OUT_TTL = os.path.join(OUTPUT_DIR, "example_out.ttl")
+OUT_JSON = os.path.join(OUTPUT_DIR, "example_out.json")
+OUT_YAML = os.path.join(OUTPUT_DIR, "example_out.yaml")
+
+prefix_map = {
+    "CODE": "http://example.org/code/",
+    "ROR": "http://example.org/ror/",
+    "P": "http://example.org/P/",
+    "GEO": "http://example.org/GEO/",
+}
+
+P = Namespace("http://example.org/P/")
+ROR = Namespace("http://example.org/ror/")
+CODE = Namespace("http://example.org/code/")
+INFO = Namespace("https://w3id.org/linkml/examples/personinfo/")
+SDO = Namespace("http://schema.org/")
+GSSO = Namespace("http://purl.obolibrary.org/obo/GSSO_")
+HP = Namespace("http://purl.obolibrary.org/obo/HP_")
+SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
+WD = Namespace("http://www.wikidata.org/entity/")
+
+
+@pytest.fixture(scope="module")
+def loader_dumper_setup():
+    """Set up loader/dumper test environment with round-trip testing."""
+    view = SchemaView(SCHEMA)
+    container: Container
+    container = yaml_loader.load(DATA, target_class=Container)
+    _check_objs(view, container)
+
+    # Test RDF round-trip
+    test_fn = OUT_TTL
+    rdflib_dumper.dump(container, schemaview=view, to_file=test_fn, prefix_map=prefix_map)
+    container = rdflib_loader.load(test_fn, target_class=Container, schemaview=view, prefix_map=prefix_map)
+    _check_objs(view, container)
+
+    # Test JSON round-trip
+    test_fn = OUT_JSON
+    json_dumper.dump(container, to_file=test_fn)
+    container = json_loader.load(test_fn, target_class=Container)
+    _check_objs(view, container)
+
+    # Test YAML round-trip
+    test_fn = OUT_YAML
+    yaml_dumper.dump(container, to_file=test_fn)
+    container = yaml_loader.load(test_fn, target_class=Container)
+    _check_objs(view, container)
+    # TODO: use jsonpatch to compare files
+
+    return {"view": view, "container": container}
+
+
+def test_load_from_list(loader_dumper_setup):
+    """
+    Tests the load_any loader method, which can be used to load directly to a list
+    """
+    view = SchemaView(SCHEMA)
+    with open(DATA, encoding="UTF-8") as stream:
+        data = yaml.safe_load(stream)
+    person_dicts = data["persons"]
+    tuples = [(yaml_loader, yaml.dump(person_dicts)), (json_loader, json.dumps(person_dicts, default=str))]
+    for loader, person_list_str in tuples:
+        persons = loader.loads_any(person_list_str, target_class=Person)
+        assert isinstance(persons, list)
+        assert isinstance(persons[0], Person)
+        [p1] = [p for p in persons if p.id == "P:001"]
+        [p2] = [p for p in persons if p.id == "P:002"]
+        assert p1.name == "fred bloggs"
+        assert p2.name == "joe schmö"
+        assert p1.age_in_years == 33
+        assert p1.gender.code.text == "cisgender man"
+        assert p2.gender.code.text == "transgender man"
+
+
+def test_encoding(loader_dumper_setup):
+    """
+    This will reveal if generated yaml or json files are utf-8 encoded
+    """
+    # pyyaml or json read non-ascii strings just fine no matter if the
+    # file is ascii or utf-8 encoded. So we use Python's open function
+    # to detect undesired ascii encoding. (linkml issue #634)
+    with open(OUT_YAML, encoding="UTF-8") as f:
+        [p2_name_line] = [l for l in f.readlines() if "joe schm" in l]
+    assert "joe schmö" in p2_name_line
+
+    with open(OUT_JSON, encoding="UTF-8") as f:
+        [p2_name_line] = [l for l in f.readlines() if "joe schm" in l]
+    assert "joe schmö" in p2_name_line
+
+
+def _check_objs(view: SchemaView, container: Container):
+    """Helper function to check container objects."""
+    persons = container.persons
+    orgs = container.organizations.values()
+    [p1] = [p for p in persons if p.id == "P:001"]
+    [p2] = [p for p in persons if p.id == "P:002"]
+    [o1] = [o for o in orgs if o.id == "ROR:1"]
+    [o2] = [o for o in orgs if o.id == "ROR:2"]
+    [o3] = [o for o in orgs if o.id == "ROR:3"]
+    [o4] = [o for o in orgs if o.id == "ROR:4"]
+    o1cats = [c.code.text for c in o1.categories]
+    o2cats = [c.code.text for c in o2.categories]
+    assert p1.name == "fred bloggs"
+    assert p2.name == "joe schmö"
+    assert p1.age_in_years == 33
+    assert p1.gender.code.text == "cisgender man"
+    assert p2.gender.code.text == "transgender man"
+    assert sorted(o1cats) == sorted(["non profit", "charity"])
+    assert sorted(o2cats) == sorted(["shell company"])
+    p2: Person
+    emp = p2.has_employment_history[0]
+    assert emp.started_at_time == "2019-01-01"
+    assert emp.is_current == True
+    assert emp.employed_at == o1.id
+    frel = p2.has_familial_relationships[0]
+    assert frel.related_to == p1.id
+    # TODO: check PV vs PVText
+    assert str(frel.type) == "SIBLING_OF"
+    med = p2.has_medical_history[0]
+    assert med.in_location == "GEO:1234"
+    assert med.diagnosis.id == "CODE:D0001"
+    assert med.diagnosis.name == "headache"
+    assert med.diagnosis.code_system == "CODE:D"
+    # Check decimal representation
+    assert o1.score == Decimal(1)
+    assert o2.score == Decimal("1.5")
+    assert o3.score == Decimal(1)
+    assert o4.score == Decimal(1)
+    assert o1.min_salary == Decimal("99999.00")
+
+
+def test_edge_cases(loader_dumper_setup):
+    """
+    Tests various edge cases:
+
+     - unprocessed triples (triples that cannot be reached via root objects)
+     - mismatch between expected range categories (Type vs Class) and value (Literal vs Node)
+     - complex range expressions (e.g. modeling a range as being EITHER string OR object
+    """
+    # schema with following characterics:
+    #  - reified triples
+    #  - object has a complex union range (experimental new feature)
+    view = SchemaView(os.path.join(INPUT_DIR, "complex_range_example.yaml"))
+    graph = Graph()
+    taxon_prefix_map = {
+        "NCBITaxon": "http://purl.obolibrary.org/obo/NCBITaxon_",
+        "RO": "http://purl.obolibrary.org/obo/RO_",
+    }
+    # this graph has the following characteristics
+    #  - blank nodes to represent statements
+    #  - some triples not reachable from roots
+    #  - implicit schema with complex ranges (rdf:object has range of either node or literal)
+    graph.parse(os.path.join(INPUT_DIR, "bacteria-taxon-class.ttl"), format="ttl")
+    objs = rdflib_loader.from_rdf_graph(
+        graph,
+        target_class=NodeObject,
+        schemaview=view,
+        cast_literals=False,  ## strict
+        allow_unprocessed_triples=True,  ## known issue
+        prefix_map=taxon_prefix_map,
+    )
+    [obj] = objs
+    for x in obj.statements:
+        assert x.subject is None
+        assert x.predicate is not None
+        assert x.object is not None
+        logger.info(f"  x={x}")
+    # ranges that are objects are contracted
+    assert Triple(subject=None, predicate="rdfs:subClassOf", object="owl:Thing") in obj.statements
+    assert Triple(subject=None, predicate="rdfs:subClassOf", object="NCBITaxon:1") in obj.statements
+    # string ranges
+    assert Triple(subject=None, predicate="rdfs:label", object="Bacteria") in obj.statements
+    with pytest.raises(ValueError):
+        rdflib_loader.from_rdf_graph(
+            graph,
+            target_class=NodeObject,
+            schemaview=view,
+            cast_literals=False,
+            allow_unprocessed_triples=False,
+            prefix_map=taxon_prefix_map,
+        )
+        logger.error("Passed unexpectedly: there are known to be unreachable triples")
+    # removing complex range, object has a range of string
+    view.schema.slots["object"].exactly_one_of = []
+    view.set_modified()
+    rdflib_loader.from_rdf_graph(
+        graph,
+        target_class=NodeObject,
+        schemaview=view,
+        cast_literals=True,  ## required to pass
+        allow_unprocessed_triples=True,
+        prefix_map=taxon_prefix_map,
+    )
+    with pytest.raises(ValueError):
+        rdflib_loader.from_rdf_graph(
+            graph,
+            target_class=NodeObject,
+            schemaview=view,
+            cast_literals=False,
+            allow_unprocessed_triples=True,
+            prefix_map=taxon_prefix_map,
+        )
+        logger.error("Passed unexpectedly: rdf:object is known to have a mix of literals and nodes")

@@ -86,8 +86,7 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Generate coverage results
         run: |
-          uv run coverage run -m pytest --with-network packages/linkml/tests
-          uv run coverage run -a -m pytest packages/linkml_runtime/tests
+          uv run coverage run -m pytest --with-network
           uv run coverage xml
           uv run coverage report -m
         shell: bash
@@ -133,7 +132,7 @@ jobs:
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          uv run coverage run -m pytest --with-slow --with-biolink -m slow -n auto packages/linkml/tests
+          uv run coverage run -m pytest --with-slow --with-biolink -m slow -n auto --dist=loadgroup
           uv run coverage xml
           uv run coverage report -m
       - name: Upload coverage report

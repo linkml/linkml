@@ -1,0 +1,13 @@
+from pathlib import Path
+
+import pytest
+
+from linkml.generators.jsonldgen import JSONLDGenerator
+from test_linkml import LOCAL_MODEL_YAML_NO_META, METAMODEL_NAMESPACE
+
+
+@pytest.mark.parametrize("model", LOCAL_MODEL_YAML_NO_META)
+def test_models_jsonld(model, snapshot):
+    generated = JSONLDGenerator(model).serialize(base=METAMODEL_NAMESPACE)
+    output_file = Path(model).with_suffix(".json").name
+    assert generated == snapshot(output_file)
