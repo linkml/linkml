@@ -23,16 +23,13 @@ class SimpleDictLoader:
     def tx_core(self, linkml_simple_dict):
         """core simple dict to list of dicts logic"""
         for id_value, range_value in linkml_simple_dict.items():
+            base_dict = {k: None for k in self.ordered_schema_keys}
             if isinstance(range_value, dict) and (set(range_value.keys()) <= self.polars_schema_keys):
-                base_dict = {k: None for k in self.ordered_schema_keys}
                 base_dict.update(self.nested_tx(range_value))
-                base_dict[self.id_col] = id_value
-                yield base_dict
             else:
-                base_dict = {k: None for k in self.ordered_schema_keys}
-                base_dict[self.id_col] = id_value
                 base_dict[self.other_col] = range_value
-                yield base_dict
+            base_dict[self.id_col] = id_value
+            yield base_dict
 
     # simple dict handling
     def tx(self, sd):

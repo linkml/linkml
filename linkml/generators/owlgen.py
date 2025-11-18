@@ -229,7 +229,7 @@ class OwlSchemaGenerator(Generator):
         data = self.graph.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
         return data
 
-    def add_metadata(self, e: Definition, uri: URIRef) -> None:
+    def add_metadata(self, e: Union[Definition, PermissibleValue], uri: URIRef) -> None:
         """
         Add annotation properties.
 
@@ -866,6 +866,10 @@ class OwlSchemaGenerator(Generator):
             if impl.startswith("rdfs:"):
                 return RDFS[impl.split(":")[1]]
         if isinstance(default_value, str):
+            if default_value.startswith("owl:"):
+                return OWL[default_value.split(":")[1]]
+            if default_value.startswith("rdfs:"):
+                return RDFS[default_value.split(":")[1]]
             return URIRef(default_value)
         return default_value
 
@@ -873,6 +877,8 @@ class OwlSchemaGenerator(Generator):
         g = self.graph
         enum_uri = self._enum_uri(e.name)
         g.add((enum_uri, RDF.type, OWL.Class))
+
+        self.add_metadata(e, enum_uri)
         has_parent = False
         if e.is_a:
             self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(e.is_a)))
@@ -916,6 +922,7 @@ class OwlSchemaGenerator(Generator):
                 )
             )
             if not isinstance(pv_node, Literal):
+                self.add_metadata(pv, pv_node)
                 g.add((pv_node, RDF.type, pv_owl_type))
                 g.add((pv_node, RDFS.label, Literal(pv.text)))
                 # TODO: make this configurable
@@ -936,6 +943,7 @@ class OwlSchemaGenerator(Generator):
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
         if all([pv is not None for pv in pv_uris]):
+            # every single PV in the enum is not-null
             all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
             all_is_individual = all([owl_type == OWL.NamedIndividual for owl_type in owl_types])
             all_is_literal = all([owl_type == RDFS.Literal for owl_type in owl_types])

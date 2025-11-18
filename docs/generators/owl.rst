@@ -70,13 +70,36 @@ Mapping
 Enums and PermissibleValues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Enums and PermissibleValues are treated as *classes* by default. An enum has a *definition* added using
-an OWL ``UnionOf`` construct.
+Enums and PermissibleValues provide flexible OWL representation options. By default, permissible values
+are treated as *classes* and an enum has a *definition* added using an OWL ``UnionOf`` construct.
 
-* Use ``--default-permissible-value-type`` to change the default type
-* Use ``--enum-iri-separator`` to change the separator character in the enum IRI which is ``#`` by default
+CLI Options for Controlling Enum/PV Generation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can make an enum represent individuals by adding an ``implements`` slot assignment:
+* ``--default-permissible-value-type`` - Sets the default OWL type for permissible values
+
+  - ``owl:Class`` (default) - PVs become OWL classes, enum uses ``owl:unionOf``
+  - ``owl:NamedIndividual`` - PVs become named individuals, enum uses ``owl:oneOf``
+  - ``rdfs:Literal`` - PVs become RDF literals, enum uses ``owl:oneOf``
+
+* ``--enum-iri-separator`` - Changes the separator character in enum IRIs (default: ``#``)
+
+Example CLI usage:
+
+.. code-block:: bash
+
+    # Generate enum PVs as named individuals
+    gen-owl --default-permissible-value-type owl:NamedIndividual schema.yaml
+
+    # Generate enum PVs as literals
+    gen-owl --default-permissible-value-type rdfs:Literal schema.yaml
+
+Schema Annotations for Fine-Grained Control
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can control enum and permissible value representation directly in your schema using ``implements`` annotations.
+
+**Enum-level control** - Apply to all permissible values in an enum:
 
 .. code-block:: yaml
 
@@ -87,7 +110,100 @@ You can make an enum represent individuals by adding an ``implements`` slot assi
         description: The type of home planet
         permissible_values:
           Earth:
+            description: Third planet from the sun
           Venus:
+            description: Second planet from the sun
+
+**Per-permissible-value control** - Override specific permissible values:
+
+.. code-block:: yaml
+
+    enums:
+      MixedRepresentationType:
+        description: Enum with mixed PV representations
+        permissible_values:
+          concept_term:
+            description: A concept represented as a class
+            implements:
+              - owl:Class
+          instance_value:
+            description: A specific instance
+            implements:
+              - owl:NamedIndividual
+          literal_value:
+            description: A literal value
+            implements:
+              - rdfs:Literal
+
+**Using URIs vs. text for permissible values:**
+
+.. code-block:: yaml
+
+    enums:
+      StatusEnum:
+        permissible_values:
+          active:
+            meaning: ex:ActiveStatus    # Will use URI for OWL representation
+            description: Currently active
+          inactive:
+            description: Not active     # Will use text-based representation
+
+OWL Output Patterns
+~~~~~~~~~~~~~~~~~~~
+
+The choice of permissible value type affects the generated OWL structure:
+
+**owl:Class (default):**
+
+.. code-block:: turtle
+
+    :StatusEnum a owl:Class ;
+        owl:unionOf ( :active :inactive ) .
+    :active a owl:Class .
+    :inactive a owl:Class .
+
+**owl:NamedIndividual:**
+
+.. code-block:: turtle
+
+    :StatusEnum a owl:Class ;
+        owl:oneOf ( :active :inactive ) .
+    :active a owl:NamedIndividual .
+    :inactive a owl:NamedIndividual .
+
+**rdfs:Literal:**
+
+.. code-block:: turtle
+
+    :StatusEnum a owl:Class ;
+        owl:oneOf ( "active" "inactive" ) .
+
+Mixed Types in One Enum
+~~~~~~~~~~~~~~~~~~~~~~~
+
+When permissible values in the same enum have different ``implements`` annotations,
+the behavior depends on the URI/meaning configuration:
+
+* **All PVs have URIs**: Mixed types are supported
+* **Some PVs lack URIs**: The enum may skip certain representation patterns that would be inconsistent
+* **No PVs have URIs**: All PVs use the same default type
+
+Advanced Usage
+~~~~~~~~~~~~~~
+
+**Using with different URI patterns:**
+
+.. code-block:: yaml
+
+    enums:
+      ConceptEnum:
+        permissible_values:
+          term_a:
+            meaning: MONDO:0001234
+            implements: [owl:Class]
+          term_b:
+            meaning: http://example.org/TermB
+            implements: [owl:NamedIndividual]
 
 
 Tips
