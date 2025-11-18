@@ -412,10 +412,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.class_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassGeneratorMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.class_handler_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassHandlerBase</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dataframe_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataframeClass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.enum_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumGeneratorMixin</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.slot_generator_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotGeneratorMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.enum_handler_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumHandlerBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.slot_handler_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotHandlerBase</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -445,7 +445,7 @@
 <div class="viewcode-block" id="PanderaGenerator">
 <a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">PanderaGenerator</span><span class="p">(</span><span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">EnumGeneratorMixin</span><span class="p">,</span> <span class="n">ClassGeneratorMixin</span><span class="p">,</span> <span class="n">SlotGeneratorMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PanderaGenerator</span><span class="p">(</span><span class="n">OOCodeGenerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates Pandera python classes from a LinkML schema.</span>
 
@@ -574,11 +574,11 @@
 
         <span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordered_classes</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_handler</span><span class="o">.</span><span class="n">ordered_classes</span><span class="p">():</span>
             <span class="n">cn</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span>
             <span class="n">safe_cn</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
             <span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="n">identifier_or_key_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_or_key_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
+            <span class="n">identifier_or_key_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_handler</span><span class="o">.</span><span class="n">get_identifier_or_key_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">identifier_or_key_slot</span><span class="p">:</span>
                 <span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;identifier_key_slot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">identifier_or_key_slot</span><span class="o">.</span><span class="n">name</span>
             <span class="n">ooclass</span> <span class="o">=</span> <span class="n">DataframeClass</span><span class="p">(</span>
@@ -600,7 +600,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">parent_slots</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_slots</span><span class="p">(</span><span class="n">cn</span><span class="p">):</span>
-                <span class="n">oofield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">sn</span><span class="p">)</span>
+                <span class="n">oofield</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_handler</span><span class="o">.</span><span class="n">handle_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">sn</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">sn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">parent_slots</span><span class="p">:</span>
                     <span class="n">ooclass</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
                 <span class="n">ooclass</span><span class="o">.</span><span class="n">all_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">oofield</span><span class="p">)</span>
@@ -608,7 +608,13 @@
         <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">classes</span>
 
         <span class="k">return</span> <span class="n">oodoc</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slot_handler</span> <span class="o">=</span> <span class="n">SlotHandlerBase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enum_handler</span> <span class="o">=</span> <span class="n">EnumHandlerBase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_handler</span> <span class="o">=</span> <span class="n">ClassHandlerBase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 
