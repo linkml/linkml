@@ -1,7 +1,10 @@
 import logging
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
+
+if TYPE_CHECKING:
+    from .dataframe_generator import DataframeGenerator
 
 from linkml.utils.helpers import get_range_associated_slots
 
@@ -10,12 +13,15 @@ from .dataframe_field import DataframeField
 logger = logging.getLogger(__file__)
 
 
-class SlotGeneratorMixin:
+class SlotHandlerBase:
     """
     Prior to rendering the dataframe schema, this class provides
     and adapter between the LinkML model and schema view
     and the rendering engine.
     """
+
+    def __init__(self, generator: "DataframeGenerator"):
+        self.generator = generator
 
     LINKML_ANY_CURIE = "linkml:Any"
 
@@ -61,7 +67,7 @@ class SlotGeneratorMixin:
     }
 
     def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
-        sv = self.schemaview
+        sv = self.generator.schemaview
         id_slot = sv.get_identifier_slot(cn)
         if id_slot:
             return id_slot
@@ -75,73 +81,71 @@ class SlotGeneratorMixin:
         is_multivalued = self.is_multivalued(slot)
         internal_inlined_form_key = ((slot.inlined is True), (slot.inlined_as_list is True), is_multivalued)
         logger.info(f"Inlined form key: {internal_inlined_form_key}")
-        internal_inlined_form = self._INTERNAL_INLINED_FORM.get(
-            internal_inlined_form_key, SlotGeneratorMixin.FORM_ERROR
-        )
+        internal_inlined_form = self._INTERNAL_INLINED_FORM.get(internal_inlined_form_key, SlotHandlerBase.FORM_ERROR)
 
-        if internal_inlined_form == SlotGeneratorMixin.FORM_INLINED_COLLECTION_DICT:
+        if internal_inlined_form == SlotHandlerBase.FORM_INLINED_COLLECTION_DICT:
             if self.get_identifier_or_key_slot(slot.range) is None:
-                internal_inlined_form = SlotGeneratorMixin.FORM_INLINED_LIST_DICT
+                internal_inlined_form = SlotHandlerBase.FORM_INLINED_LIST_DICT
 
         if self.calculate_simple_dict(slot) is not None:
-            return SlotGeneratorMixin.FORM_INLINED_SIMPLE_DICT
+            return SlotHandlerBase.FORM_INLINED_SIMPLE_DICT
 
         return internal_inlined_form
 
     def calculate_simple_dict(self, slot: SlotDefinition):
         """slot is the container for the simple dict slot"""
 
-        (_, range_simple_dict_value_slot, _) = get_range_associated_slots(self.schemaview, slot.range)
+        (_, range_simple_dict_value_slot, _) = get_range_associated_slots(self.generator.schemaview, slot.range)
 
         return range_simple_dict_value_slot
 
     def handle_none_slot(self, slot) -> str:
-        range = self.schema.default_range  # need to figure this out, set at the beginning?
+        range = self.generator.schema.default_range  # need to figure this out, set at the beginning?
         if range is None:
             range = "str"
 
         return range
 
     def handle_class_slot(self, slot, range: str) -> str:
-        range_info = self.schemaview.all_classes().get(range)
+        range_info = self.generator.schemaview.all_classes().get(range)
 
-        if range_info["class_uri"] == SlotGeneratorMixin.LINKML_ANY_CURIE:
-            range = SlotGeneratorMixin.ANY_RANGE_STRING
+        if range_info["class_uri"] == SlotHandlerBase.LINKML_ANY_CURIE:
+            range = SlotHandlerBase.ANY_RANGE_STRING
         else:
             inlined_form = self.calculate_inlined_form(slot)
 
-            if inlined_form == SlotGeneratorMixin.FORM_INLINED_COLLECTION_DICT:
+            if inlined_form == SlotHandlerBase.FORM_INLINED_COLLECTION_DICT:
                 logger.warning(
                     f"Slot {slot.name} uses inlined dictionary form,"
                     "which may be less efficient than inlined as list form with the current implementation."
                 )
-            elif inlined_form == SlotGeneratorMixin.FORM_INLINED_SIMPLE_DICT:
+            elif inlined_form == SlotHandlerBase.FORM_INLINED_SIMPLE_DICT:
                 logger.warning(
                     f"Slot {slot.name} uses inlined simple dictionary form. Support is incomplete "
                     "and performance is less efficient than inlined as list form with the current implementation."
                 )
 
-            if inlined_form in (SlotGeneratorMixin.FORM_MULTIVALUED_FOREIGN_KEY, SlotGeneratorMixin.FORM_FOREIGN_KEY):
+            if inlined_form in (SlotHandlerBase.FORM_MULTIVALUED_FOREIGN_KEY, SlotHandlerBase.FORM_FOREIGN_KEY):
                 logger.warning(f"Foreign key not implemented for slot {slot.name}")
-                range = f"ID_TYPES['{self.get_class_name(range)}']"
+                range = f"ID_TYPES['{self.generator.get_class_name(range)}']"
             else:
                 # TODO: make these setters
-                slot.annotations["reference_class"] = self.get_class_name(range)
+                slot.annotations["reference_class"] = self.generator.get_class_name(range)
                 slot.annotations["inline_form"] = inlined_form
 
-                range = SlotGeneratorMixin.INLINED_FORM_RANGE_PANDERA[inlined_form]
+                range = SlotHandlerBase.INLINED_FORM_RANGE_PANDERA[inlined_form]
 
-                if inlined_form == SlotGeneratorMixin.FORM_INLINED_SIMPLE_DICT:
+                if inlined_form == SlotHandlerBase.FORM_INLINED_SIMPLE_DICT:
                     self.set_simple_dict_inline_details_annotation(slot)
-                elif inlined_form in [SlotGeneratorMixin.FORM_INLINED_LIST_DICT]:
-                    range = self.make_multivalued(range)
+                elif inlined_form in [SlotHandlerBase.FORM_INLINED_LIST_DICT]:
+                    range = self.generator.make_multivalued(range)
 
         return range
 
     def set_simple_dict_inline_details_annotation(self, slot):
         """Extra metadata is to help with the simple dict case"""
         (range_id_slot, range_simple_dict_value_slot, _) = get_range_associated_slots(  # range_required_slots,
-            self.schemaview, slot.range
+            self.generator.schemaview, slot.range
         )
 
         simple_dict_id = range_id_slot.name
@@ -150,20 +154,22 @@ class SlotGeneratorMixin:
 
     def handle_non_inlined_class_slot(self, slot, range: str) -> str:
         """non-inlined class slots have been temporarily removed but this will be needed to support them"""
-        return f"ID_TYPES['{self.get_class_name(range)}']"
+        return f"ID_TYPES['{self.generator.get_class_name(range)}']"
 
     def handle_type_slot(self, slot, range: str) -> str:
         del slot  # unused for now
 
-        t = self.schemaview.all_types().get(range)
-        range = self.map_type(t)
+        t = self.generator.schemaview.all_types().get(range)
+        range = self.generator.map_type(t)
 
         return range
 
     def handle_enum_slot(self, slot, range: str) -> str:
-        enum_definition = self.schemaview.all_enums().get(range)
-        range = SlotGeneratorMixin.ENUM_RANGE_STRING
-        slot.annotations["permissible_values"] = self.get_enum_permissible_values(enum_definition)
+        enum_definition = self.generator.schemaview.all_enums().get(range)
+        range = SlotHandlerBase.ENUM_RANGE_STRING
+        slot.annotations["permissible_values"] = self.generator.enum_handler.get_enum_permissible_values(
+            enum_definition
+        )
 
         return range
 
@@ -171,27 +177,27 @@ class SlotGeneratorMixin:
         if (slot.inlined_as_list is True and self.is_multivalued(slot)) or (
             slot.inlined is True and slot.inlined_as_list is True and self.is_multivalued(slot)
         ):
-            range = self.make_multivalued(range)
+            range = self.generator.make_multivalued(range)
 
         return range
 
     def handle_slot(self, cn: str, sn: str):
-        safe_sn = self.get_slot_name(sn)
-        slot = self.schemaview.induced_slot(sn, cn)
+        safe_sn = self.generator.get_slot_name(sn)
+        slot = self.generator.schemaview.induced_slot(sn, cn)
         range = slot.range
 
         if slot.alias is not None:
-            safe_sn = self.get_slot_name(slot.alias)
+            safe_sn = self.generator.get_slot_name(slot.alias)
 
         if range is None:
             range = self.handle_none_slot(slot)
-        elif range in self.schemaview.all_classes():
+        elif range in self.generator.schemaview.all_classes():
             range = self.handle_class_slot(slot, range)
-        elif range in self.schemaview.all_types():
+        elif range in self.generator.schemaview.all_types():
             range = self.handle_type_slot(slot, range)
             if self.is_multivalued(slot):
-                range = self.make_multivalued(range)
-        elif range in self.schemaview.all_enums():
+                range = self.generator.make_multivalued(range)
+        elif range in self.generator.schemaview.all_enums():
             range = self.handle_enum_slot(slot, range)
             range = self.handle_multivalued_slot(slot, range)
         else:
