@@ -903,6 +903,7 @@
       "range": "StructuredAlias",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1663,6 +1664,7 @@
       "range": "AnonymousEnumExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1682,6 +1684,7 @@
       "range": "AnonymousEnumExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1721,6 +1724,7 @@
       ],
       "range": "MatchQuery",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -1774,6 +1778,7 @@
       ],
       "range": "ReachabilityQuery",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2052,6 +2057,7 @@
       "range": "ImportExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2408,6 +2414,7 @@
       ],
       "range": "EnumExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2431,6 +2438,7 @@
       ],
       "range": "AnonymousClassExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2443,6 +2451,7 @@
       "range": "Expression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2472,6 +2481,7 @@
       "range": "Expression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2501,6 +2511,7 @@
       "range": "Expression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2530,6 +2541,7 @@
       "range": "Expression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2559,6 +2571,7 @@
       "range": "Expression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2591,6 +2604,7 @@
       ],
       "range": "AnonymousClassExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2620,6 +2634,7 @@
       ],
       "range": "AnonymousClassExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2644,6 +2659,7 @@
       ],
       "range": "AnonymousClassExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2752,6 +2768,7 @@
       "range": "ClassRule",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -2771,6 +2788,7 @@
       "range": "AnonymousClassExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -3147,6 +3165,7 @@
       ],
       "range": "ArrayExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -3168,6 +3187,7 @@
       "range": "DimensionExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -3205,6 +3225,7 @@
       ],
       "range": "Anything",
       "inlined": true,
+      "inlined_as_list": true,
       "any_of": [
         {
           "range": "integer",
@@ -3541,6 +3562,7 @@
       ],
       "range": "AnonymousSlotExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -3560,6 +3582,7 @@
       ],
       "range": "AnonymousSlotExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4290,6 +4313,7 @@
       ],
       "range": "Anything",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4317,6 +4341,7 @@
       ],
       "range": "Anything",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4413,6 +4438,7 @@
       ],
       "range": "PatternExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4455,6 +4481,7 @@
       "range": "EnumBinding",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4743,6 +4770,7 @@
       ],
       "range": "Anything",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -4766,6 +4794,7 @@
       "range": "Example",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5063,6 +5092,7 @@
       ],
       "range": "Expression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5104,6 +5134,7 @@
       ],
       "range": "PathExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5371,6 +5402,7 @@
       "range": "AnyValue",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5410,6 +5442,7 @@
       ],
       "range": "UnitOfMeasure",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5603,6 +5636,7 @@
       "range": "AnonymousTypeExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5633,6 +5667,7 @@
       "range": "AnonymousTypeExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5663,6 +5698,7 @@
       "range": "AnonymousTypeExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5693,6 +5729,7 @@
       "range": "AnonymousTypeExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5807,6 +5844,7 @@
       "usage_slot_name": "followed_by",
       "range": "PathExpression",
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5837,6 +5875,7 @@
       "range": "PathExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5867,6 +5906,7 @@
       "range": "PathExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5897,6 +5937,7 @@
       "range": "PathExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5927,6 +5968,7 @@
       "range": "PathExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5957,6 +5999,7 @@
       "range": "AnonymousSlotExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -5987,6 +6030,7 @@
       "range": "AnonymousSlotExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6017,6 +6061,7 @@
       "range": "AnonymousSlotExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6047,6 +6092,7 @@
       "range": "AnonymousSlotExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6206,6 +6252,7 @@
       "range": "AnonymousClassExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6236,6 +6283,7 @@
       "range": "AnonymousClassExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6266,6 +6314,7 @@
       "range": "AnonymousClassExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6296,6 +6345,7 @@
       "range": "AnonymousClassExpression",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {
@@ -6403,6 +6453,7 @@
       "range": "ClassRule",
       "multivalued": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     },
     {

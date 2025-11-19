@@ -31,7 +31,6 @@ classes:
       email:
       age:
       occupation:
-      ...
 ```
 
 this is already useful as it states which column headers are expected in your data.
@@ -400,6 +399,98 @@ LinkML, and LinkML is not restricted solely to CSVs - e.g. you can
 semantically describe JSON files with LinkML too.
 
 We are currently planning on writing a generator for CSVW JSON-LD.
+
+## Why should I use LinkML over Frictionless Data?
+
+[Frictionless Data](https://frictionlessdata.io/) is a framework for describing tabular and other datasets with metadata.
+
+**Frictionless Data** provides Table Schema for describing the structure of tabular data, along with Data Package
+for bundling datasets with metadata. It's excellent for data publishing and validation of CSVs and
+spreadsheets. If your primary use case is lightweight tabular data publishing, Frictionless may be simpler.
+
+LinkML works across JSON, YAML, RDF, SQL databases, and graph databases.  LinkML also provides built-in
+support for ontology mappings, IRIs, and semantic web integration beyond basic metadata. LinkML supports
+object-oriented modeling features.
+
+## Why should I use LinkML over Croissant?
+
+[Croissant](https://github.com/mlcommons/croissant) is a framework for describing tabular and other datasets with metadata.
+
+Croissant is a metadata format developed by MLCommons for describing machine learning datasets, including
+their structure, provenance, and content. It builds on schema.org and is designed for dataset discovery and
+reuse in machine learning contexts.
+
+LinkML offers sophisticated validation rules including patterns, ranges, and dynamic enumerations linked to ontologies,
+and can generate Python dataclasses, TypeScript interfaces, JSON-Schema, SQL DDL, and more from a single schema.
+
+If you're specifically working with ML datasets and need schema.org compatibility, Croissant may be appropriate.
+
+## Why should I use LinkML over Schema.org?
+
+[Schema.org](https://schema.org) is a collaborative initiative that provides a collection of schemas (structured data vocabularies)
+used to mark up web pages so that search engines can better understand their content. It's supported by major search
+engines including Google and Microsoft and is used by over 45 million websites.
+
+Schema.org is, at heart, a vocabulary that you can use to annotate data for use on the web. LinkML, in contrast, provides rich
+validation rules, required fields, patterns, ranges, and cardinality constraints.  Use Schema.org when you primarily
+need to mark up web pages for SEO or are describing common web entities with standard vocabularies. Use LinkML when you
+need to validate data, generate code, work across multiple formats, or require domain-specific modeling with
+constraints. You can still map your LinkML models to Schema.org terms for compatibility.
+
+## Why should I use LinkML over Bioschemas?
+
+[Bioschemas](https://bioschemas.org) is a community initiative that extends Schema.org with life sciences-specific types and properties.
+It creates profiles (usage guidelines) for Schema.org types to improve findability of biological datasets, tools,
+training materials, and other resources.
+Bioschemas profiles are guidelines; LinkML enforces constraints through validation. Bioschemas focuses on JSON-LD for
+web; LinkML supports TSV, SQL, RDF, and other formats common in bioinformatics pipelines. LinkML has sophisticated
+support for dynamic enumerations from ontologies (e.g., pulling terms from GO, MONDO, UBERON) and ontology-based
+validation.
+
+Use Bioschemas when your primary goal is to mark up biological web resources for improved search engine
+indexing and discoverability. Use LinkML when building biological data standards, databases, APIs, or analytical pipelines that require validation,
+code generation, and complex data modeling. LinkML is particularly strong for multi-institutional data integration
+projects in life sciences.
+
+## Why should I use LinkML over DCAT?
+
+[DCAT (Data Catalog Vocabulary)](https://www.w3.org/TR/vocab-dcat-3/) is a W3C RDF vocabulary designed to facilitate interoperability between data
+catalogs published on the web. It enables publishers to describe datasets and data services in a standardized way
+that catalog aggregators can consume.
+
+DCAT describes catalog metadata; LinkML models, validates and maps the actual data within datasets. But LinkML can
+also be used for modeling dataset metadata.
+
+## Why should I use LinkML over XML Schema (XSD)?
+
+[XML Schema](https://www.w3.org/TR/xmlschema11-1/) (XSD) is a W3C specification for defining the structure, content, and semantics of XML documents.
+It provides a type system, validation rules, and documentation for XML-based data exchange.LinkML uses YAML instead of
+verbose XML, making schemas much more human-friendly to author and maintain. XML Schema only works with XML. LinkML
+handles JSON, YAML, TSV, RDF, SQL, and more from a single schema definition.
+
+Use XML Schema when you're working in an XML-centric environment, integrating with legacy systems that require XSD,
+or in industries with established XSD-based standards. Use LinkML when building new data standards, working with
+modern data formats (JSON, YAML), need multi-format support, or want developer-friendly schema authoring.
+If you need XML support, compile your LinkML schema to XSD.
+
+## Why should I use LinkML over ISA-Tools?
+
+[ISA-Tools](https://isa-tools.org) is an open-source framework built around a three-level data model:
+Investigation (project context), Study (unit of research), and Assay (analytical measurement).
+It provides rich description of experimental metadata for life sciences, environmental, and biomedical
+experiments using ISA-Tab (tab-delimited), ISA-JSON, and RDF serializations.
+
+ISA is prescriptive with its three-level hierarchy; LinkML allows arbitrary domain models tailored to your specific needs
+and works for any type of data. LinkML is domain-agnostic and used across biomedicine, environmental science,
+materials science, and other fields
+
+Use ISA-Tools when you're submitting to repositories that require ISA-Tab format, working in metabolomics or other
+communities with established ISA adoption, or need tools specifically designed for experimental metadata management.
+
+Use LinkML when you need flexible data modeling beyond the Investigation-Study-Assay hierarchy, want to generate
+code and schemas for multiple targets, require sophisticated validation, or are building domain-specific data standards.
+LinkML is particularly strong when your data doesn't fit the experimental metadata pattern or when you need a schema
+that serves multiple purposes (validation, documentation, code generation, and transformation).
 
 ## Why should I use LinkML over ISO-11179?
 

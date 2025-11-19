@@ -407,6 +407,7 @@
       "range": "AnyValue",
       "required": true,
       "inlined": true,
+      "inlined_as_list": true,
       "@type": "SlotDefinition"
     }
   ],
