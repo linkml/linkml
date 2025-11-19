@@ -7,9 +7,8 @@ def assert_sorted_order(sorted_list: list[str], dependency_dict: dict[str, list[
     """
     Assert that each dependency appears before its dependent in the sorted list.
 
-    Args:
-        sorted_list: The sorted list of nodes.
-        dependency_dict: The dictionary mapping nodes to their dependencies.
+    :param sorted_list: The sorted list of nodes.
+    :param dependency_dict: The dictionary mapping nodes to their dependencies.
     """
     for node, dependencies in dependency_dict.items():
         for dep in dependencies:
@@ -20,15 +19,13 @@ def assert_sorted_order(sorted_list: list[str], dependency_dict: dict[str, list[
 def test_sort_dependencies():
     ds = DependencySorter({"A": ["B", "C"], "B": [], "C": ["D"], "D": ["E"], "E": []})
     result = ds.sort_dependencies()
-    # assert result == ['B', 'C', 'D', 'E', 'A']
     assert_sorted_order(result, ds.dependency_dict)
 
 
 def test_cyclic_dependency():
     ds = DependencySorter({"A": ["B"], "B": ["A"]})
-    with pytest.raises(ValueError) as cm:
+    with pytest.raises(ValueError, match="Cyclic dependency detected"):
         ds.sort_dependencies()
-    assert "Cyclic dependency detected" in str(cm.value)
 
 
 def test_add_dependency():
@@ -36,5 +33,4 @@ def test_add_dependency():
     ds.add_dependency("A", "B")
     ds.add_dependency("B", "C")
     result = ds.sort_dependencies()
-    # assert result == ['C', 'B', 'A']
     assert_sorted_order(result, ds.dependency_dict)
