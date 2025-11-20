@@ -32,6 +32,8 @@ from pydantic import BaseModel, ConfigDict
 
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 
+from .dataframe_helper import check_data_pandera
+
 try:
     from yaml import CSafeDumper as SafeDumper
 except ImportError:
@@ -912,38 +914,6 @@ def check_data(
                 notes=str(notes),
             )
         )
-
-
-def check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid):
-    pl = pytest.importorskip("polars", minversion="1.0", reason="Polars >= 1.0 not installed")
-
-    try:
-        mod = compile_python(output)
-        py_cls = getattr(mod, target_class)
-
-        logger.info(
-            f"Validating {target_class} against {object_to_validate} / {coerced} / {expected_behavior} / "
-            f"{valid}\n\n{yaml.dump(schema)}\n\n{output}"
-        )
-
-        dataframe_to_validate = pl.DataFrame([object_to_validate])
-
-        try:
-            schema_name = schema.get("name", "")
-            polars_schema = py_cls.generate_polars_schema(object_to_validate, parser=True)
-
-            if schema_name.startswith("test_date_types") or schema_name.startswith("test_enum_alias"):
-                dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
-            elif dataframe_to_validate.item() is None:
-                dataframe_to_validate = pl.DataFrame(object_to_validate, schema=polars_schema, strict=False)
-        except Exception:
-            pass
-
-        logger.info(dataframe_to_validate)
-        py_cls.validate(dataframe_to_validate, lazy=True)
-    except Exception as e:
-        if valid:
-            raise e
 
 
 def clean_null_terms(d):

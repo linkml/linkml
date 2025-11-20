@@ -14,12 +14,13 @@ from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOCodeGenerator, OODocument
+from linkml.generators.oocodegen import OOCodeGenerator
 
-from .class_generator_mixin import ClassGeneratorMixin
-from .dataframe_class import DataframeClass
-from .enum_generator_mixin import EnumGeneratorMixin
-from .slot_generator_mixin import SlotGeneratorMixin
+from .class_handler_base import ClassHandlerBase
+from .enum_handler_base import EnumHandlerBase
+from .render_adapters import DataframeDocument
+from .render_adapters.dataframe_class import DataframeClass
+from .slot_handler_base import SlotHandlerBase
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ class TemplateEnum(Enum):
 
 
 @dataclass
-class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin, SlotGeneratorMixin):
+class PanderaGenerator(OOCodeGenerator):
     """
     Generates Pandera python classes from a LinkML schema.
 
@@ -78,6 +79,8 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
     genmeta: bool = False
     emit_metadata: bool = True
     coerce: bool = False
+    backing_form: str = "serialization"
+    """specific storage format that may differ from specified inlined flags"""
 
     def default_value_for_type(self, typ: str) -> str:
         """Allow underlying framework to handle default if not specified."""
@@ -124,7 +127,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
         return compile_python(pandera_code)
 
-    def serialize(self, rendered_module: Optional[OODocument] = None) -> str:
+    def serialize(self, rendered_module: Optional[DataframeDocument] = None) -> str:
         """
         Serialize the schema to a Pandera module as a string
         """
@@ -153,7 +156,7 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
         )
         return code
 
-    def render(self) -> OODocument:
+    def render(self) -> DataframeDocument:
         """
         Create a data structure ready to pass to the serialization templates.
         """
@@ -161,15 +164,15 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
 
         module_name = camelcase(sv.schema.name)
 
-        oodoc = OODocument(name=module_name, package=self.package, source_schema=sv.schema)
+        doc = DataframeDocument(name=module_name, package=self.package, source_schema=sv.schema)
 
         classes = []
 
-        for c in self.ordered_classes():
+        for c in self.class_handler.ordered_classes():
             cn = c.name
             safe_cn = camelcase(cn)
             annotations = {}
-            identifier_or_key_slot = self.get_identifier_or_key_slot(cn)
+            identifier_or_key_slot = self.slot_handler.get_identifier_or_key_slot(cn)
             if identifier_or_key_slot:
                 annotations["identifier_key_slot"] = identifier_or_key_slot.name
             ooclass = DataframeClass(
@@ -191,14 +194,20 @@ class PanderaGenerator(OOCodeGenerator, EnumGeneratorMixin, ClassGeneratorMixin,
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                oofield = self.handle_slot(cn, sn)
+                oofield = self.slot_handler.handle_slot(cn, sn)
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
 
-        oodoc.classes = classes
+        doc.classes = classes
 
-        return oodoc
+        return doc
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.slot_handler = SlotHandlerBase(self)
+        self.enum_handler = EnumHandlerBase(self)
+        self.class_handler = ClassHandlerBase(self)
 
 
 @click.option("--package", help="Package name where relevant for generated class files")
