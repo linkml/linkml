@@ -8,7 +8,7 @@ from linkml_runtime.utils.yamlutils import as_rdf
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
-from tests.utils.compare_jsonld_context import CompareJsonldContext
+from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 
 
 @pytest.mark.jsonldgen

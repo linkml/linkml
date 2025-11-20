@@ -3,7 +3,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from sqlalchemy.orm import sessionmaker
 
 from linkml.utils.sqlutils import SQLStore
-from tests.utils.dict_comparator import compare_yaml
+from tests.linkml.utils.dict_comparator import compare_yaml
 
 
 def test_enums(person_pydantic):

@@ -279,8 +279,8 @@ import unittest
 
 from linkml.generators.pythongen import PythonGenerator
 from tests.test_issues.environment import env
-from tests.utils.python_comparator import compare_python
-from tests.utils.test_environment import TestEnvironmentTestCase
+from tests.linkml.utils.python_comparator import compare_python
+from tests.linkml.utils.test_environment import TestEnvironmentTestCase
 
 
 class Issue106TestCase(TestEnvironmentTestCase):
@@ -318,8 +318,8 @@ import unittest
 from linkml.generators.owlgen import OwlSchemaGenerator
 from rdflib import URIRef, Graph
 from rdflib.namespace import OWL, RDF
-from tests.utils.compare_rdf import compare_rdf
-from tests.utils.test_environment import TestEnvironmentTestCase
+from tests.linkml.utils.compare_rdf import compare_rdf
+from tests.linkml.utils.test_environment import TestEnvironmentTestCase
 
 from tests.test_issues.environment import env
 
@@ -408,7 +408,7 @@ output directory will be removed and replaced with the temp directory.
 import unittest
 
 from linkml.generators.markdowngen import MarkdownGenerator
-from tests.utils.test_environment import TestEnvironmentTestCase
+from tests.linkml.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 
 
@@ -464,7 +464,7 @@ import click
 
 from linkml.generators import csvgen
 from tests.test_scripts.environment import env
-from tests.utils.clicktestcase import ClickTestCase
+from tests.linkml.utils.clicktestcase import ClickTestCase
 
 
 class GenCSVTestCase(ClickTestCase):

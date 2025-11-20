@@ -9,7 +9,7 @@ from nbconvert.preprocessors import ExecutePreprocessor
 
 from tests.environment import env
 from tests.linkml.test_notebooks.environment import nbenv
-from tests.utils.filters import nb_filter
+from tests.linkml.utils.filters import nb_filter
 
 FORCE_REWRITE = True
 # Tests moved to root: tests/linkml/test_notebooks, notebooks at root

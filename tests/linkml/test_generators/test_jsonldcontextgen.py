@@ -6,8 +6,8 @@ from click.testing import CliRunner
 from linkml.generators import ContextGenerator, JSONLDGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextGenerator
 from linkml.generators.jsonldcontextgen import cli as jsonld_context_cli
-from tests.utils.compare_jsonld_context import CompareJsonldContext
-from tests.utils.validate_jsonld_context import RdfExpectations
+from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
+from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
 
 def test_jsonld_context_integration(kitchen_sink_path, snapshot_path):

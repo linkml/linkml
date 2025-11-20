@@ -2,7 +2,7 @@ from typing import Optional
 
 from linkml_runtime.utils.compile_python import compile_python
 
-from tests.utils.filters import metadata_filter
+from tests.linkml.utils.filters import metadata_filter
 
 
 def compare_python(expected: str, actual: str, expected_path: Optional[str] = None) -> Optional[str]:
