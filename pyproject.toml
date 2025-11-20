@@ -131,6 +131,9 @@ select = [
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
 
+# tests/linkml_runtime follows the original linkml_runtime linting conventions
+"tests/linkml_runtime/**/*.py" = ["E402", "E501", "E712", "E731", "E741", "F401", "F811", "F841"]
+
 [tool.tox]
 requires = ["tox>=4", "tox-uv"]
 env_list = ["lint", "py{39,310,311,312,313}"]
