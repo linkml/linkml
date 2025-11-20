@@ -519,3 +519,180 @@ def test_yarrrml_e2e_csv_source_suffix_inference(tmp_path: Path):
     assert (EX.P9, RDF.type, EX.Person) in g
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed for suffix inference:\n{results_text}"
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_uses_correct_uris_and_default_prefix(tmp_path: Path):
+    schema_text = """
+id: https://ex.org/uri-test
+name: uri-test
+prefixes:
+  ex: https://ex.org/test#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Human:
+    class_uri: ex:Person
+    attributes:
+      name:
+        slot_uri: ex:fullName
+      friend:
+        range: Human
+        inlined: false
+"""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema_text, encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path))
+    yobj = yaml.safe_load(yg.serialize())
+
+    assert "ex" in yobj["prefixes"]
+    assert "mappings" in yobj
+
+    m = yobj["mappings"]["Human"]
+    type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
+    assert type_po["o"] == "ex:Person"
+
+    pred_names = [p["p"] for p in m["po"]]
+    assert "ex:fullName" in pred_names
+
+    iri_obj = next(p for p in m["po"] if p["p"].endswith("friend"))
+    assert iri_obj["o"]["type"] == "iri"
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_adds_default_prefix_when_missing(tmp_path: Path):
+    schema_text = """
+id: https://no.prefix/test
+name: noprefix
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Note:
+    attributes:
+      text: {}
+"""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema_text, encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path))
+    yobj = yaml.safe_load(yg.serialize())
+
+    assert "ex" in yobj["prefixes"]
+    assert yobj["prefixes"]["ex"] == "https://example.org/default#"
+
+    assert "mappings" in yobj and isinstance(yobj["mappings"], dict)
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_does_not_override_existing_default_prefix(tmp_path: Path):
+    schema_text = """
+id: https://ex.org/custom
+name: custom
+prefixes:
+  my: https://ex.org/my#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: my
+
+classes:
+  Thing:
+    attributes:
+      id:
+        identifier: true
+"""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema_text, encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path))
+    yobj = yaml.safe_load(yg.serialize())
+
+    assert "ex" not in yobj["prefixes"]
+    assert "my" in yobj["prefixes"]
+
+    m = yobj["mappings"]["Thing"]
+    assert m["s"] == "my:$(id)"
+    type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
+    assert type_po["o"] == "my:Thing"
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_slot_uri_full_iri_used_verbatim(tmp_path: Path):
+    schema_text = """
+id: https://ex.org/full-iri
+name: full-iri
+prefixes:
+  ex: https://ex.org/ns#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+
+slots:
+  name:
+    slot_uri: "https://example.org/vocab/fullName"
+
+classes:
+  Human:
+    attributes:
+      id:
+        identifier: true
+      name: {}
+"""
+    data = {"items": [{"id": "H1", "name": "Alice"}]}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema_text, encoding="utf-8")
+    data_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    m = yarrrml["mappings"]["Human"]
+    preds = [po["p"] for po in m["po"]]
+    assert "https://example.org/vocab/fullName" in preds
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    FULL = rdflib.URIRef("https://example.org/vocab/fullName")
+    EXNS = rdflib.Namespace("https://ex.org/ns#")
+
+    assert (EXNS.H1, FULL, rdflib.Literal("Alice")) in g
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_single_class_without_slots_has_mapping_and_type(tmp_path: Path):
+    schema_text = """
+id: https://ex.org/only-class
+name: only-class
+prefixes:
+  ex: https://ex.org/only#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+
+classes:
+  Lonely:
+    description: Just a lonely class
+"""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema_text, encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path))
+    yobj = yaml.safe_load(yg.serialize())
+
+    assert "mappings" in yobj
+    assert "Lonely" in yobj["mappings"]
+
+    m = yobj["mappings"]["Lonely"]
+
+    assert m["s"].startswith("ex:Lonely/$(")
+
+    type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
+    assert isinstance(type_po["o"], str)
+    assert type_po["o"]
