@@ -132,7 +132,7 @@ select = [
 "tests/test_notebooks/input/*" = ["E402"]
 
 # tests/linkml_runtime follows the original linkml_runtime linting conventions
-"tests/linkml_runtime/**/*.py" = ["E402", "E501", "E712", "E731", "E741", "F401", "F811", "F841"]
+"tests/linkml_runtime/**/*.py" = ["E402", "E501", "E712", "E731", "E741", "F401", "F811", "F841", "I001", "UP006", "UP035", "UP045"]
 
 [tool.tox]
 requires = ["tox>=4", "tox-uv"]
