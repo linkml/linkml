@@ -124,9 +124,9 @@ select = [
 
 [tool.ruff.lint.per-file-ignores]
 # These templates can have long lines
-"linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
-"linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
+"packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
+"packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
+"packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
 
 # Notebooks can have unsorted imports
 "tests/test_notebooks/input/*" = ["E402"]
