@@ -185,8 +185,9 @@ def ensure_click_not_monkeypatched(request):
     # Only restore if we're NOT in a linkml_runtime test module
     if "linkml_runtime" not in str(request.path):
         try:
-            from tests.linkml_runtime.support.test_environment import _original_click_exit
             import click
+
+            from tests.linkml_runtime.support.test_environment import _original_click_exit
 
             click.core.Context.exit = _original_click_exit
         except (ImportError, AttributeError):
