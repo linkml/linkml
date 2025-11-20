@@ -129,7 +129,7 @@ select = [
 "packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
 
 # Notebooks can have unsorted imports
-"tests/test_notebooks/input/*" = ["E402"]
+"tests/linkml/test_notebooks/input/*" = ["E402"]
 
 # tests/linkml_runtime follows the original linkml_runtime linting conventions
 "tests/linkml_runtime/**/*.py" = ["E402", "E501", "E712", "E731", "E741", "F401", "F811", "F841", "I001", "UP006", "UP007", "UP035", "UP045"]
