@@ -1,7 +1,6 @@
+from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from rdflib import Graph, URIRef
 from rdflib.namespace import DCTERMS, RDFS
-
-from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 
 # reported in https://github.com/linkml/linkml/issues/692
 # description metaproperty is not being exported with owl-gen

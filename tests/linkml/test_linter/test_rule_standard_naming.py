@@ -1,9 +1,8 @@
 import pytest
-from linkml_runtime import SchemaView
-
 from linkml.linter.config.datamodel.config import RuleLevel, StandardNamingConfig
 from linkml.linter.rules import StandardNamingRule
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
 
 
 @pytest.fixture

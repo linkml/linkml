@@ -1,7 +1,6 @@
 import pytest
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml.utils.datautils import infer_root_class
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def test_jsonschema_validation(input_path):

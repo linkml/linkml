@@ -1,5 +1,4 @@
 import pytest
-
 from linkml.generators.panderagen.dependency_sorter import DependencySorter
 
 

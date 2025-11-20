@@ -1,3 +1,4 @@
+from linkml.generators.mermaidclassdiagramgen import MermaidClassDiagramGenerator
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     EnumDefinition,
@@ -5,8 +6,6 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
     TypeDefinition,
 )
-
-from linkml.generators.mermaidclassdiagramgen import MermaidClassDiagramGenerator
 
 
 def test_generate_class_diagrams(kitchen_sink_path, tmp_path):

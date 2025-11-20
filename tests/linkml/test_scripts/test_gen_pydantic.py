@@ -1,9 +1,8 @@
 from pathlib import Path
 
 from click.testing import CliRunner
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators.pydanticgen import cli
+from linkml_runtime.utils.compile_python import compile_python
 
 
 def test_template_dir(input_path):

@@ -1,4 +1,5 @@
 from linkml.generators.javagen import JavaGenerator
+
 from tests.linkml.utils.fileutils import assert_file_contains
 
 schema_str = """

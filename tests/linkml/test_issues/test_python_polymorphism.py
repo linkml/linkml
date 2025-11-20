@@ -1,9 +1,8 @@
 import json
 
 import pytest
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.compile_python import compile_python
 
 
 def test_pythongenerator_loads_poly(schema_str, data_str):

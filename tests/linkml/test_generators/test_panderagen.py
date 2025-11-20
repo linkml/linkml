@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
-
 from linkml.cli.main import linkml as linkml_cli
 from linkml.generators.panderagen import PanderaGenerator, cli
 

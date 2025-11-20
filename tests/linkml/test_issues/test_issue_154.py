@@ -1,7 +1,6 @@
 import yaml
-from linkml_runtime.utils.yamlutils import as_yaml
-
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.yamlutils import as_yaml
 
 
 def test_roundtrip(input_path):

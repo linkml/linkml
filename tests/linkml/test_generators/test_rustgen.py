@@ -11,10 +11,9 @@ from typing import Optional
 
 import pytest
 import yaml
+from linkml.generators.rustgen import RustGenerator
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml.generators.rustgen import RustGenerator
 
 pytestmark = [
     pytest.mark.rustgen,

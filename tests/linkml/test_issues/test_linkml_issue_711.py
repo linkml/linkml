@@ -1,6 +1,5 @@
-from rdflib import Graph, Namespace
-
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
+from rdflib import Graph, Namespace
 
 # reported in https://github.com/linkml/linkml/issues/711
 # export custom annotations

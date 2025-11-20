@@ -1,14 +1,13 @@
 import pytest
-from linkml_runtime.linkml_model import String
-from rdflib import Graph, URIRef
-from rdflib.namespace import OWL, RDF, RDFS, XSD
-
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.yamlgen import YAMLGenerator
+from linkml_runtime.linkml_model import String
+from rdflib import Graph, URIRef
+from rdflib.namespace import OWL, RDF, RDFS, XSD
 
 TESTFILE = "linkml_issue_384"
 

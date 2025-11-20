@@ -1,8 +1,7 @@
-from linkml_runtime.loaders import yaml_loader
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators import PythonGenerator
 from linkml.validators import JsonSchemaDataValidator
+from linkml_runtime.loaders import yaml_loader
+from linkml_runtime.utils.compile_python import compile_python
 
 
 def test_heterogeneous_collection(input_path):

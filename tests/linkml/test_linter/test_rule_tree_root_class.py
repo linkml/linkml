@@ -1,10 +1,9 @@
 import pytest
-from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
-
 from linkml.linter.config.datamodel.config import RuleLevel, TreeRootClassRuleConfig
 from linkml.linter.rules import TreeRootClassRule
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model import ClassDefinition, SlotDefinition
 
 MY_CLASS = "MyClass"
 MY_ENUM = "MyEnum"

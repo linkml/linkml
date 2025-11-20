@@ -1,5 +1,4 @@
 import pytest
-
 from linkml.utils.schemaloader import SchemaLoader
 
 # Issue #206 - SchemaLoader needs to do a yaml_loader.load early on

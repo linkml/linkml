@@ -1,5 +1,4 @@
 import pytest
-
 from linkml.utils.schema_builder import SchemaBuilder
 
 MY_CLASS = "MyClass"

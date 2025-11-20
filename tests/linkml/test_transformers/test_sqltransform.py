@@ -10,10 +10,6 @@ the relational representation.
 from pathlib import Path
 
 import pytest
-from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml.transformers.relmodel_transformer import (
     ForeignKeyPolicy,
     RelationalModelTransformer,
@@ -22,6 +18,9 @@ from linkml.transformers.relmodel_transformer import (
     get_primary_key_attributes,
 )
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schemaview import SchemaView
 
 DUMMY_CLASS = "c"
 

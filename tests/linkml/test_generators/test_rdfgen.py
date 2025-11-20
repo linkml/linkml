@@ -1,8 +1,7 @@
 import pytest
 import rdflib
-from rdflib import Graph
-
 from linkml.generators.rdfgen import RDFGenerator
+from rdflib import Graph
 
 schema = """
 id: http://example.org/interval

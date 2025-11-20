@@ -2,7 +2,6 @@ import os
 
 import pytest
 import yaml
-
 from linkml.generators.sssomgen import SSSOMGenerator
 
 

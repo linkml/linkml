@@ -1,7 +1,6 @@
 import pytest
-from linkml_runtime.utils.yamlutils import as_yaml
-
 from linkml.utils.schemaloader import SchemaLoader
+from linkml_runtime.utils.yamlutils import as_yaml
 
 
 def test_issue_18(input_path, snapshot):

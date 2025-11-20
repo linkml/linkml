@@ -1,6 +1,5 @@
 import pytest
 import yaml
-
 from linkml.validator import validate
 
 

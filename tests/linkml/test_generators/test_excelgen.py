@@ -1,8 +1,7 @@
 import os
 
-from openpyxl import load_workbook
-
 from linkml.generators.excelgen import ExcelGenerator
+from openpyxl import load_workbook
 
 
 def test_excel_generation(input_path, tmp_path):

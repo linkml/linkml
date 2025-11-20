@@ -1,10 +1,9 @@
 import pytest
 from jsonasobj2 import as_json
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.yamlutils import as_rdf
-
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.yamlutils import as_rdf
 
 
 @pytest.mark.jsonldcontextgen

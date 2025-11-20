@@ -21,6 +21,8 @@ from io import StringIO
 from typing import TextIO, Union, cast
 
 import pytest
+from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.utils.generator import Generator
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -32,9 +34,6 @@ from linkml_runtime.linkml_model.meta import (
     SubsetDefinition,
     TypeDefinition,
 )
-
-from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.utils.generator import Generator
 
 
 @dataclass

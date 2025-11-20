@@ -1,8 +1,7 @@
 import pytest
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.compile_python import compile_python
 
 model_txt = """
 id: https://example.org/ifabsent

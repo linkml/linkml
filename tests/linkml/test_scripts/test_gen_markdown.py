@@ -1,6 +1,5 @@
 import pytest
 from click.testing import CliRunner
-
 from linkml.generators.markdowngen import cli
 
 from tests.conftest import KITCHEN_SINK_PATH

@@ -1,7 +1,6 @@
 import json
 
 import pytest
-
 from linkml.validator.loaders import JsonLoader
 
 

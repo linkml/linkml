@@ -1,13 +1,12 @@
 from collections.abc import Iterable
 
 import pytest
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
-
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
 from linkml.validator.validation_context import ValidationContext
+from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
 
 SCHEMA = SchemaDefinition(
     id="testschema",

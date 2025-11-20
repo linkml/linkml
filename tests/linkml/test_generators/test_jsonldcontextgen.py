@@ -2,10 +2,10 @@ import json
 
 import pytest
 from click.testing import CliRunner
-
 from linkml.generators import ContextGenerator, JSONLDGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextGenerator
 from linkml.generators.jsonldcontextgen import cli as jsonld_context_cli
+
 from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 

@@ -1,12 +1,12 @@
 import sys
 
 import pytest
+from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml.generators.shexgen import ShExGenerator
 from linkml_runtime.dumpers import json_dumper, rdf_dumper
 from linkml_runtime.loaders import yaml_loader
 from pyshex.evaluate import evaluate
 
-from linkml.generators.jsonldcontextgen import ContextGenerator
-from linkml.generators.shexgen import ShExGenerator
 from tests.linkml.test_generators.test_pythongen import make_python
 
 

@@ -1,9 +1,8 @@
 import jsonasobj
 import pytest
-from linkml_runtime.utils.yamlutils import as_yaml
-
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.schemaloader import SchemaLoader
+from linkml_runtime.utils.yamlutils import as_yaml
 
 
 @pytest.mark.jsonschemagen

@@ -2,12 +2,12 @@ from pathlib import PurePath
 
 import pytest
 from jsonasobj2 import loads
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.yamlutils import as_rdf
-
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.yamlutils import as_rdf
+
 from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 
 

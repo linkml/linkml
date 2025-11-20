@@ -5,10 +5,9 @@ Tests SchemaFixer
 from copy import deepcopy
 
 import pytest
-from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
-
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
+from linkml_runtime.linkml_model import SlotDefinition, SlotDefinitionName
 
 MY_CLASS = "MyClass"
 MY_CLASS2 = "MyClass2"

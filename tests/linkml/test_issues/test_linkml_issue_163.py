@@ -1,8 +1,7 @@
 import pytest
+from linkml.generators.rdfgen import JSONLDGenerator, RDFGenerator
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import SKOS
-
-from linkml.generators.rdfgen import JSONLDGenerator, RDFGenerator
 
 BIOLINK = Namespace("https://w3id.org/biolink/vocab/")
 

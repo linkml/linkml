@@ -1,5 +1,4 @@
 import pytest
-
 from linkml.generators.pythongen import PythonGenerator
 
 

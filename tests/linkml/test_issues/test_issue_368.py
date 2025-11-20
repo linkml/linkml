@@ -1,11 +1,10 @@
 from typing import Callable
 
 import pytest
-from linkml_runtime.dumpers import json_dumper, rdf_dumper, yaml_dumper
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.dumpers import json_dumper, rdf_dumper, yaml_dumper
+from linkml_runtime.utils.compile_python import compile_python
 
 
 @pytest.mark.pythongen

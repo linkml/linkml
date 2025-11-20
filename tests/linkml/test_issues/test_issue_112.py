@@ -1,6 +1,5 @@
 import pytest
 import requests
-
 from linkml.generators.yumlgen import YumlGenerator
 
 

@@ -1,5 +1,4 @@
 from click.testing import CliRunner
-
 from linkml.generators.yamlgen import cli
 
 from tests.conftest import KITCHEN_SINK_PATH

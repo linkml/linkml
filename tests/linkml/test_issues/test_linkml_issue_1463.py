@@ -1,8 +1,7 @@
 import pytest
+from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml_runtime import LINKML
 from rdflib import OWL, RDF, RDFS, SKOS, Literal, Namespace, URIRef
-
-from linkml.generators.owlgen import OwlSchemaGenerator
 
 PERSONINFO = Namespace("https://w3id.org/linkml/examples/personinfo/")
 SCHEMA_HTTP = Namespace("http://schema.org/")

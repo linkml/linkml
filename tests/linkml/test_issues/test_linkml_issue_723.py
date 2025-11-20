@@ -4,16 +4,15 @@ from enum import Enum
 
 import pytest
 import rdflib
+from linkml.generators.pydanticgen import PydanticGenerator
+from linkml.generators.pythongen import PythonGenerator
+from linkml.reporting.model import RDF
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper, rdflib_dumper
 from linkml_runtime.linkml_model import PermissibleValue
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
 from rdflib import Literal
-
-from linkml.generators.pydanticgen import PydanticGenerator
-from linkml.generators.pythongen import PythonGenerator
-from linkml.reporting.model import RDF
 
 # reported in https://github.com/linkml/linkml/issues/723
 

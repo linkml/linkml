@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
+from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python
 
-from linkml.generators.pythongen import PythonGenerator
 from tests import LOCAL_MODEL_YAML_NO_META
 
 pytestmark = pytest.mark.pythongen

@@ -1,11 +1,10 @@
 """Tests of the linter's one per class checks."""
 
 import pytest
-from linkml_runtime import SchemaView
-
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
 from linkml.linter.linter import LinterProblem
 from linkml.linter.rules import OneIdentifierPerClass, OneKeyPerClass
+from linkml_runtime import SchemaView
 
 EMPTY = ""
 ID = "identifier"

@@ -1,9 +1,8 @@
 import yaml
 from click.testing import CliRunner
+from linkml.generators.linkmlgen import LinkmlGenerator, cli
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
-
-from linkml.generators.linkmlgen import LinkmlGenerator, cli
 
 
 def test_linkmlgen_prefixes():

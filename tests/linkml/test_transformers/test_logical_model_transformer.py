@@ -1,15 +1,14 @@
 from pathlib import Path
 
 import pytest
-from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
-
 from linkml.transformers.logical_model_transformer import (
     LogicalModelTransformer,
     UnsatisfiableAttribute,
 )
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import SchemaDefinition, SlotDefinition
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"

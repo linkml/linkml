@@ -1,5 +1,4 @@
 import pytest
-
 from linkml.generators.common.naming import NameCompatibility
 
 

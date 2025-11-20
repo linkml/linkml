@@ -2,8 +2,6 @@ import platform
 from pathlib import Path
 
 import pytest
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
@@ -13,6 +11,7 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
+from linkml_runtime.utils.compile_python import compile_python
 
 
 @pytest.mark.slow

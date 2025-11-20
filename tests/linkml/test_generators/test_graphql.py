@@ -2,7 +2,6 @@ import logging
 
 import pytest
 from graphql import parse
-
 from linkml.generators.graphqlgen import GraphqlGenerator
 
 logger = logging.getLogger(__name__)

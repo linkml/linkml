@@ -1,10 +1,9 @@
 from typing import Optional
 
 import pytest
+from linkml.utils.schemaloader import SchemaLoader
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.utils.yamlutils import as_yaml
-
-from linkml.utils.schemaloader import SchemaLoader
 
 
 def _eval_expected(

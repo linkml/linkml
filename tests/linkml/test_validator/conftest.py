@@ -1,8 +1,7 @@
 import pytest
+from linkml.validator.validation_context import ValidationContext
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.loaders import yaml_loader
-
-from linkml.validator.validation_context import ValidationContext
 
 
 @pytest.fixture

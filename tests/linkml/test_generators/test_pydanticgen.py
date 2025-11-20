@@ -15,14 +15,6 @@ import numpy as np
 import pytest
 import yaml
 from jinja2 import DictLoader, Environment, Template
-from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
-from linkml_runtime.utils.schemaview import load_schema_wrap
-from pydantic import BaseModel, ConfigDict, ValidationError
-
 from linkml.generators import pydanticgen as pydanticgen_root
 from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators.pydanticgen import (
@@ -47,6 +39,13 @@ from linkml.generators.pydanticgen.template import (
 )
 from linkml.utils.exceptions import ValidationError as ArrayValidationError
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
+from linkml_runtime.utils.schemaview import load_schema_wrap
+from pydantic import BaseModel, ConfigDict, ValidationError
 
 from .conftest import MyInjectedClass
 

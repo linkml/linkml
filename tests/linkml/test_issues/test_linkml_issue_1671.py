@@ -1,6 +1,5 @@
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.compile_python import compile_python
 
 # Define the schema as a YAML string
 schema_yaml = """

@@ -1,9 +1,8 @@
 import pytest
-from linkml_runtime.linkml_model.meta import LINKML
-from rdflib import XSD, Graph
-
 from linkml import LOCAL_TYPES_YAML_FILE
 from linkml.generators.rdfgen import RDFGenerator
+from linkml_runtime.linkml_model.meta import LINKML
+from rdflib import XSD, Graph
 
 
 @pytest.mark.network

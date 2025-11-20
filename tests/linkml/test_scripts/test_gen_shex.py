@@ -1,15 +1,14 @@
 import pytest
 from click.testing import CliRunner
-from pyshex import ShExEvaluator
-from rdflib import Graph
-
 from linkml import METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator, cli
-from tests import SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON
+from pyshex import ShExEvaluator
+from rdflib import Graph
 
+from tests import SKIP_SHEX_VALIDATION, SKIP_SHEX_VALIDATION_REASON
 from tests.conftest import KITCHEN_SINK_PATH
 
 

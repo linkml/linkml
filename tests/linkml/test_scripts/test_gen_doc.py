@@ -2,7 +2,6 @@ import os.path
 import re
 
 from click.testing import CliRunner
-
 from linkml.generators.docgen import cli
 
 from tests.conftest import KITCHEN_SINK_PATH

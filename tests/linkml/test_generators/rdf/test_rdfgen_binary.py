@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Any
 
-from rdflib import Graph
-
 from linkml.generators.rdfgen import RDFGenerator
+from rdflib import Graph
 
 
 def _write_min_schema(p: Path) -> Path:

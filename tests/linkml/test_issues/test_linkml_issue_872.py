@@ -1,8 +1,7 @@
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SlotDefinition
-
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import SlotDefinition
 
 
 def test_monotonic():

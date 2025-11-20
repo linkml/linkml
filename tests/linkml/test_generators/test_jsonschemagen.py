@@ -7,6 +7,7 @@ from typing import Optional, Union
 import jsonschema
 import pytest
 import yaml
+from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import (
@@ -18,7 +19,6 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.loaders import yaml_loader
 
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from tests.linkml.test_generators.test_pythongen import make_python
 
 logger = logging.getLogger(__name__)

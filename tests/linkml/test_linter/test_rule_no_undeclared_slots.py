@@ -1,9 +1,8 @@
 """Tests of the linter's missing slots rules."""
 
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
 from linkml.linter.rules import NoUndeclaredSlotsRule
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def test_undeclared_slots() -> None:

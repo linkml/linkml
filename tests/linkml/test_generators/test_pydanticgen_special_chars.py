@@ -3,7 +3,6 @@ Tests for Pydantic generator handling of special characters in field names
 """
 
 import pytest
-
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pydanticgen.pydanticgen import make_valid_python_identifier
 from linkml.validator import Validator

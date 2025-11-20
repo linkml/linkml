@@ -1,9 +1,9 @@
 from pathlib import Path
 
 import pytest
-
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml.generators.rdfgen import RDFGenerator
+
 from tests import LOCAL_MODEL_YAML_NO_META
 
 

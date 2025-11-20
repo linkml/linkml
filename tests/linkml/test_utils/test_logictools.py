@@ -1,5 +1,4 @@
 import pytest
-
 from linkml.utils.logictools import (
     And,
     Bottom,

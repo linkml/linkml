@@ -1,8 +1,7 @@
+from linkml.transformers.schema_renamer import SchemaRenamer
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml.transformers.schema_renamer import SchemaRenamer
 
 MAP = {
     ClassDefinition: lambda s: s.upper(),

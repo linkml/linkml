@@ -4,9 +4,8 @@ Tests generation of mermaidfrom LinkML schemas
 
 import pytest
 from click.testing import CliRunner
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
-
 from linkml.generators.erdiagramgen import ERDiagram, ERDiagramGenerator, cli
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 
 
 @pytest.fixture

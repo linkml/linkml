@@ -9,9 +9,9 @@ Aliases include:
 
 import pytest
 import rdflib
+from linkml.reporting.model import RDF, RDFS
 from rdflib import URIRef
 
-from linkml.reporting.model import RDF, RDFS
 from tests.linkml.test_compliance.helper import (
     JSONLD_CONTEXT,
     OWL,

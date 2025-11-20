@@ -3,12 +3,10 @@ from typing import Optional
 
 import pytest
 from click.testing import CliRunner
+from linkml.generators.pythongen import cli
 from linkml_runtime.utils.compile_python import compile_python
 
-from linkml.generators.pythongen import cli
-from tests.conftest import Snapshot
-
-from tests.conftest import KITCHEN_SINK_PATH
+from tests.conftest import KITCHEN_SINK_PATH, Snapshot
 
 pytestmark = pytest.mark.pythongen
 

@@ -5,11 +5,10 @@ from numbers import Number
 import jsonschema
 import pytest
 from jsonschema.exceptions import ValidationError
-from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.loaders import json_loader
-
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.loaders import json_loader
 
 schema_str = """
 id: http://example.org/decimals

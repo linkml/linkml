@@ -1,10 +1,9 @@
 import re
 
 import pytest
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml_runtime.utils.compile_python import compile_python
 from pydantic import ValidationError
-
-from linkml.generators.pydanticgen import PydanticGenerator
 
 
 def test_pydantic_obey_range(schema_str):

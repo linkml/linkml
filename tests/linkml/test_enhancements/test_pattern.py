@@ -3,9 +3,8 @@ from pathlib import Path
 
 import pytest
 import yaml
-from linkml_runtime.utils.compile_python import compile_python
-
 from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.compile_python import compile_python
 
 
 @pytest.mark.pythongen

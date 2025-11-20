@@ -1,12 +1,11 @@
 import re
 
-from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.yamlutils import YAMLRoot
-
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.validators import JsonSchemaDataValidator
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 # reported in https://github.com/linkml/linkml/issues/349
 

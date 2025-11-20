@@ -1,9 +1,8 @@
 import pytest
-from linkml_runtime.loaders import rdflib_loader
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml.generators.pythongen import PythonGenerator
 from linkml.validators import JsonSchemaDataValidator
+from linkml_runtime.loaders import rdflib_loader
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def test_issue_532(input_path):

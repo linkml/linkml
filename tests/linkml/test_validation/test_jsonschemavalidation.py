@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 import yaml
-from linkml_runtime.loaders import yaml_loader
-
 from linkml.generators.pythongen import PythonGenerator
 from linkml.validators.jsonschemavalidator import (
     JsonSchemaDataValidator,
     JsonSchemaDataValidatorError,
     _generate_jsonschema,
 )
+from linkml_runtime.loaders import yaml_loader
+
 from tests.linkml.test_validation.environment import env
 
 SCHEMA = env.input_path("kitchen_sink.yaml")

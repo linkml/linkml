@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import pytest
-
 from linkml.generators.markdowngen import MarkdownGenerator
+
 from tests import LOCAL_MODEL_YAML_NO_META
 
 

@@ -2,12 +2,11 @@ import json
 from pathlib import Path
 
 import pytest
-from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
-from linkml_runtime.loaders import yaml_loader
-
 from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.validation_context import ValidationContext
+from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.loaders import yaml_loader
 
 
 def test_valid_instance(validation_context):

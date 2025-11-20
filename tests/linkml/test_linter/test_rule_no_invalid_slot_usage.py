@@ -1,9 +1,8 @@
-from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import ClassDefinition
-
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
 from linkml.linter.rules import NoInvalidSlotUsageRule
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model import ClassDefinition
 
 
 def test_invalid_slot_usage():

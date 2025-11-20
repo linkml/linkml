@@ -1,9 +1,8 @@
 import pytest
-from rdflib import Graph, URIRef
-from rdflib.namespace import OWL, RDF
-
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.rdfgen import RDFGenerator
+from rdflib import Graph, URIRef
+from rdflib.namespace import OWL, RDF
 
 
 def test_issue_owl_namespace(input_path, snapshot):

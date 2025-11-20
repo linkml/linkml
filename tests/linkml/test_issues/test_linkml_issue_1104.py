@@ -2,14 +2,14 @@
 from collections import namedtuple
 
 import pytest
+from linkml.generators.linkmlgen import LinkmlGenerator
+from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.utils.sqlutils import SQLStore
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.loaders import yaml_loader
 
 import tests.linkml.test_issues.model.issue_1104_classes
-from linkml.generators.linkmlgen import LinkmlGenerator
-from linkml.generators.owlgen import OwlSchemaGenerator
-from linkml.utils.sqlutils import SQLStore
 from tests.linkml.test_issues.model.issue_1104_classes import Database
 
 

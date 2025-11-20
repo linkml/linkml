@@ -1,8 +1,7 @@
-from linkml_runtime import SchemaView
-
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
 from linkml.linter.rules import NoXsdIntTypeRule
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
 
 
 def test_xsd_int_type_no_fix():

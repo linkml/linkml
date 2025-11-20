@@ -1,7 +1,6 @@
 import pytest
-from yaml.constructor import ConstructorError
-
 from linkml.generators.yamlgen import YAMLGenerator
+from yaml.constructor import ConstructorError
 
 
 def test_empty_list(input_path):

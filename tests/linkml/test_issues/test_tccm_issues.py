@@ -3,7 +3,6 @@
 import logging
 
 import pytest
-
 from linkml import generators
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.yamlgen import YAMLGenerator

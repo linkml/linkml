@@ -1,6 +1,5 @@
 import pytest
 from click.testing import CliRunner
-
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.generators.rdfgen import cli
 

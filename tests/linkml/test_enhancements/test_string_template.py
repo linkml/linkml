@@ -1,10 +1,9 @@
 from pathlib import Path
 
 import pytest
+from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.yamlutils import from_yaml
-
-from linkml.generators.pythongen import PythonGenerator
 
 
 @pytest.mark.pythongen

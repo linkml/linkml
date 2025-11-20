@@ -1,10 +1,9 @@
 import pytest
 from click.testing import CliRunner
-
 from linkml.generators.jsonldcontextgen import cli
-from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
 from tests.conftest import KITCHEN_SINK_PATH
+from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
 
 def test_help():

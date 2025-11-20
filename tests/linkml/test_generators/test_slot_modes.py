@@ -1,10 +1,9 @@
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml.generators.rustgen.rustgen import (
     SlotContainerMode,
     SlotInlineMode,
     determine_slot_mode,
 )
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def test_determine_slot_mode(kitchen_sink_path):

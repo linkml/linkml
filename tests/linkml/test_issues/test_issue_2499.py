@@ -1,4 +1,5 @@
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+
 from tests import DEFAULT_LOG_LEVEL
 
 

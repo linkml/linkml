@@ -1,7 +1,6 @@
+from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
-
-from linkml.generators.pythongen import PythonGenerator
 
 
 def _roundtrip(obj, tc):

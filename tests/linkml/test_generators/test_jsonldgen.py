@@ -2,11 +2,10 @@ import json
 import logging
 
 import pytest
+from linkml.generators import JSONLDGenerator, RDFGenerator
 from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import Graph, term
 from yaml import safe_load
-
-from linkml.generators import JSONLDGenerator, RDFGenerator
 
 logger = logging.getLogger(__name__)
 

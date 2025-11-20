@@ -1,7 +1,6 @@
 import json
 
 import jsonschema
-
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 
 schema_str = """

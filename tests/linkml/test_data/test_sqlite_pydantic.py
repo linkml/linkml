@@ -1,8 +1,8 @@
 import yaml
+from linkml.utils.sqlutils import SQLStore
 from linkml_runtime.dumpers import yaml_dumper
 from sqlalchemy.orm import sessionmaker
 
-from linkml.utils.sqlutils import SQLStore
 from tests.linkml.utils.dict_comparator import compare_yaml
 
 
