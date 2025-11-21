@@ -71,10 +71,12 @@ dev = [
 skip = [
   ".git", "*.pdf", "*.svg", "*.dill",
   "uv.lock",
+  "*.toml",
 ]
 # Ignore table where words could be split across rows
 ignore-regex = '(\|.*\|.*\|.*\||\[[A-Z][a-z]\][a-z][a-z])'
 ignore-words-list = [
+  "ClassE",
   "CrossReference",
   "ND",
   "MILIARY",

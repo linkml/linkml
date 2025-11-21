@@ -1323,5 +1323,3 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
        rdf:type [ qudt:Unit ] ?
     )
 }
-
-

@@ -11,7 +11,14 @@ from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import as_json_object
-from tests.linkml_runtime.test_loaders_dumpers.models.books_normalized import Author, Review, Shop, Book, GenreEnum, BookSeries
+from tests.linkml_runtime.test_loaders_dumpers.models.books_normalized import (
+    Author,
+    Review,
+    Shop,
+    Book,
+    GenreEnum,
+    BookSeries,
+)
 from tests.linkml_runtime.test_loaders_dumpers.models.table import Table, Row
 
 logger = logging.getLogger(__name__)

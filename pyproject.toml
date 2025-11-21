@@ -21,6 +21,7 @@ ignore-words-list = [
   "amination",
   "anc",
   "brite",
+  "ClassE",
   "CrossReference",
   "crossReference",
   "connexion",

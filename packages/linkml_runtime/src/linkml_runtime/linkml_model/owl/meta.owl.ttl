@@ -5049,4 +5049,3 @@ linkml:SlotDefinition a owl:Class,
     skos:definition "an element that describes how instances are related to other instances" ;
     skos:inScheme linkml:meta ;
     sh:order 3 .
-

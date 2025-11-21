@@ -112,7 +112,7 @@ enums:
       - sh:Severity
     permissible_values:
       FATAL:
-      ERROR: 
+      ERROR:
         meaning: sh:Violation
       WARNING:
         meaning: sh:Warning

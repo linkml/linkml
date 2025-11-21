@@ -11,7 +11,7 @@ description: >-
   use `implements` to denote conformance.
 
 status: testing
- contributors:
+contributors:
   - github:rly
   - github:oruebel
   - github:sneakers-the-rat

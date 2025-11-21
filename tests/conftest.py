@@ -210,6 +210,7 @@ def clear_package_schemaview_cache(request):
     """
     try:
         from linkml_runtime.utils.introspection import package_schemaview
+
         package_schemaview.cache_clear()
     except (ImportError, AttributeError):
         # Function not imported yet or doesn't have cache_clear

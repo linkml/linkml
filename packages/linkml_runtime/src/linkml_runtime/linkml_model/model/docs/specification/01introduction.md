@@ -2,7 +2,7 @@
 
 This document is a functional draft specification for the Linked Data Modeling Language (LinkML).
 
-LinkML is a data modeling language for describing the structure of a collection of *instances*, where instances are tree-like object-oriented structures. Instances represent things of interest in a particular domain, such as individual people, biological samples, places, events, or abstract entities. 
+LinkML is a data modeling language for describing the structure of a collection of *instances*, where instances are tree-like object-oriented structures. Instances represent things of interest in a particular domain, such as individual people, biological samples, places, events, or abstract entities.
 
 Instances are either primitive *types* such as numbers or strings, or *objects* that are typed using *classes* from a LinkML *schema*. Classes are categories or groupings of things in the domain of interest; for example, `Person`, `Medical History`, `Data file`, or `Country`. Instances can be inter-related by assigning *values* to particular *slots*; for example, an instance of a Person may have values for slots `name` or `country of birth`.
 
