@@ -153,7 +153,7 @@ def test_rustgen_personschema_maturin(temp_dir):
     """
 
     # Resolve schema and output directory
-    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    schema_path = Path(__file__).resolve().parents[3] / "examples" / "PersonSchema" / "personinfo.yaml"
     assert schema_path.exists(), f"Schema not found at {schema_path}"
     out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_rust")
 
@@ -194,7 +194,7 @@ def test_rustgen_personschema_maturin(temp_dir):
 def test_rustgen_personschema_stubgen(temp_dir):
     """Run the generated stub_gen binary and sanity-check emitted stub files."""
 
-    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    schema_path = Path(__file__).resolve().parents[3] / "examples" / "PersonSchema" / "personinfo.yaml"
     assert schema_path.exists(), f"Schema not found at {schema_path}"
     out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "personinfo_stubgen")
 
@@ -259,7 +259,7 @@ def test_rustgen_metamodel_maturin(temp_dir):
 
 
 def test_rustgen_file_mode_generation(temp_dir):
-    schema_path = Path(__file__).resolve().parents[2] / "examples" / "PersonSchema" / "personinfo.yaml"
+    schema_path = Path(__file__).resolve().parents[3] / "examples" / "PersonSchema" / "personinfo.yaml"
     out_file = Path(temp_dir) / "personinfo.rs"
     gen = RustGenerator(
         str(schema_path),
