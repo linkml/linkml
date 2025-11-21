@@ -101,7 +101,8 @@ class SnapshotFile(Snapshot):
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(_diff_text(actual, expected, verbose=self.config.getoption("verbose")))
+                # highlighter is a no-op function for pytest 8.4+ compatibility
+                self.eq_state = "\n".join(_diff_text(actual, expected, lambda x, **kwargs: x, verbose=self.config.getoption("verbose")))
             return is_eq
 
 
