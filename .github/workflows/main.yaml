@@ -182,4 +182,4 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
-        run: uv build
+        run: uv build --all-packages
