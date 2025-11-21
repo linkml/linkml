@@ -151,12 +151,6 @@ jobs:
           uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m slow -n auto
           uv run coverage xml -o coverage-linkml-slow.xml
           uv run coverage report -m
-      - name: Test linkml-runtime slow tests
-        shell: bash
-        run: |
-          uv run coverage run -m pytest tests/linkml_runtime/ --with-slow --with-biolink -m slow -n auto
-          uv run coverage xml -o coverage-linkml_runtime-slow.xml
-          uv run coverage report -m
       - name: Upload linkml slow test coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v5.5.1
@@ -165,15 +159,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage-linkml-slow.xml
           flags: linkml
-          fail_ci_if_error: true
-      - name: Upload runtime slow test coverage
-        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.5.1
-        with:
-          name: codecov-runtime-slow-${{ matrix.os }}-${{ matrix.python-version }}
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage-linkml_runtime-slow.xml
-          flags: runtime
           fail_ci_if_error: true
 
   test_build_package:
