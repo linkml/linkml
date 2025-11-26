@@ -1129,6 +1129,38 @@ def test_append_to_optional_lists(kitchen_sink_path):
     assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
 
 
+def test_optional_multivalued_defaults_to_none_when_disabled():
+    """
+    Optional multivalued fields can be kept as None when requested
+    """
+    schema_str = """
+id: http://example.org/associated
+name: associated
+imports:
+  - linkml:types
+classes:
+  AssociatedNetElement:
+    attributes:
+      bounds:
+        range: float
+        multivalued: true
+        minimum_cardinality: 1
+        maximum_cardinality: 2
+"""
+    gen = PydanticGenerator(
+        schema_str,
+        package=PACKAGE,
+        empty_list_for_multivalued_slots=False,
+    )
+    code = gen.serialize()
+    assert "bounds: Optional[list[float]] = Field(default=None" in code
+    mod = compile_python(code, PACKAGE)
+    assoc = mod.AssociatedNetElement()
+    assert assoc.model_dump(exclude_none=True) == {}
+    with pytest.raises(ValidationError):
+        mod.AssociatedNetElement(bounds=[])
+
+
 def test_class_validators():
     """
     PydanticClass should create validators from attributes that have `patterns`
