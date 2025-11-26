@@ -32,6 +32,8 @@ class ShaclGenerator(Generator):
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
+    non_native_names: bool =  True
+    """If True, Shapes inherit the names from the LinkML class instead of Class_uri. Suffixes still works in addition"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -71,22 +73,13 @@ class ShaclGenerator(Generator):
                 if v is not None:
                     g.add((class_uri_with_suffix, p, v))
 
-            # first, get the base class URI
             class_uri = URIRef(sv.get_uri(c, expand=True))
-
-            # check for an annotation
-            shape_uri = None
-            if c.annotations and c.annotations["shape_uri"].value:
-                shape_uri = c.annotations["shape_uri"].value
-
-            if shape_uri:
-                class_uri_with_suffix = URIRef(shape_uri)
-            elif URIRef(sv.get_uri(c, expand=True, native=True)) is not None:
-                class_uri_with_suffix = URIRef(sv.get_uri(c, native=True))  # .replace("/:","#"))
+            if not self.non_native_names:
+                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
             else:
-                class_uri_with_suffix = class_uri
-                if self.suffix is not None:
-                    class_uri_with_suffix += self.suffix
+                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True))
+            if self.suffix:
+                class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
 
@@ -240,7 +233,10 @@ class ShaclGenerator(Generator):
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
-        range_ref = sv.get_uri(r, expand=True)
+        if not self.non_native_names:
+            range_ref = sv.get_uri(r, expand=True, native=True)
+        else:
+            range_ref = sv.get_uri(r, expand=True)
         func(SH["class"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
@@ -384,6 +380,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="Use --exclude-imports to exclude imported elements from the generated SHACL shapes. This is useful when "
     "extending a substantial ontology to avoid large output files.",
+)
+@click.option(
+    "--non-native-names/--native-names",
+    default=True,
+    show_default=True,
+    help="Use --native-names to change the shacl-names from using the class_uri for the name, to using the "
+    "linkML class names of the yaml/schema file. Suffixes from the --suffix option can still be appended",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
