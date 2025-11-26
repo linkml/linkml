@@ -32,7 +32,7 @@ class ShaclGenerator(Generator):
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
-    non_native_names: bool =  True
+    non_native_names: bool = True
     """If True, Shapes inherit the names from the LinkML class instead of Class_uri. Suffixes still works in addition"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
