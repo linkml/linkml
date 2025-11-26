@@ -24,15 +24,15 @@ from Jonny Saunders, Ryan Ly, and Chris Mungall [`#1887`](https://github.com/lin
 
 We can divide data types into a few [abstract forms](https://en.wikipedia.org/wiki/Abstract_data_type)
 (see ["Recognizing Structural Forms"](structural-forms)). Linked data tools regularly handle scalars, lists,
-tables, graphs, and trees, but less commonly handle multidimensional arrays. The LinkML metamodel has first-class support 
+tables, graphs, and trees, but less commonly handle multidimensional arrays. The LinkML metamodel has first-class support
 to specify them, and its generators are growing first-class support to make those specifications work with
-array formats and libraries that people actually use. 
+array formats and libraries that people actually use.
 
 ## Types
 
 There are two types of array specification in LinkML:
 
-- [**NDArrays**](#ndarrays) - "regular" dense multidimensional arrays with shape and dtype constraints 
+- [**NDArrays**](#ndarrays) - "regular" dense multidimensional arrays with shape and dtype constraints
 - {feature}`Coming Soon` **Labeled Arrays** - arrays that use additional arrays as their indices (eg. a set of temperature measurements indexed by latitude and longitude).
 
 ## NDArrays
@@ -56,7 +56,7 @@ theme = Theme({
     "repr.call": Style(color=Color.from_rgb(110,191,38), bold=True),
     "repr.attrib_name": Style(color="slate_blue1"),
     "repr.number": Style(color="deep_sky_blue1"),
-    
+
 })
 console = Console(theme=theme)
 
@@ -77,7 +77,7 @@ COMPARISON = """
 ::::{{tab-item}} numpydantic
 :::{{code-block}} python
 {pydantic_npd}
-::: 
+:::
 ::::
 :::::
 """
@@ -86,7 +86,7 @@ def render_module(path, representation='list'):
     generator = PydanticGenerator(str(path), array_representations=[representation])
     module = generator.render()
     return module
-    
+
 def compile_module(path, representation='list'):
     generator = PydanticGenerator(str(path), array_representations=[representation])
     module = generator.compile_module()
@@ -101,20 +101,20 @@ def render_class(path, cls, representation='list') -> str:
 def render_comparison(path, cls, string=False) -> str:
     if not isinstance(cls, list):
         cls = [cls]
-        
+
     path = str(path)
     sch = YAMLLoader().load_as_dict(path)
     class_strs = []
     pydantic_strs = []
     npd_strs = []
-    
+
     for a_cls in cls:
         class_def = sch['classes'][a_cls]
         class_def = {a_cls: class_def}
         class_strs.append(YAMLDumper().dumps(class_def))
         pydantic_strs.append(render_class(path, a_cls))
         npd_strs.append(render_class(path, a_cls, representation='numpydantic'))
-        
+
     class_str = "\n".join(class_strs)
     pydantic_str = "\n".join(pydantic_strs)
     npd_str = "\n".join(npd_strs)
@@ -123,12 +123,12 @@ def render_comparison(path, cls, string=False) -> str:
         return md
     else:
         display(Markdown(md))
-    
-``` 
- 
+
+```
+
 NDArrays are a *slot-level* feature - they augment the usual [slot `range`](slots.md#ranges) syntax with an `array` property.
 
-For example, A class with a `data` slot which consists of array of integers between 2 and 5 dimensions and its 
+For example, A class with a `data` slot which consists of array of integers between 2 and 5 dimensions and its
 {class}`~linkml.generators.pydanticgen.PydanticGenerator` {mod}`~linkml.generators.pydanticgen.array` representations look like:
 
 ```{code-cell}
@@ -177,7 +177,7 @@ except Exception as e:
 ### Array Library Integration
 
 The most basic kind of array annotations that the pydantic generator can produce are "list of list" style arrays,
-but most practical uses of arrays require specialized array libraries. 
+but most practical uses of arrays require specialized array libraries.
 
 The {class}`.PydanticGenerator` also supports generating array annotations with {mod}`numpydantic`, which allows
 you to use a single model with an extensible set of array libraries.
@@ -248,9 +248,9 @@ Shape can be specified numerically:
 ```{py:data} maximum_number_dimensions
 :type: int | False | None
 
-Maximum (inclusive) number of dimensions. 
+Maximum (inclusive) number of dimensions.
 
-When used with `dimensions`, to differentiate with being unset or `None`, needs to be set to ``False`` explicitly to indicate 
+When used with `dimensions`, to differentiate with being unset or `None`, needs to be set to ``False`` explicitly to indicate
 an "infinite"[^infinity] number of dimensions (see [Complex Shaped Arrays](ComplexShape))
 ```
 
@@ -352,13 +352,13 @@ class AnyType(ConfiguredBaseModel):
 
 class Typed(ConfiguredBaseModel):
     array: Optional[NDArray[Any, int]] = Field(None)
-::: 
+:::
 ::::
 :::::
 
-The resulting pydantic models use a special {class}`AnyShapeArray` class injected by pydanticgen's 
-{mod}`~linkml.generators.pydanticgen.template` system when using the List of List (LoL) representation 
-(see [Representations](array-representations)). 
+The resulting pydantic models use a special {class}`AnyShapeArray` class injected by pydanticgen's
+{mod}`~linkml.generators.pydanticgen.template` system when using the List of List (LoL) representation
+(see [Representations](array-representations)).
 
 
 ````{note}
@@ -404,7 +404,7 @@ sch = schemas / 'bounded_shape.yaml'
 render_comparison(sch, 'MaxDimensions')
 ```
 
-An exact number of dimensions - 
+An exact number of dimensions -
 
 ```{code-cell}
 ---
@@ -471,10 +471,10 @@ sch = schemas / 'parameterized_shape.yaml'
 render_comparison(sch, 'RangeCard')
 ```
 
-And they can be used together, for example one can specify 
+And they can be used together, for example one can specify
 
 > A four dimensional array such that
-> 
+>
 > - The first dimension has at least two items
 > - The second dimension has at most five items
 > - The third dimension has between two and five items
@@ -507,7 +507,7 @@ Complex NDArrays combine all three of the prior forms.
 For example:
 
 > An array with between 5 and 7 dimensions such that...
-> 
+>
 > - The first dimension has at least two items
 > - The second dimension has at most five items
 > - The third dimension has between two and five items
@@ -555,8 +555,8 @@ representations.
 
 The basic representation supported by the pydantic generator is the "List of lists" style array representation. This can be used without any additional dependencies beyond pydantic.
 
-Pydanticgen now *also* supports most common array libraries from a single annotation using {mod}`numpydantic` - 
-a single array specification generates a single pydantic model, but the numpydantic {class}`numpydantic.NDArray` 
+Pydanticgen now *also* supports most common array libraries from a single annotation using {mod}`numpydantic` -
+a single array specification generates a single pydantic model, but the numpydantic {class}`numpydantic.NDArray`
 type abstracts the validation process for an extensible set of array libraries. Use whatever you want as an array,
 why stop at numpy arrays - currently it also supports hdf5, zarr, video files, and also allows custom array
 interfaces via subclassing. See the [numpydantic docs](https://numpydantic.readthedocs.io/en/latest/) for more.
@@ -567,9 +567,9 @@ See each [generator](../generators/index.rst)'s documentation page for a summary
 
 ```{admonition} TODO
 Implementation docs for arrays are forthcoming.
- 
+
 For now see {class}`~linkml.generators.pydanticgen.array.ArrayRangeGenerator`
-and {class}`~linkml.generators.pydanticgen.array.ListOfListsArray` 
+and {class}`~linkml.generators.pydanticgen.array.ListOfListsArray`
 as the reference implementation
 ```
 
@@ -584,5 +584,5 @@ as the reference implementation
 
 
 
-[^infinity]: Of course, Python has a recursion limit and every array library only supports a finite number of dimensions. 
+[^infinity]: Of course, Python has a recursion limit and every array library only supports a finite number of dimensions.
     Infinite in this case just means that the abstract specification sets no limit, and the implementations try and meet that as best they can.

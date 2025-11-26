@@ -101,7 +101,7 @@ class SnapshotFile(Snapshot):
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(_diff_text(actual, expected, self.config.getoption("verbose")))
+                self.eq_state = "\n".join(_diff_text(actual, expected, verbose=self.config.getoption("verbose")))
             return is_eq
 
 
@@ -196,6 +196,9 @@ def pytest_addoption(parser):
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
     parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
+    parser.addoption(
+        "--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)"
+    )
 
 
 def pytest_collection_modifyitems(config, items: list[pytest.Item]):
@@ -210,6 +213,13 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         for item in items:
             if item.get_closest_marker("biolink"):
                 item.add_marker(skip_biolink)
+
+    # Gate rustgen tests behind an explicit flag so they don't run by default
+    if not config.getoption("--with-rustgen"):
+        skip_rustgen = pytest.mark.skip(reason="need --with-rustgen option to run")
+        for item in items:
+            if item.get_closest_marker("rustgen"):
+                item.add_marker(skip_rustgen)
 
     if not config.getoption("--with-network"):
         skip_network = pytest.mark.skip(reason="need --with-network option to run")
@@ -350,7 +360,7 @@ def mock_black_import():
 
 
 # --------------------------------------------------
-# Helper functions ~onl¥~
+# Helper functions ~only~
 # --------------------------------------------------
 
 

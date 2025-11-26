@@ -401,10 +401,83 @@ class SchemaLoader:
             # Inline any class definitions that don't have identifiers.  Note that keys ARE inlined
             if slot.range in self.schema.classes:
                 range_class = self.schema.classes[cast(ClassDefinitionName, slot.range)]
-                if slot.inlined_as_list or not any(
+                range_has_identifier = any(
                     [self.schema.slots[s].identifier or self.schema.slots[s].key for s in range_class.slots]
-                ):
-                    slot.inlined = True
+                )
+                # the inference and validation of class inlining is quite complex
+                # slot.inlined and slot.inlined_as_list can have three different values:
+                # True, False or None (if nothing specified in the schema)
+                # range_has_identifier can only be True or False
+                if range_has_identifier is True:
+                    if slot.inlined is False:
+                        if slot.inlined_as_list is True:
+                            slot.inlined = True
+                            # TODO: do not override a given value, but raise an exception
+                            self.logger.warning(
+                                f"Slot '{slot.name}': 'inlining' as list requested. "
+                                + "Overriding inconsistent `inlined: False`!!"
+                            )
+                        elif slot.inlined_as_list is False:
+                            self.logger.warning(
+                                f"Slot '{slot.name}': Specifying a value for 'inlined_as_list' does not "
+                                + "make any sense for non-inlined classes."
+                            )
+                    elif slot.inlined is None:
+                        if slot.inlined_as_list is True:
+                            slot.inlined = True
+                            self.logger.info(
+                                f"Slot '{slot.name}': A value for 'inlined_as_list' specified, but no 'inlined' "
+                                + "specification. `inlined: True` has been automatically set!"
+                            )
+                        elif slot.inlined_as_list is False:
+                            # TODO: decide if `inlined` should be set or not and implement accordingly
+                            self.logger.warning(
+                                f"Slot '{slot.name}': A value for 'inlined_as_list' specified, but no "
+                                + "'inlined' specification."
+                            )
+                    elif slot.inlined is True:
+                        if slot.inlined_as_list is None:
+                            slot.inlined_as_list = False
+                            self.logger.info(
+                                f"Slot '{slot.name}': A class with identifiers ({range_class.name}) will be "
+                                + "'inlined' as a dictionary. `inlined_as_list: False` has been set!"
+                            )
+                else:
+                    if slot.inlined is True:
+                        if slot.inlined_as_list is False:
+                            self.logger.warning(
+                                f"Slot '{slot.name}': A class without identifiers ({range_class.name}) cannot be "
+                                + "'inlined' as a dictionary."
+                            )
+                        elif slot.inlined_as_list is None:
+                            slot.inlined_as_list = True
+                            self.logger.info(
+                                f"Slot '{slot.name}': A class without identifiers ({range_class.name}) will not be "
+                                + "typically 'inlined' as a dictionary. `inlined_as_list: True` has been set!"
+                            )
+                    elif slot.inlined is False:
+                        slot.inlined = True
+                        self.logger.info(
+                            f"Slot '{slot.name}': A class without identifiers ({range_class.name}) MUST be "
+                            + "'inlined', but non-inlined specified. `inlined: True` has been automatically set!"
+                        )
+                    else:
+                        slot.inlined = True
+                        self.logger.info(
+                            f"Slot '{slot.name}': A class without identifiers ({range_class.name}) MUST be "
+                            + "inlined, but nothing specified. `inlined: True` has been automatically set!"
+                        )
+                        if slot.inlined_as_list is False:
+                            self.logger.warning(
+                                f"Slot '{slot.name}': A class without identifiers ({range_class.name}) cannot be "
+                                + "'inlined' as a dictionary."
+                            )
+                        elif slot.inlined_as_list is None:
+                            slot.inlined_as_list = True
+                            self.logger.info(
+                                f"Slot '{slot.name}': A class without identifiers ({range_class.name}) will not be "
+                                + "typically 'inlined' as a dictionary. `inlined_as_list: True` has been set!"
+                            )
 
             if slot.slot_uri is not None:
                 slot.mappings.insert(0, slot.slot_uri)
@@ -737,7 +810,7 @@ class SchemaLoader:
                 for slot_usage in values(cls.slot_usage):
                     if slot_usage.alias:
                         self.raise_value_error(
-                            f'Class: "{cls.name}" - alias not permitted in slot_usage slot:' f" {slot_usage.alias}"
+                            f'Class: "{cls.name}" - alias not permitted in slot_usage slot: {slot_usage.alias}'
                         )
                     if not located_aliased_parent_slot(cls, slot_usage):
                         if slot_usage.name not in self.schema.slots:
@@ -765,7 +838,7 @@ class SchemaLoader:
         for slotname, slot_usage in cls.slot_usage.items():
             if slot_usage.alias:
                 self.raise_value_error(
-                    f'Class: "{cls.name}" - alias not permitted in slot_usage slot:' f" {slot_usage.alias}"
+                    f'Class: "{cls.name}" - alias not permitted in slot_usage slot: {slot_usage.alias}'
                 )
             # Construct a new slot
             # If we've already assigned a parent, use it
@@ -947,7 +1020,7 @@ class SchemaLoader:
             locs = "\n".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
             raise ValueError(f"{locs} {error}")
         else:
-            raise ValueError(f'{TypedNode.yaml_loc(loc_str, suffix="")} {error}')
+            raise ValueError(f"{TypedNode.yaml_loc(loc_str, suffix='')} {error}")
 
     def logger_warning(
         self,
@@ -958,7 +1031,7 @@ class SchemaLoader:
             locs = "\n\t".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
             self.logger.warning(f"{warning}\n\t{locs}")
         else:
-            self.logger.warning(f'{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix="")}')
+            self.logger.warning(f"{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix='')}")
 
     def _get_base_dir(self, stated_base: str) -> Optional[str]:
         if stated_base:

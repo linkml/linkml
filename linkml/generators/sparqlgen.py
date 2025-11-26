@@ -151,7 +151,7 @@ class SparqlGenerator(Generator):
         template_obj = Template(template)
         extra = ""
         if named_graphs is not None:
-            extra += f'FILTER( ?graph in ( {",".join(named_graphs)} ))'
+            extra += f"FILTER( ?graph in ( {','.join(named_graphs)} ))"
         logger.info(f"Named Graphs = {named_graphs} // extra={extra}")
         if limit is not None and isinstance(limit, int):
             limit = f"LIMIT {limit}"

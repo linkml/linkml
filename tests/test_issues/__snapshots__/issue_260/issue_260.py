@@ -106,4 +106,3 @@ class C2603(C260c):
 # Slots
 class slots:
     pass
-

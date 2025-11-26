@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import logging
 import os
 from collections import defaultdict
 from dataclasses import dataclass
 from types import ModuleType
-from typing import Optional, Union
 
 import click
 from jinja2 import Template
@@ -16,7 +17,8 @@ from sqlalchemy import Enum
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
-from linkml.generators.sqlalchemy import sqlalchemy_declarative_template_str, sqlalchemy_imperative_template_str
+from linkml.generators.sqlalchemy.sqlalchemy_declarative_template import sqlalchemy_declarative_template_str
+from linkml.generators.sqlalchemy.sqlalchemy_imperative_template import sqlalchemy_imperative_template_str
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
@@ -43,10 +45,10 @@ class SQLAlchemyGenerator(Generator):
     valid_formats = ["sqla"]
     file_extension = "py"
     uses_schemaloader = False
-    template: Optional[TemplateEnum] = None
+    template: TemplateEnum | None = None
 
     # ObjectVars
-    original_schema: Union[SchemaDefinition, str] = None
+    original_schema: SchemaDefinition | str = None
 
     def __post_init__(self) -> None:
         self.original_schema = self.schema
@@ -55,14 +57,12 @@ class SQLAlchemyGenerator(Generator):
 
     def generate_sqla(
         self,
-        model_path: Optional[str] = None,
+        model_path: str | None = None,
         no_model_import: bool = False,
-        template: Optional[TemplateEnum] = None,
-        foreign_key_policy: Optional[ForeignKeyPolicy] = None,
+        template: TemplateEnum | None = None,
+        foreign_key_policy: ForeignKeyPolicy | None = None,
         **kwargs,
     ) -> str:
-        # src_sv = SchemaView(self.schema)
-        # self.schema = src_sv.schema
         template = template or self.template or TemplateEnum.IMPERATIVE
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
@@ -76,7 +76,6 @@ class SQLAlchemyGenerator(Generator):
                 sql_type = sql_range.__repr__()
                 ann = Annotation("sql_type", sql_type)
                 a.annotations[ann.tag] = ann
-                # a.sql_type = sql_type
         if template == TemplateEnum.IMPERATIVE:
             template_str = sqlalchemy_imperative_template_str
         elif template == TemplateEnum.DECLARATIVE:
@@ -90,10 +89,6 @@ class SQLAlchemyGenerator(Generator):
         backrefs = defaultdict(list)
         for m in tr_result.mappings:
             backrefs[m.source_class].append(m)
-        # for c in tr_schema.classes.values():
-        #    if len(c.attributes) == 0:
-        #        skip[c.name] = True
-        #        #raise ValueError(f'Class must have attrs: {c.name}')
         self.add_safe_aliases(tr_schema)
         tr_sv = SchemaView(tr_schema)
         rel_schema_classes_ordered = [tr_sv.get_class(cn, strict=True) for cn in self.order_classes_by_hierarchy(tr_sv)]
@@ -167,7 +162,6 @@ class SQLAlchemyGenerator(Generator):
     @staticmethod
     def add_safe_aliases(schema: SchemaDefinition) -> None:
         for c in schema.classes.values():
-            # c.alias = underscore(c.name)
             for a in c.attributes.values():
                 a.alias = underscore(a.name)
 

@@ -99,9 +99,7 @@ types:
         source_file_date="August 10, 2020",
         source_file_size=173,
     ).serialize()
-    assert output.startswith(
-        f"# Auto generated from None by pythongen.py version: " f"{PythonGenerator.generatorversion}"
-    )
+    assert output.startswith(f"# Auto generated from None by pythongen.py version: {PythonGenerator.generatorversion}")
 
     output = PythonGenerator(yaml, format="py", metadata=False).serialize()
     assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")
@@ -115,7 +113,7 @@ def test_repr(kitchen_sink_path):
 class ParentClass:
     def __repr__(self):
         return "overridden"
-        
+
     def __post_init__(self, *args, **kwargs):
         pass
 """
@@ -136,3 +134,33 @@ class ParentClass:
     kitchen_module = compile_python(pstr)
     friend = kitchen_module.Friend(name="bestie")
     assert repr(friend) != "overridden"
+
+
+def test_permissible_values():
+    """
+    Test that permissible values are generated correctly
+    """
+    yaml = """id: http://example.org/test
+description: Test schema for permissible values
+prefixes:
+  example: http://example.org/
+enums:
+  TestEnum:
+    permissible_values:
+      - BASIC:
+      - ADVANCED:
+          description: This is an advanced option
+          title: Advanced Option
+          meaning: "example:advanced"
+"""
+
+    py_module = make_python(yaml)
+    assert py_module.TestEnum.BASIC.text == "BASIC"
+    assert py_module.TestEnum.BASIC.description is None
+    assert py_module.TestEnum.BASIC.title is None
+    assert py_module.TestEnum.BASIC.meaning is None
+
+    assert py_module.TestEnum.ADVANCED.text == "ADVANCED"
+    assert py_module.TestEnum.ADVANCED.description == "This is an advanced option"
+    assert py_module.TestEnum.ADVANCED.title == "Advanced Option"
+    assert py_module.TestEnum.ADVANCED.meaning == "http://example.org/advanced"

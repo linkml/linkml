@@ -196,10 +196,10 @@ linkml:types a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     dcterms:title "Core LinkML metamodel types" ;
     skos:definition "Shared type definitions for the core LinkML mode and metamodel" ;
-    sh:declare [ sh:namespace schema1: ;
-            sh:prefix "schema" ],
-        [ sh:namespace <http://www.w3.org/ns/shex#> ;
+    sh:declare [ sh:namespace <http://www.w3.org/ns/shex#> ;
             sh:prefix "shex" ],
+        [ sh:namespace schema1: ;
+            sh:prefix "schema" ],
         [ sh:namespace xsd: ;
             sh:prefix "xsd" ],
         [ sh:namespace linkml: ;

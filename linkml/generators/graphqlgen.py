@@ -24,6 +24,7 @@ class GraphqlGenerator(Generator):
 
     strict_naming: bool = False
     _permissible_value_valid_characters = re.compile("^[_A-Za-z][_0-9A-Za-z]*?$")
+    _types_any = []
 
     def __post_init__(self):
         self.name_compatiblity = NameCompatibility(profile=NamingProfiles.graphql, do_not_fix=self.strict_naming)
@@ -39,6 +40,10 @@ class GraphqlGenerator(Generator):
         return out
 
     def visit_class(self, cls: ClassDefinition) -> str:
+        # no type can be declared for subtypes of "Any"
+        if cls.class_uri == "linkml:Any":
+            self._types_any.append(cls.name)
+            return f"scalar {cls.name}"
         etype = "interface" if (cls.abstract or cls.mixin) and not cls.mixins else "type"
         mixins = ", ".join([camelcase(mixin) for mixin in cls.mixins])
         out = f"{etype} {camelcase(cls.name)}" + (f" implements {mixins}" if mixins else "")
@@ -46,14 +51,35 @@ class GraphqlGenerator(Generator):
         return out
 
     def end_class(self, cls: ClassDefinition) -> str:
-        return "\n  }\n\n"
+        if cls.name in self._types_any:
+            return "\n\n"
+        else:
+            return "\n  }\n\n"
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
-        slotrange = (
-            camelcase(slot.range)
-            if slot.range in self.schema.classes or slot.range in self.schema.types or slot.range in self.schema.enums
-            else "String"
-        )
+        if slot.range in self.schema.classes or slot.range in self.schema.slots or slot.range in self.schema.enums:
+            slotrange = camelcase(slot.range)
+        elif slot.range in self.schema.types:
+            if self.schema.types[slot.range].from_schema != "https://w3id.org/linkml/types":
+                slotrange = camelcase(slot.range)
+            else:
+                graphql_scalars = ["Int", "Float", "String", "Boolean", "ID"]
+                if slot.range == "integer":
+                    slotrange = "Int"
+                elif slot.range == "decimal":
+                    slotrange = "Float"
+                elif camelcase(slot.range) in graphql_scalars:
+                    slotrange = camelcase(slot.range)
+                else:
+                    if self.schema.types[slot.range].repr:
+                        python_type = self.schema.types[slot.range].repr
+                    elif self.schema.types[slot.range].base:
+                        python_type = self.schema.types[slot.range].base
+                    if str(python_type) == "float":
+                        slotrange = "Float"
+                    elif str(python_type) == "str":
+                        slotrange = "String"
+
         if slot.multivalued:
             slotrange = f"[{slotrange}]"
         if slot.required:
@@ -66,7 +92,7 @@ class GraphqlGenerator(Generator):
             for value in enum.permissible_values:
                 permissible_values.append(self.name_compatiblity.compatible(value))
             values = "\n    ".join(permissible_values)
-            return f"enum {camelcase(enum.name).replace(' ','')}\n  {{\n    {values}\n  }}\n\n"
+            return f"enum {camelcase(enum.name).replace(' ', '')}\n  {{\n    {values}\n  }}\n\n"
         else:
             logging.warning(
                 f"Enumeration {enum.name} using `reachable_from` instead of `permissible_values` "

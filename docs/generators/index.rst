@@ -25,7 +25,7 @@ standards for structuring data such as JSON-Schema, Protocol Buffers
    json-schema
    protobuf
    graphql
-   
+
 
 Linked Data Standards
 ---------------------
@@ -46,6 +46,7 @@ OWL, or translated to shape languages such as ShEx and SHACL.
    shex
    shacl
    owl
+   yarrrml
 
 Documentation Generation
 ------------------------
@@ -64,8 +65,8 @@ published on static hosting sites.
    yuml
    plantumlgen
    project-generator
-   
-   
+
+
 Language Specific
 -----------------
 
@@ -80,6 +81,7 @@ languages such as Python, Javascript, or Java.
    pydantic
    java
    typescript
+   rust
 
 Database
 --------
@@ -92,7 +94,7 @@ Generators specific to database frameworks. Currently only SQL databases.
 
    sqltable
    sqlalchemy
-             
+
 Others
 ------
 
@@ -107,6 +109,7 @@ Others
    excel
    csv
    yaml
+   pandera
 
 Common
 ------

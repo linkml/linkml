@@ -7,13 +7,18 @@ Note that docgen replaces markdowngen
 import logging
 import os
 from collections import Counter
+from collections.abc import Generator
 from copy import copy
+from pathlib import Path
+from unittest.mock import patch
 
+import pytest
 import yaml
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.schemaview import SchemaView
 
-from linkml.generators.docgen import DocGenerator
+from linkml.generators.docgen import DiagramType, DocGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -97,6 +102,16 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "from_schema: https://w3id.org/linkml/tests/kitchen_sink",
         after="Class: Organization",
     )
+    assert_mdfile_contains(
+        tmp_path / "KitchenStatus.md",
+        "URI: [ks:KitchenStatus](https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus)",
+        after="Enum: KitchenStatus",
+    )
+    assert_mdfile_contains(
+        tmp_path / "SubsetA.md",
+        "URI: [SubsetA](SubsetA.md)",
+        after=" Subset: SubsetA ",
+    )
     assert_mdfile_contains(tmp_path / "Organization.md", "slot_uri: skos:altLabel", after="Induced")
     # test truncating newlines
     assert_mdfile_contains(tmp_path / "index.md", "An organization", after="## Classes", followed_by=["## Slots"])
@@ -115,6 +130,10 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="```mermaid",
         followed_by=["Organization : name", "```"],
     )
+    # check link to class in mermaid diagram
+    assert_mdfile_contains(tmp_path / "Person.md", 'click Person href "../Person/"')
+    # check link to enum in mermaid diagram
+    assert_mdfile_contains(tmp_path / "Person.md", 'click LifeStatusEnum href "../LifeStatusEnum/"')
 
     # test yaml
     assert_mdfile_contains(
@@ -265,11 +284,7 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     # test slot usage overrides. See https://github.com/linkml/linkml/issues/1208
     assert_mdfile_contains(
         tmp_path / "FamilialRelationship.md",
-        (
-            "| [started_at_time](started_at_time.md) "
-            "| 0..1 <br/> [Date](Date.md) |  "
-            "| [Relationship](Relationship.md) |"
-        ),
+        ("| [started_at_time](started_at_time.md) | 0..1 <br/> [Date](Date.md) |  | [Relationship](Relationship.md) |"),
         after="## Slots",
     )
     assert_mdfile_contains(
@@ -320,6 +335,332 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     # species name has the Person class repeated multiple times in domain_of
     domain_of_species_name = person_dict["attributes"]["species name"]["domain_of"]
     assert len(set(domain_of_species_name)) == len(domain_of_species_name)
+
+
+SPACER = " " * 4
+NO_DESC = "no_description"
+SINGLE_LINE = "single_line"
+MULTI_LINE = "multi_line"
+MULTI_LINE_WS = "multi_line_preserve_whitespace"
+
+UC_NAMES = {
+    NO_DESC: "NoDescription",
+    SINGLE_LINE: "SingleLine",
+    MULTI_LINE: "MultiLine",
+    MULTI_LINE_WS: "MultiLinePreserveWhitespace",
+}
+
+DESCRIPTIONS = {
+    SINGLE_LINE: ["A single line description is easy!"],
+    MULTI_LINE: [
+        "Why restrict yourself to a single line",
+        "",
+        f"{SPACER}when there are so many",
+        "",
+        f"{SPACER}{SPACER}other lines available for your description?",
+    ],
+    MULTI_LINE_WS: [
+        "Multi Line Madness is a bit like",
+        "",
+        f"{SPACER}Multi Level Marketing",
+        f"{SPACER}{SPACER}(at least initially)",
+        "",
+        f"{SPACER}but involves more lines",
+        "",
+        "",
+        "and a lot more madness",
+    ],
+}
+
+DESCRIPTIONS_MD = {
+    SINGLE_LINE: "<br>".join(DESCRIPTIONS[SINGLE_LINE]),
+    MULTI_LINE: "<br>".join([line.strip() for line in DESCRIPTIONS[MULTI_LINE] if len(line)]),
+    MULTI_LINE_WS: "<br>".join(DESCRIPTIONS[MULTI_LINE_WS]),
+}
+
+
+def generate_multiline_chunk(entity: str, indent: int = 2) -> str:
+    std_indent = " " * 2
+    indent_str = " " * indent
+    MULTI_LINE_CHUNK = [
+        f"{entity}_no_description:",
+        f"{entity}_single_line:",
+        f"{std_indent}description: {DESCRIPTIONS[SINGLE_LINE][0]}",
+        f"{entity}_multi_line:",
+        f"{std_indent}description:",
+        *[f"{std_indent}{std_indent}{line}" for line in DESCRIPTIONS[MULTI_LINE]],
+        f"{entity}_multi_line_preserve_whitespace:",
+        f"{std_indent}description: |",
+        *[f"{std_indent}{std_indent}{line}" for line in DESCRIPTIONS[MULTI_LINE_WS]],
+    ]
+
+    return "".join([f"{indent_str}{line}\n" for line in MULTI_LINE_CHUNK])
+
+
+@pytest.fixture()
+def multi_line_description_test_schema() -> str:
+    """Generate a schema with elements that have a variety of descriptions.
+
+    Four different descriptions are used:
+    - "no_description": as expected
+    - "single_line": a single line description
+    - "multi_line": a multi-line description without whitespace preserved
+    - "multi_line_preserve_whitespace": a multi-line description where whitespace is preserved
+      (i.e. the description tag is written as `description: |` in the yaml)
+
+    The following schema elements are generated by adding the element name to the description type:
+    - slot
+    - class
+    - type
+    - enum
+    - permissible value in an enum
+    - subset
+
+    e.g. slot_no_description, slot_single_line, slot_multi_line, slot_multi_line_preserve_whitespace, etc.
+
+    :return: schema as a string
+    :rtype: str
+    """
+    return (
+        """id: unit_test
+name: unit_test
+
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+"""
+        + "\nslots:\n"
+        + generate_multiline_chunk("slot")
+        + "\nclasses:\n"
+        + generate_multiline_chunk("class")
+        # give one of the classes some slots to test out the class index page
+        + "    slots:\n"
+        + "".join(f"        - slot_{desc_type}\n" for desc_type in UC_NAMES)
+        + "\ntypes:\n"
+        + generate_multiline_chunk("type")
+        + "\nenums:\n"
+        + generate_multiline_chunk("enum")
+        # add a populated enum where the values have descriptions
+        + "  populated_enum:\n"
+        + "    permissible_values:\n"
+        + generate_multiline_chunk("pv", 6)
+        + "\nsubsets:\n"
+        + generate_multiline_chunk("subset")
+    )
+
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_index_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
+    # index.md
+    index_file = tmp_path / "index.md"
+    with index_file.open() as fh:
+        file_contents = fh.read()
+
+    # slot with no description
+    assert f"| [slot_{NO_DESC}](slot_{NO_DESC}.md) |  |\n" in file_contents
+
+    # slots with descriptions
+    for desc_type in DESCRIPTIONS:
+        component = f"slot_{desc_type}"
+        # expected output if truncate_descriptions is true
+        short_desc = DESCRIPTIONS[desc_type][0]
+        # expected if false
+        long_desc = DESCRIPTIONS_MD[desc_type]
+        if not truncate_descriptions:
+            assert f"| [{component}]({component}.md) | {long_desc} |\n" in file_contents
+            if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                assert f"| [{component}]({component}.md) | {short_desc} |\n" not in file_contents
+        else:
+            assert f"| [{component}]({component}.md) | {short_desc} |\n" in file_contents
+            if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                assert f"| [{component}]({component}.md) | {long_desc} |\n" not in file_contents
+
+    for element_type in ["Class", "Enum", "Type", "Subset"]:
+        for desc_type in UC_NAMES:
+            component = f"{element_type}{UC_NAMES[desc_type]}"
+            if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                # expected output if truncate_descriptions is true
+                long_desc = DESCRIPTIONS_MD[desc_type]
+                # expected if false
+                short_desc = DESCRIPTIONS[desc_type][0]
+                if not truncate_descriptions:
+                    assert f"| [{component}]({component}.md) | {long_desc} |\n" in file_contents
+                    assert f"| [{component}]({component}.md) | {short_desc} |\n" not in file_contents
+                else:
+                    assert f"| [{component}]({component}.md) | {short_desc} |\n" in file_contents
+                    assert f"| [{component}]({component}.md) | {long_desc} |\n" not in file_contents
+            elif desc_type == SINGLE_LINE:
+                assert f"| [{component}]({component}.md) | {DESCRIPTIONS_MD[SINGLE_LINE]} |\n" in file_contents
+            else:  # no description
+                f"| [{component}]({component}.md) |  |\n" in file_contents
+
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_slots_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
+    # check that the slot pages have the class description truncated (if applicable)
+    # can use any of the slot pages for this
+    slot_file = tmp_path / f"slot_{MULTI_LINE_WS}.md"
+    with slot_file.open() as fh:
+        slot_file_contents = fh.read()
+
+        # only ClassMultiLinePreserveWhitespace will show up (the only class that has slots)
+        class_name = f"Class{UC_NAMES[MULTI_LINE_WS]}"
+        description = DESCRIPTIONS[MULTI_LINE_WS][0] if truncate_descriptions else DESCRIPTIONS_MD[MULTI_LINE_WS]
+        assert (
+            "| Name | Description | Modifies Slot |\n"
+            + "| --- | --- | --- |\n"
+            + f"| [{class_name}]({class_name}.md) | {description} |  no  |\n"
+        ) in slot_file_contents
+
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_class_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
+    slot_type = "[xsd:string](http://www.w3.org/2001/XMLSchema#string)"
+
+    # check the table in the populated class file, ClassMultiLinePreserveWhitespace.md
+    class_file = tmp_path / f"Class{UC_NAMES[MULTI_LINE_WS]}.md"
+    with class_file.open() as fh:
+        class_file_contents = fh.read()
+
+        for slot in UC_NAMES:
+            description = ""
+            if slot != NO_DESC:
+                description = DESCRIPTIONS.get(slot)[0] if truncate_descriptions else DESCRIPTIONS_MD.get(slot)
+
+            assert (
+                f"| [slot_{slot}](slot_{slot}.md) |"
+                # all slots are type string
+                + f" 0..1 <br/> {slot_type} "
+                + f"| {description} | direct |"
+            ) in class_file_contents
+
+
+@pytest.mark.parametrize("truncate_descriptions", [True, False])
+@pytest.mark.parametrize("hierarchical_class_view", [True, False])
+def test_docgen_multiline_everything_enum_page(
+    tmp_path: Generator[Path, None, None],
+    multi_line_description_test_schema: str,
+    hierarchical_class_view: bool,
+    truncate_descriptions: bool,
+) -> None:
+    """Tests that single and multi-line descriptions are rendered correctly with truncation enabled and disabled.
+
+    :param tmp_path: temp dir for doc gen output
+    :type tmp_path: Generator[Path, None, None]
+    :param multi_line_description_test_schema: schema with lots of descriptions
+    :type multi_line_description_test_schema: str
+    :param hierarchical_class_view: whether or not hierarchical class view is enabled
+    :type hierarchical_class_view: bool
+    :param truncate_descriptions: whether or not description truncation is enabled
+    :type truncate_descriptions: bool
+    """
+    gen = DocGenerator(
+        multi_line_description_test_schema,
+        hierarchical_class_view=hierarchical_class_view,
+        truncate_descriptions=truncate_descriptions,
+        mergeimports=False,
+    )
+    gen.serialize(directory=str(tmp_path))
+
+    # check the permissible values table in the PopulatedEnum page
+    pe_file = tmp_path / "PopulatedEnum.md"
+    with pe_file.open() as fh:
+        pe_file_contents = fh.read()
+
+        for desc_type in DESCRIPTIONS:
+            component = f"pv_{desc_type}"
+            # expected output if truncate_descriptions is true
+            short_desc = DESCRIPTIONS[desc_type][0]
+            # expected if false
+            long_desc = DESCRIPTIONS_MD[desc_type]
+            if not truncate_descriptions:
+                assert f"| {component} | None | {long_desc} |\n" in pe_file_contents
+                if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                    assert f"| {component} | None | {short_desc} |\n" not in pe_file_contents
+            else:
+                assert f"| {component} | None | {short_desc} |\n" in pe_file_contents
+                if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
+                    assert f"| {component} | None | {long_desc} |\n" not in pe_file_contents
+        assert f"| pv_{NO_DESC} | None |  |\n" in pe_file_contents
 
 
 def test_docgen_no_mergeimports(kitchen_sink_path, tmp_path):
@@ -704,6 +1045,17 @@ def test_subfolder_type_separation(kitchen_sink_path, tmp_path):
         tmp_path / "slots" / "activities.md",
         "[ks:slot/activities](https://w3id.org/linkml/tests/kitchen_sink/slot/activities)",
     )
+    # check link to class in mermaid diagram
+    assert_mdfile_contains(tmp_path / "classes" / "Person.md", 'click Person href "../../classes/Person/"')
+    # check link to enum in mermaid diagram
+    assert_mdfile_contains(
+        tmp_path / "classes" / "Person.md", 'click LifeStatusEnum href "../../enums/LifeStatusEnum/"'
+    )
+
+    assert_mdfile_contains(
+        tmp_path / "enums" / "KitchenStatus.md",
+        "[ks:enum/KitchenStatus](https://w3id.org/linkml/tests/kitchen_sink/enum/KitchenStatus)",
+    )
 
 
 def test_uml_diagram_er(kitchen_sink_path, tmp_path):
@@ -811,3 +1163,190 @@ def test_derived_schema_view(kitchen_sink_path, tmp_path):
     for k, v in test_sets.items():
         gen_iter = getattr(gen, f"all_{k}_objects")
         assert v in [x.name for x in list(gen_iter())]
+
+
+def test_class_rules_section_rendering(input_path, tmp_path):
+    """
+    Tests that the contents of the ## Rules section are rendered properly
+    in the Markdown output/class documentation pages of the supplied Pokemon
+    schema in tests/test_generators/input/linkml_issue_1731.yaml.
+    """
+    schema_path = str(input_path("linkml_issue_1731.yaml"))
+    gen = DocGenerator(schema_path, mergeimports=True)
+    gen.serialize(directory=str(tmp_path))
+
+    pokemon_class_md_file = tmp_path / "Pokemon.md"
+
+    # Check that the Rules section exists in Pokemon documentation
+    assert_mdfile_contains(pokemon_class_md_file, "## Rules", after="## Slots")
+
+    # Check that the rules table is properly structured
+    assert_mdfile_contains(
+        pokemon_class_md_file,
+        "| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+        after="## Rules",
+    )
+
+    # Check for preconditions showing Water type
+    assert_mdfile_contains(
+        pokemon_class_md_file,
+        "Water",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+
+    # Check that postconditions correctly show strong_against and weak_against
+    assert_mdfile_contains(
+        pokemon_class_md_file,
+        "Fire",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+    assert_mdfile_contains(
+        pokemon_class_md_file,
+        "Rock",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+    assert_mdfile_contains(
+        pokemon_class_md_file,
+        "Electric",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+    assert_mdfile_contains(
+        pokemon_class_md_file,
+        "Grass",
+        after="| Rule Applied | Preconditions | Postconditions | Elseconditions |",
+    )
+
+
+def test_classrule_to_dict_view_method(input_path, tmp_path):
+    """
+    Unit tests for classrule_to_dict_view() in linkml/generators/docgen.py.
+    """
+    schema_path = str(input_path("linkml_issue_1731.yaml"))
+    gen = DocGenerator(schema_path, mergeimports=True)
+    gen.serialize(directory=str(tmp_path))
+
+    # Test the specific methods for rule processing
+    pokemon_class = gen.schemaview.get_class("Pokemon")
+
+    # Test classrule_to_dict_view method
+    processed_rules = gen.classrule_to_dict_view(pokemon_class)
+    assert len(processed_rules) == 1
+    assert processed_rules[0]["title"] == ""  # The rule doesn't have a title
+
+    # Get the first rule for further testing
+    rule_dict = processed_rules[0]
+
+    # Test that preconditions are properly processed
+    assert "slot_conditions" in rule_dict["preconditions"]
+    assert "type" in rule_dict["preconditions"]["slot_conditions"]
+    assert "exactly_one_of" in rule_dict["preconditions"]["slot_conditions"]["type"]
+    assert rule_dict["preconditions"]["slot_conditions"]["type"]["exactly_one_of"][0]["equals_string"] == "Water"
+
+    # Test that postconditions are properly processed for strong_against
+    assert "slot_conditions" in rule_dict["postconditions"]
+    assert "strong_against" in rule_dict["postconditions"]["slot_conditions"]
+    assert "any_of" in rule_dict["postconditions"]["slot_conditions"]["strong_against"]
+
+    # Check for specific values in the strong_against postconditions
+    strong_against_conditions = rule_dict["postconditions"]["slot_conditions"]["strong_against"]["any_of"]
+    strong_against_values = [c.get("equals_string") for c in strong_against_conditions if "equals_string" in c]
+    assert "Fire" in strong_against_values
+    assert "Rock" in strong_against_values
+
+    # Check for specific values in the weak_against postconditions
+    assert "weak_against" in rule_dict["postconditions"]["slot_conditions"]
+    assert "any_of" in rule_dict["postconditions"]["slot_conditions"]["weak_against"]
+
+    weak_against_conditions = rule_dict["postconditions"]["slot_conditions"]["weak_against"]["any_of"]
+    weak_against_values = [c.get("equals_string") for c in weak_against_conditions if "equals_string" in c]
+    assert "Electric" in weak_against_values
+    assert "Grass" in weak_against_values
+
+    # Test that elseconditions is None since it's not defined in the rule
+    assert rule_dict["elseconditions"] is None
+
+
+def test_preserve_names(tmp_path):
+    """Test preserve_names option preserves original LinkML names in documentation output"""
+    schema = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        classes={
+            "My_Class": ClassDefinition(name="My_Class", slots=["my_slot"]),
+            "Another_Class": ClassDefinition(name="Another_Class"),
+        },
+        slots={
+            "my_slot": SlotDefinition(name="my_slot", range="string"),
+        },
+    )
+
+    # Test default behavior (names are normalized)
+    gen_default = DocGenerator(schema=schema, mergeimports=False)
+    gen_default.serialize(directory=str(tmp_path / "default"))
+    assert (tmp_path / "default" / "MyClass.md").exists()
+    assert_mdfile_contains(tmp_path / "default" / "MyClass.md", "# Class: MyClass")
+
+    # Test preserve_names behavior (names are preserved)
+    gen_preserve = DocGenerator(schema=schema, mergeimports=False, preserve_names=True)
+    gen_preserve.serialize(directory=str(tmp_path / "preserve"))
+    assert (tmp_path / "preserve" / "My_Class.md").exists()
+    assert_mdfile_contains(tmp_path / "preserve" / "My_Class.md", "# Class: My_Class")
+    assert_mdfile_contains(
+        tmp_path / "preserve" / "My_Class.md",
+        "URI: [https://example.com/test/My_Class](https://example.com/test/My_Class)",
+    )
+
+    # Test method edge cases for coverage
+    assert gen_preserve.name(None) == ""
+    assert gen_preserve.link(None) == "NONE"
+    assert not gen_preserve._is_external(None)
+
+    # Test URI generation edge cases
+    test_cases = [
+        ("", "empty_id"),  # Empty ID
+        ("simple-id", "no_protocol"),  # No protocol
+        ("https://example.com/", "trailing_slash"),  # Trailing slash
+    ]
+
+    for schema_id, case_name in test_cases:
+        test_schema = SchemaDefinition(id=schema_id, name=case_name, classes={"Test": ClassDefinition(name="Test")})
+        gen = DocGenerator(schema=test_schema, preserve_names=True)
+        assert gen.uri(test_schema.classes["Test"]) is not None
+
+    # Test diagram generation
+    schema_with_types = SchemaDefinition(
+        id="https://example.com/test",
+        name="test_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+        classes={"Test": ClassDefinition(name="Test")},
+    )
+    gen_diag = DocGenerator(schema=schema_with_types, preserve_names=True)
+    gen_diag.diagram_type = DiagramType.er_diagram
+    assert gen_diag.mermaid_diagram(["Test"]) is not None
+    gen_diag.diagram_type = DiagramType.plantuml_class_diagram
+    assert gen_diag.mermaid_diagram(["Test"]) is not None
+
+    # Test mappings with valid element
+    assert gen_preserve.schemaview.get_mappings("My_Class") is not None
+
+    # Cover case where element exists but 'self'/'native' mappings are absent
+    with patch("linkml_runtime.utils.schemaview.SchemaView.get_mappings", return_value={"other": ["x"]}):
+        gen_no_keys = DocGenerator(schema=schema, preserve_names=True)
+        assert gen_no_keys.schemaview.get_mappings("My_Class") is not None
+
+    # Cover case where mappings exist but the element cannot be resolved
+    with (
+        patch("linkml_runtime.utils.schemaview.SchemaView.get_mappings", return_value={"self": ["x"]}),
+        patch("linkml_runtime.utils.schemaview.SchemaView.get_element", return_value=None),
+    ):
+        gen_no_element = DocGenerator(schema=schema, preserve_names=True)
+        assert gen_no_element.schemaview.get_mappings("My_Class") is not None
+
+    # Test exception handling in mappings override
+    gen_preserve.uri = lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("test"))
+    gen_preserve.schemaview.get_mappings("My_Class")  # Should not crash
+
+    # Test mappings edge cases
+    for test_input in [None, "", "NonExistent"]:
+        gen_preserve.schemaview.get_mappings(test_input)

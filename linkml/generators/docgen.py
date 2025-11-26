@@ -6,11 +6,11 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -61,7 +61,7 @@ SUBSET_SUBFOLDER = "subsets"
 
 def enshorten(input):
     """
-    Custom filter to truncate any long text intended to go in a table,
+    Custom filters to truncate any long text intended to go in a table
     and to remove anything after a newline"""
     if input is None:
         return ""
@@ -76,8 +76,11 @@ def enshorten(input):
     return input
 
 
-def customize_environment(env: Environment):
-    env.filters["enshorten"] = enshorten
+def text_to_web(input) -> str:
+    """Custom filter to convert multi-line text strings into a suitable format for web/markdown output."""
+    if input is None:
+        return ""
+    return "<br>".join(input.strip().split("\n"))
 
 
 def _ensure_ranked(elements: Iterable[Element]):
@@ -155,6 +158,9 @@ class DocGenerator(Generator):
     subfolder_type_separation: bool = False
     """Whether each type (class, slot, etc.) should be put in separate subfolder for navigation purposes"""
 
+    truncate_descriptions: bool = True
+    """Whether to truncate long (multi-line) descriptions down to a single line."""
+
     example_directory: Optional[str] = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
@@ -166,6 +172,9 @@ class DocGenerator(Generator):
     use_class_uris: bool = False
     hierarchical_class_view: bool = False
     render_imports: bool = False
+
+    preserve_names: bool = False
+    """If true, preserve LinkML element names in docs instead of camelcase/underscore."""
 
     def __post_init__(self):
         dialect = self.dialect
@@ -186,6 +195,27 @@ class DocGenerator(Generator):
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
         self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
+
+        # Override schemaview's get_mappings to use preserved URIs when needed
+        if self.preserve_names:
+            original_get_mappings = self.schemaview.get_mappings
+
+            def get_mappings_with_preserved_uris(element_name, **kwargs):
+                mappings = original_get_mappings(element_name, **kwargs)
+                if mappings and element_name:
+                    try:
+                        element = self.schemaview.get_element(element_name)
+                        if element:
+                            preserved_uri = self.uri(element, expand=True)
+                            # Fix self and native mappings to use preserved URI
+                            for key in ("self", "native"):
+                                if key in mappings:
+                                    mappings[key] = [preserved_uri]
+                    except Exception:
+                        pass
+                return mappings
+
+            self.schemaview.get_mappings = get_mappings_with_preserved_uris
 
     def serialize(self, directory: str = None) -> None:
         """
@@ -314,7 +344,7 @@ class DocGenerator(Generator):
             # TODO: relative paths
             # loader = FileSystemLoader()
             env = Environment()
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(path)
         else:
             base_file_name = f"{element_type}.{self._file_suffix()}.jinja2"
@@ -332,7 +362,7 @@ class DocGenerator(Generator):
                 folder = os.path.join(package_dir, "docgen", "")
             loader = FileSystemLoader(folder)
             env = Environment(loader=loader)
-            customize_environment(env)
+            self.customize_environment(env)
             return env.get_template(base_file_name)
 
     def schema_title(self) -> str:
@@ -357,19 +387,21 @@ class DocGenerator(Generator):
         :return: slot name or numeric portion of CURIE prefixed
             slot_uri
         """
-        if type(element).class_name == "slot_definition":
+        if element is None:
+            return ""
+        if self.preserve_names:
+            return element.name
+        elif type(element).class_name == "slot_definition":
             if self.use_slot_uris:
                 curie = self.schemaview.get_uri(element)
                 if curie:
                     return curie.split(":")[1]
-
             return underscore(element.name)
         elif type(element).class_name == "class_definition":
             if self.use_class_uris:
                 curie = self.schemaview.get_uri(element)
                 if curie:
                     return curie.split(":")[1]
-
             return camelcase(element.name)
         else:
             return camelcase(element.name)
@@ -381,9 +413,16 @@ class DocGenerator(Generator):
         :param element:
         :return:
         """
-        if isinstance(element, (EnumDefinition, SubsetDefinition)):
-            # TODO: fix schema view to handle URIs for enums and subsets
+        if isinstance(element, SubsetDefinition):
+            # Subsets have no uri attribute
             return self.name(element)
+
+        # Simple URI composition for preserved names
+        if self.preserve_names and not (self.use_class_uris or self.use_slot_uris):
+            base = self.schemaview.schema.id
+            if base and ("://" in base or base.startswith("http")):
+                sep = "" if base.endswith(("/", "#", "_", ":")) else "/"
+                return f"{base}{sep}{self.name(element)}"
 
         if self.subfolder_type_separation:
             return self.schemaview.get_uri(element, expand=expand, use_element_type=True)
@@ -404,6 +443,21 @@ class DocGenerator(Generator):
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
 
+    def link_mermaid(self, e: Union[Definition, DefinitionName]) -> str:
+        """
+        Return link to insert in mermaid diagrams for a given element
+
+        :param e: element to be linked
+        :return: string with link
+        """
+        # Reuse markdown link generation to avoid code duplication.
+        md_link = self.link(e)
+        if not md_link.endswith(")"):
+            return md_link
+        link = md_link.rsplit("(")[-1][:-1]
+        link = link.removesuffix(".md")
+        return f"../{link}/"
+
     def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
         """
         Render an element as a hyperlink
@@ -421,6 +475,8 @@ class DocGenerator(Generator):
             return "NONE"
         if not isinstance(e, Definition):
             e = self.schemaview.get_element(e)
+            if e is None:
+                return "NONE"
         if self._is_external(e):
             return self.uri_link(e)
         elif isinstance(e, ClassDefinition):
@@ -433,12 +489,12 @@ class DocGenerator(Generator):
                         subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
                     )
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + CLASS_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, EnumDefinition):
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + ENUM_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, SlotDefinition):
@@ -451,17 +507,17 @@ class DocGenerator(Generator):
                         subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
                     )
             return self._markdown_link(
-                underscore(e.name),
+                self.name(e),
                 subfolder=subfolder + SLOT_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, TypeDefinition):
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + TYPE_SUBFOLDER if self.subfolder_type_separation else None,
             )
         elif isinstance(e, SubsetDefinition):
             return self._markdown_link(
-                camelcase(e.name),
+                self.name(e),
                 subfolder=subfolder + SUBSET_SUBFOLDER if self.subfolder_type_separation else None,
             )
         else:
@@ -479,14 +535,15 @@ class DocGenerator(Generator):
         return self._is_external(t) and not self.schemaview.schema.id.startswith("https://w3id.org/linkml/")
 
     def _is_external(self, element: Element) -> bool:
-        # note: this is currently incomplete. See: https://github.com/linkml/linkml/issues/782
+        if element is None:
+            return False
         if element.from_schema == "https://w3id.org/linkml/types" and not self.genmeta:
             return True
         else:
             return False
 
     @staticmethod
-    def _markdown_link(n: str, name: str = None, subfolder: str = None) -> str:
+    def _markdown_link(n: str, name: str = "", subfolder: str = "") -> str:
         if subfolder:
             rel_path = f"{subfolder}/{n}"
         else:
@@ -694,7 +751,7 @@ class DocGenerator(Generator):
         :return:
         """
         if self.diagram_type.value == DiagramType.er_diagram.value:
-            erdgen = ERDiagramGenerator(self.schemaview.schema, format="mermaid")
+            erdgen = ERDiagramGenerator(self.schemaview.schema, format="mermaid", preserve_names=self.preserve_names)
             if class_names:
                 return erdgen.serialize_classes(class_names, follow_references=True, max_hops=2)
             else:
@@ -702,7 +759,7 @@ class DocGenerator(Generator):
         elif self.diagram_type.value == DiagramType.mermaid_class_diagram.value:
             self.logger.info("This is currently handled in the jinja templates")
         elif self.diagram_type.value == DiagramType.plantuml_class_diagram.value:
-            plantumlgen = PlantumlGenerator(self.schema)
+            plantumlgen = PlantumlGenerator(self.schema, preserve_names=self.preserve_names)
             plantuml_diagram = plantumlgen.serialize(classes=class_names)
             self.logger.debug(f"Created PlantUML diagram for class: {class_names}")
             return plantuml_diagram
@@ -959,13 +1016,93 @@ class DocGenerator(Generator):
                 objs.append((stem, f.read()))
         return objs
 
+    def _remove_name_keys(self, obj):
+        """Recursively removes 'name' keys from a JSON object representation.
+
+        This is used to clean up the output of ClassRule objects. For example, if we had a rule like:
+        rules:
+        - title: calibration_standard_if_rt
+            preconditions:
+                slot_conditions:
+                    calibration_target:
+                        equals_string: retention_index
+
+        The JSON representation would include redundant "name" keys:
+        {
+            "slot_conditions": {
+                "name": "slot_conditions"
+                "calibration_target": {
+                    "name": "calibration_target"
+                    "equals_string": "retention_index",
+                },
+            }
+        }
+
+        This function removes those redundant "name" keys to make the output cleaner.
+
+        :param obj: The object to clean (dict, list, or primitive value)
+        :return: The same object with all "name" keys removed from dicts
+        """
+        if isinstance(obj, dict):
+            return {k: self._remove_name_keys(v) for k, v in obj.items() if k != "name"}
+        elif isinstance(obj, list):
+            return [self._remove_name_keys(item) for item in obj]
+        else:
+            return obj
+
+    def classrule_to_dict_view(self, element: ClassDefinition) -> list[dict[str, Any]]:
+        """Process all rules (of type ClassRule) asserted on a class.
+
+        This method iterates through all rules asserted on a class and returns a list of
+        dictionaries, each containing four pieces of information about a rule:
+        _title_, _preconditions_, _postconditions_, and _elseconditions_.
+        These values will be read in the jinja template and formatted into a tabular
+        view for users to understand the rules applied to the class.
+
+        Note: This method removes redundant "name" keys which are asserted on some
+        classes in the Python representation of classes from the metamodel.
+
+        :param element: LinkML class object with `rules` asserted on it
+        :return: List of dictionaries with title and "sanitized" conditions for each rule
+        """
+        if not element.rules:
+            return []
+
+        rule_dicts = []
+
+        for rule in element.rules:
+            # TODO: expand this list of ClassRule metaslots based on use case
+            rule_dict = {
+                "title": rule.title or "",
+                "preconditions": None,
+                "postconditions": None,
+                "elseconditions": None,
+            }
+
+            for key in ["preconditions", "postconditions", "elseconditions"]:
+                condition_obj = getattr(rule, key, None)
+                if condition_obj:
+                    json_obj = json_dumper.to_dict(condition_obj)
+                    sanitized_condition = self._remove_name_keys(json_obj)
+                    rule_dict[key] = sanitized_condition
+
+            rule_dicts.append(rule_dict)
+
+        return rule_dicts
+
+    def customize_environment(self, env: Environment):
+        if self.truncate_descriptions:
+            env.filters["enshorten"] = enshorten
+        else:
+            env.filters["enshorten"] = text_to_web
+
 
 @shared_arguments(DocGenerator)
 @click.option(
     "--directory",
     "-d",
     required=True,
-    help="Folder to which document files are written",
+    help="Path to the directory where you want the Markdown files to be written to",
 )
 @click.option("--index-name", default="index", show_default=True, help="Name of the index document.")
 @click.option("--dialect", help="Dialect or 'flavor' of Markdown used.")
@@ -992,7 +1129,7 @@ class DocGenerator(Generator):
     show_default=True,
     help="Generating metamodel. Only use this for generating meta.py",
 )
-@click.option("--template-directory", help="Folder in which custom templates are kept")
+@click.option("--template-directory", help="Path to the directory with custom jinja2 templates")
 @click.option(
     "--use-slot-uris/--no-use-slot-uris",
     default=False,
@@ -1019,7 +1156,6 @@ class DocGenerator(Generator):
     help="Folder in which example files are found. These are used to make inline examples",
 )
 @click.option(
-    "-d",
     "--include",
     help="""
 Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
@@ -1030,6 +1166,20 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     "--subfolder-type-separation/--no-subfolder-type-separation",
     default=False,
     help="Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes",
+)
+@click.option(
+    "--truncate-descriptions",
+    default=True,
+    show_default=True,
+    help="""
+Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.
+Set to true for truncated descriptions, and false to display full descriptions.""",
+)
+@click.option(
+    "--preserve-names/--normalize-names",
+    default=False,
+    show_default=True,
+    help="Preserve original LinkML names in documentation output (e.g., for page titles, links, and file names).",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="doc")
@@ -1044,6 +1194,8 @@ def cli(
     hierarchical_class_view,
     subfolder_type_separation,
     render_imports,
+    truncate_descriptions,
+    preserve_names,
     **args,
 ):
     """Generate documentation folder from a LinkML YAML schema
@@ -1076,6 +1228,8 @@ def cli(
         index_name=index_name,
         subfolder_type_separation=subfolder_type_separation,
         render_imports=render_imports,
+        truncate_descriptions=truncate_descriptions,
+        preserve_names=preserve_names,
         **args,
     )
     print(gen.serialize())

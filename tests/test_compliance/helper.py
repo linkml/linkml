@@ -32,6 +32,8 @@ from pydantic import BaseModel, ConfigDict
 
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 
+from .dataframe_helper import check_data_pandera
+
 try:
     from yaml import CSafeDumper as SafeDumper
 except ImportError:
@@ -64,6 +66,7 @@ SCHEMA_NAME = str
 FRAMEWORK = str  ## pydantic, java, etc
 
 PYDANTIC_ROOT_CLASS = "ConfiguredBaseModel"
+PANDERA_ROOT_CLASS = "pla.DataFrameModel, _LinkmlPanderaValidator"
 PYTHON_DATACLASSES_ROOT_CLASS = "YAMLRoot"
 PYDANTIC = "pydantic"
 PYDANTIC_STRICT = "pydantic_strict"  ## TODO: https://docs.pydantic.dev/latest/usage/types/strict_types/
@@ -76,6 +79,7 @@ JSONLD_CONTEXT = "jsonld_context"
 JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
+PANDERA_POLARS_CLASS = "pandera_polars_class"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
@@ -96,6 +100,7 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
         generators.SQLAlchemyGenerator,
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
+    PANDERA_POLARS_CLASS: generators.PanderaGenerator,
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -317,7 +322,6 @@ def _generate_framework_output(
 
         cached_generator_output[pair] = (gen, output, out_path)
         for context, impdict in mappings:
-
             if framework in impdict:
                 expected = impdict[framework]
                 if expected is None:
@@ -556,7 +560,7 @@ def _make_schema(
 
     if imported_schemas:
         for imp in imported_schemas:
-            imp_path = f'{out_dir / imp["name"]}.yaml'
+            imp_path = f"{out_dir / imp['name']}.yaml"
             with open(imp_path, "w", encoding="utf-8") as imp_stream:
                 yaml.safe_dump(imp, imp_stream, sort_keys=False)
 
@@ -785,9 +789,9 @@ def check_data(
                         assert True, f"could not coerce invalid object; exception: {e}"
                     if py_inst:
                         if coerced:
-                            assert _as_compact_yaml(py_inst) == _as_compact_yaml(
-                                coerced
-                            ), f"coerced {py_inst} != {coerced}"
+                            assert _as_compact_yaml(py_inst) == _as_compact_yaml(coerced), (
+                                f"coerced {py_inst} != {coerced}"
+                            )
                         else:
                             logger.warning(f"INCOMPLETE TEST: did not check coerced: {py_inst}")
                 else:
@@ -809,6 +813,8 @@ def check_data(
 
         elif isinstance(gen, JsonSchemaGenerator):
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
+        elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS]):
+            check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid)
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:

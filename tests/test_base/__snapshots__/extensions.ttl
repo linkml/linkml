@@ -244,6 +244,7 @@ linkml:extension_value a linkml:SlotDefinition ;
     linkml:domain linkml:Extension ;
     linkml:domain_of linkml:Extension ;
     linkml:inlined true ;
+    linkml:inlined_as_list true ;
     linkml:owner linkml:Extension ;
     linkml:range linkml:AnyValue ;
     linkml:required true ;

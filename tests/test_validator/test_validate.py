@@ -12,8 +12,8 @@ def personinfo_schema_path(input_path):
 def test_valid_instance_against_schema_file(personinfo_schema_path):
     instance = {
         "persons": [
-            {"id": "1", "full_name": "Person A"},
-            {"id": "2", "full_name": "Person B"},
+            {"id": "1", "name": "Person A"},
+            {"id": "2", "name": "Person B"},
         ]
     }
     report = validate(instance, personinfo_schema_path)
@@ -25,8 +25,8 @@ def test_valid_instance_against_schema_instance(personinfo_schema_path):
         schema = yaml.safe_load(schema_file)
     instance = {
         "persons": [
-            {"id": "1", "full_name": "Person A"},
-            {"id": "2", "full_name": "Person B"},
+            {"id": "1", "name": "Person A"},
+            {"id": "2", "name": "Person B"},
         ]
     }
     report = validate(instance, schema)
@@ -36,8 +36,8 @@ def test_valid_instance_against_schema_instance(personinfo_schema_path):
 def test_invalid_instance(personinfo_schema_path):
     instance = {
         "persons": [
-            {"full_name": "Person A"},
-            {"full_name": "Person B"},
+            {"name": "Person A"},
+            {"name": "Person B"},
         ]
     }
     report = validate(instance, personinfo_schema_path)
@@ -47,13 +47,13 @@ def test_invalid_instance(personinfo_schema_path):
 
 
 def test_valid_instance_specified_class(personinfo_schema_path):
-    instance = {"id": "1", "full_name": "Person A"}
+    instance = {"id": "1", "name": "Person A"}
     report = validate(instance, personinfo_schema_path, "Person")
     assert len(report.results) == 0
 
 
 def test_invalid_instance_specified_class(personinfo_schema_path):
-    instance = {"full_name": "Person A"}
+    instance = {"name": "Person A"}
     report = validate(instance, personinfo_schema_path, "Person")
     assert len(report.results) == 1
     assert "'id' is a required property" in report.results[0].message
@@ -62,8 +62,8 @@ def test_invalid_instance_specified_class(personinfo_schema_path):
 def test_invalid_instance_strict(personinfo_schema_path):
     instance = {
         "persons": [
-            {"full_name": "Person A"},
-            {"full_name": "Person B"},
+            {"name": "Person A"},
+            {"name": "Person B"},
         ]
     }
     report = validate(instance, personinfo_schema_path, strict=True)

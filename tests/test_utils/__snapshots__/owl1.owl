@@ -1,86 +1,87 @@
 @prefix linkml: <https://w3id.org/linkml/> .
+@prefix meta: <http://example.org/owl1/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://example.org/owl1/:string> a owl:Class,
+meta:string a owl:Class,
         linkml:TypeDefinition ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:onDataRange <http://example.org/owl1/:string> ;
+            owl:onDataRange meta:string ;
             owl:onProperty linkml:topValue ;
             owl:qualifiedCardinality 1 ] .
 
 linkml:topValue a owl:DatatypeProperty ;
     rdfs:label "value" .
 
-<http://example.org/owl1/:slotonemany> a owl:ObjectProperty,
+meta:slotonemany a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "slotonemany" ;
-    rdfs:domain <http://example.org/owl1/:C1> ;
-    rdfs:range <http://example.org/owl1/:C2> ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
     skos:inScheme <http://example.org/owl1> .
 
-<http://example.org/owl1/:slotzeromany> a owl:ObjectProperty,
+meta:slotzeromany a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "slotzeromany" ;
-    rdfs:domain <http://example.org/owl1/:C1> ;
-    rdfs:range <http://example.org/owl1/:C2> ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
     skos:inScheme <http://example.org/owl1> .
 
-<http://example.org/owl1/:slotopt> a owl:ObjectProperty,
+meta:slotopt a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "slotopt" ;
-    rdfs:domain <http://example.org/owl1/:C1> ;
-    rdfs:range <http://example.org/owl1/:C2> ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
     skos:inScheme <http://example.org/owl1> .
 
-<http://example.org/owl1/:slotreq> a owl:ObjectProperty,
+meta:slotreq a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "slotreq" ;
-    rdfs:domain <http://example.org/owl1/:C1> ;
-    rdfs:range <http://example.org/owl1/:C2> ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
     skos:inScheme <http://example.org/owl1> .
 
-<http://example.org/owl1/:C1> a owl:Class,
+meta:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotopt> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotonemany> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotzeromany> ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotreq> ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotreq> ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty <http://example.org/owl1/:slotopt> ],
+            owl:minCardinality 1 ;
+            owl:onProperty meta:slotonemany ],
         [ a owl:Restriction ;
             owl:minCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotonemany> ],
+            owl:onProperty meta:slotreq ],
         [ a owl:Restriction ;
-            owl:allValuesFrom <http://example.org/owl1/:C2> ;
-            owl:onProperty <http://example.org/owl1/:slotopt> ],
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotopt ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotreq ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
-            owl:onProperty <http://example.org/owl1/:slotzeromany> ],
+            owl:onProperty meta:slotzeromany ],
         [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty <http://example.org/owl1/:slotreq> ] ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:slotreq ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotzeromany ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:slotopt ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotonemany ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:slotopt ] ;
     skos:inScheme <http://example.org/owl1> .
 
 <http://example.org/owl1> a owl:Ontology ;
     rdfs:label "owl1" .
 
-<http://example.org/owl1/:C2> a owl:Class,
+meta:C2 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c2" ;
     skos:inScheme <http://example.org/owl1> .

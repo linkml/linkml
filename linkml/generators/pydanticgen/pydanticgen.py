@@ -1,4 +1,5 @@
 import inspect
+import keyword
 import logging
 import os
 import re
@@ -31,6 +32,7 @@ from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.pydanticgen.build import ClassResult, SlotResult, SplitResult
+from linkml.generators.pydanticgen.pydantic_ifabsent_processor import PydanticIfAbsentProcessor
 from linkml.generators.pydanticgen.template import (
     Import,
     Imports,
@@ -41,7 +43,6 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     PydanticTemplateModel,
 )
-from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
 
@@ -94,7 +95,10 @@ DEFAULT_IMPORTS = (
             ObjectImport(name="ConfigDict"),
             ObjectImport(name="Field"),
             ObjectImport(name="RootModel"),
+            ObjectImport(name="SerializationInfo"),
+            ObjectImport(name="SerializerFunctionWrapHandler"),
             ObjectImport(name="field_validator"),
+            ObjectImport(name="model_serializer"),
         ],
     )
 )
@@ -141,6 +145,41 @@ class SplitMode(str, Enum):
 
 DefinitionType = TypeVar("DefinitionType", bound=Union[SchemaDefinition, ClassDefinition, SlotDefinition])
 TemplateType = TypeVar("TemplateType", bound=Union[PydanticModule, PydanticClass, PydanticAttribute])
+
+
+def make_valid_python_identifier(name: str) -> str:
+    """
+    Convert a string to a valid Python identifier.
+
+    This is used when slot names contain characters that are not valid in Python
+    identifiers (e.g., '@id', '@type'). The original name can be preserved using
+    Pydantic field aliases.
+
+    Args:
+        name: The original name that may contain invalid characters
+
+    Returns:
+        A valid Python identifier that doesn't start with underscore (Pydantic restriction)
+    """
+    # Replace invalid characters with underscores
+    identifier = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+
+    # Remove leading underscores (Pydantic doesn't allow field names starting with _)
+    identifier = identifier.lstrip("_")
+
+    # Ensure it doesn't start with a number
+    if identifier and identifier[0].isdigit():
+        identifier = f"field_{identifier}"
+
+    # Ensure it's not a keyword
+    if keyword.iskeyword(identifier):
+        identifier = f"{identifier}_"
+
+    # Ensure it's not empty
+    if not identifier:
+        identifier = "field"
+
+    return identifier
 
 
 @dataclass
@@ -461,7 +500,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             if getattr(slot, k, None) is not None
         }
         slot_alias = slot.alias if slot.alias else slot.name
-        slot_args["name"] = underscore(slot_alias)
+
+        # Create a valid Python identifier for the field name
+        python_field_name = make_valid_python_identifier(underscore(slot_alias))
+        slot_args["name"] = python_field_name
+
+        # If the original name is different from the Python identifier, set an alias
+        if slot_alias != python_field_name:
+            slot_args["alias"] = slot_alias
+        else:
+            # Remove any existing alias if the names are the same
+            if "alias" in slot_args:
+                del slot_args["alias"]
+
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
@@ -537,7 +588,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         if self._predefined_slot_values is None:
             sv = self.schemaview
-            ifabsent_processor = PythonIfAbsentProcessor(sv)
+            ifabsent_processor = PydanticIfAbsentProcessor(sv)
             slot_values = defaultdict(dict)
             for class_def in sv.all_classes().values():
                 for slot_name in sv.class_slots(class_def.name):
@@ -832,8 +883,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             meta = remove_empty_items(source)
         else:
             raise ValueError(
-                f"Unknown metadata mode '{self.metadata_mode}', needs to be one of "
-                f"{[mode for mode in MetadataMode]}"
+                f"Unknown metadata mode '{self.metadata_mode}', needs to be one of {[mode for mode in MetadataMode]}"
             )
 
         model.meta = meta
@@ -1196,7 +1246,7 @@ Available templates to override:
 )
 @click.option(
     "--meta",
-    type=click.Choice([k for k in MetadataMode]),
+    type=click.Choice([k.value for k in MetadataMode]),
     default="auto",
     help="How to include linkml schema metadata in generated pydantic classes. "
     "See docs for MetadataMode for full description of choices. "
@@ -1242,7 +1292,7 @@ def cli(
         metadata_mode=meta,
         **args,
     )
-    print(gen.serialize())
+    print(gen.serialize(), end="")
 
 
 if __name__ == "__main__":

@@ -1,10 +1,14 @@
+"""Linkml linter."""
+
+from __future__ import annotations
+
 import inspect
 from collections.abc import Iterable
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import jsonschema
 import yaml
@@ -23,10 +27,10 @@ from .config.datamodel.config import Config, ExtendableConfigs, RuleLevel
 @dataclass
 class LinterProblem:
     message: str
-    level: Union[RuleLevel, None] = None
-    schema_name: Union[str, None] = None
-    schema_source: Union[str, None] = None
-    rule_name: Union[str, None] = None
+    level: RuleLevel | None = None
+    schema_name: str | None = None
+    schema_source: str | None = None
+    rule_name: str | None = None
 
 
 @lru_cache
@@ -41,8 +45,7 @@ def get_metamodel_validator() -> Validator:
     meta_json_gen = JsonSchemaGenerator(LOCAL_METAMODEL_YAML_FILE, not_closed=False)
     meta_json_schema = meta_json_gen.generate()
     validator_cls = jsonschema.validators.validator_for(meta_json_schema, default=jsonschema.Draft7Validator)
-    validator = validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
-    return validator
+    return validator_cls(meta_json_schema, format_checker=validator_cls.FORMAT_CHECKER)
 
 
 def merge_configs(original: dict, other: dict):
@@ -107,7 +110,7 @@ class Linter:
 
     def lint(
         self,
-        schema: Union[str, SchemaDefinition],
+        schema: str | SchemaDefinition,
         fix: bool = False,
         validate_schema: bool = False,
         validate_only: bool = False,

@@ -32,7 +32,7 @@ settings:
   unit.length: "(centimeter|meter|inch)"
   unit.weight: "(kg|g|lbs|stone)"
   email: "\\S+@\\S+{\\.\\w}+"
-  
+
 #==================================
 # Classes                         #
 #==================================
@@ -82,5 +82,3 @@ types:
       syntax: "{email}"
       interpolated: true
       partial_match: false  ## implicit ^...$
-    
-      

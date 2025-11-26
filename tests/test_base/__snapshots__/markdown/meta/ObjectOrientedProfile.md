@@ -44,4 +44,3 @@ URI: [linkml:ObjectOrientedProfile](https://w3id.org/linkml/ObjectOrientedProfil
 
 
 ### Enums
-

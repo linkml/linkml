@@ -1,6 +1,5 @@
 
-# Slot: founding_location
-
+# Slot: founding location
 
 
 

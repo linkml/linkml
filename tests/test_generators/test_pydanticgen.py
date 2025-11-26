@@ -50,6 +50,7 @@ from linkml.utils.schema_builder import SchemaBuilder
 
 from .conftest import MyInjectedClass
 
+INDENT = " " * 4
 PACKAGE = "kitchen_sink"
 pytestmark = pytest.mark.pydanticgen
 
@@ -117,6 +118,16 @@ enums:
     assert enum["values"]["PLUS_SIGN"]["value"] == "+"
     assert enum["values"]["This_AMPERSAND_that_plus_maybe_a_TOP_HAT"]["value"] == "This & that, plus maybe a 🎩"
     assert enum["values"]["Ohio"]["value"] == "Ohio"
+    gen_output = gen.serialize()
+    expected_lines = [
+        "class TestEnum(str, Enum):",
+        f'{INDENT}number_123 = "123"',
+        f'{INDENT}PLUS_SIGN = "+"',
+        f'{INDENT}This_AMPERSAND_that_plus_maybe_a_TOP_HAT = "This & that, plus maybe a 🎩"',
+        f'{INDENT}Ohio = "Ohio"',
+    ]
+    for line in expected_lines:
+        assert f"\n{line}\n" in gen_output
 
 
 def test_pydantic_enum_titles():
@@ -136,6 +147,8 @@ enums:
       value2:
         title: label2
       value3:
+      value4:
+        title: label 4
     """
     sv = SchemaView(unit_test_schema)
     gen = PydanticGenerator(schema=unit_test_schema)
@@ -146,6 +159,101 @@ enums:
     assert enum["values"]["label1"]["value"] == "value1"
     assert enum["values"]["label2"]["value"] == "value2"
     assert enum["values"]["value3"]["value"] == "value3"
+    assert enum["values"]["label_4"]["value"] == "value4"
+    gen_output = gen.serialize()
+    expected_lines = [
+        "class TestEnum(str, Enum):",
+        f'{INDENT}label1 = "value1"',
+        f'{INDENT}label2 = "value2"',
+        f'{INDENT}value3 = "value3"',
+        f'{INDENT}label_4 = "value4"',
+    ]
+    for line in expected_lines:
+        assert f"\n{line}\n" in gen_output
+
+
+def test_pydantic_enum_descriptions():
+    unit_test_schema = """
+id: unit_test
+name: unit_test
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+enums:
+  TestEnum:
+    permissible_values:
+      no_description:
+      single_line:
+        description: A single line description. Easy!
+      multi_line:
+        description:
+          Sometimes
+
+            one line
+
+                isn't enough
+
+          for a "description".
+      multi_line_preserve_whitespace:
+        description: |
+          Multi
+
+                    Line
+
+              Madness!
+"""
+    sv = SchemaView(unit_test_schema)
+    gen = PydanticGenerator(schema=unit_test_schema)
+    enums = gen.generate_enums(sv.all_enums())
+    assert "TestEnum" in enums
+    enum = enums["TestEnum"]
+    assert enum["values"]["no_description"]["description"] is None
+
+    DESCRIPTION = {
+        "single_line": ["A single line description. Easy!"],
+        "multi_line": ["Sometimes", "one line", "isn't enough", 'for a "description".'],
+        "multi_line_preserve_whitespace": ["Multi", "", f"{' ' * 10}Line", "", f"{INDENT}Madness!", ""],
+    }
+
+    for line_type in DESCRIPTION:
+        assert enum["values"][line_type]["description"] == "\n".join(DESCRIPTION[line_type])
+
+    gen_output = gen.serialize()
+    assert "\nclass TestEnum(str, Enum):\n" in gen_output
+    assert f'\n{INDENT}no_description = "no_description"\n' in gen_output
+    for line_type in DESCRIPTION:
+        # if the line doesn't have any content, there is no indent;
+        # otherwise, there is the standard 4-space indent
+        assert (
+            "\n".join(
+                [
+                    f"{INDENT}{line}" if len(line) > 0 else ""
+                    for line in [
+                        f'{line_type} = "{line_type}"',
+                        '"""',
+                        *DESCRIPTION[line_type],
+                        '"""',
+                    ]
+                ]
+            )
+            in gen_output
+        )
+
+
+def test_pydantic_unmasked_keywords(input_path):
+    gen = PydanticGenerator(input_path("unmasked_python_keywords_example.yaml"), package=PACKAGE)
+    code = gen.serialize()
+    try:
+        mod = compile_python(code, PACKAGE)
+    except SyntaxError as e:
+        assert False, f"Failed to compile generated bindings: {str(e)}"
+    translation_dict = {"from": "eng", "to": "del"}
+    translation_inst = mod.Translation.model_validate(translation_dict)
+    assert translation_inst.from_ == mod.LanguageEnum("eng")
+    assert translation_inst.to == mod.LanguageEnum("del")
+    assert translation_inst.model_dump() == translation_dict
 
 
 def test_pydantic_any_of():
@@ -199,8 +307,8 @@ slots:
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
     assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
-    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
 
 
 @pytest.mark.parametrize(
@@ -280,8 +388,8 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[list[str]]": "Field(default=None",
-        "Optional[list[B]]": "Field(default=None",
+        "Optional[list[str]]": "Field(default=[]",
+        "Optional[list[B]]": "Field(default=[]",
         "Optional[dict[str, B]]": "Field(default=None",
         "Optional[dict[str, str]]": "Field(default=None",
         "Optional[dict[str, Union[str, B]]]": "Field(default=None",
@@ -308,9 +416,9 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     assert f"a2b: {expected}" in code, f"did not find expected {expected} in {code}"
     if expected not in expected_default_factories:
         raise ValueError(f"unexpected default factory for {expected}")
-    assert (
-        expected_default_factories[expected] in code
-    ), f"did not find expected default factory {expected_default_factories[expected]}"
+    assert expected_default_factories[expected] in code, (
+        f"did not find expected default factory {expected_default_factories[expected]}"
+    )
 
 
 def test_ifabsent():
@@ -434,7 +542,7 @@ classes:
             _ = mod.A(my_slot=a_string)
 
 
-def test_multiline_module(input_path):
+def test_multiline_descriptions(input_path):
     """
     Ensure that multi-line enum descriptions and enums containing
     reserved characters are handled correctly
@@ -454,7 +562,6 @@ def test_multiline_module(input_path):
             "",
         ]
     )
-
     assert 'INTERNAL "REORGANIZATION"' in gen.schema.enums["EmploymentEventType"].permissible_values
 
 
@@ -468,6 +575,41 @@ def test_pydantic_pattern(kitchen_sink_path, tmp_path, input_path):
     assert p1.name == "John Doe"
     with pytest.raises(ValidationError):
         module.Person(id="01", name="x")
+
+
+def test_pydantic_pattern_multivalued(input_path) -> None:
+    gen = PydanticGenerator(
+        str(input_path("pattern-example.yaml")),
+        package="pattern-example",
+    )
+    code = gen.serialize()
+    module = compile_python(code, "pattern-example")
+
+    # name and nicknames must match "^[A-Z0-9]\w+.*$"
+    p1 = module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=[])
+    assert p1.name == "Jane Doe"
+
+    p2 = module.PersonInfo(
+        id="P1234321",
+        name="Jane Doe",
+        nicknames=["Jane Donuts", "Jane Doughnuts", "JayDoe"],
+    )
+    assert p2.nicknames == ["Jane Donuts", "Jane Doughnuts", "JayDoe"]
+
+    # test the validator on a single value
+    with pytest.raises(ValidationError, match="Invalid name format: __JDoe__"):
+        module.PersonInfo(id="P1234321", name="__JDoe__")
+
+    with pytest.raises(ValidationError, match="Invalid name format:  J Doe "):
+        module.PersonInfo(id="P1234321", name=" J Doe ")
+
+    # test the validator on a list of values
+    with pytest.raises(ValidationError, match="Invalid nicknames format:  J Doe "):
+        module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=[" J Doe "])
+
+    # the first entry encountered raises the error
+    with pytest.raises(ValidationError, match="Invalid nicknames format: __JDoe__"):
+        module.PersonInfo(id="P1234321", name="Jane Doe", nicknames=["Jay", "__JDoe__", " J Doe "])
 
 
 def test_pydantic_template_1666():
@@ -973,6 +1115,19 @@ def test_attribute_field():
     for item in ("required", "identifier", "key"):
         attr = PydanticAttribute(name="attr", **{item: True})
         assert attr.model_dump()["field"] == "..."
+
+
+def test_append_to_optional_lists(kitchen_sink_path):
+    """
+    Optional multivalued fields should be initialised as empty lists
+    """
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    code = gen.serialize()
+    mod = compile_python(code, PACKAGE)
+    p = mod.Person(id="P:1")
+    d = mod.Dataset()
+    d.persons.append(p)
+    assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
 
 
 def test_class_validators():
@@ -1496,7 +1651,8 @@ def test_arrays_anyshape_json_schema(dtype, expected):
     # Check that the expected primitive types match the beginning of `anyOf`
     assert anyOf[0:-1] == expected
     # Check that the final type is a self-referential array
-    assert anyOf[-1] == {"$ref": f"#/$defs/{array_ref}"}
+    self_ref = anyOf[-1]["$ref"]
+    assert self_ref.startswith("#/$defs/") and "AnyShapeArray" in self_ref
 
 
 def test_arrays_anyshape_strict():
@@ -2436,7 +2592,7 @@ def test_generate_split_pattern(input_path):
         assert an_import in imports, "Missed a necessary import when generating from a pattern"
     for an_import in shouldnt_have:
         assert an_import not in imports, (
-            "Got one of the imports with the default template " "instead of the supplied pattern"
+            "Got one of the imports with the default template instead of the supplied pattern"
         )
 
 
@@ -2572,9 +2728,9 @@ def test_crappy_stdlib_set_removed():
 
         linkml_meta = metadata("linkml")
         req_python = SpecifierSet(linkml_meta.json["requires_python"])
-        assert req_python.contains(
-            Version("3.9")
-        ), "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
+        assert req_python.contains(Version("3.9")), (
+            "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
+        )
         "and then REMOVE THIS TEST!"
     except Exception:
         pass

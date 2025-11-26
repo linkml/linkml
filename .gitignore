@@ -107,7 +107,13 @@ tests/test_config.ini
 # Don't lock
 Pipfile.lock
 
+# Understand databases
+*.und
+
 # User defined
 .vscode/*
 
 http_cache.sqlite
+
+examples/PersonSchema/rust/target
+examples/PersonSchema/rust/Cargo.lock
