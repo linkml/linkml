@@ -32,7 +32,7 @@ class ShaclGenerator(Generator):
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
-    non_native_names: bool = True
+    use_class_uri_names: bool = True
     """If True, Shapes inherit the names from the LinkML class instead of Class_uri. Suffixes still works in addition"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
@@ -74,10 +74,10 @@ class ShaclGenerator(Generator):
                     g.add((class_uri_with_suffix, p, v))
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
-            if not self.non_native_names:
-                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
-            else:
+            if self.use_class_uri_names:
                 class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True))
+            else:
+                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
             if self.suffix:
                 class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
@@ -233,10 +233,10 @@ class ShaclGenerator(Generator):
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
-        if not self.non_native_names:
-            range_ref = sv.get_uri(r, expand=True, native=True)
-        else:
+        if self.use_class_uri_names:
             range_ref = sv.get_uri(r, expand=True)
+        else:
+            range_ref = sv.get_uri(r, expand=True, native=True)
         func(SH["class"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
@@ -382,10 +382,10 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     "extending a substantial ontology to avoid large output files.",
 )
 @click.option(
-    "--non-native-names/--native-names",
+    "--use-class-uri-names/--use-native-names",
     default=True,
     show_default=True,
-    help="Use --native-names to change the shacl-names from using the class_uri for the name, to using the "
+    help="Use --use-native-names to change the shacl-names from using the class_uri for the name, to using the "
     "linkML class names of the yaml/schema file. Suffixes from the --suffix option can still be appended",
 )
 @click.version_option(__version__, "-V", "--version")
