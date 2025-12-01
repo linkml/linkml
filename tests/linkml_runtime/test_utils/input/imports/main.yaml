@@ -1,0 +1,15 @@
+id: main
+name: main
+title: main
+imports:
+  - linkml:types
+  - s1
+  - s2
+  - s3
+classes:
+  Main:
+    description: "The class we use to test overrides on imports!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Main"
