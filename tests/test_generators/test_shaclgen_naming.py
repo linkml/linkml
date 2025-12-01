@@ -9,10 +9,10 @@ This extends the existing test_shaclgen.py module with:
 """
 
 import rdflib
-import pytest
-from rdflib import RDF, SH, Literal, URIRef
+from rdflib import RDF, SH
 
 from linkml.generators.shaclgen import ShaclGenerator
+
 
 # ---------------------------------------------------------------------------
 # 1. SHAPE NAMING MODES: class_uri (default) vs native LinkML class names
@@ -63,22 +63,14 @@ slots:
     schema_path.write_text(test_schema)
 
     # --- Mode 1: default mode = class_uri naming ---
-    shacl_default = ShaclGenerator(
-        str(schema_path),
-        mergeimports=True,
-        use_class_uri_names=True
-    ).serialize()
+    shacl_default = ShaclGenerator(str(schema_path), mergeimports=True, use_class_uri_names=True).serialize()
 
     g_default = rdflib.Graph()
     g_default.parse(data=shacl_default, format="turtle")
     default_shapes = {str(s) for s in g_default.subjects(RDF.type, SH.NodeShape)}
 
     # --- Mode 2: native names (LinkML class names) ---
-    shacl_native = ShaclGenerator(
-        str(schema_path),
-        mergeimports=True,
-        use_class_uri_names=False
-    ).serialize()
+    shacl_native = ShaclGenerator(str(schema_path), mergeimports=True, use_class_uri_names=False).serialize()
 
     g_native = rdflib.Graph()
     g_native.parse(data=shacl_native, format="turtle")
@@ -96,8 +88,6 @@ slots:
     assert any(s.endswith("Bar") for s in native_shapes)
 
     # And finally: All default URIs MUST differ from all native URIs
-    assert default_shapes.isdisjoint(native_shapes), \
+    assert default_shapes.isdisjoint(native_shapes), (
         f"Expected naming modes to produce different URIs:\n{default_shapes}\nvs\n{native_shapes}"
-
-
-
+    )

@@ -1,8 +1,9 @@
-import rdflib
 import pytest
-from rdflib import RDF, SH, Literal, URIRef
+import rdflib
+from rdflib import RDF, SH
 
 from linkml.generators.shaclgen import ShaclGenerator
+
 
 @pytest.mark.xfail(reason="Known bug: shapes with same class_uri incorrectly merged")
 def test_shacl_distinct_shapes_with_native_names():
@@ -49,7 +50,9 @@ slots:
     range: string
 """
 
-    import tempfile, os
+    import os
+    import tempfile
+
     with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
         f.write(test_schema)
         tmp = f.name
@@ -58,7 +61,7 @@ slots:
         shaclstr = ShaclGenerator(
             tmp,
             mergeimports=True,
-            use_class_uri_names=False   # <-- native names → expected behavior: NO MERGE
+            use_class_uri_names=False,  # <-- native names → expected behavior: NO MERGE
         ).serialize()
 
         g = rdflib.Graph()
@@ -67,8 +70,7 @@ slots:
         shapes = list(g.subjects(RDF.type, SH.NodeShape))
 
         # EXPECTED: 3 distinct shapes (1 per LinkML class)
-        assert len(shapes) == 3, \
-            f"Expected 3 separate shapes but found {len(shapes)}"
+        assert len(shapes) == 3, f"Expected 3 separate shapes but found {len(shapes)}"
 
         # Check that each class name appears in exactly one shape URI
         for cname in ["Entity", "EvaluatedEntity", "ThirdEntity"]:
