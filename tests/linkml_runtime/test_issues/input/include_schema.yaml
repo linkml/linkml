@@ -1,0 +1,231 @@
+id: https://w3id.org/include_schema
+name: include_schema
+description: >-
+  INCLUDE Schema prototype
+
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 0.0.1
+
+imports:
+ - linkml:types
+ - include_core
+
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  include_schema: https://w3id.org/mixs/include_schema/
+
+default_prefix: include_schema
+
+######
+# slots
+######
+
+slots:
+  name:
+    description: human readable name
+    range: string
+
+  first name:
+    is_a: name
+    description: The first name of a person
+
+  middle name:
+    is_a: name
+    description: The middle name of a person
+
+  last name:
+    is_a: name
+    description: The last name of a person
+
+  dob:
+    description: The date of a person's birth
+    range: date
+
+  birth month:
+    description: The month of a person's birth
+    range: integer
+
+  birth year:
+    description: The year of a person's birth
+    range: integer
+
+  birth city:
+    description: The city in which a person was born
+    range: string
+
+  birth country:
+    description: The country in which a person was born
+    range: string
+
+  sex:
+    description: Person gender
+    range: gender_enum
+
+  race:
+    description: Person race
+    range: race_enum
+
+  ethnicity:
+    description: Person ethnicity
+    range: ethnicity_enum
+
+  handedness:
+    description: Side of dominant hand of a person
+    range: handedness_enum
+
+  primary language:
+    description: A person's first language or the language spoken at home
+    range: language_enum
+
+  other language:
+    description: Any language a person speaks with fluency
+    range: language_enum
+
+  residence:
+    description: A person's living arrangements
+    range: residence_enum
+
+  age of mother at birth:
+    description: The age of the mother when the subject was born
+    range: integer
+
+  age of father at birth:
+    description: The age of the father when the subject was born
+    range: integer
+
+  sample:
+    description: Material collected from the subject
+    # range: nodeIdentifier
+    multivalued: true
+
+  subject:
+    description: A person
+    range: subject
+
+  sample date:
+    description: Date on which a sample was collected
+    range: date
+
+  visit date:
+    description: Date on which a visit occurred
+    range: date
+
+  parent sample:
+    description: Sample from which another sample was derived
+    range: sample
+
+  sample type:
+    description: Type of sample
+    range: sample_enum
+
+######
+# classes
+######
+
+classes:
+  person:
+    is_a: named thing
+
+  subject:
+    is_a: person
+    slots:
+      - first name
+      - middle name
+      - last name
+      - dob
+      - birth month
+      - birth year
+      - birth city
+      - birth country
+      - sex
+      - race
+      - ethnicity
+      - handedness
+      - primary language
+      - other language
+      - residence
+      - age of mother at birth
+      - age of father at birth
+
+  sample:
+    is_a: named thing
+    slots:
+      - subject
+      - sample date
+      - parent sample
+      - sample type
+    slot_usage:
+      subject:
+        required: true
+
+  visit:
+    is_a: named thing
+    slots:
+      - subject
+      - sample
+      - visit date
+    slot_usage:
+      subject:
+        required: true
+
+######
+# enums
+######
+
+enums:
+  gender_enum:
+    description: Gender of something
+    permissible_values:
+      0: Male gender
+      1: Female gender
+      8: Nonbinary gender
+
+  race_enum:
+    description: Race of something
+    permissible_values:
+      0: American Indian or Alaska Native
+      1: Asian
+      2: Black or African-American
+      3: Native Hawaiian or Other Pacific Islander
+      4: White
+      5: More than one race
+      6: Other
+      7: Decline to answer
+
+  ethnicity_enum:
+    description: Ethnicity of something
+    permissible_values:
+      0: Hispanic or latino
+      1: Not Hispanic or Latino
+      2: Unsure
+      3: Decline to answer
+
+  handedness_enum:
+    description: Side of dominant hand of a person
+    permissible_values:
+      0: Right handed
+      1: Left handed
+      2: Ambidextrous
+
+  language_enum:
+    description: Human language
+    permissible_values:
+      0: English
+      1: Spanish
+      2: Other
+
+  residence_enum:
+    description: A living arrangement
+    permissible_values:
+      0: With family/caregiver
+      1: Group home
+      2: Independent living
+      3: Facility
+
+  sample_enum:
+    description: Type of material sample
+    permissible_values:
+      0: Blood
+      1: Urine
+      2: Stool
