@@ -3,16 +3,16 @@
 Join the LinkML community for regular sessions featuring presentations on LinkML applications, best practices, and community projects. The community meeting is hosted on the third Thursday of the month 8:00 AM PT / 4:00 PM UTC.
 
 
-### Organizers
+## Organizers
 [Kevin Schaper](https://tislab.org/members/kevin-schaper.html), University of North Carolina at Chapel Hill <br>
 [Corey Cox](https://tislab.org/members/corey-cox.html), University of North Carolina at Chapel Hill <br>
 [Sierra Moxon](https://berkeleybop.org/people/sierra-moxon/), Lawernce Berkeley National Laboratory <br>
 [Sarah Gehrke](https://tislab.org/members/sarah-gehrke.html), University of North Carolina at Chapel Hill <br>
 
-### What to present at a Community meeting?
+## What to present at a Community meeting?
 Contact Sarah Gehrke on [Slack](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g) and they can help get you on the schedule!
 
-### Helpful links
+## Helpful links
 - [Community Meeting Agenda](https://docs.google.com/document/d/1MStpDyh9LOZYJTjLtnpOsNYc3HaeU-bz0CHAI9xOjfQ/edit?tab=t.0#heading=h.6sqkx1xhumse): In this document you can find the zoom link to join the monthly call as well as recordings of previous sessions.
 
 ## Schedule

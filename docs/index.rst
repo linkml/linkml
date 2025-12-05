@@ -35,6 +35,7 @@ Documentation
    ecosystem
    specifications/linkml-spec.md
    contributing/contributing.md
+   Get Involved/index
    faq/index
 
 Metamodel Reference
