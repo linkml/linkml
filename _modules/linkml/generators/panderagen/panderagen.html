@@ -405,9 +405,9 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.class_handler_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassHandlerBase</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.enum_handler_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumHandlerBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.pandera</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotHandlerPandera</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.render_adapters</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataframeDocument</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.render_adapters.dataframe_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataframeClass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.slot_handler_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SlotHandlerBase</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -435,7 +435,7 @@
 
 
 <div class="viewcode-block" id="PanderaGenerator">
-<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator">[docs]</a>
+<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.panderagen.PanderaGenerator">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PanderaGenerator</span><span class="p">(</span><span class="n">OOCodeGenerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -472,7 +472,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;specific storage format that may differ from specified inlined flags&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PanderaGenerator.default_value_for_type">
-<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.default_value_for_type">[docs]</a>
+<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.panderagen.PanderaGenerator.default_value_for_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Allow underlying framework to handle default if not specified.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -512,7 +512,7 @@
         <span class="k">return</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">template_filename</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PanderaGenerator.compile_pandera">
-<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.compile_pandera">[docs]</a>
+<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.panderagen.PanderaGenerator.compile_pandera">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">compile_pandera</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModuleType</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates and compiles Pandera model</span>
@@ -523,7 +523,7 @@
 
 
 <div class="viewcode-block" id="PanderaGenerator.serialize">
-<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.serialize">[docs]</a>
+<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.panderagen.PanderaGenerator.serialize">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rendered_module</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataframeDocument</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize the schema to a Pandera module as a string</span>
@@ -555,7 +555,7 @@
 
 
 <div class="viewcode-block" id="PanderaGenerator.render">
-<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.PanderaGenerator.render">[docs]</a>
+<a class="viewcode-back" href="../../../../generators/pandera.html#linkml.generators.panderagen.panderagen.PanderaGenerator.render">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataframeDocument</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a data structure ready to pass to the serialization templates.</span>
@@ -606,7 +606,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slot_handler</span> <span class="o">=</span> <span class="n">SlotHandlerBase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slot_handler</span> <span class="o">=</span> <span class="n">SlotHandlerPandera</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enum_handler</span> <span class="o">=</span> <span class="n">EnumHandlerBase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">class_handler</span> <span class="o">=</span> <span class="n">ClassHandlerBase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
