@@ -1,0 +1,15 @@
+id: https://example.org/enum_test
+name: enum_test
+
+classes:
+  Organism:
+    slots:
+      - state
+slots:
+  state:
+    range: StateEnum
+enums:
+  StateEnum:
+    permissible_values:
+      LIVING:
+      DEAD:
