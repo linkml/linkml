@@ -39,6 +39,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     valid_formats = ["python"]
     file_extension = "py"
     java_style = False
+    TYPE_MAP: dict = None
 
     # ObjectVars
     template_file: str = None
@@ -57,16 +58,22 @@ class DataframeGenerator(OOCodeGenerator, ABC):
 
     def __post_init__(self):
         super().__post_init__()
+        if self.TYPE_MAP is None:
+            self.TYPE_MAP = self._default_type_map()
         self.class_handler = ClassHandlerBase(self)
         self.enum_handler = EnumHandlerBase(self)
         # Slot handler will be set by subclasses
+
+    @abstractmethod
+    def _default_type_map(self) -> dict:
+        """Override in subclasses to provide default TYPE_MAP."""
 
     def default_value_for_type(self, typ: str) -> str:
         """Allow underlying framework to handle default if not specified."""
         return None
 
-    def map_type(self, t: TypeDefinition) -> str:
-        logger.info(f"type_map definition: {t}")
+    def map_type(self, t: TypeDefinition, required: bool = False) -> str:
+        del required  # unused
 
         typ = None
 
@@ -186,7 +193,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
             if c.name in self.schemaview.all_enums():
                 continue
             cn = c.name
-            safe_cn = camelcase(cn)
+            safe_cn = self.get_class_name(cn)
             annotations = {}
             identifier_or_key_slot = self.slot_handler.get_identifier_or_key_slot(cn)
             if identifier_or_key_slot:
@@ -244,7 +251,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
 
     def get_class_name(self, cn):
         """override from OOCodeGenerator"""
-        return self.clean(cn)
+        return camelcase(self.clean(cn))
 
     def get_slot_name(self, sn):
         """override from OOCodeGenerator"""
@@ -261,8 +268,12 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     def slot_name(self, name: str) -> str:
         """
         Override from generator to use get_metamodel_slot_name
-        Return the  version of the aliased slot name if name is a slot. Prepend ``unknown_`` if the name
+        Return the metamodel version of the aliased slot name if name is a slot. Prepend ``unknown_`` if the name
         isn't valid.
         """
         slot = self.slot_for(name)
-        return self.get_metamodel_slot_name(self.aliased_slot_name(slot) if slot else ("unknown " + name))
+
+        if slot is None:
+            raise ValueError(f"Unknown slot: {name}")
+
+        return self.get_metamodel_slot_name(self.aliased_slot_name(slot))

@@ -29,24 +29,24 @@ class PanderaDataframeGenerator(DataframeGenerator):
 
     TEMPLATE_DIRECTORY = "panderagen_class_based"
 
-    # Pandera-specific type mapping
-    TYPE_MAP = {
-        "xsd:string": "str",
-        "xsd:integer": "int",
-        "xsd:int": "int",
-        "xsd:float": "float",
-        "xsd:double": "float",
-        "xsd:boolean": "bool",
-        "xsd:dateTime": "DateTime()",
-        "xsd:date": "Date",
-        "xsd:time": "Time",
-        "xsd:anyURI": "str",
-        "xsd:decimal": "float",
-    }
-
     # ObjectVars
     inline_validator_mixin: bool = False
     coerce: bool = False
+
+    def _default_type_map(self) -> dict:
+        return {
+            "xsd:string": "str",
+            "xsd:integer": "int",
+            "xsd:int": "int",
+            "xsd:float": "float",
+            "xsd:double": "float",
+            "xsd:boolean": "bool",
+            "xsd:dateTime": "DateTime()",
+            "xsd:date": "Date",
+            "xsd:time": "Time",
+            "xsd:anyURI": "str",
+            "xsd:decimal": "float",
+        }
 
     def __post_init__(self):
         super().__post_init__()

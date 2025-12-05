@@ -19,7 +19,7 @@ ALLOWED_TEMPLATE_DIRECTORIES = ["panderagen_class_based"]
 GENERATOR_CLASSES = {
     "PanderaDataframeGenerator": {
         "class": PanderaDataframeGenerator,
-        "module": "linkml.generators.panderagen.pandera_dataframe_generator",
+        "module": "linkml.generators.panderagen",
     },
 }
 
@@ -45,7 +45,7 @@ class DataframeGeneratorCli:
         The generated pandera classes use a mixin helper.
         This is currently inlined in the generated code.
 
-        TODO: generalize this for other dataframe targets (possible all Pandera targets)
+        TODO: generalize this for other dataframe targets
         """
         linkml_pandera_validator = importlib.import_module("linkml.generators.panderagen.linkml_pandera_validator")
         module_path = linkml_pandera_validator.__file__
@@ -87,7 +87,6 @@ def cli(
     if template_path is not None and template_path not in ALLOWED_TEMPLATE_DIRECTORIES:
         raise Exception(f"Template {template_path} not supported. Available: {ALLOWED_TEMPLATE_DIRECTORIES}")
 
-    """Generator classes to represent a LinkML model"""
     gen_class = DataframeGeneratorCli.DEFAULT_GENERATOR_CLASS
 
     generator: DataframeGenerator = gen_class(

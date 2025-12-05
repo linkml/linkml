@@ -13,7 +13,7 @@ np = pytest.importorskip("numpy", minversion="1.0", reason="NumPy >= 1.0 not ins
 pl = pytest.importorskip("polars", minversion="1.0", reason="PolaRS >= 1.0 not installed")
 pandera = pytest.importorskip("pandera.polars", reason="Pandera not installed")
 
-# These depend on PolaRS and Numpy so need to be after importerskip
+# These depend on PolaRS and Numpy so need to be after importorskip
 from linkml.generators.panderagen import PanderaDataframeGenerator, cli  # noqa: E402
 
 logger = logging.getLogger(__name__)
