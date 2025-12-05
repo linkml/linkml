@@ -1,4 +1,4 @@
-# Commmunity Meetings
+# Community Meetings
 
 Join the LinkML community for regular sessions featuring presentations on LinkML applications, best practices, and community projects. The community meeting is hosted on the third Thursday of the month 8:00 AM PT / 4:00 PM UTC.
 
