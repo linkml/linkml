@@ -1,0 +1,9 @@
+{%- macro enum_parameter(field) -%}
+    {%- if field.permissible_values|length > 0 -%}
+        dtype_kwargs={"categories":(
+        {%- for pv in field.permissible_values -%}
+            '{{ pv }}',
+        {%- endfor -%}
+        )}
+    {%- endif -%}
+{%- endmacro -%}

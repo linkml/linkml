@@ -1,0 +1,5 @@
+id: greatgrandchild
+name: greatgrandchild
+title: greatgrandchild
+imports:
+  - linkml:types
