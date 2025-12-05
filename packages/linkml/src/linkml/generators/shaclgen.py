@@ -33,7 +33,7 @@ class ShaclGenerator(Generator):
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
     use_class_uri_names: bool = True
-    """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work in addition."""
+    """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -311,15 +311,6 @@ class ShaclGenerator(Generator):
             return XSD.decimal
         else:
             return None
-
-    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
-        pv_node = BNode()
-        Collection(
-            g,
-            pv_node,
-            [Literal(v) for v in values],
-        )
-        func(SH["in"], pv_node)
 
     def _build_ignored_properties(self, g: Graph, c: ClassDefinition) -> BNode:
         def collect_child_properties(class_name: str, output: set) -> None:
