@@ -8,10 +8,9 @@ This extends the existing test_shaclgen.py module with:
 3. Correct (non-merged) behavior when using native LinkML class names
 """
 
+from linkml.generators.shaclgen import ShaclGenerator
 import rdflib
 from rdflib import RDF, SH
-
-from linkml.generators.shaclgen import ShaclGenerator
 
 
 # ---------------------------------------------------------------------------
