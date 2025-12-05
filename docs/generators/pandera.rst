@@ -17,7 +17,7 @@ using the PolaRS integration.
 
 The implementation of the generator is incomplete. Because Pandera is a dataframe library,
 the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
-`tests/test\_generators/test\_panderagen.py` also has an example using supported LinkML features.
+`tests/linkml/test\_generators/test\_panderagen.py` also has an example using supported LinkML features.
 
 Currently supported LinkML features are:
 
@@ -199,7 +199,7 @@ The generate python looks like this:
 Command Line
 ------------
 
-.. currentmodule:: linkml.generators.panderagen
+.. currentmodule:: linkml.generators.panderagen.panderagen
 
 .. click:: linkml.generators.panderagen:cli
     :prog: gen-pandera
