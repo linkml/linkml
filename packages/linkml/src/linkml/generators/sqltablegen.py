@@ -167,7 +167,7 @@ class SQLTableGenerator(Generator):
 
         def dump(sql, *multiparams, **params):
             nonlocal ddl_str
-            ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};"
+            ddl_str += f"{str(sql.compile(dialect=engine.dialect)).rstrip()};\n"
 
         engine = create_mock_engine(f"{self.dialect}://./MyDb", strategy="mock", executor=dump)
         schema_metadata = MetaData()
