@@ -18,9 +18,9 @@ from linkml.generators.oocodegen import OOCodeGenerator
 
 from .class_handler_base import ClassHandlerBase
 from .enum_handler_base import EnumHandlerBase
+from .pandera import SlotHandlerPandera
 from .render_adapters import DataframeDocument
 from .render_adapters.dataframe_class import DataframeClass
-from .slot_handler_base import SlotHandlerBase
 
 logger = logging.getLogger(__name__)
 
@@ -205,7 +205,7 @@ class PanderaGenerator(OOCodeGenerator):
 
     def __post_init__(self):
         super().__post_init__()
-        self.slot_handler = SlotHandlerBase(self)
+        self.slot_handler = SlotHandlerPandera(self)
         self.enum_handler = EnumHandlerBase(self)
         self.class_handler = ClassHandlerBase(self)
 
