@@ -1,0 +1,83 @@
+{#-
+  Jinja2 Template for a Pandera class-based model
+  Details at https://pandera.readthedocs.io/en/stable/dataframe_models.html
+-#}
+{%- import 'slots.jinja2' as slot_macros -%}
+{%- import 'custom_checks.jinja2' as custom_checks -%}
+
+{%- macro render_parent_classes(cls) -%}
+    {%- if cls.is_a -%}
+        {{ cls.is_a }}
+    {%- else -%}
+        pla.DataFrameModel, _LinkmlPanderaValidator
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_nested_ranges(cls) -%}
+{#-
+    Helper class member that references another Pandera class that
+    handles a nested association.
+-#}
+    _NESTED_RANGES = {
+    {%- for field in cls.fields -%}
+        {%- if field.reference_class is not none %}
+        "{{ field.name }}": "{{ field.reference_class }}",
+{% endif -%}
+    {%- endfor %}
+    }
+{%- endmacro -%}
+
+{%- macro render_inline_form(cls) -%}
+{#-
+    This is a meta object with information used by the various check methods
+-#}
+    _INLINE_FORM = {
+    {%- for field in cls.fields -%}
+        {%- if field.inline_form is not none %}
+        "{{ field.name }}": "{{ field.inline_form }}",
+{% endif -%}
+    {%- endfor %}
+    }
+{%- endmacro -%}
+
+{%- macro render_inline_details(cls) -%}
+{#-
+    This is a meta object with information used by the various check methods
+-#}
+    _INLINE_DETAILS = {
+    {%- for field in cls.fields -%}
+        {%- if field.inline_details() %}
+        "{{ field.name }}": {{ field.inline_details() }},
+{% endif -%}
+    {%- endfor %}
+    }
+{%- endmacro -%}
+
+{%- macro render_slots(cls) -%}
+    {{ slot_macros.id_slot_name_class_variable(cls) }}
+    {%- if (cls.fields | length) == 0 %}
+    pass
+    {% endif -%}
+    {%- for field in cls.fields -%}
+        {{ slot_macros.render_slot(field) }}
+    {%- endfor -%}
+{%- endmacro -%}
+
+{%- macro render_class(cls) %}
+{#-
+    Generates the main structure of a Pandera class.
+    This includes the slots, custom checks,
+    and helper class members with information used by the custom checks.
+-#}
+class {{cls.name}}({{ render_parent_classes(cls) }}):
+    {%- if cls.source_class.description %}
+    """
+    {{ cls.source_class.description }}
+    """
+{% endif -%}
+    {{ render_slots(cls) }}
+    {{ custom_checks.render_custom_checks(cls) }}
+    {{ render_nested_ranges(cls) }}
+    {{ render_inline_form(cls) }}
+    {{ render_inline_details(cls) }}
+{% endmacro -%}

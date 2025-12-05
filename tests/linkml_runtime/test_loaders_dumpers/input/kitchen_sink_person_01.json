@@ -1,0 +1,9 @@
+{
+  "aliases": [],
+  "id": "P01",
+  "name": "John Doe",
+  "has_birth_event": {
+    "started_at_time": "2021-01-01",
+    "ended_at_time": "2021-01-02"
+  }
+}
