@@ -1,4 +1,5 @@
 import pytest
+import rdflib
 from linkml.generators.shaclgen import ShaclGenerator
 from rdflib import RDF, SH
 
