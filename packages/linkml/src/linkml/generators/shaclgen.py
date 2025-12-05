@@ -33,7 +33,7 @@ class ShaclGenerator(Generator):
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
     use_class_uri_names: bool = True
-    """If True, Shapes inherit the names from the LinkML class instead of Class_uri. Suffixes still works in addition"""
+    """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work in addition."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -75,7 +75,7 @@ class ShaclGenerator(Generator):
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
             if self.use_class_uri_names:
-                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True))
+                class_uri_with_suffix = class_uri
             else:
                 class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
             if self.suffix:
@@ -385,8 +385,9 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     "--use-class-uri-names/--use-native-names",
     default=True,
     show_default=True,
-    help="Use --use-native-names to change the shacl-names from using the class_uri for the name, to using the "
-    "linkML class names of the yaml/schema file. Suffixes from the --suffix option can still be appended",
+    help="If --use-class-uri-names (default), SHACL shape names are based on class_uri. "
+    "If --use-native-names, SHACL shape names are based on LinkML class names from the schema file. "
+    "Suffixes from the --suffix option can still be appended.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

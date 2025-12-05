@@ -20,8 +20,8 @@ def test_shacl_shape_naming_modes(tmp_path):
     """
     Validate naming modes using a minimal deterministic schema:
 
-    - non_native_names=True  (default)  => shape URIs based on class_uri
-    - non_native_names=False             => shape URIs based on LinkML class name
+    - use_class_uri_names=True  (default)  => shape URIs based on class_uri
+    - use_class_uri_names=False             => shape URIs based on LinkML class name
 
     A custom schema is used to guarantee differences.
     """

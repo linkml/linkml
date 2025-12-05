@@ -8,7 +8,7 @@ from rdflib import RDF, SH
 def test_shacl_distinct_shapes_with_native_names():
     """
     Expected correct behavior:
-    When using native names (non_native_names=False), shapes SHOULD be created per LinkML class
+    When using native names (use_class_uri_names=False), shapes SHOULD be created per LinkML class
     even if class_uri is identical.
 
     This test documents the intended future behavior and currently fails.
