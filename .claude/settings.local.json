@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv sync:*)",
+      "Bash(git log:*)",
+      "Bash(uv run pytest:*)",
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

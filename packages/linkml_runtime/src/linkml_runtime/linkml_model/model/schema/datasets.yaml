@@ -1,0 +1,357 @@
+id: https://w3id.org/linkml/datasets
+title: LinkML Datasets Datamodel
+name: datasets
+description: A datamodel for datasets
+license: https://creativecommons.org/publicdomain/zero/1.0/
+see_also:
+  - https://specs.frictionlessdata.io/data-resource
+  - https://www.w3.org/TR/void/
+  - https://www.w3.org/TR/hcls-dataset/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  datasets: https://w3id.org/linkml/report
+  skos: http://www.w3.org/2004/02/skos/core#
+  pav: http://purl.org/pav/
+  schema: http://schema.org/
+  sh: https://w3id.org/shacl/
+  void: http://rdfs.org/ns/void#
+  frictionless: https://specs.frictionlessdata.io/
+  formats: http://www.w3.org/ns/formats/
+  csvw: http://www.w3.org/ns/csvw#
+  dcat: http://www.w3.org/ns/dcat#
+  mediatypes: https://www.iana.org/assignments/media-types/
+  oslc: http://open-services.net/ns/core#
+  bibo: http://purl.org/ontology/bibo/
+
+default_prefix: datasets
+default_range: string
+
+default_curi_maps:
+  - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+
+# ==================================
+# Classes                          #
+# ==================================
+classes:
+  Information:
+    abstract: true
+    description: Grouping for datasets and data files
+    close_mappings:
+      - schema:CreativeWork
+    slots:
+      - id
+      - download_url
+      - license
+      - title
+      - description
+      - conforms_to
+      - conforms_to_schema
+      - conforms_to_class
+      - version
+      - language
+      - publisher
+      - keywords
+      - issued
+#      - modified
+      - created_by
+      - created_on
+      - compression
+      - was_derived_from
+      - page
+      - test_roles
+
+  DataPackage:
+    aliases:
+      - dataset
+      - file collection
+      - data resource collection
+    description: A collection of data resources
+    is_a: Information
+    class_uri: void:Dataset
+    exact_mappings:
+      - dcat:Dataset
+    close_mappings:
+      - dcat:Catalog
+    see_also:
+      - https://specs.frictionlessdata.io/data-package
+    slots:
+      - resources
+    
+  DataResource:
+    is_a: Information
+    description: An individual file or table
+    class_uri: dcat:Distribution
+    exact_mappings:
+      - schema:DataDownload
+    see_also:
+      - https://specs.frictionlessdata.io/data-resource
+    slots:
+      - path
+      - title
+      - description
+      - format
+      - media_type
+      - encoding
+      - bytes
+      - hash
+      - md5
+      - sha256
+      - dialect
+
+  FormatDialect:
+    description: Additional format information for a file
+    attributes:
+      comment_prefix:
+      delimiter:
+      double_quote:
+      header:
+      quote_char:
+      
+# ==================================
+# Slots                            #
+# ==================================
+slots:
+  id:
+    identifier: true
+    description: the unique name of th dataset
+    slot_uri: dcterms:identifier
+    exact_mappings:
+      - schema:name
+
+  title:
+    description: the official title of the element
+    slot_uri: dcterms:title
+
+  description:
+    description: human readable description of the information
+    slot_uri: dcterms:description
+
+  language:
+    description: language in which the information is expressed
+    
+  publisher:
+    slot_uri: dcterms:publisher
+    range: uriorcurie
+    
+  issued:
+    slot_uri: dcterms:issued
+    range: datetime
+
+  page:
+    slot_uri: dcat:landingPage
+    
+  dialect:
+    slot_uri: csvw:dialect
+
+  bytes:
+    range: integer
+    slot_uri: dcat:byteSize
+
+  path:
+    close_mappings:
+      - frictionless:path
+
+  download_url:
+    range: uri
+    slot_uri: dcat:downloadURL
+    exact_mappings:
+      - schema:url
+    close_mappings:
+      - frictionless:path
+
+  format:
+    range: FormatEnum
+    slot_uri: dcterms:format
+
+  compression:
+
+  encoding:
+  hash:
+    notes:
+      - we recommend using a more specific slot such as sha256 or md5
+  sha256:
+    is_a: hash
+  md5:
+    is_a: hash
+    
+  media_type:
+    # range: MediaTypeEnum
+    range: string
+    examples:
+      - value: text/csv
+      - value: application/json
+    slot_uri: dcat:mediaType
+    exact_mappings:
+      - frictionless:mediatype
+      - schema:encodingFormat
+
+  conforms_to:
+    slot_uri: dcterms:conformsTo
+    range: uriorcurie
+
+  conforms_to_schema:
+    is_a: conforms_to
+    exact_mappings:
+      - frictionless:schema
+
+  conforms_to_class:
+    is_a: conforms_to
+    description: class in schema which the data object instantiates
+      
+  profile:
+    range: uriorcurie
+    exact_mappings:
+      - frictionless:profiles
+
+  keywords:
+    singular_name: keyword
+    multivalued: true
+    range: string
+    slot_uri: dcat:keyword
+    exact_mappings:
+      - schema:keywords
+    
+  themes:
+    singular_name: theme
+    multivalued: true
+    range: uriorcurie
+    slot_uri: dcat:theme
+    
+  resources:
+    multivalued: true
+    range: DataResource
+    slot_uri: dcat:distribution
+    exact_mappings:
+      - schema:distribution
+
+  test_roles:
+    multivalued: true
+    range: TestRole
+    
+  created_by:
+    range: uriorcurie
+    description: agent that created the element
+    slot_uri: pav:createdBy
+
+  created_on:
+    range: datetime
+    description: time at which the element was created
+    slot_uri: pav:createdOn
+
+  last_updated_on:
+    range: datetime
+    description: time at which the element was last updated
+    slot_uri: pav:lastUpdatedOn
+
+  modified_by:
+    range: uriorcurie
+    description: agent that modified the element
+    slot_uri: oslc:modifiedBy
+
+  status:
+    range: uriorcurie
+    description: status of the element
+    slot_uri: bibo:status
+    examples:
+      - value: "bibo:draft"
+
+  license:
+    description: license for the data
+    slot_uri: dcterms:license
+    exact_mappings:
+      - frictionless:licenses
+
+  version:
+    description: particular version of schema
+    slot_uri: pav:version
+    exact_mappings:
+      - schema:version
+      - dcterms:hasVersion
+
+  was_derived_from:
+    slot_uri: prov:wasDerivedFrom
+    description: A derivation is a transformation of an entity into another, an update
+      of an entity resulting in a new one, or the construction of a new entity based
+      on a pre-existing entity.@en
+      
+# ==================================
+# Enumerations                     #
+# ==================================
+enums:
+
+  TestRole:
+    permissible_values:
+      Example:
+      CounterExample:
+
+  MediaTypeEnum:
+    exact_mappings:
+      - dcterms:MediaType
+    permissible_values:
+      csv:
+        meaning: mediatypes:text/csv
+      rdf-xml:
+        meaning: mediatypes:application/rdf+xml
+        
+  FormatEnum:
+    permissible_values:
+      JSON-LD:
+        meaning: formats:JSON-LD
+      N3:
+        meaning: formats:N3
+      N-Triples:
+        meaning: formats:N-Triples
+      N-Quads:
+        meaning: formats:N-Quads
+      LD Patch:
+        meaning: formats:LD_Patch
+      Microdata:
+        meaning: formats:microdata
+      OWL XML Serialization:
+        meaning: formats:OWL_XML
+      OWL Functional Syntax:
+        meaning: formats:OWL_Functional
+      OWL Manchester Syntax:
+        meaning: formats:OWL_Manchester
+      POWDER:
+        meaning: formats:POWDER
+      POWDER-S:
+        meaning: formats:POWDER-S
+      PROV-N:
+        meaning: formats:PROV-N
+      PROV-XML:
+        meaning: formats:PROV-XML
+      RDFa:
+        meaning: formats:RDFa
+      RDF/JSON:
+        meaning: formats:RDF_JSON
+      RDF/XML:
+        meaning: formats:RDF_XML
+      RIF XML Syntax:
+        meaning: formats:RIF_XML
+      SPARQL Results in XML:
+        meaning: formats:SPARQL_Results_XML
+      SPARQL Results in JSON:
+        meaning: formats:SPARQL_Results_JSON
+      SPARQL Results in CSV:
+        meaning: formats:SPARQL_Results_CSV
+      SPARQL Results in TSV:
+        meaning: formats:SPARQL_Results_TSV
+      Turtle:
+        meaning: formats:Turtle
+      TriG:
+        meaning: formats:TriG
+      YAML:
+      JSON:
