@@ -1286,16 +1286,8 @@ def test_common_metadata_properties(input_path, tmp_path):
     # Test Class with metadata properties
     class_file = tmp_path / "TestClassWithPhase1Props.md"
 
-    # Test status
-    assert_mdfile_contains(class_file, "## Status", after="Class: Test Class With Metadata Properties")
-    assert_mdfile_contains(class_file, "testing", after="## Status")
-
-    # Test rank
-    assert_mdfile_contains(class_file, "## Rank", after="## Status")
-    assert_mdfile_contains(class_file, "100", after="## Rank")
-
-    # Test categories
-    assert_mdfile_contains(class_file, "## Categories", after="## Rank")
+    # Test categories (appears before Administrative Metadata)
+    assert_mdfile_contains(class_file, "## Categories", after="Class: Test Class With Metadata Properties")
     assert_mdfile_contains(class_file, "* test_category", after="## Categories")
     assert_mdfile_contains(class_file, "* metadata_test", after="* test_category")
 
@@ -1321,6 +1313,11 @@ def test_common_metadata_properties(input_path, tmp_path):
     )
     assert_mdfile_contains(class_file, "* **source2**: Alternative description from source 2", after="source1")
 
+    # Test status and rank under Administrative Metadata
+    assert_mdfile_contains(class_file, "### Administrative Metadata", after="## Alternative Descriptions")
+    assert_mdfile_contains(class_file, "**Status:** testing", after="### Administrative Metadata")
+    assert_mdfile_contains(class_file, "**Rank:** 100", after="**Status:**")
+
     # Test title display (when different from name)
     assert_mdfile_contains(class_file, "# Class: Test Class With Metadata Properties (TestClassWithPhase1Props)")
 
@@ -1330,11 +1327,8 @@ def test_common_metadata_properties(input_path, tmp_path):
     # Test Slot with metadata properties
     slot_file = tmp_path / "test_slot.md"
 
-    assert_mdfile_contains(slot_file, "## Status", after="Slot: Test Slot Title")
-    assert_mdfile_contains(slot_file, "stable", after="## Status")
-    assert_mdfile_contains(slot_file, "## Rank", after="## Status")
-    assert_mdfile_contains(slot_file, "50", after="## Rank")
-    assert_mdfile_contains(slot_file, "## Categories", after="## Rank")
+    # Test categories (appears before Administrative Metadata for slots too)
+    assert_mdfile_contains(slot_file, "## Categories", after="Slot: Test Slot Title")
     assert_mdfile_contains(slot_file, "* slot_category", after="## Categories")
     assert_mdfile_contains(slot_file, "## Keywords", after="## Categories")
     assert_mdfile_contains(slot_file, "* test_keyword", after="## Keywords")
@@ -1342,34 +1336,42 @@ def test_common_metadata_properties(input_path, tmp_path):
     assert_mdfile_contains(slot_file, "## Notes", after="## In Subsets")
     assert_mdfile_contains(slot_file, "* Slot note 1", after="## Notes")
 
+    # Test status and rank under Administrative Metadata for slot
+    assert_mdfile_contains(slot_file, "### Administrative Metadata", after="## Notes")
+    assert_mdfile_contains(slot_file, "**Status:** stable", after="### Administrative Metadata")
+    assert_mdfile_contains(slot_file, "**Rank:** 50", after="**Status:**")
+
     # Test Enum with metadata properties
     enum_file = tmp_path / "TestEnum.md"
 
-    assert_mdfile_contains(enum_file, "## Status", after="Enum: Test Enumeration")
-    assert_mdfile_contains(enum_file, "draft", after="## Status")
-    assert_mdfile_contains(enum_file, "## Rank", after="## Status")
-    assert_mdfile_contains(enum_file, "200", after="## Rank")
-    assert_mdfile_contains(enum_file, "## Categories", after="## Rank")
+    # Test categories (appears before Administrative Metadata for enums too)
+    assert_mdfile_contains(enum_file, "## Categories", after="Enum: Test Enumeration")
     assert_mdfile_contains(enum_file, "* enum_category", after="## Categories")
     assert_mdfile_contains(enum_file, "## Keywords", after="## Categories")
     assert_mdfile_contains(enum_file, "* enum_test", after="## Keywords")
 
+    # Test status and rank under Administrative Metadata for enum
+    assert_mdfile_contains(enum_file, "### Administrative Metadata", after="## Keywords")
+    assert_mdfile_contains(enum_file, "**Status:** draft", after="### Administrative Metadata")
+    assert_mdfile_contains(enum_file, "**Rank:** 200", after="**Status:**")
+
     # Test Type with metadata properties
     type_file = tmp_path / "TestType.md"
 
-    assert_mdfile_contains(type_file, "## Status", after="Type: Test Type Title")
-    assert_mdfile_contains(type_file, "production", after="## Status")
-    assert_mdfile_contains(type_file, "## Rank", after="## Status")
-    assert_mdfile_contains(type_file, "10", after="## Rank")
-    assert_mdfile_contains(type_file, "## Categories", after="## Rank")
+    # Test categories (appears before Administrative Metadata for types too)
+    assert_mdfile_contains(type_file, "## Categories", after="Type: Test Type Title")
     assert_mdfile_contains(type_file, "* type_category", after="## Categories")
     assert_mdfile_contains(type_file, "## Keywords", after="## Categories")
     assert_mdfile_contains(type_file, "* custom_type", after="## Keywords")
 
+    # Test status and rank under Administrative Metadata for type
+    assert_mdfile_contains(type_file, "### Administrative Metadata", after="## Keywords")
+    assert_mdfile_contains(type_file, "**Status:** production", after="### Administrative Metadata")
+    assert_mdfile_contains(type_file, "**Rank:** 10", after="**Status:**")
+
     # Test that minimal elements WITHOUT metadata properties don't show these sections
     minimal_class_file = tmp_path / "MinimalClass.md"
-    assert_mdfile_does_not_contain(minimal_class_file, "## Status")
-    assert_mdfile_does_not_contain(minimal_class_file, "## Rank")
+    assert_mdfile_does_not_contain(minimal_class_file, "### Administrative Metadata")
     assert_mdfile_does_not_contain(minimal_class_file, "## Categories")
     assert_mdfile_does_not_contain(minimal_class_file, "## Keywords")
 
