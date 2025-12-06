@@ -199,7 +199,7 @@ The generate python looks like this:
 Command Line
 ------------
 
-.. currentmodule:: linkml.generators.panderagen.panderagen
+.. currentmodule:: linkml.generators.panderagen
 
 .. click:: linkml.generators.panderagen:cli
     :prog: gen-pandera
@@ -209,7 +209,7 @@ Generator
 ---------
 
 
-.. autoclass:: PanderaGenerator
+.. autoclass:: PanderaDataframeGenerator
     :members:
 
 
@@ -219,7 +219,7 @@ Templates
 The panderagen module uses a templating system that allows generating different target APIs.
 The only template currently provided is the default `panderagen_class_based` template.
 
-The :class:`.PanderaGenerator` then serves as a translation layer between
+The :class:`.PanderaDataframeGenerator` then serves as a translation layer between
 the source models from :mod:`linkml_runtime` and the target models under
 :mod:`.panderagen` , making clear what is needed to generate
 schema code as well as what parts of the linkml metamodel are supported.
