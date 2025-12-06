@@ -64,7 +64,13 @@ Data can be retrieved from the database via sqlite3, e. g. the following command
 sqlite3 persons.db "SELECT * FROM Person"
 ```
 
-will result in:
+or alternatively using the sqlite3 module from Python (if you don't have sqlite3 installed)
+
+```bash
+python -m sqlite3 persons.db "SELECT * FROM Person"
+```
+
+The coummand will result in:
 ```bash
 ORCID:1234|Clark Kent|555-555-5555|33|1
 ORCID:4567|Lois Lane||34|1
