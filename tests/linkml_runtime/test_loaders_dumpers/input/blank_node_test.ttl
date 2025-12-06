@@ -1,0 +1,6 @@
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix sdo: <http://schema.org/> .
+
+[ a sdo:PostalAddress ;
+            personinfo:city "foo city" ;
+            personinfo:street "1 foo street" ] .

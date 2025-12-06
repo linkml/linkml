@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=https://linkml.io/linkml-model/linkml_model/jsonschema/meta.schema.json
+id: https://w3id.org/linkml/examples/range_local
+title: Range Local
+name: range_local
+description: Schema for testing ranges
+
+prefixes:
+  ex: https://w3id.org/linkml/examples/patterns/
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_prefix: ex
+
+slots:
+  none_range:
+  string_range:
+    range: string
+  class_range:
+    range: RangeClass
+  enum_range:
+    range: RangeEnum
+  any_range:
+    range: AnyOldRange
+  exactly_one_of_range:
+    range: AnyOldRange
+    exactly_one_of:
+      - range: range_string
+      - range: string
+  any_of_range:
+    range: AnyOldRange
+    any_of:
+      - range: RangeEnum
+      - range: RangeClass
+      - range: string
+  any_of_and_exactly_one_of_range:
+    range: AnyOldRange
+    any_of:
+      - range: string
+      - range: range_string
+    exactly_one_of:
+      - range: RangeEnum
+      - range: RangeClass
+  invalid_any_range_no_linkml_any:
+    any_of:
+      - range: string
+      - range: range_string
+  invalid_any_range_enum:
+    range: RangeEnum
+    any_of:
+      - range: string
+      - range: range_string
+  invalid_any_range_class:
+    range: RangeClass
+    any_of:
+      - range: string
+      - range: range_string
+
+
+classes:
+
+  AnyOldRange:
+    class_uri: linkml:Any
+
+  ClassWithRanges:
+    slots:
+    - string_range
+    - class_range
+    - enum_range
+    - none_range
+    - any_range
+    - any_of_range
+    - exactly_one_of_range
+    - any_of_and_exactly_one_of_range
+    - invalid_any_range_no_linkml_any
+    - invalid_any_range_enum
+    - invalid_any_range_class
+
+  RangeClass:
+    description: A class used as a range.
+
+enums:
+  RangeEnum:
+    permissible_values:
+      RangeRover:
+      LoneRangeR:
+      HomeOnTheRange:
+      StRangerThings:
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+    description: A character string
+
+  range_string:
+    typeof: string
+    description: A character string that describes a range.
+
+  range_local_default:
+    uri: xsd:integer
+    base: int
+    description: Set as default range within this file.
+
+  range_importer_default:
+    uri: xsd:float
+    base: float
+    description: Set as default range of a schema that imports this file.
+
+  range_import_importer_default:
+    uri: xsd:boolean
+    base: boolean
+    description: Set as default range at the top level of the schema.
