@@ -13,8 +13,7 @@ LinkML allows you to work with SQL/Relational databases in a number of different
 
 ### Example Schema
 
-We will use the example from the previous tutorial (examples/tutorial07/personinfo.yaml)
-```
+We will use the example from the previous tutorial (examples/tutorial/tutorial07/personinfo.yaml).
 
 ### Generating SQL CREATE TABLE statements
 
