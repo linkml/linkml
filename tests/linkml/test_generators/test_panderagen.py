@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 from linkml.cli.main import linkml as linkml_cli
-from linkml.generators.panderagen import PanderaGenerator, cli
 
 # The following packages are required for these tests but optional for linkml
 # avoid pytest collection errors if not installed
@@ -13,6 +12,9 @@ from linkml.generators.panderagen import PanderaGenerator, cli
 np = pytest.importorskip("numpy", minversion="1.0", reason="NumPy >= 1.0 not installed")
 pl = pytest.importorskip("polars", minversion="1.0", reason="PolaRS >= 1.0 not installed")
 pandera = pytest.importorskip("pandera.polars", reason="Pandera not installed")
+
+# These depend on PolaRS and Numpy so need to be after importorskip
+from linkml.generators.panderagen import PanderaDataframeGenerator, cli  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -336,17 +338,17 @@ def big_synthetic_dataframe(
 
 @pytest.fixture(scope="module")
 def synthetic_schema(synthetic_flat_dataframe_model):
-    return PanderaGenerator(synthetic_flat_dataframe_model)
+    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
 
 
 @pytest.fixture(scope="module")
 def compiled_synthetic_schema_module(synthetic_schema):
-    return synthetic_schema.compile_pandera()
+    return synthetic_schema.compile_dataframe_model()
 
 
 def test_pandera_basic_class_based(synthetic_schema):
     """
-    Test generation of Pandera for classed-based mode
+    Test generation of Pandera for class-based mode
 
     This test will check the generated python, but does not include a compilation step
     """

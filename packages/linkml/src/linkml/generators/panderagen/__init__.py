@@ -1,9 +1,9 @@
 from .panderagen import (
-    PanderaGenerator,
+    PanderaDataframeGenerator,
     cli,
 )
 
 __all__ = [
     "cli",
-    "PanderaGenerator",
+    "PanderaDataframeGenerator",
 ]
