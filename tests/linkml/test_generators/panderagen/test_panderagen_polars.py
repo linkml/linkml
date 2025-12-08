@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 
 import pytest
@@ -156,10 +157,20 @@ def compiled_polars_synthetic_schema_module(synthetic_flat_dataframe_model):
         ),
     ],
 )
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
 def test_stub(compiled_model, class_name, data):
     schema_class = getattr(compiled_model, class_name)
+    logger.info(
+        "DIFF: "
+        + ", ".join(list(set(schema_class.keys()) - set(data.keys())))
+        + " / , ".join(list(set(data.keys()) - set(schema_class.keys())))
+    )
+    logger.info(schema_class)
+    logger.info(data)
 
-    assert schema_class == "temp"
+    df = pl.DataFrame(data, schema=schema_class)
+
+    assert df is not None
 
 
 def test_synthetic_dataframe(
@@ -175,10 +186,9 @@ def test_dump_synthetic_df(big_synthetic_dataframe):
     logger.info(big_synthetic_dataframe)
 
 
-@pytest.mark.skipif(True, reason="Temporary skip until real templates are checked in.")
 def test_enums(compiled_polars_synthetic_schema_module):
     SyntheticEnum = compiled_polars_synthetic_schema_module.SyntheticEnum
     SyntheticEnumOnt = compiled_polars_synthetic_schema_module.SyntheticEnumOnt
 
-    assert SyntheticEnum == "temp"
-    assert SyntheticEnumOnt == "temp"
+    assert set(SyntheticEnum.categories) == {"ANIMAL", "VEGETABLE", "MINERAL"}
+    assert set(SyntheticEnumOnt.categories) == {"fiction", "non fiction"}
