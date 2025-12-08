@@ -13,8 +13,7 @@ LinkML allows you to work with SQL/Relational databases in a number of different
 
 ### Example Schema
 
-We will use the example from the previous tutorial (examples/tutorial07/personinfo.yaml)
-```
+We will use the example from the previous tutorial (examples/tutorial/tutorial07/personinfo.yaml).
 
 ### Generating SQL CREATE TABLE statements
 
@@ -58,7 +57,15 @@ linkml-sqldb dump -s personinfo.yaml --db persons.db data.yaml
 
 This will create a SQLite database `persons.db` (you don't have to worry about creating the schema, this is handled automatically)
 
-Data can be retrieved from the database via slite3, e. g. the following command
+Data can be retrieved from the database using the `load` subcommand:
+
+```bash
+linkml-sqldb load -s personinfo.yaml --db persons.db -o data_out.yaml
+```
+
+This will export the data from the database back into YAML format.
+
+Alternatively, data can be queried directly from the database via sqlite3, e. g. the following command
 
 ```bash
 sqlite3 persons.db "SELECT * FROM Person"

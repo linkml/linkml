@@ -416,14 +416,12 @@
 <h2>Converting LinkML Schemas to DDL<a class="headerlink" href="#converting-linkml-schemas-to-ddl" title="Link to this heading">¶</a></h2>
 <section id="example-schema">
 <h3>Example Schema<a class="headerlink" href="#example-schema" title="Link to this heading">¶</a></h3>
-<p>We will use the example from the previous tutorial (examples/tutorial07/personinfo.yaml)</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-### Generating SQL CREATE TABLE statements
-
-Use the [gen-sqltables](/generators/sqltable) command to make a SQL schema:
-
-```bash
-gen-sqltables personinfo.yaml
+<p>We will use the example from the previous tutorial (examples/tutorial/tutorial07/personinfo.yaml).</p>
+</section>
+<section id="generating-sql-create-table-statements">
+<h3>Generating SQL CREATE TABLE statements<a class="headerlink" href="#generating-sql-create-table-statements" title="Link to this heading">¶</a></h3>
+<p>Use the <a class="reference internal" href="../generators/sqltable.html"><span class="doc std std-doc">gen-sqltables</span></a> command to make a SQL schema:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-sqltables<span class="w"> </span>personinfo.yaml
 </pre></div>
 </div>
 <p>Outputs:</p>
@@ -457,7 +455,12 @@ gen-sqltables personinfo.yaml
 </pre></div>
 </div>
 <p>This will create a SQLite database <code class="docutils literal notranslate"><span class="pre">persons.db</span></code> (you don’t have to worry about creating the schema, this is handled automatically)</p>
-<p>Data can be retrieved from the database via sqlite3, e. g. the following command</p>
+<p>Data can be retrieved from the database using the <code class="docutils literal notranslate"><span class="pre">load</span></code> subcommand:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-sqldb<span class="w"> </span>load<span class="w"> </span>-s<span class="w"> </span>personinfo.yaml<span class="w"> </span>--db<span class="w"> </span>persons.db<span class="w"> </span>-o<span class="w"> </span>data_out.yaml
+</pre></div>
+</div>
+<p>This will export the data from the database back into YAML format.</p>
+<p>Alternatively, data can be queried directly from the database via sqlite3, e. g. the following command</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sqlite3<span class="w"> </span>persons.db<span class="w"> </span><span class="s2">&quot;SELECT * FROM Person&quot;</span>
 </pre></div>
 </div>
@@ -554,6 +557,7 @@ you are using a relational database management system (RDBMS) you may find them 
 <li><a class="reference internal" href="#">Part 9: Working with SQL databases</a><ul>
 <li><a class="reference internal" href="#converting-linkml-schemas-to-ddl">Converting LinkML Schemas to DDL</a><ul>
 <li><a class="reference internal" href="#example-schema">Example Schema</a></li>
+<li><a class="reference internal" href="#generating-sql-create-table-statements">Generating SQL CREATE TABLE statements</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#using-a-sql-database-as-a-backend-for-data">Using a SQL database as a backend for data</a></li>
