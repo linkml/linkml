@@ -1,0 +1,86 @@
+#[cfg(feature = "serde")]
+impl serde_utils::InlinedPair for {{ name }} {
+    type Key   = {{ key_property_type }};
+{% if can_convert_from_primitive %}
+    type Value = {{ value_property_type }};
+{% else %}
+    type Value = Value;
+{% endif %}
+    type Error = String;
+
+    fn extract_key(&self) -> &Self::Key {
+        return &self.{{ key_property_name }};
+    }
+
+    fn from_pair_mapping(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
+        let mut map = match v {
+            Value::Map(m) => m,
+            _ => return Err("ClassDefinition must be a mapping".into()),
+        };
+        let key_value = serde_value::to_value(k.clone())
+            .map_err(|e| format!("unable to serialize key: {}", e))?;
+        map.insert(Value::String("{{key_property_name}}".into()), key_value);
+        let de          = Value::Map(map).into_deserializer();
+        match serde_path_to_error::deserialize(de) {
+            Ok(ok)  => Ok(ok),
+            Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
+        }
+    }
+
+
+{% if can_convert_from_primitive %}
+    fn from_pair_simple(k: Self::Key, v: Value) -> Result<Self,Self::Error> {
+        let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
+        let key_value = serde_value::to_value(k.clone())
+            .map_err(|e| format!("unable to serialize key: {}", e))?;
+        map.insert(Value::String("{{ key_property_name }}".into()), key_value);
+        map.insert(Value::String("{{ value_property_name }}".into()), v);
+        let de          = Value::Map(map).into_deserializer();
+        match serde_path_to_error::deserialize(de) {
+            Ok(ok)  => Ok(ok),
+            Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
+        }
+
+{% elif can_convert_from_empty %}
+    fn from_pair_simple(k: Self::Key, _v: Value) -> Result<Self,Self::Error> {
+        let mut map:  BTreeMap<Value, Value> = BTreeMap::new();
+        let key_value = serde_value::to_value(k.clone())
+            .map_err(|e| format!("unable to serialize key: {}", e))?;
+        map.insert(Value::String("{{ key_property_name }}".into()), key_value);
+        let de          = Value::Map(map).into_deserializer();
+        match serde_path_to_error::deserialize(de) {
+            Ok(ok)  => Ok(ok),
+            Err(e)  => Err(format!("at `{}`: {}", e.path(), e.inner())),
+        }
+
+
+{% else %}
+    fn from_pair_simple(_k: Self::Key, _v: Value) -> Result<Self,Self::Error> {
+        Err("Cannot create a {{name}} from a primitive value!".into())
+{% endif %}
+    }
+
+{% if can_convert_from_primitive %}
+    fn simple_value(&self) -> Option<&Self::Value> {
+{% if value_property_optional %}
+        self.{{ value_property_name }}.as_ref()
+{% else %}
+        Some(&self.{{ value_property_name }})
+{% endif %}
+    }
+{% endif %}
+
+    fn compact_value(&self) -> Option<Value> {
+        let value = match serde_value::to_value(self) {
+            Ok(v) => v,
+            Err(_) => return None,
+        };
+        match value {
+            Value::Map(mut map) => {
+                map.remove(&Value::String("{{ key_property_name }}".into()));
+                Some(Value::Map(map))
+            }
+            _ => None,
+        }
+    }
+}
