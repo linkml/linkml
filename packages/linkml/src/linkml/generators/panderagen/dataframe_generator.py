@@ -188,7 +188,6 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     def append_classes(self, oodoc: OODocument):
         classes = []
 
-        # TODO: move to class mixin
         for c in self.class_handler.ordered_classes():
             if c.name in self.schemaview.all_enums():
                 continue

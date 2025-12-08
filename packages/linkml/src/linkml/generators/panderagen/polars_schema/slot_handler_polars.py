@@ -30,7 +30,7 @@ class SlotHandlerPolars(SlotHandlerBase):
             if inlined_form == SlotHandlerBase.FORM_MULTIVALUED_FOREIGN_KEY:
                 range = self.generator.make_multivalued(f"{self.range_id_type(slot)}")
             elif inlined_form == SlotHandlerBase.FORM_FOREIGN_KEY:
-                range = self.range_id_type(slot)  # TODO: make this a get id function
+                range = self.range_id_type(slot)
             elif inlined_form == SlotHandlerBase.FORM_INLINED_LIST_DICT:
                 range = self.generator.get_class_name(range)
                 range = self.generator.make_multivalued(f"{range}Struct")

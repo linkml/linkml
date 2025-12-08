@@ -1,7 +1,6 @@
 import logging
 from dataclasses import dataclass
 
-# TODO: separate these all out for PolaRS
 from ..dataframe_generator import DataframeGenerator
 from .slot_handler_polars import SlotHandlerPolars
 
