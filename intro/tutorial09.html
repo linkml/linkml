@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Part 10: Working with SQL databases" href="tutorial10.html"><link rel="prev" title="Part 8: Generating Projects" href="tutorial08.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="LinkML Schemas" href="../schemas/index.html"><link rel="prev" title="Part 8: Generating Projects" href="tutorial08.html">
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
@@ -213,7 +213,6 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorial07.html">Part 7: Slots and inheritance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial08.html">Part 8: Generating Projects</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Part 9: Working with SQL databases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial10.html">Part 10: Working with SQL databases</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input aria-label="Toggle navigation of LinkML Schemas" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -464,7 +463,11 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sqlite3<span class="w"> </span>persons.db<span class="w"> </span><span class="s2">&quot;SELECT * FROM Person&quot;</span>
 </pre></div>
 </div>
-<p>will result in:</p>
+<p>or alternatively using the sqlite3 module from Python (if you don’t have sqlite3 installed)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>sqlite3<span class="w"> </span>persons.db<span class="w"> </span><span class="s2">&quot;SELECT * FROM Person&quot;</span>
+</pre></div>
+</div>
+<p>The coummand will result in:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ORCID:1234<span class="p">|</span>Clark<span class="w"> </span>Kent<span class="p">|</span><span class="m">555</span>-555-5555<span class="p">|</span><span class="m">33</span><span class="p">|</span><span class="m">1</span>
 ORCID:4567<span class="p">|</span>Lois<span class="w"> </span>Lane<span class="o">||</span><span class="m">34</span><span class="p">|</span><span class="m">1</span>
 </pre></div>
@@ -504,12 +507,12 @@ you are using a relational database management system (RDBMS) you may find them 
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="tutorial10.html">
+          <a class="next-page" href="../schemas/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Part 10: Working with SQL databases</div>
+                <div class="title">LinkML Schemas</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
