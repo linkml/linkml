@@ -71,6 +71,9 @@ instance/
 # pyenv
 .python-version
 
+# mise
+mise.toml
+
 # dotenv
 .env
 
