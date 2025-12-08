@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://linkml.io/linkml-model/linkml_model/jsonschema/meta.schema.json
+id: https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc/creature_subsets
+name: creature_subsets
+description: Subsets in the mythical creature catalogue
+
+subsets:
+  generic_creature:
+    description: Subset for representing any creature, mythical or otherwise.
+  mythical_creature:
+    description: Contains classes for representing mythical creatures.

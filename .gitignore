@@ -117,3 +117,6 @@ http_cache.sqlite
 
 examples/PersonSchema/rust/target
 examples/PersonSchema/rust/Cargo.lock
+
+# temporary ignore
+monorepo-cleanup.sh

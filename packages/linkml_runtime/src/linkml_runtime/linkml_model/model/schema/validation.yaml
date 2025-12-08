@@ -1,0 +1,120 @@
+id: https://w3id.org/linkml/reporting
+title: LinkML Report Metamodel
+name: reporting
+description: A datamodel for reports on data, based on SHACL
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  reporting: https://w3id.org/linkml/report
+  skos: http://www.w3.org/2004/02/skos/core#
+  pav: http://purl.org/pav/
+  schema: http://schema.org/
+  sh: https://w3id.org/shacl/
+
+default_prefix: reporting
+default_range: string
+
+default_curi_maps:
+  - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - owl
+
+imports:
+  - linkml:types
+
+
+# ==================================
+# Classes                          #
+# ==================================
+classes:
+  ValidationReport:
+    class_uri: sh:ValidationReport
+    description: A report object
+    attributes:
+      results:
+        range: ValidationResult
+        multivalued: true
+    todos:
+      - add prov object
+
+  ValidationResult:
+    class_uri: sh:ValidationResult
+    description: An individual result arising from validation of a data instance using a particular rule
+    slots:
+      - type
+      - severity
+      - subject
+      - instantiates
+      - predicate
+      - object
+      - object_str
+      - node_source
+      - info
+
+# ==================================
+# Slots                            #
+# ==================================
+slots:
+  type:
+    # range: problem_type
+    range: nodeidentifier
+    slot_uri: sh:sourceConstraintComponent
+  subject:
+    range: nodeidentifier
+    slot_uri: sh:focusNode
+  instantiates:
+    range: nodeidentifier
+    exact_mappings:
+      - sh:sourceShape
+  predicate:
+    range: nodeidentifier
+    related_mappings:
+      - sh:resultPath
+  object:
+    range: nodeidentifier
+    slot_uri: sh:value
+  object_str:
+    range: string
+  node_source:
+    range: nodeidentifier
+  severity:
+    range: severity_options
+  info:
+    range: string
+
+
+# ==================================
+# Enumerations                     #
+# ==================================
+enums:
+  problem_type:
+    permissible_values:
+      undeclared_slot:
+        description: Applies when a slot is used in data but the slot is undeclared in the datamodel
+      inapplicable_slot:
+        description: Applies when a slot is used in an instance of a class where the slot is not applicable for that class
+      missing_slot_value:
+        description: Applies when an instance of a class has a required slot which is not filled in
+      slot_range_violation:
+        description: Applies when the value of a slot is inconsistent with the declared range
+      max_count_violation:
+        meaning: sh:MaxCountConstraintComponent
+      parsing_error:
+        description: The data could not be parsed
+  severity_options:
+    exact_mappings:
+      - sh:Severity
+    permissible_values:
+      FATAL:
+      ERROR: 
+        meaning: sh:Violation
+      WARNING:
+        meaning: sh:Warning
+      INFO:
+        meaning: sh:Info
