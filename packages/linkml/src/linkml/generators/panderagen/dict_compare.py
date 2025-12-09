@@ -33,7 +33,7 @@ def deep_compare_dicts(dict1: dict[str, Any], dict2: dict[str, Any], float_toler
         else:
             val2 = dict2[key]
 
-        elif not key1_exists and val2 is None:
+        if not key1_exists and val2 is None:
             continue
         elif not key2_exists and val1 is None:
             continue
