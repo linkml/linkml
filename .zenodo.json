@@ -1,0 +1,140 @@
+{
+  "creators": [
+    {
+      "name": "Moxon, Sierra A.T.",
+      "orcid": "0000-0002-8719-7760"
+    },
+    {
+      "name": "Solbrig, Harold"
+    },
+    {
+      "name": "Harris, Nomi L.",
+      "orcid": "0000-0001-6315-3707"
+    },
+    {
+      "name": "Kalita, Patrick"
+    },
+    {
+      "name": "Miller, Mark A."
+    },
+    {
+      "name": "Patil, Sujay"
+    },
+    {
+      "name": "Schaper, Kevin"
+    },
+    {
+      "name": "Bizon, Chris"
+    },
+    {
+      "name": "Caufield, J. Harry"
+    },
+    {
+      "name": "Cirujano Cuesta, Silvano"
+    },
+    {
+      "name": "Cox, Corey"
+    },
+    {
+      "name": "Dekervel, Frank"
+    },
+    {
+      "name": "Dooley, Damion M."
+    },
+    {
+      "name": "Duncan, William D."
+    },
+    {
+      "name": "Fliss, Tim"
+    },
+    {
+      "name": "Gehrke, Sarah"
+    },
+    {
+      "name": "Graefe, Adam S.L."
+    },
+    {
+      "name": "Hegde, Harshad"
+    },
+    {
+      "name": "Ireland, AJ"
+    },
+    {
+      "name": "Jacobsen, Julius O.B."
+    },
+    {
+      "name": "Krishnamurthy, Madan"
+    },
+    {
+      "name": "Kroll, Carlo"
+    },
+    {
+      "name": "Linke, David"
+    },
+    {
+      "name": "Ly, Ryan"
+    },
+    {
+      "name": "Matentzoglu, Nicolas"
+    },
+    {
+      "name": "Overton, James A."
+    },
+    {
+      "name": "Saunders, Jonny L."
+    },
+    {
+      "name": "Unni, Deepak R."
+    },
+    {
+      "name": "Vaidya, Gaurav"
+    },
+    {
+      "name": "Vierdag, Wouter-Michiel A.M."
+    },
+    {
+      "name": "LinkML Community Contributors"
+    },
+    {
+      "name": "Ruebel, Oliver"
+    },
+    {
+      "name": "Chute, Christopher G."
+    },
+    {
+      "name": "Brush, Matthew H."
+    },
+    {
+      "name": "Haendel, Melissa A.",
+      "orcid": "0000-0001-9114-8737"
+    },
+    {
+      "name": "Mungall, Christopher J.",
+      "orcid": "0000-0002-6601-2165"
+    }
+  ],
+  "license": "Apache-2.0",
+  "title": "LinkML: A Linked Open Data Modeling Language",
+  "keywords": [
+    "linked data",
+    "data modeling",
+    "semantic web",
+    "RDF",
+    "JSON-LD",
+    "YAML",
+    "schema",
+    "ontology"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.48550/arXiv.2511.16935",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/linkml/linkml",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
