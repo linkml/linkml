@@ -63,7 +63,7 @@ def check_data_pandera(
             same = deep_compare_dicts(object_to_validate, actual_data)
             if same:
                 if not valid:
-                    logger.warning("PolaRS schema accepted an invalid object. Note the schema is not a full validator.")
+                    logger.warning("Polars schema accepted an invalid object. Note the schema is not a full validator.")
                 else:
                     logger.info(f"polars round-trip: {object_to_validate} == {actual_data}")
             else:
