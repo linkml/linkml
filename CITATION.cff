@@ -63,6 +63,8 @@ authors:
     given-names: Gaurav
   - family-names: Vierdag
     given-names: Wouter-Michiel A.M.
+  - family-names: Putman
+    given-names: Tim
   - family-names: LinkML Community Contributors
   - family-names: Ruebel
     given-names: Oliver
@@ -145,6 +147,8 @@ preferred-citation:
       given-names: Gaurav
     - family-names: Vierdag
       given-names: Wouter-Michiel A.M.
+    - family-names: Putman
+      given-names: Tim
     - family-names: LinkML Community Contributors
     - family-names: Ruebel
       given-names: Oliver
