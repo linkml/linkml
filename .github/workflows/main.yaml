@@ -84,19 +84,35 @@ jobs:
         run: uv sync --all-groups
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2.0.2
-      - name: Generate coverage results
+      - name: Test linkml package
         run: |
-          uv run coverage run -m pytest --with-network
-          uv run coverage xml
+          uv run coverage run -m pytest tests/linkml/ --with-network
+          uv run coverage xml -o coverage-linkml.xml
           uv run coverage report -m
         shell: bash
-      - name: Upload coverage report
+      - name: Test linkml-runtime package
+        run: |
+          uv run coverage run -m pytest tests/linkml_runtime/ --with-network
+          uv run coverage xml -o coverage-linkml_runtime.xml
+          uv run coverage report -m
+        shell: bash
+      - name: Upload linkml coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v5.5.1
         with:
-          name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
+          name: codecov-linkml-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: coverage-linkml.xml
+          flags: linkml
+          fail_ci_if_error: true
+      - name: Upload runtime coverage report
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v5.5.1
+        with:
+          name: codecov-runtime-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-linkml_runtime.xml
+          flags: runtime
           fail_ci_if_error: true
 
   test_slow:
@@ -128,20 +144,21 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: uv sync --all-groups
-      - name: Generate coverage results
+      - name: Test linkml slow tests
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          uv run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
-          uv run coverage xml
+          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m slow -n auto
+          uv run coverage xml -o coverage-linkml-slow.xml
           uv run coverage report -m
-      - name: Upload coverage report
+      - name: Upload linkml slow test coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v5.5.1
         with:
-          name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
+          name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: coverage-linkml-slow.xml
+          flags: linkml
           fail_ci_if_error: true
 
   test_build_package:
@@ -165,4 +182,4 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
-        run: uv build
+        run: uv build --all-packages
