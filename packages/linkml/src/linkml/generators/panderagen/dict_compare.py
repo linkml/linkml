@@ -13,7 +13,7 @@ def deep_compare_dicts(dict1: dict[str, Any], dict2: dict[str, Any], float_toler
     Args:
         dict1: First dictionary to compare
         dict2: Second dictionary to compare
-        float_tolerance: Tolerance for float comparisons (default: 1e-9)
+        float_tolerance: Tolerance for float comparisons (default: 1e-7)
 
     Returns:
         True if dictionaries are equivalent, False otherwise
@@ -24,8 +24,6 @@ def deep_compare_dicts(dict1: dict[str, Any], dict2: dict[str, Any], float_toler
         key1_exists = key in dict1
         key2_exists = key in dict2
 
-        if not key1_exists and not key2_exists:
-            continue
         if not key1_exists:
             val1 = None
         else:
@@ -35,8 +33,6 @@ def deep_compare_dicts(dict1: dict[str, Any], dict2: dict[str, Any], float_toler
         else:
             val2 = dict2[key]
 
-        if not key1_exists and not key2_exists:
-            continue
         elif not key1_exists and val2 is None:
             continue
         elif not key2_exists and val1 is None:
