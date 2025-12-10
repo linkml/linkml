@@ -6,6 +6,18 @@
 [![PyPIDownloadsTotal](https://pepy.tech/badge/linkml)](https://pepy.tech/project/linkml)
 [![PyPIDownloadsMonth](https://img.shields.io/pypi/dm/linkml?logo=PyPI&color=blue)](https://pypi.org/project/linkml)
 
+# Archived Repo Notice
+
+This repository was archived in December 2025.
+Before this point is was a dependency in the [Data Vocabs ](https://github.com/govuk-one-login/data-vocab) application.
+It was decoupled in [data-vocab#147](https://github.com/govuk-one-login/data-vocab/pull/147).
+
+We'd forked and customised LinkML to cater for our use case.
+But then were stuck with a largely unmaintaiend fork that accued security updates and was diffiuclt to reconcile against main due to our changes.
+
+The few relevant commits where held on [a data-vocab branch](https://github.com/linkml/linkml/compare/main...govuk-one-login:linkml:data-vocab).
+
+All other data in this repo is effectively already public domain, and nothing else should be considered sensitive.
 
 # LinkML - Linked Data Modeling Language
 
