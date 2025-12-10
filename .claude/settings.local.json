@@ -1,11 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(uv sync:*)",
-      "Bash(git log:*)",
-      "Bash(uv run pytest:*)",
+      "WebFetch(domain:developers.zenodo.org)"
     ],
-    "deny": [],
-    "ask": []
+    "deny": []
   }
 }
