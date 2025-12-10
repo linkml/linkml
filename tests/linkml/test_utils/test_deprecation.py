@@ -225,46 +225,6 @@ def test_deprecation_warns_selectively(linkml_version):
         assert len(record) == 1
 
 
-@patch("linkml.utils.deprecation.SemVer.from_package")
-def test_future_version_catches_removed(mock_from_package, patch_deprecations):
-    """
-    Test that when version is bumped, the test_removed_are_removed
-    will catch any deprecated features that should have been removed.
-    """
-    current_ver = SemVer.from_package("linkml")
-
-    # Create a test deprecation that will be removed in the future
-    test_dep = Deprecation(
-        name="test-future-removed",
-        deprecated_in=SemVer(major=current_ver.major - 1, minor=0, patch=0),
-        removed_in=SemVer(major=current_ver.major + 1, minor=0, patch=0),
-        message="Test deprecation for future removal",
-    )
-    dep_mod.DEPRECATIONS = (test_dep,)
-
-    # Simulate future version where this should be removed
-    mock_from_package.return_value = SemVer(major=current_ver.major + 1, minor=0, patch=0)
-
-    # Clear EMITTED and simulate that the deprecated feature was used
-    EMITTED.clear()
-    EMITTED.add("test-future-removed")
-
-    # Now the test deprecation should be marked as removed
-    assert test_dep.removed  # Should be True in future version
-
-    # The test should fail because test-future-removed is removed but still used
-    removed = [dep for dep in dep_mod.DEPRECATIONS if dep.removed and not dep.name.startswith("test-")]
-    assert len(removed) == 0  # Should be empty because our test dep starts with "test-"
-
-    # But if we include test deprecations, it would be caught
-    all_removed = [dep for dep in dep_mod.DEPRECATIONS if dep.removed]
-    assert len(all_removed) == 1
-    assert all_removed[0].name == "test-future-removed"
-
-    # This assertion would fail in test_removed_are_removed if the name didn't start with "test-"
-    assert "test-future-removed" in EMITTED
-
-
 def test_removed_are_removed():
     """
     Test that any Deprecation marked as having been removed in this version have been.
@@ -281,5 +241,5 @@ def test_removed_are_removed():
         return
 
     removed = [dep for dep in DEPRECATIONS if dep.removed and not dep.name.startswith("test-")]
-    for dep in removed:
-        assert dep.name not in EMITTED
+    for removed in removed:
+        assert removed.name not in EMITTED

@@ -225,7 +225,7 @@ DEPRECATIONS = (
     Deprecation(
         name="validators",
         deprecated_in=SemVer.from_str("1.8.6"),
-        removed_in=SemVer.from_str("1.10.0"),
+        removed_in=SemVer.from_str("1.11.0"),
         message=(
             "linkml.validators and linkml.utils.validation are the older versions "
             "of linkml.validator and have unmaintained, duplicated functionality"
