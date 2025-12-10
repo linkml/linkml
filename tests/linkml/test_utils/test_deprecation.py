@@ -241,5 +241,5 @@ def test_removed_are_removed():
         return
 
     removed = [dep for dep in DEPRECATIONS if dep.removed and not dep.name.startswith("test-")]
-    for removed in removed:
-        assert removed.name not in EMITTED
+    for dep in removed:
+        assert dep.name not in EMITTED
