@@ -39,6 +39,9 @@ def linkml_version() -> SemVer:
         ["3.2.1", "1.2.3", [ge, gt]],
         ["v1.2.3", "1.2.3", [le, ge, eq]],
         ["0.0.0.post2223.dev0+0c3afa90", "0.0.0.post9999.dev9+0c3afa90", [le, ge, eq]],
+        ["1.10.0-rc1", "1.10.0", [le, lt]],
+        ["1.10.0", "1.10.0-rc1", [ge, gt]],
+        ["1.10.0-rc1", "1.10.0-rc1", [le, ge, eq]],
     ],
 )
 def test_semver(v1, v2, ops):
@@ -223,6 +226,7 @@ def test_deprecation_warns_selectively(linkml_version):
     with pytest.warns() as record:
         dep.warn()
         assert len(record) == 1
+
 
 
 def test_removed_are_removed():
