@@ -1,0 +1,37 @@
+name: test-union-schema
+id: https://example.org/test-union-schema
+imports:
+  - linkml:types
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+default_prefix: test
+
+classes:
+  Thing:
+    description: A base class
+    attributes:
+      id:
+        identifier: true
+      name:
+        range: string
+
+  TypeA:
+    is_a: Thing
+    description: First type in union
+    attributes:
+      field_a:
+        range: string
+
+  TypeB:
+    is_a: Thing
+    description: Second type in union
+    attributes:
+      field_b:
+        range: integer
+
+  UnionClass:
+    description: A class that represents a union of other classes
+    union_of:
+      - TypeA
+      - TypeB
