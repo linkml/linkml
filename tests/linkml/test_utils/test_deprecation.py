@@ -4,9 +4,9 @@ from operator import eq, ge, gt, le, lt
 from unittest.mock import patch
 
 import pytest
-from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecation_warning
 
 from linkml.utils import deprecation as dep_mod
+from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecation_warning
 
 all_ops = {le, lt, gt, ge, eq}
 
