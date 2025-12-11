@@ -122,10 +122,12 @@ class SemVer:
     def __eq__(self, other: "SemVer"):
         # Versions are equal only if major, minor, patch AND pre-release status match
         # e.g., 1.10.0 != 1.10.0-rc1
-        return (self.major == other.major and 
-                self.minor == other.minor and 
-                self.patch == other.patch and
-                self.pre == other.pre)
+        return (
+            self.major == other.major and 
+            self.minor == other.minor and 
+            self.patch == other.patch and
+            self.pre == other.pre
+        )
 
     def __lt__(self, other: "SemVer"):
         # fall through each if elif only if version component is equal
