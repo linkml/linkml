@@ -123,10 +123,10 @@ class SemVer:
         # Versions are equal only if major, minor, patch AND pre-release status match
         # e.g., 1.10.0 != 1.10.0-rc1
         return (
-            self.major == other.major and 
-            self.minor == other.minor and 
-            self.patch == other.patch and
-            self.pre == other.pre
+            self.major == other.major
+            and self.minor == other.minor
+            and self.patch == other.patch
+            and self.pre == other.pre
         )
 
     def __lt__(self, other: "SemVer"):
@@ -144,7 +144,7 @@ class SemVer:
             return True
         elif self.pre is None and other.pre is not None:
             return False
-        
+
         # otherwise, equal (which is False)
         return False
 
