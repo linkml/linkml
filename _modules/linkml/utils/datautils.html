@@ -392,13 +392,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldcontextgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSVDumper</span><span class="p">,</span> <span class="n">JSONDumper</span><span class="p">,</span> <span class="n">RDFLibDumper</span><span class="p">,</span> <span class="n">TSVDumper</span><span class="p">,</span> <span class="n">YAMLDumper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinitionName</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSVLoader</span><span class="p">,</span> <span class="n">JSONLoader</span><span class="p">,</span> <span class="n">RDFLibLoader</span><span class="p">,</span> <span class="n">TSVLoader</span><span class="p">,</span> <span class="n">YAMLLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders.loader_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Loader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldcontextgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextGenerator</span>
 
 <span class="n">dumpers_loaders</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;yml&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">YAMLDumper</span><span class="p">,</span> <span class="n">YAMLLoader</span><span class="p">),</span>
