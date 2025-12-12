@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:developers.zenodo.org)"
+      "WebFetch(domain:developers.zenodo.org)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:codecov.io)",
+      "WebFetch(domain:api.codecov.io)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

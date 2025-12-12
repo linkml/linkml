@@ -64,10 +64,11 @@ class SemVer:
 
     .. note::
 
-        The inequality methods _only_ test the numeric major, minor, and patch components
-        of the version - ie. they do not evaluate the prerelease versions as described in the semver
-        spec. This is not intended to be a general SemVer inequality calculator, but used
-        only for testing deprecations
+        The inequality methods test the numeric major, minor, and patch components
+        of the version, and treat pre-release versions (rc, alpha, beta, etc.) as
+        less than the corresponding release version. For example, 1.10.0-rc1 < 1.10.0.
+        This is not intended to be a general SemVer inequality calculator, but used
+        only for testing deprecations.
 
     """
 
@@ -119,7 +120,14 @@ class SemVer:
         return SemVer.from_str(v)
 
     def __eq__(self, other: "SemVer"):
-        return self.major == other.major and self.minor == other.minor and self.patch == other.patch
+        # Versions are equal only if major, minor, patch AND pre-release status match
+        # e.g., 1.10.0 != 1.10.0-rc1
+        return (
+            self.major == other.major
+            and self.minor == other.minor
+            and self.patch == other.patch
+            and self.pre == other.pre
+        )
 
     def __lt__(self, other: "SemVer"):
         # fall through each if elif only if version component is equal
@@ -128,6 +136,14 @@ class SemVer:
                 return True
             elif getattr(self, field) > getattr(other, field):
                 return False
+
+        # If major.minor.patch are equal, check pre-release
+        # Pre-release versions are considered less than the release version
+        # e.g., 1.10.0-rc1 < 1.10.0
+        if self.pre is not None and other.pre is None:
+            return True
+        elif self.pre is None and other.pre is not None:
+            return False
 
         # otherwise, equal (which is False)
         return False
