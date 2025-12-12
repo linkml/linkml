@@ -32,6 +32,8 @@ class ShaclGenerator(Generator):
     """True means include all class / slot / type annotations in generated Node or Property shapes"""
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
+    use_class_uri_names: bool = True
+    """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -72,8 +74,11 @@ class ShaclGenerator(Generator):
                     g.add((class_uri_with_suffix, p, v))
 
             class_uri = URIRef(sv.get_uri(c, expand=True))
-            class_uri_with_suffix = class_uri
-            if self.suffix is not None:
+            if self.use_class_uri_names:
+                class_uri_with_suffix = class_uri
+            else:
+                class_uri_with_suffix = URIRef(sv.get_uri(c, expand=True, native=True))
+            if self.suffix:
                 class_uri_with_suffix += self.suffix
             shape_pv(RDF.type, SH.NodeShape)
             shape_pv(SH.targetClass, class_uri)  # TODO
@@ -228,7 +233,10 @@ class ShaclGenerator(Generator):
 
     def _add_class(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
-        range_ref = sv.get_uri(r, expand=True)
+        if self.use_class_uri_names:
+            range_ref = sv.get_uri(r, expand=True)
+        else:
+            range_ref = sv.get_uri(r, expand=True, native=True)
         func(SH["class"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
@@ -304,15 +312,6 @@ class ShaclGenerator(Generator):
         else:
             return None
 
-    def _and_equals_string(self, g: Graph, func: Callable, values: list) -> None:
-        pv_node = BNode()
-        Collection(
-            g,
-            pv_node,
-            [Literal(v) for v in values],
-        )
-        func(SH["in"], pv_node)
-
     def _build_ignored_properties(self, g: Graph, c: ClassDefinition) -> BNode:
         def collect_child_properties(class_name: str, output: set) -> None:
             for childName in self.schemaview.class_children(class_name, imports=True, mixins=False, is_a=True):
@@ -372,6 +371,14 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="Use --exclude-imports to exclude imported elements from the generated SHACL shapes. This is useful when "
     "extending a substantial ontology to avoid large output files.",
+)
+@click.option(
+    "--use-class-uri-names/--use-native-names",
+    default=True,
+    show_default=True,
+    help="If --use-class-uri-names (default), SHACL shape names are based on class_uri. "
+    "If --use-native-names, SHACL shape names are based on LinkML class names from the schema file. "
+    "Suffixes from the --suffix option can still be appended.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

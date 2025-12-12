@@ -234,7 +234,6 @@ class SlotHandlerBase(ABC):
 
     def handle_non_inlined_class_slot(self, slot, field) -> None:
         """non-inlined class slots have been temporarily removed but this will be needed to support them"""
-        # TODO: resolve this earlier
         range = slot.range
         field.range = f"ID_TYPES['{self.generator.get_class_name(range)}']"
 

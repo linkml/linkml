@@ -1,241 +1,125 @@
+import importlib
 import logging
-import os
 from dataclasses import dataclass
-from enum import Enum
-from pathlib import PurePosixPath
-from types import ModuleType
 from typing import Optional
 
 import click
-from jinja2 import Environment, PackageLoader
-from linkml_runtime.linkml_model.meta import TypeDefinition
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.generators.oocodegen import OODocument
 
-from .class_handler_base import ClassHandlerBase
-from .enum_handler_base import EnumHandlerBase
-from .pandera import SlotHandlerPandera
-from .render_adapters import DataframeDocument
-from .render_adapters.dataframe_class import DataframeClass
+from .dataframe_generator import DataframeGenerator
+from .pandera.pandera_dataframe_generator import PanderaDataframeGenerator
+from .polars_schema.polars_schema_dataframe_generator import PolarsSchemaDataframeGenerator
+
+# Allowed template directories
+ALLOWED_TEMPLATE_DIRECTORIES = ["panderagen_class_based", "panderagen_polars_schema"]
+
+
+# Available generator classes
+GENERATOR_CLASSES = {
+    "PanderaDataframeGenerator": {
+        "class": PanderaDataframeGenerator,
+        "module": "linkml.generators.panderagen",
+    },
+    "PolarsSchemaDataframeGenerator": {
+        "class": PolarsSchemaDataframeGenerator,
+        "module": "linkml.generators.panderagen.polars_schema_dataframe_generator",
+    },
+}
 
 logger = logging.getLogger(__name__)
 
 
-# keys are template_path
-TYPEMAP = {
-    "panderagen_class_based": {
-        "xsd:string": "str",
-        "xsd:integer": "int",
-        "xsd:int": "int",
-        "xsd:float": "float",
-        "xsd:double": "float",
-        "xsd:boolean": "bool",
-        "xsd:dateTime": "DateTime",
-        "xsd:date": "Date",
-        "xsd:time": "Time",
-        "xsd:anyURI": "str",
-        "xsd:decimal": "float",
-    },
-}
-
-
-class TemplateEnum(Enum):
-    CLASS_BASED = "panderagen_class_based"
-
-
 @dataclass
-class PanderaGenerator(OOCodeGenerator):
-    """
-    Generates Pandera python classes from a LinkML schema.
-
-    Status: incompletely implemented
-
-    One styles is supported:
-
-    - panderagen_class_based
-    """
+class DataframeGeneratorCli:
+    """CLI wrapper for dataframe generators with serialization capabilities."""
 
     DEFAULT_TEMPLATE_PATH = "panderagen_class_based"
     DEFAULT_TEMPLATE_FILE = "pandera.jinja2"
+    DEFAULT_GENERATOR_CLASS = PanderaDataframeGenerator
 
-    # ClassVars
-    generatorname = os.path.basename(__file__)
-    generatorstem = PurePosixPath(generatorname).stem
-    generatorversion = "0.0.1"
-    valid_formats = ["python"]
-    file_extension = "py"
-    java_style = False
-
-    # ObjectVars
-    template_file: Optional[str] = None
+    generator: DataframeGenerator
     template_path: str = DEFAULT_TEMPLATE_PATH
+    template_file: Optional[str] = None
 
-    gen_classvars: bool = True
-    gen_slots: bool = True
-    genmeta: bool = False
-    emit_metadata: bool = True
-    coerce: bool = False
-    backing_form: str = "serialization"
-    """specific storage format that may differ from specified inlined flags"""
-
-    def default_value_for_type(self, typ: str) -> str:
-        """Allow underlying framework to handle default if not specified."""
-        return None
-
-    @staticmethod
-    def make_multivalued(range: str) -> str:
-        if range == "Struct":
-            return "pl.List"
-        return f"List[{range}]"
-
-    def uri_type_map(self, xsd_uri: str, template: str = None):
-        if template is None:
-            template = self.template_path
-
-        return TYPEMAP[template].get(xsd_uri)
-
-    def map_type(self, t: TypeDefinition) -> str:
-        logger.info(f"type_map definition: {t}")
-
-        typ = None
-
-        if t.uri:
-            typ = self.uri_type_map(t.uri)
-            if typ is None:
-                typ = self.map_type(self.schemaview.get_type(t.typeof))
-        elif t.typeof:
-            typ = self.map_type(self.schemaview.get_type(t.typeof))
-
-        if typ is None:
-            raise ValueError(f"{t} cannot be mapped to a type")
-
-        return typ
-
-    def load_template(self, template_filename):
-        jinja_env = Environment(loader=PackageLoader("linkml.generators.panderagen", self.template_path))
-        return jinja_env.get_template(template_filename)
-
-    def compile_pandera(self) -> ModuleType:
+    def read_validator_helper(self) -> str:
         """
-        Generates and compiles Pandera model
+        Return the linkml_pandera_validator python module code as a string.
+
+        The generated pandera classes use a mixin helper.
+        This is currently inlined in the generated code.
+
+        TODO: generalize this for other dataframe targets
         """
-        pandera_code = self.serialize()
+        linkml_pandera_validator = importlib.import_module("linkml.generators.panderagen.linkml_pandera_validator")
+        module_path = linkml_pandera_validator.__file__
 
-        return compile_python(pandera_code)
+        try:
+            with open(module_path) as file:
+                return file.read().replace("LinkmlPanderaValidator", "_LinkmlPanderaValidator")
+        except Exception as e:
+            logger.warning(f"Unable to read linkml_pandera_validator module: {e}")
+            return None
 
-    def serialize(self, rendered_module: Optional[DataframeDocument] = None) -> str:
+    def serialize(self, directory: Optional[str] = None, rendered_module: Optional[OODocument] = None) -> str:
         """
-        Serialize the schema to a Pandera module as a string
+        Serialize the dataframe schema to a Python module as a string
         """
-        if self.template_path is None:
-            self.template_path = PanderaGenerator.DEFAULT_TEMPLATE_PATH
+        # Set template path and file on generator if provided
+        if self.template_path != self.DEFAULT_TEMPLATE_PATH:
+            self.generator.template_path = self.template_path
+        if self.template_file is not None:
+            self.generator.template_file = self.template_file
 
-        if rendered_module is not None:
-            module = rendered_module
-        else:
-            module = self.render()
+        code = self.generator.serialize(rendered_module=rendered_module)
 
-        if self.template_file is None:
-            self.template_file = PanderaGenerator.DEFAULT_TEMPLATE_FILE
-        template_file = self.template_file
-
-        template_obj = self.load_template(template_file)
-
-        code = template_obj.render(
-            doc=module,
-            metamodel_version=self.schema.metamodel_version,
-            model_version=self.schema.version,
-            coerce=self.coerce,
-            type_map=TYPEMAP,
-            template_path=self.template_path,
-            pandera_validator_code=None,
-        )
         return code
 
-    def render(self) -> DataframeDocument:
-        """
-        Create a data structure ready to pass to the serialization templates.
-        """
-        sv: SchemaView = self.schemaview
 
-        module_name = camelcase(sv.schema.name)
-
-        doc = DataframeDocument(name=module_name, package=self.package, source_schema=sv.schema)
-
-        classes = []
-
-        for c in self.class_handler.ordered_classes():
-            cn = c.name
-            safe_cn = camelcase(cn)
-            annotations = {}
-            identifier_or_key_slot = self.slot_handler.get_identifier_or_key_slot(cn)
-            if identifier_or_key_slot:
-                annotations["identifier_key_slot"] = identifier_or_key_slot.name
-            ooclass = DataframeClass(
-                name=safe_cn,
-                description=c.description,
-                package=self.package,
-                fields=[],
-                source_class=c,
-                annotations=annotations,
-            )
-            classes.append(ooclass)
-            if c.mixin:
-                ooclass.mixin = c.mixin
-            if c.mixins:
-                ooclass.mixins = [(x) for x in c.mixins]
-            if c.is_a:
-                ooclass.is_a = self.get_class_name(c.is_a)
-                parent_slots = sv.class_slots(c.is_a)
-            else:
-                parent_slots = []
-            for sn in sv.class_slots(cn):
-                oofield = self.slot_handler.handle_slot(cn, sn)
-                if sn not in parent_slots:
-                    ooclass.fields.append(oofield)
-                ooclass.all_fields.append(oofield)
-
-        doc.classes = classes
-
-        return doc
-
-    def __post_init__(self):
-        super().__post_init__()
-        self.slot_handler = SlotHandlerPandera(self)
-        self.enum_handler = EnumHandlerBase(self)
-        self.class_handler = ClassHandlerBase(self)
-
-
-@click.option("--package", help="Package name where relevant for generated class files")
 @click.option("--template-path", help="Optional jinja2 template directory within module")
 @click.option("--template-file", help="Optional jinja2 template to use for class generation")
+@click.option(
+    "--generator-class",
+    help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())}",
+    default="PanderaDataframeGenerator",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("yamlfile")
 @click.command(name="gen-pandera")
 def cli(
     yamlfile,
-    package=None,
     template_path=None,
     template_file=None,
+    generator_class=None,
     **args,
 ):
-    if template_path is not None and template_path not in TYPEMAP:
-        raise Exception(f"Template {template_path} not supported")
+    if template_path is not None and template_path not in ALLOWED_TEMPLATE_DIRECTORIES:
+        raise Exception(f"Template {template_path} not supported. Available: {ALLOWED_TEMPLATE_DIRECTORIES}")
 
     """Generate Pandera classes to represent a LinkML model"""
-    gen = PanderaGenerator(
+
+    # Get generator class
+    if generator_class is None or generator_class == "PanderaDataframeGenerator":
+        gen_class = DataframeGeneratorCli.DEFAULT_GENERATOR_CLASS
+    elif generator_class in GENERATOR_CLASSES:
+        gen_class = GENERATOR_CLASSES[generator_class]["class"]
+    else:
+        raise Exception(f"Generator class {generator_class} not supported. Available: {list(GENERATOR_CLASSES.keys())}")
+
+    generator: DataframeGenerator = gen_class(
         yamlfile,
-        package=package,
         template_path=template_path,
         template_file=template_file,
         **args,
     )
 
-    print(gen.serialize())
+    cli_wrapper = DataframeGeneratorCli(
+        generator=generator,
+        template_path=template_path or DataframeGeneratorCli.DEFAULT_TEMPLATE_PATH,
+        template_file=template_file,
+    )
+    print(cli_wrapper.serialize())
 
 
 if __name__ == "__main__":
