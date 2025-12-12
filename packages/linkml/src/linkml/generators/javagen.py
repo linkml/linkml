@@ -5,11 +5,11 @@ from typing import Optional
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
-from linkml_runtime.linkml_model.meta import TypeDefinition
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
+from linkml_runtime.linkml_model.meta import TypeDefinition
 
 default_template = """
 {#-

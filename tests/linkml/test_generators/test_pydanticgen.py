@@ -15,6 +15,8 @@ import numpy as np
 import pytest
 import yaml
 from jinja2 import DictLoader, Environment, Template
+from pydantic import BaseModel, ConfigDict, ValidationError
+
 from linkml.generators import pydanticgen as pydanticgen_root
 from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators.pydanticgen import (
@@ -45,7 +47,6 @@ from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefin
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
-from pydantic import BaseModel, ConfigDict, ValidationError
 
 from .conftest import MyInjectedClass
 

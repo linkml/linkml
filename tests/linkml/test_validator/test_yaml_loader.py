@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.validator.loaders import YamlLoader
 
 

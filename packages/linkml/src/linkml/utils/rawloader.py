@@ -7,11 +7,11 @@ from urllib.parse import urlparse
 import yaml
 from dateutil.parser import ParserError, parse
 from hbreader import FileInfo, HBType, detect_type
+
+from linkml.utils.mergeutils import set_from_schema
 from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 from linkml_runtime.loaders import yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLMark, YAMLRoot
-
-from linkml.utils.mergeutils import set_from_schema
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 yaml.error.Mark = YAMLMark

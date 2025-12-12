@@ -7,9 +7,10 @@ Test example runner using a simulated setup.
 """
 
 import pytest
+from prefixmaps.io.parser import load_multi_context
+
 from linkml.workspaces.example_runner import ExampleRunner
 from linkml_runtime import SchemaView
-from prefixmaps.io.parser import load_multi_context
 
 
 @pytest.fixture

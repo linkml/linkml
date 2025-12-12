@@ -9,12 +9,12 @@ from types import ModuleType
 from typing import Optional
 
 from jinja2 import Environment, PackageLoader
+
+from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml_runtime.linkml_model.meta import TypeDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 
 from .class_handler_base import ClassHandlerBase
 from .enum_handler_base import EnumHandlerBase

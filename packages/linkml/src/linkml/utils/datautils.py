@@ -2,13 +2,12 @@ import os
 from collections import defaultdict
 from typing import Optional
 
+from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml_runtime.dumpers import CSVDumper, JSONDumper, RDFLibDumper, TSVDumper, YAMLDumper
 from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinitionName
 from linkml_runtime.loaders import CSVLoader, JSONLoader, RDFLibLoader, TSVLoader, YAMLLoader
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml.generators.jsonldcontextgen import ContextGenerator
 
 dumpers_loaders = {
     "yml": (YAMLDumper, YAMLLoader),

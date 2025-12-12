@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "WebFetch(domain:developers.zenodo.org)"
-    ],
-    "deny": []
-  }
-}

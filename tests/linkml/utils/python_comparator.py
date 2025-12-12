@@ -1,7 +1,6 @@
 from typing import Optional
 
 from linkml_runtime.utils.compile_python import compile_python
-
 from tests.linkml.utils.filters import metadata_filter
 
 

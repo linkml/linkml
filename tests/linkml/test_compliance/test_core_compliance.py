@@ -5,8 +5,8 @@ import unicodedata
 from _decimal import Decimal
 
 import pytest
-from linkml_runtime.utils.formatutils import underscore
 
+from linkml_runtime.utils.formatutils import underscore
 from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
