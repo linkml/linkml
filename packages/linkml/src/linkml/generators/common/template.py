@@ -45,7 +45,7 @@ class TemplateModel(BaseModel):
         if environment is None:
             environment = type(self).environment()
 
-        fields = {**self.model_fields, **self.model_computed_fields}
+        fields = {**type(self).model_fields, **type(self).model_computed_fields}
 
         data = {k: _render(getattr(self, k, None), environment) for k in fields}
         template = environment.get_template(self.template)
@@ -149,7 +149,7 @@ class Import(TemplateModel):
                     is_schema=self.is_schema or other.is_schema,
                     **{
                         k: getattr(other, k)
-                        for k in other.model_fields
+                        for k in type(other).model_fields
                         if k not in ("module", "alias", "objects", "is_schema")
                     },
                 )
@@ -271,7 +271,7 @@ class Imports(TemplateModel):
         imports = self.imports.copy()
         imports = self._merge(imports, other)
         return type(self).model_construct(
-            imports=imports, **{k: getattr(self, k, None) for k in self.model_fields if k != "imports"}
+            imports=imports, **{k: getattr(self, k, None) for k in type(self).model_fields if k != "imports"}
         )
 
     def __len__(self) -> int:
@@ -369,7 +369,7 @@ def _render(
     elif isinstance(item, dict):
         return {k: _render(v, environment) for k, v in item.items()}
     elif isinstance(item, BaseModel):
-        fields = {**item.model_fields, **getattr(item, "model_computed_fields", {})}
+        fields = {**type(item).model_fields, **getattr(type(item), "model_computed_fields", {})}
         return {k: _render(getattr(item, k, None), environment) for k in fields.keys()}
     else:
         return item
