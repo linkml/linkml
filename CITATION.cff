@@ -2,55 +2,168 @@ cff-version: 1.2.0
 message: If you use this software, please cite it as below.
 authors:
   - family-names: Moxon
-    given-names: Sierra
+    given-names: Sierra A.T.
     orcid: https://orcid.org/0000-0002-8719-7760
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Kalita
-    given-names: Patrick
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Saunders
-    given-names: Jonny
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Hegde
-    given-names: Harshad
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Patil
-    given-names: Sujay
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Schaper
-    given-names: Kevin
-    affiliation: "University of North Carolina - Chapel Hill"
-  - family-names: Harris
-    given-names: Nomi
-    orcid: https://orcid.org/0000-0001-6315-3707
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
-  - family-names: Cox
-    given-names: Corey
-    affiliation: "University of North Carolina - Chapel Hill"
-  - family-names: Linke
-    given-names: David
-    affiliation: "Leibniz-Institut für Katalyse e.V. (LIKAT)"
-  - family-names: Unni
-    given-names: Deepak
-    affiliation: "SIB Swiss Institute of Bioinformatics"
-  - family-names: Vaidya
-    given-names: Gaurav
-    affiliation: "RENCI"
-  - family-names: Putman
-    given-names: Tim
   - family-names: Solbrig
     given-names: Harold
-    affiliation: "independent"
-  - family-names: "All GitHub Contributors"
-    given-names: "https://github.com/linkml/linkml/graphs/contributors"
-  - family-names: Haendel
-    given-names: Melissa
-    orcid: https://orcid.org/0000-0001-9114-8737
-    affiliation: "University of Colorado Anschutz"
-  - family-names: Mungall
+  - family-names: Harris
+    given-names: Nomi L.
+    orcid: https://orcid.org/0000-0001-6315-3707
+  - family-names: Kalita
+    given-names: Patrick
+  - family-names: Miller
+    given-names: Mark A.
+  - family-names: Patil
+    given-names: Sujay
+  - family-names: Schaper
+    given-names: Kevin
+  - family-names: Bizon
     given-names: Chris
+  - family-names: Caufield
+    given-names: J. Harry
+  - family-names: Cirujano Cuesta
+    given-names: Silvano
+  - family-names: Cox
+    given-names: Corey
+  - family-names: Dekervel
+    given-names: Frank
+  - family-names: Dooley
+    given-names: Damion M.
+  - family-names: Duncan
+    given-names: William D.
+  - family-names: Fliss
+    given-names: Tim
+  - family-names: Gehrke
+    given-names: Sarah
+  - family-names: Graefe
+    given-names: Adam S.L.
+  - family-names: Hegde
+    given-names: Harshad
+  - family-names: Ireland
+    given-names: AJ
+  - family-names: Jacobsen
+    given-names: Julius O.B.
+  - family-names: Krishnamurthy
+    given-names: Madan
+  - family-names: Kroll
+    given-names: Carlo
+  - family-names: Linke
+    given-names: David
+  - family-names: Ly
+    given-names: Ryan
+  - family-names: Matentzoglu
+    given-names: Nicolas
+  - family-names: Overton
+    given-names: James A.
+  - family-names: Saunders
+    given-names: Jonny L.
+  - family-names: Unni
+    given-names: Deepak R.
+  - family-names: Vaidya
+    given-names: Gaurav
+  - family-names: Vierdag
+    given-names: Wouter-Michiel A.M.
+  - family-names: Putman
+    given-names: Tim
+  - family-names: LinkML Community Contributors
+  - family-names: Ruebel
+    given-names: Oliver
+  - family-names: Chute
+    given-names: Christopher G.
+  - family-names: Brush
+    given-names: Matthew H.
+  - family-names: Haendel
+    given-names: Melissa A.
+    orcid: https://orcid.org/0000-0001-9114-8737
+  - family-names: Mungall
+    given-names: Christopher J.
     orcid: https://orcid.org/0000-0002-6601-2165
-    affiliation: "Lawrence Berkeley National Laboratory (LBNL)"
 title: LinkML
 repository-code: https://github.com/linkml/linkml
-url: https://limkml.io
+url: https://linkml.io
+license: Apache-2.0
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Moxon
+      given-names: Sierra A.T.
+      orcid: https://orcid.org/0000-0002-8719-7760
+    - family-names: Solbrig
+      given-names: Harold
+    - family-names: Harris
+      given-names: Nomi L.
+      orcid: https://orcid.org/0000-0001-6315-3707
+    - family-names: Kalita
+      given-names: Patrick
+    - family-names: Miller
+      given-names: Mark A.
+    - family-names: Patil
+      given-names: Sujay
+    - family-names: Schaper
+      given-names: Kevin
+    - family-names: Bizon
+      given-names: Chris
+    - family-names: Caufield
+      given-names: J. Harry
+    - family-names: Cirujano Cuesta
+      given-names: Silvano
+    - family-names: Cox
+      given-names: Corey
+    - family-names: Dekervel
+      given-names: Frank
+    - family-names: Dooley
+      given-names: Damion M.
+    - family-names: Duncan
+      given-names: William D.
+    - family-names: Fliss
+      given-names: Tim
+    - family-names: Gehrke
+      given-names: Sarah
+    - family-names: Graefe
+      given-names: Adam S.L.
+    - family-names: Hegde
+      given-names: Harshad
+    - family-names: Ireland
+      given-names: AJ
+    - family-names: Jacobsen
+      given-names: Julius O.B.
+    - family-names: Krishnamurthy
+      given-names: Madan
+    - family-names: Kroll
+      given-names: Carlo
+    - family-names: Linke
+      given-names: David
+    - family-names: Ly
+      given-names: Ryan
+    - family-names: Matentzoglu
+      given-names: Nicolas
+    - family-names: Overton
+      given-names: James A.
+    - family-names: Saunders
+      given-names: Jonny L.
+    - family-names: Unni
+      given-names: Deepak R.
+    - family-names: Vaidya
+      given-names: Gaurav
+    - family-names: Vierdag
+      given-names: Wouter-Michiel A.M.
+    - family-names: Putman
+      given-names: Tim
+    - family-names: LinkML Community Contributors
+    - family-names: Ruebel
+      given-names: Oliver
+    - family-names: Chute
+      given-names: Christopher G.
+    - family-names: Brush
+      given-names: Matthew H.
+    - family-names: Haendel
+      given-names: Melissa A.
+      orcid: https://orcid.org/0000-0001-9114-8737
+    - family-names: Mungall
+      given-names: Christopher J.
+      orcid: https://orcid.org/0000-0002-6601-2165
+  title: "LinkML: A Linked Open Data Modeling Language"
+  journal: arXiv
+  year: 2025
+  url: https://arxiv.org/abs/2511.16935
+  doi: 10.48550/arXiv.2511.16935

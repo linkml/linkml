@@ -1,0 +1,13 @@
+id: four
+name: import_four
+title: Import Four
+description: |
+  Import loaded by the StepChild class.
+imports:
+  - linkml:types
+classes:
+  Four:
+    attributes:
+      value:
+        range: string
+        ifabsent: "Four"

@@ -71,6 +71,9 @@ instance/
 # pyenv
 .python-version
 
+# mise
+mise.toml
+
 # dotenv
 .env
 
@@ -112,8 +115,12 @@ Pipfile.lock
 
 # User defined
 .vscode/*
+CLAUDE.local.md
 
 http_cache.sqlite
 
 examples/PersonSchema/rust/target
 examples/PersonSchema/rust/Cargo.lock
+
+# temporary ignore
+monorepo-cleanup.sh
