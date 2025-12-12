@@ -1,9 +1,10 @@
 import os
 import sys
 
+from rdflib.plugins.serializers.turtle import TurtleSerializer
+
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
-from rdflib.plugins.serializers.turtle import TurtleSerializer
 
 assert sys.version_info > (
     3,

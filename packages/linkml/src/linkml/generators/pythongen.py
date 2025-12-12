@@ -10,6 +10,13 @@ from types import ModuleType
 from typing import Callable, Optional, Union
 
 import click
+from rdflib import URIRef
+
+import linkml
+from linkml._version import __version__
+from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
+from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.meta import (
@@ -26,13 +33,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import be, camelcase, sfx, split_col, underscore, wrapped_annotation
 from linkml_runtime.utils.metamodelcore import builtinnames
-from rdflib import URIRef
-
-import linkml
-from linkml._version import __version__
-from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
-from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
-from linkml.utils.generator import Generator, shared_arguments
 
 logger = logging.getLogger(__name__)
 

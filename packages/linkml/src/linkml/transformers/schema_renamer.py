@@ -4,6 +4,7 @@ from typing import Any, Callable
 
 import click
 from jsonasobj2 import as_dict
+
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import (
     ClassDefinition,

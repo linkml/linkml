@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 import click
-from linkml_runtime.linkml_model import SchemaDefinition
 from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
@@ -21,6 +20,7 @@ from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model import SchemaDefinition
 
 
 @dataclass

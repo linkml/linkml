@@ -1,10 +1,11 @@
 from types import ModuleType
 
+from rdflib import Graph
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml_runtime.dumpers import json_dumper
-from rdflib import Graph
 
 yaml = """
 id: http://example.org/sample/example1

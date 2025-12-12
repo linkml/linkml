@@ -1,14 +1,14 @@
 import csv
 
 import pytest
+from sqlalchemy.orm import sessionmaker
+
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml.utils.schema_fixer import SchemaFixer
 from linkml.utils.sqlutils import SQLStore
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.loaders import csv_loader, yaml_loader
-from sqlalchemy.orm import sessionmaker
-
 from tests.linkml.utils.dict_comparator import compare_objs, compare_yaml
 
 

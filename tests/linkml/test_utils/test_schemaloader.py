@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from jsonasobj2 import as_json
+
 from linkml.utils.schemaloader import SchemaLoader
 
 

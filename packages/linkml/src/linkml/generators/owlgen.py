@@ -11,6 +11,15 @@ from typing import Any, Optional, Union
 
 import click
 import rdflib
+from rdflib import DCTERMS, OWL, RDF, XSD, BNode, Graph, Literal, URIRef
+from rdflib.collection import Collection
+from rdflib.namespace import RDFS, SKOS
+from rdflib.plugin import Parser as rdflib_Parser
+from rdflib.plugin import plugins as rdflib_plugins
+
+from linkml import METAMODEL_NAMESPACE_NAME
+from linkml._version import __version__
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -31,15 +40,6 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
-from rdflib import DCTERMS, OWL, RDF, XSD, BNode, Graph, Literal, URIRef
-from rdflib.collection import Collection
-from rdflib.namespace import RDFS, SKOS
-from rdflib.plugin import Parser as rdflib_Parser
-from rdflib.plugin import plugins as rdflib_plugins
-
-from linkml import METAMODEL_NAMESPACE_NAME
-from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
 
 logger = logging.getLogger(__name__)
 

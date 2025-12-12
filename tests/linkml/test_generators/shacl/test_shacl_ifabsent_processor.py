@@ -1,10 +1,11 @@
 import pytest
+from rdflib import URIRef
+from rdflib.term import Literal
+
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinitionName, SlotDefinitionName
-from rdflib import URIRef
-from rdflib.term import Literal
 
 schema_base = """
 id: ifabsent_tests

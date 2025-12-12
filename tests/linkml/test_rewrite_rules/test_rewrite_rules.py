@@ -6,9 +6,9 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
-from linkml_runtime.linkml_model.linkml_files import GITHUB_IO_BASE, LINKML_URL_BASE
 from rdflib import Namespace, URIRef
 
+from linkml_runtime.linkml_model.linkml_files import GITHUB_IO_BASE, LINKML_URL_BASE
 from tests import SKIP_REWRITE_RULES, SKIP_REWRITE_RULES_REASON
 
 logger = logging.getLogger(__name__)

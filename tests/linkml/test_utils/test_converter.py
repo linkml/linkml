@@ -2,8 +2,9 @@ import json
 
 import pytest
 from click.testing import CliRunner
-from linkml.converter.cli import cli
 from rdflib import Graph
+
+from linkml.converter.cli import cli
 
 
 @pytest.fixture

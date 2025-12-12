@@ -5,6 +5,8 @@ Lifestyle methods mixin
 from collections.abc import Iterable
 from typing import TypeVar
 
+from linkml.generators.common.build import ClassResult, EnumResult, RangeResult, SchemaResult, SlotResult, TypeResult
+from linkml.generators.common.template import TemplateModel
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -13,9 +15,6 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
     TypeDefinition,
 )
-
-from linkml.generators.common.build import ClassResult, EnumResult, RangeResult, SchemaResult, SlotResult, TypeResult
-from linkml.generators.common.template import TemplateModel
 
 TSchema = TypeVar("TSchema", bound=SchemaResult)
 TClass = TypeVar("TClass", bound=ClassResult)

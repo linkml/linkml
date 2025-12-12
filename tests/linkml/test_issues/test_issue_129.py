@@ -1,5 +1,6 @@
 import jsonasobj
 import pytest
+
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 
 

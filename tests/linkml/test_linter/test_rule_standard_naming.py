@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.linter.config.datamodel.config import RuleLevel, StandardNamingConfig
 from linkml.linter.rules import StandardNamingRule
 from linkml.utils.schema_builder import SchemaBuilder

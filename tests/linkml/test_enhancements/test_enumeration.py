@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.yamlgen import YAMLGenerator
 from linkml_runtime.utils.compile_python import compile_python

@@ -6,6 +6,13 @@ from dataclasses import dataclass
 from typing import Any, Optional, Union
 
 import click
+
+from linkml._version import __version__
+from linkml.generators.common import build
+from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.type_designators import get_type_designator_value
+from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
@@ -19,13 +26,6 @@ from linkml_runtime.linkml_model.meta import (
     metamodel_version,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
-
-from linkml._version import __version__
-from linkml.generators.common import build
-from linkml.generators.common.lifecycle import LifecycleMixin
-from linkml.generators.common.type_designators import get_type_designator_value
-from linkml.utils.generator import Generator, shared_arguments
-from linkml.utils.helpers import get_range_associated_slots
 
 logger = logging.getLogger(__name__)
 

@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.validator.plugins.pydantic_validation_plugin import PydanticValidationPlugin
 
 

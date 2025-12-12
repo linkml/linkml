@@ -14,7 +14,6 @@ from typing import Callable, Optional, Union
 from linkml import LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE
 from linkml_runtime.linkml_model import linkml_files
 from linkml_runtime.linkml_model.linkml_files import Format, Source
-
 from tests.linkml.utils.dirutils import are_dir_trees_equal
 from tests.linkml.utils.mismatchlog import MismatchLog
 

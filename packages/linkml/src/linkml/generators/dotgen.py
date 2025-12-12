@@ -9,11 +9,11 @@ from typing import Optional
 import click
 from deprecated.classic import deprecated
 from graphviz import FORMATS, Digraph
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.utils.formatutils import underscore
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.utils.formatutils import underscore
 
 valid_formats = sorted(list(FORMATS))
 

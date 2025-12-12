@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.validator.plugins.recommended_slots_plugin import RecommendedSlotsPlugin
 from linkml.validator.validation_context import ValidationContext
 from linkml_runtime.linkml_model import SchemaDefinition

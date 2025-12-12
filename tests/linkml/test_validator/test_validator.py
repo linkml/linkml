@@ -1,6 +1,7 @@
 from collections.abc import Iterable
 
 import pytest
+
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader
 from linkml.validator.plugins import ValidationPlugin
