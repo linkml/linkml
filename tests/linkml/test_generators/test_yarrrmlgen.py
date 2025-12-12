@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 from click.testing import CliRunner
+
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.yarrrmlgen import YarrrmlGenerator

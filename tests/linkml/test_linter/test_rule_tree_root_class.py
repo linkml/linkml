@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.linter.config.datamodel.config import RuleLevel, TreeRootClassRuleConfig
 from linkml.linter.rules import TreeRootClassRule
 from linkml.utils.schema_builder import SchemaBuilder

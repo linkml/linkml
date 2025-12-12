@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from linkml.transformers.logical_model_transformer import (
     LogicalModelTransformer,
     UnsatisfiableAttribute,

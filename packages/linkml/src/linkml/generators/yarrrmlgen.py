@@ -5,11 +5,11 @@ from typing import Any, TextIO
 
 import click
 import yaml
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition
+from linkml_runtime.utils.schemaview import SchemaView
 
 DEFAULT_SOURCE_JSON = "data.json~jsonpath"
 DEFAULT_ITERATOR = "$.items[*]"

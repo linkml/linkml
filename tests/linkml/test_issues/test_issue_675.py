@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python

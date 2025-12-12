@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from typing import Union
 
 import click
-from linkml_runtime.dumpers import json_dumper, yaml_dumper
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import write_to_file
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 

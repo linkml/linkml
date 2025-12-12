@@ -7,12 +7,12 @@ from typing import Optional
 
 import click
 from jinja2 import Environment, FileSystemLoader
-from linkml_runtime.linkml_model.meta import Element, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.generators.docgen import DocGenerator
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import Element, SlotDefinition
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 @dataclass

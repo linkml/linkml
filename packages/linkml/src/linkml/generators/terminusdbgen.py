@@ -4,6 +4,7 @@ import warnings
 from dataclasses import dataclass
 
 import click
+
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 

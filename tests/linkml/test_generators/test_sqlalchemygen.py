@@ -3,12 +3,13 @@ import re
 from collections import Counter
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 logger = logging.getLogger(__name__)
 

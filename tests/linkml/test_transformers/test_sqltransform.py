@@ -10,6 +10,7 @@ the relational representation.
 from pathlib import Path
 
 import pytest
+
 from linkml.transformers.relmodel_transformer import (
     ForeignKeyPolicy,
     RelationalModelTransformer,

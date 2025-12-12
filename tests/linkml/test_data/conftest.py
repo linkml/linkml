@@ -2,6 +2,7 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
+
 from linkml.generators import PydanticGenerator, PythonGenerator
 
 

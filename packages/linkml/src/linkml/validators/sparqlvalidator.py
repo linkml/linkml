@@ -4,8 +4,6 @@ from dataclasses import dataclass
 from typing import Union
 
 import click
-from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.schemaview import SchemaView
 from rdflib import Graph
 from SPARQLWrapper import JSON, SPARQLWrapper
 
@@ -15,6 +13,8 @@ from linkml.reporting import CheckResult, Report
 from linkml.utils.datautils import _get_format, dumpers_loaders, get_dumper
 from linkml.utils.datavalidator import DataValidator
 from linkml.utils.deprecation import deprecation_warning
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 

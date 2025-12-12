@@ -1,9 +1,8 @@
 from collections.abc import Iterator
 from typing import Any
 
-from linkml_runtime.loaders import json_loader
-
 from linkml.validator.loaders.loader import Loader
+from linkml_runtime.loaders import json_loader
 
 
 class JsonLoader(Loader):

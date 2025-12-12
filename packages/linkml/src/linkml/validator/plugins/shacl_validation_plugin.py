@@ -3,12 +3,12 @@ from collections.abc import Iterator
 from typing import Any, Optional
 
 import rdflib
-from linkml_runtime.dumpers import rdflib_dumper
 
 from linkml.generators import PythonGenerator, ShaclGenerator
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
 from linkml.validator.validation_context import ValidationContext
+from linkml_runtime.dumpers import rdflib_dumper
 
 SH = rdflib.Namespace("http://www.w3.org/ns/shacl#")
 

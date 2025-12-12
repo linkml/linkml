@@ -14,6 +14,7 @@ from unittest.mock import patch
 
 import pytest
 import yaml
+
 from linkml.generators.docgen import DiagramType, DocGenerator
 from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview

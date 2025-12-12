@@ -10,6 +10,12 @@ from typing import Any, Optional, Union
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
+
+from linkml._version import __version__
+from linkml.generators.erdiagramgen import ERDiagramGenerator
+from linkml.generators.plantumlgen import PlantumlGenerator
+from linkml.utils.generator import Generator, shared_arguments
+from linkml.workspaces.example_runner import ExampleRunner
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -26,12 +32,6 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml._version import __version__
-from linkml.generators.erdiagramgen import ERDiagramGenerator
-from linkml.generators.plantumlgen import PlantumlGenerator
-from linkml.utils.generator import Generator, shared_arguments
-from linkml.workspaces.example_runner import ExampleRunner
 
 
 class MarkdownDialect(Enum):

@@ -10,13 +10,13 @@ from typing import Callable, Optional, cast
 
 import click
 import requests
-from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import Namespace
 
 from linkml import REQUESTS_TIMEOUT
 from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SlotDefinition
+from linkml_runtime.utils.formatutils import camelcase, underscore
 
 yuml_is_a = "^-"
 yuml_uses = "uses -.->"

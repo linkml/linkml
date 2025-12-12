@@ -7,6 +7,14 @@ from typing import Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
+from rdflib import OWL, RDF, XSD, Graph, Namespace
+from ShExJSG import ShExC
+from ShExJSG.SchemaWithContext import Schema
+from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
+
+from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
+from linkml._version import __version__
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ElementName,
@@ -18,14 +26,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
-from rdflib import OWL, RDF, XSD, Graph, Namespace
-from ShExJSG import ShExC
-from ShExJSG.SchemaWithContext import Schema
-from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
-
-from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
-from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
 
 
 @dataclass

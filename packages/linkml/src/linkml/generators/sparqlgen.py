@@ -7,12 +7,12 @@ from typing import Optional
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model.meta import Prefix
-from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import Prefix
+from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 
