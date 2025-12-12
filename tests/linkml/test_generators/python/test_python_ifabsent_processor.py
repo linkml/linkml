@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinitionName, SlotDefinitionName

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
+
 from linkml.validator.cli import cli
 
 TEST_INPUTS_DIR = Path(__file__).parent / "input" / "issue_1446"

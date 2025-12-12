@@ -4,8 +4,8 @@ tests generation of CSV summaries
 
 import pytest
 from click.testing import CliRunner
-from linkml.generators import csvgen
 
+from linkml.generators import csvgen
 from tests.conftest import KITCHEN_SINK_PATH
 
 

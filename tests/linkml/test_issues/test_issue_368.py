@@ -1,6 +1,7 @@
 from typing import Callable
 
 import pytest
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.dumpers import json_dumper, rdf_dumper, yaml_dumper

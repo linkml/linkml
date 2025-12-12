@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+
 from linkml.transformers.rollup_transformer import (
     FlattenTransformerConfiguration,
     RollupTransformer,

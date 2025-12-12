@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.rdfgen import RDFGenerator
 
 

@@ -1,8 +1,8 @@
-from linkml_runtime.linkml_model import ClassDefinition, EnumDefinitionName, SlotDefinition
 from rdflib import Literal, URIRef
 
 from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
+from linkml_runtime.linkml_model import ClassDefinition, EnumDefinitionName, SlotDefinition
 
 
 class ShaclIfAbsentProcessor(IfAbsentProcessor):

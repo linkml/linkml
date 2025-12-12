@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
+
 from linkml.validator.cli import cli
 
 VALID_PERSON_1 = {"id": "id:1", "name": "John Doe", "age": 35}

@@ -1,6 +1,7 @@
 import pytest
-from linkml_runtime.utils.curienamespace import CurieNamespace
 from rdflib import URIRef
+
+from linkml_runtime.utils.curienamespace import CurieNamespace
 
 
 def test_basics():

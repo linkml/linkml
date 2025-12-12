@@ -1,10 +1,10 @@
 import logging
 
 import click
-from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml.utils.generator import Generator
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def _map_range_to_dbml_type(range_name: str) -> str:

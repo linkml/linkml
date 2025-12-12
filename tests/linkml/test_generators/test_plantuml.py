@@ -5,10 +5,11 @@ from xml.dom import minidom
 
 import pytest
 from docker.errors import ImageNotFound
-from linkml.generators.plantumlgen import PlantumlGenerator
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
+
+from linkml.generators.plantumlgen import PlantumlGenerator
+from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
 
 pytestmark = [pytest.mark.plantumlgen, pytest.mark.docker]
 
