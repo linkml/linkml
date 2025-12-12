@@ -225,7 +225,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     """
     If black is present in the environment, format the serialized code with it
     """
-    empty_list_for_multivalued_slots: bool = True
+    empty_list_for_multivalued_slots: bool = False
     """
     If True, optional multivalued slots default to ``[]``; if False, they default to ``None``.
     """
@@ -1262,10 +1262,10 @@ Available templates to override:
     "Default (auto) is to include all metadata that can't be otherwise represented",
 )
 @click.option(
-    "--no-emptylist-for-multivalued-slots",
+    "--emptylist-for-multivalued-slots",
     is_flag=True,
     default=False,
-    help="Use None (previous behavior) for optional multivalued defaults instead of an empty list.",
+    help="Use empty list for optional multivalued defaults instead of None (default behavior).",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="pydantic")
@@ -1281,7 +1281,7 @@ def cli(
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     black: bool = False,
     meta: MetadataMode = "auto",
-    no_emptylist_for_multivalued_slots: bool = False,
+    emptylist_for_multivalued_slots: bool = False,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -1306,7 +1306,7 @@ def cli(
         template_dir=template_dir,
         black=black,
         metadata_mode=meta,
-        empty_list_for_multivalued_slots=not no_emptylist_for_multivalued_slots,
+        empty_list_for_multivalued_slots=emptylist_for_multivalued_slots,
         **args,
     )
     print(gen.serialize(), end="")

@@ -306,8 +306,8 @@ slots:
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
     assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
-    assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -387,8 +387,8 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[list[str]]": "Field(default=[]",
-        "Optional[list[B]]": "Field(default=[]",
+        "Optional[list[str]]": "Field(default=None",
+        "Optional[list[B]]": "Field(default=None",
         "Optional[dict[str, B]]": "Field(default=None",
         "Optional[dict[str, str]]": "Field(default=None",
         "Optional[dict[str, Union[str, B]]]": "Field(default=None",
@@ -1118,9 +1118,9 @@ def test_attribute_field():
 
 def test_append_to_optional_lists(kitchen_sink_path):
     """
-    Optional multivalued fields should be initialised as empty lists
+    Optional multivalued fields can be initialised as empty lists when enabled
     """
-    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, empty_list_for_multivalued_slots=True)
     code = gen.serialize()
     mod = compile_python(code, PACKAGE)
     p = mod.Person(id="P:1")
@@ -1129,9 +1129,9 @@ def test_append_to_optional_lists(kitchen_sink_path):
     assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
 
 
-def test_optional_multivalued_defaults_to_none_when_disabled():
+def test_optional_multivalued_defaults_to_none():
     """
-    Optional multivalued fields can be kept as None when requested
+    Optional multivalued fields default to None (default behavior)
     """
     schema_str = """
 id: http://example.org/associated
@@ -1150,7 +1150,6 @@ classes:
     gen = PydanticGenerator(
         schema_str,
         package=PACKAGE,
-        empty_list_for_multivalued_slots=False,
     )
     code = gen.serialize()
     assert "bounds: Optional[list[float]] = Field(default=None" in code
