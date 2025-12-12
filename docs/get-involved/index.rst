@@ -13,3 +13,4 @@ Learn about ways to get involved with the LinkML community.
    :caption: Contents:
 
    Community-Meetings
+   workshops-and-presentations
