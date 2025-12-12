@@ -1,6 +1,7 @@
 """Tests of the linter's root type checks."""
 
 import pytest
+
 from linkml.linter.config.datamodel.config import RuleConfig, RuleLevel
 from linkml.linter.linter import LinterProblem
 from linkml.linter.rules import RootTypeChecks

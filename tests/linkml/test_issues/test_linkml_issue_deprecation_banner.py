@@ -1,7 +1,6 @@
 import logging
 
 from linkml.generators.docgen import DocGenerator
-
 from tests.linkml.test_generators.test_docgen import assert_mdfile_contains
 
 logger = logging.getLogger(__name__)

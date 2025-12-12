@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml

@@ -1,4 +1,5 @@
 from jsonasobj2 import JsonObj, as_json, loads
+
 from linkml.generators.jsonldgen import JSONLDGenerator
 
 

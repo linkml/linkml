@@ -1,7 +1,8 @@
 import pytest
 import rdflib
-from linkml.generators.shaclgen import ShaclGenerator
 from rdflib import RDF, SH
+
+from linkml.generators.shaclgen import ShaclGenerator
 
 
 @pytest.mark.xfail(reason="Known bug: shapes with same class_uri incorrectly merged")

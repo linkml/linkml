@@ -1,10 +1,9 @@
+from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     EnumDefinitionName,
     SlotDefinition,
 )
-
-from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 
 
 class PythonIfAbsentProcessor(IfAbsentProcessor):

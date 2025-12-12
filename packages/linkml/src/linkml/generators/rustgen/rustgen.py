@@ -4,15 +4,6 @@ from pathlib import Path
 from typing import Literal, Optional, Union, overload
 
 from jinja2 import Environment
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    EnumDefinition,
-    PermissibleValue,
-    SlotDefinition,
-    TypeDefinition,
-)
-from linkml_runtime.utils.formatutils import camelcase, uncamelcase, underscore
-from linkml_runtime.utils.schemaview import OrderedBy, SchemaView
 
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.template import ObjectImport
@@ -58,6 +49,15 @@ from linkml.generators.rustgen.template import (
     StubUtilsFile,
 )
 from linkml.utils.generator import Generator
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    SlotDefinition,
+    TypeDefinition,
+)
+from linkml_runtime.utils.formatutils import camelcase, uncamelcase, underscore
+from linkml_runtime.utils.schemaview import OrderedBy, SchemaView
 
 RUST_MODES = Literal["crate", "file"]
 

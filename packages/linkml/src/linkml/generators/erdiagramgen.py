@@ -5,12 +5,12 @@ from typing import Optional, Union
 
 import click
 import pydantic
-from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 MERMAID_SERIALIZATION = str
 

@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.panderagen.transforms import CollectionDictLoader, SimpleDictLoader
 
 pl = pytest.importorskip("polars", minversion="1.0", reason="PolaRS >= 1.0 not installed")

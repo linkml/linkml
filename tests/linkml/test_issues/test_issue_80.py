@@ -1,5 +1,6 @@
 import pytest
 from jsonasobj2 import as_json
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python

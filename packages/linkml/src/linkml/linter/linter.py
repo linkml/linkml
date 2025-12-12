@@ -14,11 +14,11 @@ import jsonschema
 import yaml
 from jsonschema.exceptions import best_match
 from jsonschema.protocols import Validator
+
+from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
-
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
 
 from .. import LOCAL_METAMODEL_YAML_FILE
 from .config.datamodel.config import Config, ExtendableConfigs, RuleLevel

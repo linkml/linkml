@@ -62,6 +62,8 @@ from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, Callable, Optional, Union
 
+from linkml.transformers.model_transformer import ModelTransformer
+from linkml.utils import logictools
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import ClassDefinitionName, SchemaDefinition
@@ -72,9 +74,6 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinitionName,
     TypeDefinition,
 )
-
-from linkml.transformers.model_transformer import ModelTransformer
-from linkml.utils import logictools
 
 HERITABLE_METASLOT = [
     # "multivalued",
