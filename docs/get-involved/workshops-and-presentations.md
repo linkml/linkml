@@ -1,4 +1,4 @@
-# Workshops and Presenations
+# Workshops and Presentations
 
 This page is regularly updated to share links to previous LinkML workshops and presentations. Happy viewing! 
 _____
