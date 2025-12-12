@@ -456,10 +456,11 @@
 
 <span class="sd">    .. note::</span>
 
-<span class="sd">        The inequality methods _only_ test the numeric major, minor, and patch components</span>
-<span class="sd">        of the version - ie. they do not evaluate the prerelease versions as described in the semver</span>
-<span class="sd">        spec. This is not intended to be a general SemVer inequality calculator, but used</span>
-<span class="sd">        only for testing deprecations</span>
+<span class="sd">        The inequality methods test the numeric major, minor, and patch components</span>
+<span class="sd">        of the version, and treat pre-release versions (rc, alpha, beta, etc.) as</span>
+<span class="sd">        less than the corresponding release version. For example, 1.10.0-rc1 &lt; 1.10.0.</span>
+<span class="sd">        This is not intended to be a general SemVer inequality calculator, but used</span>
+<span class="sd">        only for testing deprecations.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -517,7 +518,14 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;SemVer&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">major</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">minor</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">minor</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">patch</span>
+        <span class="c1"># Versions are equal only if major, minor, patch AND pre-release status match</span>
+        <span class="c1"># e.g., 1.10.0 != 1.10.0-rc1</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">major</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">major</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">minor</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">minor</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">patch</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">pre</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;SemVer&quot;</span><span class="p">):</span>
         <span class="c1"># fall through each if elif only if version component is equal</span>
@@ -526,6 +534,14 @@
                 <span class="k">return</span> <span class="kc">True</span>
             <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># If major.minor.patch are equal, check pre-release</span>
+        <span class="c1"># Pre-release versions are considered less than the release version</span>
+        <span class="c1"># e.g., 1.10.0-rc1 &lt; 1.10.0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">pre</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">pre</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">pre</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># otherwise, equal (which is False)</span>
         <span class="k">return</span> <span class="kc">False</span>

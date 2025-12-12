@@ -655,10 +655,11 @@ leave the <a class="reference internal" href="#linkml.utils.deprecation.Deprecat
 <dd><p>Representation of semantic version that supports inequality comparisons.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The inequality methods _only_ test the numeric major, minor, and patch components
-of the version - ie. they do not evaluate the prerelease versions as described in the semver
-spec. This is not intended to be a general SemVer inequality calculator, but used
-only for testing deprecations</p>
+<p>The inequality methods test the numeric major, minor, and patch components
+of the version, and treat pre-release versions (rc, alpha, beta, etc.) as
+less than the corresponding release version. For example, 1.10.0-rc1 &lt; 1.10.0.
+This is not intended to be a general SemVer inequality calculator, but used
+only for testing deprecations.</p>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="linkml.utils.deprecation.SemVer.dev">
