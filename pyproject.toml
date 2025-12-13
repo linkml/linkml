@@ -124,6 +124,12 @@ select = [
   "UP", # pyupgrade
 ]
 
+[tool.ruff.lint.isort]
+known-first-party = [
+  "linkml",
+  "linkml_runtime",
+]
+
 [tool.ruff.lint.per-file-ignores]
 # These templates can have long lines
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
