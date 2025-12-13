@@ -3,6 +3,7 @@ import sys
 
 import pytest
 import yaml
+
 from linkml.generators.panderagen.dict_compare import deep_compare_dicts
 from linkml_runtime.utils.compile_python import compile_python
 
