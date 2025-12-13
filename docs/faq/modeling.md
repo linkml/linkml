@@ -264,8 +264,8 @@ list of permissible values, but there are some external tools like Ontology Acce
 expansion for dynamic enums in LinkML schemas (with some limitations, see
 [vskit support for OWL ontologies](https://linkml.io/linkml/schemas/enums.html#tooling-to-support-dynamic-enums)).
 
-Other patterns for dynamic enums also exist (like regex matching on IRIs, and boolean logic for inclusion / exclusion
-of ontology terms). These are described in more detail in the [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) documentation.
+Other patterns for dynamic enums also exist, such as regex matching on IRIs and boolean logic for inclusion/exclusion
+of ontology terms. These are described in more detail in the [dynamic enums](https://linkml.io/linkml/schemas/enums.html#dynamic-enums) documentation.
 
 #### 2. Using Regex Constraints on Custom Types
 

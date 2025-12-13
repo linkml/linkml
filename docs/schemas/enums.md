@@ -196,8 +196,8 @@ in your schema documentation.
 The [Ontology Access Kit](https://github.com/INCATools/ontology-access-kit) (OAK)
 has a tool called vskit for expanding value sets.
 
-vskit natively supports resolving of many OBO ontologies. For ontologies not natively supported within vskit, prefix
-resolvers can be can be declared through a `config.yaml` file, and mapped to various backends such as BioPortal,
+vskit natively supports resolving many OBO ontologies. For ontologies not natively supported within vskit, prefix
+resolvers can be declared through a `config.yaml` file, and mapped to various backends such as BioPortal,
 Wikidata, or local .ttl files.
 
 To run:
