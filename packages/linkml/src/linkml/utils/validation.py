@@ -2,12 +2,12 @@ import json
 from typing import TextIO, Union
 
 import jsonschema
-from linkml_runtime.dumpers import json_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.deprecation import deprecation_warning
+from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 def _as_dict(inst):

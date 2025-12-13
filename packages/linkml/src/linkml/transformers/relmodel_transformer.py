@@ -3,6 +3,8 @@ from copy import copy
 from dataclasses import dataclass, field
 from typing import Optional
 
+from sqlalchemy import Enum
+
 from linkml_runtime.linkml_model import (
     Annotation,
     ClassDefinition,
@@ -14,7 +16,6 @@ from linkml_runtime.linkml_model import (
 )
 from linkml_runtime.linkml_model.meta import UniqueKey
 from linkml_runtime.utils.schemaview import SchemaView, SlotDefinitionName
-from sqlalchemy import Enum
 
 logger = logging.getLogger(__name__)
 

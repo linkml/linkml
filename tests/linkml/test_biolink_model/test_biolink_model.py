@@ -1,6 +1,8 @@
 from pathlib import Path
 
 import pytest
+from rdflib import Namespace
+
 from linkml.generators.csvgen import CsvGenerator
 from linkml.generators.golrgen import GolrSchemaGenerator
 from linkml.generators.graphqlgen import GraphqlGenerator
@@ -14,7 +16,6 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml_runtime.utils.compile_python import compile_python
-from rdflib import Namespace
 
 BIOLINK_NS = Namespace("https://w3id.org/biolink/vocab/")
 

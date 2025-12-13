@@ -8,6 +8,17 @@ from collections.abc import Callable, Iterable
 from functools import cache
 from itertools import chain
 
+from prefixmaps.io.parser import load_multi_context
+
+from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.linter.config.datamodel.config import (
+    CanonicalPrefixesConfig,
+    RecommendedRuleConfig,
+    RuleConfig,
+    StandardNamingConfig,
+    TreeRootClassRuleConfig,
+)
+from linkml.linter.linter import LinterProblem
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     ClassDefinitionName,
@@ -20,17 +31,6 @@ from linkml_runtime.linkml_model import (
     TypeDefinitionName,
 )
 from linkml_runtime.utils.schemaview import SchemaView
-from prefixmaps.io.parser import load_multi_context
-
-from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.linter.config.datamodel.config import (
-    CanonicalPrefixesConfig,
-    RecommendedRuleConfig,
-    RuleConfig,
-    StandardNamingConfig,
-    TreeRootClassRuleConfig,
-)
-from linkml.linter.linter import LinterProblem
 
 
 class LinterRule(ABC):

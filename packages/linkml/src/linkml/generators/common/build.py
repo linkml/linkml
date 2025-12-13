@@ -6,6 +6,9 @@ Models for intermediate build results
 
 from typing import Annotated, TypeVar
 
+from pydantic import BaseModel, ConfigDict, GetPydanticSchema
+from pydantic_core import core_schema
+
 from linkml_runtime.linkml_model import (
     ClassDefinition,
     Definition,
@@ -14,8 +17,6 @@ from linkml_runtime.linkml_model import (
     SlotDefinition,
     TypeDefinition,
 )
-from pydantic import BaseModel, ConfigDict, GetPydanticSchema
-from pydantic_core import core_schema
 
 T = TypeVar("T", bound="BuildResult", covariant=True)
 Tsv = TypeVar("Tsv", bound=Definition, covariant=True)

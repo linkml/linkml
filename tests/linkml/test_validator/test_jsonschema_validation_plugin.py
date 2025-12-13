@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
 from linkml.validator.validation_context import ValidationContext

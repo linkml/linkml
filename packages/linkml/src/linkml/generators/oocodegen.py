@@ -4,6 +4,7 @@ import unicodedata
 from dataclasses import dataclass, field
 from typing import Optional
 
+from linkml.utils.generator import Generator
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     EnumDefinition,
@@ -14,8 +15,6 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml.utils.generator import Generator
 
 SAFE_NAME = str
 TYPE_EXPRESSION = str

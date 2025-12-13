@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from datetime import date
 
 import click
+
+from linkml._version import __version__
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     LINKML,
     ClassDefinition,
@@ -11,9 +14,6 @@ from linkml_runtime.linkml_model.meta import (
     SchemaDefinition,
     SlotDefinition,
 )
-
-from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
 
 DEFAULT_OUTPUT_FILENAME = "sssom.tsv"
 

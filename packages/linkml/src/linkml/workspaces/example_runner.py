@@ -14,15 +14,15 @@ from typing import Any, Optional, TextIO, Union
 
 import click
 import yaml
-from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
-from linkml_runtime.linkml_model import ElementName
-from linkml_runtime.utils.formatutils import camelcase
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils.helpers import get_range_associated_slots
 from linkml.validator import Validator, _get_default_validator
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import json_dumper, rdflib_dumper, yaml_dumper
+from linkml_runtime.linkml_model import ElementName
+from linkml_runtime.utils.formatutils import camelcase
 
 logger = logging.getLogger(__name__)
 

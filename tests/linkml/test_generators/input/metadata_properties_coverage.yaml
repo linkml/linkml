@@ -1,0 +1,121 @@
+id: https://example.org/test/metadata_properties_coverage
+name: metadata_properties_coverage_schema
+title: Metadata Properties Coverage Test Schema
+description: Schema to test that common metadata properties are rendered in documentation
+
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+default_prefix: test
+default_range: string
+
+imports:
+  - linkml:types
+
+subsets:
+  subset_a:
+    description: Test subset for in_subset property
+
+classes:
+  TestClassWithPhase1Props:
+    description: A test class with common metadata properties
+    status: testing
+    rank: 100
+    categories:
+      - test_category
+      - metadata_test
+    keywords:
+      - metadata
+      - documentation
+      - coverage
+    in_subset:
+      - subset_a
+    title: Test Class With Metadata Properties
+    definition_uri: https://example.org/test/TestClassWithPhase1Props
+    notes:
+      - This is a test note for metadata coverage
+      - Multiple notes can be added
+    alt_descriptions:
+      source1:
+        source: source1
+        description: Alternative description from source 1
+      source2:
+        source: source2
+        description: Alternative description from source 2
+    slots:
+      - test_slot
+
+  MinimalClass:
+    description: A minimal class without metadata properties
+    slots:
+      - test_slot
+
+slots:
+  test_slot:
+    description: A test slot with metadata properties
+    range: string
+    status: stable
+    rank: 50
+    categories:
+      - slot_category
+    keywords:
+      - test_keyword
+    in_subset:
+      - subset_a
+    title: Test Slot Title
+    definition_uri: https://example.org/test/test_slot
+    notes:
+      - Slot note 1
+      - Slot note 2
+
+  minimal_slot:
+    description: A minimal slot without metadata properties
+    range: string
+
+enums:
+  TestEnum:
+    description: Test enum with metadata properties
+    status: draft
+    rank: 200
+    categories:
+      - enum_category
+    keywords:
+      - enum_test
+    in_subset:
+      - subset_a
+    title: Test Enumeration
+    definition_uri: https://example.org/test/TestEnum
+    notes:
+      - Enum note for testing
+    permissible_values:
+      VALUE_A:
+        description: First value
+      VALUE_B:
+        description: Second value
+
+  MinimalEnum:
+    description: Minimal enum
+    permissible_values:
+      VAL1:
+        description: Value 1
+
+types:
+  TestType:
+    typeof: string
+    description: Test type with metadata properties
+    status: production
+    rank: 10
+    categories:
+      - type_category
+    keywords:
+      - custom_type
+    in_subset:
+      - subset_a
+    title: Test Type Title
+    definition_uri: https://example.org/test/TestType
+    notes:
+      - Type note
+
+  MinimalType:
+    typeof: integer
+    description: Minimal type

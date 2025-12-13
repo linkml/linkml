@@ -3,13 +3,13 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import click
-from linkml_runtime.utils.schemaview import SchemaView
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 @dataclass

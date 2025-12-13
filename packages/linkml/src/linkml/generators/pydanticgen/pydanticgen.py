@@ -13,16 +13,6 @@ from typing import ClassVar, Literal, Optional, TypeVar, Union, overload
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ElementName,
-    SchemaDefinition,
-    SlotDefinition,
-    TypeDefinition,
-)
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
@@ -45,6 +35,16 @@ from linkml.generators.pydanticgen.template import (
 )
 from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ElementName,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 

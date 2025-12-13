@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.utils.schemaloader import SchemaLoader
 
 

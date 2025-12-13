@@ -2,6 +2,7 @@ import re
 from types import ModuleType
 
 import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python

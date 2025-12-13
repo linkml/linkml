@@ -2,6 +2,7 @@ import logging
 import re
 
 import pytest
+
 from linkml.cli.main import linkml as linkml_cli
 from linkml.generators.panderagen import cli
 

@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator

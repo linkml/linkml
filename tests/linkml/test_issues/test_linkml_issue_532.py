@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.pythongen import PythonGenerator
 from linkml.validators import JsonSchemaDataValidator
 from linkml_runtime.loaders import rdflib_loader

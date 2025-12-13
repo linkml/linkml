@@ -1,7 +1,7 @@
 import pytest
 from click.testing import CliRunner
-from linkml.generators.yumlgen import YumlGenerator, cli
 
+from linkml.generators.yumlgen import YumlGenerator, cli
 from tests.conftest import KITCHEN_SINK_PATH
 
 
