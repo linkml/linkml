@@ -103,11 +103,11 @@ enums:
         - rdfs:subClassOf
 ```
 
-Alternatively, the `matches` metaslot allows for the use of regular expressions to restrict for specific set of IRIs
-within a source ontology.
+The `matches` metaslot provides an alternative approach using regular expressions to restrict values to a specific set of IRIs
+from a source ontology.
 
-This is particularly useful when working with SKOS collections or other non-OWL vocabularies where a regex match
-is sufficient to restrict the set of permissible values.
+This approach is particularly useful for SKOS collections or other non-OWL vocabularies where hierarchical relationships
+may not be available or where pattern-based matching is sufficient.
 
 ```yaml
 enums:
@@ -117,9 +117,8 @@ enums:
       identifier_pattern: "http://vocab.nerc.ac.uk/collection/C16/current/.+/"
 ```
 
-### include / minus
-
-Arbitrarily nested boolean expressions can be used, combined with the [minus](https://w3id.org/linkml/minus) operator to subtract from sets:
+Arbitrarily nested boolean expressions can be used by combining the [include](https://w3id.org/linkml/include) and
+[minus](https://w3id.org/linkml/minus) operators to subtract from sets:
 
 ```yaml
 enums:
@@ -197,6 +196,10 @@ in your schema documentation.
 The [Ontology Access Kit](https://github.com/INCATools/ontology-access-kit) (OAK)
 has a tool called vskit for expanding value sets.
 
+vskit natively supports resolving of many OBO ontologies. For ontologies not natively supported within vskit, prefix
+resolvers can be can be declared through a `config.yaml` file, and mapped to various backends such as BioPortal,
+Wikidata, or local .ttl files.
+
 To run:
 
 ```bash
@@ -204,5 +207,5 @@ pip install oaklib
 vskit expand -s my_schema.yaml -o my_schema_expanded.yaml
 ```
 
-Support for `reachable_from` expansions in vskit is limited to OWL ontologies, where the `relationship_type` must be a
-valid owl:ObjectProperty.
+Support for `reachable_from` expansions in vskit is limited to OWL ontologies, where each `relationship_type` must be
+declared as an `owl:ObjectProperty` in the source ontology.
