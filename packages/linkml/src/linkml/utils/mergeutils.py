@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Optional, Union, cast
 from urllib.parse import urlparse
 
+from rdflib import URIRef
+
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     Element,
@@ -19,7 +21,6 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.yamlutils import extended_str
-from rdflib import URIRef
 
 logger = logging.getLogger(__name__)
 

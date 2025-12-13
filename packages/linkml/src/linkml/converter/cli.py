@@ -5,11 +5,6 @@ import sys
 
 import click
 import yaml
-from linkml_runtime.linkml_model import Prefix
-from linkml_runtime.utils import inference_utils
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.inference_utils import infer_all_slot_values
-from linkml_runtime.utils.schemaview import SchemaView
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
@@ -24,6 +19,11 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+from linkml_runtime.linkml_model import Prefix
+from linkml_runtime.utils import inference_utils
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.inference_utils import infer_all_slot_values
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 

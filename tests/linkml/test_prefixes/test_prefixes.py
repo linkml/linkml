@@ -4,12 +4,12 @@ import logging
 import re
 
 import pytest
+from rdflib import Graph, URIRef
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.rdfgen import RDFGenerator
-from rdflib import Graph, URIRef
-
 from tests.linkml.test_prefixes.environment import env
 
 

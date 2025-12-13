@@ -1,4 +1,5 @@
 import yaml
+
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import Linter
 from linkml.utils.schema_builder import SchemaBuilder

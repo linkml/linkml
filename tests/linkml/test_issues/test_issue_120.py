@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 

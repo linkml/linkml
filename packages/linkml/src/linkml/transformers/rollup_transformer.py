@@ -10,13 +10,12 @@ import copy
 from dataclasses import dataclass
 from typing import Optional
 
+from linkml.transformers.model_transformer import ModelTransformer
 from linkml_runtime.linkml_model.meta import (
     ClassDefinitionName,
     SchemaDefinition,
 )
 from linkml_runtime.utils.schemaview import SchemaView
-
-from linkml.transformers.model_transformer import ModelTransformer
 
 
 @dataclass

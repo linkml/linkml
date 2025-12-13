@@ -5,6 +5,7 @@ from numbers import Number
 import jsonschema
 import pytest
 from jsonschema.exceptions import ValidationError
+
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.dumpers import json_dumper

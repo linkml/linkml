@@ -15,11 +15,13 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Callable, Optional, Union
 
-import linkml_runtime
 import pydantic
 import pytest
 import rdflib
 import yaml
+from pydantic import BaseModel, ConfigDict
+
+import linkml_runtime
 from linkml.transformers.logical_model_transformer import UnsatisfiableAttribute
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import rdflib_dumper, yaml_dumper
@@ -29,7 +31,6 @@ from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
 from linkml_runtime.utils.yamlutils import YAMLRoot
-from pydantic import BaseModel, ConfigDict
 
 from .dataframe_helper import check_data_pandera
 
@@ -39,6 +40,7 @@ except ImportError:
     from yaml import SafeDumper
 
 
+import tests
 from linkml import generators as generators
 from linkml.generators import (
     ContextGenerator,
@@ -54,8 +56,6 @@ from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
 from linkml.validator.plugins.shacl_validation_plugin import ShaclValidationPlugin
-
-import tests
 
 logger = logging.getLogger(__name__)
 

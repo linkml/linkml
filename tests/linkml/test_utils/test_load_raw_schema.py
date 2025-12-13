@@ -4,6 +4,7 @@ from typing import Callable
 
 import pytest
 from jsonasobj2 import as_dict, as_json, loads
+
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemaloader import SchemaLoader
 from linkml_runtime.linkml_model.meta import SchemaDefinition

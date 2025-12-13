@@ -1,6 +1,6 @@
 from click.testing import CliRunner
-from linkml.generators import golrgen
 
+from linkml.generators import golrgen
 from tests.conftest import KITCHEN_SINK_PATH
 
 

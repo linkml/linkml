@@ -4,12 +4,12 @@ import re
 from dataclasses import dataclass
 
 import click
-from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 
 from linkml._version import __version__
 from linkml.generators.common.naming import NameCompatibility, NamingProfiles
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
+from linkml_runtime.utils.formatutils import camelcase, lcamelcase
 
 
 @dataclass

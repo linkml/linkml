@@ -5,7 +5,6 @@ import logging  # noqa: F401
 import os
 
 from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_MODEL_YAML_FILES, METAMODEL_NAMESPACE, NAMESPACES
-
 from tests.linkml.utils.test_environment import MismatchAction  # noqa: F401
 
 # ---------------------------------------------------------------

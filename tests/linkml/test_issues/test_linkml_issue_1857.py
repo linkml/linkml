@@ -1,5 +1,6 @@
 import pytest
 from click.testing import CliRunner
+
 from linkml.generators.pythongen import cli
 from linkml_runtime.utils.compile_python import compile_python
 

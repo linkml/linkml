@@ -8,15 +8,6 @@ from types import ModuleType
 from typing import Any, Optional, Union
 
 import click
-import linkml_runtime.linkml_model.meta as metamodel
-from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
-from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.enumerations import EnumDefinitionImpl
-from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.introspection import package_schemaview
-from linkml_runtime.utils.yamlutils import YAMLRoot
 from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -24,6 +15,7 @@ from sqlalchemy.ext.associationproxy import _AssociationCollection
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
+import linkml_runtime.linkml_model.meta as metamodel
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
@@ -39,6 +31,14 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+from linkml_runtime import SchemaView
+from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
 
