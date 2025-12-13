@@ -83,7 +83,13 @@ Starting with LinkML 1.3, enums do not have to be a static hardcoded list; inste
 
 This allows the enum to be synced with some upstream source, and avoids hardcoding very long lists where there are a lot of possibilities.
 
-The following example defines an enumeration that selects any subtype of "neuron" from the OBO cell type ontology:
+There are several metaslots that can be used to support defining constraints for dynamic enums:
+- [reachable_from](https://linkml.io/linkml-model/latest/docs/reachable_from/)
+- [matches](https://linkml.io/linkml-model/latest/docs/matches/)
+- [include](https://linkml.io/linkml-model/latest/docs/include/) / [minus](https://linkml.io/linkml-model/latest/docs/minus/)
+
+The following example uses `reachable_from` to define an enumeration that selects any subtype of "neuron" from the OBO
+cell type ontology:
 
 ```yaml
 enums:
@@ -96,6 +102,22 @@ enums:
       relationship_types:
         - rdfs:subClassOf
 ```
+
+Alternatively, the `matches` metaslot allows for the use of regular expressions to restrict for specific set of IRIs
+within a source ontology.
+
+This is particularly useful when working with SKOS collections or other non-OWL vocabularies where a regex match
+is sufficient to restrict the set of permissible values.
+
+```yaml
+enums:
+  MarinePlatformCategories:
+    matches:
+      source_ontology: "SDN:C16"
+      identifier_pattern: "http://vocab.nerc.ac.uk/collection/C16/current/.+/"
+```
+
+### include / minus
 
 Arbitrarily nested boolean expressions can be used, combined with the [minus](https://w3id.org/linkml/minus) operator to subtract from sets:
 
@@ -116,7 +138,7 @@ enums:
         - LOINC:5932-9
 ```
 
-Enums can extend other enums using [inherits](https://w3id.org/linkml/inherits):
+Lastly, enums can extend other enums using [inherits](https://w3id.org/linkml/inherits):
 
 ```yaml
 enums:
@@ -181,3 +203,6 @@ To run:
 pip install oaklib
 vskit expand -s my_schema.yaml -o my_schema_expanded.yaml
 ```
+
+Support for `reachable_from` expansions in vskit is limited to OWL ontologies, where the `relationship_type` must be a
+valid owl:ObjectProperty.
