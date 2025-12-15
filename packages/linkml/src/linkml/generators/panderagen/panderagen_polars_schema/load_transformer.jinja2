@@ -1,0 +1,43 @@
+import polars as pl
+from . import panderagen_polars_schema as serialized_schema
+from . import panderagen_polars_schema_loaded as loaded_schema
+from linkml.generators.panderagen.transforms import CollectionDictLoader, SimpleDictLoader
+
+{%- macro render_slot(field) -%}
+    {%- if field.inline_form == 'inline_collection_dict' %}
+                CollectionDictLoader(
+                    struct_schema=loaded_schema.{{ field.reference_class }}Struct
+                ).load('{{ field.name }}'),
+    {%- elif field.inline_form == 'simple_dict' %}
+                SimpleDictLoader(
+                    struct_schema=loaded_schema.{{ field.reference_class }}Dict,
+                    id_col="{{ field.inline_id_column_name }}",
+                    other_col="{{ field.inline_other_column_name }}",
+                    id_dtype=loaded_schema.{{ field.inline_id_range }},
+                    other_dtype=loaded_schema.{{ field.inline_other_range }},
+                ).load('{{ field.name }}'),
+    {% else -%}
+    {#- No operation on other forms -#}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_with_columns(cls) %}
+            .with_columns(
+{% for field in cls.fields %}{{ render_slot(field) }}{% endfor %}
+            )
+{% endmacro -%}
+
+{%- for cls in doc.classes %}
+class {{cls.name }}(object):
+    _polars_serialized_schema_struct = serialized_schema.{{ cls.name }}Struct
+    _polars_serialized_schema_dict = serialized_schema.{{ cls.name }}Dict
+    _polars_loaded_schema_struct = loaded_schema.{{ cls.name }}Struct
+    _polars_loaded_schema_dict = loaded_schema.{{ cls.name }}Dict
+
+    def load(self, df: pl.DataFrame) -> pl.DataFrame:
+        return (
+            df.lazy()
+{{ render_with_columns(cls) }}
+            .collect()
+        )
+{% endfor -%}
