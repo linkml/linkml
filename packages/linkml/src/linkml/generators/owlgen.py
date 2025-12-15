@@ -1,5 +1,6 @@
 """Generate OWL ontology representation of a LinkML schema."""
 
+import json
 import logging
 import os
 from collections import defaultdict
@@ -296,6 +297,15 @@ class OwlSchemaGenerator(Generator):
                     k_uri = None
             if k_uri:
                 self.graph.add((uri, URIRef(k_uri), Literal(v.value)))
+
+        # Handle examples - these are skipped by the main loop because they're linkml: prefixed
+        if hasattr(e, "examples") and e.examples:
+            for example in e.examples:
+                if example.value:
+                    self.graph.add((uri, SKOS.example, Literal(example.value)))
+                elif example.object:
+                    obj_str = json.dumps(example.object, default=str)
+                    self.graph.add((uri, SKOS.example, Literal(obj_str)))
 
     def add_class(self, cls: ClassDefinition) -> None:
         """
