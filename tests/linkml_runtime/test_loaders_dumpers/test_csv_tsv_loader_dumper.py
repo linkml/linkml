@@ -137,5 +137,128 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
         assert roundtrip == data
 
 
+def test_bracket_free_multivalued_primitives():
+    """Test that multivalued primitives are dumped without brackets.
+
+    See https://github.com/linkml/linkml/issues/3041
+    CSV/TSV output should use pipe-delimited format without brackets,
+    aligning with schemasheets conventions and common spreadsheet patterns.
+    """
+    schemaview = SchemaView(SCHEMA)
+    data = yaml_loader.load(DATA, target_class=Shop)
+
+    # Dump to CSV
+    csv_output = csv_dumper.dumps(data, index_slot="all_book_series", schemaview=schemaview)
+
+    # Split into lines and check header and data
+    lines = csv_output.strip().split("\n")
+    header = lines[0]
+    data_lines = lines[1:]
+
+    # Header should have 'genres' column
+    assert "genres" in header
+
+    # Find genres column index
+    headers = header.split(",")
+    genres_idx = headers.index("genres")
+
+    # Check each row's genres value - should NOT have brackets
+    for line in data_lines:
+        # Handle CSV parsing (fields may contain commas in JSON)
+        import csv
+        import io
+
+        reader = csv.reader(io.StringIO(line))
+        row = next(reader)
+        genres_value = row[genres_idx]
+
+        # Should not start/end with brackets (unless empty)
+        if genres_value:
+            assert not genres_value.startswith("["), f"Genres should not have brackets: {genres_value}"
+            assert not genres_value.endswith("]"), f"Genres should not have brackets: {genres_value}"
+
+
+def test_load_bracket_free_csv():
+    """Test loading CSV with bracket-free pipe-delimited values.
+
+    Users commonly enter data like "apple|banana|cherry" in spreadsheets,
+    not "[apple|banana|cherry]". This should be properly parsed as a list.
+    """
+    import tempfile
+
+    schemaview = SchemaView(SCHEMA)
+
+    # Create a CSV with bracket-free pipe-delimited genres
+    csv_content = """id,name,genres,creator_json
+S001,Test Series,scifi|fantasy,{"name": "Test Author"}
+S002,Another Series,romance,{"name": "Another Author"}
+S003,No Genre,,{"name": "Third Author"}
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
+        f.write(csv_content)
+        csv_file = f.name
+
+    try:
+        # Load the CSV
+        result = csv_loader.load_as_dict(csv_file, index_slot="all_book_series", schemaview=schemaview)
+
+        items = result.get("all_book_series", [])
+        assert len(items) == 3
+
+        # First item should have genres as a list
+        assert items[0]["genres"] == ["scifi", "fantasy"]
+
+        # Second item should have single-item list
+        assert items[1]["genres"] == ["romance"]
+
+        # Third item should have no genres (empty)
+        assert "genres" not in items[2] or items[2].get("genres") is None
+    finally:
+        import os
+
+        os.unlink(csv_file)
+
+
+def test_multivalued_primitive_roundtrip():
+    """Test that multivalued primitives round-trip correctly with bracket-free format."""
+    schemaview = SchemaView(SCHEMA)
+
+    # Create test data with multiple genres
+    series = BookSeries(
+        id="TEST001",
+        name="Test Book Series",
+        genres=[GenreEnum.scifi, GenreEnum.fantasy, GenreEnum.romance],
+        creator=Author(name="Test Author"),
+    )
+    shop = Shop(all_book_series=[series])
+
+    # Dump to CSV
+    csv_output = csv_dumper.dumps(shop, index_slot="all_book_series", schemaview=schemaview)
+
+    # Verify output format
+    assert "scifi|fantasy|romance" in csv_output
+    assert "[scifi|fantasy|romance]" not in csv_output
+
+    # Load back
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
+        f.write(csv_output)
+        csv_file = f.name
+
+    try:
+        roundtrip = csv_loader.load(csv_file, target_class=Shop, index_slot="all_book_series", schemaview=schemaview)
+
+        # Verify genres came back correctly
+        assert len(roundtrip.all_book_series) == 1
+        roundtrip_genres = [str(g) for g in roundtrip.all_book_series[0].genres]
+        assert roundtrip_genres == ["scifi", "fantasy", "romance"]
+    finally:
+        import os
+
+        os.unlink(csv_file)
+
+
 if __name__ == "__main__":
     unittest.main()

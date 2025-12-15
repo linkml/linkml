@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
-from linkml_runtime.utils.csvutils import get_configmap
+from linkml_runtime.utils.csvutils import CSV_LIST_MARKERS, get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -35,7 +35,11 @@ class DelimitedFileDumper(Dumper, ABC):
         if schemaview is None:
             schemaview = SchemaView(schema)
         configmap = get_configmap(schemaview, index_slot)
-        config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
+        config = GlobalConfig(
+            key_configs=configmap,
+            csv_delimiter=self.delimiter,
+            csv_list_markers=CSV_LIST_MARKERS,
+        )
         output = io.StringIO()
         flatten_to_csv(objs, output, config=config, **kwargs)
         return output.getvalue()

@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
 from linkml_runtime.loaders.json_loader import JSONLoader
 from linkml_runtime.loaders.loader_root import Loader
-from linkml_runtime.utils.csvutils import get_configmap
+from linkml_runtime.utils.csvutils import CSV_LIST_MARKERS, clean_multivalued_nulls, get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -68,6 +68,13 @@ class DelimitedFileLoader(Loader, ABC):
         if schemaview is None:
             schemaview = SchemaView(schema)
         configmap = get_configmap(schemaview, index_slot)
-        config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
+        config = GlobalConfig(
+            key_configs=configmap,
+            csv_delimiter=self.delimiter,
+            csv_list_markers=CSV_LIST_MARKERS,
+        )
         objs = unflatten_from_csv(input, config=config, **kwargs)
-        return json.dumps({index_slot: objs})
+        data = {index_slot: objs}
+        # Clean up [null] values in multivalued slots that result from empty CSV cells
+        data = clean_multivalued_nulls(data, schemaview, index_slot)
+        return json.dumps(data)
