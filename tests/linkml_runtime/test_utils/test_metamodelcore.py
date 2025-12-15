@@ -152,6 +152,43 @@ def test_bool():
     assert Bool.is_valid(Bool(True))
 
 
+def test_bool_extended_truthy_falsy():
+    """Test extended truthy/falsy values for CSV/TSV compatibility.
+
+    See https://github.com/linkml/linkml/issues/2580
+    Common representations used in spreadsheets should be accepted.
+    """
+    # Extended truthy values (case-insensitive)
+    assert Bool("TRUE")
+    assert Bool("True")
+    assert Bool("true")
+    assert Bool("yes")
+    assert Bool("Yes")
+    assert Bool("YES")
+    assert Bool("1")
+    assert Bool(1)
+
+    # Extended falsy values (case-insensitive)
+    assert not Bool("FALSE")
+    assert not Bool("False")
+    assert not Bool("false")
+    assert not Bool("no")
+    assert not Bool("No")
+    assert not Bool("NO")
+    assert not Bool("0")
+    assert not Bool(0)
+
+    # Verify is_valid works for all extended values
+    assert Bool.is_valid("TRUE")
+    assert Bool.is_valid("FALSE")
+    assert Bool.is_valid("yes")
+    assert Bool.is_valid("YES")
+    assert Bool.is_valid("no")
+    assert Bool.is_valid("NO")
+    assert Bool.is_valid("1")
+    assert Bool.is_valid("0")
+
+
 def test_time():
     v = datetime.time(13, 17, 43, 279000)
     assert "13:17:43.279000" == XSDTime(v)  # A date can be a datetime

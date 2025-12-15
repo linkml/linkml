@@ -203,10 +203,15 @@ class Curie(URIorCURIE):
 
 
 class Bool:
-    """Wrapper for boolean datatype"""
+    """Wrapper for boolean datatype
 
-    bool_true = re.compile(r"([Tt]rue)|(1)$")
-    bool_false = re.compile(r"([Ff]alse)|(0)$")
+    Accepts common truthy/falsy string representations:
+    - True: true, True, TRUE, 1, yes, Yes, YES
+    - False: false, False, FALSE, 0, no, No, NO
+    """
+
+    bool_true = re.compile(r"^(true|1|yes)$", re.IGNORECASE)
+    bool_false = re.compile(r"^(false|0|no)$", re.IGNORECASE)
 
     def __new__(cls, v: Union[str, bool, "Bool"]) -> bool:
         if isinstance(v, bool):
