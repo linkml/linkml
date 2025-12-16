@@ -3,7 +3,7 @@
 This page is regularly updated to share links to previous LinkML workshops and presentations. Happy viewing! 
 _____
 
-### Annotating Data with Ontologies: LinkML Can Help
+## Annotating Data with Ontologies: LinkML Can Help
 November 5, 2025 <br>
 16th International Conference on Biological and Biomedical Ontology (ICBO 2025) <br>
 Hosted by Sierra Moxon, Corey Cox, and Kevin Schaper
