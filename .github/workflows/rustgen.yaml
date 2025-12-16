@@ -27,7 +27,7 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v7.1.6
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
