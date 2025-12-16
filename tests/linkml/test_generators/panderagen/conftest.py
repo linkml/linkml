@@ -31,7 +31,7 @@ def cli_runner():
 
 @pytest.fixture(scope="module")
 def N():
-    """Number of rows in the test dataframes, 1000 is enough to be real but not strain the build."""
+    """Number of rows in the test dataframes is enough for testing without long build time."""
     return 1000
 
 
@@ -48,13 +48,13 @@ def synthetic_flat_dataframe_model(synthetic_model_path):
 
 @pytest.fixture(scope="module")
 def compiled_modules(synthetic_flat_dataframe_model):
-    compiled_modules = DataframeGenerator.compile_package_from_specification(
-        PANDERA_GROUP, "test_package", synthetic_flat_dataframe_model
-    )
-
-    yield compiled_modules
-
-    DataframeGenerator.cleanup_package("test_package")
+    try:
+        compiled_modules = DataframeGenerator.compile_package_from_specification(
+            PANDERA_GROUP, "test_package", synthetic_flat_dataframe_model
+        )
+        yield compiled_modules
+    finally:
+        DataframeGenerator.cleanup_package("test_package")
 
 
 @pytest.fixture(scope="module")

@@ -249,6 +249,7 @@ def test_cli_package(cli_runner, test_inputs_dir, tmp_path):
 
     assert result.exit_code == 0
     assert (tmp_path / "test_package").exists()
+    assert (tmp_path / "test_package" / "__init__.py").exists()
     assert (tmp_path / "test_package" / "panderagen_polars_schema.py").exists()
     assert (tmp_path / "test_package" / "panderagen_polars_schema_loaded.py").exists()
     assert (tmp_path / "test_package" / "panderagen_polars_schema_transform.py").exists()

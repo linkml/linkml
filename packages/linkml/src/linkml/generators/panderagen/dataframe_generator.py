@@ -174,7 +174,11 @@ class DataframeGenerator(OOCodeGenerator, ABC):
 
     @staticmethod
     def compile_package_from_specification(
-        specification: list[tuple], package_name: str, schema: str, directory: str = None, **args
+        specification: list[tuple[str, type, str, str, str]],
+        package_name: str,
+        schema: str,
+        directory: str = None,
+        **args,
     ):
         """
         Compile multiple generators from specification tuples as a package to support relative imports.
@@ -205,13 +209,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
                 # File-only mode: generate and write to disk
                 oodoc = gen.render()
                 oodoc.name = module_name
-                code = gen.serialize(rendered_module=oodoc)
-
-                os.makedirs(directory, exist_ok=True)
-                filename = f"{module_name}.py"
-                filepath = os.path.join(directory, filename)
-                with open(filepath, "w") as f:
-                    f.write(code)
+                gen.serialize(directory=directory, rendered_module=oodoc)
             else:
                 # Memory-only mode: prepare for compilation
                 generators.append((module_name, gen))
@@ -220,6 +218,11 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         if directory is None:
             return DataframeGenerator.compile_package(generators, package_name)
         else:
+            # Create __init__.py for the package
+            init_file = os.path.join(directory, "__init__.py")
+            if not os.path.exists(init_file):
+                with open(init_file, "w") as f:
+                    f.write('"""Package of generated pandera schemas."""\n')
             return None
 
     @staticmethod

@@ -138,11 +138,11 @@ DATAFRAME_GROUP = [
 
 
 @click.option("--package", help="Package name where relevant for generated class files")
-@click.option("--template-path", help="Optional jinja2 template directory within module")
-@click.option("--template-file", help="Optional jinja2 template to use for class generation")
+@click.option("--template-path", help="Optional jinja2 template directory within module (not used with --package)")
+@click.option("--template-file", help="Optional jinja2 template to use for class generation (not used with --package)")
 @click.option(
     "--generator-class",
-    help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())}",
+    help=f"Generator class to use. Options: {list(GENERATOR_CLASSES.keys())} (not used with --package)",
     default="PanderaDataframeGenerator",
 )
 @click.version_option(__version__, "-V", "--version")
@@ -156,10 +156,15 @@ def cli(
     generator_class=None,
     **args,
 ):
+    """Generate Pandera classes to represent a LinkML model"""
+
+    if package is not None and (
+        template_path is not None or template_file is not None or generator_class != "PanderaDataframeGenerator"
+    ):
+        raise Exception("--template-path, --template-file, and --generator-class cannot be used with --package")
+
     if template_path is not None and template_path not in ALLOWED_TEMPLATE_DIRECTORIES:
         raise Exception(f"Template {template_path} not supported. Available: {ALLOWED_TEMPLATE_DIRECTORIES}")
-
-    """Generate Pandera classes to represent a LinkML model"""
 
     # Get generator class
     if generator_class is None or generator_class == "PanderaDataframeGenerator":
