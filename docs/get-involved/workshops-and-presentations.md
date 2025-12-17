@@ -1,6 +1,6 @@
 # Workshops and Presentations
 
-This page is regularly updated to share links to previous LinkML workshops and presentations. Happy viewing! 
+This page is regularly updated to share links to previous LinkML workshops and presentations. Happy viewing!
 _____
 
 ## Annotating Data with Ontologies: LinkML Can Help
@@ -17,4 +17,3 @@ This workshop provides an introduction to LinkML aimed at people who generate or
 
 [Workshop slides](https://docs.google.com/presentation/d/1IcVaRopn2HmvyFREWMd4k-k9cFLGDh9uZ1FszFSK9us/edit?slide=id.g274025f72a8_0_248#slide=id.g274025f72a8_0_248) <br>
 [Workshop recording](https://www.youtube.com/watch?v=ijCXDGO-NTU&t=4s)
-

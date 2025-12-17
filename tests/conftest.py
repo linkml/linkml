@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import sys
+import warnings
 from abc import ABC, abstractmethod
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
@@ -314,6 +315,14 @@ def pytest_sessionstart(session: pytest.Session):
 
     _monkeypatch_pyshex()
 
+    # Clear all warning registries at session start
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
+
 
 def _monkeypatch_pyshex():
     import sys
@@ -333,6 +342,15 @@ def _monkeypatch_pyshex():
     typing_io.TextIO = TextIO
     typing.io = typing_io
     sys.modules["typing.io"] = typing_io
+
+
+def pytest_runtest_setup(item):
+    # Clear warning registries before each test
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.simplefilter("always")
 
 
 def pytest_assertrepr_compare(config, op, left, right):
@@ -406,6 +424,25 @@ def mock_black_import():
 
     sys.modules.update(removed)
     sys.meta_path.remove(meta_finder)
+
+
+@pytest.fixture(autouse=True)
+def reset_warnings():
+    """Reset warnings for each test."""
+    # Pre-test cleanup
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
+
+    yield
+
+    # Post-test cleanup
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
 
 
 # --------------------------------------------------

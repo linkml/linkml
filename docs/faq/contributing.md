@@ -26,7 +26,7 @@ and you can [vote for your favorite issue here](https://github.com/linkml/linkml
 
 ## How do I stay involved?
 
-See [Get Involved](https://linkml.io/linkml/get-involved/index.html) for more information on how to get involved with the LinkML community.  
+See [Get Involved](https://linkml.io/linkml/get-involved/index.html) for more information on how to get involved with the LinkML community.
 
 
 ## How do I register my schema?

@@ -41,7 +41,7 @@ def test_issue_368(input_path, snapshot, tmp_path):
     dump_and_load(json_dumper.dump, "json")
     dump_and_load(yaml_dumper.dump, "yaml")
 
-    context = ContextGenerator(input_path("issue_368.yaml"), emit_metadata=False).serialize()
+    context = ContextGenerator(input_path("issue_368.yaml"), metadata=False).serialize()
     assert context == snapshot("issue_368.context.jsonld")
 
     dump_and_load(
