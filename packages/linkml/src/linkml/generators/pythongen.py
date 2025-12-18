@@ -2,9 +2,11 @@ import keyword
 import logging
 import os
 import re
+from collections import defaultdict
 from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass
+from graphlib import TopologicalSorter
 from pathlib import Path
 from types import ModuleType
 from typing import Callable, Optional, Union
@@ -405,7 +407,8 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
     def gen_references(self) -> str:
         """Generate python type declarations for all identifiers (primary keys)"""
-        rval = []
+        rval = dict()
+        graph = defaultdict(set)
         for cls in self._sort_classes(self.schema.classes.values()):
             if not cls.imported_from:
                 pkeys = self.primary_keys_for(cls)
@@ -425,9 +428,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                         parent_cls = (
                             "extended_" + parents[-1] if parents[-1] in ["str", "float", "int"] else parents[-1]
                         )
-                        rval.append(f"class {classname}({parent_cls}):\n\tpass")
+                        rval[classname] = f"class {classname}({parent_cls}):\n\tpass"
+                        graph[classname].add(parent_cls)
                         break  # We only do the first primary key
-        return "\n\n\n".join(rval)
+        return "\n\n\n".join(rval[name] for name in TopologicalSorter(graph).static_order() if name in rval)
 
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
