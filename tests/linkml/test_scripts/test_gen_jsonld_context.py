@@ -33,7 +33,7 @@ def test_fix_container_type():
     assert "@container" in context["@context"]["activity_set"]
     assert "@container" in context["@context"]["addresses"]
     assert context["@context"]["activity_set"]["@container"] == "@set"
-    assert context["@context"]["addresses"]["@container"] == "@index"
+    assert context["@context"]["addresses"]["@container"] == "@set"
 
 
 @pytest.mark.parametrize(
