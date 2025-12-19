@@ -17,7 +17,7 @@ using the PolaRS integration.
 
 The implementation of the generator is incomplete. Because Pandera is a dataframe library,
 the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
-`tests/test\_generators/test\_panderagen.py` also has an example using supported LinkML features.
+`tests/linkml/test\_generators/test\_panderagen.py` also has an example using supported LinkML features.
 
 Currently supported LinkML features are:
 
@@ -209,7 +209,7 @@ Generator
 ---------
 
 
-.. autoclass:: PanderaGenerator
+.. autoclass:: PanderaDataframeGenerator
     :members:
 
 
@@ -219,7 +219,7 @@ Templates
 The panderagen module uses a templating system that allows generating different target APIs.
 The only template currently provided is the default `panderagen_class_based` template.
 
-The :class:`.PanderaGenerator` then serves as a translation layer between
+The :class:`.PanderaDataframeGenerator` then serves as a translation layer between
 the source models from :mod:`linkml_runtime` and the target models under
 :mod:`.panderagen` , making clear what is needed to generate
 schema code as well as what parts of the linkml metamodel are supported.
