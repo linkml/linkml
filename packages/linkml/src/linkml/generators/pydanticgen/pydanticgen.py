@@ -225,6 +225,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     """
     If black is present in the environment, format the serialized code with it
     """
+    empty_list_for_multivalued_slots: bool = False
+    """
+    If True, optional multivalued slots default to ``[]``; if False, they default to ``None``.
+    """
 
     template_dir: Optional[Union[str, Path]] = None
     """
@@ -499,6 +503,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             for k in PydanticAttribute.model_fields.keys()
             if getattr(slot, k, None) is not None
         }
+        slot_args["empty_list_for_multivalued_slots"] = self.empty_list_for_multivalued_slots
         slot_alias = slot.alias if slot.alias else slot.name
 
         # Create a valid Python identifier for the field name
@@ -1006,7 +1011,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         enums = self.before_generate_enums(list(sv.all_enums().values()), sv)
         enums = self.generate_enums({e.name: e for e in enums})
 
-        base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=self.injected_fields)
+        base_model = PydanticBaseModel(
+            extra_fields=self.extra_fields,
+            fields=self.injected_fields,
+            empty_list_for_multivalued_slots=self.empty_list_for_multivalued_slots,
+        )
 
         # schema classes
         class_results = []
@@ -1252,6 +1261,12 @@ Available templates to override:
     "See docs for MetadataMode for full description of choices. "
     "Default (auto) is to include all metadata that can't be otherwise represented",
 )
+@click.option(
+    "--emptylist-for-multivalued-slots",
+    is_flag=True,
+    default=False,
+    help="Use empty list for optional multivalued defaults instead of None (default behavior).",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="pydantic")
 def cli(
@@ -1266,6 +1281,7 @@ def cli(
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     black: bool = False,
     meta: MetadataMode = "auto",
+    emptylist_for_multivalued_slots: bool = False,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -1290,6 +1306,7 @@ def cli(
         template_dir=template_dir,
         black=black,
         metadata_mode=meta,
+        empty_list_for_multivalued_slots=emptylist_for_multivalued_slots,
         **args,
     )
     print(gen.serialize(), end="")
