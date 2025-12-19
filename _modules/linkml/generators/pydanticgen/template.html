@@ -400,8 +400,7 @@
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">PackageLoader</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERSION</span> <span class="k">as</span> <span class="n">PYDANTIC_VERSION</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">computed_field</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.template</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ConditionalImport</span> <span class="k">as</span> <span class="n">ConditionalImport_</span><span class="p">,</span>
@@ -416,7 +415,6 @@
     <span class="n">ObjectImport</span><span class="p">,</span>  <span class="c1"># noqa: F401</span>
     <span class="n">TemplateModel</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">find_spec</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -427,15 +425,6 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="c1"># we can also get an import error from find_spec during testing because that&#39;s how we mock not having it installed</span>
     <span class="n">format_black</span> <span class="o">=</span> <span class="kc">None</span>
-
-<span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">computed_field</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;pydantic-v1&quot;</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">computed_field</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;No-op decorator to allow this module to not break imports until 1.9.0&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">f</span>
 
 
 <span class="n">IMPORT_GROUPS</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;future&quot;</span><span class="p">,</span> <span class="s2">&quot;stdlib&quot;</span><span class="p">,</span> <span class="s2">&quot;thirdparty&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;conditional&quot;</span><span class="p">]</span>

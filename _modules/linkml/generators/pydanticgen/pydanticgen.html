@@ -404,7 +404,6 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChoiceLoader</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERSION</span> <span class="k">as</span> <span class="n">PYDANTIC_VERSION</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleMixin</span>
@@ -424,7 +423,6 @@
     <span class="n">PydanticModule</span><span class="p">,</span>
     <span class="n">PydanticTemplateModel</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
@@ -438,10 +436,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">PYDANTIC_VERSION</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-    <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;pydantic-v1&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_get_pyrange</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
