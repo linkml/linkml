@@ -1,0 +1,87 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  personinfo: https://w3id.org/linkml/personinfo/
+  schema: http://schema.org/
+  ex: https://example.org/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: personinfo
+
+types:
+  Code:
+    typeof: string
+    description: >-
+      An identifier that is encoded in a string.  This is used to represent
+      identifiers that are not URIs, but are encoded as strings.  For example,
+      a person's social security number is an encoded identifier.
+    annotations:
+      prefix: "@base"
+      percent_encoded: true
+
+
+classes:
+  Person:
+    class_uri: schema:Person
+    attributes:
+      id:
+        identifier: true
+        range: uriorcurie
+        comments:
+          - person IDs are natively encoded as uris or curies
+      name:
+        range: string
+        slot_uri: schema:name
+      friends:
+        range: Person
+        multivalued: true
+
+  Pet:
+    attributes:
+      id:
+        identifier: true
+        range: string
+        comments:
+          - pet IDs are natively encoded as strings without encoding
+          - they are assumed to be in CURIE form
+      name:
+        range: string
+        slot_uri: schema:name
+      owner:
+        range: Person
+        slot_uri: schema:owner
+
+  Organization:
+    class_uri: schema:Organization
+    attributes:
+      id:
+        identifier: true
+        range: Code
+        comments:
+          - organization IDs are natively encoded as strings with percent encoding
+          - they are encoded before being turned into CURIEs
+      name:
+        range: string
+        slot_uri: schema:name
+      part_of:
+        range: Organization
+        multivalued: true
+
+  Dataset:
+    attributes:
+      source:
+        range: uriorcurie
+      persons:
+        multivalued: true
+        range: Person
+        inlined: true
+      organizations:
+        multivalued: true
+        range: Organization
+        inlined: true
+      pets:
+        multivalued: true
+        range: Pet
+        inlined: true
