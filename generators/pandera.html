@@ -582,6 +582,7 @@ the first priority is implementing models of literal and nested data types and c
 <h2>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h2>
 <section id="gen-pandera">
 <h3>gen-pandera<a class="headerlink" href="#gen-pandera" title="Link to this heading">¶</a></h3>
+<p>Generate Pandera classes to represent a LinkML model</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-pandera<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
@@ -595,19 +596,25 @@ the first priority is implementing models of literal and nested data types and c
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-pandera-generator-class">
 <span class="sig-name descname"><span class="pre">--generator-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;generator_class&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pandera-generator-class" title="Link to this definition">¶</a></dt>
-<dd><p>Generator class to use. Options: [‘PanderaDataframeGenerator’, ‘PolarsSchemaDataframeGenerator’]</p>
+<dd><p>Generator class to use. Options: [‘PanderaDataframeGenerator’, ‘PolarsSchemaDataframeGenerator’] (not used with –package)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-pandera-template-file">
 <span class="sig-name descname"><span class="pre">--template-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_file&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pandera-template-file" title="Link to this definition">¶</a></dt>
-<dd><p>Optional jinja2 template to use for class generation</p>
+<dd><p>Optional jinja2 template to use for class generation (not used with –package)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-pandera-template-path">
 <span class="sig-name descname"><span class="pre">--template-path</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_path&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pandera-template-path" title="Link to this definition">¶</a></dt>
-<dd><p>Optional jinja2 template directory within module</p>
+<dd><p>Optional jinja2 template directory within module (not used with –package)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-pandera-package">
+<span class="sig-name descname"><span class="pre">--package</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;package&gt;</span></span><a class="headerlink" href="#cmdoption-gen-pandera-package" title="Link to this definition">¶</a></dt>
+<dd><p>Package name where relevant for generated class files</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
