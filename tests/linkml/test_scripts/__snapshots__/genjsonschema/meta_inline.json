@@ -1,0 +1,1151 @@
+{
+    "$defs": {
+        "Activity": {
+            "additionalProperties": false,
+            "description": "a provence-generating activity",
+            "properties": {
+                "description": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "used": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "was_associated_with": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "was_informed_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Activity",
+            "type": "object"
+        },
+        "Address": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "altitude": {
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "city": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "street": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Address",
+            "type": "object"
+        },
+        "Agent": {
+            "additionalProperties": false,
+            "description": "a provence-generating agent",
+            "properties": {
+                "acted_on_behalf_of": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "was_informed_by": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Agent",
+            "type": "object"
+        },
+        "AnyObject": {
+            "additionalProperties": true,
+            "description": "Example of unconstrained class",
+            "title": "AnyObject",
+            "type": [
+                "null",
+                "boolean",
+                "object",
+                "number",
+                "string"
+            ]
+        },
+        "AnyOfClasses": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute2": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "type": "string"
+                }
+            },
+            "title": "AnyOfClasses",
+            "type": "object"
+        },
+        "AnyOfEnums": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute3": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DiagnosisType"
+                        },
+                        {
+                            "$ref": "#/$defs/EmploymentEventType"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "type": "string"
+                }
+            },
+            "title": "AnyOfEnums",
+            "type": "object"
+        },
+        "AnyOfMix": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute4": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "$ref": "#/$defs/EmploymentEventType"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "type": "string"
+                }
+            },
+            "title": "AnyOfMix",
+            "type": "object"
+        },
+        "AnyOfSimpleType": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute1": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "type": "string"
+                }
+            },
+            "title": "AnyOfSimpleType",
+            "type": "object"
+        },
+        "BirthEvent": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_location": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Example of a slot that has an unconstrained range"
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "BirthEvent",
+            "type": "object"
+        },
+        "ClassWithSpaces": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "slot_with_space_1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "ClassWithSpaces",
+            "type": "object"
+        },
+        "CodeSystem": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "CodeSystem",
+            "type": "object"
+        },
+        "Company": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "aliases": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "ceo": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Company",
+            "type": "object"
+        },
+        "Concept": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "in_code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Concept",
+            "type": "object"
+        },
+        "CordialnessEnum": {
+            "description": "",
+            "enum": [
+                "heartfelt",
+                "hateful",
+                "indifferent"
+            ],
+            "title": "CordialnessEnum",
+            "type": "string"
+        },
+        "Dataset": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "activities": {
+                    "items": {
+                        "$ref": "#/$defs/Activity"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "code_systems": {
+                    "items": {
+                        "$ref": "#/$defs/CodeSystem"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "companies": {
+                    "items": {
+                        "$ref": "#/$defs/Company"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Example of a slot that has an unconstrained range"
+                },
+                "persons": {
+                    "items": {
+                        "$ref": "#/$defs/Person"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Dataset",
+            "type": "object"
+        },
+        "DiagnosisConcept": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "in_code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "DiagnosisConcept",
+            "type": "object"
+        },
+        "DiagnosisType": {
+            "description": "",
+            "enum": [
+                "TODO"
+            ],
+            "title": "DiagnosisType",
+            "type": "string"
+        },
+        "EmploymentEvent": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "employed_at": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Example of a slot that has an unconstrained range"
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "type": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CordialnessEnum"
+                        },
+                        {
+                            "$ref": "#/$defs/EmploymentEventType"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "type": "string"
+                }
+            },
+            "title": "EmploymentEvent",
+            "type": "object"
+        },
+        "EmploymentEventType": {
+            "description": "codes for different kinds of employment/HR related events",
+            "enum": [
+                "HIRE",
+                "FIRE",
+                "PROMOTION",
+                "TRANSFER"
+            ],
+            "title": "EmploymentEventType",
+            "type": "string"
+        },
+        "EqualsString": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute5": {
+                    "const": "foo",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "EqualsString",
+            "type": "object"
+        },
+        "EqualsStringIn": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "attribute6": {
+                    "enum": [
+                        "foo",
+                        "bar"
+                    ],
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "EqualsStringIn",
+            "type": "object"
+        },
+        "Event": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Example of a slot that has an unconstrained range"
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Event",
+            "type": "object"
+        },
+        "FakeClass": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "test_attribute": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "FakeClass",
+            "type": "object"
+        },
+        "FamilialRelationship": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "cordialness": {
+                    "$ref": "#/$defs/CordialnessEnum"
+                },
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "related_to": {
+                    "type": "string"
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "type": {
+                    "$ref": "#/$defs/FamilialRelationshipType"
+                }
+            },
+            "required": [
+                "related_to",
+                "type"
+            ],
+            "title": "FamilialRelationship",
+            "type": "object"
+        },
+        "FamilialRelationshipType": {
+            "description": "",
+            "enum": [
+                "SIBLING_OF",
+                "PARENT_OF",
+                "CHILD_OF"
+            ],
+            "title": "FamilialRelationshipType",
+            "type": "string"
+        },
+        "KitchenStatus": {
+            "description": "",
+            "enum": [
+                "DIRTY",
+                "CLEAN"
+            ],
+            "title": "KitchenStatus",
+            "type": "string"
+        },
+        "LifeStatusEnum": {
+            "description": "",
+            "enum": [
+                "LIVING",
+                "DEAD",
+                "UNKNOWN"
+            ],
+            "title": "LifeStatusEnum",
+            "type": "string"
+        },
+        "MarriageEvent": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_location": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "married_to": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Example of a slot that has an unconstrained range"
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "MarriageEvent",
+            "type": "object"
+        },
+        "MedicalEvent": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "diagnosis": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DiagnosisConcept"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_location": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "is_current": {
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "metadata": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnyObject"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "Example of a slot that has an unconstrained range"
+                },
+                "procedure": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ProcedureConcept"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "MedicalEvent",
+            "type": "object"
+        },
+        "Organization": {
+            "additionalProperties": false,
+            "description": "An organization.\n\nThis description\nincludes newlines\n\n## Markdown headers\n\n * and\n * a\n * list",
+            "properties": {
+                "aliases": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Organization",
+            "type": "object"
+        },
+        "OtherCodes": {
+            "description": "",
+            "enum": [
+                "a b"
+            ],
+            "title": "OtherCodes",
+            "type": "string"
+        },
+        "Person": {
+            "additionalProperties": false,
+            "description": "A person, living or dead",
+            "properties": {
+                "addresses": {
+                    "items": {
+                        "$ref": "#/$defs/Address"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "age_in_years": {
+                    "description": "number of years since birth",
+                    "maximum": 999,
+                    "minimum": 0,
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "aliases": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "has_birth_event": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/BirthEvent"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "has_employment_history": {
+                    "items": {
+                        "$ref": "#/$defs/EmploymentEvent"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "has_familial_relationships": {
+                    "items": {
+                        "$ref": "#/$defs/FamilialRelationship"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "has_medical_history": {
+                    "items": {
+                        "$ref": "#/$defs/MedicalEvent"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_living": {
+                    "$ref": "#/$defs/LifeStatusEnum"
+                },
+                "name": {
+                    "pattern": "^\\S+ \\S+$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "species_name": {
+                    "const": "human",
+                    "pattern": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "stomach_count": {
+                    "const": 1,
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Person",
+            "type": "object"
+        },
+        "Place": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "aliases": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "Place",
+            "type": "object"
+        },
+        "ProcedureConcept": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "in_code_system": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "title": "ProcedureConcept",
+            "type": "object"
+        },
+        "Relationship": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "cordialness": {
+                    "$ref": "#/$defs/CordialnessEnum"
+                },
+                "ended_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "related_to": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "started_at_time": {
+                    "format": "date",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "type": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Relationship",
+            "type": "object"
+        },
+        "SubSubClass2": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "slot_with_space_1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "slot_with_space_2": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClassWithSpaces"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "title": "SubSubClass2",
+            "type": "object"
+        },
+        "SubclassTest": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "slot_with_space_1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "slot_with_space_2": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClassWithSpaces"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "title": "SubclassTest",
+            "type": "object"
+        },
+        "TubSubClass1": {
+            "additionalProperties": false,
+            "description": "Same depth as Sub sub class 1",
+            "properties": {
+                "slot_with_space_1": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "slot_with_space_2": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClassWithSpaces"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "title": "TubSubClass1",
+            "type": "object"
+        }
+    },
+    "$id": "https://w3id.org/linkml/tests/kitchen_sink",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "description": "",
+    "metamodel_version": "1.7.0",
+    "properties": {
+        "activities": {
+            "items": {
+                "$ref": "#/$defs/Activity"
+            },
+            "type": [
+                "array",
+                "null"
+            ]
+        },
+        "code_systems": {
+            "items": {
+                "$ref": "#/$defs/CodeSystem"
+            },
+            "type": [
+                "array",
+                "null"
+            ]
+        },
+        "companies": {
+            "items": {
+                "$ref": "#/$defs/Company"
+            },
+            "type": [
+                "array",
+                "null"
+            ]
+        },
+        "metadata": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/AnyObject"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "description": "Example of a slot that has an unconstrained range"
+        },
+        "persons": {
+            "items": {
+                "$ref": "#/$defs/Person"
+            },
+            "type": [
+                "array",
+                "null"
+            ]
+        }
+    },
+    "title": "kitchen_sink",
+    "type": "object",
+    "version": null
+}
+

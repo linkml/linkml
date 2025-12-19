@@ -1,0 +1,54 @@
+@prefix ex: <http://example.org/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:C1 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom linkml:String ;
+            owl:onProperty ex:s1 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:s1 ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:s1 ] ;
+    skos:inScheme <http://example.org/sample/example163c> .
+
+ex:C2 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c2" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom linkml:Uriorcurie ;
+            owl:onProperty ex:s2 ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:s2 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:s2 ] ;
+    skos:inScheme <http://example.org/sample/example163c> .
+
+ex:s1 a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "s1" ;
+    rdfs:range linkml:String ;
+    skos:definition "This is a slot used in one context whose range is a description" ;
+    skos:inScheme <http://example.org/sample/example163c> ;
+    skos:prefLabel "source" .
+
+ex:s2 a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "s2" ;
+    rdfs:range linkml:Uriorcurie ;
+    skos:definition "A second slot which wishes to be called \"source\", but is a URI" ;
+    skos:inScheme <http://example.org/sample/example163c> ;
+    skos:prefLabel "source" .
+
+<http://example.org/sample/example163c> a owl:Ontology ;
+    rdfs:label "example163c" .
+

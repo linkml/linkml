@@ -1,0 +1,71 @@
+id: https://w3id.org/biolink/biolink-model
+name: Biolink-Model
+description: Entity and association taxonomy and datamodel for life-sciences data
+license: https://creativecommons.org/publicdomain/zero/1.0/
+version: 2.2.3
+
+prefixes:
+  biolink: 'https://w3id.org/biolink/vocab/'
+  linkml: 'https://w3id.org/linkml/'
+  RO: 'http://purl.obolibrary.org/obo/RO_'
+  SIO: 'http://semanticscience.org/resource/SIO_'
+  prov: 'http://www.w3.org/ns/prov#'
+  gff3: 'https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md#'
+  dct: 'http://purl.org/dc/terms/'
+
+default_prefix: biolink
+default_range: string
+
+# 2. The following prefix maps are retrieved from the
+#    specified contexts defined at https://prefixcommons.org/
+default_curi_maps:
+  - obo_context
+  - semweb_context
+
+# The following 'standard' prefixes are also used.
+emit_prefixes:
+  - rdf
+  - rdfs
+  - xsd
+  - skos
+  - OIO
+  - BIOGRID
+#  - SO
+
+imports:
+  - linkml:types
+
+slots:
+
+  has evidence:
+    description: >-
+      connects an association to an instance of supporting evidence
+    exact_mappings:
+      - RO:0002558
+  type:
+    slot_uri: rdf:type
+
+  name:
+    aliases: [ 'label', 'display name', 'title' ]
+    slot_uri: rdfs:label
+    exact_mappings:
+      - gff3:Name
+    narrow_mappings:
+      - dct:title
+
+classes:
+
+  thing:
+    class_uri: owl:Thing
+
+  association:
+    class_uri: rdf:Statement
+
+  snv:
+    aliases: [ 'single nucleotide variant','single nucleotide polymorphism', 'snp' ]
+    description: >-
+      SNVs are single nucleotide positions in genomic DNA at
+      which different sequence alternatives exist
+    exact_mappings:
+      - SO:0001483
+      - UNKNOWN_PREFIX:1234567

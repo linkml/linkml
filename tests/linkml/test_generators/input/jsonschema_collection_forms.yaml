@@ -1,0 +1,242 @@
+schema:
+  id: http://example.org/test_collection_forms
+  name: test_collection_forms
+  imports:
+    - https://w3id.org/linkml/types
+  default_range: string
+
+  slots:
+    int_key:
+      identifier: true
+      range: integer
+    key:
+      identifier: true
+    uriorcurie_key:
+      identifier: true
+      range: uriorcurie
+    value:
+    value2:
+    key_value_pairs:
+      range: KeyValuePair
+      multivalued: true
+      inlined: true
+    more_than_one_non_key_slots:
+      range: MoreThanOneNonKeySlot
+      multivalued: true
+      inlined: true
+    not_inlined_key_value_pairs:
+      range: KeyValuePair
+      multivalued: true
+      inlined: false
+    not_inlined_int_key_value_pairs:
+      range: IntKeyValuePair
+      multivalued: true
+      inlined: false
+    inlined_as_list_key_value_pair:
+      range: KeyValuePair
+      multivalued: true
+      inlined_as_list: true
+    inlined_as_list_int_key_value_pair:
+      range: IntKeyValuePair
+      multivalued: true
+      inlined_as_list: true
+    inlined_uriorcurie_key_value_pairs:
+      range: UriOrCurieKeyValuePair
+      multivalued: true
+      inlined: true
+    inlined_as_list_uriorcurie_key_value_pairs:
+      range: UriOrCurieKeyValuePair
+      multivalued: true
+      inlined_as_list: true
+    not_inlined_uriorcurie_key_value_pairs:
+      range: UriOrCurieKeyValuePair
+      multivalued: true
+      inlined: false
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - key_value_pairs
+        - more_than_one_non_key_slots
+        - not_inlined_key_value_pairs
+        - not_inlined_int_key_value_pairs
+        - inlined_as_list_key_value_pair
+        - inlined_as_list_int_key_value_pair
+        - inlined_uriorcurie_key_value_pairs
+        - inlined_as_list_uriorcurie_key_value_pairs
+        - not_inlined_uriorcurie_key_value_pairs
+    KeyValuePair:
+      slots:
+        - key
+        - value
+    IntKeyValuePair:
+      slots:
+        - int_key
+        - value
+    UriOrCurieKeyValuePair:
+      slots:
+        - uriorcurie_key
+        - value
+    MoreThanOneNonKeySlot:
+      slots:
+        - key
+        - value
+        - value2
+    IntMoreThanOneNonKeySlot:
+      slots:
+        - int_key
+        - value
+        - value2
+
+data_cases:
+  - data:
+      key_value_pairs:
+        k1:
+          key: k1
+          value: v1
+        k2:
+          key: k2
+          value: v2
+  - data:
+      key_value_pairs:
+        k1:
+          value: v1
+        k2:
+          value: v2
+  - data:
+      key_value_pairs:
+        k1: v1
+        k2: v2
+  - data:
+      more_than_one_non_key_slots:
+        k1:
+          key: k1
+          value: v1
+          value2: v12
+        k2:
+          key: k2
+          value: v2
+          value2: v22
+  - data:
+      more_than_one_non_key_slots:
+        k1:
+          value: v1
+          value2: v12
+        k2:
+          value: v2
+          value2: v22
+  - data:
+      more_than_one_non_key_slots:
+        k1: v1
+        k2: v2
+    error_message: "not valid under any of the given schemas"
+  - data:
+      not_inlined_key_value_pairs:
+        - k1
+        - k2
+  - data:
+      not_inlined_key_value_pairs:
+        k1: v1
+        k2: v2
+    error_message: "not of type 'array'"
+  - data:
+      not_inlined_int_key_value_pairs:
+        - 1
+        - 2
+  - data:
+      not_inlined_int_key_value_pairs:
+        - k1
+        - k2
+    error_message: "not of type 'integer'"
+  - data:
+      not_inlined_int_key_value_pairs:
+        1: v1
+        2: v2
+    error_message: "not of type 'array'"
+  - data:
+      inlined_as_list_key_value_pair:
+        - key: k1
+          value: v1
+        - key: k2
+          value: k2
+  - data:
+      inlined_as_list_key_value_pair:
+        k1: v1
+        k2: v2
+    error_message: "not of type 'array'"
+  - data:
+      inlined_as_list_int_key_value_pair:
+        - int_key: 1
+          value: v1
+        - int_key: 2
+          value: k2
+  - data:
+      inlined_as_list_int_key_value_pair:
+        1:
+          value: v1
+        2:
+          value: v2
+    error_message: "not of type 'array'"
+  - data:
+      inlined_uriorcurie_key_value_pairs:
+        'pfx:1':
+          uriorcurie_key: 'pfx:1'
+          value: v1
+        'pfx:2':
+          uriorcurie_key: 'pfx:2'
+          value: v2
+  - data:
+      inlined_uriorcurie_key_value_pairs:
+        'pfx:1':
+          value: v1
+        'pfx:2':
+          value: v2
+  - data:
+      inlined_uriorcurie_key_value_pairs:
+        'pfx:1': v1
+        'pfx:2': v2
+  - data:
+      inlined_uriorcurie_key_value_pairs:
+        - uriorcurie_key: 'pfx:1'
+          value: v1
+        - uriorcurie_key: 'pfx:2'
+          value: v2
+    error_message: not of type 'object'
+  - data:
+      inlined_uriorcurie_key_value_pairs:
+        - 'pfx:1'
+        - 'pfx:2'
+    error_message: not of type 'object'
+  - data:
+      inlined_as_list_uriorcurie_key_value_pairs:
+        - uriorcurie_key: 'pfx:1'
+          value: v1
+        - uriorcurie_key: 'pfx:2'
+          value: v2
+  - data:
+      inlined_as_list_uriorcurie_key_value_pairs:
+        'pfx:1': v1
+        'pfx:2': v2
+    error_message: not of type 'array'
+  - data:
+      inlined_as_list_uriorcurie_key_value_pairs:
+        - 'pfx:1'
+        - 'pfx:2'
+    error_message: not of type 'object'
+  - data:
+      not_inlined_uriorcurie_key_value_pairs:
+        - 'pfx:1'
+        - 'pfx:2'
+  - data:
+      not_inlined_uriorcurie_key_value_pairs:
+        - uriorcurie_key: 'pfx:1'
+          value: v1
+        - uriorcurie_key: 'pfx:2'
+          value: v2
+    error_message: not of type 'string'
+  - data:
+      not_inlined_uriorcurie_key_value_pairs:
+        'pfx:1': v1
+        'pfx:2': v2
+    error_message: not of type 'array'

@@ -23,4 +23,3 @@ CLI
 
 .. click:: linkml.validator.cli:cli
     :prog: linkml-validate
-

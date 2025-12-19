@@ -71,6 +71,9 @@ instance/
 # pyenv
 .python-version
 
+# mise
+mise.toml
+
 # dotenv
 .env
 
@@ -107,7 +110,18 @@ tests/test_config.ini
 # Don't lock
 Pipfile.lock
 
+# Understand databases
+*.und
+
 # User defined
 .vscode/*
+CLAUDE.local.md
+.claude/settings.local.json
 
 http_cache.sqlite
+
+examples/PersonSchema/rust/target
+examples/PersonSchema/rust/Cargo.lock
+
+# temporary ignore
+monorepo-cleanup.sh

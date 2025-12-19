@@ -1,0 +1,52 @@
+persons:
+  - id: P:001
+    name: fred bloggs
+    primary_email: fred.bloggs@example.com
+    gender: cisgender man
+    depicted_by: https://example.org/pictures/fred.jpg
+  - id: P:002
+    name: joe schmö
+    primary_email: joe.schmoe@example.com
+    has_employment_history:
+      - employed_at: ROR:1
+        #started_at_time: 2019-01-01
+        is_current: true
+    has_familial_relationships:
+      - related_to: P:001
+        type: SIBLING_OF
+    has_medical_history:
+      - #started_at_time: 2019-01-01
+        in_location: GEO:1234
+        diagnosis:
+          id: CODE:D0001
+          name: headache
+          mappings:
+            - HP:0002315
+            - http://purl.obolibrary.org/obo/SYMP_0000504
+            - http://www.wikidata.org/entity/Q86
+        procedure:
+          id: CODE:P0001
+          name: trepanation
+    gender: transgender man
+    current_address:
+      street: 1 foo street
+      city: foo city
+organizations:
+  - id: ROR:1
+    name: foo
+    categories:
+      - charity
+      - non profit
+    score: 1
+    min_salary: 99999.00
+  - id: ROR:2
+    name: bar
+    categories:
+      - shell company
+    score: 1.5
+  - id: ROR:3
+    name: MI9922
+    score: 1
+  - id: ROR:4
+    name: Göë Schmöë Höt Dög Empóriüm
+    score: 1.0

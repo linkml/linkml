@@ -1,0 +1,47 @@
+name: test_1608
+id: https://example.org/test_1608
+prefixes:
+  linkml: https://w3id.org/linkml/
+  test_pref: https://example.org/test_pref/
+imports:
+  - linkml:types
+classes:
+  Database:
+    slots:
+      - vehicles
+  Vehicle:
+    class_uri: test_pref:Vehicle
+    slots:
+      - exterior_color
+      - max_passengers
+      - type
+  Boat:
+    class_uri: test_pref:Boat
+    is_a: Vehicle
+    slots:
+      - waterline
+  Airplane:
+    class_uri: test_pref:Airplane
+    is_a: Vehicle
+    slots:
+      - wingspan
+slots:
+  exterior_color: { }
+  max_passengers:
+    range: integer
+  wingspan:
+    range: float
+    required: true
+  waterline:
+    range: float
+    required: true
+  vehicles:
+    range: Vehicle
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  type:
+    range: uriorcurie
+    slot_uri: rdf:type
+    designates_type: true
+    required: true

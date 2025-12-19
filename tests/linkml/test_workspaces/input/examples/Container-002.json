@@ -1,0 +1,45 @@
+{
+  "persons": [
+    {
+      "id": "P:701",
+      "name": "fred bloggs",
+      "primary_email": "fred.bloggs@example.com"
+    },
+    {
+      "id": "P:702",
+      "name": "joe schmoe",
+      "primary_email": "joe.schmoe@example.com",
+      "has_employment_history": [
+        {
+          "is_current": true,
+          "employed_at": "ROR:1"
+        }
+      ],
+      "has_familial_relationships": [
+        {
+          "related_to": "P:701",
+          "type": "SIBLING_OF"
+        }
+      ],
+      "has_medical_history": [
+        {
+          "in_location": "GEO:1234",
+          "diagnosis": {
+            "id": "CODE:D0001",
+            "name": "headache"
+          },
+          "procedure": {
+            "id": "CODE:P0001",
+            "name": "trepanation"
+          }
+        }
+      ]
+    }
+  ],
+  "organizations": [
+      {
+        "id": "ROR:1",
+        "name": "foo"
+      }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+    "$defs": {
+        "GeospatialDDCoordLocation": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "latitude": {
+                    "description": "angular coordinate measured positive north from the equator.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                }
+            },
+            "title": "GeospatialDDCoordLocation",
+            "type": "object"
+        }
+    },
+    "$id": "http://example.org/sample/example1",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "metamodel_version": "1.7.0",
+    "title": "example1",
+    "type": "object",
+    "version": null
+}

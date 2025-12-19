@@ -1,0 +1,29 @@
+id: schema_2
+name: Schema_2
+title: Schema 2
+imports:
+  - linkml:types
+version: v2.3.4
+annotations:
+  custom: 'DIFFERENT_METADATA'
+classes:
+  Main:
+    description: "The class we use to test overrides on imports!"
+    attributes:
+      value:
+        range: string
+  S2:
+    description: "A class from one of the imported classes!"
+    attributes:
+      value:
+        range: string
+  S2Any:
+    description: "One part of the any_of in main"
+    attributes:
+      value:
+        range: string
+  S2Unused:
+    description: "Unused class in schema 1"
+    attributes:
+      value:
+        range: string

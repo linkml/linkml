@@ -1,0 +1,104 @@
+id: http://example.org/test/alternatives
+name: alternatives
+description: Enumeration alternatives
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  evidence: http://example.org/test/evidence/
+  CLUE: http://ontologies-r.us/clue/
+  CS: http://ontologies-r.us/codesystems/
+
+default_range: string
+default_prefix: evidence
+
+imports:
+  - linkml:types
+
+subsets:
+  hpo_options:
+    description: Subset of enumerations that include HPO references
+  test_subset:
+    description: Another subset
+
+enums:
+  open_enum:
+    description: Baseline enumeration -- simple code/value pairs, where the value (description) is optional
+    permissible_values:
+      a: top
+      b: middle
+      c: bottom
+      d:
+
+  constrained_enum_2:
+    description: All codes from the version of HPO labeled "current" by the referenced service
+    code_set: CS:HPO
+    pv_formula: CODE
+    in_subset: hpo_options
+
+  constrained_enum_3:
+    description: All uris from the version of HPO with the tag, "production"
+    code_set: CS:HPO
+    code_set_tag: production
+    pv_formula: URI
+    in_subset: hpo_options
+
+  constrained_enum_4:
+    description: All curies from version 1.17 of HPO
+    code_set: CS:HPO
+    code_set_version: 1.17
+    pv_formula: CURIE
+    in_subset: hpo_options
+
+  constrained_enum_5:
+    description: All fhir codings from the "current" version of the CLUE "mustard options" value set
+    code_set: CLUE:mustard_options
+    pv_formula: FHIR_CODING
+
+  constrained_enum_6:
+    description: All codes from SNOMED CT INTL 2020-7-31 or greater
+    code_set: CS:SCT
+    code_set_version: ">=2020-7-31"
+    pv_formula: CODE
+
+  constrained_evidence:
+    description: Permissible values for CLUE evidence fragments
+    code_set: clue_answers
+    permissible_values:
+      IEA: Colonel Mustard in the Ballroom
+      ISS:
+        description: Mrs. Peacock with the Dagger
+        meaning: CLUE:1173
+
+
+  mapped_evidence:
+    description: Permissible values that draw directly from the code set
+    code_set: clue_answers
+    pv_formula: URI
+    in_subset: test_subset
+
+
+classes:
+  all_enums:
+    description: A class that incorporates all of the enumeration examples above
+    attributes:
+      entry_name:
+        description: Name of the particular enum permutation
+        identifier: true
+      code_1:
+        range: open_enum
+        multivalued: true
+        required: true
+      code_2:
+        range: constrained_enum_2
+      code_3:
+        range: constrained_enum_3
+      code_4:
+        range: constrained_enum_4
+      code_5:
+        range: constrained_enum_4
+      code_6:
+        range: constrained_enum_4
+      code_7:
+        range: constrained_evidence
+      code_8:
+        range: mapped_evidence

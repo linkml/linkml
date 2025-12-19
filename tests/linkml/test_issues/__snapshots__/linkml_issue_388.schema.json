@@ -1,0 +1,60 @@
+{
+    "$defs": {
+        "C1": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "a": {
+                    "description": "this-a in the context of C1",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "C1",
+            "type": "object"
+        },
+        "C2": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "a": {
+                    "description": "this-a in the context of C2",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                }
+            },
+            "title": "C2",
+            "type": "object"
+        },
+        "C3": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "a": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/C1"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "other-a in the context of C3"
+                }
+            },
+            "title": "C3",
+            "type": "object"
+        }
+    },
+    "$id": "https://w3id.org/linkml/examples/personinfo",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "metamodel_version": "1.7.0",
+    "title": "personinfo",
+    "type": "object",
+    "version": null
+}

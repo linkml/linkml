@@ -1,0 +1,55 @@
+{
+    "$defs": {
+        "C": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "id": {},
+                "issue_status": {
+                    "$ref": "#/$defs/IssueStatuses"
+                },
+                "issue_type": {
+                    "items": {
+                        "$ref": "#/$defs/IssueTypes"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "id",
+                "issue_status"
+            ],
+            "title": "C",
+            "type": "object"
+        },
+        "IssueStatuses": {
+            "description": "An enumeration of issue statuses.",
+            "enum": [
+                "open",
+                "fixed",
+                "wontfix"
+            ],
+            "title": "IssueStatuses",
+            "type": "string"
+        },
+        "IssueTypes": {
+            "description": "An enumeration of issue types.",
+            "enum": [
+                "bug",
+                "feature_request"
+            ],
+            "title": "IssueTypes",
+            "type": "string"
+        }
+    },
+    "$id": "http://example.org/sample/types",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "metamodel_version": "1.7.0",
+    "title": "types",
+    "type": "object",
+    "version": null
+}

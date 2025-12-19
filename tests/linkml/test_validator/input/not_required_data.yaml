@@ -1,0 +1,15 @@
+scalar:
+multi:
+is_inlined_as_list:
+is_inlined_as_dict:
+is_any_of:
+any_of_multivalued:
+class_range:
+class_range_multivalued:
+class_range_inlined:
+class_range_required:
+class_range_required_multivalued:
+class_range_required_inlined:
+class_range_id:
+class_range_id_multivalued:
+class_range_id_inlined:

@@ -1,0 +1,16 @@
+id: schema_3
+name: Schema_3
+title: Schema 3
+annotations:
+  custom: 'ADDITIONAL_METADATA'
+description: |
+  Module that should NOT be generated during split imports even though it is
+  imported by main.yaml because main.yaml doesn't use any classes from it
+imports:
+  - linkml:types
+classes:
+  S3:
+    description: "A class from one of the imported classes!"
+    attributes:
+      value:
+        range: string

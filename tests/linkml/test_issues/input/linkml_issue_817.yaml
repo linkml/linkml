@@ -1,0 +1,81 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+imports:
+  - linkml:types
+prefixes:
+  personinfo: https://w3id.org/linkml/examples/personinfo/
+  linkml: https://w3id.org/linkml/
+default_prefix: personinfo
+default_range: string
+
+emit_prefixes:
+  - rdf
+  - rdfs
+  - xsd
+  - skos
+
+classes:
+
+
+  Person:
+    slots:
+      - id
+      - name
+      - vital_status
+  PersonNoId:
+    slots:
+      - name
+      - vital_status
+  Container:
+    tree_root: true
+    slots:
+      - name
+      - persons_as_list
+      - persons_as_dict
+      - single_person_inlined
+      - noidobj_as_list
+#      - noidobj_as_dict
+      - single_noidobj_inlined
+
+slots:
+  id:
+    identifier: true
+  name: {}
+
+  persons_as_list:
+    range: Person
+    inlined: true
+    inlined_as_list: true
+    multivalued: true
+  persons_as_dict:
+    range: Person
+    inlined: true
+    inlined_as_list: false
+    multivalued: true
+  single_person_inlined:
+    inlined: true
+    range: Person
+
+  noidobj_as_list:
+    range: PersonNoId
+    inlined: true
+    inlined_as_list: true
+    multivalued: true
+# impossible to inline-as-dict if no id/key
+#  noidobj_as_dict:
+#    range: PersonNoId
+#    inlined: true
+#    inlined_as_list: false
+#    multivalued: true
+  single_noidobj_inlined:
+    inlined: true
+    range: PersonNoId
+
+  vital_status:
+    range: VitalStatusEnum
+
+enums:
+  VitalStatusEnum:
+    permissible_values:
+      LIVING:
+      DEAD:

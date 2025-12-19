@@ -1,0 +1,11 @@
+id: "https://example.org/examples/loaderror5"
+description: type 'phenotype' is undefined
+
+imports:
+  - linkml:types
+
+prefixes:
+    linkml: https://w3id.org/linkml/
+
+types:
+  phenotype:

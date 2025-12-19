@@ -3,16 +3,16 @@
 
 
 
-
 URI: [personinfo:Event](https://w3id.org/linkml/examples/personinfo/Event)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;duration:float%20%3F;is_current:boolean%20%3F]^-[MedicalEvent],[Event]^-[EmploymentEvent],[EmploymentEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[MedicalEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;duration:float%20%3F;is_current:boolean%20%3F]^-[MedicalEvent],[Event]^-[EmploymentEvent],[EmploymentEvent])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NewsEvent],[MedicalEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;duration:float%20%3F;is_current:boolean%20%3F]^-[NewsEvent],[Event]^-[MedicalEvent],[Event]^-[EmploymentEvent],[EmploymentEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[NewsEvent],[MedicalEvent],[Event&#124;started_at_time:date%20%3F;ended_at_time:date%20%3F;duration:float%20%3F;is_current:boolean%20%3F]^-[NewsEvent],[Event]^-[MedicalEvent],[Event]^-[EmploymentEvent],[EmploymentEvent])
 
 ## Children
 
  * [EmploymentEvent](EmploymentEvent.md)
  * [MedicalEvent](MedicalEvent.md)
+ * [NewsEvent](NewsEvent.md)
 
 ## Referenced by Class
 
@@ -36,4 +36,3 @@ URI: [personinfo:Event](https://w3id.org/linkml/examples/personinfo/Event)
 |  |  |  |
 | --- | --- | --- |
 | **Close Mappings:** | | schema:Event |
-

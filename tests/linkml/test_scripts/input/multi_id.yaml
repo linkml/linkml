@@ -1,0 +1,47 @@
+id: http://example.org/example/multi_id
+name: multi_id
+
+default_range: uri
+
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  uri:
+    base: URIorCURIE
+    uri: xsd:anyURI
+
+  identifier type:
+    typeof: uri
+
+slots:
+  node property:
+    domain: named thing
+    range: identifier type
+    inherited: true
+
+  not overridden:
+    domain: named thing
+    range: identifier type
+
+  id:
+    is_a: node property
+    identifier: true
+    domain: named thing
+    range: uri
+
+classes:
+  named thing:
+    slots:
+      - node property
+      - not overridden
+      - id
+
+
+  sequence variant:
+    is_a: named thing
+    slot_usage:
+      id:
+        description: no significant change
+      node property:
+        description: none here either

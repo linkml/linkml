@@ -1,0 +1,152 @@
+schema:
+  id: http://example.org/test_value_constraints
+  name: test_value_constraints
+
+  imports:
+    - https://w3id.org/linkml/types
+
+  slots:
+    string_constant:
+      range: string
+      equals_string: constant
+    string_pattern:
+      range: string
+      pattern: "pat{2,}ern[!]?"
+    integer_constant:
+      range: integer
+      equals_number: 10
+    integer_under:
+      range: integer
+      maximum_value: 10
+    integer_over:
+      range: integer
+      minimum_value: 10
+    string_any_constant:
+      range: string
+      any_of:
+        - equals_string: this
+        - equals_string: that
+    integer_big_or_small:
+      range: integer
+      any_of:
+        - maximum_value: 10
+        - minimum_value: 100
+    string_all_patterns:
+      range: string
+      all_of:
+        - pattern: Michael \S+
+        - pattern: \S+ Jordan
+    string_exactly_one_pattern:
+      range: string
+      exactly_one_of:
+        - pattern: Michael \S+
+        - pattern: \S+ Jordan
+    string_none_of:
+      range: string
+      none_of:
+        - equals_string: purple
+        - equals_string: green
+    integer_over_ten_or_string_na:
+      exactly_one_of:
+        - range: integer
+          minimum_value: 10
+        - range: string
+          pattern: "[nN]/?[aA]"
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - string_constant
+        - string_pattern
+        - integer_constant
+        - integer_under
+        - integer_over
+        - string_any_constant
+        - integer_big_or_small
+        - string_all_patterns
+        - string_exactly_one_pattern
+        - string_none_of
+        - integer_over_ten_or_string_na
+
+data_cases:
+  - data:
+      string_constant: constant
+  - data:
+      string_constant: wrong
+    error_message: "'constant' was expected"
+  - data:
+      string_pattern: pattttttern
+  - data:
+      string_pattern: pattern!
+  - data:
+      string_pattern: patern
+    error_message: does not match
+  - data:
+      integer_constant: 10
+  - data:
+      integer_constant: 9
+    error_message: 10 was expected
+  - data:
+      integer_under: 10
+  - data:
+      integer_under: 11
+    error_message: 11 is greater than the maximum of 10
+  - data:
+      integer_over: 10
+  - data:
+      integer_over: 9
+    error_message: 9 is less than the minimum of 10
+  - data:
+      string_any_constant: this
+  - data:
+      string_any_constant: that
+  - data:
+      string_any_constant: another
+    error_message: Failed validating 'anyOf'
+  - data:
+      integer_big_or_small: 9
+  - data:
+      integer_big_or_small: 101
+  - data:
+      integer_big_or_small: 50
+    error_message: Failed validating 'anyOf'
+  - data:
+      string_all_patterns: Michael Jeffrey Jordan
+  - data:
+      string_all_patterns: Air Jordan
+    error_message: does not match 'Michael \S+'
+  - data:
+      string_all_patterns: Michael J. Fox
+    error_message: does not match '\S+ Jordan'
+  - data:
+      string_exactly_one_pattern: Air Jordan
+  - data:
+      string_exactly_one_pattern: Michael J. Fox
+  - data:
+      string_exactly_one_pattern: Michael Jordan
+    error_message: is valid under each of
+  - data:
+      string_exactly_one_pattern: Scottie Pippen
+    error_message: is not valid under any of
+  - data:
+      string_none_of: orange
+  - data:
+      string_none_of: purple
+    error_message: should not be valid under
+  - data:
+      string_none_of: green
+    error_message: should not be valid under
+  - data:
+      integer_over_ten_or_string_na: 100
+  - data:
+      integer_over_ten_or_string_na: 5
+    error_message: 5 is less than the minimum
+  - data:
+      integer_over_ten_or_string_na: n/a
+  - data:
+      integer_over_ten_or_string_na: wrong
+    error_message: "'wrong' does not match"
+  - data:
+      integer_over_ten_or_string_na: false
+    error_message: False is not valid under any of the given schemas

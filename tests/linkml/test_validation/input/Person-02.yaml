@@ -1,0 +1,14 @@
+id: P:004
+name: eventful life
+has_events:
+  - employed_at: ROR:1
+    started_at_time: "2019-01-01"
+    is_current: true
+  - started_at_time: "2023-01-01"
+    in_location: GEO:1234
+    diagnosis:
+      id: CODE:P1789
+      name: hypertension
+    procedure:
+      id: CODE:P1846
+      name: valve repair

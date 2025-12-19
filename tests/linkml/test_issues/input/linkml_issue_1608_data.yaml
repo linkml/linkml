@@ -1,0 +1,9 @@
+vehicles:
+  - exterior_color: red
+    max_passengers: 4
+    type: test_pref:Boat
+    waterline: 30.0
+  - exterior_color: blue
+    max_passengers: 5
+    type: test_pref:Airplane
+    wingspan: 100.0

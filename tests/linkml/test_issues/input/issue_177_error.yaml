@@ -1,0 +1,17 @@
+id: http://example.org/tests/issue177
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    tree_root: true
+
+  c2:
+    tree_root: true
+
+  c3:
+    tree_root: true

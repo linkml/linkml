@@ -1,0 +1,94 @@
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix meta: <http://example.org/owl2/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+linkml:topValue a owl:DatatypeProperty ;
+    rdfs:label "value" .
+
+meta:annotslot a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "annotslot" ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
+    skos:inScheme <http://example.org/owl2> .
+
+meta:annotslot2 a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "annotslot2" ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:string ;
+    skos:inScheme <http://example.org/owl2> .
+
+meta:dataslot a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "dataslot" ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:string ;
+    skos:inScheme <http://example.org/owl2> .
+
+meta:objslot a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "objslot" ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
+    skos:inScheme <http://example.org/owl2> .
+
+meta:C1 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:dataslot ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:string ;
+            owl:onProperty meta:annotslot2 ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:dataslot ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:string ;
+            owl:onProperty meta:dataslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot2 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:annotslot2 ] ;
+    skos:inScheme <http://example.org/owl2> .
+
+meta:C2 a owl:Class,
+        linkml:ClassDefinition ;
+    rdfs:label "c2" ;
+    skos:inScheme <http://example.org/owl2> .
+
+meta:string a owl:Class,
+        linkml:TypeDefinition ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:onDataRange meta:string ;
+            owl:onProperty linkml:topValue ;
+            owl:qualifiedCardinality 1 ] .
+
+<http://example.org/owl2> a owl:Ontology ;
+    rdfs:label "owl2" .
+

@@ -1,0 +1,13 @@
+id: neighbor
+name: neighbor
+title: neighbor
+description: neighbor class imported without ./, but has relative imports of its own
+imports:
+  - ../neighborhood_parent
+classes:
+  Neighbor:
+    description: "Our main class's best friend!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Neighbor"

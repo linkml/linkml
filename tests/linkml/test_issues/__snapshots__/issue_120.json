@@ -1,0 +1,43 @@
+{
+    "$defs": {
+        "Course": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "name": {
+                    "description": "Any name"
+                }
+            },
+            "title": "Course",
+            "type": "object"
+        },
+        "Student": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "courses": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Course"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "Any name"
+                }
+            },
+            "title": "Student",
+            "type": "object"
+        }
+    },
+    "$id": "http://example.org/sample/example1",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": true,
+    "metamodel_version": "1.7.0",
+    "title": "example1",
+    "type": "object",
+    "version": null
+}

@@ -1,0 +1,13 @@
+{% if attributes or description %}
+#[
+{%- if description -%}doc = r" {{ description | escape }}", {%- endif -%}
+{%- for key, val in attributes.items() -%}
+{{ key }} = "{{ val }}"{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+]
+{%- endif -%}
+pub type {{ name }} = {%- if multivalued %} Vec<{{ type_ }}>
+{%- else %} {{ type_ }}{%- endif -%};
+{%- if slot_range_as_union %}
+{{ slot_range_as_union }}
+{% endif -%}

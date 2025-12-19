@@ -1,0 +1,16 @@
+id: http://example.org/example/loaderror11
+name: loaderror11
+description: type with adequate definition
+
+default_range: string
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+  bstring:
+    typeof: string

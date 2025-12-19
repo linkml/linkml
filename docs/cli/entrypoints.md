@@ -17,7 +17,7 @@
 
 ## Generators
 
-Not all of these have API documentation, 
+Not all of these have API documentation,
 try running them with `--help` and see what happens!
 
 - {ref}`gen-jsonld-context <generators/jsonld-context:gen-jsonld-context>`
@@ -40,6 +40,7 @@ try running them with `--help` and see what happens!
 - {ref}`gen-python <generators/python:gen-python>`
 - {ref}`gen-pydantic <generators/pydantic:gen-pydantic>`
 - {ref}`gen-rdf <generators/rdf:gen-rdf>`
+- {ref}`gen-yarrrml <generators/yarrrml:gen-yarrrml>`
 - {ref}`gen-shex <generators/shex:gen-shex>`
 - {ref}`gen-shacl <generators/shacl:gen-shacl>`
 - {ref}`gen-sparql <generators/sparql:gen-sparql>`

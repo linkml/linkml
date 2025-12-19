@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:birth_date](https://w3id.org/linkml/examples/personinfo/birth_date)
 
 
@@ -26,4 +25,3 @@ None &#8594;  <sub>0..1</sub> [String](types/String.md)
 |  |  |  |
 | --- | --- | --- |
 | **Mappings:** | | schema:birthDate |
-

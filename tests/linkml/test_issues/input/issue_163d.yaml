@@ -1,0 +1,17 @@
+id: http://example.org/sample/example163d
+
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+
+classes:
+  c1:
+    exact_mappings:
+      - ex:mapping1

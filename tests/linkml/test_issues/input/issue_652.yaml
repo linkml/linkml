@@ -1,0 +1,48 @@
+id: https://w3id.org/Example-Schema
+name: Example-Schema
+description: >-
+  An Example Schema
+version: 0.0.0
+imports:
+  - linkml:types
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  example: https://w3id.org/example/
+
+default_prefix: example
+
+classes:
+  c1:
+    slots:
+        - prop1
+
+  c2:
+    is_a: c1
+    slots:
+        - prop2
+
+  c3:
+    is_a: c1
+    slots:
+      - prop3
+
+  named thing:
+    slots:
+      - prop4
+
+
+slots:
+  prop1:
+    required: true
+
+  prop2:
+    range: string
+    required: true
+
+  prop3:
+    range: string
+    required: true
+
+  prop4:
+    range: c1

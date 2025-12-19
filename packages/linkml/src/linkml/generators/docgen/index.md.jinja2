@@ -1,0 +1,62 @@
+# {% if schema.title %}{{ schema.title }}{% else %}{{ schema.name }}{% endif %}
+
+{% if schema.description %}{{ schema.description }}{% endif %}
+
+URI: {{ schema.id }}
+
+Name: {{ schema.name }}
+
+{% if include_top_level_diagram %}
+
+## Schema Diagram
+
+```{{ gen.mermaid_directive() }}
+{{ gen.mermaid_diagram() }}
+```
+{% endif %}
+
+## Classes
+
+| Class | Description |
+| --- | --- |
+{% if gen.hierarchical_class_view -%}
+{% for u, v in gen.class_hierarchy_as_tuples() -%}
+| {{ "&nbsp;"|safe*u*8 }}{{ gen.link(schemaview.get_class(v), True) }} | {{ schemaview.get_class(v).description|enshorten }} |
+{% endfor %}
+{% else -%}
+{% for c in gen.all_class_objects()|sort(attribute=sort_by) -%}
+| {{ gen.link(c, True) }} | {{ c.description|enshorten }} |
+{% endfor %}
+{% endif %}
+
+## Slots
+
+| Slot | Description |
+| --- | --- |
+{% for s in gen.all_slot_objects()|sort(attribute=sort_by) -%}
+| {{ gen.link(s, True) }} | {{ s.description|enshorten }} |
+{% endfor %}
+
+## Enumerations
+
+| Enumeration | Description |
+| --- | --- |
+{% for e in gen.all_enum_objects()|sort(attribute=sort_by) -%}
+| {{ gen.link(e, True) }} | {{ e.description|enshorten }} |
+{% endfor %}
+
+## Types
+
+| Type | Description |
+| --- | --- |
+{% for t in gen.all_type_objects()|sort(attribute=sort_by) -%}
+| {{ gen.link(t, True) }} | {{ t.description|enshorten }} |
+{% endfor %}
+
+## Subsets
+
+| Subset | Description |
+| --- | --- |
+{% for ss in schemaview.all_subsets().values()|sort(attribute='name') -%}
+| {{ gen.link(ss, True) }} | {{ ss.description|enshorten }} |
+{% endfor %}

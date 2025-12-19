@@ -1,0 +1,5 @@
+id: file://testmodel
+classes:
+  annotation:
+    description: dummy
+    abstract: true

@@ -1,0 +1,43 @@
+schema1:
+  id: "http://example.org/schema1"
+
+  prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+
+  subsets:
+    s1:
+
+  default_range: t1
+
+  types:
+    t1:
+      base: str
+      uri: xsd:string
+
+  slots:
+    s1:
+      domain: c1
+
+  classes:
+    c1:
+
+schema2:
+  id: "http://example.org/schema2"
+
+  prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+
+  subsets:
+    s2:
+
+  types:
+    t2:
+      base: Bool
+      uri: xsd:boolean
+
+  slots:
+    s2:
+      domain: c2
+
+  classes:
+    c2:
