@@ -185,6 +185,11 @@ class PydanticBaseModel(PydanticTemplateModel):
     References:
         https://docs.pydantic.dev/latest/concepts/strict_mode
     """
+    empty_list_for_multivalued_slots: bool = False
+    """
+    If True, optional multivalued slots default to an empty list and the serializer collapses empty
+    lists to ``None`` when ``exclude_none`` is used.
+    """
 
 
 class PydanticAttribute(PydanticTemplateModel):
@@ -215,6 +220,7 @@ class PydanticAttribute(PydanticTemplateModel):
     maximum_cardinality: Optional[int] = None
     multivalued: Optional[bool] = None
     pattern: Optional[str] = None
+    empty_list_for_multivalued_slots: bool = False
     meta: Optional[dict[str, Any]] = None
     """
     Metadata for the slot to be included in a Field annotation
@@ -228,7 +234,7 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
-            if self.range and self.range.startswith("Optional[list"):
+            if self.empty_list_for_multivalued_slots and self.range and self.range.startswith("Optional[list"):
                 return "[]"
             return "None"
 
