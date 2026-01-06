@@ -2753,15 +2753,12 @@ def test_union_of():
     code = generator.serialize()
 
     # Check that UnionClass is generated as a type alias with forward references
-    assert "# Type alias for union_of" in code
+    # Description should appear as a comment before the type alias
+    assert "# A class that represents a union of other classes" in code
     assert 'UnionClass = Union["TypeA", "TypeB"]' in code
 
     # Check that Union is imported
     assert "from typing import" in code and "Union" in code
-
-    # Check that the description is preserved
-    assert '"""' in code
-    assert "A class that represents a union of other classes" in code
 
     # Check that individual classes are still generated normally
     assert "class TypeA(" in code
@@ -2780,16 +2777,88 @@ def test_union_of():
 
     # Verify they are instances of the union (type checking would work at runtime)
 
-    if hasattr(typing, "get_origin"):  # Python 3.8+
-        union_origin = typing.get_origin(module.UnionClass)
-        union_args = typing.get_args(module.UnionClass)
-        assert union_origin is Union
-        # With forward references, the args are ForwardRef objects
-        from typing import ForwardRef
+    union_origin = typing.get_origin(module.UnionClass)
+    union_args = typing.get_args(module.UnionClass)
+    assert union_origin is Union
+    # With forward references, the args are ForwardRef objects
+    from typing import ForwardRef
 
-        expected_refs = {ForwardRef("TypeA"), ForwardRef("TypeB")}
-        actual_refs = set(union_args)
-        assert actual_refs == expected_refs
+    expected_refs = {ForwardRef("TypeA"), ForwardRef("TypeB")}
+    actual_refs = set(union_args)
+    assert actual_refs == expected_refs
+
+
+def test_union_of_single_type_error():
+    """
+    Test that union_of with a single type raises ValueError
+    """
+    schema = SchemaDefinition(
+        id="https://example.org/single_union",
+        name="single_union",
+        classes=[
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="SingleUnion", union_of=["TypeA"]),
+        ],
+    )
+    generator = PydanticGenerator(schema, package="test")
+    with pytest.raises(ValueError, match="has union_of with 1 type.*requires at least 2 types"):
+        generator.serialize()
+
+
+def test_union_of_with_inheritance_error():
+    """
+    Test that union_of classes cannot have is_a or mixins
+    """
+    # Test with is_a
+    schema_with_is_a = SchemaDefinition(
+        id="https://example.org/union_inheritance",
+        name="union_inheritance",
+        classes=[
+            ClassDefinition(name="BaseClass"),
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="TypeB"),
+            ClassDefinition(name="UnionWithParent", union_of=["TypeA", "TypeB"], is_a="BaseClass"),
+        ],
+    )
+    generator = PydanticGenerator(schema_with_is_a, package="test")
+    with pytest.raises(ValueError, match="has union_of but also has inheritance.*is_a=BaseClass"):
+        generator.serialize()
+
+    # Test with mixins
+    schema_with_mixins = SchemaDefinition(
+        id="https://example.org/union_mixins",
+        name="union_mixins",
+        classes=[
+            ClassDefinition(name="MixinClass", mixin=True),
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="TypeB"),
+            ClassDefinition(name="UnionWithMixin", union_of=["TypeA", "TypeB"], mixins=["MixinClass"]),
+        ],
+    )
+    generator = PydanticGenerator(schema_with_mixins, package="test")
+    with pytest.raises(ValueError, match="has union_of but also has inheritance.*mixins="):
+        generator.serialize()
+
+
+def test_union_of_with_slots_error():
+    """
+    Test that union_of classes cannot have slots/attributes
+    """
+    schema = SchemaDefinition(
+        id="https://example.org/union_slots",
+        name="union_slots",
+        classes=[
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="TypeB"),
+            ClassDefinition(name="UnionWithSlots", union_of=["TypeA", "TypeB"], slots=["some_slot"]),
+        ],
+        slots=[
+            SlotDefinition(name="some_slot", range="string"),
+        ],
+    )
+    generator = PydanticGenerator(schema, package="test")
+    with pytest.raises(ValueError, match="has union_of but also has slots"):
+        generator.serialize()
 
 
 def test_crappy_stdlib_set_removed():
