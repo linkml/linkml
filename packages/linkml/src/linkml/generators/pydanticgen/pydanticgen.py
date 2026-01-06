@@ -509,10 +509,12 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         union_type_str = f"Union[{', '.join(union_types)}]"
 
         # Create a type alias instead of a class
+        # Sanitize description for single-line comment (replace newlines with spaces)
+        description = cls.description.replace("\n", " ").strip() if cls.description else None
         pyclass = PydanticClass(
             name=camelcase(cls.name),
             bases=[],  # Empty list for type aliases
-            description=cls.description,
+            description=description,
             is_type_alias=True,
             type_alias_value=union_type_str,
         )
