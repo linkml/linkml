@@ -1,6 +1,6 @@
 {% if is_type_alias %}
 {% if description %}
-# {{ description }}
+# {{ description | pprint }}
 {% endif -%}
 {{ name }} = {{ type_alias_value }}
 {% else %}
