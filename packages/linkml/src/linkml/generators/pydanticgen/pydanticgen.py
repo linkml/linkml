@@ -520,10 +520,6 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         imports = self._get_imports(cls) if self.split else None
         result = ClassResult(cls=pyclass, source=cls, imports=imports)
 
-        # Add Union import
-        union_import = Import(module="typing", objects=[ObjectImport(name="Union")])
-        result.imports = result.imports + union_import if result.imports else Imports() + union_import
-
         # Add metadata
         result.cls = self.include_metadata(result.cls, cls)
 
