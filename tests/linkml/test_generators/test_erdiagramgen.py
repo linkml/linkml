@@ -30,10 +30,10 @@ Person {
     string id
     string name
     integer age_in_years
-    stringList aliases
     LifeStatusEnum is_living
     string species_name
     integer stomach_count
+    stringList aliases
 }
 """
 )
@@ -213,3 +213,137 @@ def test_preserve_names():
     diagram = ERDiagram()
     gen_test.add_upstream_class("My_Class", set(), diagram)
     assert any(e.name == "My_Class" for e in diagram.entities)
+
+
+def test_sanitize_class_name_for_erd():
+    """Test that 'Class' keyword is properly sanitized for Mermaid ERD."""
+    import re
+
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_class_keyword",
+        classes={
+            "Class": ClassDefinition(name="Class", slots=["name"]),
+            "MyClass": ClassDefinition(name="MyClass", slots=["ref"]),
+        },
+        slots={
+            "name": SlotDefinition(name="name", range="string"),
+            "ref": SlotDefinition(name="ref", range="Class"),
+        },
+    )
+
+    gen = ERDiagramGenerator(schema=schema)
+    diagram = gen.serialize()
+
+    # "Class" should be renamed to "__Class" to avoid Mermaid keyword conflict
+    assert "__Class {" in diagram
+    # Check standalone "Class" entity doesn't exist (use word boundary to avoid matching "MyClass")
+    assert not re.search(r"\bClass\s*\{", diagram), "Reserved keyword 'Class' should be sanitized to '__Class'"
+    # Relationships should also use the sanitized name
+    assert "__Class :" in diagram
+
+
+def test_relationship_collapsing():
+    """Test that multiple relationships between same entities are collapsed."""
+    from linkml.generators.erdiagramgen import Cardinality, Entity, Relationship, RelationshipType
+
+    diagram = ERDiagram()
+    diagram.entities = [Entity(name="Person"), Entity(name="Address")]
+
+    # Add multiple relationships from Person to Address
+    rel_type = RelationshipType(
+        left_cardinality=Cardinality(is_left=False),
+        right_cardinality=Cardinality(is_left=True),
+    )
+    diagram.relationships = [
+        Relationship(
+            first_entity="Person",
+            second_entity="Address",
+            relationship_type=rel_type,
+            relationship_label="home_address",
+        ),
+        Relationship(
+            first_entity="Person",
+            second_entity="Address",
+            relationship_type=rel_type,
+            relationship_label="work_address",
+        ),
+        Relationship(
+            first_entity="Person",
+            second_entity="Address",
+            relationship_type=rel_type,
+            relationship_label="mailing_address",
+        ),
+    ]
+
+    output = str(diagram)
+
+    # Should have only one relationship line from Person to Address with combined labels
+    assert output.count("Person") == 2  # Once in entity, once in relationship
+    assert "home_address" in output
+    assert "mailing_address" in output
+    assert "work_address" in output
+    # Labels should be comma-separated on same line
+    assert "home_address, mailing_address, work_address" in output
+
+
+def test_slot_usage_relationships():
+    """Test that relationships declared in slot_usage are included in ERD."""
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_slot_usage",
+        classes={
+            "Person": ClassDefinition(
+                name="Person",
+                slots=["name"],
+                slot_usage={"employer": SlotDefinition(name="employer", range="Organization")},
+            ),
+            "Organization": ClassDefinition(name="Organization", slots=["org_name"]),
+        },
+        slots={
+            "name": SlotDefinition(name="name", range="string"),
+            "org_name": SlotDefinition(name="org_name", range="string"),
+            "employer": SlotDefinition(name="employer", range="string"),  # Base slot has string range
+        },
+    )
+
+    gen = ERDiagramGenerator(schema=schema, structural=False)
+    diagram = gen.serialize()
+
+    # The slot_usage override should create a relationship to Organization
+    assert "Person ||--" in diagram
+    assert 'Organization : "employer"' in diagram
+
+
+def test_parent_slot_usage_relationships():
+    """Test that slot_usage from parent classes creates relationships in child ERD."""
+    schema = SchemaDefinition(
+        id="https://example.com/test_schema",
+        name="test_parent_slot_usage",
+        classes={
+            "BaseEntity": ClassDefinition(
+                name="BaseEntity",
+                slots=["name"],
+                slot_usage={"related_org": SlotDefinition(name="related_org", range="Organization")},
+            ),
+            "Person": ClassDefinition(
+                name="Person",
+                is_a="BaseEntity",
+                slots=["age"],
+            ),
+            "Organization": ClassDefinition(name="Organization", slots=["org_name"]),
+        },
+        slots={
+            "name": SlotDefinition(name="name", range="string"),
+            "age": SlotDefinition(name="age", range="integer"),
+            "org_name": SlotDefinition(name="org_name", range="string"),
+            "related_org": SlotDefinition(name="related_org", range="string"),  # Base slot has string range
+        },
+    )
+
+    gen = ERDiagramGenerator(schema=schema, structural=False)
+    diagram = gen.serialize()
+
+    # Person should inherit the slot_usage from BaseEntity and have a relationship to Organization
+    assert "Person ||--" in diagram
+    assert 'Organization : "related_org"' in diagram
