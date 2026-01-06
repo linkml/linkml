@@ -2753,15 +2753,12 @@ def test_union_of():
     code = generator.serialize()
 
     # Check that UnionClass is generated as a type alias with forward references
-    assert "# Type alias for union_of" in code
+    # Description should appear as a comment before the type alias
+    assert "# A class that represents a union of other classes" in code
     assert 'UnionClass = Union["TypeA", "TypeB"]' in code
 
     # Check that Union is imported
     assert "from typing import" in code and "Union" in code
-
-    # Check that the description is preserved
-    assert '"""' in code
-    assert "A class that represents a union of other classes" in code
 
     # Check that individual classes are still generated normally
     assert "class TypeA(" in code

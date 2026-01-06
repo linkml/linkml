@@ -497,6 +497,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
     def _generate_union_class(self, cls: ClassDefinition) -> ClassResult:
         """Generate a union type alias for classes with union_of"""
+        # Validate that union_of has at least 2 types
+        if len(cls.union_of) < 2:
+            raise ValueError(
+                f"Class '{cls.name}' has union_of with {len(cls.union_of)} type(s), "
+                "but a Union requires at least 2 types"
+            )
+
         # Get the union types with string quotes to handle forward references
         union_types = [f'"{camelcase(union_cls)}"' for union_cls in cls.union_of]
         union_type_str = f"Union[{', '.join(union_types)}]"
@@ -505,7 +512,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         pyclass = PydanticClass(
             name=camelcase(cls.name),
             bases=[],  # Empty list for type aliases
-            description=cls.description.replace('"', '\\"') if cls.description is not None else None,
+            description=cls.description,
             is_type_alias=True,
             type_alias_value=union_type_str,
         )
