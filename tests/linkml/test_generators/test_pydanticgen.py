@@ -2782,16 +2782,15 @@ def test_union_of():
     # Verify they are instances of the union (type checking would work at runtime)
     import typing
 
-    if hasattr(typing, "get_origin"):  # Python 3.8+
-        union_origin = typing.get_origin(module.UnionClass)
-        union_args = typing.get_args(module.UnionClass)
-        assert union_origin is Union
-        # With forward references, the args are ForwardRef objects
-        from typing import ForwardRef
+    union_origin = typing.get_origin(module.UnionClass)
+    union_args = typing.get_args(module.UnionClass)
+    assert union_origin is Union
+    # With forward references, the args are ForwardRef objects
+    from typing import ForwardRef
 
-        expected_refs = {ForwardRef("TypeA"), ForwardRef("TypeB")}
-        actual_refs = set(union_args)
-        assert actual_refs == expected_refs
+    expected_refs = {ForwardRef("TypeA"), ForwardRef("TypeB")}
+    actual_refs = set(union_args)
+    assert actual_refs == expected_refs
 
 
 def test_crappy_stdlib_set_removed():
