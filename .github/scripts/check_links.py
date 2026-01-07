@@ -33,7 +33,7 @@ SKIP_DOMAINS = {
 
 def extract_domain(url: str) -> str:
     """Extract domain from URL."""
-    match = re.match(r'https?://([^/]+)', url)
+    match = re.match(r"https?://([^/]+)", url)
     return match.group(1) if match else ""
 
 
@@ -95,9 +95,7 @@ def save_cache(cache: dict[str, dict], cache_file: Path) -> None:
             writer.writerow({"url": url, **data})
 
 
-def needs_check(
-    url: str, cache: dict[str, dict], ttl_days: int, jitter_days: int
-) -> bool:
+def needs_check(url: str, cache: dict[str, dict], ttl_days: int, jitter_days: int) -> bool:
     """Determine if a URL needs to be checked."""
     if url not in cache:
         return True
@@ -153,9 +151,7 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Check links in documentation with caching and rate limiting."
-    )
+    parser = argparse.ArgumentParser(description="Check links in documentation with caching and rate limiting.")
     parser.add_argument(
         "--docs-dir",
         type=Path,
@@ -231,10 +227,7 @@ def main():
         selected = urls[: args.links_per_domain]
         urls_this_run.extend(selected)
         if args.verbose and len(urls) > args.links_per_domain:
-            print(
-                f"  {domain}: checking {len(selected)}/{len(urls)} "
-                f"(limited by --links-per-domain)"
-            )
+            print(f"  {domain}: checking {len(selected)}/{len(urls)} (limited by --links-per-domain)")
 
     print(f"Checking {len(urls_this_run)} URLs this run")
 
@@ -284,9 +277,9 @@ def main():
     # Report results
     all_broken = broken_links + cached_broken
     if all_broken:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"BROKEN LINKS ({len(all_broken)}):")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         for url, status, error in sorted(all_broken):
             msg = f"  [{status}] {url}"
             if error:
