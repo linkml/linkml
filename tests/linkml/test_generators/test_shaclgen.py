@@ -615,9 +615,7 @@ def test_nodeshape_description_uses_rdfs_comment(kitchen_sink_path):
 
     # Verify NodeShape does NOT have sh:description (this was the bug)
     nodeshape_sh_descriptions = list(g.objects(person_uri, SH.description))
-    assert len(nodeshape_sh_descriptions) == 0, (
-        "NodeShapes should not use sh:description; use rdfs:comment instead"
-    )
+    assert len(nodeshape_sh_descriptions) == 0, "NodeShapes should not use sh:description; use rdfs:comment instead"
 
     # Verify PropertyShapes still use sh:description (this is correct per spec)
     # Check that at least one property shape (BNode) uses sh:description
