@@ -1,6 +1,7 @@
-from linkml.generators.owlgen import OwlSchemaGenerator
 from rdflib import Graph, URIRef
 from rdflib.namespace import OWL, RDF
+
+from linkml.generators.owlgen import OwlSchemaGenerator
 
 
 def test_issue_owl(input_path, snapshot):

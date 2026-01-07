@@ -11,13 +11,13 @@ from typing import Any, Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.linkml_model.types import SHEX
-from linkml_runtime.utils.formatutils import camelcase, underscore
 from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.types import SHEX
+from linkml_runtime.utils.formatutils import camelcase, underscore
 
 URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
@@ -50,6 +50,7 @@ class ContextGenerator(Generator):
     output: Optional[str] = None
     prefixes: Optional[bool] = True
     flatprefixes: Optional[bool] = False
+    fix_multivalue_containers: Optional[bool] = False
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
@@ -206,6 +207,12 @@ class ContextGenerator(Generator):
                     else:
                         slot_def["@type"] = range_type.uri
 
+                if self.fix_multivalue_containers and slot.multivalued:
+                    if slot.inlined and not slot.inlined_as_list:
+                        slot_def["@container"] = "@index"
+                    else:
+                        slot_def["@container"] = "@set"
+
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
@@ -284,6 +291,12 @@ class ContextGenerator(Generator):
     "--output",
     type=click.Path(),
     help="Output file name",
+)
+@click.option(
+    "--fix-multivalue-containers/--no-fix-multivalue-containers",
+    default=False,
+    show_default=True,
+    help="For multivalued attributes declare a fix container type ('@set' for lists, '@index' for dictionaries).",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):

@@ -3,6 +3,7 @@ from typing import Any, Optional, Union
 
 import jsonpatch
 import yaml
+
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
+
 from linkml.generators.panderagen.panderagen import DataframeGeneratorCli
 from linkml.generators.panderagen.polars_schema.polars_schema_dataframe_generator import PolarsSchemaDataframeGenerator
 
@@ -74,6 +75,29 @@ def compiled_polars_synthetic_schema_module(synthetic_flat_dataframe_model):
         generator=generator, template_path="panderagen_polars_schema", template_file="polars_schema.jinja2"
     )
     return polars_generator_cli.generator.compile_dataframe_model("polars_test_module")
+
+
+@pytest.fixture(scope="module")
+def compiled_polars_loaded_module(synthetic_flat_dataframe_model):
+    generator = PolarsSchemaDataframeGenerator(synthetic_flat_dataframe_model, backing_form="loaded")
+    polars_generator_cli = DataframeGeneratorCli(
+        generator=generator, template_path="panderagen_polars_schema", template_file="polars_schema.jinja2"
+    )
+    return polars_generator_cli.generator.compile_dataframe_model("polars_loaded_module")
+
+
+@pytest.fixture(scope="module")
+def polars_transform_module_code(synthetic_flat_dataframe_model):
+    generator = PolarsSchemaDataframeGenerator(
+        synthetic_flat_dataframe_model,
+        template_path="panderagen_polars_schema",
+        template_file="load_transformer.jinja2",
+        backing_form="transform",
+    )
+    serialized_code = generator.serialize()
+    logger.info(f"polars transform module code:\n\n{serialized_code}")
+
+    return serialized_code
 
 
 @pytest.mark.parametrize(
@@ -192,3 +216,23 @@ def test_enums(compiled_polars_synthetic_schema_module):
 
     assert set(SyntheticEnum.categories) == {"ANIMAL", "VEGETABLE", "MINERAL"}
     assert set(SyntheticEnumOnt.categories) == {"fiction", "non fiction"}
+
+
+def test_polars_loaded_module(compiled_polars_loaded_module):
+    schema = compiled_polars_loaded_module.PanderaSyntheticTable
+
+    for name, dtype in schema.items():
+        if name == "any_type_column":
+            assert str(dtype) == "Object"
+        else:
+            assert str(dtype) != "Object"
+
+
+def test_polars_transform_module(polars_transform_module_code):
+    """Verify some lines that are characteristic of the polars transform are present"""
+    for expected in [
+        "from . import panderagen_polars_schema as serialized_schema",
+        "from . import panderagen_polars_schema_loaded as loaded_schema",
+        "load(",
+    ]:
+        assert expected in polars_transform_module_code

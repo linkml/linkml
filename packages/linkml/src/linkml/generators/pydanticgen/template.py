@@ -9,8 +9,7 @@ except ImportError:
     from typing_extensions import Self
 
 from jinja2 import Environment, PackageLoader
-from pydantic import BaseModel, Field, field_validator, model_validator
-from pydantic.version import VERSION as PYDANTIC_VERSION
+from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
 
 from linkml.generators.common.template import (
     ConditionalImport as ConditionalImport_,
@@ -25,7 +24,6 @@ from linkml.generators.common.template import (
     ObjectImport,  # noqa: F401
     TemplateModel,
 )
-from linkml.utils.deprecation import deprecation_warning
 
 try:
     if find_spec("black") is not None:
@@ -36,15 +34,6 @@ try:
 except ImportError:
     # we can also get an import error from find_spec during testing because that's how we mock not having it installed
     format_black = None
-
-if int(PYDANTIC_VERSION[0]) >= 2:
-    from pydantic import computed_field
-else:
-    deprecation_warning("pydantic-v1")
-
-    def computed_field(f):
-        """No-op decorator to allow this module to not break imports until 1.9.0"""
-        return f
 
 
 IMPORT_GROUPS = Literal["future", "stdlib", "thirdparty", "local", "conditional"]
@@ -185,6 +174,11 @@ class PydanticBaseModel(PydanticTemplateModel):
     References:
         https://docs.pydantic.dev/latest/concepts/strict_mode
     """
+    empty_list_for_multivalued_slots: bool = False
+    """
+    If True, optional multivalued slots default to an empty list and the serializer collapses empty
+    lists to ``None`` when ``exclude_none`` is used.
+    """
 
 
 class PydanticAttribute(PydanticTemplateModel):
@@ -215,6 +209,7 @@ class PydanticAttribute(PydanticTemplateModel):
     maximum_cardinality: Optional[int] = None
     multivalued: Optional[bool] = None
     pattern: Optional[str] = None
+    empty_list_for_multivalued_slots: bool = False
     meta: Optional[dict[str, Any]] = None
     """
     Metadata for the slot to be included in a Field annotation
@@ -228,7 +223,7 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
-            if self.range and self.range.startswith("Optional[list"):
+            if self.empty_list_for_multivalued_slots and self.range and self.range.startswith("Optional[list"):
                 return "[]"
             return "None"
 

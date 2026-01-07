@@ -1,7 +1,8 @@
 import pytest
+from rdflib import Graph, Namespace
+
 from linkml.generators.rdfgen import RDFGenerator
 from linkml_runtime.linkml_model.meta import LINKML
-from rdflib import Graph, Namespace
 
 NS = Namespace("https://example.org/test/")
 

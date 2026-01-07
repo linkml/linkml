@@ -9,13 +9,13 @@ from typing import Optional, Union
 
 import click
 from jsonasobj2 import JsonObj, as_json
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.linkml_model.types import SHEX
-from linkml_runtime.utils.formatutils import camelcase
 from rdflib import XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.types import SHEX
+from linkml_runtime.utils.formatutils import camelcase
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 

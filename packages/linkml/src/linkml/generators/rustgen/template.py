@@ -2,12 +2,12 @@ from enum import Enum
 from typing import ClassVar, Optional
 
 from jinja2 import Environment, PackageLoader
-from linkml_runtime.utils.formatutils import uncamelcase, underscore
 from pydantic import BaseModel, Field, computed_field, field_validator
 
 from linkml.generators.common.template import Import as Import_
 from linkml.generators.common.template import Imports as Imports_
 from linkml.generators.common.template import TemplateModel, _render
+from linkml_runtime.utils.formatutils import uncamelcase, underscore
 
 
 class ContainerType(Enum):

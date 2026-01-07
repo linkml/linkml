@@ -2,10 +2,10 @@ import json
 
 import pytest
 from click.testing import CliRunner
+
 from linkml.generators import ContextGenerator, JSONLDGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator as FrameContextGenerator
 from linkml.generators.jsonldcontextgen import cli as jsonld_context_cli
-
 from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
@@ -340,3 +340,22 @@ classes:
     result = runner.invoke(jsonld_context_cli, [str(schema), "--embed-context-in-frame"])
     assert result.exit_code != 0
     assert "requires --output" in result.output
+
+
+@pytest.mark.parametrize(
+    "fix_container,attribute,container_type",
+    [
+        [False, "int_list", ""],
+        [False, "int_inlined_list", ""],
+        [False, "int_dict", ""],
+        [True, "int_list", "@set"],
+        [True, "int_inlined_list", "@set"],
+        [True, "int_dict", "@index"],
+    ],
+)
+def test_container_list(input_path, fix_container, attribute, container_type):
+    schema_path = input_path("jsonld_context_multivalued_slot_cardinality.yaml")
+    context = json.loads(ContextGenerator(schema_path, fix_multivalue_containers=fix_container).serialize())
+    assert ("@container" in context["@context"][attribute].keys()) == fix_container
+    if fix_container:
+        assert context["@context"][attribute]["@container"] == container_type

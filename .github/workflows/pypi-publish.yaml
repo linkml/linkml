@@ -23,7 +23,7 @@ jobs:
         python-version: 3.13
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v6.6.1
+      uses: astral-sh/setup-uv@v7.1.6
       with:
         version: ${{ env.UV_VERSION }}
 
@@ -32,7 +32,7 @@ jobs:
         uv build --all-packages
 
     - name: Store built distribution
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: distribution-files
         path: dist/
@@ -49,7 +49,7 @@ jobs:
       id-token: write  # This permission is mandatory for trusted publishing.
     steps:
       - name: Download built distribution
-        uses: actions/download-artifact@v5.0.0
+        uses: actions/download-artifact@v6.0.0
         with:
           name: distribution-files
           path: dist

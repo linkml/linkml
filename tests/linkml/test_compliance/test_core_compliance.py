@@ -5,8 +5,8 @@ import unicodedata
 from _decimal import Decimal
 
 import pytest
-from linkml_runtime.utils.formatutils import underscore
 
+from linkml_runtime.utils.formatutils import underscore
 from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
@@ -528,7 +528,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     choices = {
         (PYDANTIC, False, False): "Optional[str] = Field(default=None",
         (PYDANTIC, False, True): "str = Field(default=...",
-        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=[]",
+        (PYDANTIC, True, False): "Optional[list[str]] = Field(default=None",
         (PYDANTIC, True, True): "list[str] = Field(default=...",
         # TODO: values
         (PYTHON_DATACLASSES, False, False): "",

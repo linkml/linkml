@@ -4,6 +4,7 @@ from operator import eq, ge, gt, le, lt
 from unittest.mock import patch
 
 import pytest
+
 from linkml.utils import deprecation as dep_mod
 from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer, deprecation_warning
 
@@ -39,6 +40,9 @@ def linkml_version() -> SemVer:
         ["3.2.1", "1.2.3", [ge, gt]],
         ["v1.2.3", "1.2.3", [le, ge, eq]],
         ["0.0.0.post2223.dev0+0c3afa90", "0.0.0.post9999.dev9+0c3afa90", [le, ge, eq]],
+        ["1.10.0-rc1", "1.10.0", [le, lt]],
+        ["1.10.0", "1.10.0-rc1", [ge, gt]],
+        ["1.10.0-rc1", "1.10.0-rc1", [le, ge, eq]],
     ],
 )
 def test_semver(v1, v2, ops):

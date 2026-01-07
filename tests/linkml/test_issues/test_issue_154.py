@@ -1,4 +1,5 @@
 import yaml
+
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.yamlutils import as_yaml
 

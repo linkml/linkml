@@ -1,4 +1,5 @@
 import pytest
+
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.schemaloader import SchemaLoader
 

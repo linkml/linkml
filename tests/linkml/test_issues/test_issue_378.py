@@ -1,4 +1,5 @@
 from jsonasobj2 import loads
+
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
 without_default = """

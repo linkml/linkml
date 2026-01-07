@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from click.testing import CliRunner
+
 from linkml.generators.typescriptgen import TypescriptGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime import SchemaView

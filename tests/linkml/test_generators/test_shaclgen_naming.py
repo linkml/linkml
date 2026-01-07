@@ -9,8 +9,9 @@ This extends the existing test_shaclgen.py module with:
 """
 
 import rdflib
-from linkml.generators.shaclgen import ShaclGenerator
 from rdflib import RDF, SH
+
+from linkml.generators.shaclgen import ShaclGenerator
 
 
 # ---------------------------------------------------------------------------

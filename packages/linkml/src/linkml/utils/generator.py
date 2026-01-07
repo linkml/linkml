@@ -29,6 +29,12 @@ from typing import Callable, ClassVar, Optional, TextIO, Union, cast
 import click
 from click import Argument, Command, Option
 from jsonasobj2 import JsonObj
+
+from linkml import LOCAL_METAMODEL_YAML_FILE
+from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
+from linkml.utils.mergeutils import alias_root
+from linkml.utils.schemaloader import SchemaLoader
+from linkml.utils.typereferences import References
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -49,12 +55,6 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
-
-from linkml import LOCAL_METAMODEL_YAML_FILE
-from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
-from linkml.utils.mergeutils import alias_root
-from linkml.utils.schemaloader import SchemaLoader
-from linkml.utils.typereferences import References
 
 logger = logging.getLogger(__name__)
 

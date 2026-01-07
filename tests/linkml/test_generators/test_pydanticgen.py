@@ -15,6 +15,8 @@ import numpy as np
 import pytest
 import yaml
 from jinja2 import DictLoader, Environment, Template
+from pydantic import BaseModel, ConfigDict, ValidationError
+
 from linkml.generators import pydanticgen as pydanticgen_root
 from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators.pydanticgen import (
@@ -45,7 +47,6 @@ from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefin
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schemaview import load_schema_wrap
-from pydantic import BaseModel, ConfigDict, ValidationError
 
 from .conftest import MyInjectedClass
 
@@ -306,8 +307,8 @@ slots:
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
     assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
-    assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -387,8 +388,8 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[list[str]]": "Field(default=[]",
-        "Optional[list[B]]": "Field(default=[]",
+        "Optional[list[str]]": "Field(default=None",
+        "Optional[list[B]]": "Field(default=None",
         "Optional[dict[str, B]]": "Field(default=None",
         "Optional[dict[str, str]]": "Field(default=None",
         "Optional[dict[str, Union[str, B]]]": "Field(default=None",
@@ -1118,15 +1119,46 @@ def test_attribute_field():
 
 def test_append_to_optional_lists(kitchen_sink_path):
     """
-    Optional multivalued fields should be initialised as empty lists
+    Optional multivalued fields can be initialised as empty lists when enabled
     """
-    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, empty_list_for_multivalued_slots=True)
     code = gen.serialize()
     mod = compile_python(code, PACKAGE)
     p = mod.Person(id="P:1")
     d = mod.Dataset()
     d.persons.append(p)
     assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
+
+
+def test_optional_multivalued_defaults_to_none():
+    """
+    Optional multivalued fields default to None (default behavior)
+    """
+    schema_str = """
+id: http://example.org/associated
+name: associated
+imports:
+  - linkml:types
+classes:
+  AssociatedNetElement:
+    attributes:
+      bounds:
+        range: float
+        multivalued: true
+        minimum_cardinality: 1
+        maximum_cardinality: 2
+"""
+    gen = PydanticGenerator(
+        schema_str,
+        package=PACKAGE,
+    )
+    code = gen.serialize()
+    assert "bounds: Optional[list[float]] = Field(default=None" in code
+    mod = compile_python(code, PACKAGE)
+    assoc = mod.AssociatedNetElement()
+    assert assoc.model_dump(exclude_none=True) == {}
+    with pytest.raises(ValidationError):
+        mod.AssociatedNetElement(bounds=[])
 
 
 def test_class_validators():

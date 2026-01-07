@@ -1,4 +1,5 @@
 import pytest
+
 from linkml.utils.schemaloader import SchemaLoader
 from linkml_runtime.utils.yamlutils import as_yaml
 

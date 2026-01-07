@@ -1,5 +1,12 @@
 [tool.uv.workspace]
-members = ["packages/*"]
+members = [
+  "packages/linkml",
+  "packages/linkml_runtime",
+]
+[tool.uv.sources]
+linkml = { workspace = true }
+linkml-runtime = { workspace = true }
+
 
 [tool.codespell]
 skip = [
@@ -79,6 +86,7 @@ markers = [
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
   "panderagen: tests for the pandera generator",
+  "dataframe_polars_schema: tests for the polars schema dataframe generator",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",
@@ -122,6 +130,9 @@ select = [
   "I",  # isort
   "UP", # pyupgrade
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["linkml", "linkml_runtime"]
 
 [tool.ruff.lint.per-file-ignores]
 # These templates can have long lines
@@ -176,11 +187,3 @@ commands = [
   ["ruff", "check", "{posargs:.}"],
   ["ruff", "format", "{posargs:.}"],
 ]
-
-[tool.uv-dynamic-versioning]
-vcs = "git"
-style = "pep440"
-fallback-version = "0.0.0"
-
-[tool.hatch.version]
-source = "uv-dynamic-versioning"

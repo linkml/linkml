@@ -5,10 +5,6 @@ from typing import Callable
 
 import click
 from jsonasobj2 import JsonObj, as_dict
-from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
-from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView
-from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, SH, XSD
@@ -17,6 +13,10 @@ from linkml._version import __version__
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
+from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.schemaview import SchemaView
+from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
 
