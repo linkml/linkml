@@ -12,10 +12,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python 3.
         uses: actions/setup-python@v6.0.0
@@ -30,6 +26,14 @@ jobs:
       - name: Install dependencies
         run: uv pip install --system requests
 
+      - name: Restore link cache
+        uses: actions/cache@v4
+        with:
+          path: .github/link-cache.csv
+          key: link-cache-${{ github.run_id }}
+          restore-keys: |
+            link-cache-
+
       - name: Check links
         run: |
           python .github/scripts/check_links.py \
@@ -39,12 +43,3 @@ jobs:
             --jitter-days 7 \
             --links-per-domain 10 \
             --verbose
-
-      - name: Commit cache updates
-        if: always() && github.event_name == 'pull_request'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .github/link-cache.csv
-          git diff --staged --quiet || git commit -m "Update link cache [skip ci]"
-          git push || echo "Could not push cache update"
