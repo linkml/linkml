@@ -3,18 +3,19 @@ env:
   UV_VERSION: "0.7.13"
 on:
   pull_request:
-  schedule:
-    - cron: '0 5 * * 1'  # at 05:00 UTC every Monday
   workflow_dispatch:
 
 jobs:
   check-external-links:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python 3.
         uses: actions/setup-python@v6.0.0
@@ -26,10 +27,24 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
 
-      - name: Install docs dependencies
-        run: uv sync --group docs
+      - name: Install dependencies
+        run: uv pip install --system requests
 
-      - name: Build documentation.
+      - name: Check links
         run: |
-          cd docs/
-          uv run sphinx-build -b linkcheck . _build | grep "broken"
+          python .github/scripts/check_links.py \
+            --docs-dir docs/ \
+            --cache-file .github/link-cache.csv \
+            --ttl-days 30 \
+            --jitter-days 7 \
+            --links-per-domain 10 \
+            --verbose
+
+      - name: Commit cache updates
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/link-cache.csv
+          git diff --staged --quiet || git commit -m "Update link cache [skip ci]"
+          git push || echo "Could not push cache update"
