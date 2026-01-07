@@ -592,12 +592,12 @@ def test_exclude_imports(input_path):
     assert "https://example.org/baseProperty" in property_paths
 
 
-def test_nodeshape_description_uses_rdfs_comment(kitchen_sink_path):
-    """Test that NodeShape descriptions use rdfs:comment, not sh:description.
+def test_nodeshape_uses_rdfs_predicates(kitchen_sink_path):
+    """Test that NodeShapes use rdfs:label and rdfs:comment, not sh:name and sh:description.
 
-    Per the SHACL spec, sh:description has rdfs:domain of sh:PropertyShape,
-    so using it on NodeShapes causes RDFS-aware validators to incorrectly
-    infer the NodeShape is also a PropertyShape. See issue #3059.
+    Per the SHACL spec, sh:name and sh:description both have rdfs:domain of sh:PropertyShape,
+    so using them on NodeShapes causes RDFS-aware validators to incorrectly infer the
+    NodeShape is also a PropertyShape. See issue #3059.
     """
     shacl = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
     g = rdflib.Graph()
@@ -616,6 +616,11 @@ def test_nodeshape_description_uses_rdfs_comment(kitchen_sink_path):
     # Verify NodeShape does NOT have sh:description (this was the bug)
     nodeshape_sh_descriptions = list(g.objects(person_uri, SH.description))
     assert len(nodeshape_sh_descriptions) == 0, "NodeShapes should not use sh:description; use rdfs:comment instead"
+
+    # Verify no NodeShape has sh:name (sh:name also has rdfs:domain sh:PropertyShape)
+    for node_shape in g.subjects(RDF.type, SH.NodeShape):
+        sh_names = list(g.objects(node_shape, SH.name))
+        assert len(sh_names) == 0, f"NodeShape {node_shape} should not use sh:name; use rdfs:label instead"
 
     # Verify PropertyShapes still use sh:description (this is correct per spec)
     # Check that at least one property shape (BNode) uses sh:description

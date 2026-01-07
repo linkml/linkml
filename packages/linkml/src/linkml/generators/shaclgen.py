@@ -91,7 +91,9 @@ class ShaclGenerator(Generator):
             else:
                 shape_pv(SH.closed, Literal(False))
             if c.title is not None:
-                shape_pv(SH.name, Literal(c.title))
+                # Use rdfs:label for NodeShape titles per SHACL spec.
+                # sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.
+                shape_pv(RDFS.label, Literal(c.title))
             if c.description is not None:
                 # Use rdfs:comment for NodeShape descriptions per SHACL spec.
                 # sh:description has rdfs:domain of sh:PropertyShape, so using it
