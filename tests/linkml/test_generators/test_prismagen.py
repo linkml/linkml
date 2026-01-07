@@ -5,11 +5,11 @@ Tests full pipeline with minimal schemas using SchemaBuilder.
 """
 
 import pytest
-from linkml_runtime import SchemaView
 
 from linkml.generators.prismagen import PrismaGenerator, prepare_prisma_enums, prepare_prisma_models
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime import SchemaView
 
 
 class TestPrismaBasicGeneration:

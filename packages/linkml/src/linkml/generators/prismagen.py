@@ -11,24 +11,22 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 import click
 from jinja2 import Template
-from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    EnumDefinition,
-    PermissibleValue,
-    SchemaDefinition,
-    SlotDefinition,
-)
 
 from linkml._version import __version__
 from linkml.generators.prisma.prisma_template import prisma_template_str
 from linkml.generators.prisma.type_mappings import PRISMA_RANGEMAP, get_prisma_type, is_optional_field
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    PermissibleValue,
+    SchemaDefinition,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +41,10 @@ def to_camel_case(snake_str: str) -> str:
     Returns:
         String in camelCase format
     """
-    parts = snake_str.split('_')
+    parts = snake_str.split("_")
     if not parts:
         return snake_str
-    return parts[0].lower() + ''.join(p.capitalize() for p in parts[1:])
+    return parts[0].lower() + "".join(p.capitalize() for p in parts[1:])
 
 
 def pluralize(word: str) -> str:
@@ -59,12 +57,12 @@ def pluralize(word: str) -> str:
     Returns:
         Plural form (simple heuristic)
     """
-    if word.endswith('y'):
-        return word[:-1] + 'ies'
-    elif word.endswith('s') or word.endswith('x') or word.endswith('ch') or word.endswith('sh'):
-        return word + 'es'
+    if word.endswith("y"):
+        return word[:-1] + "ies"
+    elif word.endswith("s") or word.endswith("x") or word.endswith("ch") or word.endswith("sh"):
+        return word + "es"
     else:
-        return word + 's'
+        return word + "s"
 
 
 def find_identifier_slot(cls: ClassDefinition) -> tuple[str, str]:
@@ -81,10 +79,10 @@ def find_identifier_slot(cls: ClassDefinition) -> tuple[str, str]:
     for slot_name, slot in cls.attributes.items():
         if slot.identifier:
             # Determine the Prisma type
-            slot_range = slot.range or 'string'
-            prisma_type = PRISMA_RANGEMAP.get(slot_range, 'String')
+            slot_range = slot.range or "string"
+            prisma_type = PRISMA_RANGEMAP.get(slot_range, "String")
             return (slot_name, prisma_type)
-    return ('id', 'Int')
+    return ("id", "Int")
 
 
 @dataclass
@@ -458,7 +456,9 @@ def prepare_prisma_models(
                 on_delete = "Cascade" if is_inlined else "SetNull"
 
                 # Build the @relation directive with correct FK field and target PK (both in camelCase)
-                relation_directive = f'@relation(fields: [{fk_field_name}], references: [{target_pk_camel}], onDelete: {on_delete})'
+                relation_directive = (
+                    f"@relation(fields: [{fk_field_name}], references: [{target_pk_camel}], onDelete: {on_delete})"
+                )
                 modifiers.append(relation_directive)
 
                 # Track this forward relation for generating reverse relation
@@ -626,7 +626,7 @@ class PrismaGenerator(Generator):
     use_scalar_arrays: bool = True
     """Whether to use scalar arrays for multivalued slots (PostgreSQL/CockroachDB only)"""
 
-    foreign_key_policy: Optional[ForeignKeyPolicy] = None
+    foreign_key_policy: ForeignKeyPolicy | None = None
     """Foreign key policy for transformer"""
 
     def __post_init__(self) -> None:
@@ -662,7 +662,16 @@ class PrismaGenerator(Generator):
         """
         # Transform schema using relational model transformer
         # Filter out generator-specific kwargs that the transformer doesn't need
-        excluded_kwargs = {"format", "metadata", "useuris", "importmap", "log_level", "mergeimports", "stacktrace", "verbose"}
+        excluded_kwargs = {
+            "format",
+            "metadata",
+            "useuris",
+            "importmap",
+            "log_level",
+            "mergeimports",
+            "stacktrace",
+            "verbose",
+        }
         transformer_kwargs = {k: v for k, v in kwargs.items() if k not in excluded_kwargs}
         logger.info("Transforming schema with RelationalModelTransformer")
         tr_result = self.transformer.transform(**transformer_kwargs)

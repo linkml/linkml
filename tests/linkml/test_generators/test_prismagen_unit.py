@@ -4,15 +4,13 @@ Unit tests for Prisma generator components.
 Tests individual functions and components without full schema generation.
 """
 
-import pytest
-from linkml_runtime.linkml_model.meta import SlotDefinition
-
 from linkml.generators.prisma.type_mappings import (
     PRISMA_RANGEMAP,
     get_prisma_modifiers,
     get_prisma_type,
     is_optional_field,
 )
+from linkml_runtime.linkml_model.meta import SlotDefinition
 
 
 class TestTypeMappingScalars:

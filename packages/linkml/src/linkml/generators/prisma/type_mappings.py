@@ -4,8 +4,6 @@ Type mapping utilities for LinkML to Prisma schema generation.
 Maps LinkML types to Prisma scalar types and generates field modifiers.
 """
 
-from typing import Optional
-
 from linkml_runtime.linkml_model.meta import SlotDefinition
 
 PRISMA_RANGEMAP = {

@@ -39,7 +39,10 @@ model {{ model.name }} {
   {%- for field in model.fields %}
   {%- set is_array = field.prisma_type.endswith('[]') %}
   {%- set field_type = field.prisma_type + ("?" if field.is_optional and not is_array else "") %}
-  {{ "%-20s"|format(field.name) }} {{ "%-16s"|format(field_type) }}{% if field.modifiers %}{{ field.modifiers }}{% endif %}{% if field.linkml_metadata %}  // {{ field.linkml_metadata }}{% endif %}
+  {%- set field_line = "%-20s"|format(field.name) ~ " " ~ "%-16s"|format(field_type) %}
+  {%- if field.modifiers %}{% set field_line = field_line ~ field.modifiers %}{% endif %}
+  {%- if field.linkml_metadata %}{% set field_line = field_line ~ "  // " ~ field.linkml_metadata %}{% endif %}
+  {{ field_line }}
   {%- if field.is_relation and field.relation_fields %}
   {%- set fk_type = field.fk_type + ("?" if field.is_optional else "") %}
   {{ "%-20s"|format(field.fk_field_name) }} {{ "%-16s"|format(fk_type) }}
