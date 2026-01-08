@@ -389,7 +389,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.generators.erdiagramgen</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
@@ -399,9 +400,11 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">MERMAID_SERIALIZATION</span> <span class="o">=</span> <span class="nb">str</span>
 
@@ -491,10 +494,58 @@
     <span class="n">entities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Entity</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">relationships</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Relationship</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collapse_relationships</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationships</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Relationship</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Relationship</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collapse multiple relationships between the same two entities into a single relationship</span>
+<span class="sd">        with comma-separated labels.</span>
+
+<span class="sd">        Only relationships with the same cardinality (relationship_type) are collapsed together,</span>
+<span class="sd">        preserving semantic differences between required/optional and single/multivalued relationships.</span>
+
+<span class="sd">        :param relationships: List of relationships</span>
+<span class="sd">        :return: List of collapsed relationships</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Group relationships by (first_entity, second_entity, relationship_type) tuple</span>
+        <span class="c1"># This preserves different cardinalities as separate relationships</span>
+        <span class="n">relationship_groups</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">relationships</span><span class="p">:</span>
+            <span class="c1"># Use string representation of relationship_type for grouping</span>
+            <span class="n">rel_type_key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rel</span><span class="o">.</span><span class="n">relationship_type</span><span class="p">)</span> <span class="k">if</span> <span class="n">rel</span><span class="o">.</span><span class="n">relationship_type</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">rel</span><span class="o">.</span><span class="n">first_entity</span><span class="p">,</span> <span class="n">rel</span><span class="o">.</span><span class="n">second_entity</span><span class="p">,</span> <span class="n">rel_type_key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">relationship_groups</span><span class="p">:</span>
+                <span class="n">relationship_groups</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">relationship_groups</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
+
+        <span class="c1"># Collapse groups with multiple relationships</span>
+        <span class="n">collapsed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">relationship_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Single relationship, keep as is</span>
+                <span class="n">collapsed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Multiple relationships with same cardinality, combine labels</span>
+                <span class="n">base_rel</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">rel</span><span class="o">.</span><span class="n">relationship_label</span> <span class="k">for</span> <span class="n">rel</span> <span class="ow">in</span> <span class="n">group</span> <span class="k">if</span> <span class="n">rel</span><span class="o">.</span><span class="n">relationship_label</span><span class="p">]</span>
+                <span class="n">combined_label</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">labels</span><span class="p">))</span>
+
+                <span class="c1"># Create new collapsed relationship</span>
+                <span class="n">collapsed_rel</span> <span class="o">=</span> <span class="n">Relationship</span><span class="p">(</span>
+                    <span class="n">first_entity</span><span class="o">=</span><span class="n">base_rel</span><span class="o">.</span><span class="n">first_entity</span><span class="p">,</span>
+                    <span class="n">relationship_type</span><span class="o">=</span><span class="n">base_rel</span><span class="o">.</span><span class="n">relationship_type</span><span class="p">,</span>
+                    <span class="n">second_entity</span><span class="o">=</span><span class="n">base_rel</span><span class="o">.</span><span class="n">second_entity</span><span class="p">,</span>
+                    <span class="n">relationship_label</span><span class="o">=</span><span class="n">combined_label</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">collapsed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">collapsed_rel</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">collapsed</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Sort entities and relationships for stable output</span>
         <span class="n">sorted_entities</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">sorted_relationships</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relationships</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+
+        <span class="c1"># Collapse multiple relationships between same entities</span>
+        <span class="n">collapsed_relationships</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collapse_relationships</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relationships</span><span class="p">)</span>
+        <span class="n">sorted_relationships</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">collapsed_relationships</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 
         <span class="n">ents</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">sorted_entities</span><span class="p">])</span>
         <span class="n">rels</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">sorted_relationships</span><span class="p">])</span>
@@ -541,6 +592,25 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+    <span class="c1"># Mermaid ERD reserved keywords that conflict with entity names</span>
+    <span class="c1"># See: https://mermaid.js.org/syntax/entityRelationshipDiagram.html</span>
+    <span class="c1"># &quot;Class&quot; confirmed as reserved; others may exist but are undocumented</span>
+    <span class="n">_MERMAID_ERD_RESERVED_KEYWORDS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Class&quot;</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitize_class_name_for_erd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sanitize class name for ERD diagram output.</span>
+
+<span class="sd">        Mermaid ERD syntax has reserved keywords that conflict with common class names.</span>
+<span class="sd">        This method prefixes problematic names with &#39;__&#39; to avoid conflicts.</span>
+
+<span class="sd">        :param name: Original class name</span>
+<span class="sd">        :return: Sanitized class name safe for ERD diagrams</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MERMAID_ERD_RESERVED_KEYWORDS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;__</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">name</span>
 
 <div class="viewcode-block" id="ERDiagramGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/erdiagram.html#linkml.generators.erdiagramgen.ERDiagramGenerator.serialize">[docs]</a>
@@ -634,11 +704,63 @@
         <span class="bp">cls</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_abstract_classes</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="n">entity</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">entity_name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_class_name_for_erd</span><span class="p">(</span><span class="n">entity_name</span><span class="p">))</span>
         <span class="n">diagram</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_relationship</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">diagram</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_attribute_sort_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a sort key for attributes for stable, deterministic output.</span>
+
+<span class="sd">        Attributes are sorted by:</span>
+<span class="sd">        1. Source type (own/direct slots first, then inherited)</span>
+<span class="sd">        2. Priority slots (id, name, description)</span>
+<span class="sd">        3. Rank (if defined)</span>
+<span class="sd">        4. Alphabetically</span>
+
+<span class="sd">        :param slot: The slot to create a sort key for</span>
+<span class="sd">        :param cls: The class this slot belongs to</span>
+<span class="sd">        :return: Sort key tuple</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="n">priority_slots</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Determine if slot is inherited or own</span>
+        <span class="c1"># A slot is inherited if it&#39;s in domain_of of a parent class AND not overridden</span>
+        <span class="c1"># in the current class&#39;s slot_usage (which makes it &quot;own&quot;)</span>
+        <span class="n">is_inherited</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">domain_of</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="s2">&quot;domain_of&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">domain_of</span> <span class="k">else</span> <span class="p">[]</span>
+
+        <span class="c1"># Check if slot is explicitly customized in current class&#39;s slot_usage</span>
+        <span class="n">slot_overridden_in_current</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span>
+
+        <span class="k">if</span> <span class="n">domain_of</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot_overridden_in_current</span><span class="p">:</span>
+            <span class="c1"># Use class_ancestors for efficiency (includes is_a and mixins)</span>
+            <span class="k">for</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="n">domain_of</span><span class="p">:</span>
+                    <span class="n">is_inherited</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+
+        <span class="c1"># Primary sort: own/direct (0) vs inherited (1)</span>
+        <span class="n">primary_sort</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">is_inherited</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="c1"># Secondary sort: priority slots come first</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">priority_slots</span><span class="p">:</span>
+            <span class="n">secondary_sort</span> <span class="o">=</span> <span class="n">priority_slots</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">secondary_sort</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">priority_slots</span><span class="p">)</span>
+
+        <span class="c1"># Tertiary sort: by rank if exists</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="s2">&quot;rank&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">rank_value</span> <span class="o">=</span> <span class="n">rank</span> <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Quaternary sort: alphabetically</span>
+        <span class="n">alphabetical_sort</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">primary_sort</span><span class="p">,</span> <span class="n">secondary_sort</span><span class="p">,</span> <span class="n">rank_value</span><span class="p">,</span> <span class="n">alphabetical_sort</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">diagram</span><span class="p">:</span> <span class="n">ERDiagram</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -652,16 +774,66 @@
         <span class="bp">cls</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_abstract_classes</span> <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="n">entity</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">entity_name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">entity</span> <span class="o">=</span> <span class="n">Entity</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_class_name_for_erd</span><span class="p">(</span><span class="n">entity_name</span><span class="p">))</span>
         <span class="n">diagram</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span>
+
+        <span class="c1"># Collect all slots first (to enable sorting before adding)</span>
+        <span class="n">all_slots</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># slot_name -&gt; SlotDefinition</span>
+        <span class="n">relationship_slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">attribute_slots</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Process regular induced slots</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
             <span class="c1"># TODO: schemaview should infer this</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span> <span class="ow">or</span> <span class="s2">&quot;string&quot;</span>
+            <span class="n">all_slots</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span>
+
+        <span class="c1"># Also process slots defined in slot_usage (which may not appear in induced_slots)</span>
+        <span class="c1"># This includes slot_usage from the current class and all ancestors (including mixins)</span>
+        <span class="n">slot_usage_to_check</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c1"># Collect slot_usage from current class</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
+            <span class="n">slot_usage_to_check</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="c1"># Collect slot_usage from all ancestor classes (includes is_a and mixins)</span>
+        <span class="k">for</span> <span class="n">ancestor_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">ancestor_cls</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">ancestor_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ancestor_cls</span> <span class="ow">and</span> <span class="n">ancestor_cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">:</span>
+                <span class="n">slot_usage_to_check</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ancestor_cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="c1"># Process all slot_usage entries</span>
+        <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">slot_usage_to_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_slots</span><span class="p">:</span>
+                <span class="c1"># Get the induced slot to get the properly overridden range</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span> <span class="ow">or</span> <span class="s2">&quot;string&quot;</span>
+                    <span class="n">all_slots</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># Slot might not exist, have missing attributes, or not be a valid induced slot, skip it</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get induced slot &#39;</span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2">&#39; for class &#39;</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Separate into relationships and attributes</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">all_slots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_relationship</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">diagram</span><span class="p">)</span>
+                <span class="n">relationship_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">add_attribute</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+                <span class="n">attribute_slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+
+        <span class="c1"># Sort attribute slots using the same logic as the markdown data dictionary</span>
+        <span class="n">attribute_slots</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_attribute_sort_key</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
+
+        <span class="c1"># Add sorted attributes to entity</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">attribute_slots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_attribute</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+
+        <span class="c1"># Add relationships (order doesn&#39;t matter as much for relationships)</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">relationship_slots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_relationship</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">diagram</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_relationship</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">diagram</span><span class="p">:</span> <span class="n">ERDiagram</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -679,12 +851,13 @@
             <span class="p">),</span>
             <span class="n">left_cardinality</span><span class="o">=</span><span class="n">Cardinality</span><span class="p">(</span><span class="n">is_left</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="p">)</span>
+        <span class="n">second_entity_name</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">rel</span> <span class="o">=</span> <span class="n">Relationship</span><span class="p">(</span>
             <span class="n">first_entity</span><span class="o">=</span><span class="n">entity</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">relationship_type</span><span class="o">=</span><span class="n">rel_type</span><span class="p">,</span>
-            <span class="n">second_entity</span><span class="o">=</span><span class="p">(</span>
-                <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span> <span class="k">else</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="p">),</span>
+            <span class="n">second_entity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sanitize_class_name_for_erd</span><span class="p">(</span><span class="n">second_entity_name</span><span class="p">),</span>
             <span class="n">relationship_label</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">diagram</span><span class="o">.</span><span class="n">relationships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rel</span><span class="p">)</span>
