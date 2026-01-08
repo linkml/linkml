@@ -860,6 +860,10 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassResult</span><span class="p">:</span>
+        <span class="c1"># Handle union_of classes by creating a type alias instead of a class</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">union_of</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_union_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
         <span class="n">pyclass</span> <span class="o">=</span> <span class="n">PydanticClass</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
             <span class="n">bases</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_bases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">PydanticBaseModel</span><span class="o">.</span><span class="n">default_name</span><span class="p">),</span>
@@ -886,6 +890,60 @@
         <span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="n">slot</span><span class="o">.</span><span class="n">attribute</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">slot</span><span class="o">.</span><span class="n">attribute</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slot_results</span><span class="p">}</span>
 
         <span class="n">result</span><span class="o">.</span><span class="n">cls</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">attributes</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_union_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a union type alias for classes with union_of&quot;&quot;&quot;</span>
+        <span class="c1"># Validate that union_of has at least 2 types</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">union_of</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Class &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has union_of with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">union_of</span><span class="p">)</span><span class="si">}</span><span class="s2"> type(s), &quot;</span>
+                <span class="s2">&quot;but a Union requires at least 2 types&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Validate that union_of classes don&#39;t have inheritance (is_a or mixins)</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+            <span class="n">inheritance</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
+                <span class="n">inheritance</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;is_a=</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
+                <span class="n">inheritance</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mixins=</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">mixins</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Class &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has union_of but also has inheritance (</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">inheritance</span><span class="p">)</span><span class="si">}</span><span class="s2">). &quot;</span>
+                <span class="s2">&quot;A union type cannot have a parent class.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Validate that union_of classes don&#39;t have slots/attributes</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="n">class_slots</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">class_slots</span><span class="p">:</span>
+            <span class="n">slot_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">class_slots</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Class &#39;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has union_of but also has slots (</span><span class="si">{</span><span class="n">slot_names</span><span class="si">}</span><span class="s2">). &quot;</span>
+                <span class="s2">&quot;A union type alias cannot have attributes.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Get the union types with string quotes to handle forward references</span>
+        <span class="n">union_types</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">union_cls</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">for</span> <span class="n">union_cls</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">union_of</span><span class="p">]</span>
+        <span class="n">union_type_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">union_types</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
+
+        <span class="c1"># Create a type alias instead of a class</span>
+        <span class="c1"># Sanitize description for single-line comment (replace newlines with spaces)</span>
+        <span class="n">description</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">pyclass</span> <span class="o">=</span> <span class="n">PydanticClass</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="n">bases</span><span class="o">=</span><span class="p">[],</span>  <span class="c1"># Empty list for type aliases</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">is_type_alias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">type_alias_value</span><span class="o">=</span><span class="n">union_type_str</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">imports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_imports</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">ClassResult</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">pyclass</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+
+        <span class="c1"># Add metadata</span>
         <span class="n">result</span><span class="o">.</span><span class="n">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_metadata</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">result</span>
