@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
@@ -8,9 +9,11 @@ import pydantic
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinitionName, SlotDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
+
+logger = logging.getLogger(__name__)
 
 MERMAID_SERIALIZATION = str
 
@@ -100,10 +103,58 @@ class ERDiagram(pydantic.BaseModel):
     entities: list[Entity] = []
     relationships: list[Relationship] = []
 
+    def _collapse_relationships(self, relationships: list[Relationship]) -> list[Relationship]:
+        """
+        Collapse multiple relationships between the same two entities into a single relationship
+        with comma-separated labels.
+
+        Only relationships with the same cardinality (relationship_type) are collapsed together,
+        preserving semantic differences between required/optional and single/multivalued relationships.
+
+        :param relationships: List of relationships
+        :return: List of collapsed relationships
+        """
+        # Group relationships by (first_entity, second_entity, relationship_type) tuple
+        # This preserves different cardinalities as separate relationships
+        relationship_groups = {}
+        for rel in relationships:
+            # Use string representation of relationship_type for grouping
+            rel_type_key = str(rel.relationship_type) if rel.relationship_type else ""
+            key = (rel.first_entity, rel.second_entity, rel_type_key)
+            if key not in relationship_groups:
+                relationship_groups[key] = []
+            relationship_groups[key].append(rel)
+
+        # Collapse groups with multiple relationships
+        collapsed = []
+        for key, group in relationship_groups.items():
+            if len(group) == 1:
+                # Single relationship, keep as is
+                collapsed.append(group[0])
+            else:
+                # Multiple relationships with same cardinality, combine labels
+                base_rel = group[0]
+                labels = [rel.relationship_label for rel in group if rel.relationship_label]
+                combined_label = ", ".join(sorted(labels))
+
+                # Create new collapsed relationship
+                collapsed_rel = Relationship(
+                    first_entity=base_rel.first_entity,
+                    relationship_type=base_rel.relationship_type,
+                    second_entity=base_rel.second_entity,
+                    relationship_label=combined_label,
+                )
+                collapsed.append(collapsed_rel)
+
+        return collapsed
+
     def __str__(self):
         # Sort entities and relationships for stable output
         sorted_entities = sorted(self.entities, key=lambda e: e.name)
-        sorted_relationships = sorted(self.relationships, key=lambda r: str(r))
+
+        # Collapse multiple relationships between same entities
+        collapsed_relationships = self._collapse_relationships(self.relationships)
+        sorted_relationships = sorted(collapsed_relationships, key=str)
 
         ents = "\n".join([str(e) for e in sorted_entities])
         rels = "\n".join([str(r) for r in sorted_relationships])
@@ -148,6 +199,25 @@ class ERDiagramGenerator(Generator):
     def __post_init__(self):
         self.schemaview = SchemaView(self.schema)
         super().__post_init__()
+
+    # Mermaid ERD reserved keywords that conflict with entity names
+    # See: https://mermaid.js.org/syntax/entityRelationshipDiagram.html
+    # "Class" confirmed as reserved; others may exist but are undocumented
+    _MERMAID_ERD_RESERVED_KEYWORDS = {"Class"}
+
+    def _sanitize_class_name_for_erd(self, name: str) -> str:
+        """
+        Sanitize class name for ERD diagram output.
+
+        Mermaid ERD syntax has reserved keywords that conflict with common class names.
+        This method prefixes problematic names with '__' to avoid conflicts.
+
+        :param name: Original class name
+        :return: Sanitized class name safe for ERD diagrams
+        """
+        if name in self._MERMAID_ERD_RESERVED_KEYWORDS:
+            return f"__{name}"
+        return name
 
     def serialize(self) -> MERMAID_SERIALIZATION:
         """
@@ -235,11 +305,63 @@ class ERDiagramGenerator(Generator):
         cls = sv.get_class(class_name)
         if self.exclude_abstract_classes and cls.abstract:
             return
-        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
+        entity_name = cls.name if self.preserve_names else camelcase(cls.name)
+        entity = Entity(name=self._sanitize_class_name_for_erd(entity_name))
         diagram.entities.append(entity)
         for slot in sv.class_induced_slots(class_name):
             if slot.range in targets:
                 self.add_relationship(entity, slot, diagram)
+
+    def _create_attribute_sort_key(self, slot: SlotDefinition, cls: ClassDefinition):
+        """
+        Create a sort key for attributes for stable, deterministic output.
+
+        Attributes are sorted by:
+        1. Source type (own/direct slots first, then inherited)
+        2. Priority slots (id, name, description)
+        3. Rank (if defined)
+        4. Alphabetically
+
+        :param slot: The slot to create a sort key for
+        :param cls: The class this slot belongs to
+        :return: Sort key tuple
+        """
+        sv = self.schemaview
+        priority_slots = ["id", "name", "description"]
+
+        # Determine if slot is inherited or own
+        # A slot is inherited if it's in domain_of of a parent class AND not overridden
+        # in the current class's slot_usage (which makes it "own")
+        is_inherited = False
+        domain_of = slot.domain_of if hasattr(slot, "domain_of") and slot.domain_of else []
+
+        # Check if slot is explicitly customized in current class's slot_usage
+        slot_overridden_in_current = cls.slot_usage and slot.name in cls.slot_usage
+
+        if domain_of and hasattr(cls, "name") and cls.name and not slot_overridden_in_current:
+            # Use class_ancestors for efficiency (includes is_a and mixins)
+            for ancestor in sv.class_ancestors(cls.name, reflexive=False):
+                if ancestor in domain_of:
+                    is_inherited = True
+                    break
+
+        # Primary sort: own/direct (0) vs inherited (1)
+        primary_sort = 1 if is_inherited else 0
+
+        # Secondary sort: priority slots come first
+        if slot.name in priority_slots:
+            secondary_sort = priority_slots.index(slot.name)
+        else:
+            secondary_sort = len(priority_slots)
+
+        # Tertiary sort: by rank if exists
+        rank = getattr(slot, "rank", None)
+        rank_value = rank if rank is not None else float("inf")
+
+        # Quaternary sort: alphabetically
+        alphabetical_sort = slot.name
+
+        return (primary_sort, secondary_sort, rank_value, alphabetical_sort)
 
     def add_class(self, class_name: ClassDefinitionName, diagram: ERDiagram) -> None:
         """
@@ -253,16 +375,66 @@ class ERDiagramGenerator(Generator):
         cls = sv.get_class(class_name)
         if self.exclude_abstract_classes and cls.abstract:
             return
-        entity = Entity(name=cls.name if self.preserve_names else camelcase(cls.name))
+        entity_name = cls.name if self.preserve_names else camelcase(cls.name)
+        entity = Entity(name=self._sanitize_class_name_for_erd(entity_name))
         diagram.entities.append(entity)
+
+        # Collect all slots first (to enable sorting before adding)
+        all_slots = {}  # slot_name -> SlotDefinition
+        relationship_slots = []
+        attribute_slots = []
+
+        # Process regular induced slots
         for slot in sv.class_induced_slots(class_name):
             # TODO: schemaview should infer this
             if slot.range is None:
                 slot.range = sv.schema.default_range or "string"
+            all_slots[slot.name] = slot
+
+        # Also process slots defined in slot_usage (which may not appear in induced_slots)
+        # This includes slot_usage from the current class and all ancestors (including mixins)
+        slot_usage_to_check = set()
+
+        # Collect slot_usage from current class
+        if cls.slot_usage:
+            slot_usage_to_check.update(cls.slot_usage.keys())
+
+        # Collect slot_usage from all ancestor classes (includes is_a and mixins)
+        for ancestor_name in sv.class_ancestors(class_name, reflexive=False):
+            ancestor_cls = sv.get_class(ancestor_name)
+            if ancestor_cls and ancestor_cls.slot_usage:
+                slot_usage_to_check.update(ancestor_cls.slot_usage.keys())
+
+        # Process all slot_usage entries
+        for slot_name in slot_usage_to_check:
+            if slot_name not in all_slots:
+                # Get the induced slot to get the properly overridden range
+                try:
+                    slot = sv.induced_slot(slot_name, class_name)
+                    if slot.range is None:
+                        slot.range = sv.schema.default_range or "string"
+                    all_slots[slot_name] = slot
+                except (KeyError, AttributeError, ValueError) as e:
+                    # Slot might not exist, have missing attributes, or not be a valid induced slot, skip it
+                    logger.debug(f"Could not get induced slot '{slot_name}' for class '{class_name}': {e}")
+
+        # Separate into relationships and attributes
+        for slot in all_slots.values():
             if slot.range in sv.all_classes():
-                self.add_relationship(entity, slot, diagram)
+                relationship_slots.append(slot)
             else:
-                self.add_attribute(entity, slot)
+                attribute_slots.append(slot)
+
+        # Sort attribute slots using the same logic as the markdown data dictionary
+        attribute_slots.sort(key=lambda s: self._create_attribute_sort_key(s, cls))
+
+        # Add sorted attributes to entity
+        for slot in attribute_slots:
+            self.add_attribute(entity, slot)
+
+        # Add relationships (order doesn't matter as much for relationships)
+        for slot in relationship_slots:
+            self.add_relationship(entity, slot, diagram)
 
     def add_relationship(self, entity: Entity, slot: SlotDefinition, diagram: ERDiagram) -> None:
         """
@@ -280,12 +452,13 @@ class ERDiagramGenerator(Generator):
             ),
             left_cardinality=Cardinality(is_left=False),
         )
+        second_entity_name = (
+            sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
+        )
         rel = Relationship(
             first_entity=entity.name,
             relationship_type=rel_type,
-            second_entity=(
-                sv.get_class(slot.range).name if self.preserve_names else camelcase(sv.get_class(slot.range).name)
-            ),
+            second_entity=self._sanitize_class_name_for_erd(second_entity_name),
             relationship_label=slot.name,
         )
         diagram.relationships.append(rel)
