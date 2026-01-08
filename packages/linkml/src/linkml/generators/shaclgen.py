@@ -7,7 +7,7 @@ import click
 from jsonasobj2 import JsonObj, as_dict
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, SH, XSD
+from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
@@ -91,9 +91,15 @@ class ShaclGenerator(Generator):
             else:
                 shape_pv(SH.closed, Literal(False))
             if c.title is not None:
-                shape_pv(SH.name, Literal(c.title))
+                # Use rdfs:label for NodeShape titles per SHACL spec.
+                # sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.
+                shape_pv(RDFS.label, Literal(c.title))
             if c.description is not None:
-                shape_pv(SH.description, Literal(c.description))
+                # Use rdfs:comment for NodeShape descriptions per SHACL spec.
+                # sh:description has rdfs:domain of sh:PropertyShape, so using it
+                # on NodeShapes causes RDFS-aware validators to incorrectly infer
+                # the NodeShape is also a PropertyShape. See issue #3059.
+                shape_pv(RDFS.comment, Literal(c.description))
 
             shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
 
