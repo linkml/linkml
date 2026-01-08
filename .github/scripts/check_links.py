@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Link checker with caching and per-domain rate limiting.
+"""Link checker with caching and per-domain rate limiting.
 
 This script checks URLs in documentation files, using a cache to avoid
 re-checking recently verified links. It implements per-domain rate limiting
