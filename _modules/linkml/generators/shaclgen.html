@@ -398,7 +398,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">as_dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">URIRef</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.collection</span><span class="w"> </span><span class="kn">import</span> <span class="n">Collection</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">XSD</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">XSD</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_data_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclDataType</span>
@@ -487,9 +487,15 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">shape_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">closed</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">shape_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">title</span><span class="p">))</span>
+                <span class="c1"># Use rdfs:label for NodeShape titles per SHACL spec.</span>
+                <span class="c1"># sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.</span>
+                <span class="n">shape_pv</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">title</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">shape_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">))</span>
+                <span class="c1"># Use rdfs:comment for NodeShape descriptions per SHACL spec.</span>
+                <span class="c1"># sh:description has rdfs:domain of sh:PropertyShape, so using it</span>
+                <span class="c1"># on NodeShapes causes RDFS-aware validators to incorrectly infer</span>
+                <span class="c1"># the NodeShape is also a PropertyShape. See issue #3059.</span>
+                <span class="n">shape_pv</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">))</span>
 
             <span class="n">shape_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">ignoredProperties</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_ignored_properties</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
 
