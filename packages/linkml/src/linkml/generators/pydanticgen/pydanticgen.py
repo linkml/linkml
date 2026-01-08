@@ -377,6 +377,15 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     See :class:`.SplitMode` for description of options
     """
 
+    expand_subproperty_of: bool = True
+    """
+    If True, expand subproperty_of constraints to Literal type constraints.
+
+    When a slot has `subproperty_of` set, valid values are the referenced slot
+    and all its descendants (via is_a). Values are formatted according to the
+    slot's range type (string, uriorcurie, uri).
+    """
+
     # ObjectVars (identical to pythongen)
     gen_classvars: bool = True
     gen_slots: bool = True
@@ -766,6 +775,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = f'Literal["{slot_def.equals_string}"]'
         elif slot_def.equals_string_in:
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
+        elif self.expand_subproperty_of and slot_def.subproperty_of:
+            pyrange = self._generate_subproperty_constraint(slot_def)
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
                 slot_range,
@@ -820,6 +831,80 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if len(collection_keys) == 1:
             return list(collection_keys)[0]
         return None
+
+    def _generate_subproperty_constraint(self, slot_def: SlotDefinition) -> str:
+        """
+        Generate Literal type from slot descendants based on subproperty_of.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        :param slot_def: SlotDefinition with subproperty_of set
+        :return: Literal type string e.g. 'Literal["related_to", "causes", ...]'
+        """
+        sv = self.schemaview
+        root_slot_name = slot_def.subproperty_of
+
+        # Get all descendants including root (reflexive)
+        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+
+        # Format values according to the slot's range type
+        values = []
+        for slot_name in descendants:
+            value = self._format_slot_value_for_range(slot_name, slot_def.range)
+            values.append(value)
+
+        # Remove duplicates while preserving order
+        values = list(dict.fromkeys(values))
+
+        # Sort for deterministic output
+        values.sort()
+
+        # Generate Literal constraint
+        return "Literal[" + ", ".join([f'"{v}"' for v in values]) + "]"
+
+    def _format_slot_value_for_range(self, slot_name: str, range_type: Optional[str]) -> str:
+        """
+        Format slot value according to the declared range type.
+
+        Uses slot_uri to generate proper CURIEs (e.g., biolink:related_to)
+        rather than just slot names.
+
+        :param slot_name: Name of the slot
+        :param range_type: The range type (string, uriorcurie, uri, or None)
+        :return: Formatted slot value
+        """
+        sv = self.schemaview
+        slot = sv.get_slot(slot_name)
+
+        if range_type is None:
+            return underscore(slot_name)
+
+        # Known URI-like built-in types (from linkml:types)
+        curie_types = {"uriorcurie", "curie"}
+        uri_types = {"uri"}
+
+        # Check if range_type itself is a URI-like type
+        if range_type in curie_types:
+            # Return as CURIE using slot_uri: biolink:related_to
+            return sv.get_uri(slot, expand=False)
+        elif range_type in uri_types:
+            # Return as full URI: https://w3id.org/biolink/vocab/related_to
+            return sv.get_uri(slot, expand=True)
+
+        # Check if range_type inherits from a URI-like type (when linkml:types is imported)
+        if range_type in sv.all_types():
+            type_ancestors = set(sv.type_ancestors(range_type))
+
+            if type_ancestors & curie_types:
+                # Return as CURIE using slot_uri: biolink:related_to
+                return sv.get_uri(slot, expand=False)
+            elif type_ancestors & uri_types:
+                # Return as full URI: https://w3id.org/biolink/vocab/related_to
+                return sv.get_uri(slot, expand=True)
+
+        # Return as snake_case string: related_to
+        return underscore(slot_name)
 
     def _clean_injected_classes(self, injected_classes: list[Union[str, type]]) -> Optional[list[str]]:
         """Get source, deduplicate, and dedent injected classes"""
