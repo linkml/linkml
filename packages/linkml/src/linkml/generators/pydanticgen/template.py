@@ -267,6 +267,14 @@ class PydanticClass(PydanticTemplateModel):
     """
     Metadata for the class to be included in a linkml_meta class attribute
     """
+    is_type_alias: bool = False
+    """
+    If True, generate a type alias instead of a class
+    """
+    type_alias_value: Optional[str] = None
+    """
+    The value for the type alias (e.g., "Union[Type1, Type2]")
+    """
 
     def _validators(self) -> Optional[dict[str, PydanticValidator]]:
         if self.attributes is None:
@@ -479,7 +487,7 @@ class PydanticModule(PydanticTemplateModel):
 
     @computed_field
     def class_names(self) -> list[str]:
-        return [c.name for c in self.classes.values()]
+        return [c.name for c in self.classes.values() if not getattr(c, "is_type_alias", False)]
 
 
 _some_stdlib_module_names = {

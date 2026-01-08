@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:ns1="http://www.w3.org/1999/xlink" aria-roledescription="er" role="graphics-document document" viewBox="0 0 596.78125 465" height="465" width="596.78125" id="container">
+  <style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .entityBox{fill:#ECECFF;stroke:#9370DB;}#container .attributeBoxOdd{fill:#ffffff;stroke:#9370DB;}#container .attributeBoxEven{fill:#f2f2f2;stroke:#9370DB;}#container .relationshipLabelBox{fill:hsl(80, 100%, 96.2745098039%);opacity:0.7;background-color:hsl(80, 100%, 96.2745098039%);}#container .relationshipLabelBox rect{opacity:0.5;}#container .relationshipLine{stroke:#333333;}#container .entityTitleText{text-anchor:middle;font-size:18px;fill:#333;}#container #MD_PARENT_START{fill:#f5f5f5!important;stroke:#333333!important;stroke-width:1;}#container #MD_PARENT_END{fill:#f5f5f5!important;stroke:#333333!important;stroke-width:1;}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <g/>
+  <defs>
+    <marker orient="auto" markerHeight="240" markerWidth="190" refY="7" refX="0" id="MD_PARENT_START">
+      <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="28" markerWidth="20" refY="7" refX="19" id="MD_PARENT_END">
+      <path d="M 18,7 L9,13 L1,7 L9,1 Z"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="18" refY="9" refX="0" id="ONLY_ONE_START">
+      <path d="M9,0 L9,18 M15,0 L15,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="18" refY="9" refX="18" id="ONLY_ONE_END">
+      <path d="M3,0 L3,18 M9,0 L9,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="30" refY="9" refX="0" id="ZERO_OR_ONE_START">
+      <circle r="6" cy="9" cx="21" fill="white" stroke="gray"/>
+      <path d="M9,0 L9,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="18" markerWidth="30" refY="9" refX="30" id="ZERO_OR_ONE_END">
+      <circle r="6" cy="9" cx="9" fill="white" stroke="gray"/>
+      <path d="M21,0 L21,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="45" refY="18" refX="18" id="ONE_OR_MORE_START">
+      <path d="M0,18 Q 18,0 36,18 Q 18,36 0,18 M42,9 L42,27" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="45" refY="18" refX="27" id="ONE_OR_MORE_END">
+      <path d="M3,9 L3,27 M9,18 Q27,0 45,18 Q27,36 9,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="57" refY="18" refX="18" id="ZERO_OR_MORE_START">
+      <circle r="6" cy="18" cx="48" fill="white" stroke="gray"/>
+      <path d="M0,18 Q18,0 36,18 Q18,36 0,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <defs>
+    <marker orient="auto" markerHeight="36" markerWidth="57" refY="18" refX="39" id="ZERO_OR_MORE_END">
+      <circle r="6" cy="18" cx="9" fill="white" stroke="gray"/>
+      <path d="M21,18 Q39,0 57,18 Q39,36 21,18" fill="none" stroke="gray"/>
+    </marker>
+  </defs>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_ONE_END)" d="M313.243,95L313.243,103.333C313.243,111.667,313.243,128.333,313.243,145C313.243,161.667,313.243,178.333,313.243,186.667L313.243,195" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_ONE_END)" d="M364.535,78.518L391.576,89.598C418.617,100.678,472.699,122.839,499.74,142.253C526.781,161.667,526.781,178.333,526.781,186.667L526.781,195" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_ONE_END)" d="M261.951,77.151L232.434,88.459C202.918,99.767,143.885,122.384,114.369,142.025C84.852,161.667,84.852,178.333,84.852,186.667L84.852,195" class="er relationshipLine"/>
+  <path style="stroke: gray; fill: none;" marker-start="url(#ONLY_ONE_START)" marker-end="url(#ZERO_OR_ONE_END)" d="M84.852,270L84.852,278.333C84.852,286.667,84.852,303.333,84.852,320C84.852,336.667,84.852,353.333,84.852,361.667L84.852,370" class="er relationshipLine"/>
+  <g transform="translate(34.852325439453125,370 )" id="entity-CodeSystem-1ad75d3e-914e-518f-bad7-2bbef756df8f">
+    <rect height="75" width="100" y="0" x="0" class="er entityBox"/>
+    <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(50,37.5)" y="0" x="0" id="text-entity-CodeSystem-1ad75d3e-914e-518f-bad7-2bbef756df8f" class="er entityLabel">CodeSystem</text>
+  </g>
+  <g transform="translate(261.95074462890625,20 )" id="entity-MedicalEvent-d5deae62-476c-51b4-a0e2-2f724e47e110">
+    <rect height="75" width="102.58444213867188" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#medicalevent">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(51.29222106933594,37.5)" y="0" x="0" id="text-entity-MedicalEvent-d5deae62-476c-51b4-a0e2-2f724e47e110" class="er entityLabel">MedicalEvent</text>
+    </a>
+  </g>
+  <g transform="translate(20,195 )" id="entity-ProcedureConcept-7de1050c-658c-5dbb-997d-87a011954b70">
+    <rect height="75" width="129.70465087890625" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#procedureconcept">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(64.85232543945312,37.5)" y="0" x="0" id="text-entity-ProcedureConcept-7de1050c-658c-5dbb-997d-87a011954b70" class="er entityLabel">ProcedureConcept</text>
+    </a>
+  </g>
+  <g transform="translate(249.70465087890625,195 )" id="entity-DiagnosisConcept-a658aeb3-a04f-5a01-82f7-734da4aa37d4">
+    <rect height="75" width="127.07662963867188" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#diagnosisconcept">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(63.53831481933594,37.5)" y="0" x="0" id="text-entity-DiagnosisConcept-a658aeb3-a04f-5a01-82f7-734da4aa37d4" class="er entityLabel">DiagnosisConcept</text>
+    </a>
+  </g>
+  <g transform="translate(476.7812805175781,195 )" id="entity-Place-18cedc50-4c85-52d4-b2dd-111465382dcf">
+    <rect height="75" width="100" y="0" x="0" class="er entityBox"/>
+    <a ns1:href="https://example.com/schema#place">
+      <text style="dominant-baseline: middle; text-anchor: middle; font-size: 12px;" transform="translate(50,37.5)" y="0" x="0" id="text-entity-Place-18cedc50-4c85-52d4-b2dd-111465382dcf" class="er entityLabel">Place</text>
+    </a>
+  </g>
+  <rect height="14" width="52.236328125" y="138" x="287.1248474121094" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="145" x="313.2430114746094" id="rel1" class="er relationshipLabel">diagnosis</text>
+  <rect height="14" width="60.90625" y="113.60797882080078" x="431.57574462890625" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="120.60797882080078" x="462.02886962890625" id="rel2" class="er relationshipLabel">in_location</text>
+  <rect height="14" width="55.421875" y="112.30638122558594" x="129.46604919433594" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="119.30638122558594" x="157.17698669433594" id="rel3" class="er relationshipLabel">procedure</text>
+  <rect height="14" width="67.203125" y="313" x="51.25043487548828" class="er relationshipLabelBox"/>
+  <text style="text-anchor: middle; dominant-baseline: middle; font-size: 12px;" y="320" x="84.85199737548828" id="rel4" class="er relationshipLabel">code system</text>
+</svg>
