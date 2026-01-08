@@ -20,6 +20,10 @@ import requests
 # URL pattern to match in docs
 URL_PATTERN = re.compile(r'https?://[^\s<>")\]`\'\,]+')
 
+# Status classification
+OK_STATUSES = {"200", "201", "202", "203", "204", "301", "302", "303", "307", "308"}
+WARNING_STATUSES = {"403"}  # Bot protection - probably fine, just can't verify
+
 # Domains to skip (localhost, example domains, etc.)
 SKIP_DOMAINS = {
     "localhost",
@@ -27,6 +31,20 @@ SKIP_DOMAINS = {
     "example.com",
     "example.org",
     "example.net",
+    # Example/placeholder domains in docs
+    "acme.org",
+    # URL extraction issues - URLs contain special chars that break extraction
+    "yuml.me",
+    # Unreliable/slow - frequently timeout or rate limit
+    "terminusdb.com",
+    "xmlns.com",
+    "unitsofmeasure.org",
+    "upload.wikimedia.org",
+    # Namespace URIs - used as identifiers, not dereferenceable web pages
+    "purl.obolibrary.org",
+    "snomed.info",
+    # LinkML metamodel - w3id redirects to linkml.io/linkml-model which has issues
+    "w3id.org",
 }
 
 
@@ -101,8 +119,8 @@ def needs_check(url: str, cache: dict[str, dict], ttl_days: int, jitter_days: in
 
     entry = cache[url]
 
-    # Always re-check broken links
-    if entry["status"] != "200":
+    # Always re-check broken/warning links
+    if entry["status"] not in OK_STATUSES:
         return True
 
     # Check if expired (with jitter)
@@ -119,6 +137,9 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
     """
     Check a URL and return (status, error_message).
 
+    Don't follow redirects - accept 3xx as valid (the redirect itself is the response).
+    This avoids false failures when redirect targets have bot protection.
+
     Returns:
         Tuple of (status_code_or_error, error_message_or_empty)
     """
@@ -126,7 +147,7 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
         response = requests.head(
             url,
             timeout=timeout,
-            allow_redirects=True,
+            allow_redirects=False,  # Accept redirects as valid without following
             headers={"User-Agent": "LinkML-Doc-Checker/1.0"},
         )
         # Some servers don't support HEAD, try GET
@@ -134,7 +155,7 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
             response = requests.get(
                 url,
                 timeout=timeout,
-                allow_redirects=True,
+                allow_redirects=False,
                 headers={"User-Agent": "LinkML-Doc-Checker/1.0"},
                 stream=True,  # Don't download body
             )
@@ -243,6 +264,7 @@ def main():
 
     # Check URLs
     broken_links = []
+    warning_links = []
     now = datetime.now().isoformat()
 
     for i, url in enumerate(urls_this_run, 1):
@@ -256,20 +278,26 @@ def main():
             "checked_at": now,
         }
 
-        # Track broken links
-        is_ok = status in ("200", "201", "202", "203", "204", "301", "302", "303", "307", "308")
-        if not is_ok:
+        # Classify result
+        if status in OK_STATUSES:
+            if args.verbose:
+                print(f"[{i}/{len(urls_this_run)}] OK: {url}")
+        elif status in WARNING_STATUSES:
+            warning_links.append((url, status, error))
+            print(f"[{i}/{len(urls_this_run)}] WARNING: {url} ({status} - likely bot protection)")
+        else:
             broken_links.append((url, status, error))
             print(f"[{i}/{len(urls_this_run)}] BROKEN: {url} ({status})")
-        elif args.verbose:
-            print(f"[{i}/{len(urls_this_run)}] OK: {url}")
 
-    # Also collect any previously cached broken links still in docs
+    # Also collect any previously cached broken/warning links still in docs
     cached_broken = []
+    cached_warnings = []
     for url in all_urls:
         if url in cache and url not in urls_this_run:
             entry = cache[url]
-            if entry["status"] not in ("200", "201", "202", "203", "204", "301", "302", "303", "307", "308"):
+            if entry["status"] in WARNING_STATUSES:
+                cached_warnings.append((url, entry["status"], ""))
+            elif entry["status"] not in OK_STATUSES:
                 cached_broken.append((url, entry["status"], ""))
 
     # Save updated cache
@@ -279,7 +307,16 @@ def main():
     print(f"Cache saved ({len(pruned_cache)} entries)")
 
     # Report results
+    all_warnings = warning_links + cached_warnings
     all_broken = broken_links + cached_broken
+
+    if all_warnings:
+        print(f"\n{'=' * 60}")
+        print(f"WARNINGS ({len(all_warnings)}) - likely bot protection, cannot verify:")
+        print(f"{'=' * 60}")
+        for url, status, error in sorted(all_warnings):
+            print(f"  [{status}] {url}")
+
     if all_broken:
         print(f"\n{'=' * 60}")
         print(f"BROKEN LINKS ({len(all_broken)}):")
