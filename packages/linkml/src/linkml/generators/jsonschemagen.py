@@ -269,6 +269,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     preserve_names: bool = False
     """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
 
+    expand_subproperty_of: bool = True
+    """
+    If True, expand subproperty_of constraints to enum constraints.
+
+    When a slot has `subproperty_of` set, valid values are the referenced slot
+    and all its descendants (via is_a). Values are formatted according to the
+    slot's range type (CURIE for uriorcurie, full URI for uri, snake_case for string).
+    """
+
     def __post_init__(self):
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
@@ -526,7 +535,86 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         constraints.add_keyword("const", slot.equals_number)
         if slot.equals_string_in:
             constraints.add_keyword("enum", slot.equals_string_in)
+        # Handle subproperty_of constraint - generates enum from slot hierarchy
+        # Only SlotDefinition has subproperty_of, not AnonymousSlotExpression
+        if self.expand_subproperty_of and isinstance(slot, SlotDefinition) and slot.subproperty_of:
+            subproperty_values = self._get_subproperty_values(slot)
+            if subproperty_values:
+                constraints.add_keyword("enum", subproperty_values)
         return constraints
+
+    def _format_slot_value_for_range(self, slot_name: str, range_type: Optional[str]) -> str:
+        """
+        Format slot value according to the declared range type.
+
+        Uses slot_uri to generate proper CURIEs (e.g., biolink:related_to)
+        rather than just slot names.
+
+        :param slot_name: Name of the slot
+        :param range_type: The range type (string, uriorcurie, uri, or None)
+        :return: Formatted slot value
+        """
+        sv = self.schemaview
+        slot = sv.get_slot(slot_name)
+
+        if range_type is None:
+            return underscore(slot_name)
+
+        # Known URI-like built-in types (from linkml:types)
+        curie_types = {"uriorcurie", "curie"}
+        uri_types = {"uri"}
+
+        # Check if range_type itself is a URI-like type
+        if range_type in curie_types:
+            # Return as CURIE using slot_uri: biolink:related_to
+            return sv.get_uri(slot, expand=False)
+        elif range_type in uri_types:
+            # Return as full URI: https://w3id.org/biolink/vocab/related_to
+            return sv.get_uri(slot, expand=True)
+
+        # Check if range_type inherits from a URI-like type (when linkml:types is imported)
+        if range_type in sv.all_types():
+            type_ancestors = set(sv.type_ancestors(range_type))
+
+            if type_ancestors & curie_types:
+                # Return as CURIE using slot_uri: biolink:related_to
+                return sv.get_uri(slot, expand=False)
+            elif type_ancestors & uri_types:
+                # Return as full URI: https://w3id.org/biolink/vocab/related_to
+                return sv.get_uri(slot, expand=True)
+
+        # Return as snake_case string: related_to
+        return underscore(slot_name)
+
+    def _get_subproperty_values(self, slot: Union[SlotDefinition, AnonymousSlotExpression]) -> list[str]:
+        """
+        Get all valid values from slot hierarchy for subproperty_of constraint.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: List of valid values formatted according to range type
+        """
+        sv = self.schemaview
+        root_slot_name = slot.subproperty_of
+
+        # Get all descendants including root (reflexive)
+        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+
+        # Format values according to the slot's range type
+        values = []
+        for slot_name in descendants:
+            value = self._format_slot_value_for_range(slot_name, slot.range)
+            values.append(value)
+
+        # Remove duplicates while preserving order
+        values = list(dict.fromkeys(values))
+
+        # Sort for deterministic output
+        values.sort()
+
+        return values
 
     def get_subschema_for_slot(
         self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False, include_null: bool = True
@@ -779,6 +867,12 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=False,
     show_default=True,
     help="Preserve original LinkML names in JSON Schema output (e.g., for $defs, properties, $ref targets).",
+)
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If set, expand subproperty_of constraints to enum constraints.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
