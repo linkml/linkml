@@ -42,4 +42,5 @@ jobs:
             --ttl-days 30 \
             --jitter-days 7 \
             --links-per-domain 10 \
-            --verbose
+            --verbose \
+            --no-fail

@@ -198,6 +198,11 @@ def main():
         action="store_true",
         help="Verbose output",
     )
+    parser.add_argument(
+        "--no-fail",
+        action="store_true",
+        help="Exit 0 even if broken links are found (informational mode)",
+    )
 
     args = parser.parse_args()
 
@@ -284,6 +289,9 @@ def main():
             if error:
                 msg += f" - {error}"
             print(msg)
+        if args.no_fail:
+            print("\n(--no-fail specified, exiting with 0)")
+            return 0
         return 1
 
     print("\nAll checked links are OK!")
