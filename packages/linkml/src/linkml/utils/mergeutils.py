@@ -188,10 +188,10 @@ def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinitio
 
 
 def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> Optional[SlotDefinitionName]:
-    """Return the ultimate alias of a slot"""
+    """Return the ultimate alias of a slot."""
     alias = schema.slots[slotname].alias if slotname in schema.slots else None
     if alias and alias == slotname:
-        raise ValueError("Error: Slot {slotname} is aliased to itself.")
+        return slotname  # self-alias is semantically "no alias"
     return alias_root(schema, cast(SlotDefinitionName, alias)) if alias else slotname
 
 
