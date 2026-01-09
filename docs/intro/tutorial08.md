@@ -126,7 +126,7 @@ The [linkml/linkml-model-template](https://github.com/linkml/linkml-model-templa
 Once you have authored a schema, generated a full project, and are
 managing everything in GitHub, you may want to consider registering
 your schema. To do this, make a GitHub Pull Request (PR) on the main
-[linkml-registry](https://linkml.io/linkml-registry/home/) metadata
+[linkml-registry](https://linkml.io/linkml-registry/) metadata
 file, which is here:
 
-[https://github.com/linkml/linkml-registry/blob/main/models.yaml](https://github.com/linkml/linkml-registry/blob/main/models.yaml)
+[https://github.com/linkml/linkml-registry/blob/main/linkml_registry.yaml](https://github.com/linkml/linkml-registry/blob/main/linkml_registry.yaml)
