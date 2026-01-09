@@ -34,6 +34,8 @@ class ShaclGenerator(Generator):
     """If True, elements from imported ontologies won't be included in the generator's output"""
     use_class_uri_names: bool = True
     """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work."""
+    expand_subproperty_of: bool = True
+    """If True, expand subproperty_of to sh:in constraints with slot descendants"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -227,6 +229,9 @@ class ShaclGenerator(Generator):
                     if s.equals_string_in:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, s.equals_string_in)
+                    if self.expand_subproperty_of and s.subproperty_of:
+                        # Map subproperty_of to sh:in with slot descendants
+                        self._add_subproperty_constraint(g, prop_pv, s)
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
@@ -280,6 +285,80 @@ class ShaclGenerator(Generator):
             [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
+
+    def _add_subproperty_constraint(self, g: Graph, func: Callable, slot) -> None:
+        """
+        Add sh:in constraint from subproperty_of slot hierarchy.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        :param g: RDF graph to add to
+        :param func: Function to call with predicate and object
+        :param slot: SlotDefinition with subproperty_of set
+        """
+        values = self._get_subproperty_values(slot)
+        if values:
+            pv_node = BNode()
+            Collection(g, pv_node, values)
+            func(SH["in"], pv_node)
+
+    def _get_subproperty_values(self, slot) -> list:
+        """
+        Get all valid values from slot hierarchy for subproperty_of constraint.
+
+        Values are formatted according to range type:
+        - uri/uriorcurie: Returns URIRef objects with full URIs
+        - string: Returns Literal objects with slot names
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: List of URIRef or Literal objects for sh:in constraint
+        """
+        sv = self.schemaview
+        root_slot_name = slot.subproperty_of
+
+        # Get all descendants including root (reflexive)
+        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+
+        # Determine how to format values based on range type
+        range_type = slot.range
+
+        # Check if range is URI-like
+        curie_types = {"uriorcurie", "curie"}
+        uri_types = {"uri"}
+        is_uri_range = False
+
+        if range_type in curie_types or range_type in uri_types:
+            is_uri_range = True
+        elif range_type and range_type in sv.all_types():
+            type_ancestors = set(sv.type_ancestors(range_type))
+            if type_ancestors & curie_types or type_ancestors & uri_types:
+                is_uri_range = True
+
+        # Format values
+        values = []
+        for slot_name in descendants:
+            descendant_slot = sv.get_slot(slot_name)
+            if is_uri_range:
+                # For URI-like ranges, use full URI as URIRef
+                uri = sv.get_uri(descendant_slot, expand=True)
+                values.append(URIRef(uri))
+            else:
+                # For string ranges, use slot name as Literal
+                values.append(Literal(underscore(slot_name)))
+
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_values = []
+        for v in values:
+            if v not in seen:
+                seen.add(v)
+                unique_values.append(v)
+
+        # Sort for deterministic output
+        unique_values.sort(key=str)
+
+        return unique_values
 
     def _add_annotations(self, func: Callable, item) -> None:
         # TODO: migrate some of this logic to SchemaView
@@ -385,6 +464,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     help="If --use-class-uri-names (default), SHACL shape names are based on class_uri. "
     "If --use-native-names, SHACL shape names are based on LinkML class names from the schema file. "
     "Suffixes from the --suffix option can still be appended.",
+)
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
+    "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
