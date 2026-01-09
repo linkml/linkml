@@ -43,7 +43,7 @@ SKIP_DOMAINS = {
     # Namespace URIs - used as identifiers, not dereferenceable web pages
     "purl.obolibrary.org",
     "snomed.info",
-    # LinkML metamodel - w3id redirects to linkml.io/linkml-model which has issues
+    # LinkML metamodel - w3id redirects to linkml.io/linkml-model which may have issues
     "w3id.org",
 }
 
