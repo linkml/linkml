@@ -22,7 +22,7 @@ hierarchies should be stratified.
 See these wikipedia pages for more information.
 
  - [mixins](https://en.wikipedia.org/wiki/Mixin)
- - [traits](https://en.wikipedia.org/wiki/Trait_(computer_programming))
+ - [traits](https://en.wikipedia.org/wiki/Trait_%28computer_programming%29)
 
 ## Didn't you know composition is favored over inheritance these days?
 
