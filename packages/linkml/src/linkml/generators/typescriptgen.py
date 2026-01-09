@@ -7,6 +7,7 @@ import click
 from jinja2 import Template
 
 from linkml._version import __version__
+from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import (
@@ -122,6 +123,8 @@ class TypescriptGenerator(OOCodeGenerator):
     # ObjectVars
     gen_type_utils: bool = False
     include_induced_slots: bool = False
+    expand_subproperty_of: bool = True
+    """If True, expand subproperty_of to union types with slot descendants"""
 
     def serialize(self, output=None) -> str:
         """Serialize a schema to typescript string"""
@@ -186,6 +189,15 @@ class TypescriptGenerator(OOCodeGenerator):
     def range(self, slot: SlotDefinition) -> str:
         sv = self.schemaview
         r = slot.range
+
+        # Check for subproperty_of constraint first
+        if self.expand_subproperty_of and slot.subproperty_of:
+            subproperty_type = self._get_subproperty_union_type(slot)
+            if subproperty_type:
+                if slot.multivalued:
+                    return f"({subproperty_type})[]"
+                return subproperty_type
+
         if r in sv.all_classes():
             rc = sv.get_class(r)
             rc_ref = self.classref(rc)
@@ -265,20 +277,60 @@ class TypescriptGenerator(OOCodeGenerator):
     def required_slots(self, cls: ClassDefinition) -> list[SlotDefinitionName]:
         return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
 
+    def _get_subproperty_union_type(self, slot: SlotDefinition) -> Optional[str]:
+        """
+        Get TypeScript union type from slot hierarchy for subproperty_of constraint.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        Values are formatted according to range type:
+        - uri/uriorcurie: Uses CURIEs (e.g., "biolink:causes")
+        - string: Uses snake_case slot names (e.g., "causes")
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: TypeScript union type string or None if no values
+        """
+        sv = self.schemaview
+
+        # TypeScript uses CURIEs for URI-like ranges (not full URIs)
+        # The shared utility handles formatting based on range type
+        use_curie = is_uri_range(sv, slot.range)
+
+        # Get formatted values - CURIEs for URI ranges, snake_case for strings
+        values = get_subproperty_values(sv, slot, expand_uri=False if use_curie else None)
+
+        if not values:
+            return None
+
+        # Format as TypeScript union type
+        return " | ".join([f'"{v}"' for v in values])
+
 
 @shared_arguments(TypescriptGenerator)
 @click.version_option(__version__, "-V", "--version")
 @click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
 @click.option("--include-induced-slots/", help="Generate slots induced through inheritance", is_flag=True)
 @click.option("--output", type=click.Path(dir_okay=False))
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If --expand-subproperty-of (default), slots with subproperty_of will generate union types "
+    "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
 @click.command()
-def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, output=None, **args):
+def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, expand_subproperty_of=True, output=None, **args):
     """Generate typescript interfaces and types
 
     See https://github.com/linkml/linkml-runtime.js
     """
     gen = TypescriptGenerator(
-        yamlfile, gen_type_utils=gen_type_utils, include_induced_slots=include_induced_slots, **args
+        yamlfile,
+        gen_type_utils=gen_type_utils,
+        include_induced_slots=include_induced_slots,
+        expand_subproperty_of=expand_subproperty_of,
+        **args,
     )
     serialized = gen.serialize(output=output)
     if output is None:
