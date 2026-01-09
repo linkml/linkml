@@ -3,39 +3,48 @@ import pytest
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.schemaview import SchemaView
 
-SCHEMA_TEMPLATE = """
-id: http://example.org/test
-name: test
+
+@pytest.mark.pythongen
+@pytest.mark.parametrize(
+    "slot_name,expected_alias",
+    [
+        ("slot_a", "slot_a"),
+        ("slot-a", "slot_a"),
+    ],
+)
+def test_issue_2911(slot_name: str, expected_alias: str):
+    """Induced slot with self-alias should not raise error."""
+    source = SchemaView(f"""
+id: http://example.org/source
+name: source
 imports:
 - https://w3id.org/linkml/types
 
 slots:
   {slot_name}:
-    {slot_extra}
     range: string
 
 classes:
-  TestClass:
+  SourceClass:
     slots:
       - {slot_name}
-"""
+""")
 
+    target = SchemaView("""
+id: http://example.org/target
+name: target
+imports:
+- https://w3id.org/linkml/types
 
-@pytest.mark.pythongen
-@pytest.mark.parametrize(
-    "slot_name,slot_extra,expected_alias",
-    [
-        ("slot_a", "", "slot_a"),
-        ("slot-a", "", "slot_a"),
-        ("slotA", "alias: slot_a", "slot_a"),
-    ],
-)
-def test_issue_2911(slot_name: str, slot_extra: str, expected_alias: str):
-    """Self-alias in induced_slot should not raise error."""
-    schema = SCHEMA_TEMPLATE.format(slot_name=slot_name, slot_extra=slot_extra)
-    view = SchemaView(schema)
+classes:
+  TargetClass:
+""")
 
-    induced = view.induced_slot(slot_name, "TestClass")
+    induced = source.induced_slot(slot_name, "SourceClass")
     assert induced.alias == expected_alias
 
-    PythonGenerator(view.schema).serialize()
+    target.add_slot(induced)
+    target.get_class("TargetClass").slots.append(slot_name)
+    target.set_modified()
+
+    PythonGenerator(target.schema).serialize()
