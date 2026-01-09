@@ -43,6 +43,8 @@ class ShExGenerator(Generator):
     shapes: list = field(default_factory=lambda: [])
     shape: Optional[Shape] = None  # Current shape being defined
     list_shapes: list[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+    expand_subproperty_of: bool = True
+    """If True, expand subproperty_of to NodeConstraint value lists with slot descendants"""
 
     def __post_init__(self):
         super().__post_init__()
@@ -157,6 +159,13 @@ class ShExGenerator(Generator):
                         values=values,
                     )
                     constraint.valueExpr = node_constraint
+            elif self.expand_subproperty_of and slot.subproperty_of:
+                # Handle subproperty_of constraint - restrict to slot descendants
+                values = self._get_subproperty_values(slot)
+                if values:
+                    constraint.valueExpr = NodeConstraint(values=values)
+                else:
+                    constraint.valueExpr = self._class_or_type_uri(slot.range)
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
@@ -219,10 +228,58 @@ class ShExGenerator(Generator):
             min=0 if opt else 1,
         )
 
+    def _get_subproperty_values(self, slot: SlotDefinition) -> list:
+        """
+        Get all valid values from slot hierarchy for subproperty_of constraint.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        Values are formatted as URIs for ShEx compatibility.
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: List of URI strings for NodeConstraint values
+        """
+        from linkml_runtime.utils.schemaview import SchemaView
+
+        sv = SchemaView(self.schema)
+        root_slot_name = slot.subproperty_of
+
+        # Get all descendants including root (reflexive)
+        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+
+        # Format values as full URIs
+        values = []
+        for slot_name in descendants:
+            descendant_slot = sv.get_slot(slot_name)
+            # Get the full URI using slot_uri
+            uri = sv.get_uri(descendant_slot, expand=True)
+            values.append(uri)
+
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_values = []
+        for v in values:
+            if v not in seen:
+                seen.add(v)
+                unique_values.append(v)
+
+        # Sort for deterministic output
+        unique_values.sort()
+
+        return unique_values
+
 
 @shared_arguments(ShExGenerator)
 @click.command(name="shex")
 @click.option("-o", "--output", help="Output file name")
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If --expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint "
+    "values containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate a ShEx Schema for a  LinkML model"""
