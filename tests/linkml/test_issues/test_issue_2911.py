@@ -13,7 +13,7 @@ from linkml_runtime.utils.schemaview import SchemaView
     ],
 )
 def test_issue_2911(slot_name: str, expected_alias: str):
-    """Induced slot with self-alias should not raise error."""
+    """Induced slot with self-alias must not raise error."""
     source = SchemaView(f"""
 id: http://example.org/source
 name: source
