@@ -14,6 +14,7 @@ from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, Triple
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -243,31 +244,8 @@ class ShExGenerator(Generator):
         from linkml_runtime.utils.schemaview import SchemaView
 
         sv = SchemaView(self.schema)
-        root_slot_name = slot.subproperty_of
-
-        # Get all descendants including root (reflexive)
-        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
-
-        # Format values as full URIs
-        values = []
-        for slot_name in descendants:
-            descendant_slot = sv.get_slot(slot_name)
-            # Get the full URI using slot_uri
-            uri = sv.get_uri(descendant_slot, expand=True)
-            values.append(uri)
-
-        # Remove duplicates while preserving order
-        seen = set()
-        unique_values = []
-        for v in values:
-            if v not in seen:
-                seen.add(v)
-                unique_values.append(v)
-
-        # Sort for deterministic output
-        unique_values.sort()
-
-        return unique_values
+        # ShEx always uses full URIs
+        return get_subproperty_values(sv, slot, expand_uri=True)
 
 
 @shared_arguments(ShExGenerator)

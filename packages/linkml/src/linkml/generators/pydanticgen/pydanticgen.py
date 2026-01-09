@@ -16,6 +16,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
@@ -842,69 +843,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         :param slot_def: SlotDefinition with subproperty_of set
         :return: Literal type string e.g. 'Literal["related_to", "causes", ...]'
         """
-        sv = self.schemaview
-        root_slot_name = slot_def.subproperty_of
-
-        # Get all descendants including root (reflexive)
-        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
-
-        # Format values according to the slot's range type
-        values = []
-        for slot_name in descendants:
-            value = self._format_slot_value_for_range(slot_name, slot_def.range)
-            values.append(value)
-
-        # Remove duplicates while preserving order
-        values = list(dict.fromkeys(values))
-
-        # Sort for deterministic output
-        values.sort()
-
-        # Generate Literal constraint
+        values = get_subproperty_values(self.schemaview, slot_def)
         return "Literal[" + ", ".join([f'"{v}"' for v in values]) + "]"
-
-    def _format_slot_value_for_range(self, slot_name: str, range_type: Optional[str]) -> str:
-        """
-        Format slot value according to the declared range type.
-
-        Uses slot_uri to generate proper CURIEs (e.g., biolink:related_to)
-        rather than just slot names.
-
-        :param slot_name: Name of the slot
-        :param range_type: The range type (string, uriorcurie, uri, or None)
-        :return: Formatted slot value
-        """
-        sv = self.schemaview
-        slot = sv.get_slot(slot_name)
-
-        if range_type is None:
-            return underscore(slot_name)
-
-        # Known URI-like built-in types (from linkml:types)
-        curie_types = {"uriorcurie", "curie"}
-        uri_types = {"uri"}
-
-        # Check if range_type itself is a URI-like type
-        if range_type in curie_types:
-            # Return as CURIE using slot_uri: biolink:related_to
-            return sv.get_uri(slot, expand=False)
-        elif range_type in uri_types:
-            # Return as full URI: https://w3id.org/biolink/vocab/related_to
-            return sv.get_uri(slot, expand=True)
-
-        # Check if range_type inherits from a URI-like type (when linkml:types is imported)
-        if range_type in sv.all_types():
-            type_ancestors = set(sv.type_ancestors(range_type))
-
-            if type_ancestors & curie_types:
-                # Return as CURIE using slot_uri: biolink:related_to
-                return sv.get_uri(slot, expand=False)
-            elif type_ancestors & uri_types:
-                # Return as full URI: https://w3id.org/biolink/vocab/related_to
-                return sv.get_uri(slot, expand=True)
-
-        # Return as snake_case string: related_to
-        return underscore(slot_name)
 
     def _clean_injected_classes(self, injected_classes: list[Union[str, type]]) -> Optional[list[str]]:
         """Get source, deduplicate, and dedent injected classes"""

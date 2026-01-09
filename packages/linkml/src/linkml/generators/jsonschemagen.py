@@ -10,6 +10,7 @@ import click
 from linkml._version import __version__
 from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
@@ -538,83 +539,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         # Handle subproperty_of constraint - generates enum from slot hierarchy
         # Only SlotDefinition has subproperty_of, not AnonymousSlotExpression
         if self.expand_subproperty_of and isinstance(slot, SlotDefinition) and slot.subproperty_of:
-            subproperty_values = self._get_subproperty_values(slot)
+            subproperty_values = get_subproperty_values(self.schemaview, slot)
             if subproperty_values:
                 constraints.add_keyword("enum", subproperty_values)
         return constraints
-
-    def _format_slot_value_for_range(self, slot_name: str, range_type: Optional[str]) -> str:
-        """
-        Format slot value according to the declared range type.
-
-        Uses slot_uri to generate proper CURIEs (e.g., biolink:related_to)
-        rather than just slot names.
-
-        :param slot_name: Name of the slot
-        :param range_type: The range type (string, uriorcurie, uri, or None)
-        :return: Formatted slot value
-        """
-        sv = self.schemaview
-        slot = sv.get_slot(slot_name)
-
-        if range_type is None:
-            return underscore(slot_name)
-
-        # Known URI-like built-in types (from linkml:types)
-        curie_types = {"uriorcurie", "curie"}
-        uri_types = {"uri"}
-
-        # Check if range_type itself is a URI-like type
-        if range_type in curie_types:
-            # Return as CURIE using slot_uri: biolink:related_to
-            return sv.get_uri(slot, expand=False)
-        elif range_type in uri_types:
-            # Return as full URI: https://w3id.org/biolink/vocab/related_to
-            return sv.get_uri(slot, expand=True)
-
-        # Check if range_type inherits from a URI-like type (when linkml:types is imported)
-        if range_type in sv.all_types():
-            type_ancestors = set(sv.type_ancestors(range_type))
-
-            if type_ancestors & curie_types:
-                # Return as CURIE using slot_uri: biolink:related_to
-                return sv.get_uri(slot, expand=False)
-            elif type_ancestors & uri_types:
-                # Return as full URI: https://w3id.org/biolink/vocab/related_to
-                return sv.get_uri(slot, expand=True)
-
-        # Return as snake_case string: related_to
-        return underscore(slot_name)
-
-    def _get_subproperty_values(self, slot: Union[SlotDefinition, AnonymousSlotExpression]) -> list[str]:
-        """
-        Get all valid values from slot hierarchy for subproperty_of constraint.
-
-        Following metamodel semantics: "any ontological child (related to X via
-        an is_a relationship), is a valid value for the slot"
-
-        :param slot: SlotDefinition with subproperty_of set
-        :return: List of valid values formatted according to range type
-        """
-        sv = self.schemaview
-        root_slot_name = slot.subproperty_of
-
-        # Get all descendants including root (reflexive)
-        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
-
-        # Format values according to the slot's range type
-        values = []
-        for slot_name in descendants:
-            value = self._format_slot_value_for_range(slot_name, slot.range)
-            values.append(value)
-
-        # Remove duplicates while preserving order
-        values = list(dict.fromkeys(values))
-
-        # Sort for deterministic output
-        values.sort()
-
-        return values
 
     def get_subschema_for_slot(
         self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False, include_null: bool = True

@@ -10,6 +10,7 @@ from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
+from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
@@ -315,50 +316,19 @@ class ShaclGenerator(Generator):
         :return: List of URIRef or Literal objects for sh:in constraint
         """
         sv = self.schemaview
-        root_slot_name = slot.subproperty_of
 
-        # Get all descendants including root (reflexive)
-        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+        # SHACL uses full URIs for URI-like ranges
+        use_uris = is_uri_range(sv, slot.range)
 
-        # Determine how to format values based on range type
-        range_type = slot.range
+        # Get string values from shared utility
+        # For URI ranges, get full URIs; for string ranges, get formatted names
+        string_values = get_subproperty_values(sv, slot, expand_uri=True if use_uris else None)
 
-        # Check if range is URI-like
-        curie_types = {"uriorcurie", "curie"}
-        uri_types = {"uri"}
-        is_uri_range = False
-
-        if range_type in curie_types or range_type in uri_types:
-            is_uri_range = True
-        elif range_type and range_type in sv.all_types():
-            type_ancestors = set(sv.type_ancestors(range_type))
-            if type_ancestors & curie_types or type_ancestors & uri_types:
-                is_uri_range = True
-
-        # Format values
-        values = []
-        for slot_name in descendants:
-            descendant_slot = sv.get_slot(slot_name)
-            if is_uri_range:
-                # For URI-like ranges, use full URI as URIRef
-                uri = sv.get_uri(descendant_slot, expand=True)
-                values.append(URIRef(uri))
-            else:
-                # For string ranges, use slot name as Literal
-                values.append(Literal(underscore(slot_name)))
-
-        # Remove duplicates while preserving order
-        seen = set()
-        unique_values = []
-        for v in values:
-            if v not in seen:
-                seen.add(v)
-                unique_values.append(v)
-
-        # Sort for deterministic output
-        unique_values.sort(key=str)
-
-        return unique_values
+        # Convert to RDF types
+        if use_uris:
+            return [URIRef(v) for v in string_values]
+        else:
+            return [Literal(v) for v in string_values]
 
     def _add_annotations(self, func: Callable, item) -> None:
         # TODO: migrate some of this logic to SchemaView

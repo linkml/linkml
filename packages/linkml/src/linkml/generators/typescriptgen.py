@@ -7,6 +7,7 @@ import click
 from jinja2 import Template
 
 from linkml._version import __version__
+from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import (
@@ -291,53 +292,19 @@ class TypescriptGenerator(OOCodeGenerator):
         :return: TypeScript union type string or None if no values
         """
         sv = self.schemaview
-        root_slot_name = slot.subproperty_of
 
-        # Get all descendants including root (reflexive)
-        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+        # TypeScript uses CURIEs for URI-like ranges (not full URIs)
+        # The shared utility handles formatting based on range type
+        use_curie = is_uri_range(sv, slot.range)
 
-        # Determine how to format values based on range type
-        range_type = slot.range
+        # Get formatted values - CURIEs for URI ranges, snake_case for strings
+        values = get_subproperty_values(sv, slot, expand_uri=False if use_curie else None)
 
-        # Check if range is URI-like
-        curie_types = {"uriorcurie", "curie"}
-        uri_types = {"uri"}
-        is_uri_range = False
-
-        if range_type in curie_types or range_type in uri_types:
-            is_uri_range = True
-        elif range_type and range_type in sv.all_types():
-            type_ancestors = set(sv.type_ancestors(range_type))
-            if type_ancestors & curie_types or type_ancestors & uri_types:
-                is_uri_range = True
-
-        # Format values
-        values = []
-        for slot_name in descendants:
-            descendant_slot = sv.get_slot(slot_name)
-            if is_uri_range:
-                # For URI-like ranges, use CURIE format
-                curie = sv.get_uri(descendant_slot, expand=False)
-                values.append(f'"{curie}"')
-            else:
-                # For string ranges, use snake_case slot name
-                values.append(f'"{underscore(slot_name)}"')
-
-        # Remove duplicates while preserving order
-        seen = set()
-        unique_values = []
-        for v in values:
-            if v not in seen:
-                seen.add(v)
-                unique_values.append(v)
-
-        # Sort for deterministic output
-        unique_values.sort()
-
-        if not unique_values:
+        if not values:
             return None
 
-        return " | ".join(unique_values)
+        # Format as TypeScript union type
+        return " | ".join([f'"{v}"' for v in values])
 
 
 @shared_arguments(TypescriptGenerator)

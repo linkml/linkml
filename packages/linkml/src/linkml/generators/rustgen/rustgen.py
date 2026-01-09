@@ -6,6 +6,7 @@ from typing import Literal, Optional, Union, overload
 from jinja2 import Environment
 
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.subproperty import is_uri_range
 from linkml.generators.common.template import ObjectImport
 from linkml.generators.common.type_designators import get_accepted_type_designator_values
 from linkml.generators.rustgen.build import (
@@ -60,10 +61,6 @@ from linkml_runtime.utils.formatutils import camelcase, uncamelcase, underscore
 from linkml_runtime.utils.schemaview import OrderedBy, SchemaView
 
 RUST_MODES = Literal["crate", "file"]
-
-# Types that indicate URI-like ranges
-CURIE_TYPES = {"uriorcurie", "curie"}
-URI_TYPES = {"uri"}
 
 PYTHON_TO_RUST = {
     int: "isize",
@@ -751,26 +748,17 @@ class RustGenerator(Generator, LifecycleMixin):
         # Get all descendants including root (reflexive)
         descendants = sv.slot_descendants(root_slot_name, reflexive=True)
 
-        # Determine how to format values based on range type
-        range_type = slot.range
-        is_uri_range = False
+        # Check if range is URI-like using shared utility
+        use_uri = is_uri_range(sv, slot.range)
 
-        if range_type in CURIE_TYPES or range_type in URI_TYPES:
-            is_uri_range = True
-        elif range_type and range_type in sv.all_types():
-            type_ancestors = set(sv.type_ancestors(range_type))
-            if type_ancestors & CURIE_TYPES or type_ancestors & URI_TYPES:
-                is_uri_range = True
-
-        # Generate enum items
+        # Generate enum items - Rust needs both variant names and text values
         items = []
         seen_variants = set()
         for slot_name in sorted(descendants):
             descendant_slot = sv.get_slot(slot_name)
-            if is_uri_range:
+            if use_uri:
                 # For URI-like ranges, use CURIE format for serde
-                curie = sv.get_uri(descendant_slot, expand=False)
-                text = curie
+                text = sv.get_uri(descendant_slot, expand=False)
             else:
                 # For string ranges, use snake_case slot name
                 text = underscore(slot_name)
