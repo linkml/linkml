@@ -46,13 +46,13 @@ def test_metamodel_invalid_calls():
 def test_simple_uris(input_path, snapshot):
     """Test a simple schema that needs both LinkML AND Specific prefixes"""
     # Generate all of the required contexts
-    output = ContextGenerator(input_path("includes/simple_types.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(input_path("includes/simple_types.yaml"), metadata=False).serialize()
     assert output == snapshot("genjsonld/includes/simple_types.context.jsonld")
 
-    output = ContextGenerator(input_path("simple_slots.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(input_path("simple_slots.yaml"), metadata=False).serialize()
     assert output == snapshot("genjsonld/simple_slots.context.jsonld")
 
-    output = ContextGenerator(input_path("simple_uri_test.yaml"), emit_metadata=False).serialize()
+    output = ContextGenerator(input_path("simple_uri_test.yaml"), metadata=False).serialize()
     assert output == snapshot("genjsonld/simple_uri_test.context.jsonld")
 
     runner = CliRunner()
