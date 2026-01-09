@@ -122,6 +122,8 @@ class TypescriptGenerator(OOCodeGenerator):
     # ObjectVars
     gen_type_utils: bool = False
     include_induced_slots: bool = False
+    expand_subproperty_of: bool = True
+    """If True, expand subproperty_of to union types with slot descendants"""
 
     def serialize(self, output=None) -> str:
         """Serialize a schema to typescript string"""
@@ -186,6 +188,15 @@ class TypescriptGenerator(OOCodeGenerator):
     def range(self, slot: SlotDefinition) -> str:
         sv = self.schemaview
         r = slot.range
+
+        # Check for subproperty_of constraint first
+        if self.expand_subproperty_of and slot.subproperty_of:
+            subproperty_type = self._get_subproperty_union_type(slot)
+            if subproperty_type:
+                if slot.multivalued:
+                    return f"({subproperty_type})[]"
+                return subproperty_type
+
         if r in sv.all_classes():
             rc = sv.get_class(r)
             rc_ref = self.classref(rc)
@@ -265,20 +276,94 @@ class TypescriptGenerator(OOCodeGenerator):
     def required_slots(self, cls: ClassDefinition) -> list[SlotDefinitionName]:
         return [s for s in self.schemaview.class_slots(cls.name) if self.schemaview.induced_slot(s, cls.name).required]
 
+    def _get_subproperty_union_type(self, slot: SlotDefinition) -> Optional[str]:
+        """
+        Get TypeScript union type from slot hierarchy for subproperty_of constraint.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        Values are formatted according to range type:
+        - uri/uriorcurie: Uses CURIEs (e.g., "biolink:causes")
+        - string: Uses snake_case slot names (e.g., "causes")
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: TypeScript union type string or None if no values
+        """
+        sv = self.schemaview
+        root_slot_name = slot.subproperty_of
+
+        # Get all descendants including root (reflexive)
+        descendants = sv.slot_descendants(root_slot_name, reflexive=True)
+
+        # Determine how to format values based on range type
+        range_type = slot.range
+
+        # Check if range is URI-like
+        curie_types = {"uriorcurie", "curie"}
+        uri_types = {"uri"}
+        is_uri_range = False
+
+        if range_type in curie_types or range_type in uri_types:
+            is_uri_range = True
+        elif range_type and range_type in sv.all_types():
+            type_ancestors = set(sv.type_ancestors(range_type))
+            if type_ancestors & curie_types or type_ancestors & uri_types:
+                is_uri_range = True
+
+        # Format values
+        values = []
+        for slot_name in descendants:
+            descendant_slot = sv.get_slot(slot_name)
+            if is_uri_range:
+                # For URI-like ranges, use CURIE format
+                curie = sv.get_uri(descendant_slot, expand=False)
+                values.append(f'"{curie}"')
+            else:
+                # For string ranges, use snake_case slot name
+                values.append(f'"{underscore(slot_name)}"')
+
+        # Remove duplicates while preserving order
+        seen = set()
+        unique_values = []
+        for v in values:
+            if v not in seen:
+                seen.add(v)
+                unique_values.append(v)
+
+        # Sort for deterministic output
+        unique_values.sort()
+
+        if not unique_values:
+            return None
+
+        return " | ".join(unique_values)
+
 
 @shared_arguments(TypescriptGenerator)
 @click.version_option(__version__, "-V", "--version")
 @click.option("--gen-type-utils/", "-u", help="Generate Type checking utils", is_flag=True)
 @click.option("--include-induced-slots/", help="Generate slots induced through inheritance", is_flag=True)
 @click.option("--output", type=click.Path(dir_okay=False))
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If --expand-subproperty-of (default), slots with subproperty_of will generate union types "
+    "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
 @click.command()
-def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, output=None, **args):
+def cli(yamlfile, gen_type_utils=False, include_induced_slots=False, expand_subproperty_of=True, output=None, **args):
     """Generate typescript interfaces and types
 
     See https://github.com/linkml/linkml-runtime.js
     """
     gen = TypescriptGenerator(
-        yamlfile, gen_type_utils=gen_type_utils, include_induced_slots=include_induced_slots, **args
+        yamlfile,
+        gen_type_utils=gen_type_utils,
+        include_induced_slots=include_induced_slots,
+        expand_subproperty_of=expand_subproperty_of,
+        **args,
     )
     serialized = gen.serialize(output=output)
     if output is None:
