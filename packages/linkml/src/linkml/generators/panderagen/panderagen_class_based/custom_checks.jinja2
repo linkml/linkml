@@ -17,8 +17,7 @@
         {% elif field.inline_form == 'inline_dict' %}
         return cls._check_nested_struct(data, {{ field.reference_class }}, pa_pl.{{ field.reference_class }})
         {% else -%}
-        ## NO MATCH FOUND FOR INLINE FORM "{{ field.inline_form }}"
-        raise Exception("No match found during template generation for inline_form: {{ field.inline_form }}")
+        {{ field.raise_('No match found during template generation for inline_form: ' ~ field.inline_form) }}
         {% endif -%}
     {%- endif -%}
 {%- endmacro -%}

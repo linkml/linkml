@@ -13,7 +13,7 @@ from linkml.generators.panderagen.transforms import CollectionDictLoader, Simple
                     struct_schema=loaded_schema.{{ field.reference_class }}Dict,
                     id_col="{{ field.inline_id_column_name }}",
                     other_col="{{ field.inline_other_column_name }}",
-                    id_dtype=pl.String,
+                    id_dtype={{ field.inline_id_column_type }},
                     other_dtype=loaded_schema.{{ field.inline_other_range }},
                 ).load('{{ field.name }}'),
     {% else -%}
