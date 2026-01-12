@@ -12,7 +12,7 @@ jobs:
     name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5.0.0
+    - uses: actions/checkout@v6
       with:
         # Checkout the code including tags required for dynamic versioning
         fetch-depth: 0
@@ -32,7 +32,7 @@ jobs:
         uv build --all-packages
 
     - name: Store built distribution
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: distribution-files
         path: dist/

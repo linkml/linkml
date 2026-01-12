@@ -242,7 +242,7 @@ You can customize markdown generation using your own templates. This requires a 
 
 The protocol is:
 
-1. copy the jinja templates from [docgen](https://github.com/linkml/linkml/tree/main/linkml/generators/docgen) to your own repo in a folder `templates`
+1. copy the jinja templates from [docgen](https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen) to your own repo in a folder `templates`
 2. customize these templates
 3. run `gen-docs --template-directory templates -d docs my_schema.yaml`
 4. run `mkdocs serve` to test locally
