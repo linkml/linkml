@@ -1,6 +1,6 @@
 # Schema Linter
 
-When authoring a schema -- especially when it is large or there are many authors -- it is important to establish and adhere to best practices. For example, while [providing a description](./metadata.md#providing-descriptions) for each schema element is not required, descriptions can help reduce miscommunication between schema authors. LinkML provides a configurable [linter](https://en.wikipedia.org/wiki/Lint_(software)) to identify violations of best practices or error-prone patterns.
+When authoring a schema -- especially when it is large or there are many authors -- it is important to establish and adhere to best practices. For example, while [providing a description](./metadata.md#providing-descriptions) for each schema element is not required, descriptions can help reduce miscommunication between schema authors. LinkML provides a configurable [linter](https://en.wikipedia.org/wiki/Lint_%28software%29) to identify violations of best practices or error-prone patterns.
 
 ## Introduction
 
