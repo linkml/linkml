@@ -107,8 +107,7 @@ def check_data_pandera(
         logger.info("Same: N/A")
         logger.info(f"Schema Name: {schema['name']}")
         if valid:
-            if not polars_only:
-                logger.info(output)
+            logger.info(output)
             raise e
     finally:
         DataframeGenerator.cleanup_package("test_pandera_package")
