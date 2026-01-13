@@ -1,0 +1,42 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+prefixes:
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Person:
+    class_uri: schema:Person
+    attributes:
+      id:
+        identifier: true
+    slots:
+      - type
+
+  Programmer:
+    slots:
+      - type
+    slot_usage:
+      type:
+        range: TypeEnum
+
+  Administrator:
+    slots:
+      - type
+    slot_usage:
+      type:
+        range: OtherTypeEnum
+
+slots:
+    type:
+
+enums:
+  TypeEnum:
+    permissible_values:
+      UNKNOWN:
+  OtherTypeEnum:
+    permissible_values:
+      KNOWN:

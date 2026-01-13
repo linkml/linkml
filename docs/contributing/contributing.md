@@ -192,7 +192,7 @@ Formatting and some code quality issues can be fixed automatically by running:
 uv run tox -e format
 ```
 
-You can configure these tools to run automatically before each commit by using [pre-commit](https://pre-commit.com/). To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pypa.github.io/pipx/):
+You can configure these tools to run automatically before each commit by using [pre-commit](https://pre-commit.com/). To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pipx.pypa.io/):
 
 ```shell
 pipx install pre-commit

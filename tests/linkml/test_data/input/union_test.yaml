@@ -1,0 +1,40 @@
+id: https://example.org/test/union
+name: union-test
+title: Union Test Schema
+description: Test schema for union_of functionality
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  test: https://example.org/test/
+
+default_prefix: test
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  NamedThing:
+    abstract: true
+    attributes:
+      id:
+        identifier: true
+      name:
+
+  TypeA:
+    is_a: NamedThing
+    attributes:
+      field_a:
+        range: string
+
+  TypeB:
+    is_a: NamedThing
+    attributes:
+      field_b:
+        range: integer
+
+  UnionClass:
+    description: A class that represents a union of other classes
+    union_of:
+      - TypeA
+      - TypeB

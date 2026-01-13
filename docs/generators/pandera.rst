@@ -17,7 +17,7 @@ using the PolaRS integration. It can also produce PolaRS schemas for use in load
 
 The implementation of the generator is incomplete. Because Pandera is a dataframe library,
 the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
-`tests/test\_generators/test\_panderagen.py` also has an example using supported LinkML features.
+`tests/linkml/test\_generators/test\_panderagen.py` also has an example using supported LinkML features.
 
 Currently supported LinkML features are:
 
@@ -364,8 +364,8 @@ To test panderagen compliance use the `-m panderagen` pytest mark. Use `-m dataf
 
 .. code-block:: sh
 
-    pytest -m panderagen tests/test_compliance
-    pytest -m dataframe_polars_schema tests/test_compliance
+    pytest -m panderagen tests/linkml/test_compliance
+    pytest -m dataframe_polars_schema tests/linkml/test_compliance
 
 
 In the tests, the optional LinkML dependencies such as NumPy, PolaRS, and Pandera
@@ -387,6 +387,7 @@ The following major features need to be prioritized
   - Parquet/PyArrow storage formats
   - PySpark (also supported by Pandera)
   - Narwhals (general dataframe API wrapper)
+  - Ibis (portable dataframe library)
 - Improve modularity
   - leverage and align with existing linkml-runtime modules and tables
 - Top-level validator cli tool under linkml/validators
