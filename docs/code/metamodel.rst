@@ -6,7 +6,7 @@ MetaModel
 Definitions
 -----------
 
-See `Datamodel docs <https://linkml.io/linkml-model/docs/>`_ for full documentation
+See `Datamodel docs <https://linkml.io/linkml-model/latest/docs/>`_ for full documentation
 
 .. currentmodule:: linkml_runtime.linkml_model.meta
 
