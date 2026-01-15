@@ -22,7 +22,7 @@ hierarchies should be stratified.
 See these wikipedia pages for more information.
 
  - [mixins](https://en.wikipedia.org/wiki/Mixin)
- - [traits](https://en.wikipedia.org/wiki/Trait_(computer_programming))
+ - [traits](https://en.wikipedia.org/wiki/Trait_%28computer_programming%29)
 
 ## Didn't you know composition is favored over inheritance these days?
 
@@ -647,7 +647,7 @@ The id_prefixes are listed in decreasing priority order, with the "preferred" pr
 
 Downstream software components can use this field to constrain data entry to a particular kind of identifier.
 
-To see examples, Biolink uses id_prefixes extensively. For example, the [MolecularEntity](https://biolink.github.io/biolink-model/docs/MolecularEntity) class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.
+To see examples, Biolink uses id_prefixes extensively. For example, the [MolecularEntity](https://biolink.github.io/biolink-model/MolecularEntity/) class shows that identifiers for this class can be drawn from PubChem, CHEBI, DrugBank, etc.
 
 For more, see [URIs and Mappings](https://linkml.io/linkml/schemas/uris-and-mappings.html)
 

@@ -2,6 +2,8 @@ name: Check Sphinx external links
 env:
   UV_VERSION: "0.7.13"
 on:
+  push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -42,5 +44,4 @@ jobs:
             --ttl-days 30 \
             --jitter-days 7 \
             --links-per-domain 10 \
-            --verbose \
-            --no-fail
+            --verbose

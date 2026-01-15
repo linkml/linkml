@@ -15,7 +15,7 @@ validating data. The majority tools are in Python, but they can be executed
 during the development cycle of your project, avoiding python
 dependencies in non-python code.
 
-Before embarking on a porting project, please read the [The LinkML specification](https://linkml.io/linkml-model/docs/specification/)
+Before embarking on a porting project, please read the [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema)
 
 ## Data class generators
 
@@ -340,7 +340,7 @@ schema = yaml_loader.load('my-schema.yaml', target=SchemaDefinition)
 
 ### Step 3: Implement core logic for derived schemas
 
-See: [Part 4 of the specification](https://linkml.io/linkml-model/docs/specification/04derived-schemas/)
+See: [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema) (derived schema rules)
 
 By this stage you can load and dump schema objects in a type-safe way. It may be tempting to just go off and implement things with this.
 
