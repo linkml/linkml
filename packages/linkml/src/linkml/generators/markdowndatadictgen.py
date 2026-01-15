@@ -36,7 +36,7 @@ from linkml_runtime.linkml_model.meta import (
     SubsetDefinition,
     TypeDefinition,
 )
-from linkml_runtime.utils.formatutils import be, camelcase, underscore
+from linkml_runtime.utils.formatutils import be, camelcase
 from linkml_runtime.utils.yamlutils import extended_str
 
 logger = logging.getLogger(__name__)
@@ -294,6 +294,11 @@ class ClassRelationship(pydantic.BaseModel):
 
     def __hash__(self) -> int:
         return hash((self.base, self.derived, self.relationship_type))
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ClassRelationship):
+            return NotImplemented
+        return (self.base, self.derived, self.relationship_type) == (other.base, other.derived, other.relationship_type)
 
 
 class ClassDiagram(pydantic.BaseModel):
@@ -703,7 +708,7 @@ class MarkdownDataDictGen(Generator):
                 connected_components.append(component)
 
         # Sort connected components by their first class name (alphabetically) for deterministic ordering
-        connected_components.sort(key=lambda c: min(c))
+        connected_components.sort(key=min)
 
         # Now classify singleton classes into base classes vs truly standalone
         base_classes = set()
@@ -1247,7 +1252,7 @@ class MarkdownDataDictGen(Generator):
             slot = next((s for s in self._collect_all_class_slots(cls) if s.name == slot_name), None)
 
             if not slot:
-                return (99, 0, 0, float("inf"), slot_name)  # Unknown slots go last
+                return (99, 0, float("inf"), slot_name)  # Unknown slots go last
 
             # Primary sort by priority slots (id, name, description first)
             if slot_name in priority_slots:
@@ -1314,40 +1319,8 @@ class MarkdownDataDictGen(Generator):
                     )
 
     def visit_subset(self, subset: SubsetDefinition) -> Optional[str]:
-        if None:
-            with open(self.exist_warning(self.dir_path(subset)), "w", encoding="UTF-8") as subsetfile:
-                items = []
-                curie = self.namespaces.uri_or_curie_for(str(self.namespaces._base), underscore(subset.name))
-                uri = self.namespaces.uri_for(curie)
-                items.append(self.element_header(obj=subset, name=camelcase(subset.name), curie=curie, uri=uri))
-                # TODO: consider showing hierarchy within a subset
-                items.append(self.header(3, "Classes"))
-                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if not cls.mixin:
-                        if cls.in_subset and subset.name in cls.in_subset:
-                            items.append(self.bullet(self.class_link(cls, use_desc=True), 0))
-                items.append(self.header(3, "Mixins"))
-                for cls in sorted(self.schema.classes.values(), key=lambda c: c.name):
-                    if cls.mixin:
-                        if cls.in_subset and subset.name in cls.in_subset:
-                            items.append(self.bullet(self.class_link(cls, use_desc=True), 0))
-                items.append(self.header(3, "Slots"))
-                for slot in sorted(self.schema.slots.values(), key=lambda s: s.name):
-                    if slot.in_subset and subset.name in slot.in_subset:
-                        items.append(self.bullet(self.slot_link(slot, use_desc=True), 0))
-                items.append(self.header(3, "Types"))
-                for type in sorted(self.schema.types.values(), key=lambda s: s.name):
-                    if type.in_subset and subset.name in type.in_subset:
-                        items.append(self.bullet(self.type_link(type, use_desc=True), 0))
-                items.append(self.header(3, "Enums"))
-                for enum in sorted(self.schema.enums.values(), key=lambda s: s.name):
-                    if enum.in_subset and subset.name in enum.in_subset:
-                        items.append(self.bullet(self.enum_link(enum, use_desc=True), 0))
-                items.append(self.element_properties(subset))
-                out = "\n".join(items)
-                out = pad_heading(out)
-                subsetfile.write(out)
-                return out
+        # TODO: Implement subset documentation generation
+        return None
 
     def element_header(self, obj: Element, name: str, curie: str, uri: str) -> str:
         header_label = f"~~{name}~~ _(deprecated)_" if obj.deprecated else f"{name}"

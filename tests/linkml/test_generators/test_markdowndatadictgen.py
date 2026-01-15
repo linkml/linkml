@@ -66,22 +66,26 @@ def test_datadict_personinfo(input_path, snapshot):
     """Test generating data dictionary for personinfo schema."""
     schema = str(input_path("personinfo.yaml"))
     figs_dir = snapshot("markdowndatadict_personinfo.md").path.parent / "figs"
+    cache_file = figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg"
+
+    # Remove cached SVG to force fresh generation from Kroki
+    try:
+        cache_file.unlink()
+    except FileNotFoundError:
+        pass  # File doesn't exist, nothing to clean up
 
     try:
-        (figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg").unlink()
-    except FileNotFoundError:
-        pass
-
-    gen = MarkdownDataDictGen(
-        schema, debug=True, pretty_format_svg=True, kroki_server="https://kroki.io", diagram_dir=figs_dir
-    )
-    generated = gen.serialize()
-    assert generated == snapshot("markdowndatadict_personinfo.md")
-
-    try:
-        (figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg").unlink()
-    except FileNotFoundError:
-        pass
+        gen = MarkdownDataDictGen(
+            schema, debug=True, pretty_format_svg=True, kroki_server="https://kroki.io", diagram_dir=figs_dir
+        )
+        generated = gen.serialize()
+        assert generated == snapshot("markdowndatadict_personinfo.md")
+    finally:
+        # Clean up generated cache file
+        try:
+            cache_file.unlink()
+        except FileNotFoundError:
+            pass  # File wasn't created, nothing to clean up
 
 
 def test_datadict_kitchensink(kitchen_sink_path, snapshot):
