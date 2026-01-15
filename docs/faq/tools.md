@@ -71,7 +71,7 @@ You can use any of the generator tools distributed as part of linkml to check fo
 
 ## Is there a linter for LinkML?
 
-Yes! See the documentation for [the schema linter](https://linkml.io/linkml/schemas/linter).
+Yes! See the documentation for [the schema linter](https://linkml.io/linkml/schemas/linter.html).
 
 The linter will attempt to ensure your schema follows best practice.
 
