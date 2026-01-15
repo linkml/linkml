@@ -410,16 +410,11 @@
 <a class="viewcode-back" href="../../../generators/yarrrml.html#linkml.generators.yarrrmlgen.YarrrmlGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">YarrrmlGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.2.1&quot;</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.3.0&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yml&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">SchemaDefinition</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;yml&quot;</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;yml&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">raw_src</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">it</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;iterator_template&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -454,7 +449,7 @@
         <span class="n">mappings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">mapping_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">mapping_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_json_source</span><span class="p">():</span>
                 <span class="n">mapping_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)]]</span>
@@ -462,29 +457,44 @@
                 <span class="n">mapping_dict</span><span class="p">[</span><span class="s2">&quot;sources&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">]]</span>
 
             <span class="n">mapping_dict</span><span class="p">[</span><span class="s2">&quot;s&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subject_template_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-
             <span class="n">mapping_dict</span><span class="p">[</span><span class="s2">&quot;po&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_po_list_for_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
             <span class="n">mappings</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">mapping_dict</span>
 
-        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;prefixes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixes</span><span class="p">(),</span> <span class="s2">&quot;mappings&quot;</span><span class="p">:</span> <span class="n">mappings</span><span class="p">}</span>
+        <span class="n">prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefixes_with_defaults</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;prefixes&quot;</span><span class="p">:</span> <span class="n">prefixes</span><span class="p">,</span> <span class="s2">&quot;mappings&quot;</span><span class="p">:</span> <span class="n">mappings</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="c1"># helpers</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_json_source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;~jsonpath&quot;</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_prefixes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prefixes_with_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="n">px</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">:</span>
                     <span class="n">px</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">)</span>
+
         <span class="n">px</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;rdf&quot;</span><span class="p">,</span> <span class="s2">&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</span><span class="p">)</span>
+
+        <span class="n">has_user_prefix</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;rdf&quot;</span><span class="p">,</span> <span class="s2">&quot;linkml&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">px</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_user_prefix</span><span class="p">:</span>
+            <span class="n">px</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;ex&quot;</span><span class="p">,</span> <span class="s2">&quot;https://example.org/default#&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;ex&quot;</span> <span class="ow">in</span> <span class="n">px</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="o">=</span> <span class="s2">&quot;ex&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">px</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;rdf&quot;</span><span class="p">,</span> <span class="s2">&quot;linkml&quot;</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="o">=</span> <span class="n">k</span>
+                        <span class="k">break</span>
+
         <span class="k">return</span> <span class="n">px</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_iterator_for_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># supports {Class}</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterator_template</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{Class}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_subject_template_for_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -502,17 +512,27 @@
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="n">po</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">class_curie</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">class_curie</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">po</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;rdf:type&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">class_curie</span><span class="p">)})</span>
+        <span class="n">class_uri</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">class_term</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">class_uri</span><span class="p">)</span> <span class="k">if</span> <span class="n">class_uri</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;ex&#39;</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">po</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="s2">&quot;rdf:type&quot;</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="n">class_term</span><span class="p">})</span>
 
         <span class="n">default_prefix</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_prefix</span> <span class="ow">or</span> <span class="s2">&quot;ex&quot;</span>
 
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
-            <span class="n">pred_uri</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">pred</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pred_uri</span><span class="p">)</span> <span class="k">if</span> <span class="n">pred_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
-
             <span class="n">decl</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">slot_uri</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">decl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">decl</span><span class="p">,</span> <span class="s2">&quot;slot_uri&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">slot_uri</span> <span class="o">=</span> <span class="n">decl</span><span class="o">.</span><span class="n">slot_uri</span>
+            <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s2">&quot;slot_uri&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="n">slot_uri</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">slot_uri</span>
+
+            <span class="k">if</span> <span class="n">slot_uri</span><span class="p">:</span>
+                <span class="n">pred</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pred_uri</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">decl</span> <span class="ow">or</span> <span class="n">s</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">pred</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pred_uri</span><span class="p">)</span> <span class="k">if</span> <span class="n">pred_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">default_prefix</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
             <span class="n">alias</span> <span class="o">=</span> <span class="n">decl</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">decl</span> <span class="ow">and</span> <span class="n">decl</span><span class="o">.</span><span class="n">alias</span> <span class="k">else</span> <span class="n">s</span><span class="o">.</span><span class="n">alias</span>
             <span class="n">var</span> <span class="o">=</span> <span class="n">alias</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span>
 
@@ -526,6 +546,7 @@
                 <span class="k">continue</span>
 
             <span class="n">po</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">,</span> <span class="s2">&quot;o&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;$(</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">})</span>
+
         <span class="k">return</span> <span class="n">po</span></div>
 
 

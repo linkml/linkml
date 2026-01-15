@@ -413,7 +413,10 @@
 </pre></div>
 </div>
 <p>The generator produces YARRRML like:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">mappings</span><span class="p">:</span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/test#</span>
+<span class="w">  </span><span class="nt">rdf</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://www.w3.org/1999/02/22-rdf-syntax-ns#</span>
+<span class="nt">mappings</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">sources</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data.json~jsonpath</span>
@@ -482,14 +485,23 @@ gen-yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<s
 </section>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<ul class="simple">
+<ul>
 <li><p>one mapping per LinkML class</p></li>
-<li><p>prefixes come from the schema</p></li>
+<li><p>prefixes come from the schema (<code class="docutils literal notranslate"><span class="pre">prefixes</span></code> always emitted)</p></li>
+<li><p>if the schema has <strong>no default prefix</strong>, the generator automatically adds:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ex</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/default#</span>
+</pre></div>
+</div>
+<p>ensuring that all CURIEs can expand correctly</p>
+</li>
+<li><p>when <code class="docutils literal notranslate"><span class="pre">class_uri</span></code> or <code class="docutils literal notranslate"><span class="pre">slot_uri</span></code> are defined, they are used <strong>verbatim</strong> for
+<code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> and predicate IRIs (including full IRIs if present)</p></li>
 <li><p>subject from identifier slot (else key; else safe fallback)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">po</span></code> for all class attributes (slot aliases respected)</p></li>
-<li><p>emits <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> as CURIEs (e.g., <code class="docutils literal notranslate"><span class="pre">ex:Person</span></code>)</p></li>
+<li><p>emits <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> as CURIEs or IRIs (depending on availability)</p></li>
 <li><p>JSON by default: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[data.json~jsonpath,</span> <span class="pre">$.items[*]]]</span></code></p></li>
 <li><p>CSV/TSV: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[path~csv]]</span></code> (no iterator), values via <code class="docutils literal notranslate"><span class="pre">$(column)</span></code></p></li>
+<li><p>a top-level <code class="docutils literal notranslate"><span class="pre">mappings:</span></code> section is <strong>always</strong> included, even for minimal schemas</p></li>
 </ul>
 </section>
 <section id="command-line">
