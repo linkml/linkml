@@ -14,9 +14,9 @@ def test_markdown_table_empty():
     assert table.get_markdown() == ""
 
 
-def test_svg_cache_short_hash():
+def test_svg_cache_short_hash(tmp_path):
     """Test SvgCache handles short hashes with fallback logic."""
-    cache = SvgCache("/tmp/test")
+    cache = SvgCache(str(tmp_path))
     # Short hash (less than 4 chars) triggers fallback
     result = cache.get_cache_path("abc")
     assert result is not None
