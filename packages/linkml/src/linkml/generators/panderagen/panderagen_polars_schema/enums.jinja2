@@ -1,0 +1,12 @@
+{#-
+  Jinja2 Template for a PolaRS Enum
+-#}
+
+{#- Renders the enum definitions at the top of the file -#}
+{%- macro render_enums(schema_view, generator) -%}
+{% for enum in schema_view.all_enums().values() %}
+{{ generator.get_enum_name(enum.name) }} = pl.Enum([
+"{{ generator.enum_handler.get_enum_permissible_values(enum)|join("\", \"") }}"
+])
+{% endfor %}
+{%- endmacro -%}

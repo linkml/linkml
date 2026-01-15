@@ -1,6 +1,6 @@
 from click.testing import CliRunner
-from linkml.generators.protogen import cli
 
+from linkml.generators.protogen import cli
 from tests.conftest import KITCHEN_SINK_PATH
 
 

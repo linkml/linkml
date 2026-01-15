@@ -7,11 +7,11 @@ from io import StringIO
 from typing import Optional
 
 import click
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.utils.formatutils import camelcase
 
 
 @dataclass

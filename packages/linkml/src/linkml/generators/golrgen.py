@@ -12,13 +12,13 @@ from dataclasses import dataclass
 from typing import Optional
 
 import click
+
+from linkml._version import __version__
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.metamodelcore import empty_list
 from linkml_runtime.utils.yamlutils import YAMLRoot, as_yaml
-
-from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
 
 
 @dataclass

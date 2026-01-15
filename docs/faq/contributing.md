@@ -26,15 +26,11 @@ and you can [vote for your favorite issue here](https://github.com/linkml/linkml
 
 ## How do I stay involved?
 
-- Mailing list (low traffic; mostly announcements about upcoming LinkML Community Meetings): [sign up](https://groups.google.com/g/linkml-community)
-- Separate Slack channels for the core development team and the LinkML community: [join here](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g)
-- LinkedIn group: [join](https://www.linkedin.com/groups/14303246/)
-- Mastodon: [follow us](https://fosstodon.org/@linkml)
-- Community meetings: we hold an open meeting once a month (usually the third Thursday of the month at 11am ET). Please join the mailing list or Slack channel (see above) for info on how to participate.
+See [Get Involved](https://linkml.io/linkml/get-involved/index.html) for more information on how to get involved with the LinkML community.
 
 
 ## How do I register my schema?
 
-You can make a GitHub Pull Request (PR) on the main [linkml-registry](https://linkml.io/linkml-registry/home/) metadata file.
+You can make a GitHub Pull Request (PR) on the main [linkml-registry](https://linkml.io/linkml-registry/) metadata file.
 
-If you are not familiar with the process of making PRs via the GitHub interface, you may find the [guide to registering OBO ontologies](https://github.com/linkml/linkml-registry/blob/main/models.yaml) useful (of course, LinkML schemas are not OBO ontologies, but the process is analogous).
+If you are not familiar with the process of making PRs via the GitHub interface, you may find the [guide to registering OBO ontologies](https://github.com/linkml/linkml-registry/blob/main/linkml_registry.yaml) useful (of course, LinkML schemas are not OBO ontologies, but the process is analogous).

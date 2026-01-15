@@ -1,7 +1,9 @@
+import json
+
 import pytest
 from click.testing import CliRunner
-from linkml.generators.jsonldcontextgen import cli
 
+from linkml.generators.jsonldcontextgen import cli
 from tests.conftest import KITCHEN_SINK_PATH
 from tests.linkml.utils.validate_jsonld_context import RdfExpectations
 
@@ -20,6 +22,18 @@ def test_metamodel(arguments, snapshot_file, snapshot):
     result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     assert result.output == snapshot(f"gencontext/{snapshot_file}")
+
+
+def test_fix_container_type():
+    arguments = ["--fix-multivalue-containers"]
+    runner = CliRunner()
+    result = runner.invoke(cli, arguments + [KITCHEN_SINK_PATH])
+    print(result.output)
+    context = json.loads(result.output)
+    assert "@container" in context["@context"]["activity_set"]
+    assert "@container" in context["@context"]["addresses"]
+    assert context["@context"]["activity_set"]["@container"] == "@set"
+    assert context["@context"]["addresses"]["@container"] == "@set"
 
 
 @pytest.mark.parametrize(

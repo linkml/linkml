@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from click.testing import CliRunner
+
 from linkml.linter.cli import main
 
 SCHEMA_FILE = "schema.yaml"

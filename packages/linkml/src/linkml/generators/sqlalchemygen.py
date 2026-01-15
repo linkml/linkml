@@ -8,10 +8,6 @@ from types import ModuleType
 
 import click
 from jinja2 import Template
-from linkml_runtime.linkml_model import Annotation, ClassDefinition, ClassDefinitionName, SchemaDefinition
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, underscore
-from linkml_runtime.utils.schemaview import SchemaView
 from sqlalchemy import Enum
 
 from linkml._version import __version__
@@ -22,6 +18,10 @@ from linkml.generators.sqlalchemy.sqlalchemy_imperative_template import sqlalche
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model import Annotation, ClassDefinition, ClassDefinitionName, SchemaDefinition
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 

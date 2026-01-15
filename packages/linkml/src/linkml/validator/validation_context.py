@@ -5,11 +5,11 @@ from typing import Optional
 
 import jsonschema
 from jsonschema.protocols import Validator
-from linkml_runtime import SchemaView
-from linkml_runtime.linkml_model import SchemaDefinition
 
 from linkml.generators import JsonSchemaGenerator, PydanticGenerator
 from linkml.utils.datautils import infer_root_class
+from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model import SchemaDefinition
 
 
 class ValidationContext:

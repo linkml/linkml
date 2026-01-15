@@ -12,9 +12,9 @@ import docker
 import pytest
 import requests_cache
 from _pytest.assertion.util import _diff_text
-from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 import tests
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
 

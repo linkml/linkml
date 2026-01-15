@@ -12,16 +12,16 @@ from typing import Callable, Optional, cast
 
 import click
 import requests
+
+from linkml import REQUESTS_TIMEOUT
+from linkml._version import __version__
+from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
     SlotDefinition,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
-
-from linkml import REQUESTS_TIMEOUT
-from linkml._version import __version__
-from linkml.utils.generator import Generator, shared_arguments
 
 plantuml_is_a = "^--"
 plantuml_uses = ("--", " : uses")

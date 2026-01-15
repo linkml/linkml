@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from click.testing import CliRunner
+
 from linkml.generators.pydanticgen import cli
 from linkml_runtime.utils.compile_python import compile_python
 

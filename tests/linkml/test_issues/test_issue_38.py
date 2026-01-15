@@ -1,6 +1,6 @@
 import pytest
-from linkml.generators.csvgen import CsvGenerator
 
+from linkml.generators.csvgen import CsvGenerator
 from tests import DEFAULT_LOG_LEVEL
 
 

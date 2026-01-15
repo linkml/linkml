@@ -13,17 +13,6 @@ from typing import ClassVar, Literal, Optional, TypeVar, Union, overload
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
-from linkml_runtime.linkml_model.meta import (
-    ClassDefinition,
-    ElementName,
-    SchemaDefinition,
-    SlotDefinition,
-    TypeDefinition,
-)
-from linkml_runtime.utils.compile_python import compile_python
-from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
-from linkml_runtime.utils.schemaview import SchemaView
-from pydantic.version import VERSION as PYDANTIC_VERSION
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
@@ -43,14 +32,19 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     PydanticTemplateModel,
 )
-from linkml.utils import deprecation_warning
 from linkml.utils.generator import shared_arguments
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    ElementName,
+    SchemaDefinition,
+    SlotDefinition,
+    TypeDefinition,
+)
+from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
+from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
-
-
-if int(PYDANTIC_VERSION[0]) == 1:
-    deprecation_warning("pydantic-v1")
 
 
 def _get_pyrange(t: TypeDefinition, sv: SchemaView) -> str:
@@ -224,6 +218,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     black: bool = False
     """
     If black is present in the environment, format the serialized code with it
+    """
+    empty_list_for_multivalued_slots: bool = False
+    """
+    If True, optional multivalued slots default to ``[]``; if False, they default to ``None``.
     """
 
     template_dir: Optional[Union[str, Path]] = None
@@ -463,6 +461,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return slist
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
+        # Handle union_of classes by creating a type alias instead of a class
+        if cls.union_of:
+            return self._generate_union_class(cls)
+
         pyclass = PydanticClass(
             name=camelcase(cls.name),
             bases=self.class_bases.get(camelcase(cls.name), PydanticBaseModel.default_name),
@@ -493,12 +495,67 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         return result
 
+    def _generate_union_class(self, cls: ClassDefinition) -> ClassResult:
+        """Generate a union type alias for classes with union_of"""
+        # Validate that union_of has at least 2 types
+        if len(cls.union_of) < 2:
+            raise ValueError(
+                f"Class '{cls.name}' has union_of with {len(cls.union_of)} type(s), "
+                "but a Union requires at least 2 types"
+            )
+
+        # Validate that union_of classes don't have inheritance (is_a or mixins)
+        if cls.is_a or cls.mixins:
+            inheritance = []
+            if cls.is_a:
+                inheritance.append(f"is_a={cls.is_a}")
+            if cls.mixins:
+                inheritance.append(f"mixins={cls.mixins}")
+            raise ValueError(
+                f"Class '{cls.name}' has union_of but also has inheritance ({', '.join(inheritance)}). "
+                "A union type cannot have a parent class."
+            )
+
+        # Validate that union_of classes don't have slots/attributes
+        sv = self.schemaview
+        class_slots = sv.class_induced_slots(cls.name)
+        if class_slots:
+            slot_names = [s.name for s in class_slots]
+            raise ValueError(
+                f"Class '{cls.name}' has union_of but also has slots ({slot_names}). "
+                "A union type alias cannot have attributes."
+            )
+
+        # Get the union types with string quotes to handle forward references
+        union_types = [f'"{camelcase(union_cls)}"' for union_cls in cls.union_of]
+        union_type_str = f"Union[{', '.join(union_types)}]"
+
+        # Create a type alias instead of a class
+        # Sanitize description for single-line comment (replace newlines with spaces)
+        description = cls.description.replace("\n", " ").strip() if cls.description else None
+        pyclass = PydanticClass(
+            name=camelcase(cls.name),
+            bases=[],  # Empty list for type aliases
+            description=description,
+            is_type_alias=True,
+            type_alias_value=union_type_str,
+        )
+
+        imports = self._get_imports(cls) if self.split else None
+        result = ClassResult(cls=pyclass, source=cls, imports=imports)
+
+        # Add metadata
+        result.cls = self.include_metadata(result.cls, cls)
+
+        return result
+
     def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> SlotResult:
         slot_args = {
             k: getattr(slot, k, None)
             for k in PydanticAttribute.model_fields.keys()
             if getattr(slot, k, None) is not None
         }
+        slot_args["empty_list_for_multivalued_slots"] = self.empty_list_for_multivalued_slots
         slot_alias = slot.alias if slot.alias else slot.name
 
         # Create a valid Python identifier for the field name
@@ -1006,7 +1063,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         enums = self.before_generate_enums(list(sv.all_enums().values()), sv)
         enums = self.generate_enums({e.name: e for e in enums})
 
-        base_model = PydanticBaseModel(extra_fields=self.extra_fields, fields=self.injected_fields)
+        base_model = PydanticBaseModel(
+            extra_fields=self.extra_fields,
+            fields=self.injected_fields,
+            empty_list_for_multivalued_slots=self.empty_list_for_multivalued_slots,
+        )
 
         # schema classes
         class_results = []
@@ -1252,6 +1313,12 @@ Available templates to override:
     "See docs for MetadataMode for full description of choices. "
     "Default (auto) is to include all metadata that can't be otherwise represented",
 )
+@click.option(
+    "--emptylist-for-multivalued-slots",
+    is_flag=True,
+    default=False,
+    help="Use empty list for optional multivalued defaults instead of None (default behavior).",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="pydantic")
 def cli(
@@ -1266,6 +1333,7 @@ def cli(
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid",
     black: bool = False,
     meta: MetadataMode = "auto",
+    emptylist_for_multivalued_slots: bool = False,
     **args,
 ):
     """Generate pydantic classes to represent a LinkML model"""
@@ -1290,6 +1358,7 @@ def cli(
         template_dir=template_dir,
         black=black,
         metadata_mode=meta,
+        empty_list_for_multivalued_slots=emptylist_for_multivalued_slots,
         **args,
     )
     print(gen.serialize(), end="")

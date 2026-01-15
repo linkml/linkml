@@ -1,8 +1,8 @@
 import sys
 
 import pytest
-from linkml_runtime.utils.formatutils import camelcase
 
+from linkml_runtime.utils.formatutils import camelcase
 from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,

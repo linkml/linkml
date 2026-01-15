@@ -13,6 +13,8 @@ pandera = pytest.importorskip("pandera.polars", reason="Pandera not installed")
 
 # These depend on PolaRS and Numpy so need to be after importerskip
 from linkml.generators.panderagen import PanderaDataframeGenerator  # noqa: E402
+from linkml.generators.panderagen.dataframe_generator import DataframeGenerator  # noqa: E402
+from linkml.generators.panderagen.panderagen import PANDERA_GROUP  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +31,7 @@ def cli_runner():
 
 @pytest.fixture(scope="module")
 def N():
-    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines."""
+    """Number of rows in the test dataframes is enough for testing without long build time."""
     return 1000
 
 
@@ -42,6 +44,48 @@ def synthetic_model_path():
 def synthetic_flat_dataframe_model(synthetic_model_path):
     with open(synthetic_model_path) as f:
         return f.read()
+
+
+@pytest.fixture(scope="module")
+def compiled_modules(synthetic_flat_dataframe_model):
+    try:
+        compiled_modules = DataframeGenerator.compile_package_from_specification(
+            PANDERA_GROUP, "test_package", synthetic_flat_dataframe_model
+        )
+        yield compiled_modules
+    finally:
+        DataframeGenerator.cleanup_package("test_package")
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_schema_module(compiled_modules):
+    return compiled_modules["panderagen_polars_schema"]
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_schema_loaded(compiled_modules):
+    return compiled_modules["panderagen_polars_schema_loaded"]
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_schema_transform(compiled_modules):
+    return compiled_modules["panderagen_polars_schema_transform"]
+
+
+@pytest.fixture(scope="module")
+def synthetic_pandera_schema(synthetic_flat_dataframe_model):
+    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_pandera_schema_module(compiled_modules):
+    """The pandera schema using the loaded backing form"""
+    return compiled_modules["panderagen_schema_loaded"]
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_pandera_schema_module_serialized(compiled_modules):
+    return compiled_modules["panderagen_class_based"]
 
 
 @pytest.fixture(scope="module")
@@ -165,7 +209,7 @@ def invalid_inlined_as_list_column_expression(N):
 
 
 @pytest.fixture(scope="module")
-def big_synthetic_dataframe(
+def big_synthetic_dataframe_serialized(
     N,
 ):
     """Construct a reasonably sized dataframe that complies with the PanderaSyntheticTable model"""
@@ -212,10 +256,10 @@ def big_synthetic_dataframe(
 
 
 @pytest.fixture(scope="module")
-def synthetic_schema(synthetic_flat_dataframe_model):
-    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
-
-
-@pytest.fixture(scope="module")
-def compiled_synthetic_schema_module(synthetic_schema):
-    return synthetic_schema.compile_dataframe_model()
+def big_synthetic_dataframe(
+    big_synthetic_dataframe_serialized,
+    compiled_synthetic_schema_transform,
+):
+    """Synthetic dataframe with inefficient inline forms converted to lists"""
+    dict_to_list_transform = compiled_synthetic_schema_transform.PanderaSyntheticTable()
+    return dict_to_list_transform.load(big_synthetic_dataframe_serialized)

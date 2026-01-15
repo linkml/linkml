@@ -3,14 +3,13 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Optional, TextIO, Union
 
-from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.loaders import yaml_loader
-
 from linkml.validator.loaders import Loader
 from linkml.validator.loaders.passthrough_loader import PassthroughLoader
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity, ValidationReport, ValidationResult
 from linkml.validator.validation_context import ValidationContext
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 
 class Validator:
