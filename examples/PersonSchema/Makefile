@@ -8,7 +8,7 @@ INDEX_SLOT = persons
 RUST_OUTDIR = rust
 
 
-all: gen 
+all: gen
 gen: gen-code gen-datadict gen-rust
 
 gen-rust:

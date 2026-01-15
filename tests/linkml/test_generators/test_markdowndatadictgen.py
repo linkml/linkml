@@ -1,5 +1,6 @@
 """Tests for the markdown data dictionary generator."""
 
+import os
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -20,7 +21,9 @@ def test_svg_cache_short_hash():
     result = cache.get_cache_path("abc")
     assert result is not None
     abs_path, rel_path = result
-    assert "abc/00/abc.svg" in abs_path
+    # Use os.path.join for platform-independent path comparison
+    assert os.path.join("abc", "00", "abc.svg") in abs_path
+    # rel_path always uses forward slashes (URL-style for markdown)
     assert rel_path == ".kroki-cache/abc/00/abc.svg"
 
 
@@ -37,7 +40,7 @@ def test_diagram_renderer_kroki_failure():
 def test_diagram_renderer_large_diagram_post(tmp_path):
     """Test DiagramRenderer uses POST for large diagrams (>1KB)."""
     # Create a diagram source larger than 1KB
-    large_source = "classDiagram\n" + "\n".join([f"Class{i} --> Class{i+1}" for i in range(200)])
+    large_source = "classDiagram\n" + "\n".join([f"Class{i} --> Class{i + 1}" for i in range(200)])
     assert len(large_source.encode("utf-8")) > 1024  # Verify it's > 1KB
 
     # Mock the urlopen to avoid network call
@@ -58,36 +61,28 @@ def test_diagram_renderer_large_diagram_post(tmp_path):
         assert "large_test" in result  # Returns image reference when diagram_dir is set
 
 
+@pytest.mark.network
 def test_datadict_personinfo(input_path, snapshot):
     """Test generating data dictionary for personinfo schema."""
     schema = str(input_path("personinfo.yaml"))
-    figs_dir =snapshot("markdowndatadict_personinfo.md").path.parent / "figs"
+    figs_dir = snapshot("markdowndatadict_personinfo.md").path.parent / "figs"
 
     try:
-      (
-          figs_dir / ".kroki-cache/71/4f" / 
-          "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg").unlink()
+        (figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg").unlink()
     except FileNotFoundError:
         pass
-    
 
     gen = MarkdownDataDictGen(
-        schema,
-        debug=True,
-        pretty_format_svg=True,
-        kroki_server="https://kroki.r4.v-lad.org",
-        diagram_dir=figs_dir
-        )
+        schema, debug=True, pretty_format_svg=True, kroki_server="https://kroki.io", diagram_dir=figs_dir
+    )
     generated = gen.serialize()
     assert generated == snapshot("markdowndatadict_personinfo.md")
 
     try:
-      (
-          figs_dir / ".kroki-cache/71/4f" / 
-          "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg").unlink()
+        (figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg").unlink()
     except FileNotFoundError:
         pass
-   
+
 
 def test_datadict_kitchensink(kitchen_sink_path, snapshot):
     """Test generating data dictionary for kitchen sink schema."""

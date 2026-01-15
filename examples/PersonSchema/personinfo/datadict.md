@@ -33,116 +33,116 @@ Relationship <|-- InterPersonalRelationship
 ```mermaid
 erDiagram
 Address {
-    string city  
-    string postal_code  
-    string street  
+    string city
+    string postal_code
+    string street
 }
 CodeSystem {
-    uriorcurie id  
-    string name  
+    uriorcurie id
+    string name
 }
 Concept {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    CrossReferenceList mappings  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    CrossReferenceList mappings
 }
 Container {
 
 }
 DiagnosisConcept {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    CrossReferenceList mappings  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    CrossReferenceList mappings
 }
 EmploymentEvent {
-    float duration  
-    date ended_at_time  
-    boolean is_current  
-    date started_at_time  
-    SalaryType salary  
+    float duration
+    date ended_at_time
+    boolean is_current
+    date started_at_time
+    SalaryType salary
 }
 FamilialRelationship {
-    date ended_at_time  
-    date started_at_time  
-    FamilialRelationshipType type  
+    date ended_at_time
+    date started_at_time
+    FamilialRelationshipType type
 }
 ImagingProcedureConcept {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    CrossReferenceList mappings  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    CrossReferenceList mappings
 }
 InterPersonalRelationship {
-    date ended_at_time  
-    date started_at_time  
-    string type  
+    date ended_at_time
+    date started_at_time
+    string type
 }
 MedicalEvent {
-    float duration  
-    date ended_at_time  
-    boolean is_current  
-    date started_at_time  
+    float duration
+    date ended_at_time
+    boolean is_current
+    date started_at_time
 }
 NewsEvent {
-    float duration  
-    date ended_at_time  
-    boolean is_current  
-    date started_at_time  
-    string headline  
+    float duration
+    date ended_at_time
+    boolean is_current
+    date started_at_time
+    string headline
 }
 OperationProcedureConcept {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    CrossReferenceList mappings  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    CrossReferenceList mappings
 }
 Organization {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    stringList aliases  
-    OrganizationTypeList categories  
-    string founding_date  
-    SalaryType min_salary  
-    string mission_statement  
-    decimal score  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    stringList aliases
+    OrganizationTypeList categories
+    string founding_date
+    SalaryType min_salary
+    string mission_statement
+    decimal score
 }
 Person {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    integer age_in_years  
-    stringList aliases  
-    string birth_date  
-    GenderType gender  
-    string primary_email  
-    string telephone  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    integer age_in_years
+    stringList aliases
+    string birth_date
+    GenderType gender
+    string primary_email
+    string telephone
 }
 Place {
-    uriorcurie id  
-    string name  
-    stringList aliases  
-    ImageURL depicted_by  
+    uriorcurie id
+    string name
+    stringList aliases
+    ImageURL depicted_by
 }
 ProcedureConcept {
-    uriorcurie id  
-    string name  
-    string description  
-    ImageURL depicted_by  
-    CrossReferenceList mappings  
+    uriorcurie id
+    string name
+    string description
+    ImageURL depicted_by
+    CrossReferenceList mappings
 }
 Relationship {
-    date ended_at_time  
-    date started_at_time  
-    string type  
+    date ended_at_time
+    date started_at_time
+    string type
 }
 
 Concept ||--|o CodeSystem : "code system"
@@ -226,7 +226,7 @@ Person ||--}o NewsEvent : "has_news_events"
 
 #### Referenced by:
 
- *  **[Person](#Person)** : current_address  <sub>0..1</sub> 
+ *  **[Person](#Person)** : current_address  <sub>0..1</sub>
 
 
 
@@ -355,7 +355,7 @@ MedicalEvent ||--|o ProcedureConcept : "procedure"
 
 #### Referenced by:
 
- *  **[MedicalEvent](#MedicalEvent)** : diagnosis  <sub>0..1</sub> 
+ *  **[MedicalEvent](#MedicalEvent)** : diagnosis  <sub>0..1</sub>
 
 
 
@@ -405,7 +405,7 @@ Person ||--}o NewsEvent : "has_news_events"
 
 #### Referenced by:
 
- *  **[Person](#Person)** : has_employment_history  <sub>0..\*</sub> 
+ *  **[Person](#Person)** : has_employment_history  <sub>0..\*</sub>
 
 
 
@@ -480,7 +480,7 @@ Person ||--}o NewsEvent : "has_news_events"
 
 #### Referenced by:
 
- *  **[Person](#Person)** : has_familial_relationships  <sub>0..\*</sub> 
+ *  **[Person](#Person)** : has_familial_relationships  <sub>0..\*</sub>
 
 
 
@@ -572,7 +572,7 @@ Person ||--}o NewsEvent : "has_news_events"
 
 #### Referenced by:
 
- *  **[Person](#Person)** : has_interpersonal_relationships  <sub>0..\*</sub> 
+ *  **[Person](#Person)** : has_interpersonal_relationships  <sub>0..\*</sub>
 
 
 
@@ -635,7 +635,7 @@ ProcedureConcept ||--|o CodeSystem : "code system"
 
 #### Referenced by:
 
- *  **[Person](#Person)** : has_medical_history  <sub>0..\*</sub> 
+ *  **[Person](#Person)** : has_medical_history  <sub>0..\*</sub>
 
 
 
@@ -705,7 +705,7 @@ HasNewsEvents ||--}o NewsEvent : "has_news_events"
 
 #### Referenced by:
 
- *  **[HasNewsEvents](#HasNewsEvents)** : hasNewsEvents__has_news_events  <sub>0..\*</sub> 
+ *  **[HasNewsEvents](#HasNewsEvents)** : hasNewsEvents__has_news_events  <sub>0..\*</sub>
 
 
 
@@ -804,8 +804,8 @@ Organization ||--}o NewsEvent : "has_news_events"
 
 #### Referenced by:
 
- *  **[EmploymentEvent](#EmploymentEvent)** : employed_at  <sub>0..1</sub> 
- *  **[Container](#Container)** : organizations  <sub>0..\*</sub> 
+ *  **[EmploymentEvent](#EmploymentEvent)** : employed_at  <sub>0..1</sub>
+ *  **[Container](#Container)** : organizations  <sub>0..\*</sub>
 
 
 
@@ -895,10 +895,10 @@ Relationship ||--|o Person : "related_to"
 
 #### Referenced by:
 
- *  **[FamilialRelationship](#FamilialRelationship)** : related to  <sub>1..1</sub> 
- *  **[InterPersonalRelationship](#InterPersonalRelationship)** : related to  <sub>1..1</sub> 
- *  **[Container](#Container)** : persons  <sub>0..\*</sub> 
- *  **[Relationship](#Relationship)** : related_to  <sub>0..1</sub> 
+ *  **[FamilialRelationship](#FamilialRelationship)** : related to  <sub>1..1</sub>
+ *  **[InterPersonalRelationship](#InterPersonalRelationship)** : related to  <sub>1..1</sub>
+ *  **[Container](#Container)** : persons  <sub>0..\*</sub>
+ *  **[Relationship](#Relationship)** : related_to  <sub>0..1</sub>
 
 
 
@@ -946,9 +946,9 @@ WithLocation ||--|o Place : "in_location"
 
 #### Referenced by:
 
- *  **[Organization](#Organization)** : founding location  <sub>0..1</sub> 
- *  **[WithLocation](#WithLocation)** : in_location  <sub>0..1</sub> 
- *  **[Container](#Container)** : places  <sub>0..\*</sub> 
+ *  **[Organization](#Organization)** : founding location  <sub>0..1</sub>
+ *  **[WithLocation](#WithLocation)** : in_location  <sub>0..1</sub>
+ *  **[Container](#Container)** : places  <sub>0..\*</sub>
 
 
 
@@ -998,7 +998,7 @@ ProcedureConcept ||--|o CodeSystem : "code system"
 
 #### Referenced by:
 
- *  **[MedicalEvent](#MedicalEvent)** : procedure  <sub>0..1</sub> 
+ *  **[MedicalEvent](#MedicalEvent)** : procedure  <sub>0..1</sub>
 
 
 
@@ -1069,7 +1069,7 @@ Concept ||--|o CodeSystem : "code system"
 
 #### Referenced by:
 
- *  **[Concept](#Concept)** : concept__code_system  <sub>0..1</sub> 
+ *  **[Concept](#Concept)** : concept__code_system  <sub>0..1</sub>
 
 
 
@@ -1230,7 +1230,7 @@ WithLocation ||--|o Place : "in_location"
 
 #### Used by
 
- *  **[FamilialRelationship](#FamilialRelationship)** *[FamilialRelationship_type](#FamilialRelationshipType)*  <sub>1..1</sub> 
+ *  **[FamilialRelationship](#FamilialRelationship)** *[FamilialRelationship_type](#FamilialRelationshipType)*  <sub>1..1</sub>
 
 ### GenderType
 
@@ -1247,7 +1247,7 @@ WithLocation ||--|o Place : "in_location"
 
 #### Used by
 
- *  **[Person](#Person)** *[gender](#Gender)*  <sub>0..1</sub> 
+ *  **[Person](#Person)** *[gender](#Gender)*  <sub>0..1</sub>
 
 ### NonFamilialRelationshipType
 
@@ -1276,4 +1276,3 @@ WithLocation ||--|o Place : "in_location"
 #### Used by
 
  *  **[Organization](#Organization)** *[Organization_categories](#OrganizationCategories)*  <sub>0..\*</sub>
-

@@ -11,21 +11,22 @@ import hashlib
 import logging
 import os
 import re
+import urllib.request
 import zlib
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable, Optional, Union
 from xml.dom import minidom
 
 import click
 import pydantic
 import yaml
-from pathlib import Path
-import urllib.request
 
 from linkml._version import __version__
 from linkml.generators.erdiagramgen import ERDiagramGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.typereferences import References
+from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
@@ -35,10 +36,8 @@ from linkml_runtime.linkml_model.meta import (
     SubsetDefinition,
     TypeDefinition,
 )
-from linkml_runtime import SchemaView
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 from linkml_runtime.utils.yamlutils import extended_str
-
 
 logger = logging.getLogger(__name__)
 
@@ -205,9 +204,7 @@ class DiagramRenderer:
             logging.debug(f"Failed to pretty-format SVG: {e}")
             return svg_content
 
-    def render(
-        self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: Optional[str] = None
-    ) -> str:
+    def render(self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: Optional[str] = None) -> str:
         """Render diagram via Kroki server with caching, or return mermaid code block if no server."""
         clean_source = diagram_source.strip()
         if clean_source.startswith(f"```{diagram_type}"):
@@ -689,7 +686,7 @@ class MarkdownDataDictGen(Generator):
             for neighbor in adjacency.get(node, set()):
                 dfs(neighbor, component)
 
-        for cls_name in all_classes:
+        for cls_name in sorted(all_classes):
             if cls_name not in visited:
                 component = set()
                 dfs(cls_name, component)
@@ -704,6 +701,9 @@ class MarkdownDataDictGen(Generator):
                 singleton_classes.update(component)
             else:
                 connected_components.append(component)
+
+        # Sort connected components by their first class name (alphabetically) for deterministic ordering
+        connected_components.sort(key=lambda c: min(c))
 
         # Now classify singleton classes into base classes vs truly standalone
         base_classes = set()
@@ -1175,7 +1175,6 @@ class MarkdownDataDictGen(Generator):
     def _get_slot_source(self, slot: SlotDefinition, cls: ClassDefinition) -> dict[str, Any]:
         """Determine slot source: own, mixin, or inherited."""
         if not hasattr(self, "_schema_view"):
-
             self._schema_view = SchemaView(self.schema_location)
 
         # Use SchemaView to determine slot ownership
@@ -1605,13 +1604,15 @@ def pad_heading(text: str) -> str:
     "--diagram-dir",
     type=str,
     default=None,
-    help="Directory to save diagram files (requires --kroki-server). Diagrams will be saved as SVG files and referenced in markdown.",
+    help="Directory to save diagram files (requires --kroki-server). "
+    "Diagrams will be saved as SVG files and referenced in markdown.",
 )
 @click.option(
     "--pretty-format-svg",
     is_flag=True,
     default=False,
-    help="Pretty-format SVG files with proper HTML-style indentation (2 spaces). Makes SVGs more readable but increases file size.",
+    help="Pretty-format SVG files with proper HTML-style indentation (2 spaces). "
+    "Makes SVGs more readable but increases file size.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):
