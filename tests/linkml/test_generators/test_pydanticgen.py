@@ -2861,6 +2861,287 @@ def test_union_of_with_slots_error():
         generator.serialize()
 
 
+# --------------------------------------------------
+# Tests for subproperty_of constraint
+# --------------------------------------------------
+
+
+def test_subproperty_of_generates_literal():
+    """Test that subproperty_of generates Literal constraint with slot descendants."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should generate Literal with all descendants (sorted alphabetically)
+    assert 'Literal["causes", "related_to", "treats"]' in code
+
+
+def test_subproperty_of_with_deeper_hierarchy():
+    """Test that subproperty_of includes all descendants, not just direct children."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  directly_causes:
+    is_a: causes
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should include grandchild (directly_causes)
+    assert 'Literal["causes", "directly_causes", "related_to", "treats"]' in code
+
+
+def test_subproperty_of_formats_as_curie_for_uriorcurie_range():
+    """Test that subproperty_of values are formatted as CURIEs for uriorcurie range."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should format as CURIEs
+    assert 'Literal["ex:causes", "ex:related_to", "ex:treats"]' in code
+
+
+def test_subproperty_of_formats_as_uri_for_uri_range():
+    """Test that subproperty_of values are formatted as full URIs for uri range."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+
+  predicate:
+    range: uri
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should format as full URIs
+    assert "https://example.org/causes" in code
+    assert "https://example.org/related_to" in code
+
+
+def test_subproperty_of_can_be_disabled():
+    """Test that expand_subproperty_of=False disables the constraint expansion."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema, expand_subproperty_of=False)
+    code = gen.serialize()
+
+    # Should NOT generate Literal with descendants
+    assert 'Literal["causes", "related_to"]' not in code
+    # Should use the regular range (string -> str)
+    assert "predicate: Optional[str]" in code
+
+
+def test_subproperty_of_validation():
+    """Test that generated Pydantic model validates predicate values."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    mod = gen.compile_module()
+
+    # Valid predicates should work
+    a1 = mod.Association(predicate="related_to")
+    assert a1.predicate == "related_to"
+
+    a2 = mod.Association(predicate="causes")
+    assert a2.predicate == "causes"
+
+    a3 = mod.Association(predicate="treats")
+    assert a3.predicate == "treats"
+
+    # Invalid predicate should fail
+    with pytest.raises(ValidationError):
+        mod.Association(predicate="invalid_predicate")
+
+
+def test_subproperty_of_with_slot_usage():
+    """Test subproperty_of in slot_usage narrows the constraint."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  interacts_with:
+    is_a: related_to
+  physically_interacts_with:
+    is_a: interacts_with
+  causes:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+  InteractionAssociation:
+    is_a: Association
+    slot_usage:
+      predicate:
+        subproperty_of: interacts_with
+
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Base Association should have all descendants
+    assert 'Literal["causes", "interacts_with", "physically_interacts_with", "related_to"]' in code
+
+    # InteractionAssociation should have narrowed constraint
+    # (interacts_with and its descendants only)
+    assert 'Literal["interacts_with", "physically_interacts_with"]' in code
+
+
 def test_crappy_stdlib_set_removed():
     """
     After support for <3.10 is dropped, remove the dang stdlib list stub
