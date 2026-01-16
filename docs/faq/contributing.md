@@ -26,11 +26,11 @@ and you can [vote for your favorite issue here](https://github.com/linkml/linkml
 
 ## How do I stay involved?
 
-See [Get Involved](https://linkml.io/linkml/get-involved/index.html) for more information on how to get involved with the LinkML community.  
+See [Get Involved](https://linkml.io/linkml/get-involved/index.html) for more information on how to get involved with the LinkML community.
 
 
 ## How do I register my schema?
 
-You can make a GitHub Pull Request (PR) on the main [linkml-registry](https://linkml.io/linkml-registry/home/) metadata file.
+You can make a GitHub Pull Request (PR) on the main [linkml-registry](https://linkml.io/linkml-registry/) metadata file.
 
-If you are not familiar with the process of making PRs via the GitHub interface, you may find the [guide to registering OBO ontologies](https://github.com/linkml/linkml-registry/blob/main/models.yaml) useful (of course, LinkML schemas are not OBO ontologies, but the process is analogous).
+If you are not familiar with the process of making PRs via the GitHub interface, you may find the [guide to registering OBO ontologies](https://github.com/linkml/linkml-registry/blob/main/linkml_registry.yaml) useful (of course, LinkML schemas are not OBO ontologies, but the process is analogous).

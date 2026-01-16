@@ -29,13 +29,13 @@ MODEL_COLUMNS = [
 ]
 
 
-def test_pandera_basic_class_based(synthetic_schema):
+def test_pandera_basic_class_based(synthetic_pandera_schema):
     """
     Test generation of Pandera for class-based mode
 
     This test will check the generated python, but does not include a compilation step
     """
-    code = synthetic_schema.serialize()
+    code = synthetic_pandera_schema.serialize()
 
     classes = []
 
@@ -51,31 +51,35 @@ def test_pandera_basic_class_based(synthetic_schema):
     assert sorted(expected_classes) == sorted(classes)
 
 
-def test_dump_schema_code(synthetic_schema):
-    code = synthetic_schema.serialize()
+def test_dump_schema_code(synthetic_pandera_schema):
+    code = synthetic_pandera_schema.serialize()
 
     logger.info(f"\nGenerated Pandera model:\n{code}")
 
     assert all(column in code for column in MODEL_COLUMNS)
 
 
-def test_get_metadata(compiled_synthetic_schema_module):
-    logger.info(compiled_synthetic_schema_module.PanderaSyntheticTable.get_metadata())
+def test_get_metadata(compiled_synthetic_pandera_schema_module):
+    logger.info(compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.get_metadata())
 
 
 def test_dump_synthetic_df(big_synthetic_dataframe):
     logger.info(big_synthetic_dataframe)
 
 
-def test_pandera_compile_basic_class_based(compiled_synthetic_schema_module, big_synthetic_dataframe):
+def test_pandera_compile_basic_class_based(
+    compiled_synthetic_pandera_schema_module_serialized, big_synthetic_dataframe_serialized
+):
     """
     tests compilation and validation of correct class-based schema
     """
     # raises pandera.errors.SchemaErrors, so no assert needed
-    compiled_synthetic_schema_module.PanderaSyntheticTable.validate(big_synthetic_dataframe, lazy=True)
+    compiled_synthetic_pandera_schema_module_serialized.PanderaSyntheticTable.validate(
+        big_synthetic_dataframe_serialized, lazy=True
+    )
 
 
-def test_pandera_validation_error_ge(compiled_synthetic_schema_module, big_synthetic_dataframe):
+def test_pandera_validation_error_ge(compiled_synthetic_pandera_schema_module, big_synthetic_dataframe):
     """
     tests ge range validation error
     """
@@ -90,7 +94,7 @@ def test_pandera_validation_error_ge(compiled_synthetic_schema_module, big_synth
     # fmt: on
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(high_int_dataframe, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(high_int_dataframe, lazy=True)
 
     assert "DATAFRAME_CHECK" in str(e.value)
     assert "less_than_or_equal_to(999)" in str(e.value)
@@ -98,7 +102,9 @@ def test_pandera_validation_error_ge(compiled_synthetic_schema_module, big_synth
 
 
 @pytest.mark.parametrize("bad_column", MODEL_COLUMNS)
-def test_synthetic_dataframe_wrong_datatype(compiled_synthetic_schema_module, big_synthetic_dataframe, bad_column):
+def test_synthetic_dataframe_wrong_datatype(
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, bad_column
+):
     if bad_column == "bool_column":
         bad_value = None
     else:
@@ -114,14 +120,16 @@ def test_synthetic_dataframe_wrong_datatype(compiled_synthetic_schema_module, bi
     # fmt: on
 
     with pytest.raises((pandera.errors.SchemaError, pandera.errors.SchemaErrors)) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
 
     assert "WRONG_DATATYPE" in str(e.value)
     assert f"expected column '{bad_column}' to have type" in str(e.value)
 
 
 @pytest.mark.parametrize("drop_column", MODEL_COLUMNS)
-def test_synthetic_dataframe_boolean_error(compiled_synthetic_schema_module, big_synthetic_dataframe, drop_column):
+def test_synthetic_dataframe_boolean_error(
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, drop_column
+):
     """Note that this test accepts SchemaError as well as SchemaErrors
     even though lazy validation is performed, because nested checks
     may be run non-lazy.
@@ -136,7 +144,7 @@ def test_synthetic_dataframe_boolean_error(compiled_synthetic_schema_module, big
     # fmt: on
 
     with pytest.raises((pandera.errors.SchemaErrors, pandera.errors.SchemaError)) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(error_dataframe, lazy=True)
 
     assert "COLUMN_NOT_IN_DATAFRAME" in str(e.value)
     assert f"column '{drop_column}' not in dataframe" in str(e.value)
@@ -231,6 +239,22 @@ def test_cli_simple(cli_runner, test_inputs_dir, target_class, schema):
 
     assert result.exit_code == 0
     assert f"class {target_class}(" in result.output
+
+
+def test_cli_package(cli_runner, test_inputs_dir, tmp_path):
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    package_dir = str(tmp_path / "test_package")
+
+    result = cli_runner.invoke(cli, ["--package", package_dir, schema_path])
+
+    assert result.exit_code == 0
+    assert (tmp_path / "test_package").exists()
+    assert (tmp_path / "test_package" / "__init__.py").exists()
+    assert (tmp_path / "test_package" / "panderagen_polars_schema.py").exists()
+    assert (tmp_path / "test_package" / "panderagen_polars_schema_loaded.py").exists()
+    assert (tmp_path / "test_package" / "panderagen_polars_schema_transform.py").exists()
+    assert (tmp_path / "test_package" / "panderagen_class_based.py").exists()
+    assert (tmp_path / "test_package" / "panderagen_schema_loaded.py").exists()
 
 
 @pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])

@@ -1,5 +1,12 @@
 [tool.uv.workspace]
-members = ["packages/*"]
+members = [
+  "packages/linkml",
+  "packages/linkml_runtime",
+]
+[tool.uv.sources]
+linkml = { workspace = true }
+linkml-runtime = { workspace = true }
+
 
 [tool.codespell]
 skip = [
@@ -180,11 +187,3 @@ commands = [
   ["ruff", "check", "{posargs:.}"],
   ["ruff", "format", "{posargs:.}"],
 ]
-
-[tool.uv-dynamic-versioning]
-vcs = "git"
-style = "pep440"
-fallback-version = "0.0.0"
-
-[tool.hatch.version]
-source = "uv-dynamic-versioning"
