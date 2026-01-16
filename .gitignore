@@ -125,3 +125,4 @@ examples/PersonSchema/rust/Cargo.lock
 
 # temporary ignore
 monorepo-cleanup.sh
+/tests/linkml/test_generators/__snapshots__/figs/class_event_local.svg
