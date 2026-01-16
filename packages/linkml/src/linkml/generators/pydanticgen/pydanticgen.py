@@ -16,6 +16,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
@@ -377,6 +378,15 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     See :class:`.SplitMode` for description of options
     """
 
+    expand_subproperty_of: bool = True
+    """
+    If True, expand subproperty_of constraints to Literal type constraints.
+
+    When a slot has `subproperty_of` set, valid values are the referenced slot
+    and all its descendants (via is_a). Values are formatted according to the
+    slot's range type (string, uriorcurie, uri).
+    """
+
     # ObjectVars (identical to pythongen)
     gen_classvars: bool = True
     gen_slots: bool = True
@@ -461,6 +471,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         return slist
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
+        # Handle union_of classes by creating a type alias instead of a class
+        if cls.union_of:
+            return self._generate_union_class(cls)
+
         pyclass = PydanticClass(
             name=camelcase(cls.name),
             bases=self.class_bases.get(camelcase(cls.name), PydanticBaseModel.default_name),
@@ -487,6 +501,60 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         attributes = {slot.attribute.name: slot.attribute for slot in slot_results}
 
         result.cls.attributes = attributes
+        result.cls = self.include_metadata(result.cls, cls)
+
+        return result
+
+    def _generate_union_class(self, cls: ClassDefinition) -> ClassResult:
+        """Generate a union type alias for classes with union_of"""
+        # Validate that union_of has at least 2 types
+        if len(cls.union_of) < 2:
+            raise ValueError(
+                f"Class '{cls.name}' has union_of with {len(cls.union_of)} type(s), "
+                "but a Union requires at least 2 types"
+            )
+
+        # Validate that union_of classes don't have inheritance (is_a or mixins)
+        if cls.is_a or cls.mixins:
+            inheritance = []
+            if cls.is_a:
+                inheritance.append(f"is_a={cls.is_a}")
+            if cls.mixins:
+                inheritance.append(f"mixins={cls.mixins}")
+            raise ValueError(
+                f"Class '{cls.name}' has union_of but also has inheritance ({', '.join(inheritance)}). "
+                "A union type cannot have a parent class."
+            )
+
+        # Validate that union_of classes don't have slots/attributes
+        sv = self.schemaview
+        class_slots = sv.class_induced_slots(cls.name)
+        if class_slots:
+            slot_names = [s.name for s in class_slots]
+            raise ValueError(
+                f"Class '{cls.name}' has union_of but also has slots ({slot_names}). "
+                "A union type alias cannot have attributes."
+            )
+
+        # Get the union types with string quotes to handle forward references
+        union_types = [f'"{camelcase(union_cls)}"' for union_cls in cls.union_of]
+        union_type_str = f"Union[{', '.join(union_types)}]"
+
+        # Create a type alias instead of a class
+        # Sanitize description for single-line comment (replace newlines with spaces)
+        description = cls.description.replace("\n", " ").strip() if cls.description else None
+        pyclass = PydanticClass(
+            name=camelcase(cls.name),
+            bases=[],  # Empty list for type aliases
+            description=description,
+            is_type_alias=True,
+            type_alias_value=union_type_str,
+        )
+
+        imports = self._get_imports(cls) if self.split else None
+        result = ClassResult(cls=pyclass, source=cls, imports=imports)
+
+        # Add metadata
         result.cls = self.include_metadata(result.cls, cls)
 
         return result
@@ -708,6 +776,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = f'Literal["{slot_def.equals_string}"]'
         elif slot_def.equals_string_in:
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
+        elif self.expand_subproperty_of and slot_def.subproperty_of:
+            pyrange = self._generate_subproperty_constraint(slot_def)
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
                 slot_range,
@@ -762,6 +832,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if len(collection_keys) == 1:
             return list(collection_keys)[0]
         return None
+
+    def _generate_subproperty_constraint(self, slot_def: SlotDefinition) -> str:
+        """
+        Generate Literal type from slot descendants based on subproperty_of.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        :param slot_def: SlotDefinition with subproperty_of set
+        :return: Literal type string e.g. 'Literal["related_to", "causes", ...]'
+        """
+        values = get_subproperty_values(self.schemaview, slot_def)
+        return "Literal[" + ", ".join([f'"{v}"' for v in values]) + "]"
 
     def _clean_injected_classes(self, injected_classes: list[Union[str, type]]) -> Optional[list[str]]:
         """Get source, deduplicate, and dedent injected classes"""

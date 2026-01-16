@@ -2,19 +2,18 @@ name: Check Sphinx external links
 env:
   UV_VERSION: "0.7.13"
 on:
+  push:
+    branches: [main]
   pull_request:
-  schedule:
-    - cron: '0 5 * * 1'  # at 05:00 UTC every Monday
   workflow_dispatch:
 
 jobs:
   check-external-links:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
-        with:
-          fetch-depth: 0
+        uses: actions/checkout@v6
 
       - name: Set up Python 3.
         uses: actions/setup-python@v6.0.0
@@ -26,10 +25,23 @@ jobs:
         with:
           version: ${{ env.UV_VERSION }}
 
-      - name: Install docs dependencies
-        run: uv sync --group docs
+      - name: Install dependencies
+        run: uv pip install --system requests
 
-      - name: Build documentation.
+      - name: Restore link cache
+        uses: actions/cache@v4
+        with:
+          path: .github/link-cache.csv
+          key: link-cache-${{ github.run_id }}
+          restore-keys: |
+            link-cache-
+
+      - name: Check links
         run: |
-          cd docs/
-          uv run sphinx-build -b linkcheck . _build | grep "broken"
+          python .github/scripts/check_links.py \
+            --docs-dir docs/ \
+            --cache-file .github/link-cache.csv \
+            --ttl-days 30 \
+            --jitter-days 7 \
+            --links-per-domain 10 \
+            --verbose

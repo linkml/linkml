@@ -7,9 +7,10 @@ import click
 from jsonasobj2 import JsonObj, as_dict
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
-from rdflib.namespace import RDF, SH, XSD
+from rdflib.namespace import RDF, RDFS, SH, XSD
 
 from linkml._version import __version__
+from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
@@ -34,6 +35,8 @@ class ShaclGenerator(Generator):
     """If True, elements from imported ontologies won't be included in the generator's output"""
     use_class_uri_names: bool = True
     """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work."""
+    expand_subproperty_of: bool = True
+    """If True, expand subproperty_of to sh:in constraints with slot descendants"""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -91,9 +94,15 @@ class ShaclGenerator(Generator):
             else:
                 shape_pv(SH.closed, Literal(False))
             if c.title is not None:
-                shape_pv(SH.name, Literal(c.title))
+                # Use rdfs:label for NodeShape titles per SHACL spec.
+                # sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.
+                shape_pv(RDFS.label, Literal(c.title))
             if c.description is not None:
-                shape_pv(SH.description, Literal(c.description))
+                # Use rdfs:comment for NodeShape descriptions per SHACL spec.
+                # sh:description has rdfs:domain of sh:PropertyShape, so using it
+                # on NodeShapes causes RDFS-aware validators to incorrectly infer
+                # the NodeShape is also a PropertyShape. See issue #3059.
+                shape_pv(RDFS.comment, Literal(c.description))
 
             shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
 
@@ -221,6 +230,9 @@ class ShaclGenerator(Generator):
                     if s.equals_string_in:
                         # Map equal_string and equal_string_in to sh:in
                         self._and_equals_string(g, prop_pv, s.equals_string_in)
+                    if self.expand_subproperty_of and s.subproperty_of:
+                        # Map subproperty_of to sh:in with slot descendants
+                        self._add_subproperty_constraint(g, prop_pv, s)
 
                 if s.annotations and self.include_annotations:
                     self._add_annotations(prop_pv, s)
@@ -274,6 +286,49 @@ class ShaclGenerator(Generator):
             [Literal(v) for v in values],
         )
         func(SH["in"], pv_node)
+
+    def _add_subproperty_constraint(self, g: Graph, func: Callable, slot) -> None:
+        """
+        Add sh:in constraint from subproperty_of slot hierarchy.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        :param g: RDF graph to add to
+        :param func: Function to call with predicate and object
+        :param slot: SlotDefinition with subproperty_of set
+        """
+        values = self._get_subproperty_values(slot)
+        if values:
+            pv_node = BNode()
+            Collection(g, pv_node, values)
+            func(SH["in"], pv_node)
+
+    def _get_subproperty_values(self, slot) -> list:
+        """
+        Get all valid values from slot hierarchy for subproperty_of constraint.
+
+        Values are formatted according to range type:
+        - uri/uriorcurie: Returns URIRef objects with full URIs
+        - string: Returns Literal objects with slot names
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: List of URIRef or Literal objects for sh:in constraint
+        """
+        sv = self.schemaview
+
+        # SHACL uses full URIs for URI-like ranges
+        use_uris = is_uri_range(sv, slot.range)
+
+        # Get string values from shared utility
+        # For URI ranges, get full URIs; for string ranges, get formatted names
+        string_values = get_subproperty_values(sv, slot, expand_uri=True if use_uris else None)
+
+        # Convert to RDF types
+        if use_uris:
+            return [URIRef(v) for v in string_values]
+        else:
+            return [Literal(v) for v in string_values]
 
     def _add_annotations(self, func: Callable, item) -> None:
         # TODO: migrate some of this logic to SchemaView
@@ -379,6 +434,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     help="If --use-class-uri-names (default), SHACL shape names are based on class_uri. "
     "If --use-native-names, SHACL shape names are based on LinkML class names from the schema file. "
     "Suffixes from the --suffix option can still be appended.",
+)
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
+    "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
