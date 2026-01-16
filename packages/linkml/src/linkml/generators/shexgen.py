@@ -1,5 +1,6 @@
 """Generate ShEx definition of a model"""
 
+import json
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
@@ -11,6 +12,82 @@ from rdflib import OWL, RDF, XSD, Graph, Namespace
 from ShExJSG import ShExC
 from ShExJSG.SchemaWithContext import Schema
 from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
+
+# Cached ShEx JSON-LD context to avoid remote fetches from w3.org
+# Source: http://www.w3.org/ns/shex.jsonld
+SHEX_CONTEXT = {
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "shex": "http://www.w3.org/ns/shex#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "annotations": {"@id": "shex:annotation", "@container": "@list", "@type": "@id"},
+    "exclusions": {"@id": "shex:exclusion", "@container": "@list", "@type": "@id"},
+    "id": "@id",
+    "language": "@language",
+    "type": "@type",
+    "value": "@value",
+    "Annotation": "shex:Annotation",
+    "EachOf": "shex:EachOf",
+    "IriStem": "shex:IriStem",
+    "IriStemRange": "shex:IriStemRange",
+    "Language": "shex:Language",
+    "LanguageStem": "shex:LanguageStem",
+    "LanguageStemRange": "shex:LanguageStemRange",
+    "LiteralStem": "shex:LiteralStem",
+    "LiteralStemRange": "shex:LiteralStemRange",
+    "NodeConstraint": "shex:NodeConstraint",
+    "OneOf": "shex:OneOf",
+    "Schema": "shex:Schema",
+    "SemAct": "shex:SemAct",
+    "Shape": "shex:Shape",
+    "ShapeAnd": "shex:ShapeAnd",
+    "ShapeExternal": "shex:ShapeExternal",
+    "ShapeNot": "shex:ShapeNot",
+    "ShapeOr": "shex:ShapeOr",
+    "Stem": "shex:Stem",
+    "StemRange": "shex:StemRange",
+    "TripleConstraint": "shex:TripleConstraint",
+    "Wildcard": "shex:Wildcard",
+    "closed": {"@id": "shex:closed", "@type": "xsd:boolean"},
+    "code": {"@id": "shex:code", "@language": None},
+    "datatype": {"@id": "shex:datatype", "@type": "@id"},
+    "expression": {"@id": "shex:expression", "@type": "@id"},
+    "expressions": {"@id": "shex:expressions", "@type": "@id", "@container": "@list"},
+    "extra": {"@id": "shex:extra", "@type": "@id"},
+    "extends": {"@id": "shex:extends", "@type": "@id"},
+    "flags": {"@id": "shex:flags", "@language": None},
+    "fractiondigits": {"@id": "shex:fractiondigits", "@type": "xsd:integer"},
+    "inverse": {"@id": "shex:inverse", "@type": "xsd:boolean"},
+    "languageTag": {"@id": "shex:languageTag", "@language": None},
+    "length": {"@id": "shex:length", "@type": "xsd:integer"},
+    "max": {"@id": "shex:max", "@type": "xsd:integer"},
+    "maxexclusive": {"@id": "shex:maxexclusive", "@type": "xsd:integer"},
+    "maxinclusive": {"@id": "shex:maxinclusive", "@type": "xsd:integer"},
+    "maxlength": {"@id": "shex:maxlength", "@type": "xsd:integer"},
+    "min": {"@id": "shex:min", "@type": "xsd:integer"},
+    "minexclusive": {"@id": "shex:minexclusive", "@type": "xsd:integer"},
+    "mininclusive": {"@id": "shex:mininclusive", "@type": "xsd:integer"},
+    "minlength": {"@id": "shex:minlength", "@type": "xsd:integer"},
+    "name": {"@id": "shex:name", "@type": "@id"},
+    "nodeKind": {"@id": "shex:nodeKind", "@type": "@vocab"},
+    "object": {"@id": "shex:object", "@type": "@id"},
+    "pattern": {"@id": "shex:pattern", "@language": None},
+    "predicate": {"@id": "shex:predicate", "@type": "@id"},
+    "semActs": {"@id": "shex:semActs", "@type": "@id", "@container": "@list"},
+    "shapeExpr": {"@id": "shex:shapeExpr", "@type": "@id"},
+    "shapeExprs": {"@id": "shex:shapeExprs", "@type": "@id", "@container": "@list"},
+    "shapes": {"@id": "shex:shapes", "@type": "@id", "@container": "@list"},
+    "start": {"@id": "shex:start", "@type": "@id"},
+    "startActs": {"@id": "shex:startActs", "@type": "@id", "@container": "@list"},
+    "stem": {"@id": "shex:stem", "@type": "xsd:string"},
+    "totaldigits": {"@id": "shex:totaldigits", "@type": "xsd:integer"},
+    "valueExpr": {"@id": "shex:valueExpr", "@type": "@id"},
+    "values": {"@id": "shex:values", "@type": "@id", "@container": "@list"},
+    "bnode": "shex:bnode",
+    "iri": "shex:iri",
+    "literal": "shex:literal",
+    "nonliteral": "shex:nonliteral",
+}
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
@@ -174,6 +251,19 @@ class ShExGenerator(Generator):
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
+            # Inline the ShEx context to avoid remote fetch from w3.org
+            # which can fail with 429 Too Many Requests
+            shex_dict = json.loads(shex)
+            original_context = shex_dict.get("@context", [])
+            if isinstance(original_context, str) and "shex.jsonld" in original_context:
+                # Replace URL with inline context
+                shex_dict["@context"] = SHEX_CONTEXT
+            elif isinstance(original_context, list):
+                # Replace URL in context list with inline context
+                shex_dict["@context"] = [
+                    SHEX_CONTEXT if (isinstance(c, str) and "shex.jsonld" in c) else c for c in original_context
+                ]
+            shex = json.dumps(shex_dict)
             g = Graph()
             g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
