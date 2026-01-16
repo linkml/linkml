@@ -631,3 +631,377 @@ def test_nodeshape_uses_rdfs_predicates(kitchen_sink_path):
             found_property_description = True
             break
     assert found_property_description, "PropertyShapes should use sh:description"
+
+
+def test_subproperty_of_generates_sh_in():
+    """Test that subproperty_of generates sh:in constraint with slot descendants."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the property shape for predicate
+    association_uri = URIRef("https://example.org/Association")
+    predicate_property = None
+    for prop_node in g.objects(association_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and str(path[0]) == "https://example.org/predicate":
+            predicate_property = prop_node
+            break
+
+    assert predicate_property is not None, "Should find predicate property shape"
+
+    # Check that sh:in constraint exists
+    sh_in_nodes = list(g.objects(predicate_property, SH["in"]))
+    assert len(sh_in_nodes) == 1, "Should have sh:in constraint"
+
+    # Get the list values
+    in_values = list(Collection(g, sh_in_nodes[0]))
+    expected_uris = [
+        URIRef("https://example.org/causes"),
+        URIRef("https://example.org/related_to"),
+        URIRef("https://example.org/treats"),
+    ]
+    assert sorted(in_values, key=str) == expected_uris
+
+
+def test_subproperty_of_with_deeper_hierarchy():
+    """Test that subproperty_of includes all descendants, not just direct children."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  directly_causes:
+    is_a: causes
+    slot_uri: ex:directly_causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the property shape for predicate
+    association_uri = URIRef("https://example.org/Association")
+    predicate_property = None
+    for prop_node in g.objects(association_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and str(path[0]) == "https://example.org/predicate":
+            predicate_property = prop_node
+            break
+
+    assert predicate_property is not None
+
+    # Get the sh:in values
+    sh_in_nodes = list(g.objects(predicate_property, SH["in"]))
+    in_values = list(Collection(g, sh_in_nodes[0]))
+
+    # Should include grandchild (directly_causes)
+    expected_uris = [
+        URIRef("https://example.org/causes"),
+        URIRef("https://example.org/directly_causes"),
+        URIRef("https://example.org/related_to"),
+        URIRef("https://example.org/treats"),
+    ]
+    assert sorted(in_values, key=str) == expected_uris
+
+
+def test_subproperty_of_with_string_range():
+    """Test that subproperty_of with string range uses Literal values."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the property shape for predicate
+    association_uri = URIRef("https://example.org/Association")
+    predicate_property = None
+    for prop_node in g.objects(association_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and str(path[0]) == "https://example.org/predicate":
+            predicate_property = prop_node
+            break
+
+    assert predicate_property is not None
+
+    # Get the sh:in values
+    sh_in_nodes = list(g.objects(predicate_property, SH["in"]))
+    in_values = list(Collection(g, sh_in_nodes[0]))
+
+    # Should be Literal values with slot names (snake_case)
+    expected_literals = [
+        Literal("causes"),
+        Literal("related_to"),
+        Literal("treats"),
+    ]
+    assert sorted(in_values, key=str) == expected_literals
+
+
+def test_subproperty_of_can_be_disabled():
+    """Test that expand_subproperty_of=False disables sh:in generation."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = ShaclGenerator(schema_yaml, expand_subproperty_of=False)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the property shape for predicate
+    association_uri = URIRef("https://example.org/Association")
+    predicate_property = None
+    for prop_node in g.objects(association_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and str(path[0]) == "https://example.org/predicate":
+            predicate_property = prop_node
+            break
+
+    assert predicate_property is not None
+
+    # Should NOT have sh:in constraint when disabled
+    sh_in_nodes = list(g.objects(predicate_property, SH["in"]))
+    assert len(sh_in_nodes) == 0, "Should not have sh:in when expand_subproperty_of=False"
+
+
+def test_subproperty_of_with_slot_usage():
+    """Test that slot_usage subproperty_of narrows the constraint."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  directly_causes:
+    is_a: causes
+    slot_uri: ex:directly_causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+
+classes:
+  Association:
+    slots:
+      - predicate
+  CausalAssociation:
+    is_a: Association
+    slot_usage:
+      predicate:
+        subproperty_of: causes
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the property shape for predicate in CausalAssociation
+    causal_uri = URIRef("https://example.org/CausalAssociation")
+    predicate_property = None
+    for prop_node in g.objects(causal_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and str(path[0]) == "https://example.org/predicate":
+            predicate_property = prop_node
+            break
+
+    assert predicate_property is not None
+
+    # Get the sh:in values - should only include causes and its descendants
+    sh_in_nodes = list(g.objects(predicate_property, SH["in"]))
+    assert len(sh_in_nodes) == 1
+
+    in_values = list(Collection(g, sh_in_nodes[0]))
+    expected_uris = [
+        URIRef("https://example.org/causes"),
+        URIRef("https://example.org/directly_causes"),
+    ]
+    assert sorted(in_values, key=str) == expected_uris
+
+
+def test_subproperty_of_with_uri_range():
+    """Test that subproperty_of with uri range generates URIRef values."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+
+  predicate:
+    range: uri
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Find the property shape for predicate
+    association_uri = URIRef("https://example.org/Association")
+    predicate_property = None
+    for prop_node in g.objects(association_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and str(path[0]) == "https://example.org/predicate":
+            predicate_property = prop_node
+            break
+
+    assert predicate_property is not None
+
+    # Get the sh:in values - should be full URIs
+    sh_in_nodes = list(g.objects(predicate_property, SH["in"]))
+    in_values = list(Collection(g, sh_in_nodes[0]))
+
+    expected_uris = [
+        URIRef("https://example.org/causes"),
+        URIRef("https://example.org/related_to"),
+    ]
+    assert sorted(in_values, key=str) == expected_uris
