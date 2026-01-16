@@ -160,7 +160,20 @@ class OOCodeGenerator(Generator):
 
             return safe_label
 
-    def generate_enum_objects(self, all_enums: dict[EnumDefinitionName, EnumDefinition]) -> dict[str, OOEnum]:
+    def generate_enum_objects(
+        self, all_enums: dict[EnumDefinitionName, EnumDefinition]
+    ) -> dict[EnumDefinitionName, OOEnum]:
+        """Gets an object representation of enum definitions.
+
+        This method transforms LinkML enum definitions into simplified
+        OOEnum objects that can be used by a code generator.
+
+        :param all_enums: The enums to transform.
+        :return: A dictionary with the same key as the original
+            all_enums dictionary, but whose values are OOEnum
+            objects.
+        """
+
         enums = {}
         for enum_name, enum_original in all_enums.items():
             enum = OOEnum(name=camelcase(enum_name))
