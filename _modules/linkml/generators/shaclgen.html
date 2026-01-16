@@ -401,6 +401,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.namespace</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDF</span><span class="p">,</span> <span class="n">RDFS</span><span class="p">,</span> <span class="n">SH</span><span class="p">,</span> <span class="n">XSD</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span><span class="p">,</span> <span class="n">is_uri_range</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_data_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclDataType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_ifabsent_processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclIfAbsentProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
@@ -427,6 +428,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, elements from imported ontologies won&#39;t be included in the generator&#39;s output&quot;&quot;&quot;</span>
     <span class="n">use_class_uri_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work.&quot;&quot;&quot;</span>
+    <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, expand subproperty_of to sh:in constraints with slot descendants&quot;&quot;&quot;</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ttl&quot;</span><span class="p">]</span>
@@ -623,6 +626,9 @@
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
                         <span class="c1"># Map equal_string and equal_string_in to sh:in</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_and_equals_string</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
+                        <span class="c1"># Map subproperty_of to sh:in with slot descendants</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_add_subproperty_constraint</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">annotations</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_annotations</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_add_annotations</span><span class="p">(</span><span class="n">prop_pv</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
@@ -676,6 +682,49 @@
             <span class="p">[</span><span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">pv_node</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_subproperty_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g</span><span class="p">:</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add sh:in constraint from subproperty_of slot hierarchy.</span>
+
+<span class="sd">        Following metamodel semantics: &quot;any ontological child (related to X via</span>
+<span class="sd">        an is_a relationship), is a valid value for the slot&quot;</span>
+
+<span class="sd">        :param g: RDF graph to add to</span>
+<span class="sd">        :param func: Function to call with predicate and object</span>
+<span class="sd">        :param slot: SlotDefinition with subproperty_of set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subproperty_values</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">pv_node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+            <span class="n">Collection</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">pv_node</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+            <span class="n">func</span><span class="p">(</span><span class="n">SH</span><span class="p">[</span><span class="s2">&quot;in&quot;</span><span class="p">],</span> <span class="n">pv_node</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_subproperty_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all valid values from slot hierarchy for subproperty_of constraint.</span>
+
+<span class="sd">        Values are formatted according to range type:</span>
+<span class="sd">        - uri/uriorcurie: Returns URIRef objects with full URIs</span>
+<span class="sd">        - string: Returns Literal objects with slot names</span>
+
+<span class="sd">        :param slot: SlotDefinition with subproperty_of set</span>
+<span class="sd">        :return: List of URIRef or Literal objects for sh:in constraint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+
+        <span class="c1"># SHACL uses full URIs for URI-like ranges</span>
+        <span class="n">use_uris</span> <span class="o">=</span> <span class="n">is_uri_range</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+
+        <span class="c1"># Get string values from shared utility</span>
+        <span class="c1"># For URI ranges, get full URIs; for string ranges, get formatted names</span>
+        <span class="n">string_values</span> <span class="o">=</span> <span class="n">get_subproperty_values</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">expand_uri</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">use_uris</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># Convert to RDF types</span>
+        <span class="k">if</span> <span class="n">use_uris</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">URIRef</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">string_values</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">string_values</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># TODO: migrate some of this logic to SchemaView</span>
@@ -782,6 +831,13 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If --use-class-uri-names (default), SHACL shape names are based on class_uri. &quot;</span>
     <span class="s2">&quot;If --use-native-names, SHACL shape names are based on LinkML class names from the schema file. &quot;</span>
     <span class="s2">&quot;Suffixes from the --suffix option can still be appended.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--expand-subproperty-of/--no-expand-subproperty-of&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints &quot;</span>
+    <span class="s2">&quot;containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>

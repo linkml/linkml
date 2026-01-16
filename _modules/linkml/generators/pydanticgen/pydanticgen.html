@@ -407,6 +407,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.type_designators</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_accepted_type_designator_values</span><span class="p">,</span> <span class="n">get_type_designator_value</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">includes</span>
@@ -768,6 +769,15 @@
 <span class="sd">    How to filter imports from imported schema.</span>
 
 <span class="sd">    See :class:`.SplitMode` for description of options</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If True, expand subproperty_of constraints to Literal type constraints.</span>
+
+<span class="sd">    When a slot has `subproperty_of` set, valid values are the referenced slot</span>
+<span class="sd">    and all its descendants (via is_a). Values are formatted according to the</span>
+<span class="sd">    slot&#39;s range type (string, uriorcurie, uri).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ObjectVars (identical to pythongen)</span>
@@ -1167,6 +1177,8 @@
             <span class="n">pyrange</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Literal[&quot;</span><span class="si">{</span><span class="n">slot_def</span><span class="o">.</span><span class="n">equals_string</span><span class="si">}</span><span class="s1">&quot;]&#39;</span>
         <span class="k">elif</span> <span class="n">slot_def</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
             <span class="n">pyrange</span> <span class="o">=</span> <span class="s2">&quot;Literal[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">a_string</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">for</span> <span class="n">a_string</span> <span class="ow">in</span> <span class="n">slot_def</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">and</span> <span class="n">slot_def</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
+            <span class="n">pyrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_subproperty_constraint</span><span class="p">(</span><span class="n">slot_def</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="n">pyrange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_slot_range</span><span class="p">(</span>
                 <span class="n">slot_range</span><span class="p">,</span>
@@ -1225,6 +1237,19 @@
             <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">collection_keys</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_subproperty_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate Literal type from slot descendants based on subproperty_of.</span>
+
+<span class="sd">        Following metamodel semantics: &quot;any ontological child (related to X via</span>
+<span class="sd">        an is_a relationship), is a valid value for the slot&quot;</span>
+
+<span class="sd">        :param slot_def: SlotDefinition with subproperty_of set</span>
+<span class="sd">        :return: Literal type string e.g. &#39;Literal[&quot;related_to&quot;, &quot;causes&quot;, ...]&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">get_subproperty_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot_def</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;Literal[&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_clean_injected_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">injected_classes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get source, deduplicate, and dedent injected classes&quot;&quot;&quot;</span>

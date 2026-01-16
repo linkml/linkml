@@ -397,6 +397,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_uri_range</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.template</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObjectImport</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.type_designators</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_accepted_type_designator_values</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.rustgen.build</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -796,10 +797,15 @@
 <span class="sd">    it must be provided on a call to :meth:`.serialize`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, expand subproperty_of to Rust enums with slot descendants&quot;&quot;&quot;</span>
+
     <span class="n">_environment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Environment</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_subproperty_enums</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Cache for generated subproperty enums</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subproperty_enums</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Cache for generated subproperty enums</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_select_root_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_defs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
@@ -1035,7 +1041,28 @@
         <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_slot</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
         <span class="n">is_class_range</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
         <span class="p">(</span><span class="n">container_mode</span><span class="p">,</span> <span class="n">inline_mode</span><span class="p">)</span> <span class="o">=</span> <span class="n">determine_slot_mode</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
-        <span class="nb">range</span> <span class="o">=</span> <span class="n">get_rust_range_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+
+        <span class="c1"># Check for subproperty_of constraint - generates enum type instead of regular range</span>
+        <span class="n">subproperty_enum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subproperty_enum_type</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subproperty_enum_type</span><span class="p">:</span>
+            <span class="c1"># Create a RustRange with the enum type</span>
+            <span class="n">range_info</span> <span class="o">=</span> <span class="n">RustRange</span><span class="p">(</span>
+                <span class="n">optional</span><span class="o">=</span><span class="ow">not</span> <span class="n">attr</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+                <span class="n">has_default</span><span class="o">=</span><span class="ow">not</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="n">containerType</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">ContainerType</span><span class="o">.</span><span class="n">LIST</span>
+                    <span class="k">if</span> <span class="n">container_mode</span> <span class="o">==</span> <span class="n">SlotContainerMode</span><span class="o">.</span><span class="n">LIST</span>
+                    <span class="k">else</span> <span class="n">ContainerType</span><span class="o">.</span><span class="n">MAPPING</span>
+                    <span class="k">if</span> <span class="n">container_mode</span> <span class="o">==</span> <span class="n">SlotContainerMode</span><span class="o">.</span><span class="n">MAPPING</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
+                <span class="n">is_class_range</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># It&#39;s an enum, not a class</span>
+                <span class="n">is_reference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">type_</span><span class="o">=</span><span class="n">subproperty_enum_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">range_info</span> <span class="o">=</span> <span class="n">get_rust_range_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+
         <span class="n">res</span> <span class="o">=</span> <span class="n">AttributeResult</span><span class="p">(</span>
             <span class="n">source</span><span class="o">=</span><span class="n">attr</span><span class="p">,</span>
             <span class="n">attribute</span><span class="o">=</span><span class="n">RustProperty</span><span class="p">(</span>
@@ -1044,7 +1071,7 @@
                 <span class="n">alias</span><span class="o">=</span><span class="n">attr</span><span class="o">.</span><span class="n">alias</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">attr</span><span class="o">.</span><span class="n">alias</span> <span class="o">!=</span> <span class="n">get_name</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">generate_merge</span><span class="o">=</span><span class="n">MERGE_ANNOTATION</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span>
                 <span class="n">container_mode</span><span class="o">=</span><span class="n">container_mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
-                <span class="n">type_</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span>
+                <span class="n">type_</span><span class="o">=</span><span class="n">range_info</span><span class="p">,</span>
                 <span class="n">required</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">required</span><span class="p">),</span>
                 <span class="n">multivalued</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">attr</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
                 <span class="n">is_key_value</span><span class="o">=</span><span class="n">is_class_range</span>
@@ -1101,6 +1128,121 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Imports</span><span class="p">()</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_subproperty_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RustEnum</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a Rust enum for subproperty_of constrained slot.</span>
+
+<span class="sd">        Following metamodel semantics: &quot;any ontological child (related to X via</span>
+<span class="sd">        an is_a relationship), is a valid value for the slot&quot;</span>
+
+<span class="sd">        Values are formatted according to range type:</span>
+<span class="sd">        - uri/uriorcurie: Uses CURIEs (e.g., &quot;biolink:causes&quot;)</span>
+<span class="sd">        - string: Uses snake_case slot names (e.g., &quot;causes&quot;)</span>
+
+<span class="sd">        :param slot: SlotDefinition with subproperty_of set</span>
+<span class="sd">        :return: RustEnum with variants for all valid values, or None if no values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="n">root_slot_name</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">subproperty_of</span>
+
+        <span class="c1"># Check cache first using both slot name and root slot</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">root_slot_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subproperty_enums</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subproperty_enums</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+
+        <span class="c1"># Get all descendants including root (reflexive)</span>
+        <span class="n">descendants</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">slot_descendants</span><span class="p">(</span><span class="n">root_slot_name</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Check if range is URI-like using shared utility</span>
+        <span class="n">use_uri</span> <span class="o">=</span> <span class="n">is_uri_range</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+
+        <span class="c1"># Generate enum items - Rust needs both variant names and text values</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen_variants</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">descendants</span><span class="p">):</span>
+            <span class="n">descendant_slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">use_uri</span><span class="p">:</span>
+                <span class="c1"># For URI-like ranges, use CURIE format for serde</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">descendant_slot</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># For string ranges, use snake_case slot name</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+
+            <span class="c1"># Generate a valid Rust identifier for the variant</span>
+            <span class="n">variant</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="c1"># Ensure uniqueness</span>
+            <span class="k">if</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">seen_variants</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">seen_variants</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">variant</span><span class="p">)</span>
+
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">RustEnumItem</span><span class="p">(</span><span class="n">variant</span><span class="o">=</span><span class="n">variant</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subproperty_enums</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Create enum name based on slot name</span>
+        <span class="n">enum_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;Enum&quot;</span>
+        <span class="n">rust_enum</span> <span class="o">=</span> <span class="n">RustEnum</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">enum_name</span><span class="p">,</span>
+            <span class="n">items</span><span class="o">=</span><span class="n">items</span><span class="p">,</span>
+            <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
+            <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
+            <span class="n">stubgen</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stubgen</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subproperty_enums</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">rust_enum</span>
+        <span class="k">return</span> <span class="n">rust_enum</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_subproperty_enum_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the Rust enum type name for a subproperty_of constrained slot.</span>
+
+<span class="sd">        :param slot: SlotDefinition with subproperty_of set</span>
+<span class="sd">        :return: Enum type name or None if not applicable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">enum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subproperty_enum</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">enum</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">enum</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_range_info_with_subproperty</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">crate_ref</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RustRange</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get RustRange info, considering subproperty_of constraint.</span>
+
+<span class="sd">        If the slot has subproperty_of set and expand_subproperty_of is True,</span>
+<span class="sd">        returns a RustRange with the generated enum type. Otherwise, falls back</span>
+<span class="sd">        to the standard get_rust_range_info function.</span>
+
+<span class="sd">        :param cls: ClassDefinition containing the slot</span>
+<span class="sd">        :param slot: SlotDefinition to get range info for</span>
+<span class="sd">        :param crate_ref: Optional crate reference for type paths</span>
+<span class="sd">        :return: RustRange with appropriate type information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subproperty_enum_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subproperty_enum_type</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subproperty_enum_type</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">container_mode</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">=</span> <span class="n">determine_slot_mode</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">RustRange</span><span class="p">(</span>
+                <span class="n">optional</span><span class="o">=</span><span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">,</span>
+                <span class="n">has_default</span><span class="o">=</span><span class="ow">not</span> <span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">or</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="n">containerType</span><span class="o">=</span><span class="p">(</span>
+                    <span class="n">ContainerType</span><span class="o">.</span><span class="n">LIST</span>
+                    <span class="k">if</span> <span class="n">container_mode</span> <span class="o">==</span> <span class="n">SlotContainerMode</span><span class="o">.</span><span class="n">LIST</span>
+                    <span class="k">else</span> <span class="n">ContainerType</span><span class="o">.</span><span class="n">MAPPING</span>
+                    <span class="k">if</span> <span class="n">container_mode</span> <span class="o">==</span> <span class="n">SlotContainerMode</span><span class="o">.</span><span class="n">MAPPING</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
+                <span class="n">is_class_range</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># It&#39;s an enum, not a class</span>
+                <span class="n">is_reference</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">type_</span><span class="o">=</span><span class="n">subproperty_enum_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_rust_range_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">crate_ref</span><span class="p">)</span>
+
     <span class="nd">@overload</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;file&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;file&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileResult</span><span class="p">:</span> <span class="o">...</span>
 
@@ -1150,6 +1292,9 @@
         <span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_class</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">]</span>
         <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after_generate_classes</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="n">sv</span><span class="p">)</span>
 
+        <span class="c1"># Collect subproperty enums generated during class processing</span>
+        <span class="n">subproperty_enums</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subproperty_enums</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+
         <span class="n">poly_traits</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">gen_poly_trait</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">ordered_by</span><span class="o">=</span><span class="n">OrderedBy</span><span class="o">.</span><span class="n">INHERITANCE</span><span class="p">)]</span>
 
         <span class="n">imports</span> <span class="o">=</span> <span class="n">DEFAULT_IMPORTS</span><span class="o">.</span><span class="n">model_copy</span><span class="p">()</span>
@@ -1162,12 +1307,15 @@
         <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">enums</span><span class="p">,</span> <span class="o">*</span><span class="n">slots</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">]:</span>
             <span class="n">imports</span> <span class="o">+=</span> <span class="n">result</span><span class="o">.</span><span class="n">imports</span>
 
+        <span class="c1"># Combine schema enums with subproperty enums</span>
+        <span class="n">all_enums</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">enum</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">enums</span><span class="p">]</span> <span class="o">+</span> <span class="n">subproperty_enums</span>
+
         <span class="n">file</span> <span class="o">=</span> <span class="n">RustFile</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span>
             <span class="n">slots</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">slot</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">],</span>
             <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">type_</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">types</span><span class="p">],</span>
-            <span class="n">enums</span><span class="o">=</span><span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">enum</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">enums</span><span class="p">],</span>
+            <span class="n">enums</span><span class="o">=</span><span class="n">all_enums</span><span class="p">,</span>
             <span class="n">structs</span><span class="o">=</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">cls</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">],</span>
             <span class="n">pyo3</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">,</span>
             <span class="n">serde</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serde</span><span class="p">,</span>
@@ -1224,7 +1372,7 @@
         <span class="n">rust_attribs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">attribs</span><span class="p">:</span>
             <span class="n">n</span> <span class="o">=</span> <span class="n">get_name</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-            <span class="n">base_ri</span> <span class="o">=</span> <span class="n">get_rust_range_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
+            <span class="n">base_ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_range_info_with_subproperty</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
             <span class="n">promoted_ri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_rust_range_info_across_descendants</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
             <span class="n">rust_attribs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PolyTraitProperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">n</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="n">base_ri</span><span class="p">,</span> <span class="n">promoted_range</span><span class="o">=</span><span class="n">promoted_ri</span><span class="p">))</span>
 
@@ -1242,7 +1390,7 @@
             <span class="n">ptis</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">PolyTraitPropertyImpl</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">a</span><span class="p">),</span>
-                    <span class="nb">range</span><span class="o">=</span><span class="n">get_rust_range_info</span><span class="p">(</span><span class="n">sco</span><span class="p">,</span> <span class="n">find_slot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">),</span>
+                    <span class="nb">range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_range_info_with_subproperty</span><span class="p">(</span><span class="n">sco</span><span class="p">,</span> <span class="n">find_slot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span>
                     <span class="n">definition_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_rust_range_info_across_descendants</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span>
                     <span class="n">trait_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_rust_range_info_across_descendants</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span>
                     <span class="n">struct_name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">sco</span><span class="p">),</span>
@@ -1308,6 +1456,12 @@
 
 <span class="sd">        Container and optionality are taken from the base class slot.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If this slot has subproperty_of, return the enum type directly</span>
+        <span class="c1"># (subproperty enums are fixed types that don&#39;t vary across descendants)</span>
+        <span class="n">subproperty_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_range_info_with_subproperty</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subproperty_enum_type</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">subproperty_range</span>
+
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="c1"># Collect rust type names for all ranges across base + descendants, and remember</span>
         <span class="c1"># the source class name (if any) responsible for each rust type so we can</span>

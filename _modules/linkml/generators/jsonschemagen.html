@@ -401,6 +401,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common</span><span class="w"> </span><span class="kn">import</span> <span class="n">build</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.lifecycle</span><span class="w"> </span><span class="kn">import</span> <span class="n">LifecycleMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.type_designators</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_type_designator_value</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_range_associated_slots</span>
@@ -662,6 +663,15 @@
     <span class="n">preserve_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets).&quot;&quot;&quot;</span>
 
+    <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If True, expand subproperty_of constraints to enum constraints.</span>
+
+<span class="sd">    When a slot has `subproperty_of` set, valid values are the referenced slot</span>
+<span class="sd">    and all its descendants (via is_a). Values are formatted according to the</span>
+<span class="sd">    slot&#39;s range type (CURIE for uriorcurie, full URI for uri, snake_case for string).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">topClass</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;topClass is deprecated - use top_class&quot;</span><span class="p">)</span>
@@ -919,6 +929,12 @@
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
             <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">)</span>
+        <span class="c1"># Handle subproperty_of constraint - generates enum from slot hierarchy</span>
+        <span class="c1"># Only SlotDefinition has subproperty_of, not AnonymousSlotExpression</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
+            <span class="n">subproperty_values</span> <span class="o">=</span> <span class="n">get_subproperty_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">subproperty_values</span><span class="p">:</span>
+                <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="n">subproperty_values</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">constraints</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subschema_for_slot</span><span class="p">(</span>
@@ -1176,6 +1192,12 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Preserve original LinkML names in JSON Schema output (e.g., for $defs, properties, $ref targets).&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--expand-subproperty-of/--no-expand-subproperty-of&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If set, expand subproperty_of constraints to enum constraints.&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

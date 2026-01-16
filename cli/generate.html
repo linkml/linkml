@@ -673,6 +673,17 @@ it’s just a quirk of the package we use for documenting the cli</p>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-cli-expand-subproperty-of">
+<span id="cmdoption-linkml-generate-full-cli-no-expand-subproperty-of"></span><span class="sig-name descname"><span class="pre">--expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-cli-expand-subproperty-of" title="Link to this definition">¶</a></dt>
+<dd><p>If –expand-subproperty-of (default), slots with subproperty_of will generate union types containing all slot descendants. Use –no-expand-subproperty-of to disable this behavior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-cli-output">
 <span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-cli-output" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -2127,6 +2138,17 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-json-schema-expand-subproperty-of">
+<span id="cmdoption-linkml-generate-full-json-schema-no-expand-subproperty-of"></span><span class="sig-name descname"><span class="pre">--expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-json-schema-expand-subproperty-of" title="Link to this definition">¶</a></dt>
+<dd><p>If set, expand subproperty_of constraints to enum constraints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4221,6 +4243,17 @@ if an override is not found</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-shacl-expand-subproperty-of">
+<span id="cmdoption-linkml-generate-full-shacl-no-expand-subproperty-of"></span><span class="sig-name descname"><span class="pre">--expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-shacl-expand-subproperty-of" title="Link to this definition">¶</a></dt>
+<dd><p>If –expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints containing all slot descendants. Use –no-expand-subproperty-of to disable this behavior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-shacl-V">
 <span id="cmdoption-linkml-generate-full-shacl-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-shacl-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
@@ -4324,6 +4357,17 @@ if an override is not found</p>
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-shex-o">
 <span id="cmdoption-linkml-generate-full-shex-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-shex-o" title="Link to this definition">¶</a></dt>
 <dd><p>Output file name</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-shex-expand-subproperty-of">
+<span id="cmdoption-linkml-generate-full-shex-no-expand-subproperty-of"></span><span class="sig-name descname"><span class="pre">--expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-expand-subproperty-of</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-shex-expand-subproperty-of" title="Link to this definition">¶</a></dt>
+<dd><p>If –expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint values containing all slot descendants. Use –no-expand-subproperty-of to disable this behavior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="std option">

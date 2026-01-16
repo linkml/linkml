@@ -405,6 +405,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE</span><span class="p">,</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_subproperty_values</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
@@ -436,6 +437,8 @@
     <span class="n">shapes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
     <span class="n">shape</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shape</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Current shape being defined</span>
     <span class="n">list_shapes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IRIREF</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>  <span class="c1"># Shapes that have been defined as lists</span>
+    <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, expand subproperty_of to NodeConstraint value lists with slot descendants&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
@@ -550,6 +553,13 @@
                         <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">constraint</span><span class="o">.</span><span class="n">valueExpr</span> <span class="o">=</span> <span class="n">node_constraint</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
+                <span class="c1"># Handle subproperty_of constraint - restrict to slot descendants</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_subproperty_values</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="n">constraint</span><span class="o">.</span><span class="n">valueExpr</span> <span class="o">=</span> <span class="n">NodeConstraint</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">constraint</span><span class="o">.</span><span class="n">valueExpr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">constraint</span><span class="o">.</span><span class="n">valueExpr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_or_type_uri</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
 
@@ -610,13 +620,38 @@
             <span class="n">predicate</span><span class="o">=</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
             <span class="n">valueExpr</span><span class="o">=</span><span class="n">NodeConstraint</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="n">IRIREF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">target</span><span class="p">))]),</span>
             <span class="nb">min</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">opt</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_subproperty_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get all valid values from slot hierarchy for subproperty_of constraint.</span>
+
+<span class="sd">        Following metamodel semantics: &quot;any ontological child (related to X via</span>
+<span class="sd">        an is_a relationship), is a valid value for the slot&quot;</span>
+
+<span class="sd">        Values are formatted as URIs for ShEx compatibility.</span>
+
+<span class="sd">        :param slot: SlotDefinition with subproperty_of set</span>
+<span class="sd">        :return: List of URI strings for NodeConstraint values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
+
+        <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+        <span class="c1"># ShEx always uses full URIs</span>
+        <span class="k">return</span> <span class="n">get_subproperty_values</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="n">expand_uri</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">ShExGenerator</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;shex&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file name&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--expand-subproperty-of/--no-expand-subproperty-of&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If --expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint &quot;</span>
+    <span class="s2">&quot;values containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a ShEx Schema for a  LinkML model&quot;&quot;&quot;</span>
