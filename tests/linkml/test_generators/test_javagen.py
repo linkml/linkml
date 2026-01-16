@@ -59,7 +59,7 @@ def test_generate_enum_objects(kitchen_sink_path):
     ]
     assert expected_enum == enum_objects["FamilialRelationshipType"]
 
-    # Same, but with an enum with names that must be tranformed
+    # Same, but with an enum with names that must be transformed
     expected_enum = OOEnum(name="OtherCodes")
     expected_enum.values = [OOEnumValue(label="a_b", text="a b")]
     assert expected_enum == enum_objects["other codes"]
