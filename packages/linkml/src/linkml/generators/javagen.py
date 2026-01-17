@@ -19,24 +19,88 @@ default_template = """
 -#}
 package {{ doc.package }};
 
+{% if metamodel_version -%}
+/* metamodel_version: {{metamodel_version}} */
+{% endif -%}
+{% if model_version -%}
+/* version: {{model_version}} */
+{% endif -%}
+
+{% if cls -%}
 import java.util.List;
 import lombok.*;
 
-
-{% if metamodel_version %}/* metamodel_version: {{metamodel_version}} */{% endif %}
-{% if model_version %}/* version: {{model_version}} */{% endif %}
-
-
-{% if cls.source_class.description %}/**
+{%   if cls.source_class.description -%}
+/**
   {{ cls.source_class.description }}
-**/{% endif %}
+**/
+{%   endif -%}
 @Data
 @EqualsAndHashCode(callSuper=false)
 public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
-{% for f in cls.fields %}
+{%   for f in cls.fields %}
   private {{f.range}} {{ f.name }};
-{%- endfor %}
+{%-  endfor %}
 
+{% elif enum -%}
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+{% if enum.description %}/**
+ * {{ enum.description }}
+ */
+{% endif -%}
+public enum {{ enum.name }} {
+{%- for value in enum.values[0:-1] %}
+{% if value.description %}
+  /**
+   * {{ value.description }}
+   */
+{%- endif %}
+  {{ value.label|upper }}("{{ value.text }}"),
+{%- endfor %}
+{%- if enum.values %}
+{% if enum.values[-1].description %}
+  /**
+   * {{ enum.values[-1].description }}
+   */
+{%- endif %}
+  {{ enum.values[-1].label|upper }}("{{ enum.values[-1].text }}");
+  {%- else %}
+  ;{% endif %}
+
+  private final static Map<String, {{ enum.name }}> MAP;
+
+  static {
+    Map<String, {{ enum.name }}> map = new HashMap<String, {{ enum.name }}>();
+    for ( {{ enum.name }} value : {{ enum.name }}.values() ) {
+      map.put(value.toString(), value);
+    }
+
+    MAP = Collections.unmodifiableMap(map);
+  }
+
+  private final String repr;
+
+  {{ enum.name }}(String repr) {
+    this.repr = repr;
+  }
+
+  @Override
+  public String toString() {
+    return repr;
+  }
+
+  @JsonCreator
+  public static {{ enum.name }} fromString(String v) {
+    return MAP.get(v);
+  }
+
+{% endif -%}
 }"""  # noqa: E501
 
 TYPEMAP = {
@@ -116,10 +180,16 @@ class JavaGenerator(OOCodeGenerator):
         oodocs = self.create_documents()
         self.directory = directory
         for oodoc in oodocs:
-            cls = oodoc.classes[0]
+            if oodoc.classes:
+                cls = oodoc.classes[0]
+                enum = None
+            else:
+                cls = None
+                enum = oodoc.enums[0]
             code = template_obj.render(
                 doc=oodoc,
                 cls=cls,
+                enum=enum,
                 metamodel_version=self.schema.metamodel_version,
                 model_version=self.schema.version,
             )
@@ -145,6 +215,7 @@ class JavaGenerator(OOCodeGenerator):
     default=False,
     help="Optional Java 17 record implementation",
 )
+@click.option("--true-enums/--no-true-enums", default=False, help="Treat enums as distinct types rather than strings")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="java")
 def cli(
@@ -158,6 +229,7 @@ def cli(
     genmeta=False,
     classvars=True,
     slots=True,
+    true_enums=False,
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
@@ -170,6 +242,7 @@ def cli(
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
+        true_enums=true_enums,
         **args,
     ).serialize(output_directory, **args)
 
