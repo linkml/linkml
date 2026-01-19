@@ -23,7 +23,6 @@ from linkml_runtime.linkml_model.meta import (
     PermissibleValueText,
     PresenceEnum,
     SlotDefinition,
-    metamodel_version,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
@@ -290,7 +289,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
                 "$id": self.schema.id,
-                "metamodel_version": metamodel_version,
+                "metamodel_version": self.schema.metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
