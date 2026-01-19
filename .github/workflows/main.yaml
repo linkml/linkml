@@ -15,13 +15,13 @@ jobs:
   quality-checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v7.2.0
         with:
           version: ${{ env.UV_VERSION }}
 
-      - uses: actions/setup-python@v6.0.0
+      - uses: actions/setup-python@v6.1.0
         with:
           python-version: 3.13
       - name: Check pyproject.toml and uv.lock
@@ -58,7 +58,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -69,13 +69,13 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v7.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
@@ -84,19 +84,35 @@ jobs:
         run: uv sync --all-groups
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2.0.2
-      - name: Generate coverage results
+      - name: Test linkml package
         run: |
-          uv run coverage run -m pytest --with-network
-          uv run coverage xml
+          uv run coverage run -m pytest tests/linkml/ --with-network
+          uv run coverage xml -o coverage-linkml.xml
           uv run coverage report -m
         shell: bash
-      - name: Upload coverage report
+      - name: Test linkml-runtime package
+        run: |
+          uv run coverage run -m pytest tests/linkml_runtime/ --with-network
+          uv run coverage xml -o coverage-linkml_runtime.xml
+          uv run coverage report -m
+        shell: bash
+      - name: Upload linkml coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.5.1
+        uses: codecov/codecov-action@v5.5.2
         with:
-          name: codecov-results-${{ matrix.os }}-${{ matrix.python-version }}
+          name: codecov-linkml-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: coverage-linkml.xml
+          flags: linkml
+          fail_ci_if_error: true
+      - name: Upload runtime coverage report
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v5.5.2
+        with:
+          name: codecov-runtime-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-linkml_runtime.xml
+          flags: runtime
           fail_ci_if_error: true
 
   test_slow:
@@ -114,34 +130,35 @@ jobs:
         shell: bash
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v7.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: uv sync --all-groups
-      - name: Generate coverage results
+      - name: Test linkml slow tests
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          uv run coverage run -m pytest --with-slow --with-biolink -m slow -n auto
-          uv run coverage xml
+          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m slow -n auto
+          uv run coverage xml -o coverage-linkml-slow.xml
           uv run coverage report -m
-      - name: Upload coverage report
+      - name: Upload linkml slow test coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v5.5.1
+        uses: codecov/codecov-action@v5.5.2
         with:
-          name: codecov-results-slow-${{ matrix.os }}-${{ matrix.python-version }}
+          name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: coverage-linkml-slow.xml
+          flags: linkml
           fail_ci_if_error: true
 
   test_build_package:
@@ -151,18 +168,18 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: 3.13
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6.6.1
+        uses: astral-sh/setup-uv@v7.2.0
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
-        run: uv build
+        run: uv build --all-packages

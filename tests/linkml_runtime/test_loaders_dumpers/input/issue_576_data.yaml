@@ -1,0 +1,22 @@
+source: ex:source
+persons:
+  - id: ex:P1
+    name: John Doe
+  - id: ex:P2
+    name: Jane Doe
+    friends:
+      - ex:P1
+organizations:
+  - id: org 1
+    name: Acme Inc. (US)
+  - id: org 2
+    name: Acme Inc. (UK)
+    part_of:
+      - org 1
+pets:
+  - id: ex:PetA
+    name: Fido
+    owner: ex:P1
+  - id: ex:PetB
+    name: Spot
+    owner: ex:P2

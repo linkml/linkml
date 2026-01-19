@@ -1,0 +1,32 @@
+class {{ name }}(BaseModel):
+    model_config = ConfigDict(
+        serialize_by_alias = True,
+        validate_by_name = True,
+        validate_assignment = True,
+        validate_default = True,
+        extra = "{{ extra_fields }}",
+        arbitrary_types_allowed = True,
+        use_enum_values = True,
+        strict = {{ strict }},
+    )
+{% if fields is not none %}
+    {% for field in fields %}
+    {{ field }}
+    {% endfor %}
+{% endif %}
+
+{% if empty_list_for_multivalued_slots %}
+    @model_serializer(mode='wrap', when_used='unless-none')
+    def treat_empty_lists_as_none(
+            self, handler: SerializerFunctionWrapHandler,
+            info: SerializationInfo) -> dict[str, Any]:
+        if info.exclude_none:
+            _instance = self.model_copy()
+            for field, field_info in type(_instance).model_fields.items():
+                if getattr(_instance, field) == [] and not(
+                        field_info.is_required()):
+                    setattr(_instance, field, None)
+        else:
+            _instance = self
+        return handler(_instance, info)
+{% endif %}

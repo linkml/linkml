@@ -1,0 +1,32 @@
+persons:
+  - id: P:001
+    name: fred bloggs
+    primary_email: fred.bloggs@example.com
+    age_in_years: 33
+    gender: nonbinary man
+    has_familial_relationships:
+      - type: SIBLING_OF
+        related_to: P:002
+    current_address:
+      street: 1 oak street
+    aliases:
+      - a
+      - b
+    has_medical_history:
+      - diagnosis:
+          id: C:001
+          name: c1
+      - diagnosis:
+          id: C:002
+  - id: P:002
+    name: Alison Wu
+    has_familial_relationships:
+      - type: SIBLING_OF
+        related_to: P:001
+    has_medical_history:
+      - diagnosis:
+          id: C:001
+          name: c1 (renamed)
+organizations:
+  - id: ROR:1
+    name: Acme
