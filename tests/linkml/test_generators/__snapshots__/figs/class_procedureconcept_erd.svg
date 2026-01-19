@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="container" width="736.609375" class="erDiagram" height="470" viewBox="0 0 736.609375 470" role="graphics-document document" aria-roledescription="er">
+  <style>#container{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#container .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#container .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#container .error-icon{fill:#552222;}#container .error-text{fill:#552222;stroke:#552222;}#container .edge-thickness-normal{stroke-width:1px;}#container .edge-thickness-thick{stroke-width:3.5px;}#container .edge-pattern-solid{stroke-dasharray:0;}#container .edge-thickness-invisible{stroke-width:0;fill:none;}#container .edge-pattern-dashed{stroke-dasharray:3;}#container .edge-pattern-dotted{stroke-dasharray:2;}#container .marker{fill:#333333;stroke:#333333;}#container .marker.cross{stroke:#333333;}#container svg{font-family:"trebuchet ms",verdana,arial,sans-serif;font-size:16px;}#container p{margin:0;}#container .entityBox{fill:#ECECFF;stroke:#9370DB;}#container .relationshipLabelBox{fill:hsl(80, 100%, 96.2745098039%);opacity:0.7;background-color:hsl(80, 100%, 96.2745098039%);}#container .relationshipLabelBox rect{opacity:0.5;}#container .labelBkg{background-color:rgba(248.6666666666, 255, 235.9999999999, 0.5);}#container .edgeLabel .label{fill:#9370DB;font-size:14px;}#container .label{font-family:"trebuchet ms",verdana,arial,sans-serif;color:#333;}#container .edge-pattern-dashed{stroke-dasharray:8,8;}#container .node rect,#container .node circle,#container .node ellipse,#container .node polygon{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#container .relationshipLine{stroke:#333333;stroke-width:1;fill:none;}#container .marker{fill:none!important;stroke:#333333!important;stroke-width:1;}#container :root{--mermaid-font-family:"trebuchet ms",verdana,arial,sans-serif;}</style>
+  <g>
+    <defs>
+      <marker id="container_er-onlyOneStart" class="marker onlyOne er" refX="0" refY="9" markerWidth="18" markerHeight="18" orient="auto">
+        <path d="M9,0 L9,18 M15,0 L15,18"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-onlyOneEnd" class="marker onlyOne er" refX="18" refY="9" markerWidth="18" markerHeight="18" orient="auto">
+        <path d="M3,0 L3,18 M9,0 L9,18"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-zeroOrOneStart" class="marker zeroOrOne er" refX="0" refY="9" markerWidth="30" markerHeight="18" orient="auto">
+        <circle fill="white" cx="21" cy="9" r="6"/>
+        <path d="M9,0 L9,18"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-zeroOrOneEnd" class="marker zeroOrOne er" refX="30" refY="9" markerWidth="30" markerHeight="18" orient="auto">
+        <circle fill="white" cx="9" cy="9" r="6"/>
+        <path d="M21,0 L21,18"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-oneOrMoreStart" class="marker oneOrMore er" refX="18" refY="18" markerWidth="45" markerHeight="36" orient="auto">
+        <path d="M0,18 Q 18,0 36,18 Q 18,36 0,18 M42,9 L42,27"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-oneOrMoreEnd" class="marker oneOrMore er" refX="27" refY="18" markerWidth="45" markerHeight="36" orient="auto">
+        <path d="M3,9 L3,27 M9,18 Q27,0 45,18 Q27,36 9,18"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-zeroOrMoreStart" class="marker zeroOrMore er" refX="18" refY="18" markerWidth="57" markerHeight="36" orient="auto">
+        <circle fill="white" cx="48" cy="18" r="6"/>
+        <path d="M0,18 Q18,0 36,18 Q18,36 0,18"/>
+      </marker>
+    </defs>
+    <defs>
+      <marker id="container_er-zeroOrMoreEnd" class="marker zeroOrMore er" refX="39" refY="18" markerWidth="57" markerHeight="36" orient="auto">
+        <circle fill="white" cx="9" cy="18" r="6"/>
+        <path d="M21,18 Q39,0 57,18 Q39,36 21,18"/>
+      </marker>
+    </defs>
+    <g class="root">
+      <g class="clusters"/>
+      <g class="edgePaths">
+        <path d="M404.336,92L404.336,100.417C404.336,108.833,404.336,125.667,404.336,142.5C404.336,159.333,404.336,176.167,404.336,184.583L404.336,193" id="id_entity-MedicalEvent-1_entity-DiagnosisConcept-3_0" class="edge-thickness-normal edge-pattern-solid relationshipLine" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="id_entity-MedicalEvent-1_entity-DiagnosisConcept-3_0" data-points="W3sieCI6NDA0LjMzNTkzNzUsInkiOjkyfSx7IngiOjQwNC4zMzU5Mzc1LCJ5IjoxNDIuNX0seyJ4Ijo0MDQuMzM1OTM3NSwieSI6MTkzfV0=" marker-start="url(#container_er-onlyOneStart)" marker-end="url(#container_er-zeroOrOneEnd)"/>
+        <path d="M472.281,72.915L506.669,84.512C541.057,96.11,609.833,119.305,644.221,139.319C678.609,159.333,678.609,176.167,678.609,184.583L678.609,193" id="id_entity-MedicalEvent-1_entity-Place-4_1" class="edge-thickness-normal edge-pattern-solid relationshipLine" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="id_entity-MedicalEvent-1_entity-Place-4_1" data-points="W3sieCI6NDcyLjI4MTI1LCJ5Ijo3Mi45MTQ4NzQ1MjY0NDc3Mn0seyJ4Ijo2NzguNjA5Mzc1LCJ5IjoxNDIuNX0seyJ4Ijo2NzguNjA5Mzc1LCJ5IjoxOTN9XQ==" marker-start="url(#container_er-onlyOneStart)" marker-end="url(#container_er-zeroOrOneEnd)"/>
+        <path d="M336.391,70.254L295.997,82.295C255.604,94.336,174.818,118.418,134.424,138.876C94.031,159.333,94.031,176.167,94.031,184.583L94.031,193" id="id_entity-MedicalEvent-1_entity-ProcedureConcept-2_2" class="edge-thickness-normal edge-pattern-solid relationshipLine" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="id_entity-MedicalEvent-1_entity-ProcedureConcept-2_2" data-points="W3sieCI6MzM2LjM5MDYyNSwieSI6NzAuMjU0MDk3NTM1MTg0Njd9LHsieCI6OTQuMDMxMjUsInkiOjE0Mi41fSx7IngiOjk0LjAzMTI1LCJ5IjoxOTN9XQ==" marker-start="url(#container_er-onlyOneStart)" marker-end="url(#container_er-zeroOrOneEnd)"/>
+        <path d="M94.031,277L94.031,285.417C94.031,293.833,94.031,310.667,94.031,327.5C94.031,344.333,94.031,361.167,94.031,369.583L94.031,378" id="id_entity-ProcedureConcept-2_entity-CodeSystem-0_3" class="edge-thickness-normal edge-pattern-solid relationshipLine" style="undefined;;;undefined" data-edge="true" data-et="edge" data-id="id_entity-ProcedureConcept-2_entity-CodeSystem-0_3" data-points="W3sieCI6OTQuMDMxMjUsInkiOjI3N30seyJ4Ijo5NC4wMzEyNSwieSI6MzI3LjV9LHsieCI6OTQuMDMxMjUsInkiOjM3OH1d" marker-start="url(#container_er-onlyOneStart)" marker-end="url(#container_er-zeroOrOneEnd)"/>
+      </g>
+      <g class="edgeLabels">
+        <g class="edgeLabel" transform="translate(404.3359375, 142.5)">
+          <g class="label" data-id="id_entity-MedicalEvent-1_entity-DiagnosisConcept-3_0" transform="translate(-30.2421875, -10.5)">
+            <foreignObject width="60.484375" height="21">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="edgeLabel">
+                  <p>diagnosis</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel" transform="translate(678.609375, 142.5)">
+          <g class="label" data-id="id_entity-MedicalEvent-1_entity-Place-4_1" transform="translate(-35.53125, -10.5)">
+            <foreignObject width="71.0625" height="21">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="edgeLabel">
+                  <p>in_location</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel" transform="translate(94.03125, 142.5)">
+          <g class="label" data-id="id_entity-MedicalEvent-1_entity-ProcedureConcept-2_2" transform="translate(-32.328125, -10.5)">
+            <foreignObject width="64.65625" height="21">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="edgeLabel">
+                  <p>procedure</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel" transform="translate(94.03125, 327.5)">
+          <g class="label" data-id="id_entity-ProcedureConcept-2_entity-CodeSystem-0_3" transform="translate(-39.203125, -10.5)">
+            <foreignObject width="78.40625" height="21">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="labelBkg" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="edgeLabel">
+                  <p>code system</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+      </g>
+      <g class="nodes">
+        <g class="node default" id="entity-CodeSystem-0" transform="translate(94.03125, 420)">
+          <rect class="basic label-container" style="" x="-64.0234375" y="-42" width="128.046875" height="84"/>
+          <g class="label" style="" transform="translate(-44.0234375, -12)">
+            <rect/>
+            <foreignObject width="88.046875" height="24">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>CodeSystem</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default" id="entity-MedicalEvent-1" transform="translate(404.3359375, 50)">
+          <rect class="basic label-container" style="" x="-67.9453125" y="-42" width="135.890625" height="84"/>
+          <g class="label" style="" transform="translate(-47.9453125, -12)">
+            <rect/>
+            <foreignObject width="95.890625" height="24">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>MedicalEvent</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default" id="entity-ProcedureConcept-2" transform="translate(94.03125, 235)">
+          <rect class="basic label-container" style="" x="-86.03125" y="-42" width="172.0625" height="84"/>
+          <g class="label" style="" transform="translate(-66.03125, -12)">
+            <rect/>
+            <foreignObject width="132.0625" height="24">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>ProcedureConcept</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default" id="entity-DiagnosisConcept-3" transform="translate(404.3359375, 235)">
+          <rect class="basic label-container" style="" x="-84.2734375" y="-42" width="168.546875" height="84"/>
+          <g class="label" style="" transform="translate(-64.2734375, -12)">
+            <rect/>
+            <foreignObject width="128.546875" height="24">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>DiagnosisConcept</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="node default" id="entity-Place-4" transform="translate(678.609375, 235)">
+          <rect class="basic label-container" style="" x="-50" y="-42" width="100" height="84"/>
+          <g class="label" style="" transform="translate(-19.25, -12)">
+            <rect/>
+            <foreignObject width="38.5" height="24">
+              <div xmlns="http://www.w3.org/1999/xhtml" style="display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 100px; text-align: center;">
+                <span class="nodeLabel">
+                  <p>Place</p>
+                </span>
+              </div>
+            </foreignObject>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

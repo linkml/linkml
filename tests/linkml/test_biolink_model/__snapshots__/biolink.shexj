@@ -611,7 +611,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/develops_from"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -671,7 +676,18 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/food_component_of",
+                              "https://w3id.org/biolink/vocab/is_active_ingredient_of",
+                              "https://w3id.org/biolink/vocab/is_excipient_of",
+                              "https://w3id.org/biolink/vocab/nutrient_of",
+                              "https://w3id.org/biolink/vocab/part_of",
+                              "https://w3id.org/biolink/vocab/plasma_membrane_part_of",
+                              "https://w3id.org/biolink/vocab/variant_part_of"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -754,28 +770,28 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/published_in",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 1,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/iso_abbreviation",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/volume",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/issue",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            }
@@ -848,14 +864,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/negated",
-                              "valueExpr": "https://w3id.org/linkml/Boolean",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Boolean",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -883,21 +899,21 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/knowledge_source",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/primary_knowledge_source",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/aggregator_knowledge_source",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
@@ -947,21 +963,21 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/original_subject",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/original_predicate",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/original_object",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -982,14 +998,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_closure",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_closure",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
@@ -1010,28 +1026,28 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_namespace",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_namespace",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_label_closure",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_label_closure",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
@@ -1045,14 +1061,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/p_value",
-                              "valueExpr": "https://w3id.org/linkml/Float",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Float",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/adjusted_p_value",
-                              "valueExpr": "https://w3id.org/linkml/Float",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Float",
                               "min": 0,
                               "max": 1
                            },
@@ -1066,14 +1082,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/category",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": -1
                            }
@@ -1415,7 +1431,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -1437,7 +1453,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -1459,7 +1475,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -1480,49 +1496,49 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -2064,7 +2080,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": -1
                      }
@@ -2110,21 +2126,21 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/published_in",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 1,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/volume",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/chapter",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      }
@@ -2300,7 +2316,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -2322,7 +2338,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -2344,7 +2360,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -2365,49 +2381,49 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -2658,7 +2674,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -2680,7 +2696,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -2702,7 +2718,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -3273,7 +3289,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/causes"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -3294,7 +3315,21 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/affects",
+                              "https://w3id.org/biolink/vocab/affects_response_to",
+                              "https://w3id.org/biolink/vocab/ameliorates_condition",
+                              "https://w3id.org/biolink/vocab/decreases_response_to",
+                              "https://w3id.org/biolink/vocab/disrupts",
+                              "https://w3id.org/biolink/vocab/exacerbates_condition",
+                              "https://w3id.org/biolink/vocab/has_adverse_event",
+                              "https://w3id.org/biolink/vocab/has_side_effect",
+                              "https://w3id.org/biolink/vocab/increases_response_to",
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -3398,7 +3433,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/trade_name",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -3418,14 +3453,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/max_tolerated_dose",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/is_toxic",
-                              "valueExpr": "https://w3id.org/linkml/Boolean",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Boolean",
                               "min": 0,
                               "max": 1
                            },
@@ -3498,7 +3533,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/assesses"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -3587,7 +3627,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -3926,7 +3971,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/binds",
+                              "https://w3id.org/biolink/vocab/directly_physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/indirectly_physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/physically_interacts_with"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -3975,7 +4028,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/is_supplement",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -4146,7 +4199,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/has_side_effect"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -4246,7 +4304,12 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                              "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/has_adverse_event"
+                                 ]
+                              },
                               "min": 1,
                               "max": 1
                            },
@@ -4260,7 +4323,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -4282,7 +4345,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -4304,7 +4367,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -4485,7 +4548,13 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/derives_into",
+                              "https://w3id.org/biolink/vocab/has_metabolite"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -5415,7 +5484,16 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/author",
+                              "https://w3id.org/biolink/vocab/contributor",
+                              "https://w3id.org/biolink/vocab/editor",
+                              "https://w3id.org/biolink/vocab/provider",
+                              "https://w3id.org/biolink/vocab/publisher"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -5591,7 +5669,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/distribution_download_url",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      }
@@ -5637,14 +5715,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/source_web_page",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://schema.org/logo",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      }
@@ -5697,7 +5775,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/ingest_date",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -6082,7 +6160,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/has_mode_of_inheritance"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -6361,28 +6444,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
@@ -6396,7 +6479,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -6418,7 +6501,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -6440,7 +6523,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -6461,21 +6544,21 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      }
@@ -6873,7 +6956,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/target_for"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -6937,14 +7025,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/category",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": -1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": -1
                      },
@@ -6972,7 +7060,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/deprecated",
-                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Boolean",
                         "min": 0,
                         "max": 1
                      }
@@ -7242,7 +7330,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -7264,7 +7352,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -7286,7 +7374,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -7487,49 +7575,49 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -8143,7 +8231,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -8165,7 +8253,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -8187,7 +8275,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -8208,49 +8296,49 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -8299,7 +8387,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -8321,7 +8409,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -8343,7 +8431,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            }
@@ -8533,28 +8621,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -8761,7 +8849,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/symbol",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -8850,7 +8938,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_derivative_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -9115,7 +9203,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/causes"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
@@ -9136,7 +9229,21 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/affects",
+                              "https://w3id.org/biolink/vocab/affects_response_to",
+                              "https://w3id.org/biolink/vocab/ameliorates_condition",
+                              "https://w3id.org/biolink/vocab/decreases_response_to",
+                              "https://w3id.org/biolink/vocab/disrupts",
+                              "https://w3id.org/biolink/vocab/exacerbates_condition",
+                              "https://w3id.org/biolink/vocab/has_adverse_event",
+                              "https://w3id.org/biolink/vocab/has_side_effect",
+                              "https://w3id.org/biolink/vocab/increases_response_to",
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -9413,7 +9520,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -9434,7 +9541,13 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/causes",
+                              "https://w3id.org/biolink/vocab/contributes_to"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -9574,7 +9687,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/xref",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": -1
                            }
@@ -9703,7 +9816,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/causes"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -9985,7 +10103,21 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                              "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/affects",
+                                    "https://w3id.org/biolink/vocab/affects_response_to",
+                                    "https://w3id.org/biolink/vocab/ameliorates_condition",
+                                    "https://w3id.org/biolink/vocab/decreases_response_to",
+                                    "https://w3id.org/biolink/vocab/disrupts",
+                                    "https://w3id.org/biolink/vocab/exacerbates_condition",
+                                    "https://w3id.org/biolink/vocab/has_adverse_event",
+                                    "https://w3id.org/biolink/vocab/has_side_effect",
+                                    "https://w3id.org/biolink/vocab/increases_response_to",
+                                    "https://w3id.org/biolink/vocab/regulates"
+                                 ]
+                              },
                               "min": 1,
                               "max": 1
                            },
@@ -10014,14 +10146,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -10042,49 +10174,49 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/has_count",
-                              "valueExpr": "https://w3id.org/linkml/Integer",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/has_total",
-                              "valueExpr": "https://w3id.org/linkml/Integer",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                              "valueExpr": "https://w3id.org/linkml/Double",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Double",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                              "valueExpr": "https://w3id.org/linkml/Double",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Double",
                               "min": 0,
                               "max": 1
                            }
@@ -10210,7 +10342,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/expressed_in"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -10330,7 +10467,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/coexpressed_with"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -10418,7 +10560,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/member_of"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -10471,7 +10618,15 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/homologous_to",
+                              "https://w3id.org/biolink/vocab/orthologous_to",
+                              "https://w3id.org/biolink/vocab/paralogous_to",
+                              "https://w3id.org/biolink/vocab/xenologous_to"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -10538,7 +10693,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/has_gene_product"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -11075,14 +11235,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/start_interbase_coordinate",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/end_interbase_coordinate",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
@@ -11147,7 +11307,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/has_sequence_location"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -11386,7 +11551,12 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                              "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/related_condition"
+                                 ]
+                              },
                               "min": 1,
                               "max": 1
                            },
@@ -11407,7 +11577,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -11429,7 +11599,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -11451,7 +11621,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -11615,7 +11785,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/has_variant_part"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -11699,7 +11874,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/has_phenotype"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -11720,7 +11900,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -11742,7 +11922,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -11764,7 +11944,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -11785,49 +11965,49 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -12026,14 +12206,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/latitude",
-                              "valueExpr": "https://w3id.org/linkml/Float",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Float",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/longitude",
-                              "valueExpr": "https://w3id.org/linkml/Float",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Float",
                               "min": 0,
                               "max": 1
                            }
@@ -12452,28 +12632,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/license",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/rights",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/format",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/creation_date",
-                        "valueExpr": "https://w3id.org/linkml/Date",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Date",
                         "min": 0,
                         "max": 1
                      }
@@ -12533,7 +12713,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/mentions"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -13215,7 +13400,13 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/derives_from",
+                              "https://w3id.org/biolink/vocab/is_metabolite_of"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -13413,7 +13604,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/model_of"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -13670,7 +13866,18 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/food_component_of",
+                              "https://w3id.org/biolink/vocab/is_active_ingredient_of",
+                              "https://w3id.org/biolink/vocab/is_excipient_of",
+                              "https://w3id.org/biolink/vocab/nutrient_of",
+                              "https://w3id.org/biolink/vocab/part_of",
+                              "https://w3id.org/biolink/vocab/plasma_membrane_part_of",
+                              "https://w3id.org/biolink/vocab/variant_part_of"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -13719,7 +13926,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/is_metabolite",
-                              "valueExpr": "https://w3id.org/linkml/Boolean",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Boolean",
                               "min": 0,
                               "max": 1
                            }
@@ -13856,14 +14063,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/provided_by",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/xref",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": -1
                            },
@@ -13884,7 +14091,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/category",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 1,
                               "max": -1
                            }
@@ -13948,7 +14155,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -13962,14 +14169,40 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/associated_with",
+                              "https://w3id.org/biolink/vocab/associated_with_decreased_likelihood_of",
+                              "https://w3id.org/biolink/vocab/associated_with_increased_likelihood_of",
+                              "https://w3id.org/biolink/vocab/associated_with_likelihood_of",
+                              "https://w3id.org/biolink/vocab/associated_with_resistance_to",
+                              "https://w3id.org/biolink/vocab/associated_with_sensitivity_to",
+                              "https://w3id.org/biolink/vocab/biomarker_for",
+                              "https://w3id.org/biolink/vocab/coexpressed_with",
+                              "https://w3id.org/biolink/vocab/condition_associated_with_gene",
+                              "https://w3id.org/biolink/vocab/correlated_with",
+                              "https://w3id.org/biolink/vocab/decreased_likelihood_associated_with",
+                              "https://w3id.org/biolink/vocab/gene_associated_with_condition",
+                              "https://w3id.org/biolink/vocab/genetic_association",
+                              "https://w3id.org/biolink/vocab/genetically_associated_with",
+                              "https://w3id.org/biolink/vocab/has_biomarker",
+                              "https://w3id.org/biolink/vocab/increased_likelihood_associated_with",
+                              "https://w3id.org/biolink/vocab/likelihood_associated_with",
+                              "https://w3id.org/biolink/vocab/negatively_correlated_with",
+                              "https://w3id.org/biolink/vocab/occurs_together_in_literature_with",
+                              "https://w3id.org/biolink/vocab/positively_correlated_with",
+                              "https://w3id.org/biolink/vocab/resistance_associated_with",
+                              "https://w3id.org/biolink/vocab/sensitivity_associated_with"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -14748,7 +14981,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/associated_environmental_context",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -14769,7 +15002,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/binds",
+                              "https://w3id.org/biolink/vocab/directly_physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/gene_fusion_with",
+                              "https://w3id.org/biolink/vocab/genetic_neighborhood_of",
+                              "https://w3id.org/biolink/vocab/genetically_interacts_with",
+                              "https://w3id.org/biolink/vocab/indirectly_physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/interacts_with",
+                              "https://w3id.org/biolink/vocab/physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -14829,7 +15075,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/subclass_of"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      }
@@ -15038,7 +15289,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -15060,7 +15311,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -15082,7 +15333,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -15166,7 +15417,20 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                              "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/binds",
+                                    "https://w3id.org/biolink/vocab/directly_physically_interacts_with",
+                                    "https://w3id.org/biolink/vocab/gene_fusion_with",
+                                    "https://w3id.org/biolink/vocab/genetic_neighborhood_of",
+                                    "https://w3id.org/biolink/vocab/genetically_interacts_with",
+                                    "https://w3id.org/biolink/vocab/indirectly_physically_interacts_with",
+                                    "https://w3id.org/biolink/vocab/interacts_with",
+                                    "https://w3id.org/biolink/vocab/physically_interacts_with",
+                                    "https://w3id.org/biolink/vocab/regulates"
+                                 ]
+                              },
                               "min": 1,
                               "max": 1
                            }
@@ -15229,7 +15493,20 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/binds",
+                              "https://w3id.org/biolink/vocab/directly_physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/gene_fusion_with",
+                              "https://w3id.org/biolink/vocab/genetic_neighborhood_of",
+                              "https://w3id.org/biolink/vocab/genetically_interacts_with",
+                              "https://w3id.org/biolink/vocab/indirectly_physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/interacts_with",
+                              "https://w3id.org/biolink/vocab/physically_interacts_with",
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -15856,7 +16133,33 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/associated_with",
+                              "https://w3id.org/biolink/vocab/associated_with_decreased_likelihood_of",
+                              "https://w3id.org/biolink/vocab/associated_with_increased_likelihood_of",
+                              "https://w3id.org/biolink/vocab/associated_with_likelihood_of",
+                              "https://w3id.org/biolink/vocab/associated_with_resistance_to",
+                              "https://w3id.org/biolink/vocab/associated_with_sensitivity_to",
+                              "https://w3id.org/biolink/vocab/biomarker_for",
+                              "https://w3id.org/biolink/vocab/coexpressed_with",
+                              "https://w3id.org/biolink/vocab/condition_associated_with_gene",
+                              "https://w3id.org/biolink/vocab/correlated_with",
+                              "https://w3id.org/biolink/vocab/decreased_likelihood_associated_with",
+                              "https://w3id.org/biolink/vocab/gene_associated_with_condition",
+                              "https://w3id.org/biolink/vocab/genetic_association",
+                              "https://w3id.org/biolink/vocab/genetically_associated_with",
+                              "https://w3id.org/biolink/vocab/has_biomarker",
+                              "https://w3id.org/biolink/vocab/increased_likelihood_associated_with",
+                              "https://w3id.org/biolink/vocab/likelihood_associated_with",
+                              "https://w3id.org/biolink/vocab/negatively_correlated_with",
+                              "https://w3id.org/biolink/vocab/occurs_together_in_literature_with",
+                              "https://w3id.org/biolink/vocab/positively_correlated_with",
+                              "https://w3id.org/biolink/vocab/resistance_associated_with",
+                              "https://w3id.org/biolink/vocab/sensitivity_associated_with"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -15870,7 +16173,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -15892,7 +16195,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -15914,7 +16217,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -15935,28 +16238,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -16028,28 +16331,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -16126,7 +16429,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -16148,7 +16451,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -16170,7 +16473,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -16184,28 +16487,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
@@ -16219,21 +16522,21 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      }
@@ -16851,14 +17154,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/mapped_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -16880,28 +17183,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_part_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_derivative_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -16915,14 +17218,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -16944,28 +17247,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_form_or_variant_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_part_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_derivative_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -17001,7 +17304,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -17172,7 +17475,12 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -17522,35 +17830,35 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/pages",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/summary",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/keywords",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/mesh_terms",
-                              "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                               "min": 0,
                               "max": -1
                            },
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://purl.org/dc/terms/type",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 1,
                               "max": -1
                            },
@@ -17620,7 +17928,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_numeric_value",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -17715,7 +18023,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/stoichiometry",
-                              "valueExpr": "https://w3id.org/linkml/Integer",
+                              "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                               "min": 0,
                               "max": 1
                            },
@@ -18097,7 +18405,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/resource_id",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 1,
                         "max": 1
                      },
@@ -18118,7 +18426,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/upstream_resource_ids",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      }
@@ -18566,28 +18874,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/iso_abbreviation",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/volume",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/issue",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": -1
                      }
@@ -19731,7 +20039,12 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                              "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/related_condition"
+                                 ]
+                              },
                               "min": 1,
                               "max": 1
                            },
@@ -19752,7 +20065,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -19774,7 +20087,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -19796,7 +20109,7 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                              "valueExpr": "https://w3id.org/linkml/String",
+                              "valueExpr": "https://w3id.org/biolink/vocab/String",
                               "min": 0,
                               "max": 1
                            },
@@ -19922,7 +20235,14 @@
                            {
                               "type": "TripleConstraint",
                               "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                              "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/biolink/vocab/condition_associated_with_gene",
+                                    "https://w3id.org/biolink/vocab/gene_associated_with_condition",
+                                    "https://w3id.org/biolink/vocab/genetically_associated_with"
+                                 ]
+                              },
                               "min": 1,
                               "max": 1
                            }
@@ -19983,7 +20303,21 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
-                        "valueExpr": "https://w3id.org/biolink/vocab/PredicateType",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/biolink/vocab/affects",
+                              "https://w3id.org/biolink/vocab/affects_response_to",
+                              "https://w3id.org/biolink/vocab/ameliorates_condition",
+                              "https://w3id.org/biolink/vocab/decreases_response_to",
+                              "https://w3id.org/biolink/vocab/disrupts",
+                              "https://w3id.org/biolink/vocab/exacerbates_condition",
+                              "https://w3id.org/biolink/vocab/has_adverse_event",
+                              "https://w3id.org/biolink/vocab/has_side_effect",
+                              "https://w3id.org/biolink/vocab/increases_response_to",
+                              "https://w3id.org/biolink/vocab/regulates"
+                           ]
+                        },
                         "min": 1,
                         "max": 1
                      },
@@ -20095,7 +20429,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -20117,7 +20451,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_aspect_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -20139,7 +20473,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/qualified_predicate",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
@@ -20160,49 +20494,49 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/subject_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/object_specialization_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/Uriorcurie",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Uriorcurie",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/anatomical_context_qualifier",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": "https://w3id.org/biolink/vocab/String",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      }
@@ -20298,28 +20632,28 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_quotient",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_count",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_total",
-                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Integer",
                         "min": 0,
                         "max": 1
                      },
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/biolink/vocab/has_percentage",
-                        "valueExpr": "https://w3id.org/linkml/Double",
+                        "valueExpr": "https://w3id.org/biolink/vocab/Double",
                         "min": 0,
                         "max": 1
                      },

@@ -16,6 +16,7 @@ from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
 
 from linkml._version import __version__
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_accepted_type_designator_values, get_type_designator_value
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
@@ -375,6 +376,15 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     How to filter imports from imported schema.
 
     See :class:`.SplitMode` for description of options
+    """
+
+    expand_subproperty_of: bool = True
+    """
+    If True, expand subproperty_of constraints to Literal type constraints.
+
+    When a slot has `subproperty_of` set, valid values are the referenced slot
+    and all its descendants (via is_a). Values are formatted according to the
+    slot's range type (string, uriorcurie, uri).
     """
 
     # ObjectVars (identical to pythongen)
@@ -766,6 +776,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = f'Literal["{slot_def.equals_string}"]'
         elif slot_def.equals_string_in:
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
+        elif self.expand_subproperty_of and slot_def.subproperty_of:
+            pyrange = self._generate_subproperty_constraint(slot_def)
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
                 slot_range,
@@ -820,6 +832,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if len(collection_keys) == 1:
             return list(collection_keys)[0]
         return None
+
+    def _generate_subproperty_constraint(self, slot_def: SlotDefinition) -> str:
+        """
+        Generate Literal type from slot descendants based on subproperty_of.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        :param slot_def: SlotDefinition with subproperty_of set
+        :return: Literal type string e.g. 'Literal["related_to", "causes", ...]'
+        """
+        values = get_subproperty_values(self.schemaview, slot_def)
+        return "Literal[" + ", ".join([f'"{v}"' for v in values]) + "]"
 
     def _clean_injected_classes(self, injected_classes: list[Union[str, type]]) -> Optional[list[str]]:
         """Get source, deduplicate, and dedent injected classes"""

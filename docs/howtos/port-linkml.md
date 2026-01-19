@@ -118,7 +118,7 @@ is required.
 Consult some of the existing generators to see how this is done. Be
 sure to use the newer style SchemaView generators.
 
-for example: [javagen](https://github.com/linkml/linkml/blob/main/linkml/generators/javagen.py)
+for example: [javagen](https://github.com/linkml/linkml/blob/main/packages/linkml/src/linkml/generators/javagen.py)
 
 Definitely make an issue on our repo, so you can coordinate with others interested in support for the target language!
 
