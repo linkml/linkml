@@ -102,7 +102,11 @@ def load_raw_schema(
             schema.source_file_date = src_date
         schema.source_file_size = schema_metadata.source_file_size
         schema.generation_date = datetime.now().strftime(DATETIME_FORMAT)
-    schema.metamodel_version = metamodel_version
+    # Only set metamodel_version if the schema doesn't already define one.
+    # This allows schemas (like the metamodel itself) to specify their own version
+    # rather than inheriting from the currently installed runtime.
+    if not schema.metamodel_version:
+        schema.metamodel_version = metamodel_version
 
     set_from_schema(schema)
 
