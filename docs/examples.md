@@ -36,7 +36,7 @@ See [Cancer Research Data Commons - Harmonized Model](https://cancerdhc.github.i
 LinkML is itself described as a LinkML model
 
  * [linkml/linkml-model](https://github.com/linkml/linkml-model) repo
- * [generated docs](https://linkml.io/linkml-model/docs/)
+ * [generated docs](https://linkml.io/linkml-model/latest/docs/)
 
 ## INCLUDE Data Coordination Center
 
