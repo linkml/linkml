@@ -443,6 +443,7 @@
     <span class="n">SubsetDefinitionName</span><span class="p">,</span>
     <span class="n">TypeDefinition</span><span class="p">,</span>
     <span class="n">TypeDefinitionName</span><span class="p">,</span>
+    <span class="n">metamodel_version</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.namespaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Namespaces</span>
@@ -607,6 +608,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span><span class="o">.</span><span class="n">schema</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">merge_schema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">include</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span>
+            <span class="c1"># Set metamodel_version if not already defined in the schema.</span>
+            <span class="c1"># This ensures consistency with SchemaLoader-based generators.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span> <span class="o">=</span> <span class="n">metamodel_version</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_namespaces</span><span class="p">()</span>
 

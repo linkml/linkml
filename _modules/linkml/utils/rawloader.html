@@ -498,7 +498,11 @@
             <span class="n">schema</span><span class="o">.</span><span class="n">source_file_date</span> <span class="o">=</span> <span class="n">src_date</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file_size</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_size</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">generation_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">DATETIME_FORMAT</span><span class="p">)</span>
-    <span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span> <span class="o">=</span> <span class="n">metamodel_version</span>
+    <span class="c1"># Only set metamodel_version if the schema doesn&#39;t already define one.</span>
+    <span class="c1"># This allows schemas (like the metamodel itself) to specify their own version</span>
+    <span class="c1"># rather than inheriting from the currently installed runtime.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">:</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span> <span class="o">=</span> <span class="n">metamodel_version</span>
 
     <span class="n">set_from_schema</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
