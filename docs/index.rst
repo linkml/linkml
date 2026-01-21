@@ -34,7 +34,6 @@ Documentation
    examples
    ecosystem
    specifications/linkml-spec.md
-   contributing/contributing.md
    get-involved/index
    faq/index
 
@@ -55,21 +54,31 @@ The key schema elements are:
     - `linkml:TypeDefinition <https://w3id.org/linkml/TypeDefinition>`_
     - `linkml:EnumDefinition <https://w3id.org/linkml/EnumDefinition>`_
 
-Developers
-----------------
+Schema Developers
+-----------------
 
-If you are a developer looking to either contribute to the framework,
-or make use of any linkml package programmatically, this section is
-for you:
+If you are a Python developer looking to use LinkML programmatically to build schemas,
+work with data, or integrate LinkML into your applications, this section is for you:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Developers guide:
+   :caption: Schema Developers Guide:
 
    cli/index
    developers/index
    code/index
 
+Maintainers
+-----------
+
+If you want to contribute to the LinkML framework itself, including bug fixes,
+new features, or documentation improvements:
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Maintainers Guide:
+
+   maintainers/index
 
 
 Indices and tables
