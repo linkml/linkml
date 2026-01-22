@@ -1,15 +1,16 @@
 .. _developers:
 
-Developers guide
-================
+Schema Developers Guide
+=======================
 
-This section of the documentation is aimed primarily at Python developers who want to use the LinkML framework programmatically
+This section is for Python developers who want to use the LinkML framework programmatically to build schemas, work with data, and integrate LinkML into their applications.
+
+If you are looking to contribute to the LinkML framework itself, see the :ref:`maintainers` guide.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   organization
    notebooks
    manipulating-schemas
    manage-releases
@@ -20,5 +21,3 @@ This section of the documentation is aimed primarily at Python developers who wa
    using-sql-dbs
    sqlstore
    tool-developer-guide
-   contributing-code
-   deprecation
