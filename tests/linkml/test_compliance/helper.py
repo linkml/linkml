@@ -84,6 +84,7 @@ DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
+PRISMA = "prisma"
 GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[str, Any]]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
@@ -113,6 +114,7 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
             "use_native_uris": False,
         },
     ),
+    PRISMA: generators.PrismaGenerator,
 }
 
 
