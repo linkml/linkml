@@ -16,7 +16,7 @@ jobs:
       - uses: actions/stale@v9
         with:
           # Timeframes from issue #3080
-          days-before-stale: 1095    # 3 years
+          days-before-stale: 730     # 2 years
           days-before-close: 90      # +3 months
 
           # Disable for PRs
@@ -27,7 +27,7 @@ jobs:
           stale-issue-label: 'stale'
 
           # Exempt labels (issues with these won't be marked stale)
-          exempt-issue-labels: 'pinned,security,blocked'
+          exempt-issue-labels: 'pinned,security,blocked,bug'
 
           # Stale message (from issue #3080)
           stale-issue-message: |
@@ -39,7 +39,7 @@ jobs:
             - why it matters now, and
             - any updated context or concrete next steps.
 
-            If there's no activity for a bit longer, the issue will be closed automatically—but it can always be reopened later.
+            If there's no activity in the next 3 months, the issue will be closed automatically—but it can always be reopened later.
 
             Thank you for being part of the community!
 
