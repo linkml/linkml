@@ -26,7 +26,7 @@ embedded on the class documentation pages. These diagrams summarize the relation
 and slots in your schema.
 
 Optionally linkml also allows you to exercise more granular control on the layout and content rendered on your documentation pages.
-This customization is facilitated by the modification of the `base jinja2 templates <https://github.com/linkml/linkml/tree/main/linkml/generators/docgen>`_
+This customization is facilitated by the modification of the `base jinja2 templates <https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen>`_
 that are used to control the layout and content of the documentation pages. There are jinja2 templates for each of the elements
 in your schema, and you can modify whichever you need to based on your requirements.
 

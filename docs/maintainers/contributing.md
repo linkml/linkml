@@ -192,7 +192,7 @@ Formatting and some code quality issues can be fixed automatically by running:
 uv run tox -e format
 ```
 
-You can configure these tools to run automatically before each commit by using [pre-commit](https://pre-commit.com/). To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pypa.github.io/pipx/):
+You can configure these tools to run automatically before each commit by using [pre-commit](https://pre-commit.com/). To set this up, first ensure that you have the pre-commit package installed globally. This can be done via [pipx](https://pipx.pypa.io/):
 
 ```shell
 pipx install pre-commit
@@ -249,4 +249,4 @@ insight into your work and allows them to provide feedback early on.
 ## See Also
 
 - [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
-- [Deprecation](../developers/deprecation.md) - Handling deprecations
+- [Deprecation](deprecation.md) - Handling deprecations

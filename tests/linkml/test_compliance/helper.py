@@ -80,6 +80,7 @@ JSONLD = "jsonld"
 SQL_ALCHEMY_IMPERATIVE = "sqlalchemy_imperative"
 SQL_ALCHEMY_DECLARATIVE = "sqlalchemy_declarative"
 PANDERA_POLARS_CLASS = "pandera_polars_class"
+DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
@@ -101,6 +102,7 @@ GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[s
         {"template": sqlalchemygen.TemplateEnum.DECLARATIVE},
     ),
     PANDERA_POLARS_CLASS: (generators.PanderaDataframeGenerator, {"backing_form": "loaded"}),
+    DATAFRAME_POLARS_SCHEMA: generators.PolarsSchemaDataframeGenerator,
     SQL_DDL_SQLITE: (generators.SQLTableGenerator, {"dialect": "sqlite"}),
     SQL_DDL_POSTGRES: (generators.SQLTableGenerator, {"dialect": "postgresql"}),
     OWL: (
@@ -815,6 +817,10 @@ def check_data(
             plugins = [JsonschemaValidationPlugin(closed=True, include_range_class_descendants=False)]
         elif isinstance(gen, GENERATORS[PANDERA_POLARS_CLASS][0]):
             check_data_pandera(schema, output, target_class, object_to_validate, coerced, expected_behavior, valid)
+        elif isinstance(gen, GENERATORS[DATAFRAME_POLARS_SCHEMA]):
+            check_data_pandera(
+                schema, output, target_class, object_to_validate, coerced, expected_behavior, valid, polars_only=True
+            )
         elif isinstance(gen, ContextGenerator):
             context_dir = _schema_out_path(schema) / "generated" / "jsonld_context.context.jsonld"
             if not context_dir.exists() and tests.WITH_OUTPUT:

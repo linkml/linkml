@@ -550,3 +550,308 @@ def test_rustgen_special_cases_roundtrip(temp_dir):
         "prefix_bindings_compact_optional",
     ]:
         assert key in output_data
+
+
+def test_subproperty_of_generates_rust_enum(temp_dir):
+    """Test that subproperty_of generates a Rust enum with slot descendants."""
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/test
+        name: test_subproperty
+        prefixes:
+          ex: https://example.org/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        imports:
+          - linkml:types
+
+        slots:
+          related_to:
+            description: Root predicate
+            slot_uri: ex:related_to
+          causes:
+            is_a: related_to
+            slot_uri: ex:causes
+          treats:
+            is_a: related_to
+            slot_uri: ex:treats
+
+          predicate:
+            range: uriorcurie
+            subproperty_of: related_to
+
+        classes:
+          Association:
+            slots:
+              - predicate
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_subproperty.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "subproperty_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=True,
+        serde=True,
+        output=str(out_dir),
+    )
+    gen.serialize(force=True)
+
+    lib_rs = out_dir / "src" / "lib.rs"
+    assert lib_rs.exists(), "lib.rs not generated"
+    content = lib_rs.read_text(encoding="utf-8")
+
+    # Should generate PredicateEnum with variants for all descendants
+    assert "PredicateEnum" in content
+    # Should have variants for the slots
+    assert "Causes" in content or "causes" in content.lower()
+    assert "Treats" in content or "treats" in content.lower()
+    assert "RelatedTo" in content or "related_to" in content.lower()
+
+    # Should use CURIEs for serde serialization (uriorcurie range)
+    assert "ex:causes" in content or '"ex:causes"' in content
+    assert "ex:treats" in content or '"ex:treats"' in content
+    assert "ex:related_to" in content or '"ex:related_to"' in content
+
+
+def test_subproperty_of_with_deeper_hierarchy(temp_dir):
+    """Test that subproperty_of includes all descendants, not just direct children."""
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/test
+        name: test_subproperty_deep
+        prefixes:
+          ex: https://example.org/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        imports:
+          - linkml:types
+
+        slots:
+          related_to:
+            slot_uri: ex:related_to
+          causes:
+            is_a: related_to
+            slot_uri: ex:causes
+          directly_causes:
+            is_a: causes
+            slot_uri: ex:directly_causes
+          treats:
+            is_a: related_to
+            slot_uri: ex:treats
+
+          predicate:
+            range: uriorcurie
+            subproperty_of: related_to
+
+        classes:
+          Association:
+            slots:
+              - predicate
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_subproperty_deep.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "subproperty_deep_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=True,
+        serde=True,
+        output=str(out_dir),
+    )
+    gen.serialize(force=True)
+
+    lib_rs = out_dir / "src" / "lib.rs"
+    content = lib_rs.read_text(encoding="utf-8")
+
+    # Should include grandchild (directly_causes)
+    assert "DirectlyCauses" in content or "directly_causes" in content.lower()
+    # Should include direct children
+    assert "Causes" in content or "causes" in content.lower()
+    assert "Treats" in content or "treats" in content.lower()
+    # Should include root
+    assert "RelatedTo" in content or "related_to" in content.lower()
+
+
+def test_subproperty_of_with_string_range(temp_dir):
+    """Test that subproperty_of with string range uses snake_case slot names."""
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/test
+        name: test_subproperty_string
+        prefixes:
+          ex: https://example.org/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        imports:
+          - linkml:types
+
+        slots:
+          related_to:
+            slot_uri: ex:related_to
+          causes:
+            is_a: related_to
+            slot_uri: ex:causes
+          treats:
+            is_a: related_to
+            slot_uri: ex:treats
+
+          predicate:
+            range: string
+            subproperty_of: related_to
+
+        classes:
+          Association:
+            slots:
+              - predicate
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_subproperty_string.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "subproperty_string_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=True,
+        serde=True,
+        output=str(out_dir),
+    )
+    gen.serialize(force=True)
+
+    lib_rs = out_dir / "src" / "lib.rs"
+    content = lib_rs.read_text(encoding="utf-8")
+
+    # Should generate PredicateEnum
+    assert "PredicateEnum" in content
+    # For string range, serde should use snake_case slot names, not CURIEs
+    # The enum variant itself will be CamelCase, but the serialized value should be snake_case
+    assert '"causes"' in content or "causes" in content
+    assert '"treats"' in content or "treats" in content
+    assert '"related_to"' in content or "related_to" in content
+
+
+def test_subproperty_of_can_be_disabled(temp_dir):
+    """Test that expand_subproperty_of=False disables enum generation."""
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/test
+        name: test_subproperty_disabled
+        prefixes:
+          ex: https://example.org/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        imports:
+          - linkml:types
+
+        slots:
+          related_to:
+            slot_uri: ex:related_to
+          causes:
+            is_a: related_to
+            slot_uri: ex:causes
+
+          predicate:
+            range: uriorcurie
+            subproperty_of: related_to
+
+        classes:
+          Association:
+            slots:
+              - predicate
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_subproperty_disabled.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "subproperty_disabled_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=True,
+        serde=True,
+        output=str(out_dir),
+        expand_subproperty_of=False,
+    )
+    gen.serialize(force=True)
+
+    lib_rs = out_dir / "src" / "lib.rs"
+    content = lib_rs.read_text(encoding="utf-8")
+
+    # Should NOT generate PredicateEnum when disabled
+    assert "PredicateEnum" not in content
+    # Should use regular String type instead
+    assert "String" in content
+
+
+def test_subproperty_of_cargo_check(temp_dir):
+    """Test that generated code with subproperty_of passes cargo check."""
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/test
+        name: test_subproperty_check
+        prefixes:
+          ex: https://example.org/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        imports:
+          - linkml:types
+
+        slots:
+          related_to:
+            slot_uri: ex:related_to
+          causes:
+            is_a: related_to
+            slot_uri: ex:causes
+          treats:
+            is_a: related_to
+            slot_uri: ex:treats
+
+          predicate:
+            range: uriorcurie
+            subproperty_of: related_to
+
+        classes:
+          Association:
+            tree_root: true
+            slots:
+              - predicate
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_subproperty_check.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "subproperty_check_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=True,
+        serde=True,
+        output=str(out_dir),
+    )
+    gen.serialize(force=True)
+
+    result = _cargo_check(out_dir, context="subproperty_of schema")
+    if result.returncode != 0:
+        pytest.fail(
+            f"cargo check failed for subproperty_of schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
