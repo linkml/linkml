@@ -1,7 +1,5 @@
 """Pytest fixtures for metamodel compatibility tests."""
 
-from pathlib import Path
-
 import pytest
 
 
