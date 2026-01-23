@@ -48,6 +48,12 @@ class ExcelGenerator(Generator):
         :param output_path: The path where the workbook should be created.
         :param classes: List of class names for which worksheets should be created.
         """
+        if not classes:
+            self.logger.warning(
+                f"No classes to process for Excel generation. Skipping workbook creation for {output_path}"
+            )
+            return
+
         workbook = self.create_workbook(output_path)
         workbook.remove(workbook.active)
         sv = self.schemaview
