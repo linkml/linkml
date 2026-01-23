@@ -6,12 +6,30 @@ from linkml_runtime.linkml_model import ClassDefinition, EnumDefinitionName, Slo
 
 
 class ShaclIfAbsentProcessor(IfAbsentProcessor):
+    # Special ifabsent functions that compute values at runtime based on schema context.
+    # These cannot be represented as static SHACL default values, so we skip them.
+    RUNTIME_IFABSENT_FUNCTIONS = frozenset(
+        [
+            "default_range",
+            "default_prefix",
+            "default_ns",
+            "slot_curie",
+            "slot_uri",
+            "class_uri",
+            "bnode",
+        ]
+    )
+
     def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
         if default_value == "class_curie":
             class_uri = self.schema_view.get_uri(cls, expand=True)
             if class_uri:
                 return True, URIRef(class_uri)
-            return True, ""
+            return True, None
+
+        # Skip runtime-computed ifabsent functions that can't be represented in SHACL
+        if default_value in self.RUNTIME_IFABSENT_FUNCTIONS:
+            return True, None
 
         return False, None
 
