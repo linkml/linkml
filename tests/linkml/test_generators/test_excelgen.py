@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from openpyxl import load_workbook
 
@@ -150,3 +151,18 @@ def test_file_generation_for_mixins(input_path, tmp_path):
 
     assert "HasAliases.xlsx" in files
     assert "WithLocation.xlsx" in files
+
+
+def test_empty_class_list_handling(input_path, tmp_path, caplog):
+    """Test that Excel generator handles empty class lists gracefully."""
+    organization_schema = str(input_path("organization.yaml"))
+    xlsx_filename = tmp_path / "empty_classes.xlsx"
+
+    generator = ExcelGenerator(organization_schema)
+    generator.create_workbook_and_worksheets(xlsx_filename, [])
+
+    # Verify no file was created
+    assert not xlsx_filename.exists()
+
+    # Verify warning was logged
+    assert "No classes to process for Excel generation" in caplog.text
