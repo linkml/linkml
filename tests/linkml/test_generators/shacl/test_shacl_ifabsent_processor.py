@@ -482,3 +482,29 @@ def test_process_sparql_path_ifabsent_attribute():
             schema_view.all_slots()[SlotDefinitionName("unimplementedSparqlPath")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
+
+
+@pytest.mark.parametrize(
+    "ifabsent_func",
+    ["default_range", "default_prefix", "default_ns", "slot_curie", "slot_uri", "class_uri", "bnode"],
+)
+def test_runtime_ifabsent_functions_return_none(ifabsent_func):
+    """Runtime-computed ifabsent functions cannot be represented in SHACL and should return None."""
+    schema_view = SchemaView(
+        schema_base
+        + f"""
+    - name: runtimeSlot
+      range: string
+      ifabsent: {ifabsent_func}
+    """
+    )
+
+    processor = ShaclIfAbsentProcessor(schema_view)
+
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("runtimeSlot")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        is None
+    )
