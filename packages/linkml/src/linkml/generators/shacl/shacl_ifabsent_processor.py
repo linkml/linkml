@@ -1,3 +1,5 @@
+from typing import Optional
+
 from rdflib import Literal, URIRef
 
 from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
@@ -20,7 +22,9 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
         ]
     )
 
-    def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
+    def map_custom_default_values(
+        self, default_value: str, slot: SlotDefinition, cls: ClassDefinition
+    ) -> tuple[bool, Optional[URIRef]]:
         if default_value == "class_curie":
             class_uri = self.schema_view.get_uri(cls, expand=True)
             if class_uri:

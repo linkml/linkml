@@ -251,7 +251,9 @@ class IfAbsentProcessor(ABC):
                 return typ
 
     @abc.abstractmethod
-    def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
+    def map_custom_default_values(
+        self, default_value: str, slot: SlotDefinition, cls: ClassDefinition
+    ) -> tuple[bool, Optional[Any]]:
         """
         Maps custom default values that aren't generic behaviours.
 
