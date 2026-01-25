@@ -52,6 +52,7 @@ from linkml_runtime.linkml_model.meta import (
     SubsetDefinitionName,
     TypeDefinition,
     TypeDefinitionName,
+    metamodel_version,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.namespaces import Namespaces
@@ -214,6 +215,10 @@ class Generator(metaclass=abc.ABCMeta):
                     self.include = SchemaView(self.include, importmap=self.importmap, base_dir=self.base_dir).schema
                 self.schemaview.merge_schema(self.include)
             self.schema = self.schemaview.schema
+            # Set metamodel_version if not already defined in the schema.
+            # This ensures consistency with SchemaLoader-based generators.
+            if not self.schema.metamodel_version:
+                self.schema.metamodel_version = metamodel_version
 
         self._init_namespaces()
 

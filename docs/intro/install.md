@@ -49,4 +49,4 @@ See the [generators](../generators/index.rst) section for more cli entrypoints, 
 
 ## Installation for contributors
 
-*note for core developers and contributors*: consult the [developers guide](../developers/contributing-code) for using this codebase from GitHub
+*note for core developers and contributors*: consult the [maintainers guide](../maintainers/contributing) for using this codebase from GitHub
