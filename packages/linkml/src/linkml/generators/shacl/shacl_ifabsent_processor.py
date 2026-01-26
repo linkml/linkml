@@ -13,6 +13,10 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
                 return True, URIRef(class_uri)
             return True, ""
 
+        if default_value == "default_range":
+            default_range = self.schema_view.schema.default_range or "string"
+            return True, Literal(default_range, datatype=ShaclDataType.STRING.uri_ref)
+
         return False, None
 
     def map_enum_default_value(
