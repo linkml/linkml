@@ -36,7 +36,7 @@ def test_metamodel_python_compiles(metamodel_path, tmp_path):
     config = ProjectConfiguration()
     config.directory = tmp_path
     config.generator_args["owl"] = {"metaclasses": False, "type_objects": False}
-    config.excludes = ["shacl", "excel"]
+    config.excludes = ["excel"]
     gen = ProjectGenerator()
     gen.generate(metamodel_path, config)
     python_file = tmp_path / "meta.py"

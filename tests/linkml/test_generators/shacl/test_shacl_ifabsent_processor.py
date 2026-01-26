@@ -482,3 +482,35 @@ def test_process_sparql_path_ifabsent_attribute():
             schema_view.all_slots()[SlotDefinitionName("unimplementedSparqlPath")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
+
+
+def test_process_default_range():
+    """Test that default_range resolves to the schema's default range value."""
+    schema_with_default_range = """
+id: ifabsent_tests
+name: ifabsent_tests
+default_range: string
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+classes:
+  Student:
+    attributes:
+"""
+    schema_view = SchemaView(
+        schema_with_default_range
+        + """
+    - name: rangeSlot
+      range: string
+      ifabsent: default_range
+    """
+    )
+
+    processor = ShaclIfAbsentProcessor(schema_view)
+
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("rangeSlot")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("string", datatype=ShaclDataType.STRING.uri_ref)
