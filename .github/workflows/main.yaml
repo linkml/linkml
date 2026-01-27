@@ -62,6 +62,20 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Start Kroki server
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          docker run -d --name kroki -p 8000:8000 yuzutech/kroki
+          # Wait for Kroki to be ready
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+              echo "Kroki is ready"
+              break
+            fi
+            echo "Waiting for Kroki... ($i/30)"
+            sleep 1
+          done
+
       - name: Ensure tags if not run from main repo
         if: github.repository != 'linkml/linkml'
         run: |
@@ -90,6 +104,8 @@ jobs:
           uv run coverage xml -o coverage-linkml.xml
           uv run coverage report -m
         shell: bash
+        env:
+          KROKI_SERVER: ${{ matrix.os == 'ubuntu-latest' && 'http://localhost:8000' || '' }}
       - name: Test linkml-runtime package
         run: |
           uv run coverage run -m pytest tests/linkml_runtime/ --with-network

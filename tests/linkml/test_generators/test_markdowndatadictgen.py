@@ -1,11 +1,15 @@
 """Tests for the markdown data dictionary generator."""
 
 import os
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from linkml.generators.markdowndatadictgen import DiagramRenderer, MarkdownDataDictGen, MarkdownTable, SvgCache
+
+# In CI, we run a local Kroki container on Linux (not available on Windows)
+KROKI_SERVER = os.environ.get("KROKI_SERVER", "https://kroki.io")
 
 
 def test_markdown_table_empty():
@@ -62,8 +66,13 @@ def test_diagram_renderer_large_diagram_post(tmp_path):
 
 
 @pytest.mark.network
+@pytest.mark.skipif(sys.platform == "win32", reason="Kroki Docker service not available on Windows CI")
 def test_datadict_personinfo(input_path, snapshot):
-    """Test generating data dictionary for personinfo schema."""
+    """Test generating data dictionary for personinfo schema.
+
+    Uses KROKI_SERVER env var (defaults to https://kroki.io).
+    In CI on Linux, a local Kroki container is used for reliability.
+    """
     schema = str(input_path("personinfo.yaml"))
     figs_dir = snapshot("markdowndatadict_personinfo.md").path.parent / "figs"
     cache_file = figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg"
@@ -76,7 +85,7 @@ def test_datadict_personinfo(input_path, snapshot):
 
     try:
         gen = MarkdownDataDictGen(
-            schema, debug=True, pretty_format_svg=True, kroki_server="https://kroki.io", diagram_dir=figs_dir
+            schema, debug=True, pretty_format_svg=True, kroki_server=KROKI_SERVER, diagram_dir=figs_dir
         )
         generated = gen.serialize()
         assert generated == snapshot("markdowndatadict_personinfo.md")
