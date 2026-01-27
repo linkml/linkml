@@ -37,6 +37,18 @@ def test_diagram_renderer_kroki_failure():
     assert "A --> B" in result
 
 
+def test_diagram_renderer_skip_kroki_env(monkeypatch):
+    """Test DiagramRenderer skips Kroki when SKIP_KROKI_IO environment variable is set."""
+    monkeypatch.setenv("SKIP_KROKI_IO", "1")
+    renderer = DiagramRenderer(kroki_server="https://kroki.io")
+    result = renderer.render("classDiagram\nA --> B", diagram_name="test")
+    assert result.startswith("```mermaid")
+    assert "classDiagram" in result
+    assert "A --> B" in result
+    assert "<svg" not in result
+    assert "</svg>" not in result
+
+
 def test_diagram_renderer_large_diagram_post(tmp_path):
     """Test DiagramRenderer uses POST for large diagrams (>1KB)."""
     # Create a diagram source larger than 1KB
