@@ -4,6 +4,7 @@
 name: Build and test linkml
 env:
   UV_VERSION: "0.7.13"
+  SKIP_KROKI_IO: "1"
 on:
   push:
     branches:

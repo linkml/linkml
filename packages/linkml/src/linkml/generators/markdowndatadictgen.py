@@ -214,6 +214,11 @@ class DiagramRenderer:
         if not self.kroki_server:
             return f"```{diagram_type}\n{clean_source}\n```"
 
+        # Allow skipping Kroki in test environments via environment variable
+        if os.environ.get("SKIP_KROKI_IO"):
+            logging.debug("Skipping Kroki rendering (SKIP_KROKI_IO is set)")
+            return f"```{diagram_type}\n{clean_source}\n```"
+
         try:
             svg_content = None
             cache = SvgCache(self.diagram_dir)
