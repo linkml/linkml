@@ -1,7 +1,7 @@
 default_language_version:
   python: python3
 # Specify files to exclude - pre-commit hook doesn't parse pyproject.toml
-exclude: tests.*/data/hp.*\.ttl|.*\.svg|jsonschema_value_constraints.yaml|tests/linkml_runtime/test_loaders_dumpers/models/phenopackets.py|tests/linkml_runtime/.*\.yaml|tests/linkml_runtime/support/clicktestcase.py
+exclude: tests.*/data/hp.*\.ttl|.*\.svg|jsonschema_value_constraints.yaml|tests/linkml_runtime/test_loaders_dumpers/models/phenopackets.py|tests/linkml_runtime/.*\.yaml|tests/linkml_runtime/support/clicktestcase.py|tests/linkml/test_metamodel_compat/input/metamodel/.*\.yaml
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
