@@ -16,7 +16,7 @@ jobs:
       - uses: actions/stale@v9
         with:
           # Timeframes from issue #3080
-          days-before-stale: 730     # 2 years
+          days-before-stale: 1080    # 3 years
           days-before-close: 90      # +3 months
 
           # Disable for PRs
