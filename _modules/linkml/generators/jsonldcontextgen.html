@@ -490,13 +490,22 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prefixes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">flatprefixes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">flatprefixes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">_</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">prefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span>
+        <span class="k">if</span> <span class="n">flatprefixes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">flatprefixes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatprefixes</span>
         <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+
         <span class="n">context</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span><span class="p">:</span>
             <span class="n">comments</span> <span class="o">=</span> <span class="n">JsonObj</span><span class="p">()</span>
@@ -650,8 +659,18 @@
 
 <div class="viewcode-block" id="ContextGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/jsonld-context.html#linkml.generators.jsonldcontextgen.ContextGenerator.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">base</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefixes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">flatprefixes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+            <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">prefixes</span><span class="o">=</span><span class="n">prefixes</span><span class="p">,</span> <span class="n">flatprefixes</span><span class="o">=</span><span class="n">flatprefixes</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
 </div>
 
 

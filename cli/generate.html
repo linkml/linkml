@@ -2273,6 +2273,13 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-k">
+<span id="cmdoption-linkml-generate-full-jsonld-context-kwargs"></span><span class="sig-name descname"><span class="pre">-k</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--context-kwargs</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;context_kwargs&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-k" title="Link to this definition">¶</a></dt>
+<dd><p>kwargs passed to the JSONLD Context generator when instantiated. Since the context is embedded within the JSON-LD document, only the boolean instance attributes are formally supported, e.g. “output” and “base” are not applicable. The <cite>emit_metadata</cite> value is forced to be False.</p>
+<p>multiple kwargs like <cite>-k {key} {value}</cite> can be passed</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-V">
 <span id="cmdoption-linkml-generate-full-jsonld-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>

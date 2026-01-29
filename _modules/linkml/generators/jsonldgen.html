@@ -398,9 +398,10 @@
 <span></span><span class="sd">&quot;&quot;&quot;Generate JSONld from a LinkML schema.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_json</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">loads</span>
@@ -567,7 +568,15 @@
 
 <div class="viewcode-block" id="JSONLDGenerator.end_schema">
 <a class="viewcode-back" href="../../../generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.end_schema">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_schema</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">default_context_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">context_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">context_kwargs</span> <span class="o">=</span> <span class="n">default_context_kwargs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_context_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">context_kwargs</span><span class="p">}</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="n">base_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">()</span>
 
@@ -580,7 +589,9 @@
             <span class="c1"># model_context = self.schema.source_file.replace(&#39;.yaml&#39;, &#39;.prefixes.context.jsonld&#39;)</span>
             <span class="c1"># context = [METAMODEL_CONTEXT_URI, f&#39;file://./{model_context}&#39;]</span>
             <span class="c1"># TODO: The _visit function above alters the schema in situ</span>
-            <span class="n">add_prefixes</span> <span class="o">=</span> <span class="n">ContextGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">emit_metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+            <span class="c1"># force some context_kwargs</span>
+            <span class="n">context_kwargs</span><span class="p">[</span><span class="s2">&quot;emit_metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">add_prefixes</span> <span class="o">=</span> <span class="n">ContextGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span> <span class="o">**</span><span class="n">context_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
             <span class="n">add_prefixes_json</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">add_prefixes</span><span class="p">)</span>
             <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">METAMODEL_CONTEXT_URI</span><span class="p">,</span> <span class="n">add_prefixes_json</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Some of the older code doesn&#39;t do multiple contexts</span>
@@ -605,6 +616,22 @@
         <span class="n">out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">as_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span>
         <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="JSONLDGenerator.serialize">
+<a class="viewcode-back" href="../../../generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.serialize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize the model to JSON-LD</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            context (str, list[str], None): If ``None``, use context from schema,</span>
+<span class="sd">                otherwise replace context with this.</span>
+<span class="sd">            context_kwargs (dict, None): Keyword arguments forwarded to the JSON-LD Context generator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="o">=</span><span class="n">context_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
 
@@ -616,13 +643,33 @@
     <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;JSONLD context file (default: </span><span class="si">{</span><span class="n">METAMODEL_CONTEXT_URI</span><span class="si">}</span><span class="s2"> and &lt;model&gt;.prefixes.context.jsonld)&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--context-kwargs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;-k&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
+    <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;kwargs passed to the JSONLD Context generator when instantiated. &quot;</span>
+    <span class="s2">&quot;Since the context is embedded within the JSON-LD document, &quot;</span>
+    <span class="s2">&quot;only the boolean instance attributes are formally supported, &quot;</span>
+    <span class="s1">&#39;e.g. &quot;output&quot; and &quot;base&quot; are not applicable. &#39;</span>
+    <span class="s2">&quot;The `emit_metadata` value is forced to be False.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+    <span class="s2">&quot;multiple kwargs like `-k </span><span class="si">{key}</span><span class="s2"> </span><span class="si">{value}</span><span class="s2">` can be passed&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]],</span> <span class="n">context</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate JSONLD file from LinkML schema.</span>
 
 <span class="sd">    Status: incomplete</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">JSONLDGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">context_kwargs</span><span class="p">:</span>
+        <span class="n">context_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">context_kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">context_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">JSONLDGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="o">=</span><span class="n">context_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
