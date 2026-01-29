@@ -12,11 +12,11 @@ Information about people, based on [schema.org](http://schema.org)
 
 ## Class Diagram
 
-![class_diagram](figs/class_diagram.svg)
+<svg>mock</svg>
 
 ## ERD Diagram
 
-![erd_diagram](figs/erd_diagram.svg)
+<svg>mock</svg>
 
 ## Base Classes
 
@@ -61,7 +61,7 @@ Address:
 ```
 </details>
 
-![class_address_erd](figs/class_address_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -108,7 +108,7 @@ Concept:
 ```
 </details>
 
-![class_concept_erd](figs/class_concept_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -153,7 +153,7 @@ Container:
 ```
 </details>
 
-![class_container_erd](figs/class_container_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -190,7 +190,7 @@ DiagnosisConcept:
 ```
 </details>
 
-![class_diagnosisconcept_erd](figs/class_diagnosisconcept_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -238,7 +238,7 @@ EmploymentEvent:
 ```
 </details>
 
-![class_employmentevent_erd](figs/class_employmentevent_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -286,7 +286,7 @@ Event:
 
 #### Local class diagram
 
-![class_event_local](figs/class_event_local.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -336,7 +336,7 @@ FamilialRelationship:
 ```
 </details>
 
-![class_familialrelationship_erd](figs/class_familialrelationship_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -382,7 +382,7 @@ ImagingProcedureConcept:
 ```
 </details>
 
-![class_imagingprocedureconcept_erd](figs/class_imagingprocedureconcept_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -459,7 +459,7 @@ InterPersonalRelationship:
 ```
 </details>
 
-![class_interpersonalrelationship_erd](figs/class_interpersonalrelationship_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -508,7 +508,7 @@ MedicalEvent:
 ```
 </details>
 
-![class_medicalevent_erd](figs/class_medicalevent_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -562,7 +562,7 @@ NamedThing:
 
 #### Local class diagram
 
-![class_namedthing_local](figs/class_namedthing_local.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -605,7 +605,7 @@ NewsEvent:
 ```
 </details>
 
-![class_newsevent_erd](figs/class_newsevent_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -652,7 +652,7 @@ OperationProcedureConcept:
 ```
 </details>
 
-![class_operationprocedureconcept_erd](figs/class_operationprocedureconcept_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -709,7 +709,7 @@ Organization:
 ```
 </details>
 
-![class_organization_erd](figs/class_organization_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -783,7 +783,7 @@ Person:
 ```
 </details>
 
-![class_person_erd](figs/class_person_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -848,7 +848,7 @@ Place:
 ```
 </details>
 
-![class_place_erd](figs/class_place_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -896,7 +896,7 @@ ProcedureConcept:
 ```
 </details>
 
-![class_procedureconcept_erd](figs/class_procedureconcept_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -946,7 +946,7 @@ Relationship:
 ```
 </details>
 
-![class_relationship_erd](figs/class_relationship_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -984,7 +984,7 @@ code system:
 ```
 </details>
 
-![class_code system_erd](figs/class_code system_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -1062,7 +1062,7 @@ HasNewsEvents:
 ```
 </details>
 
-![class_hasnewsevents_erd](figs/class_hasnewsevents_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 
@@ -1094,7 +1094,7 @@ WithLocation:
 ```
 </details>
 
-![class_withlocation_erd](figs/class_withlocation_erd.svg)
+<svg>mock</svg>
 
 #### Attributes
 

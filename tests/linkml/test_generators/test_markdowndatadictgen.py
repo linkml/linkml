@@ -37,6 +37,14 @@ def test_diagram_renderer_kroki_failure():
     assert "A --> B" in result
 
 
+@pytest.mark.skipif(os.environ.get("CI") == "true", reason="Run locally to verify Kroki integration")
+def test_diagram_renderer_kroki_integration():
+    """Test that real Kroki API calls work."""
+    renderer = DiagramRenderer(kroki_server="https://kroki.io")
+    result = renderer.render("classDiagram\nA --> B", diagram_name="test")
+    assert "<svg" in result
+
+
 def test_diagram_renderer_large_diagram_post(tmp_path):
     """Test DiagramRenderer uses POST for large diagrams (>1KB)."""
     # Create a diagram source larger than 1KB
@@ -61,31 +69,18 @@ def test_diagram_renderer_large_diagram_post(tmp_path):
         assert "large_test" in result  # Returns image reference when diagram_dir is set
 
 
-@pytest.mark.network
 def test_datadict_personinfo(input_path, snapshot):
     """Test generating data dictionary for personinfo schema."""
-    schema = str(input_path("personinfo.yaml"))
-    figs_dir = snapshot("markdowndatadict_personinfo.md").path.parent / "figs"
-    cache_file = figs_dir / ".kroki-cache/71/4f" / "89dfe883b5f4071e149747a2fd1be257cd2bd6962ee62f7e07ab7202d299.svg"
+    mock_response = MagicMock()
+    mock_response.read.return_value = b"<svg>mock</svg>"
+    mock_response.__enter__ = MagicMock(return_value=mock_response)
+    mock_response.__exit__ = MagicMock(return_value=False)
 
-    # Remove cached SVG to force fresh generation from Kroki
-    try:
-        cache_file.unlink()
-    except FileNotFoundError:
-        pass  # File doesn't exist, nothing to clean up
-
-    try:
-        gen = MarkdownDataDictGen(
-            schema, debug=True, pretty_format_svg=True, kroki_server="https://kroki.io", diagram_dir=figs_dir
-        )
+    with patch("urllib.request.urlopen", return_value=mock_response):
+        schema = str(input_path("personinfo.yaml"))
+        gen = MarkdownDataDictGen(schema, debug=True, kroki_server="https://kroki.io")
         generated = gen.serialize()
         assert generated == snapshot("markdowndatadict_personinfo.md")
-    finally:
-        # Clean up generated cache file
-        try:
-            cache_file.unlink()
-        except FileNotFoundError:
-            pass  # File wasn't created, nothing to clean up
 
 
 def test_datadict_kitchensink(kitchen_sink_path, snapshot):
