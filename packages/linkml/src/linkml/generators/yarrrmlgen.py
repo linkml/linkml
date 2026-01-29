@@ -213,9 +213,7 @@ class YarrrmlGenerator(Generator):
                         if nested_is_obj:
                             nested_inlined = getattr(nested_decl or nested_slot, "inlined", None)
                             if nested_inlined is False:
-                                nested_po.append(
-                                    {"p": nested_pred, "o": {"value": full_var, "type": "iri"}}
-                                )
+                                nested_po.append({"p": nested_pred, "o": {"value": full_var, "type": "iri"}})
                             continue
 
                         nested_po.append({"p": nested_pred, "o": full_var})

@@ -719,11 +719,7 @@ classes:
       street: {}
       city: {}
 """
-    data = {
-        "items": [
-            {"id": "P1", "address": {"street": "Main", "city": "X"}}
-        ]
-    }
+    data = {"items": [{"id": "P1", "address": {"street": "Main", "city": "X"}}]}
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -733,7 +729,6 @@ classes:
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     y = yaml.safe_load(yg.serialize())
 
-    # inline-only class must not have mapping
     assert "Address" not in y["mappings"]
 
     person_po = y["mappings"]["Person"]["po"]
@@ -770,11 +765,7 @@ classes:
       oid:
         identifier: true
 """
-    data = {
-        "items": [
-            {"id": "P1", "employer": "https://ex.org/obj#O1", "oid": "O1"}
-        ]
-    }
+    data = {"items": [{"id": "P1", "employer": "https://ex.org/obj#O1", "oid": "O1"}]}
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -790,7 +781,7 @@ classes:
     assert emp_po["o"]["type"] == "iri"
 
     g = _materialize_with_morph(tmp_path, y)
-    EX, RDF = rdflib.Namespace("https://ex.org/obj#"), rdflib.RDF
+    EX = rdflib.Namespace("https://ex.org/obj#")
 
     assert (EX.P1, EX.employer, rdflib.URIRef("https://ex.org/obj#O1")) in g
 
@@ -833,10 +824,7 @@ classes:
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     y = yaml.safe_load(yg.serialize())
 
-    friends_po = next(
-        po for po in y["mappings"]["Person"]["po"]
-        if po["p"].endswith("friends")
-    )
+    friends_po = next(po for po in y["mappings"]["Person"]["po"] if po["p"].endswith("friends"))
 
     assert isinstance(friends_po["o"], list)
     assert all(o["type"] == "iri" for o in friends_po["o"])
