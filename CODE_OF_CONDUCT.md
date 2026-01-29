@@ -77,4 +77,4 @@ https://www.contributor-covenant.org/faq
 
 ## Related Policies
 
-* [AI Covenant](AI_COVENANT.md) - Community norms for responsible AI use in contributions
+* [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) - Community norms for responsible AI use in contributions
