@@ -146,14 +146,10 @@ class ExcelGenerator(Generator):
         mixin_classes = [name for name, cls in all_classes.items() if cls.mixin and not cls.abstract]
 
         if self.include_mixins:
-            classes_to_process = [
-                cls_name for cls_name, cls in all_classes.items() if not cls.abstract
-            ]
+            classes_to_process = [cls_name for cls_name, cls in all_classes.items() if not cls.abstract]
         else:
             classes_to_process = [
-                cls_name
-                for cls_name, cls in all_classes.items()
-                if not cls.mixin and not cls.abstract
+                cls_name for cls_name, cls in all_classes.items() if not cls.mixin and not cls.abstract
             ]
 
         if not classes_to_process:
