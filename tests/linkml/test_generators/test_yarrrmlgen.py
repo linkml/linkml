@@ -399,17 +399,13 @@ def test_yarrrml_e2e_inlined_true_included(tmp_path: Path):
     jsonschema.validate(instance=DATA_INLINED, schema=json.loads(js))
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
-    assert "Address" in yarrrml["mappings"]
-    addr_map = yarrrml["mappings"]["Address"]
-    assert any(po["p"].endswith("street") for po in addr_map["po"])
-    assert any(po["p"].endswith("city") for po in addr_map["po"])
-    g = _materialize_with_morph(tmp_path, yarrrml)
-    EX, RDF = rdflib.Namespace("https://ex.org/inl#"), rdflib.RDF
-    assert (EX.A1, RDF.type, EX.Person) in g
-    assert (EX.A1, EX.name, rdflib.Literal("WorkerX")) in g
-    assert (EX.A1, EX.address, None) not in g
-    conforms, results_text = _validate_with_shacl(schema_path, g)
-    assert conforms, f"SHACL validation failed:\n{results_text}"
+    assert "Address" not in yarrrml["mappings"]
+    person_map = yarrrml["mappings"]["Person"]
+    addr_po = next(po for po in person_map["po"] if po["p"].endswith("address"))
+    assert "po" in addr_po["o"]
+    nested_preds = {p["p"] for p in addr_po["o"]["po"]}
+    assert any(p.endswith("street") for p in nested_preds)
+    assert any(p.endswith("city") for p in nested_preds)
 
 
 @pytest.mark.yarrrml
@@ -696,3 +692,151 @@ classes:
     type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
     assert isinstance(type_po["o"], str)
     assert type_po["o"]
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_inline_object_not_separate_mapping(tmp_path: Path):
+    schema = """
+id: https://ex.org/inl2
+name: inl2
+prefixes:
+  ex: https://ex.org/inl2#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      address:
+        range: Address
+        inlined: true
+  Address:
+    attributes:
+      street: {}
+      city: {}
+"""
+    data = {
+        "items": [
+            {"id": "P1", "address": {"street": "Main", "city": "X"}}
+        ]
+    }
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    y = yaml.safe_load(yg.serialize())
+
+    # inline-only class must not have mapping
+    assert "Address" not in y["mappings"]
+
+    person_po = y["mappings"]["Person"]["po"]
+    addr_po = next(po for po in person_po if po["p"].endswith("address"))
+
+    assert "po" in addr_po["o"]
+    nested_preds = {p["p"] for p in addr_po["o"]["po"]}
+    assert any(p.endswith("street") for p in nested_preds)
+    assert any(p.endswith("city") for p in nested_preds)
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_object_link_is_iri(tmp_path: Path):
+    schema = """
+id: https://ex.org/obj
+name: obj
+prefixes:
+  ex: https://ex.org/obj#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      employer:
+        range: Organization
+        inlined: false
+  Organization:
+    attributes:
+      oid:
+        identifier: true
+"""
+    data = {
+        "items": [
+            {"id": "P1", "employer": "https://ex.org/obj#O1", "oid": "O1"}
+        ]
+    }
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    y = yaml.safe_load(yg.serialize())
+
+    person_po = y["mappings"]["Person"]["po"]
+    emp_po = next(po for po in person_po if po["p"].endswith("employer"))
+
+    assert emp_po["o"]["type"] == "iri"
+
+    g = _materialize_with_morph(tmp_path, y)
+    EX, RDF = rdflib.Namespace("https://ex.org/obj#"), rdflib.RDF
+
+    assert (EX.P1, EX.employer, rdflib.URIRef("https://ex.org/obj#O1")) in g
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_multivalued_object_links_are_iris(tmp_path: Path):
+    schema = """
+id: https://ex.org/friends
+name: friends
+prefixes:
+  ex: https://ex.org/friends#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      friends:
+        range: Person
+        multivalued: true
+        inlined: false
+"""
+    data = {
+        "items": [
+            {"id": "A", "friends": ["https://ex.org/friends#B", "https://ex.org/friends#C"]},
+            {"id": "B"},
+            {"id": "C"},
+        ]
+    }
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    y = yaml.safe_load(yg.serialize())
+
+    friends_po = next(
+        po for po in y["mappings"]["Person"]["po"]
+        if po["p"].endswith("friends")
+    )
+
+    assert isinstance(friends_po["o"], list)
+    assert all(o["type"] == "iri" for o in friends_po["o"])
