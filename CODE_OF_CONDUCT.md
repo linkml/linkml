@@ -74,3 +74,7 @@ available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.ht
 
 For answers to common questions about this code of conduct, see
 https://www.contributor-covenant.org/faq
+
+## Related Policies
+
+* [AI Covenant](AI_COVENANT.md) - Community norms for responsible AI use in contributions
