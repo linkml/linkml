@@ -41,19 +41,13 @@ class ExcelGenerator(Generator):
         workbook.save(workbook_path)
         return workbook
 
-    def create_workbook_and_worksheets(self, output_path: Path, classes: list[str]) -> None:
+    def _create_workbook_and_worksheets(self, output_path: Path, classes: list[str]) -> None:
         """
         Creates a workbook with worksheets for each class.
 
         :param output_path: The path where the workbook should be created.
         :param classes: List of class names for which worksheets should be created.
         """
-        if not classes:
-            self.logger.warning(
-                f"No classes to process for Excel generation. Skipping workbook creation for {output_path}"
-            )
-            return
-
         workbook = self.create_workbook(output_path)
         workbook.remove(workbook.active)
         sv = self.schemaview
@@ -140,17 +134,46 @@ class ExcelGenerator(Generator):
 
     def serialize(self, **kwargs) -> str:
         sv = self.schemaview
+        all_classes = sv.all_classes(imports=self.mergeimports)
+
+        if not all_classes:
+            raise ValueError(
+                "No classes defined in the schema. "
+                "Excel generation requires at least one non-abstract class to create worksheets."
+            )
+
+        abstract_classes = [name for name, cls in all_classes.items() if cls.abstract]
+        mixin_classes = [name for name, cls in all_classes.items() if cls.mixin and not cls.abstract]
 
         if self.include_mixins:
             classes_to_process = [
-                cls_name for cls_name, cls in sv.all_classes(imports=self.mergeimports).items() if not cls.abstract
+                cls_name for cls_name, cls in all_classes.items() if not cls.abstract
             ]
         else:
             classes_to_process = [
                 cls_name
-                for cls_name, cls in sv.all_classes(imports=self.mergeimports).items()
+                for cls_name, cls in all_classes.items()
                 if not cls.mixin and not cls.abstract
             ]
+
+        if not classes_to_process:
+            if abstract_classes and not mixin_classes:
+                raise ValueError(
+                    f"Schema contains only abstract classes: {', '.join(sorted(abstract_classes))}. "
+                    "Excel generation requires at least one non-abstract class to create worksheets."
+                )
+            if mixin_classes and not self.include_mixins:
+                if not abstract_classes:
+                    raise ValueError(
+                        f"Schema contains only mixin classes: {', '.join(sorted(mixin_classes))}. "
+                        "Use --include-mixins flag to generate worksheets for mixin classes."
+                    )
+                else:
+                    raise ValueError(
+                        f"Schema contains only abstract classes ({', '.join(sorted(abstract_classes))}) "
+                        f"and mixin classes ({', '.join(sorted(mixin_classes))}). "
+                        "Use --include-mixins flag to generate worksheets for mixin classes."
+                    )
 
         if self.split_workbook_by_class:
             output_path = Path(self.schema.name + "_worksheets") if not self.output else Path(self.output)
@@ -161,13 +184,13 @@ class ExcelGenerator(Generator):
 
             for cls_name in classes_to_process:
                 cls_output_path = output_path.joinpath(f"{cls_name}.xlsx")
-                self.create_workbook_and_worksheets(cls_output_path, [cls_name])
+                self._create_workbook_and_worksheets(cls_output_path, [cls_name])
                 self.logger.info(f"The Excel workbook for class '{cls_name}' has been written to {cls_output_path}")
         else:
             output_path = Path(self.schema.name + ".xlsx") if not self.output else Path(self.output)
             output_path = output_path.absolute()
 
-            self.create_workbook_and_worksheets(output_path, classes_to_process)
+            self._create_workbook_and_worksheets(output_path, classes_to_process)
             self.logger.info(f"The Excel workbook has been written to {output_path}")
 
 

@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from openpyxl import load_workbook
 
 from linkml.generators.excelgen import ExcelGenerator
@@ -152,16 +153,176 @@ def test_file_generation_for_mixins(input_path, tmp_path):
     assert "WithLocation.xlsx" in files
 
 
-def test_empty_class_list_handling(input_path, tmp_path, caplog):
-    """Test that Excel generator handles empty class lists gracefully."""
-    organization_schema = str(input_path("organization.yaml"))
-    xlsx_filename = tmp_path / "empty_classes.xlsx"
+def test_serialize_empty_schema_raises_error(tmp_path):
+    """Test that serialize raises ValueError when schema has no classes defined."""
+    schema_yaml = """
+id: https://example.org/empty
+name: empty_schema
+prefixes:
+  linkml: https://w3id.org/linkml/
 
-    generator = ExcelGenerator(organization_schema)
-    generator.create_workbook_and_worksheets(xlsx_filename, [])
+classes:
+"""
+    schema_file = tmp_path / "empty_schema.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "empty_schema.xlsx"
 
-    # Verify no file was created
+    generator = ExcelGenerator(str(schema_file), output=str(xlsx_filename))
+
+    with pytest.raises(ValueError, match="No classes defined in the schema"):
+        generator.serialize()
+
     assert not xlsx_filename.exists()
 
-    # Verify warning was logged
-    assert "No classes to process for Excel generation" in caplog.text
+
+def test_only_abstract_classes_raises_error(tmp_path):
+    """Test that Excel generator raises ValueError when schema has only abstract classes."""
+    schema_yaml = """
+id: https://example.org/abstract-only
+name: abstract_only
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+classes:
+  AbstractBase:
+    abstract: true
+    attributes:
+      id:
+        range: string
+  AnotherAbstract:
+    abstract: true
+    attributes:
+      name:
+        range: string
+"""
+    schema_file = tmp_path / "abstract_only.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "abstract_only.xlsx"
+
+    generator = ExcelGenerator(str(schema_file), output=str(xlsx_filename))
+
+    with pytest.raises(ValueError, match="Schema contains only abstract classes.*AbstractBase.*AnotherAbstract"):
+        generator.serialize()
+
+    assert not xlsx_filename.exists()
+
+
+def test_only_mixin_classes_raises_error(tmp_path):
+    """Test that Excel generator raises ValueError when schema has only mixin classes."""
+    schema_yaml = """
+id: https://example.org/mixin-only
+name: mixin_only
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+classes:
+  MixinA:
+    mixin: true
+    attributes:
+      field_a:
+        range: string
+  MixinB:
+    mixin: true
+    attributes:
+      field_b:
+        range: string
+"""
+    schema_file = tmp_path / "mixin_only.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "mixin_only.xlsx"
+
+    generator = ExcelGenerator(str(schema_file), output=str(xlsx_filename))
+
+    with pytest.raises(ValueError, match="Schema contains only mixin classes.*--include-mixins flag"):
+        generator.serialize()
+
+    assert not xlsx_filename.exists()
+
+
+def test_only_mixin_classes_with_include_mixins(tmp_path):
+    """Test that mixin-only schema works when --include-mixins is used."""
+    schema_yaml = """
+id: https://example.org/mixin-only
+name: mixin_only
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+classes:
+  MixinA:
+    mixin: true
+    attributes:
+      field_a:
+        range: string
+"""
+    schema_file = tmp_path / "mixin_only.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "mixin_only.xlsx"
+
+    generator = ExcelGenerator(str(schema_file), output=str(xlsx_filename), include_mixins=True)
+    generator.serialize()
+
+    # File should be created when include_mixins is True
+    assert xlsx_filename.exists()
+
+
+def test_abstract_and_mixin_classes_only_raises_error(tmp_path):
+    """Test that Excel generator raises ValueError when schema has only abstract and mixin classes."""
+    schema_yaml = """
+id: https://example.org/abstract-mixin
+name: abstract_mixin
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+classes:
+  AbstractBase:
+    abstract: true
+    attributes:
+      id:
+        range: string
+  MixinHelper:
+    mixin: true
+    attributes:
+      helper_field:
+        range: string
+"""
+    schema_file = tmp_path / "abstract_mixin.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "abstract_mixin.xlsx"
+
+    generator = ExcelGenerator(str(schema_file), output=str(xlsx_filename))
+
+    with pytest.raises(ValueError, match="abstract classes.*mixin classes.*--include-mixins flag"):
+        generator.serialize()
+
+    assert not xlsx_filename.exists()
+
+
+def test_abstract_and_mixin_with_include_mixins(tmp_path):
+    """Test that abstract+mixin schema creates file for mixins when --include-mixins is used."""
+    schema_yaml = """
+id: https://example.org/abstract-mixin
+name: abstract_mixin
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+classes:
+  AbstractBase:
+    abstract: true
+    attributes:
+      id:
+        range: string
+  MixinHelper:
+    mixin: true
+    attributes:
+      helper_field:
+        range: string
+"""
+    schema_file = tmp_path / "abstract_mixin.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "abstract_mixin.xlsx"
+
+    generator = ExcelGenerator(str(schema_file), output=str(xlsx_filename), include_mixins=True)
+    generator.serialize()
+
+    # File should be created for the mixin (abstract still excluded)
+    assert xlsx_filename.exists()
