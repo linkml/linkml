@@ -1,0 +1,454 @@
+{%- if element.title %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- if gen.use_slot_uris -%}
+        {%- set title = element.name -%}
+    {%- else -%}
+        {%- set title = gen.name(element) -%}
+    {%- endif -%}
+{%- endif -%}
+
+{% macro compute_range(slot) -%}
+    {%- if slot.any_of or slot.exactly_one_of -%}
+        {%- for subslot_range in schemaview.slot_range_as_union(slot) -%}
+            {{ gen.link(subslot_range) }}
+            {%- if not loop.last -%}
+                &nbsp;or&nbsp;<br />
+            {%- endif -%}
+        {%- endfor -%}
+    {%- else -%}
+        {{ gen.link(slot.range) }}
+    {%- endif -%}
+{% endmacro %}
+
+# Slot: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
+
+{%- if header -%}
+{{ header }}
+{%- endif -%}
+
+{% if element.description %}
+{% set element_description_lines = element.description.split('\n') %}
+{% for element_description_line in element_description_lines %}
+_{{ element_description_line }}_
+{% endfor %}
+{% endif %}
+
+{% if element.abstract %}
+* __NOTE__: this is an abstract slot and should not be populated directly
+{% endif %}
+
+URI: {{ gen.uri_link(element) }}
+
+{%- if element.alias %}
+Alias: {{ element.alias }}
+{% endif -%}
+
+{% if schemaview.slot_parents(element.name) or schemaview.slot_children(element.name, mixins=False) %}
+
+## Inheritance
+
+{{ gen.inheritance_tree(element, mixins=True) }}
+{% else %}
+<!-- no inheritance hierarchy -->
+{% endif %}
+
+{% set classes_by_slot = schemaview.get_classes_by_slot(element, include_induced=True) %}
+{% if classes_by_slot %}
+
+## Applicable Classes
+
+| Name | Description | Modifies Slot |
+| --- | --- | --- |
+{% for c in classes_by_slot -%}
+| {{ gen.link(c) }} | {{ schemaview.get_class(c).description|enshorten }} | {% if c in schemaview.get_classes_modifying_slot(element) %} yes {% else %} no {% endif %} |
+{% endfor %}
+
+{% endif %}
+
+{% if schemaview.is_mixin(element.name) %}
+## Mixin Usage
+
+| mixed into | description | range | domain |
+| --- | --- | --- | --- |
+{% for s in schemaview.slot_children(element.name, is_a=False) -%}
+| {{ gen.link(s) }} | {{ schemaview.get_slot(s).description|enshorten }} | {{ schemaview.get_slot(s).range }} | {{ schemaview.get_classes_by_slot(schemaview.get_slot(s))|join(', ') }} |
+{% endfor %}
+{% endif %}
+
+## Properties
+
+### Type and Range
+
+| Property | Value |
+| --- | --- |
+| Range | {{ compute_range(element) }} |
+{%- if element.domain %}
+| Domain | {{ gen.link(element.domain) }} |
+{%- endif %}
+{%- if element.domain_of %}
+| Domain Of | {{ gen.links(element.domain_of) | join(', ') }} |
+{%- endif %}
+{%- if element.slot_uri %}
+| Slot URI | {{ gen.uri_link(element.slot_uri) }} |
+{%- endif %}
+{%- if element.slot_group %}
+| Slot Group | {{ gen.link(element.slot_group) }} |
+{%- endif %}
+{%- if element.is_grouping_slot %}
+| Is Grouping Slot | Yes |
+{%- endif %}
+
+### Cardinality and Requirements
+
+| Property | Value |
+| --- | --- |
+{%- if element.required %}
+| Required | Yes |
+{%- elif element.recommended %}
+| Recommended | Yes |
+{%- endif %}
+{%- if element.multivalued %}
+| Multivalued | Yes |
+{%- endif %}
+{%- if element.minimum_cardinality is not none %}
+| Minimum Cardinality | {{ element.minimum_cardinality }} |
+{%- endif %}
+{%- if element.maximum_cardinality is not none %}
+| Maximum Cardinality | {{ element.maximum_cardinality }} |
+{%- endif %}
+{%- if element.exact_cardinality is not none %}
+| Exact Cardinality | {{ element.exact_cardinality }} |
+{%- endif %}
+
+{%- if element.multivalued and (element.list_elements_unique is not none or element.list_elements_ordered is not none) %}
+### List/Collection Properties
+
+| Property | Value |
+| --- | --- |
+{%- if element.list_elements_unique is not none %}
+| Elements Must Be Unique | {% if element.list_elements_unique %}Yes{% else %}No{% endif %} |
+{%- endif %}
+{%- if element.list_elements_ordered is not none %}
+| Elements Are Ordered | {% if element.list_elements_ordered %}Yes{% else %}No{% endif %} |
+{%- endif %}
+
+{% endif %}
+{%- set has_slot_chars = element.key or element.identifier or element.designates_type
+    or element.inherited or element.readonly or element.ifabsent or element.owner
+    or element.shared or element.is_class_field or element.is_usage_slot
+    or element.usage_slot_name or element.singular_name or schemaview.is_mixin(element.name) %}
+
+{%- if has_slot_chars %}
+### Slot Characteristics
+
+| Property | Value |
+| --- | --- |
+{%- if element.singular_name %}
+| Singular Name | {{ element.singular_name }} |
+{%- endif %}
+{%- if element.key %}
+| Key | Yes |
+{%- endif %}
+{%- if element.identifier %}
+| Identifier | Yes |
+{%- endif %}
+{%- if element.designates_type %}
+| Designates Type | Yes |
+{%- endif %}
+{%- if element.inherited %}
+| Inherited | Yes |
+{%- endif %}
+{%- if element.readonly %}
+| Readonly | Yes |
+{%- endif %}
+{%- if element.ifabsent %}
+| If Absent | `{{ element.ifabsent }}` |
+{%- endif %}
+{%- if element.owner %}
+| Owner | {{ gen.link(element.owner) }} |
+{%- endif %}
+{%- if element.shared %}
+| Shared | Yes |
+{%- endif %}
+{%- if element.is_class_field %}
+| Is Class Field | Yes |
+{%- endif %}
+{%- if element.is_usage_slot %}
+| Is Usage Slot | Yes |
+{%- endif %}
+{%- if element.usage_slot_name %}
+| Usage Slot Name | {{ element.usage_slot_name }} |
+{%- endif %}
+{%- if schemaview.is_mixin(element.name) %}
+| Mixin | Yes |
+{%- endif %}
+
+{% endif %}
+{%- set has_basic_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+
+{%- if has_basic_constraints %}
+### Value Constraints
+
+| Property | Value |
+| --- | --- |
+{%- if element.minimum_value is not none %}
+| Minimum Value | {{ element.minimum_value|int }} |
+{%- endif %}
+{%- if element.maximum_value is not none %}
+| Maximum Value | {{ element.maximum_value|int }} |
+{%- endif %}
+{%- if element.pattern %}
+| Regex Pattern | `{{ element.pattern }}` |
+{%- endif %}
+
+{% endif %}
+{%- set has_advanced_constraints = element.structured_pattern or element.equals_string
+    or element.equals_string_in or element.equals_number or element.enum_range
+    or element.unit or element.implicit_prefix %}
+
+{%- if has_advanced_constraints %}
+<details>
+<summary>Additional Constraints</summary>
+
+{%- if element.structured_pattern %}
+**Structured Pattern:**
+
+- **Syntax:** `{{ element.structured_pattern.syntax }}`
+- **Interpolated:** {{ element.structured_pattern.interpolated }}
+{%- if element.structured_pattern.partial_match %}
+- **Partial Match:** Yes
+{%- endif %}
+{%- endif %}
+
+{%- if element.equals_string %}
+**Must Equal:** `{{ element.equals_string }}`
+{%- endif %}
+
+{%- if element.equals_string_in %}
+**Must Be One Of:** {{ element.equals_string_in | join(', ') }}
+{%- endif %}
+
+{%- if element.equals_number %}
+**Must Equal:** {{ element.equals_number }}
+{%- endif %}
+
+{%- if element.enum_range %}
+**Enumeration Range:** {{ gen.link(element.enum_range) }}
+{%- endif %}
+
+{%- if element.unit %}
+**Unit:** {{ gen.uri_link(element.unit) }}
+{%- endif %}
+
+{%- if element.implicit_prefix %}
+**Implicit Prefix:** {{ element.implicit_prefix }}
+{%- endif %}
+
+</details>
+{% endif %}
+
+{%- set has_rel_props = element.symmetric or element.asymmetric or element.reflexive
+    or element.locally_reflexive or element.irreflexive or element.transitive
+    or element.inverse or element.transitive_form_of or element.reflexive_transitive_form_of
+    or element.role or element.relational_role %}
+
+{%- if has_rel_props %}
+<details>
+<summary>Relationship Properties</summary>
+
+| Property | Value |
+| --- | --- |
+{%- if element.symmetric %}
+| Symmetric | Yes |
+{%- endif %}
+{%- if element.asymmetric %}
+| Asymmetric | Yes |
+{%- endif %}
+{%- if element.reflexive %}
+| Reflexive | Yes |
+{%- endif %}
+{%- if element.locally_reflexive %}
+| Locally Reflexive | Yes |
+{%- endif %}
+{%- if element.irreflexive %}
+| Irreflexive | Yes |
+{%- endif %}
+{%- if element.transitive %}
+| Transitive | Yes |
+{%- endif %}
+{%- if element.inverse %}
+| Inverse | {{ gen.link(element.inverse) }} |
+{%- endif %}
+{%- if element.transitive_form_of %}
+| Transitive Form Of | {{ gen.link(element.transitive_form_of) }} |
+{%- endif %}
+{%- if element.reflexive_transitive_form_of %}
+| Reflexive Transitive Form Of | {{ gen.link(element.reflexive_transitive_form_of) }} |
+{%- endif %}
+{%- if element.role %}
+| Role | {{ element.role }} |
+{%- endif %}
+{%- if element.relational_role %}
+| Relational Role | {{ element.relational_role }} |
+{%- endif %}
+
+</details>
+{% endif %}
+
+{%- set has_advanced = element.path_rule or element.disjoint_with
+    or element.children_are_mutually_disjoint or element.subproperty_of
+    or element.array or element.bindings or element.type_mappings
+    or element.value_presence or element.range_expression %}
+
+{%- if has_advanced %}
+<details>
+<summary>Advanced Properties</summary>
+
+{%- if element.subproperty_of %}
+**Subproperty Of:** {{ gen.link(element.subproperty_of) }}
+{%- endif %}
+
+{%- if element.path_rule %}
+**Path Rule:**
+
+```
+{{ element.path_rule }}
+```
+{%- endif %}
+
+{%- if element.disjoint_with %}
+**Disjoint With:** {{ gen.links(element.disjoint_with) | join(', ') }}
+{%- endif %}
+
+{%- if element.children_are_mutually_disjoint %}
+**Children Are Mutually Disjoint:** Yes
+{%- endif %}
+
+{%- if element.array %}
+**Array Configuration:**
+
+- **Dimensions:** {{ element.array.dimensions | join(' x ') }}
+{%- if element.array.exact_number_dimensions %}
+- **Exact Dimensions Required:** Yes
+{%- endif %}
+{%- endif %}
+
+{%- if element.range_expression %}
+**Range Expression:** {{ element.range_expression }}
+{%- endif %}
+
+{%- if element.value_presence %}
+**Value Presence:** {{ element.value_presence }}
+{%- endif %}
+
+{%- if element.bindings %}
+**Term Bindings:**
+
+{%- for binding in element.bindings %}
+- {{ binding }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.type_mappings %}
+**Type Mappings:**
+
+{%- for tm in element.type_mappings %}
+- **Framework:** {{ tm.framework }}, **Mapping:** {{ tm.mapping }}
+{%- endfor %}
+{%- endif %}
+
+</details>
+{% endif %}
+
+{%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of
+    or element.none_of or element.equals_expression or element.has_member or element.all_members %}
+
+{%- if has_expressions %}
+<details>
+<summary>Expressions & Logic</summary>
+
+{%- if element.any_of %}
+#### Any Of
+
+Value must satisfy at least one of:
+
+{%- for expr in element.any_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.all_of %}
+#### All Of
+
+Value must satisfy all of:
+
+{%- for expr in element.all_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.exactly_one_of %}
+#### Exactly One Of
+
+Value must satisfy exactly one of:
+
+{%- for expr in element.exactly_one_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.none_of %}
+#### None Of
+
+Value must not satisfy any of:
+
+{%- for expr in element.none_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.equals_expression %}
+#### Equals Expression
+
+`{{ element.equals_expression }}`
+{%- endif %}
+
+{%- if element.has_member %}
+#### Has Member
+
+{{ element.has_member }}
+{%- endif %}
+
+{%- if element.all_members %}
+#### All Members
+
+{{ element.all_members }}
+{%- endif %}
+
+</details>
+{% endif %}
+
+{% if schemaview.usage_index().get(element.name) %}
+## Usages
+
+| used by | used in | type | used |
+| ---  | --- | --- | --- |
+{% for usage in schemaview.usage_index().get(element.name) -%}
+| {{ gen.link(usage.used_by) }} | {{ gen.link(usage.slot) }} | {{ usage.metaslot }} | {{ gen.link(usage.used) }} |
+{% endfor %}
+{% endif %}
+
+{% include "common_metadata.md.jinja2" %}
+
+## LinkML Source
+
+<details>
+```yaml
+{{ gen.yaml(element) }}
+```
+</details>
+
+{%- if footer -%}
+{{ footer }}
+{%- endif -%}

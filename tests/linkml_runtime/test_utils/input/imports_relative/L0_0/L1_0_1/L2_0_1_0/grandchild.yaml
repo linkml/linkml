@@ -1,0 +1,13 @@
+id: grandchild
+name: grandchild
+title: grandchild
+description: Grandchild schema that should cause a cycle with parent if we are just naively concatenating paths
+imports:
+  - ../../parent
+classes:
+  Grandchild:
+    description: "spoiled rotten!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Grandchild"

@@ -29,6 +29,65 @@ It additionally generates a trait for every struct to provide polymorphic access
 For all classes having subclasses, an extra enum is generated to represent an object of the class or a subtype.
 All the enums implement the trait, so they can be (optionally) directly used without match statement.
 
+How to Generate a Rust Crate with Python Bindings
+-------------------------------------------------
+
+It is possible to generate a Rust Crate from a linkml schema complete with python bindings.
+
+The steps below walk through producing a PyO3-enabled crate from a LinkML schema and installing it in a Python
+environment. The commands were exercised against ``examples/PersonSchema/personinfo.yaml`` to verify they work end-to-end.
+
+To build a rust crate as a python lib, you need ``maturin``. Maturin can easily be installed using pip.
+A convenient way to build pip packages for multiple python versions and libc alternatives is the ``manylinux`` docker image.
+
+#. **Generate the crate** using the main ``linkml`` CLI. The ``--mode crate`` option is the default; ``--pyo3`` and
+   ``--serde`` ensure the generated ``Cargo.toml`` enables those features by default. Add ``--handwritten-lib`` when you
+   want a regeneration-friendly layout: generated sources land under ``src/generated`` while ``src/lib.rs`` becomes a shim
+   that is created only on the first run and then left untouched.
+
+   .. code-block:: bash
+
+      linkml generate rust \
+        --output personinfo_rust \
+        --pyo3 --serde --handwritten-lib \
+        --force \
+        examples/PersonSchema/personinfo.yaml
+
+   The output directory contains ``Cargo.toml`` (with ``[lib]`` configured for both ``cdylib`` and ``rlib`` when PyO3 is
+   requested), ``pyproject.toml`` with a ``maturin`` build-system section, and a ``src/generated`` tree that houses the
+   regenerated code. A small ``src/lib.rs`` file is emitted on the first run only and re-exported functions from
+   ``generated`` so you can regenerate safely.
+
+#. **Adjust what is exposed to Python** in ``src/lib.rs``. The file declares the PyO3 module and calls
+   ``generated::register_pymodule``; edit it to add your own functions/classes. Because the shim is only created on the
+   first run, later regenerations leave your changes intact.
+
+#. **Generate type stubs** so Python users get better typing support. With the ``stubgen`` feature enabled, run
+   ``cargo run --bin stub_gen --features stubgen`` from the crate directory; add ``-- --check`` when you want to verify
+   existing stubs instead of overwriting them.
+
+#. **Build and install the wheel** with ``maturin``. Running ``maturin develop`` compiles the extension and puts it in the
+   active virtual environment.
+
+   .. code-block:: bash
+
+      cd personinfo_rust
+      maturin develop
+
+   ``maturin build`` is an alternative when you want distributable wheels in ``target/wheels`` instead.
+
+#. **Import the module from Python** and try the generated YAML loader.
+
+   .. code-block:: python
+
+      import personinfo
+      # Update the path below to point at your data file.
+      container = personinfo.load_yaml_container("examples/PersonSchema/data/example_personinfo_data.yaml")
+      print(container.persons[0].name)
+
+When repeating the process, pass ``--force`` (as above) or delete the output directory to avoid collisions with previous
+runs.
+
 
 Feature Compliance
 ------------------
@@ -46,12 +105,11 @@ Supported
 - Temporal scalars: ``date`` and ``datetime`` map to ``chrono``'s ``NaiveDate`` and ``NaiveDateTime`` respectively.
 - Traits for polymorphic access to class hierarchies, along with enums for class-or-subtype containers.
 - PyO3 bindings for the generated structs (behind a Cargo feature flag).
-- Basic ``serde`` deserialization (behind a Cargo feature flag).
+- Basic ``serde`` deserialization and serialization, including normalisation (behind a Cargo feature flag).
 
 Partially Supported
 ~~~~~~~~~~~~~~~~~~~
 - Many scalar types (e.g. ``time``, URI-related types) currently fall back to ``String`` representations.
-- ``serde`` deserialization works; serialization still lacks the normalisation, and will not always produce correct yaml.
 - Testing covers unit-level behaviour with a dedicated Rust CI workflow; dynamic compilation and compliance suites are
   still pending.
 

@@ -1,0 +1,139 @@
+{%- if element.title and element.title != element.name %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- set title = gen.name(element) -%}
+{%- endif -%}
+
+# Enum: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
+
+{% if element.description %}
+{% set element_description_lines = element.description.split('\n') %}
+{% for element_description_line in element_description_lines %}
+_{{ element_description_line }}_
+{% endfor %}
+{% endif %}
+
+URI: {{ gen.uri_link(element) }}
+
+{%- if element.enum_uri %}
+
+**Enum URI:** {{ gen.uri_link(element.enum_uri) }}
+{% endif %}
+
+{%- set has_enum_source = element.code_set or element.pv_formula or element.reachable_from
+    or element.matches or element.concepts %}
+
+{%- if has_enum_source %}
+## Enumeration Source
+
+{%- if element.code_set %}
+**Code Set:** {{ gen.uri_link(element.code_set) }}
+
+{%- if element.code_set_tag %}
+- **Tag:** {{ element.code_set_tag }}
+{%- endif %}
+{%- if element.code_set_version %}
+- **Version:** {{ element.code_set_version }}
+{%- endif %}
+{%- endif %}
+
+{%- if element.pv_formula %}
+**Permissible Value Formula:** {{ element.pv_formula }}
+{%- endif %}
+
+{%- if element.reachable_from %}
+**Reachable From:**
+
+{%- if element.reachable_from.source_ontology %}
+- **Source:** {{ gen.link(element.reachable_from.source_ontology) }}
+{%- endif %}
+{%- if element.reachable_from.source_nodes %}
+- **Nodes:** {{ element.reachable_from.source_nodes | join(', ') }}
+{%- endif %}
+{%- if element.reachable_from.relationship_types %}
+- **Via:** {{ element.reachable_from.relationship_types | join(', ') }}
+{%- endif %}
+{%- endif %}
+
+{%- if element.matches %}
+**Matches:**
+
+- **Expression:** `{{ element.matches.string_expression }}`
+{%- endif %}
+
+{%- if element.concepts %}
+**Concepts:** {{ gen.uri_links(element.concepts) | join(', ') }}
+{%- endif %}
+
+{% endif %}
+
+{% if element.permissible_values -%}
+{%- set has_pv_extras = namespace(found=false) -%}
+{%- for pv in element.permissible_values.values() -%}
+  {%- if pv.title or pv.is_a or pv.mixins or pv.deprecated -%}
+    {%- set has_pv_extras.found = true -%}
+  {%- endif -%}
+{%- endfor -%}
+## Permissible Values
+
+{%- if has_pv_extras.found %}
+| Value | Meaning | Description | Additional Info |
+| --- | --- | --- | --- |
+{% for pv in element.permissible_values.values() -%}
+| {{ pv.text }} | {{ pv.meaning }} | {{ pv.description|enshorten }} |
+{%- if pv.title %} Title: {{ pv.title }}<br>{% endif -%}
+{%- if pv.is_a %} Is-A: {{ gen.link(pv.is_a) }}<br>{% endif -%}
+{%- if pv.mixins %} Mixins: {{ gen.links(pv.mixins) | join(', ') }}<br>{% endif -%}
+{%- if pv.deprecated %} **DEPRECATED**{% if pv.deprecated_element_has_exact_replacement %} (use {{ gen.link(pv.deprecated_element_has_exact_replacement) }}){% endif %}{% endif -%}
+ |
+{% endfor %}
+{%- else %}
+| Value | Meaning | Description |
+| --- | --- | --- |
+{% for pv in element.permissible_values.values() -%}
+| {{ pv.text }} | {{ pv.meaning }} | {{ pv.description|enshorten }} |
+{% endfor %}
+{%- endif %}
+{% else %}
+_This is a dynamic enum_
+{% endif %}
+
+{%- set has_enum_ops = element.inherits or element.include or element.minus %}
+
+{%- if has_enum_ops %}
+## Enumeration Operations
+
+{%- if element.inherits %}
+**Inherits From:** {{ gen.links(element.inherits) | join(', ') }}
+{%- endif %}
+
+{%- if element.include %}
+**Includes:** {{ gen.links(element.include) | join(', ') }}
+{%- endif %}
+
+{%- if element.minus %}
+**Excludes:** {{ gen.links(element.minus) | join(', ') }}
+{%- endif %}
+
+{% endif %}
+
+{% set slots_for_enum = schemaview.get_slots_by_enum(element.name) %}
+{% if slots_for_enum is defined and slots_for_enum|length > 0 -%}
+## Slots
+
+| Name | Description |
+| ---  | --- |
+{% for s in schemaview.get_slots_by_enum(element.name) -%}
+| {{ gen.link(s) }} | {{ s.description|enshorten }} |
+{% endfor %}
+{% endif %}
+
+{% include "common_metadata.md.jinja2" %}
+
+## LinkML Source
+
+<details>
+```yaml
+{{ gen.yaml(element) }}
+```
+</details>
