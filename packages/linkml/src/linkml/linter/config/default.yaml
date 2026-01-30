@@ -36,3 +36,5 @@ rules:
     level: disabled
     prefixmaps_contexts:
       - merged
+  range_anyof_incompatible:
+    level: disabled

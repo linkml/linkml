@@ -447,3 +447,81 @@ class CanonicalPrefixesRule(LinterRule):
                     f"'{prefix.prefix_reference}' instead of using prefix "
                     f"'{namespace_to_prefix[prefix.prefix_reference]}'"
                 )
+
+
+class RangeAnyOfIncompatibleRule(LinterRule):
+    """Warns when any_of options are type-incompatible with slot range.
+
+    When a slot has both `range` and `any_of` specified, the JSON Schema generator
+    applies both constraints (implicit AND). This can result in unsatisfiable
+    constraints when the types are incompatible (e.g., range=string with
+    any_of containing an integer option).
+
+    This rule warns when any `any_of` option has a type that is incompatible
+    with the slot's direct range, as such options can never be satisfied.
+    """
+
+    id = "range_anyof_incompatible"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        """Check for incompatible range and any_of combinations.
+
+        :param schema_view: SchemaView object with schema access
+        :param fix: whether to fix (not supported for this rule)
+        :yields: LinterProblem for each incompatible any_of option
+        """
+        for slot in schema_view.all_slots(imports=False).values():
+            if not slot.range or not slot.any_of:
+                continue
+
+            range_kind = self._get_type_kind(slot.range, schema_view)
+            if range_kind is None:
+                continue
+
+            for i, expr in enumerate(slot.any_of):
+                if expr.range:
+                    expr_kind = self._get_type_kind(expr.range, schema_view)
+                    if expr_kind and not self._kinds_compatible(range_kind, expr_kind):
+                        yield LinterProblem(
+                            f"Slot '{slot.name}' has range '{slot.range}' ({range_kind}) "
+                            f"but any_of[{i}] has range '{expr.range}' ({expr_kind}) - "
+                            f"these types are incompatible"
+                        )
+
+    def _get_type_kind(self, range_name: str, sv: SchemaView) -> str | None:
+        """Return the JSON Schema type kind for a range.
+
+        :param range_name: name of the range (type, enum, or class)
+        :param sv: SchemaView for looking up definitions
+        :returns: one of 'string', 'integer', 'number', 'boolean', 'object', or None
+        """
+        if range_name in sv.all_enums():
+            return "string"
+        if range_name in sv.all_classes():
+            return "object"
+        if range_name in sv.all_types():
+            induced = sv.induced_type(range_name)
+            if induced.base:
+                base = induced.base.lower()
+                if base in ("int", "integer"):
+                    return "integer"
+                if base in ("float", "double", "decimal"):
+                    return "number"
+                if base in ("bool", "boolean"):
+                    return "boolean"
+            return "string"  # default for string, uri, date types, etc.
+        return None
+
+    def _kinds_compatible(self, kind1: str, kind2: str) -> bool:
+        """Check if two type kinds are compatible.
+
+        :param kind1: first type kind
+        :param kind2: second type kind
+        :returns: True if compatible, False otherwise
+        """
+        if kind1 == kind2:
+            return True
+        # integer and number are compatible
+        if {kind1, kind2} == {"integer", "number"}:
+            return True
+        return False
