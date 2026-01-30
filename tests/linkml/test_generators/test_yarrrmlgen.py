@@ -399,13 +399,17 @@ def test_yarrrml_e2e_inlined_true_included(tmp_path: Path):
     jsonschema.validate(instance=DATA_INLINED, schema=json.loads(js))
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
-    assert "Address" not in yarrrml["mappings"]
-    person_map = yarrrml["mappings"]["Person"]
-    addr_po = next(po for po in person_map["po"] if po["p"].endswith("address"))
-    assert "po" in addr_po["o"]
-    nested_preds = {p["p"] for p in addr_po["o"]["po"]}
-    assert any(p.endswith("street") for p in nested_preds)
-    assert any(p.endswith("city") for p in nested_preds)
+    assert "Address" in yarrrml["mappings"]
+    addr_map = yarrrml["mappings"]["Address"]
+    assert any(po["p"].endswith("street") for po in addr_map["po"])
+    assert any(po["p"].endswith("city") for po in addr_map["po"])
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    EX, RDF = rdflib.Namespace("https://ex.org/inl#"), rdflib.RDF
+    assert (EX.A1, RDF.type, EX.Person) in g
+    assert (EX.A1, EX.name, rdflib.Literal("WorkerX")) in g
+    assert (EX.A1, EX.address, None) not in g
+    conforms, results_text = _validate_with_shacl(schema_path, g)
+    assert conforms, f"SHACL validation failed:\n{results_text}"
 
 
 @pytest.mark.yarrrml
@@ -714,12 +718,16 @@ classes:
       address:
         range: Address
         inlined: true
+
   Address:
     attributes:
+      aid:
+        identifier: true
       street: {}
       city: {}
+
 """
-    data = {"items": [{"id": "P1", "address": {"street": "Main", "city": "X"}}]}
+    data = {"items": [{"id": "P1", "address": {"aid": "A1", "street": "Main", "city": "X"}}]}
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -729,15 +737,21 @@ classes:
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     y = yaml.safe_load(yg.serialize())
 
-    assert "Address" not in y["mappings"]
+    # Address mapping now MUST exist (join-based inline)
+    assert "Address" in y["mappings"]
 
+    # Person must reference Address via mapping + condition
     person_po = y["mappings"]["Person"]["po"]
     addr_po = next(po for po in person_po if po["p"].endswith("address"))
 
-    assert "po" in addr_po["o"]
-    nested_preds = {p["p"] for p in addr_po["o"]["po"]}
-    assert any(p.endswith("street") for p in nested_preds)
-    assert any(p.endswith("city") for p in nested_preds)
+    assert "mapping" in addr_po["o"]
+    assert addr_po["o"]["mapping"] == "Address"
+
+    assert "condition" in addr_po["o"]
+    assert addr_po["o"]["condition"]["function"] == "equal"
+
+    params = addr_po["o"]["condition"]["parameters"]
+    assert any("address." in p[1] for p in params)
 
 
 @pytest.mark.yarrrml

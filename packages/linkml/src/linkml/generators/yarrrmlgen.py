@@ -54,6 +54,7 @@ class YarrrmlGenerator(Generator):
 
         inline_targets: set[str] = set()
         non_inline_targets: set[str] = set()
+        inline_owners: dict[str, tuple[str, str]] = {}
 
         for owner in sv.all_classes().values():
             for s in sv.class_induced_slots(owner.name):
@@ -71,20 +72,22 @@ class YarrrmlGenerator(Generator):
 
                 if inlined:
                     inline_targets.add(range_cls.name)
+                    alias = decl.alias if decl and decl.alias else s.alias
+                    var = alias or s.name
+                    inline_owners[range_cls.name] = (owner.name, var)
                 else:
                     non_inline_targets.add(range_cls.name)
 
-        inline_only = inline_targets - non_inline_targets
-
         for cls in sv.all_classes().values():
-            if cls.name in inline_only:
-                if not sv.get_identifier_slot(cls.name) and not sv.get_key_slot(cls.name):
-                    continue
-
             mapping_dict: dict[str, Any] = {}
 
             if self._is_json_source():
-                mapping_dict["sources"] = [[self.source, self._iterator_for_class(cls)]]
+                if cls.name in inline_owners:
+                    owner_name, slot_var = inline_owners[cls.name]
+                    owner_iterator = self._iterator_for_class(sv.get_class(owner_name))
+                    mapping_dict["sources"] = [[self.source, f"{owner_iterator}.{slot_var}"]]
+                else:
+                    mapping_dict["sources"] = [[self.source, self._iterator_for_class(cls)]]
             else:
                 mapping_dict["sources"] = [[self.source]]
 
@@ -182,46 +185,28 @@ class YarrrmlGenerator(Generator):
                         po.append({"p": pred, "o": {"value": f"$({var})", "type": "iri"}})
                     continue
 
-                range_class = sv.get_class(s.range)
-                if range_class:
-                    nested_po = []
+                range_name = s.range
+                range_id = sv.get_identifier_slot(range_name) or sv.get_key_slot(range_name)
 
-                    for nested_slot in sv.class_induced_slots(s.range):
-                        nested_decl = sv.get_slot(nested_slot.name)
+                if range_id:
+                    left = f"$({var}.{range_id.name})"
+                    right = f"$({range_id.name})"
 
-                        nested_slot_uri = None
-                        if nested_decl is not None and getattr(nested_decl, "slot_uri", None):
-                            nested_slot_uri = nested_decl.slot_uri
-                        elif getattr(nested_slot, "slot_uri", None):
-                            nested_slot_uri = nested_slot.slot_uri
-
-                        if nested_slot_uri:
-                            nested_pred = str(nested_slot_uri)
-                        else:
-                            nested_pred_uri = sv.get_uri(nested_decl or nested_slot, expand=False)
-                            nested_pred = (
-                                str(nested_pred_uri)
-                                if nested_pred_uri is not None
-                                else f"{default_prefix}:{nested_slot.name}"
-                            )
-
-                        nested_alias = nested_decl.alias if nested_decl and nested_decl.alias else nested_slot.alias
-                        nested_var = nested_alias or nested_slot.name
-                        full_var = f"$({var}.{nested_var})"
-
-                        nested_is_obj = sv.get_class(nested_slot.range) is not None if nested_slot.range else False
-                        if nested_is_obj:
-                            nested_inlined = getattr(nested_decl or nested_slot, "inlined", None)
-                            if nested_inlined is False:
-                                nested_po.append({"p": nested_pred, "o": {"value": full_var, "type": "iri"}})
-                            continue
-
-                        nested_po.append({"p": nested_pred, "o": full_var})
-
-                    if multivalued:
-                        po.append({"p": pred, "o": [{"po": nested_po}]})
-                    else:
-                        po.append({"p": pred, "o": {"po": nested_po}})
+                    po.append(
+                        {
+                            "p": pred,
+                            "o": {
+                                "mapping": str(range_name),
+                                "condition": {
+                                    "function": "equal",
+                                    "parameters": [
+                                        ["str1", left, "s"],
+                                        ["str2", right, "o"],
+                                    ],
+                                },
+                            },
+                        }
+                    )
 
                 continue
 
