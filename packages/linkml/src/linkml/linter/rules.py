@@ -475,27 +475,27 @@ class RangeAnyOfIncompatibleRule(LinterRule):
             if not slot.range or not slot.any_of:
                 continue
 
-            range_kind = self._get_type_kind(slot.range, schema_view, slot)
-            if range_kind is None:
+            range_json_type = self.get_json_schema_type(slot.range, schema_view, slot)
+            if range_json_type is None:
                 continue
 
             for i, expr in enumerate(slot.any_of):
                 if expr.range:
-                    expr_kind = self._get_type_kind(expr.range, schema_view, expr)
-                    if expr_kind and not self._kinds_compatible(range_kind, expr_kind):
+                    expr_json_type = self.get_json_schema_type(expr.range, schema_view, expr)
+                    if expr_json_type and not self.json_schema_types_compatible(range_json_type, expr_json_type):
                         yield LinterProblem(
-                            f"Slot '{slot.name}' has range '{slot.range}' ({range_kind}) "
-                            f"but any_of[{i}] has range '{expr.range}' ({expr_kind}) - "
+                            f"Slot '{slot.name}' has range '{slot.range}' (JSON Schema type: {range_json_type}) "
+                            f"but any_of[{i}] has range '{expr.range}' (JSON Schema type: {expr_json_type}) - "
                             f"these types are incompatible"
                         )
 
-    def _get_type_kind(
+    def get_json_schema_type(
         self,
         range_name: str,
         sv: SchemaView,
         slot: SlotDefinition | AnonymousSlotExpression | None = None,
     ) -> str | None:
-        """Return the JSON Schema type kind for a range.
+        """Return the JSON Schema type for a range.
 
         :param range_name: name of the range (type, enum, or class)
         :param sv: SchemaView for looking up definitions
@@ -515,7 +515,7 @@ class RangeAnyOfIncompatibleRule(LinterRule):
                 return "object"
             else:
                 # Not inlined, reference type is the identifier's type
-                return self._get_type_kind(id_slot.range, sv) if id_slot.range else "string"
+                return self.get_json_schema_type(id_slot.range, sv) if id_slot.range else "string"
         if range_name in sv.all_types():
             induced = sv.induced_type(range_name)
             if induced.base:
@@ -529,16 +529,16 @@ class RangeAnyOfIncompatibleRule(LinterRule):
             return "string"  # default for string, uri, date types, etc.
         return None
 
-    def _kinds_compatible(self, kind1: str, kind2: str) -> bool:
-        """Check if two type kinds are compatible.
+    def json_schema_types_compatible(self, type1: str, type2: str) -> bool:
+        """Check if two JSON Schema types are compatible.
 
-        :param kind1: first type kind
-        :param kind2: second type kind
+        :param type1: first JSON Schema type
+        :param type2: second JSON Schema type
         :returns: True if compatible, False otherwise
         """
-        if kind1 == kind2:
+        if type1 == type2:
             return True
         # integer and number are compatible
-        if {kind1, kind2} == {"integer", "number"}:
+        if {type1, type2} == {"integer", "number"}:
             return True
         return False
