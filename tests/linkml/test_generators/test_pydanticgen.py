@@ -3163,3 +3163,92 @@ def test_crappy_stdlib_set_removed():
         "and then REMOVE THIS TEST!"
     except Exception:
         pass
+
+
+def test_anyof_with_range_behavior(input_path, subtests):
+    """Tests that PydanticGen treats any_of as primary when both range and any_of are specified.
+
+    When a slot has both a direct `range` and `any_of` constraints:
+    - PydanticGen uses ONLY the any_of ranges
+    - The direct `range` is IGNORED when `any_of` is present
+    - This makes `any_of` and `range` effectively mutually exclusive, with `any_of` winning
+
+    This behavior DIFFERS from the JSON Schema generator, which applies BOTH constraints
+    as an implicit AND.
+
+    This test verifies:
+    1. Generated code has correct Union types based on any_of (ignoring direct range)
+    2. Data validation follows the any_of constraints (not the direct range)
+    """
+    with open(input_path("pydantic_anyof_with_range.yaml")) as f:
+        test_definition = yaml.safe_load(f)
+
+    schema_str = yaml.dump(test_definition)
+    gen = PydanticGenerator(schema_str, package=PACKAGE)
+    code = gen.serialize()
+
+    # Verify expected range patterns in generated code
+    expected_pydantic = test_definition.get("expected_pydantic", {})
+
+    with subtests.test(msg="Generated code patterns"):
+        # Case 1: any_of only - should produce Union[Letters, Numbers]
+        if "anyof_only_enums" in expected_pydantic:
+            pattern = expected_pydantic["anyof_only_enums"]["range_pattern"]
+            assert pattern in code, f"Expected '{pattern}' in generated code for anyof_only_enums"
+
+        # Case 2: range=string is ignored, should produce Union[Letters, Numbers]
+        if "range_string_anyof_enums" in expected_pydantic:
+            pattern = expected_pydantic["range_string_anyof_enums"]["range_pattern"]
+            assert pattern in code, f"Expected '{pattern}' in generated code for range_string_anyof_enums"
+            # Also verify that "str" is NOT the range (range was ignored)
+            assert "range_string_anyof_enums: Optional[str]" not in code, (
+                "Direct range=string should be ignored when any_of is present"
+            )
+
+        # Case 3: range=string is ignored, any_of with int and enum
+        if "range_string_anyof_mixed" in expected_pydantic:
+            pattern = expected_pydantic["range_string_anyof_mixed"]["range_pattern"]
+            assert pattern in code, f"Expected '{pattern}' in generated code for range_string_anyof_mixed"
+
+        # Case 4: range=integer is ignored, any_of with string and enum
+        if "range_integer_anyof_string" in expected_pydantic:
+            pattern = expected_pydantic["range_integer_anyof_string"]["range_pattern"]
+            assert pattern in code, f"Expected '{pattern}' in generated code for range_integer_anyof_string"
+            # Verify that int is NOT the range (range was ignored)
+            assert "range_integer_anyof_string: Optional[int]" not in code, (
+                "Direct range=integer should be ignored when any_of is present"
+            )
+
+        # Case 5: multivalued with range ignored
+        if "multivalued_range_anyof" in expected_pydantic:
+            pattern = expected_pydantic["multivalued_range_anyof"]["range_pattern"]
+            assert pattern in code, f"Expected '{pattern}' in generated code for multivalued_range_anyof"
+
+        # Case 7: range=ClassA ignored, any_of with ClassB and int
+        if "range_class_anyof_different" in expected_pydantic:
+            pattern = expected_pydantic["range_class_anyof_different"]["range_pattern"]
+            assert pattern in code, f"Expected '{pattern}' in generated code for range_class_anyof_different"
+            # Verify that ClassA is NOT the range (range was ignored)
+            assert "range_class_anyof_different: Optional[ClassA]" not in code, (
+                "Direct range=ClassA should be ignored when any_of is present"
+            )
+
+    # Compile and run data validation tests
+    mod = compile_python(code, PACKAGE)
+
+    data_cases = test_definition.get("data_cases", [])
+    for case in data_cases:
+        description = case.get("description", str(case.get("data")))
+        data = case.get("data", {})
+        expected_valid = case.get("valid", True)
+
+        with subtests.test(msg=description):
+            if expected_valid:
+                try:
+                    instance = mod.Test(**data)
+                    # If we get here, validation passed as expected
+                except ValidationError as e:
+                    pytest.fail(f"Expected valid data but got ValidationError: {e}\nData: {data}")
+            else:
+                with pytest.raises(ValidationError):
+                    mod.Test(**data)
