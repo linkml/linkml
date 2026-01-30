@@ -13,6 +13,11 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
                 return True, URIRef(class_uri)
             return True, ""
 
+        # TODO: The below conditional is a stop gap for a proper solution, see @sneakers-the-rat proposal in https://github.com/linkml/linkml/issues/2522
+        if default_value == "default_range":
+            default_range = self.schema_view.schema.default_range or "string"
+            return True, Literal(default_range, datatype=ShaclDataType.STRING.uri_ref)
+
         return False, None
 
     def map_enum_default_value(
