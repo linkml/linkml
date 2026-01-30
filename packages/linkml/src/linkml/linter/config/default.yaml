@@ -37,4 +37,4 @@ rules:
     prefixmaps_contexts:
       - merged
   range_anyof_incompatible:
-    level: disabled
+    level: warning
