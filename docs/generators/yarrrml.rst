@@ -166,8 +166,8 @@ Limitations
 - Classes without an identifier are **assigned a fallback subject**: ``ex:<Class>/$(subject_id)``
 - Object slots:
   - ``inlined: false`` → emitted as IRIs
-  - ``inlined: true`` → included inline as nested ``po`` structures (no separate mapping)
-- Inline-only classes (used exclusively via ``inlined: true``) do not produce standalone mappings
+  - ``inlined: true`` → emitted using YARRRML ``mapping`` + ``condition`` (join) pattern
+- Inline classes require an identifier (or key) to support join-based linking
 - Iterators not derived from JSON Schema
 - No per-slot JSONPath/CSV expressions or functions
 - CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed
