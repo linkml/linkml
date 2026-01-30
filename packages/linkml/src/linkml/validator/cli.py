@@ -176,7 +176,7 @@ def cli(
             fg="yellow",
         )
 
-    if schema is not None and schema_remote is not None :
+    if schema is not None and schema_remote is not None:
         raise click.ClickException(
             "Both a remote and a local schema were provided. Please use either the -s/--schema "
             "option or the -r/--schema-remote option to define a schema, not both."
@@ -198,7 +198,7 @@ def cli(
             "the -s/--schema option or the -r/--schema-remote option "
             "as an argument or in a config file."
         )
-    
+
     config = Config(**config_args)
 
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
