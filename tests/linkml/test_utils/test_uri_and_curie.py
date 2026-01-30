@@ -26,7 +26,7 @@ def test_uri_and_curie(input_path, snapshot, snapshot_path):
     contextgen_output = ContextGenerator(model_path).serialize()
     CompareJsonldContext.compare_with_snapshot(contextgen_output, snapshot_path(f"{model_name}.jsonld"))
 
-    jsonldgen_output = JSONLDGenerator(model_path).serialize()
+    jsonldgen_output = JSONLDGenerator(model_path).serialize(context_kwargs={"model": True})
     assert jsonldgen_output == snapshot(f"{model_name}.json")
 
     module = compile_python(pythongen_output)

@@ -504,13 +504,17 @@ class RangeAnyOfIncompatibleRule(LinterRule):
         if range_name in sv.all_enums():
             return "string"
         if range_name in sv.all_classes():
-            # Class with identifier and not explicitly inlined -> string reference
             # Class without identifier OR explicitly inlined -> object
-            if slot is not None:
-                return "object" if sv.is_inlined(slot) else "string"
+            # Class with identifier and not inlined -> type of the identifier slot
+            id_slot = sv.get_identifier_slot(range_name)
+            if slot is not None and sv.is_inlined(slot):
+                return "object"
+            elif id_slot is None:
+                # No identifier means must be inlined
+                return "object"
             else:
-                id_slot = sv.get_identifier_slot(range_name)
-                return "object" if id_slot is None else "string"
+                # Not inlined, reference type is the identifier's type
+                return self._get_type_kind(id_slot.range, sv) if id_slot.range else "string"
         if range_name in sv.all_types():
             induced = sv.induced_type(range_name)
             if induced.base:
