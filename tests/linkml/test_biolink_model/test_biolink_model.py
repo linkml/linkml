@@ -41,7 +41,7 @@ pytestmark = pytest.mark.biolink
             ],
         ),
         pytest.param(ContextGenerator, ".context.jsonld", {"useuris": False}, {}, marks=pytest.mark.jsonldcontextgen),
-        (JSONLDGenerator, ".json", {}, {}),
+        (JSONLDGenerator, ".json", {}, {"context_kwargs": {"model": True}}),
         pytest.param(PythonGenerator, ".py", {}, {}, marks=pytest.mark.pythongen),
         (CsvGenerator, ".tsv", {"format": "tsv"}, {}),
         # (DotGenerator, "graphviz", {}, {}),
