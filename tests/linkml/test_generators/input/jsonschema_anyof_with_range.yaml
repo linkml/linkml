@@ -76,9 +76,9 @@ schema:
         CHARLIE:
     Numbers:
       permissible_values:
-        ONE:
-        TWO:
-        THREE:
+        1:
+        2:
+        3:
 
   classes:
     Test:
@@ -136,7 +136,7 @@ data_cases:
   - data:
       anyof_only_enums: ALPHA
   - data:
-      anyof_only_enums: ONE
+      anyof_only_enums: "1"
   - data:
       anyof_only_enums: INVALID
     error_message: is not valid under any of the given schemas
@@ -145,9 +145,9 @@ data_cases:
   # Valid: ALPHA is in Letters enum AND is a string
   - data:
       range_string_anyof_enums: ALPHA
-  # Valid: TWO is in Numbers enum AND is a string
+  # Valid: "2" is in Numbers enum AND is a string
   - data:
-      range_string_anyof_enums: TWO
+      range_string_anyof_enums: "2"
   # Invalid: not in either enum (fails anyOf)
   - data:
       range_string_anyof_enums: INVALID
@@ -189,7 +189,7 @@ data_cases:
   - data:
       multivalued_range_anyof:
         - ALPHA
-        - ONE
+        - "1"
   # Invalid: integers fail string type constraint in array items
   - data:
       multivalued_range_anyof:

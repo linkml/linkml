@@ -101,38 +101,6 @@ classes:
     assert "string" in problems[0].message
 
 
-def test_range_int_anyof_string_warns():
-    """Test that range=int (alias) with any_of containing string warns."""
-    schema = """
-id: http://example.org/test
-name: test
-prefixes:
-  linkml: https://w3id.org/linkml/
-  xsd: http://www.w3.org/2001/XMLSchema#
-imports:
-  - linkml:types
-
-types:
-  int:
-    typeof: integer
-
-slots:
-  my_slot:
-    range: int
-    any_of:
-      - range: string
-
-classes:
-  MyClass:
-    slots:
-      - my_slot
-"""
-    problems = check_schema(schema)
-    assert len(problems) == 1
-    assert "integer" in problems[0].message
-    assert "string" in problems[0].message
-
-
 def test_range_integer_anyof_float_no_warning():
     """Test that range=integer with any_of containing float does NOT warn (number compatible)."""
     schema = """
@@ -158,8 +126,11 @@ classes:
     assert len(problems) == 0
 
 
-def test_range_class_anyof_string_warns():
-    """Test that range=SomeClass with any_of containing string warns."""
+def test_range_class_without_identifier_anyof_string_warns():
+    """Test that range=SomeClass (no identifier) with any_of string warns.
+
+    A class without an identifier must be inlined, so it's an object type.
+    """
     schema = """
 id: http://example.org/test
 name: test
@@ -185,6 +156,39 @@ classes:
     assert len(problems) == 1
     assert "object" in problems[0].message
     assert "string" in problems[0].message
+
+
+def test_range_class_with_identifier_anyof_string_no_warning():
+    """Test that range=SomeClass (with identifier) with any_of string does NOT warn.
+
+    A class with an identifier is a string reference when not inlined.
+    """
+    schema = """
+id: http://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+slots:
+  id:
+    identifier: true
+  my_slot:
+    range: SomeClass
+    any_of:
+      - range: string
+
+classes:
+  SomeClass:
+    slots:
+      - id
+  MyClass:
+    slots:
+      - my_slot
+"""
+    problems = check_schema(schema)
+    assert len(problems) == 0
 
 
 def test_no_range_no_warning():

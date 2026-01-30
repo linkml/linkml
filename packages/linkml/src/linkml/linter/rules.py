@@ -474,13 +474,13 @@ class RangeAnyOfIncompatibleRule(LinterRule):
             if not slot.range or not slot.any_of:
                 continue
 
-            range_kind = self._get_type_kind(slot.range, schema_view)
+            range_kind = self._get_type_kind(slot.range, schema_view, slot)
             if range_kind is None:
                 continue
 
             for i, expr in enumerate(slot.any_of):
                 if expr.range:
-                    expr_kind = self._get_type_kind(expr.range, schema_view)
+                    expr_kind = self._get_type_kind(expr.range, schema_view, expr)
                     if expr_kind and not self._kinds_compatible(range_kind, expr_kind):
                         yield LinterProblem(
                             f"Slot '{slot.name}' has range '{slot.range}' ({range_kind}) "
@@ -488,17 +488,29 @@ class RangeAnyOfIncompatibleRule(LinterRule):
                             f"these types are incompatible"
                         )
 
-    def _get_type_kind(self, range_name: str, sv: SchemaView) -> str | None:
+    def _get_type_kind(
+        self,
+        range_name: str,
+        sv: SchemaView,
+        slot: Union[SlotDefinition, "AnonymousSlotExpression", None] = None,
+    ) -> str | None:
         """Return the JSON Schema type kind for a range.
 
         :param range_name: name of the range (type, enum, or class)
         :param sv: SchemaView for looking up definitions
+        :param slot: slot or expression to determine if class ranges are inlined
         :returns: one of 'string', 'integer', 'number', 'boolean', 'object', or None
         """
         if range_name in sv.all_enums():
             return "string"
         if range_name in sv.all_classes():
-            return "object"
+            # Class with identifier and not explicitly inlined -> string reference
+            # Class without identifier OR explicitly inlined -> object
+            if slot is not None:
+                return "object" if sv.is_inlined(slot) else "string"
+            else:
+                id_slot = sv.get_identifier_slot(range_name)
+                return "object" if id_slot is None else "string"
         if range_name in sv.all_types():
             induced = sv.induced_type(range_name)
             if induced.base:
