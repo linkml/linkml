@@ -3183,7 +3183,8 @@ def test_anyof_with_range_behavior(input_path, subtests):
     with open(input_path("pydantic_anyof_with_range.yaml")) as f:
         test_definition = yaml.safe_load(f)
 
-    schema_str = yaml.dump(test_definition)
+    # Extract the schema from the test definition (following jsonschema test conventions)
+    schema_str = yaml.dump(test_definition["schema"])
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
 
