@@ -246,6 +246,19 @@ def test_range_unions(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_range_union_cases.yaml"))
 
 
+def test_anyof_with_range(subtests, input_path):
+    """Tests behavior when both `range` and `any_of` are specified on a slot.
+
+    When a slot has both a direct `range` and `any_of` constraints, the JSON Schema
+    generator applies BOTH constraints (implicit AND):
+    - The direct `range` becomes a type constraint (e.g., "type": "string")
+    - The `any_of` becomes an anyOf constraint
+
+    This means values must satisfy BOTH to be valid.
+    """
+    external_file_test(subtests, input_path("jsonschema_anyof_with_range.yaml"))
+
+
 def test_multivalued_slot_cardinality(subtests, input_path):
     """Tests that cardinality constrains on multivalued slots are translated correctly."""
 
