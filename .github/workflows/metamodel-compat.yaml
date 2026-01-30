@@ -1,0 +1,130 @@
+# Weekly compatibility test against the latest linkml-model metamodel
+#
+# This workflow downloads the latest metamodel from linkml-model and runs
+# the compatibility tests to ensure the linkml toolkit can process it.
+# If tests pass and the metamodel has changed, it creates a PR with the update.
+
+name: Metamodel Compatibility
+env:
+  UV_VERSION: "0.7.13"
+on:
+  schedule:
+    # Run every Monday at 9:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+jobs:
+  metamodel-compat:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.1.0
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Setup Graphviz
+        uses: ts-graphviz/setup-graphviz@v2.0.2
+
+      - name: Download latest metamodel from linkml-model
+        run: |
+          METAMODEL_DIR="tests/linkml/test_metamodel_compat/input/metamodel"
+          BASE_URL="https://raw.githubusercontent.com/linkml/linkml-model/main/linkml_model/model/schema"
+
+          for file in meta.yaml types.yaml mappings.yaml extensions.yaml annotations.yaml units.yaml; do
+            curl -sSL "${BASE_URL}/${file}" -o "${METAMODEL_DIR}/${file}"
+          done
+
+          # Update imports in downloaded files to use local paths instead of linkml: prefix
+          # This is necessary because the test uses local copies of the metamodel files
+          sed -i 's/- linkml:types/- types/g' "${METAMODEL_DIR}"/*.yaml
+          sed -i 's/- linkml:mappings/- mappings/g' "${METAMODEL_DIR}"/*.yaml
+          sed -i 's/- linkml:extensions/- extensions/g' "${METAMODEL_DIR}"/*.yaml
+          sed -i 's/- linkml:annotations/- annotations/g' "${METAMODEL_DIR}"/*.yaml
+          sed -i 's/- linkml:units/- units/g' "${METAMODEL_DIR}"/*.yaml
+
+          # Remove commented import lines
+          sed -i '/^#.*linkml:/d' "${METAMODEL_DIR}"/*.yaml
+
+      - name: Run metamodel compatibility tests
+        id: run_tests
+        run: uv run pytest tests/linkml/test_metamodel_compat/ --with-slow -v 2>&1 | tee test_output.txt
+        continue-on-error: true
+
+      - name: Check for existing issue
+        if: steps.run_tests.outcome == 'failure'
+        id: check_issue
+        run: |
+          EXISTING_ISSUE=$(gh issue list --label "metamodel-compat" --state open --json number --jq '.[0].number // empty')
+          echo "existing_issue=${EXISTING_ISSUE}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update issue on failure
+        if: steps.run_tests.outcome == 'failure'
+        run: |
+          ISSUE_TITLE="Metamodel compatibility test failure"
+          ISSUE_BODY=$(cat <<'EOF'
+          ## Metamodel Compatibility Test Failure
+
+          The weekly metamodel compatibility test has failed. This indicates that the
+          current linkml toolkit may not be compatible with the latest linkml-model metamodel.
+
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ### Test Output (last 100 lines)
+          ```
+          $(tail -n 100 test_output.txt)
+          ```
+
+          ### Next Steps
+          1. Review the test output above
+          2. Check for recent changes in [linkml-model](https://github.com/linkml/linkml-model)
+          3. Update the linkml toolkit to handle any metamodel changes
+          EOF
+          )
+
+          if [ -n "${{ steps.check_issue.outputs.existing_issue }}" ]; then
+            gh issue comment "${{ steps.check_issue.outputs.existing_issue }}" --body "${ISSUE_BODY}"
+          else
+            gh issue create \
+              --title "${ISSUE_TITLE}" \
+              --body "${ISSUE_BODY}" \
+              --label "metamodel-compat"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fail if tests failed
+        if: steps.run_tests.outcome == 'failure'
+        run: exit 1
+
+      - name: Create PR with updated metamodel
+        if: steps.run_tests.outcome == 'success'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Update metamodel test fixtures from linkml-model"
+          title: "Update metamodel test fixtures from linkml-model"
+          body: |
+            This PR updates the metamodel test fixtures to the latest version from linkml-model.
+
+            The metamodel compatibility tests have passed with these changes.
+
+            **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          branch: update-metamodel-fixtures
+          delete-branch: true
+          labels: metamodel-compat

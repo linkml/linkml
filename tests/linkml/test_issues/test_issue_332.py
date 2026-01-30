@@ -14,7 +14,6 @@ def test_context(input_path):
                 "xsd": "http://www.w3.org/2001/XMLSchema#",
                 "meta": "https://w3id.org/linkml/",
                 "test14": "https://example.com/test14/",
-                "@vocab": "https://example.com/test14/",
             },
             {"@base": "https://example.com/test14/"},
         ]

@@ -86,13 +86,13 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Test linkml package
         run: |
-          uv run coverage run -m pytest tests/linkml/ --with-network
+          uv run coverage run -m pytest tests/linkml/ --with-network -m "not kroki"
           uv run coverage xml -o coverage-linkml.xml
           uv run coverage report -m
         shell: bash
       - name: Test linkml-runtime package
         run: |
-          uv run coverage run -m pytest tests/linkml_runtime/ --with-network
+          uv run coverage run -m pytest tests/linkml_runtime/ --with-network -m "not kroki"
           uv run coverage xml -o coverage-linkml_runtime.xml
           uv run coverage report -m
         shell: bash
@@ -148,7 +148,7 @@ jobs:
         # Set bash shell to fail correctly on Windows https://github.com/actions/runner-images/issues/6668
         shell: bash
         run: |
-          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m slow -n auto
+          uv run coverage run -m pytest tests/linkml/ --with-slow --with-biolink -m "slow and not kroki" -n auto
           uv run coverage xml -o coverage-linkml-slow.xml
           uv run coverage report -m
       - name: Upload linkml slow test coverage

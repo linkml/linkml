@@ -82,6 +82,7 @@ markers = [
   "strcmp: tests that compare stringified values rather than the values themselves",
   "biolink: tests that validate that the biolink model is unchanged",
   "docker: tests that require a running docker server",
+  "kroki: tests that use Kroki diagram creation (skipped in CI)",
   "plantumlgen: Tests for the plantuml generator",
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
