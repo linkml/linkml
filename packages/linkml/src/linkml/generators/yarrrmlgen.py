@@ -54,7 +54,7 @@ class YarrrmlGenerator(Generator):
 
         inline_targets: set[str] = set()
         non_inline_targets: set[str] = set()
-        inline_owners: dict[str, tuple[str, str]] = {}
+        inline_owners: dict[str, list[tuple[str, str]]] = {}
 
         for owner in sv.all_classes().values():
             for s in sv.class_induced_slots(owner.name):
@@ -74,7 +74,7 @@ class YarrrmlGenerator(Generator):
                     inline_targets.add(range_cls.name)
                     alias = decl.alias if decl and decl.alias else s.alias
                     var = alias or s.name
-                    inline_owners[range_cls.name] = (owner.name, var)
+                    inline_owners.setdefault(range_cls.name, []).append((owner.name, var))
                 else:
                     non_inline_targets.add(range_cls.name)
 
@@ -83,7 +83,13 @@ class YarrrmlGenerator(Generator):
 
             if self._is_json_source():
                 if cls.name in inline_owners:
-                    owner_name, slot_var = inline_owners[cls.name]
+                    owners = inline_owners[cls.name]
+                    if len(owners) > 1:
+                        raise ValueError(
+                            f"Inline class '{cls.name}' is used in multiple owners: "
+                            f"{[o[0] for o in owners]}. This is not supported."
+                        )
+                    owner_name, slot_var = owners[0]
                     owner_iterator = self._iterator_for_class(sv.get_class(owner_name))
                     mapping_dict["sources"] = [[self.source, f"{owner_iterator}.{slot_var}"]]
                 else:
@@ -188,26 +194,29 @@ class YarrrmlGenerator(Generator):
                 range_name = s.range
                 range_id = sv.get_identifier_slot(range_name) or sv.get_key_slot(range_name)
 
-                if range_id:
-                    left = f"$({var}.{range_id.name})"
-                    right = f"$({range_id.name})"
-
-                    po.append(
-                        {
-                            "p": pred,
-                            "o": {
-                                "mapping": str(range_name),
-                                "condition": {
-                                    "function": "equal",
-                                    "parameters": [
-                                        ["str1", left, "s"],
-                                        ["str2", right, "o"],
-                                    ],
-                                },
-                            },
-                        }
+                if not range_id:
+                    raise ValueError(
+                        f"Inline class '{range_name}' must define an identifier or key to support join-based linking."
                     )
 
+                left = f"$({var}.{range_id.name})"
+                right = f"$({range_id.name})"
+
+                po.append(
+                    {
+                        "p": pred,
+                        "o": {
+                            "mapping": str(range_name),
+                            "condition": {
+                                "function": "equal",
+                                "parameters": [
+                                    ["str1", left, "s"],
+                                    ["str2", right, "o"],
+                                ],
+                            },
+                        },
+                    }
+                )
                 continue
 
             po.append({"p": pred, "o": f"$({var})"})

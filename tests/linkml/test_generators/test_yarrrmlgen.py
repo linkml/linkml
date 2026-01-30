@@ -186,13 +186,31 @@ classes:
         inlined: true
   Address:
     attributes:
+      aid:
+        identifier: true
       street: {}
       city: {}
 """
 DATA_INLINED = {
     "items": [
-        {"pid": "A1", "name": "WorkerX", "address": {"street": "Main", "city": "CityA"}},
-        {"pid": "A2", "name": "WorkerY", "address": {"street": "High", "city": "CityB"}},
+        {
+            "pid": "A1",
+            "name": "WorkerX",
+            "address": {
+                "aid": "ADDR1",
+                "street": "Main",
+                "city": "CityA",
+            },
+        },
+        {
+            "pid": "A2",
+            "name": "WorkerY",
+            "address": {
+                "aid": "ADDR2",
+                "street": "High",
+                "city": "CityB",
+            },
+        },
     ]
 }
 
@@ -407,7 +425,9 @@ def test_yarrrml_e2e_inlined_true_included(tmp_path: Path):
     EX, RDF = rdflib.Namespace("https://ex.org/inl#"), rdflib.RDF
     assert (EX.A1, RDF.type, EX.Person) in g
     assert (EX.A1, EX.name, rdflib.Literal("WorkerX")) in g
-    assert (EX.A1, EX.address, None) not in g
+    assert (EX.A1, EX.address, EX.ADDR1) in g
+    assert (EX.ADDR1, RDF.type, EX.Address) in g
+    assert (EX.ADDR1, EX.street, rdflib.Literal("Main")) in g
     conforms, results_text = _validate_with_shacl(schema_path, g)
     assert conforms, f"SHACL validation failed:\n{results_text}"
 

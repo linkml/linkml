@@ -168,6 +168,9 @@ Limitations
   - ``inlined: false`` → emitted as IRIs
   - ``inlined: true`` → emitted using YARRRML ``mapping`` + ``condition`` (join) pattern
 - Inline classes require an identifier (or key) to support join-based linking
+- An inline class can only be used in a single owning class.
+  Multiple inline usages of the same class are not supported,
+  as each mapping can define only one source/iterator.
 - Iterators not derived from JSON Schema
 - No per-slot JSONPath/CSV expressions or functions
 - CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed
