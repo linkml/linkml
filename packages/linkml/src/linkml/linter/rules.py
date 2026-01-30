@@ -20,6 +20,7 @@ from linkml.linter.config.datamodel.config import (
 )
 from linkml.linter.linter import LinterProblem
 from linkml_runtime.linkml_model import (
+    AnonymousSlotExpression,
     ClassDefinition,
     ClassDefinitionName,
     Element,
@@ -492,7 +493,7 @@ class RangeAnyOfIncompatibleRule(LinterRule):
         self,
         range_name: str,
         sv: SchemaView,
-        slot: Union[SlotDefinition, "AnonymousSlotExpression", None] = None,
+        slot: SlotDefinition | AnonymousSlotExpression | None = None,
     ) -> str | None:
         """Return the JSON Schema type kind for a range.
 
