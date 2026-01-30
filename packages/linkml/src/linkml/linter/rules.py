@@ -515,7 +515,7 @@ class RangeAnyOfIncompatibleRule(LinterRule):
                 return "object"
             else:
                 # Not inlined, reference type is the identifier's type
-                return self.get_json_schema_type(id_slot.range, sv) if id_slot.range else "string"
+                return self.get_json_schema_type(id_slot.range, sv, None) if id_slot.range else "string"
         if range_name in sv.all_types():
             induced = sv.induced_type(range_name)
             if induced.base:
