@@ -10,6 +10,7 @@ from tests.linkml.test_compliance.helper import (
     JSONLD_CONTEXT,
     OWL,
     PANDERA_POLARS_CLASS,
+    PRISMA,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
@@ -79,4 +80,5 @@ CORE_FRAMEWORKS = [
     pytest.param(SQL_DDL_SQLITE, marks=[pytest.mark.sqlddlgen]),
     pytest.param(SQL_DDL_POSTGRES, marks=[pytest.mark.sqlddlpostgresgen]),
     pytest.param(OWL, marks=[pytest.mark.owlgen]),
+    pytest.param(PRISMA, marks=[pytest.mark.prismagen]),
 ]
