@@ -12,13 +12,13 @@ pages for each of the elements (classes, slots, enumerations, etc.) in your sche
 The documentation pages are an important resource for consumers of the schema because it provides a
 user-friendly way for users to explore and understand your schema.
 
-If you use the official `LinkML cookicutter <https://github.com/linkml/linkml-project-cookiecutter/tree/main>`_
-to create your schema, it will add a static site generator framework to your environment. There
+If you use the official `LinkML Project Copier <https://github.com/linkml/linkml-project-copier>`_
+template to create your schema, it will add a static site generator framework to your environment. There
 are many static site generator frameworks available, but the one recommended by LinkML is `MkDocs <https://www.mkdocs.org/>`_.
 MkDocs can be used to convert Markdown files/pages into HTML pages. The reason we recommend converting to
 HTML is so that the pages can be deployed to a static site hosting service like `GitHub Pages <https://pages.github.com/>`_. Again,
-if you have used the cookicutter to create your schema, you will find a Makefile in your project folder
-with shortcuts (Makefile targets) to help you build and deploy your documentation easily.
+if you have used the project template to create your schema, you will find a ``justfile`` in your project folder
+with commands to help you build and deploy your documentation easily.
 
 Another important detail about the information contained in the technical documentation pages is the fact
 that it also has automatically generated `Mermaid class diagrams <https://mermaid.js.org/syntax/classDiagram.html>`_

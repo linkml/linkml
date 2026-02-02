@@ -57,7 +57,7 @@ CC0 and CC BY are good for non-code resources; code should be licensed with a pe
 Automating quality control, generation of artifacts, releases, and deployment helps in maintaining and contributing to projects.
 This includes using continuous integration for quality checks, automating the generation of data views, and packaging data and code for easy deployment.
 
-The [LinkML Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter/) provides a template for a project that
+The [LinkML Project Copier](https://github.com/linkml/linkml-project-copier) template provides a template for a project that
 includes a number of automation features using GitHub actions.
 
 Implementing social workflows through tools like GitHub enhances community engagement.
@@ -96,8 +96,8 @@ Some things the governance model should cover:
 
 Detailed contribution guidelines, offering various ways to contribute, and hosting projects in neutral spaces increase contributor engagement and recruitment. Projects should be accessible and welcoming to new contributors to ensure longevity and development.
 
-The [LinkML Cookiecutter](https://github.com/linkml/linkml-project-cookiecutter/) provides a template
-for project documents such as a `CONTRIBUTING.md` file and a `CODE_OF_CONDUCT.md` file that can be
+The [LinkML Project Copier](https://github.com/linkml/linkml-project-copier) template provides
+project documents such as a `CONTRIBUTING.md` file and a `CODE_OF_CONDUCT.md` file that can be
 adapted for your project.
 
 The core schema developers should be familiar with existing best practice for contribution.
