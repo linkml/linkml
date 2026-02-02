@@ -7,8 +7,8 @@ PACKAGE = "org.sink.kitchen"
 
 def test_javagen_records(kitchen_sink_path, tmp_path):
     """Generate java records"""
-    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE, generate_records=True)
-    gen.serialize(directory=str(tmp_path))
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), template_variant="records")
     assert_file_contains(
         tmp_path / "Address.java",
         "public record Address(String street, String city, BigDecimal altitude)",
