@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.12, pytest-8.4.2, pluggy-1.6.0 -- /home/runner/work/linkml/linkml/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/runner/work/linkml/linkml
+configfile: pyproject.toml
+plugins: anyio-4.11.0, subtests-0.15.0, xdist-3.8.0, typeguard-4.4.4
+collecting ... collected 2 items
+
+tests/linkml/test_metamodel_compat/test_metamodel_projectgen.py::test_metamodel_projectgen PASSED [ 50%]
+tests/linkml/test_metamodel_compat/test_metamodel_projectgen.py::test_metamodel_python_compiles PASSED [100%]
+
+============================== 2 passed in 56.93s ==============================
