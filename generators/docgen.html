@@ -288,7 +288,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input aria-label="Toggle navigation of How-to Guides" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-copier.html">LinkML Project Copier Template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/collaborative-development.html">How to run a collaborative data modeling project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
@@ -411,13 +411,13 @@ using the <code class="docutils literal notranslate"><span class="pre">gen-doc</
 pages for each of the elements (classes, slots, enumerations, etc.) in your schema.</p>
 <p>The documentation pages are an important resource for consumers of the schema because it provides a
 user-friendly way for users to explore and understand your schema.</p>
-<p>If you use the official <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/tree/main">LinkML cookicutter</a>
-to create your schema, it will add a static site generator framework to your environment. There
+<p>If you use the official <a class="reference external" href="https://github.com/linkml/linkml-project-copier">LinkML Project Copier</a>
+template to create your schema, it will add a static site generator framework to your environment. There
 are many static site generator frameworks available, but the one recommended by LinkML is <a class="reference external" href="https://www.mkdocs.org/">MkDocs</a>.
 MkDocs can be used to convert Markdown files/pages into HTML pages. The reason we recommend converting to
 HTML is so that the pages can be deployed to a static site hosting service like <a class="reference external" href="https://pages.github.com/">GitHub Pages</a>. Again,
-if you have used the cookicutter to create your schema, you will find a Makefile in your project folder
-with shortcuts (Makefile targets) to help you build and deploy your documentation easily.</p>
+if you have used the project template to create your schema, you will find a <code class="docutils literal notranslate"><span class="pre">justfile</span></code> in your project folder
+with commands to help you build and deploy your documentation easily.</p>
 <p>Another important detail about the information contained in the technical documentation pages is the fact
 that it also has automatically generated <a class="reference external" href="https://mermaid.js.org/syntax/classDiagram.html">Mermaid class diagrams</a>
 embedded on the class documentation pages. These diagrams summarize the relationships between various classes

@@ -7,7 +7,7 @@
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>LinkML Project Cookiecutter - linkml documentation</title>
+        <title>LinkML Project Copier Template - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -288,7 +288,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">How-to Guides</a><input aria-label="Toggle navigation of How-to Guides" checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">LinkML Project Copier Template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="collaborative-development.html">How to run a collaborative data modeling project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
@@ -383,7 +383,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/howtos/linkml-project-cookiecutter.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/howtos/linkml-project-copier.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -401,34 +401,61 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="linkml-project-cookiecutter">
-<h1>LinkML Project Cookiecutter<a class="headerlink" href="#linkml-project-cookiecutter" title="Link to this heading">¶</a></h1>
-<p>To start a new LinkML project, please use the <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter">LinkML Project Cookiecutter</a>
-command line tool.  This tool will generate a LinkML project directory for you, including the directory structure
-and commands necessary to build and test your project.  For  step-by-step instructions on using the linkml-project-cookiecutter, please
-<a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md">consult the documentation here</a>.</p>
-<section id="linkml-project-cookiecutter-quickstart">
-<h2>LinkML Project Cookiecutter Quickstart<a class="headerlink" href="#linkml-project-cookiecutter-quickstart" title="Link to this heading">¶</a></h2>
-<p>In your uv virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>add<span class="w"> </span>cruft
+          <section id="linkml-project-copier-template">
+<h1>LinkML Project Copier Template<a class="headerlink" href="#linkml-project-copier-template" title="Link to this heading">¶</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If you have an existing project based on the old cookiecutter template, see the
+<a class="reference external" href="https://github.com/linkml/linkml-project-copier#migrating-an-existing-project-to-use-this-template">migration guide</a>.</p>
+</div>
+<p>To start a new LinkML project, use the <a class="reference external" href="https://github.com/linkml/linkml-project-copier">LinkML Project Copier</a>
+template. This template generates a LinkML project directory for you, including the directory structure
+and commands necessary to build and test your project. For step-by-step instructions, please
+<a class="reference external" href="https://github.com/linkml/linkml-project-copier/blob/main/README.md">consult the documentation here</a>.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<p>You need the following tools installed:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://copier.readthedocs.io/">copier</a> (version 9.4.0 or later)</p></li>
+<li><p><a class="reference external" href="https://docs.astral.sh/uv/">uv</a> (for Python package management)</p></li>
+<li><p><a class="reference external" href="https://just.systems/">just</a> (command runner)</p></li>
+</ul>
+</section>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h2>
+<section id="create-your-new-linkml-project">
+<h3>Create your new LinkML project<a class="headerlink" href="#create-your-new-linkml-project" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>my-awesome-schema
+<span class="nb">cd</span><span class="w"> </span>my-awesome-schema
+copier<span class="w"> </span>copy<span class="w"> </span>--trust<span class="w"> </span>https://github.com/linkml/linkml-project-copier<span class="w"> </span>.
+</pre></div>
+</div>
+<p>Answer the prompted questions to customize your project. More details on the prompts and how to answer
+them can be found <a class="reference external" href="https://github.com/linkml/linkml-project-copier/blob/main/README.md">here</a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--trust</span></code> flag is required because the template uses Jinja2 extensions.</p>
+</section>
+<section id="set-up-your-project">
+<h3>Set up your project<a class="headerlink" href="#set-up-your-project" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>just<span class="w"> </span>setup
 </pre></div>
 </div>
 </section>
-<section id="use-cruft-to-create-your-brand-new-linkml-project">
-<h2>Use cruft to create your brand new LinkML project:<a class="headerlink" href="#use-cruft-to-create-your-brand-new-linkml-project" title="Link to this heading">¶</a></h2>
-<p>In your uv virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>cruft<span class="w"> </span>create<span class="w"> </span>https://github.com/linkml/linkml-project-cookiecutter
+<section id="build-and-test-your-project">
+<h3>Build and test your project<a class="headerlink" href="#build-and-test-your-project" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>just<span class="w"> </span><span class="nb">test</span>
 </pre></div>
 </div>
-<p>Answer the prompted questions to customize your project.  More details on the prompts and how to answer
-them can be found <a class="reference external" href="https://github.com/linkml/linkml-project-cookiecutter/blob/main/README.md">here</a>.</p>
 </section>
-<section id="build-your-linkml-project">
-<h2>Build your LinkML project<a class="headerlink" href="#build-your-linkml-project" title="Link to this heading">¶</a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>linkml-projects/my-awesome-schema<span class="w">  </span><span class="c1"># using the folder example above</span>
-make<span class="w"> </span>setup
+</section>
+<section id="updating-your-project-from-the-template">
+<h2>Updating your project from the template<a class="headerlink" href="#updating-your-project-from-the-template" title="Link to this heading">¶</a></h2>
+<p>One key advantage of Copier over the previous Cookiecutter-based template is lifecycle management.
+When the template is updated, you can pull in those changes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>copier<span class="w"> </span>update<span class="w"> </span>--trust
 </pre></div>
 </div>
+<p>This will re-apply the template with your existing answers, using git-style conflict markers
+where your local changes conflict with template updates.</p>
 </section>
 </section>
 
@@ -487,10 +514,15 @@ make<span class="w"> </span>setup
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">LinkML Project Cookiecutter</a><ul>
-<li><a class="reference internal" href="#linkml-project-cookiecutter-quickstart">LinkML Project Cookiecutter Quickstart</a></li>
-<li><a class="reference internal" href="#use-cruft-to-create-your-brand-new-linkml-project">Use cruft to create your brand new LinkML project:</a></li>
-<li><a class="reference internal" href="#build-your-linkml-project">Build your LinkML project</a></li>
+<li><a class="reference internal" href="#">LinkML Project Copier Template</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a><ul>
+<li><a class="reference internal" href="#create-your-new-linkml-project">Create your new LinkML project</a></li>
+<li><a class="reference internal" href="#set-up-your-project">Set up your project</a></li>
+<li><a class="reference internal" href="#build-and-test-your-project">Build and test your project</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#updating-your-project-from-the-template">Updating your project from the template</a></li>
 </ul>
 </li>
 </ul>

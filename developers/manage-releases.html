@@ -288,7 +288,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input aria-label="Toggle navigation of How-to Guides" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-cookiecutter.html">LinkML Project Cookiecutter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-copier.html">LinkML Project Copier Template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/collaborative-development.html">How to run a collaborative data modeling project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
@@ -404,7 +404,7 @@
           <section id="how-to-manage-releases-of-your-linkml-schema">
 <h1>How to Manage Releases of your LinkML Schema<a class="headerlink" href="#how-to-manage-releases-of-your-linkml-schema" title="Link to this heading">¶</a></h1>
 <p>Making a schema release in LinkML can be streamlined and efficient if done correctly. This guide will walk you through the process, focusing on semantic versioning, using GitHub for release notes, and ensuring your releases are consistent and well-documented.</p>
-<p>Note: This guide assumes you use the <a class="reference internal" href="../howtos/linkml-project-cookiecutter.html"><span class="doc std std-doc">LinkML Cookiecutter</span></a> to seed your repository. If you did not,
+<p>Note: This guide assumes you use the <a class="reference internal" href="../howtos/linkml-project-copier.html"><span class="doc std std-doc">LinkML Project Copier</span></a> template to seed your repository. If you did not,
 then you should still be able to adapt this guide to your workflow.</p>
 <section id="follow-semantic-versioning-semver">
 <h2>Follow Semantic Versioning (SemVer)<a class="headerlink" href="#follow-semantic-versioning-semver" title="Link to this heading">¶</a></h2>
@@ -434,7 +434,7 @@ to your schema. See the <a class="reference external" href="https://github.com/H
 <ul class="simple">
 <li><p>When ready for a new release, create a GitHub release using the GitHub web interface</p></li>
 <li><p>Ensure the version follows the <code class="docutils literal notranslate"><span class="pre">vX.X.X</span></code> format.</p></li>
-<li><p><strong>NOTE</strong> if you used the cookiecutter, there is no need to manually set the release in your <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>, this should be left as <code class="docutils literal notranslate"><span class="pre">0.0.0</span></code>.</p></li>
+<li><p><strong>NOTE</strong> if you used the project template, the version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> is managed dynamically via <code class="docutils literal notranslate"><span class="pre">uv-dynamic-versioning</span></code> and derived from Git tags. There is no need to manually set the version.</p></li>
 </ul>
 </li>
 <li><p><strong>Autogenerating Release Notes:</strong></p>

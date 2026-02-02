@@ -9,7 +9,7 @@ Some of these guides are works in progress
    :maxdepth: 2
    :caption: Contents:
 
-   linkml-project-cookiecutter
+   linkml-project-copier
    collaborative-development
    recognize-structural-forms
    yq-for-schemas
