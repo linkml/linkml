@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from jsonasobj2 import as_dict
+
 from linkml_runtime.linkml_model import meta
 
 
