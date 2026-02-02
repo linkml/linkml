@@ -1,0 +1,26 @@
+{#-
+  Jinja2 Template for the top level of a Pandera class-based model
+  Details at https://pandera.readthedocs.io/
+-#}
+{%- import 'header.jinja2' as header -%}
+{%- import 'class.jinja2' as class_macros -%}
+{{ header }}
+
+{% if pandera_validator_code %}
+{{ pandera_validator_code }}
+{% else %}
+from linkml.generators.panderagen.linkml_pandera_validator import LinkmlPanderaValidator as _LinkmlPanderaValidator
+{% endif %}
+
+# These are all str for now
+ID_TYPES = {
+{%- for cls in doc.classes %}
+    "{{ cls.name }}": "str",
+{%- endfor %}
+}
+
+{% if metamodel_version %}# metamodel_version: {{metamodel_version}}{% endif %}
+{% if model_version %}# version: {{model_version}}{% endif %}
+{%- for cls in doc.classes -%}
+    {{- class_macros.render_class(cls) -}}
+{%- endfor %}

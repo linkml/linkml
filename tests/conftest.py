@@ -12,13 +12,13 @@ import docker
 import pytest
 import requests_cache
 from _pytest.assertion.util import _diff_text
-from linkml_runtime.linkml_model.meta import SchemaDefinition
 
 import tests
-from tests.utils.compare_rdf import compare_rdf
-from tests.utils.dirutils import are_dir_trees_equal
+from linkml_runtime.linkml_model.meta import SchemaDefinition
+from tests.linkml.utils.compare_rdf import compare_rdf
+from tests.linkml.utils.dirutils import are_dir_trees_equal
 
-KITCHEN_SINK_PATH = str(Path(__file__).parent / "test_generators" / "input" / "kitchen_sink.yaml")
+KITCHEN_SINK_PATH = str(Path(__file__).parent / "linkml" / "test_generators" / "input" / "kitchen_sink.yaml")
 
 # avoid an error from nbconvert -> jupyter_core. remove this after jupyter_core v6
 os.environ["JUPYTER_PLATFORM_DIRS"] = "1"
@@ -101,7 +101,10 @@ class SnapshotFile(Snapshot):
             if not is_eq:
                 # TODO: probably better to use something other than this pytest
                 # private method. See https://docs.python.org/3/library/difflib.html
-                self.eq_state = "\n".join(_diff_text(actual, expected, self.config.getoption("verbose")))
+                # highlighter is a no-op function for pytest 8.4+ compatibility
+                self.eq_state = "\n".join(
+                    _diff_text(actual, expected, lambda x, **kwargs: x, verbose=self.config.getoption("verbose"))
+                )
             return is_eq
 
 
@@ -173,6 +176,52 @@ def input_path(request) -> Callable[[str], Path]:
     return get_path
 
 
+@pytest.fixture(scope="module", autouse=True)
+def ensure_click_not_monkeypatched(request):
+    """
+    Ensure Click is not monkeypatched for non-linkml_runtime tests.
+
+    The linkml_runtime test suite monkeypatches click.core.Context.exit at import time.
+    This fixture ensures that for test modules outside of linkml_runtime, the original
+    Click behavior is restored before tests run.
+    """
+    # Only restore if we're NOT in a linkml_runtime test module
+    if "linkml_runtime" not in str(request.path):
+        try:
+            import click
+
+            from tests.linkml_runtime.support.test_environment import _original_click_exit
+
+            click.core.Context.exit = _original_click_exit
+        except (ImportError, AttributeError):
+            # Monkeypatch hasn't been applied yet, or original wasn't saved
+            pass
+
+    yield  # Run the tests
+
+
+@pytest.fixture(scope="module", autouse=True)
+def clear_package_schemaview_cache(request):
+    """
+    Clear the package_schemaview LRU cache before each test module.
+
+    The package_schemaview function in linkml_runtime is decorated with @lru_cache.
+    This can cause issues when tests from different modules call it with the same
+    arguments but in different package states, leading to stale cached results.
+
+    This fixture clears the cache before each test module to ensure fresh results.
+    """
+    try:
+        from linkml_runtime.utils.introspection import package_schemaview
+
+        package_schemaview.cache_clear()
+    except (ImportError, AttributeError):
+        # Function not imported yet or doesn't have cache_clear
+        pass
+
+    yield  # Run the tests
+
+
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
     base = Path(request.path.parent) / "temp"
@@ -196,6 +245,9 @@ def pytest_addoption(parser):
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
     parser.addoption("--with-biolink", action="store_true", help="Include tests marked as for the biolink model")
+    parser.addoption(
+        "--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)"
+    )
 
 
 def pytest_collection_modifyitems(config, items: list[pytest.Item]):
@@ -210,6 +262,13 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         for item in items:
             if item.get_closest_marker("biolink"):
                 item.add_marker(skip_biolink)
+
+    # Gate rustgen tests behind an explicit flag so they don't run by default
+    if not config.getoption("--with-rustgen"):
+        skip_rustgen = pytest.mark.skip(reason="need --with-rustgen option to run")
+        for item in items:
+            if item.get_closest_marker("rustgen"):
+                item.add_marker(skip_rustgen)
 
     if not config.getoption("--with-network"):
         skip_network = pytest.mark.skip(reason="need --with-network option to run")

@@ -1,0 +1,142 @@
+{% if element.categories %}
+## Categories
+
+{% for cat in element.categories %}
+* {{ cat }}
+{%- endfor %}
+
+{% endif %}
+{% if element.keywords %}
+## Keywords
+
+{% for kw in element.keywords %}
+* {{ kw }}
+{%- endfor %}
+
+{% endif %}
+{% if element.in_subset %}
+## In Subsets
+
+{% for subset in element.in_subset %}
+* {{ gen.link(subset) }}
+{%- endfor %}
+
+{% endif %}
+{% if element.aliases %}
+## Aliases
+
+{% for alias in element.aliases %}
+* {{ alias }}
+{%- endfor %}
+{% endif %}
+
+{% if element.examples %}
+## Examples
+
+| Value |
+| --- |
+{% for x in element.examples -%}
+| {{ x.value }} |
+{% endfor %}
+{% endif -%}
+
+{% if element.comments -%}
+## Comments
+
+{% for x in element.comments -%}
+* {{ x }}
+{% endfor %}
+{% endif -%}
+
+{% if element.todos -%}
+## TODOs
+
+{% for x in element.todos -%}
+* {{ x }}
+{% endfor %}
+{% endif -%}
+
+{% if element.see_also -%}
+## See Also
+
+{% for x in element.see_also -%}
+* {{ gen.uri_link(x) }}
+{% endfor %}
+{% endif -%}
+
+{% if element.notes -%}
+## Notes
+
+{% for note in element.notes -%}
+* {{ note }}
+{% endfor %}
+{% endif -%}
+
+{% if element.alt_descriptions %}
+## Alternative Descriptions
+
+{% for source, alt_desc in element.alt_descriptions.items() %}
+* **{{ source }}**: {{ alt_desc.description }}
+{%- endfor %}
+{% endif %}
+
+## Identifier and Mapping Information
+
+{%- set has_admin_metadata = element.status or (element.rank is not none and element.rank != 1000) %}
+
+{%- if has_admin_metadata %}
+### Administrative Metadata
+
+{% if element.status -%}
+**Status:** {{ element.status }}
+{% endif -%}
+{% if element.rank is not none and element.rank != 1000 -%}
+**Rank:** {{ element.rank }}
+{% endif -%}
+
+{% endif %}
+{% if element.id_prefixes %}
+### Valid ID Prefixes
+
+Instances of this class *should* have identifiers with one of the following prefixes:
+{% for p in element.id_prefixes %}
+* {{ p }}
+{% endfor %}
+
+{% endif %}
+
+{% if element.annotations %}
+### Annotations
+
+| property | value |
+| --- | --- |
+{% for a in element.annotations -%}
+{%- if a|string|first != '_' -%}
+| {{ a }} | {{ element.annotations[a].value }} |
+{% endif -%}
+{% endfor %}
+{% endif %}
+
+{% if element.from_schema or element.imported_from %}
+### Schema Source
+
+{% if element.from_schema %}
+* from schema: {{ element.from_schema }}
+{% endif %}
+{% if element.imported_from %}
+* imported from: {{ element.imported_from }}
+{% endif %}
+{% endif %}
+
+{% if schemaview.get_mappings(element.name).items() -%}
+## Mappings
+
+| Mapping Type | Mapped Value |
+| ---  | ---  |
+{% for m, mt in schemaview.get_mappings(element.name).items() -%}
+{% if mt|length > 0 -%}
+| {{ m }} | {{ mt|join(', ') }} |
+{% endif -%}
+{% endfor %}
+
+{% endif -%}

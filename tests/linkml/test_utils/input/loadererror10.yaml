@@ -1,0 +1,12 @@
+id: http://example.org/example/loaderror10
+name: loaderror10
+description: type is missing typeof or uri
+
+default_range: string
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    base: str

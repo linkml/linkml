@@ -3,8 +3,7 @@
 LinkML is fully described by a *metamodel* that is itself described in LinkML
 
 - [linkml-model repo](https://github.com/linkml/linkml-model/)
-- [linkml-model documentation](https://linkml.io/linkml-model/docs/)
-- [Part 3](https://linkml.io/linkml-model/docs/specification/03schemas/) of specification
+- [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema)
 
 ## Metamodel Versioning scheme
 

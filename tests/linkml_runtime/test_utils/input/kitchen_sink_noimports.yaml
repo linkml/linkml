@@ -1,0 +1,390 @@
+id: https://w3id.org/linkml/tests/kitchen_sink
+name: kitchen_sink
+description: |-
+  Kitchen Sink Schema (no imports version)
+
+  This schema does not do anything useful. It exists to test all features of linkml.
+
+  This particular text field exists to demonstrate markdown within a text field:
+
+  Lists:
+
+     * a
+     * b
+     * c
+
+  And links, e.g to [Person](Person.md)
+
+default_curi_maps:
+  - semweb_context
+  - monarch_context
+prefixes:
+  pav: http://purl.org/pav/
+  dce: http://purl.org/dc/elements/1.1/
+  lego: http://geneontology.org/lego/
+  linkml: https://w3id.org/linkml/
+  biolink: https://w3id.org/biolink/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
+  RO: http://purl.obolibrary.org/obo/RO_
+  BFO: http://purl.obolibrary.org/obo/BFO_
+default_prefix: ks
+default_range: string
+see_also:
+  - https://example.org/
+
+subsets:
+
+  subset A:
+    description: >-
+      test subset A
+    comments:
+      - this subset is meaningless, it is just here for testing
+    aliases:
+      - A
+  subset B:
+    description: >-
+      test subset B
+    aliases:
+      - B
+
+# --
+# Classes
+# --
+classes:
+
+  # --
+  # Mixins
+  # --
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        multivalued: true
+
+    # --
+    # Main Classes
+    # --
+  Thing:
+    slots:
+      - id
+      - name
+
+  Person:
+    is_a: Thing
+    in_subset:
+      - subset A
+    mixins:
+      - HasAliases
+    id_prefixes:
+      - ORCID
+      - DOI
+      - ZFIN
+      - WB
+    slots:
+      - has employment history
+      - has familial relationships
+      - has medical history
+      - age in years
+      - addresses
+      - has birth event
+      - reason_for_happiness
+    slot_usage:
+      name:
+        pattern: "^\\S+ \\S+"  ## do not do this in a real schema, people have all kinds of names
+      reason_for_happiness:
+        any_of:
+          - range: BirthEvent
+          - range: EmploymentEvent
+          - range: MarriageEvent
+
+  Adult:
+    is_a: Person
+    slot_usage:
+      age in years:
+        minimum_value: 16
+    structured_aliases:
+      dad:
+        predicate: EXACT_SYNONYM
+      mom:
+        predicate: EXACT_SYNONYM
+
+
+  Organization:
+    is_a: Thing
+    mixins:
+      - HasAliases
+    id_prefixes:
+      - PMID
+      - ZFIN
+      - WB
+
+  Place:
+    mixins:
+      - HasAliases
+    slots:
+      - id
+      - name
+  Address:
+    slots:
+      - street
+      - city
+      - postal code
+
+  Event:
+    slots:
+      - started at time
+      - ended at time
+      - is current
+
+  Relationship:
+    slots:
+      - started at time
+      - ended at time
+      - related to
+      - type
+
+  FamilialRelationship:
+    is_a: Relationship
+    slot_usage:
+      type:
+        range: FamilialRelationshipType
+        required: true
+      related to:
+        range: Person
+        required: true
+
+  BirthEvent:
+    is_a: Event
+    slots:
+      - in location
+
+  EmploymentEvent:
+    is_a: Event
+    slots:
+      - employed at
+
+  MedicalEvent:
+    is_a: Event
+
+  WithLocation:
+    mixin: true
+    slots:
+      - in location
+
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married to
+
+  Company:
+    is_a: Organization
+    attributes:
+      ceo:
+        range: Person
+    rank: 3
+
+  Dataset:
+    attributes:
+      persons:
+        range: Person
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+      companies:
+        range: Company
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+      activities:
+        range: activity
+        inlined_as_list: true
+        inlined: true
+        multivalued: true
+
+  activity:
+    description: "a provence-generating activity"
+    slots:
+      - id
+      - started at time
+      - ended at time
+      - was informed by
+      - was associated with
+      - used
+      - description
+    exact_mappings:
+      - prov:Activity
+    narrow_mappings:
+      - GO:0005198
+    rank: 2
+
+  agent:
+    description: "a provence-generating agent"
+    slots:
+        - id
+        - acted on behalf of
+        - was informed by
+    class_uri: prov:Agent
+    rank: 1
+
+  EmptyClass:
+
+slots:
+  employed at:
+    range: Company
+    in_subset:
+      - subset A
+    annotations:
+      - tag: "ks:a1"
+        value: [1,2,3]
+      - tag: "ks:a2"
+        value: ["v1", "v2", "v3"]
+      - tag: "ks:a3"
+        value: 'a3.1'
+      - tag: "ks:a3_2"
+        value: 'v3.2'
+  is current:
+    range: boolean
+    annotations:
+      "ks:foo": bar
+  has employment history:
+    range: EmploymentEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+    annotations:
+      "ks:mv": 1
+  employment history of:
+    inverse: has employment history
+    domain: EmploymentEvent
+
+  has marriage history:
+    range: MarriageEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has medical history:
+    range: MedicalEvent
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  has familial relationships:
+    range: FamilialRelationship
+    multivalued: true
+    inlined_as_list: true
+    in_subset:
+      - subset B
+  married to:
+    range: Person
+  in location:
+    range: Place
+  addresses:
+    range: Address
+    multivalued: True
+  dog addresses:
+    is_a: addresses
+  age in years:
+    range: integer
+    minimum_value: 0
+    maximum_value: 999
+    in_subset:
+      - subset A
+      - subset B
+  related to:
+    range: Thing
+  type:
+    range: string
+  street:
+  city:
+  has birth event:
+    range: BirthEvent
+
+  id:
+    identifier: true
+    rank: 1
+    aliases: ['identifier']
+
+  name:
+    required: false
+    rank: 2
+
+  description:
+    rank: 3
+
+  started at time:
+    slot_uri: prov:startedAtTime
+    range: date
+    rank: 1
+
+  ended at time:
+    slot_uri: prov:endedAtTime
+    range: date
+
+  was informed by:
+    range: activity
+    slot_uri: prov:wasInformedBy
+
+  was associated with:
+    range: agent
+    slot_uri: prov:wasAssociatedWith
+    inlined: false
+
+  acted on behalf of:
+    range: agent
+    slot_uri: prov:actedOnBehalfOf
+
+  was generated by:
+    range: activity
+    slot_uri: prov:wasGeneratedBy
+
+  used:
+    domain: activity
+    slot_uri: prov:used
+
+  activity set:
+    range: activity
+    multivalued: true
+    inlined_as_list: true
+
+  agent set:
+    range: agent
+    multivalued: true
+    inlined_as_list: true
+
+  postal code:
+    alias: zip
+    range: string
+
+  reason_for_happiness:
+    range: string
+    required: false
+
+
+enums:
+  FamilialRelationshipType:
+    permissible_values:
+      SIBLING_OF:
+      PARENT_OF:
+      CHILD_OF:
+  DiagnosisType:
+  OtherEnum:
+    permissible_values:
+      a:
+      b:
+  Animals:
+    is_a: OtherEnum
+    permissible_values:
+      CAT:
+      TABBY:
+        is_a: CAT
+      LION:
+        is_a: CAT
+      ANGRY_LION:
+        is_a: LION
+      BIRD:
+      EAGLE:
+        is_a: BIRD

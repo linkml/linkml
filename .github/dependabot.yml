@@ -1,5 +1,6 @@
 # Please see the documentation for all configuration options:
 # https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
 updates:
@@ -7,6 +8,10 @@ updates:
     directory: "/"
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   # Activate after migration to uv as package manager
   # - package-ecosystem: "uv"

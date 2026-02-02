@@ -1,0 +1,21 @@
+rules:
+  recommended:
+    level: warning
+  no_xsd_int_type:
+    level: error
+  no_invalid_slot_usage:
+    level: error
+  no_undeclared_slots:
+    level: error
+  no_undeclared_ranges:
+    level: error
+  one_identifier_per_class:
+    level: error
+  one_key_per_class:
+    level: error
+  root_type_checks:
+    level: error
+  standard_naming:
+    level: warning
+  canonical_prefixes:
+    level: warning
