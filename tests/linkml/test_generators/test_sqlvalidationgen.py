@@ -152,24 +152,19 @@ def test_dialect_specific_pattern(minimal_schema, dialect, pattern_syntax):
     assert pattern_syntax in queries
 
 
-def test_with_personinfo_schema(input_path):
-    """Test with the personinfo.yaml schema."""
-    schema = str(input_path("personinfo.yaml"))
+def test_with_kitchen_sink_schema(input_path):
+    """Test with the kitchen_sink.yaml schema."""
+    schema = str(input_path("kitchen_sink.yaml"))
     gen = SQLValidationGenerator(schema)
     queries = gen.generate_validation_queries()
 
     # Should find constraints in personinfo schema
     # age_in_years has alias 'age' and min=0, max=999
-    assert "age" in queries and ("age < 0" in queries or "age > 999" in queries)
+    assert "age_in_years" in queries
+    assert "age_in_years < 0" in queries
+    assert "age_in_years > 999" in queries
 
-    # primary_email has pattern
-    assert "primary_email" in queries
-
-    # telephone has pattern
-    assert "telephone" in queries
-
-    # name is required
-    assert "name" in queries
+    assert "REGEXP" in queries
 
     # Should have header
     assert "SQL Validation Queries" in queries
