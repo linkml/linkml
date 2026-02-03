@@ -248,5 +248,6 @@ insight into your work and allows them to provide feedback early on.
 
 ## See Also
 
-- [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
-- [Deprecation](deprecation.md) - Handling deprecations
+* [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
+* [Deprecation](deprecation.md) - Handling deprecations
+* [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) - Community norms for responsible AI use in contributions
