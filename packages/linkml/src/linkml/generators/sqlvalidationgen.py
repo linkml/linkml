@@ -136,7 +136,7 @@ class SQLValidationGenerator(Generator):
                 # skip if no attributes are present
                 continue
 
-            for slot_name, slot in class_def.attributes.items():
+            for slot_name, _ in class_def.attributes.items():
                 # Get induced slot to capture inherited constraints
                 induced = sv.induced_slot(slot_name, class_name)
 
@@ -171,7 +171,7 @@ class SQLValidationGenerator(Generator):
 
             # Check unique_keys constraints (multi-column uniqueness)
             if self.check_unique_keys and class_def.unique_keys:
-                for uk_name, uk in class_def.unique_keys.items():
+                for _, uk in class_def.unique_keys.items():
                     query = self._generate_unique_key_violations(class_name, class_def, uk)
                     if query:
                         queries.append(query)
@@ -184,12 +184,13 @@ class SQLValidationGenerator(Generator):
 
     def _generate_header(self) -> str:
         """Generate a header comment for the SQL output."""
-        return f"""-- ====================================================================
--- SQL Validation Queries
--- Generated from LinkML schema
--- Generator: {self.generatorname} v{self.generatorversion}
--- Dialect: {self.dialect}
--- ===================================================================="""
+        header = f"""-- ====================================================================
+        -- SQL Validation Queries
+        -- Generated from LinkML schema
+        -- Generator: {self.generatorname} v{self.generatorversion}
+        -- Dialect: {self.dialect}
+        -- ===================================================================="""
+        return header
 
     def _generate_required_violations(self, class_name: str, slot: SlotDefinition) -> str:
         """
@@ -206,7 +207,7 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'required'").label("constraint_type"),
-                tbl.c.id.label("record_id"),
+                column("id").label("record_id"),
                 literal_column("NULL").label("invalid_value"),
             )
             .select_from(tbl)
@@ -253,8 +254,8 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'range'").label("constraint_type"),
-                tbl.c.id.label("record_id"),
-                tbl.c[slot.name].label("invalid_value"),
+                column("id").label("record_id"),
+                column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
             .where(or_(*conditions))
@@ -291,6 +292,7 @@ class SQLValidationGenerator(Generator):
 
         # Generate dialect-specific pattern matching using SQLAlchemy
         # We need to use literal_column for dialect-specific operators
+        # TODO: Is there a way to do his by using sqlalchemy builtin dialect distinction?
         if self.dialect == "postgresql":
             pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
         elif self.dialect == "sqlite":
@@ -309,8 +311,8 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'pattern'").label("constraint_type"),
-                tbl.c.id.label("record_id"),
-                tbl.c[slot.name].label("invalid_value"),
+                column("id").label("record_id"),
+                column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
             .where(and_(tbl.c[slot.name].isnot(None), pattern_check))
@@ -347,7 +349,7 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column(f"'{constraint_type}'").label("constraint_type"),
-                tbl.c[slot.name].label("duplicate_value"),
+                column(slot.name).label("duplicate_value"),
                 func.count().label("duplicate_count"),
             )
             .select_from(tbl)
@@ -392,8 +394,8 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'enum'").label("constraint_type"),
-                tbl.c.id.label("record_id"),
-                tbl.c[slot.name].label("invalid_value"),
+                column("id").label("record_id"),
+                column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
             .where(and_(tbl.c[slot.name].isnot(None), tbl.c[slot.name].notin_(permissible_values)))
@@ -441,7 +443,7 @@ class SQLValidationGenerator(Generator):
 
         # Add the unique key columns
         for col in columns:
-            select_columns.append(tbl.c[col])
+            select_columns.append(column(col))
 
         select_columns.append(func.count().label("duplicate_count"))
 
