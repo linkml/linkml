@@ -214,6 +214,7 @@ Generate the package from tutorial 01 using the `gen-pandera` command
 Command-line options are under active development and are likely to change.
 
 .. code-block:: bash
+
     # recommended is to generate a package with all schema forms
     gen-pandera --package personinfo examples/tutorial/tutorial01/personinfo.yaml
 
@@ -314,6 +315,7 @@ how to use all of them to load a python object into a dataframe. Note the specif
 does not actually contain dictionaries forms that require a transform.
 
 .. code-block:: python
+
     import personinfo.panderagen_class_based as pcb
     import personinfo.panderagen_polars_schema_loaded as ppsl
     import personinfo.panderagen_polars_schema_transform as ppst
