@@ -126,3 +126,7 @@ uv run pytest
 
 - Please consult the [Google Python Styleguide](https://google.github.io/styleguide/pyguide.html) prior to contributing to this project.
 - Be consistent and follow existing conventions and spirit.
+
+## AI Use
+
+We encourage contributors to use AI tools responsibly. Please review the [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) for community norms around AI-assisted contributions.

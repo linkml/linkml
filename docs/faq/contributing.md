@@ -24,6 +24,8 @@ For filing new issues, please use the [main linkml repo](https://github.com/link
 You may wish to browse the list of [good first issues](https://github.com/linkml/linkml/labels/good%20first%20issue),
 and you can [vote for your favorite issue here](https://github.com/linkml/linkml/issues/974).
 
+We encourage contributors to use AI tools responsibly. Please review our [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) for community norms around AI-assisted contributions.
+
 ## How do I stay involved?
 
 See [Get Involved](https://linkml.io/linkml/get-involved/index.html) for more information on how to get involved with the LinkML community.
