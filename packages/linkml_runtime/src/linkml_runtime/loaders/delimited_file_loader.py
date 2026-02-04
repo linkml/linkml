@@ -18,11 +18,14 @@ def _get_list_config_from_annotations(
     index_slot: SlotDefinitionName = None,
 ) -> Tuple[Tuple[str, str], str]:
     """
-    Read list_syntax and list_delimiter from schema settings or slot annotations.
+    Read list_syntax and list_delimiter from schema-level annotations.
 
-    Checks in order (first found wins):
-    1. Slot-level annotations on any multivalued slot in the target class
-    2. Schema-level settings
+    These annotations control how multivalued fields are serialized in CSV/TSV:
+    - list_syntax: "python" (default) uses brackets [a|b|c], "plaintext" has no brackets
+    - list_delimiter: character between list items (default "|")
+
+    Note: These are schema-level only because json-flattener's GlobalConfig
+    applies the same markers/delimiter to ALL columns in the CSV/TSV.
 
     Returns:
         Tuple of (csv_list_markers, csv_inner_delimiter) for GlobalConfig.
@@ -33,38 +36,18 @@ def _get_list_config_from_annotations(
     list_markers = ("[", "]")
     inner_delimiter = "|"
 
-    if not schemaview:
+    if not schemaview or not schemaview.schema:
         return list_markers, inner_delimiter
 
-    # Check slot-level annotations first (they take precedence)
-    if index_slot:
-        slot = schemaview.get_slot(index_slot)
-        if slot and slot.range and slot.range in schemaview.all_classes():
-            target_class = slot.range
-            for slot_name in schemaview.class_slots(target_class):
-                induced_slot = schemaview.induced_slot(slot_name, target_class)
-                if induced_slot.multivalued and induced_slot.annotations:
-                    annotations = induced_slot.annotations
-                    if "list_syntax" in annotations:
-                        syntax = annotations["list_syntax"].value
-                        if syntax == "plaintext":
-                            list_markers = ("", "")
-                    if "list_delimiter" in annotations:
-                        inner_delimiter = annotations["list_delimiter"].value
-                    # If we found annotations, use them (first slot wins for global config)
-                    if "list_syntax" in annotations or "list_delimiter" in annotations:
-                        return list_markers, inner_delimiter
-
-    # Fall back to schema-level settings
-    if schemaview.schema:
-        settings = schemaview.schema.settings
-        if settings:
-            if "list_syntax" in settings:
-                syntax = settings["list_syntax"].setting_value
-                if syntax == "plaintext":
-                    list_markers = ("", "")
-            if "list_delimiter" in settings:
-                inner_delimiter = settings["list_delimiter"].setting_value
+    # Check schema-level annotations
+    if schemaview.schema.annotations:
+        annotations = schemaview.schema.annotations
+        if "list_syntax" in annotations:
+            syntax = annotations["list_syntax"].value
+            if syntax == "plaintext":
+                list_markers = ("", "")
+        if "list_delimiter" in annotations:
+            inner_delimiter = annotations["list_delimiter"].value
 
     return list_markers, inner_delimiter
 
