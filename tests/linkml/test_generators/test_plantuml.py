@@ -110,6 +110,7 @@ def test_create_request(input_class, expected, kitchen_sink_path):
     ],
 )
 @pytest.mark.network
+@pytest.mark.kroki
 def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url):
     """Test serialization of select plantUML class diagrams from schema."""
     generator = PlantumlGenerator(
@@ -133,6 +134,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
 
 
 @pytest.mark.network
+@pytest.mark.kroki
 def test_serialize(kitchen_sink_path, kroki_url):
     """Test serialization of complete plantUML class diagram from schema."""
     generator = PlantumlGenerator(
@@ -154,6 +156,7 @@ def test_serialize(kitchen_sink_path, kroki_url):
 
 
 @pytest.mark.network
+@pytest.mark.kroki
 def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
     """Test the correctness of SVG rendering of plantUML diagram."""
     generator = PlantumlGenerator(

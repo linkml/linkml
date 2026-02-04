@@ -59,7 +59,7 @@ For small schemas with limited inheritance, it should be possible to mentally pi
 There are a few strategies:
 
 * Use [gen-doc](https://linkml.io/linkml/generators/markdown) to make markdown that can be viewed using mkdocs
-    * note you get this "for free" if you set up your project using the LinkML cookiecutter
+    * note you get this "for free" if you set up your project using the LinkML project copier template
 * Use [gen-owl](https://linkml.io/linkml/generators/owl) to make an OWL ontology, which can be browsed:
     * Using an ontology editing tool like Protege
     * By publishing the ontology with an ontology repository (e.g. BioPortal or a member of the OntoPortal alliance) and using a web ontology browser
@@ -71,7 +71,7 @@ You can use any of the generator tools distributed as part of linkml to check fo
 
 ## Is there a linter for LinkML?
 
-Yes! See the documentation for [the schema linter](https://linkml.io/linkml/schemas/linter).
+Yes! See the documentation for [the schema linter](https://linkml.io/linkml/schemas/linter.html).
 
 The linter will attempt to ensure your schema follows best practice.
 
