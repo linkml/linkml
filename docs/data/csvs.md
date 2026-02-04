@@ -120,7 +120,12 @@ linkml-convert -s schema.yaml -C Container -S items -t tsv \
 |------------|-------------|
 | `--list-syntax` | `python` or `plaintext` - overrides schema annotation |
 | `--list-delimiter` | Delimiter string - overrides schema annotation |
-| `--list-strip-whitespace` / `--no-list-strip-whitespace` | Strip whitespace (default) or preserve it |
+| `--list-strip-whitespace` / `--no-list-strip-whitespace` | Strip whitespace from list values (default: strip) |
+
+All three options apply to both input (loading) and output (dumping):
+
+- **On input**: `a | b | c` is parsed as `['a', 'b', 'c']` (stripped) or `['a ', ' b ', ' c']` (preserved)
+- **On output**: `['dog   ', 'cat']` is written as `dog|cat` (stripped) or `dog   |cat` (preserved)
 
 #### Examples
 

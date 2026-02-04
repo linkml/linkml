@@ -228,6 +228,8 @@ def cli(
             outargs["list_syntax"] = list_syntax
         if list_delimiter is not None:
             outargs["list_delimiter"] = list_delimiter
+        if list_strip_whitespace is not None:
+            outargs["list_strip_whitespace"] = list_strip_whitespace
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(obj, output, **outargs)
