@@ -405,7 +405,8 @@ slots:
 """
     schemaview = SchemaView(schema_yaml)
     data = {"items": [{"id": "1", "tags": test_values}]}
-    output_file = tmp_path / f"delimiter_{delimiter}_test.tsv"
+    # Use ordinal for filename to avoid Windows reserved characters (|, etc.)
+    output_file = tmp_path / f"delimiter_ord{ord(delimiter)}_test.tsv"
 
     tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=schemaview)
     content = output_file.read_text()
