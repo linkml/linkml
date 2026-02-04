@@ -35,13 +35,11 @@ if __name__ == "__main__":
 # Related issues:
 # - https://github.com/linkml/linkml/issues/3041 (main issue)
 # - https://github.com/linkml/linkml/issues/2581 (configurable syntax)
-# - https://github.com/turbomam/issues/issues/48 (tracking issue)
 #
-# Design from Chris Mungall (Dec 2025 rolling notes):
-# - Schema/slot annotations: list_syntax (python|plaintext), list_delimiter
-# - Slot-level annotations override schema-level settings
-# - Maps to json-flattener: csv_list_markers, csv_inner_delimiter
-# - IMPORTANT: Logic should be in loader/dumper, NOT in csvutils.py
+# Design: Schema-level annotations only (json-flattener GlobalConfig is global)
+# - list_syntax: python (default, brackets) or plaintext (no brackets)
+# - list_delimiter: character between values (default "|")
+# - Logic is in loader/dumper, NOT in csvutils.py
 # =============================================================================
 
 
@@ -53,43 +51,6 @@ if __name__ == "__main__":
 # 2. Inline schemas make tests self-documenting - you can see exactly what's tested
 # 3. We can test various annotation combinations without modifying shared fixtures
 # -----------------------------------------------------------------------------
-
-SCHEMA_WITH_MULTIVALUED_PRIMITIVES = """
-id: https://example.org/test
-name: test_multivalued
-description: >-
-  Minimal schema for testing multivalued primitive slot handling in CSV/TSV.
-  The 'tags' slot is multivalued with string range - the loader/dumper should
-  build a KeyConfig so json-flattener knows to split/join on delimiter.
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-classes:
-  Container:
-    tree_root: true
-    slots:
-      - items
-  Item:
-    slots:
-      - id
-      - name
-      - tags
-
-slots:
-  items:
-    range: Item
-    multivalued: true
-    inlined_as_list: true
-  id:
-    identifier: true
-  name:
-    range: string
-  tags:
-    range: string
-    multivalued: true
-"""
 
 SCHEMA_WITH_LIST_ANNOTATIONS = """
 id: https://example.org/test
@@ -132,51 +93,6 @@ slots:
       list_delimiter: "|"
 """
 
-SCHEMA_WITH_SCHEMA_LEVEL_ANNOTATIONS = """
-id: https://example.org/test
-name: test_schema_annotations
-description: >-
-  Schema demonstrating schema-level annotations with slot-level override.
-  - Schema-level: list_syntax=plaintext, list_delimiter="|"
-  - Slot 'categories' overrides with list_delimiter=";"
-  This tests the cascading behavior where slot annotations take precedence.
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-default_range: string
-
-annotations:
-  list_syntax: plaintext
-  list_delimiter: "|"
-
-classes:
-  Container:
-    tree_root: true
-    slots:
-      - items
-  Item:
-    slots:
-      - id
-      - tags
-      - categories
-
-slots:
-  items:
-    range: Item
-    multivalued: true
-    inlined_as_list: true
-  id:
-    identifier: true
-  tags:
-    multivalued: true
-  categories:
-    multivalued: true
-    annotations:
-      list_delimiter: ";"
-"""
-
 
 # -----------------------------------------------------------------------------
 # Fixtures
@@ -184,21 +100,9 @@ slots:
 
 
 @pytest.fixture
-def schemaview_multivalued():
-    """Schema with multivalued primitive slots but no annotations."""
-    return SchemaView(SCHEMA_WITH_MULTIVALUED_PRIMITIVES)
-
-
-@pytest.fixture
 def schemaview_with_annotations():
     """Schema with list_syntax and list_delimiter annotations on slot."""
     return SchemaView(SCHEMA_WITH_LIST_ANNOTATIONS)
-
-
-@pytest.fixture
-def schemaview_schema_level():
-    """Schema with schema-level settings and slot-level override."""
-    return SchemaView(SCHEMA_WITH_SCHEMA_LEVEL_ANNOTATIONS)
 
 
 # -----------------------------------------------------------------------------
@@ -243,68 +147,3 @@ class TestListAnnotationReading:
         slot = schemaview_with_annotations.get_slot("tags")
         assert "list_delimiter" in slot.annotations
         assert slot.annotations["list_delimiter"].value == "|"
-
-
-# -----------------------------------------------------------------------------
-# Unit tests: Building CSV config from annotations (to be implemented)
-# -----------------------------------------------------------------------------
-
-
-class TestCsvConfigFromAnnotations:
-    """
-    Unit tests for building CSV config from annotations.
-
-    These tests are skipped until the implementation is complete.
-    They define the expected behavior for the get_csv_list_config() function
-    that will read annotations and return json-flattener configuration.
-    """
-
-    def test_get_csv_list_config_default(self, schemaview_multivalued):
-        """Without annotations, should use default (python/bracket) style."""
-        # This function doesn't exist yet - will be implemented
-        # list_markers, inner_delimiter = get_csv_list_config(schemaview_multivalued, "tags")
-        # assert list_markers == ("[", "]")  # default bracket style
-        # assert inner_delimiter == "|"  # default pipe
-        pytest.skip("get_csv_list_config not yet implemented")
-
-    def test_get_csv_list_config_plaintext(self, schemaview_with_annotations):
-        """With list_syntax=plaintext, should use empty markers."""
-        # list_markers, inner_delimiter = get_csv_list_config(schemaview_with_annotations, "tags")
-        # assert list_markers == ("", "")  # no brackets
-        # assert inner_delimiter == "|"
-        pytest.skip("get_csv_list_config not yet implemented")
-
-    def test_schema_level_settings_cascade(self, schemaview_schema_level):
-        """Schema-level settings should apply to all slots."""
-        # tags should inherit schema-level settings
-        # list_markers, inner_delimiter = get_csv_list_config(schemaview_schema_level, "tags")
-        # assert list_markers == ("", "")
-        # assert inner_delimiter == "|"
-        pytest.skip("get_csv_list_config not yet implemented")
-
-    def test_slot_annotation_overrides_schema(self, schemaview_schema_level):
-        """Slot-level annotation should override schema-level setting."""
-        # categories has list_delimiter=";" which overrides schema's "|"
-        # list_markers, inner_delimiter = get_csv_list_config(schemaview_schema_level, "categories")
-        # assert inner_delimiter == ";"
-        pytest.skip("get_csv_list_config not yet implemented")
-
-
-@pytest.mark.parametrize(
-    "list_syntax,expected_markers",
-    [
-        ("python", ("[", "]")),
-        ("plaintext", ("", "")),
-        (None, ("[", "]")),  # default
-    ],
-)
-def test_list_syntax_to_markers(list_syntax, expected_markers):
-    """
-    Different list_syntax values should produce correct csv_list_markers.
-
-    This tests a helper function that converts the annotation value to
-    the tuple format expected by json-flattener's GlobalConfig.
-    """
-    # markers = list_syntax_to_markers(list_syntax)
-    # assert markers == expected_markers
-    pytest.skip("list_syntax_to_markers not yet implemented")

@@ -144,32 +144,13 @@ if __name__ == "__main__":
 # =============================================================================
 # Integration tests for multivalued primitive CSV/TSV handling (issue #3041)
 #
-# These tests verify end-to-end behavior of loading and dumping CSV/TSV files
-# with multivalued primitive slots (like aliases: string*).
-#
-# Test strategy:
-# 1. Use existing personinfo.yaml schema and example_personinfo_data.yaml
-# 2. Dynamically inject aliases to test multivalued primitive handling
-# 3. This avoids modifying shared test fixtures while testing real-world patterns
+# Tests use inline schemas with list_syntax/list_delimiter annotations to
+# verify configurable delimiter behavior for multivalued fields.
 #
 # Related issues:
 # - https://github.com/linkml/linkml/issues/3041 (main issue)
 # - https://github.com/linkml/linkml/issues/2581 (configurable syntax)
-# - https://github.com/turbomam/issues/issues/48 (tracking issue)
 # =============================================================================
-
-# Paths to existing test fixtures
-PERSONINFO_SCHEMA = os.path.join(INPUT_DIR, "personinfo.yaml")
-PERSONINFO_DATA = os.path.join(INPUT_DIR, "example_personinfo_data.yaml")
-
-
-# -----------------------------------------------------------------------------
-# Inline schema for annotation testing
-#
-# We need an inline schema with list_syntax/list_delimiter annotations because
-# the existing personinfo.yaml doesn't have these. This lets us test the
-# annotation-based configuration without modifying shared fixtures.
-# -----------------------------------------------------------------------------
 
 SCHEMA_WITH_PLAINTEXT_ANNOTATIONS = """
 id: https://example.org/test
@@ -213,98 +194,10 @@ slots:
 """
 
 
-# -----------------------------------------------------------------------------
-# Fixtures
-# -----------------------------------------------------------------------------
-
-
-@pytest.fixture
-def personinfo_schemaview():
-    """
-    SchemaView for the existing personinfo.yaml schema.
-
-    This schema has Person with HasAliases mixin, giving it an 'aliases'
-    slot that is multivalued with implicit string range - perfect for
-    testing multivalued primitive handling.
-    """
-    return SchemaView(PERSONINFO_SCHEMA)
-
-
 @pytest.fixture
 def plaintext_schemaview():
     """Schema with list_syntax=plaintext annotation for bracket-free format."""
     return SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
-
-
-# -----------------------------------------------------------------------------
-# Integration tests using existing personinfo schema and data
-#
-# These tests use dynamic alias injection to add multivalued primitive data
-# to the existing test fixtures without modifying the files.
-# -----------------------------------------------------------------------------
-
-
-class TestPersoninfoAliasesIntegration:
-    """
-    Integration tests using personinfo.yaml schema with dynamically injected aliases.
-
-    The personinfo schema has Person.aliases (multivalued string from HasAliases
-    mixin) which is perfect for testing. We load the existing test data and
-    inject aliases programmatically to test CSV/TSV round-trip behavior.
-    """
-
-    def test_dump_person_with_aliases_to_tsv(self, personinfo_schemaview, tmp_path):
-        """
-        Dumping Person with aliases should include aliases in TSV output.
-
-        We load existing personinfo data, inject aliases, dump to TSV,
-        and verify the aliases appear in the output (in bracket format
-        by default, or plaintext if annotations are added).
-        """
-        # Note: personinfo schema has nested objects (current_address) that
-        # cause issues with json-flattener when fields are missing.
-        # This test is skipped until we have simpler test data.
-        pytest.skip("Personinfo schema too complex for this test - needs simpler fixture")
-
-    def test_roundtrip_person_aliases(self, personinfo_schemaview, tmp_path):
-        """
-        Round-trip test: dump Person with aliases to TSV, load back, verify data.
-
-        This is the core test for issue #3041 - ensuring multivalued primitive
-        slots survive the CSV/TSV round-trip without data loss.
-        """
-        # Note: personinfo schema has nested objects (current_address) that
-        # cause issues with json-flattener when fields are missing.
-        # This test is skipped until we have simpler test data.
-        pytest.skip("Personinfo schema too complex for this test - needs simpler fixture")
-
-    def test_load_tsv_with_pipe_delimited_aliases(self, personinfo_schemaview, tmp_path):
-        """
-        Loading TSV with pipe-delimited aliases (no brackets) should work.
-
-        This tests the user's natural input format: typing a|b|c in a
-        spreadsheet cell rather than [a|b|c].
-        """
-        # Create TSV content as a user would type it in a spreadsheet
-        # Note: This is the format that currently FAILS (issue #3041)
-        tsv_content = "id\tname\taliases\nP:001\tfred bloggs\tFrederick Bloggs|Fred B.\nP:002\tjoe schmoe\tJoe S.\n"
-        input_file = tmp_path / "user_input.tsv"
-        input_file.write_text(tsv_content)
-
-        # Load and verify aliases are split into lists
-        # result = tsv_loader.load_as_dict(str(input_file), index_slot="persons",
-        #                                   schemaview=personinfo_schemaview)
-        # assert result["persons"][0]["aliases"] == ["Frederick Bloggs", "Fred B."]
-        # assert result["persons"][1]["aliases"] == ["Joe S."]
-        pytest.skip("Plaintext format loading not yet implemented")
-
-
-# -----------------------------------------------------------------------------
-# Integration tests with annotation-based configuration
-#
-# These tests use inline schemas with list_syntax/list_delimiter annotations
-# to test the configurable delimiter behavior.
-# -----------------------------------------------------------------------------
 
 
 class TestAnnotationBasedDelimiters:
