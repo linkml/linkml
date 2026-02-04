@@ -8,6 +8,10 @@ from jsonasobj2 import as_json_obj
 
 from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
 from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
+from linkml_runtime.loaders.delimited_file_loader import (
+    _get_list_config_from_annotations,
+    _enhance_configmap_for_multivalued_primitives,
+)
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import as_json_object
@@ -198,6 +202,57 @@ slots:
 def plaintext_schemaview():
     """Schema with list_syntax=plaintext annotation for bracket-free format."""
     return SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+
+
+# -----------------------------------------------------------------------------
+# Unit tests for helper functions (defensive paths)
+# -----------------------------------------------------------------------------
+
+
+class TestHelperFunctionDefaults:
+    """Unit tests for helper function edge cases and defaults."""
+
+    def test_get_list_config_with_none_schemaview(self):
+        """When schemaview is None, should return defaults."""
+        list_markers, inner_delimiter = _get_list_config_from_annotations(None, None)
+        assert list_markers == ("[", "]")
+        assert inner_delimiter == "|"
+
+    def test_get_list_config_without_annotations(self):
+        """Schema without annotations should return defaults."""
+        schema_yaml = """
+id: https://example.org/test
+name: no_annotations
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Item:
+    slots:
+      - id
+slots:
+  id:
+    identifier: true
+"""
+        sv = SchemaView(schema_yaml)
+        list_markers, inner_delimiter = _get_list_config_from_annotations(sv, "id")
+        assert list_markers == ("[", "]")
+        assert inner_delimiter == "|"
+
+    def test_enhance_configmap_with_none_schemaview(self):
+        """When schemaview is None, should return original configmap."""
+        original = {"some": "config"}
+        result = _enhance_configmap_for_multivalued_primitives(None, "slot", original, plaintext_mode=True)
+        assert result is original
+
+    def test_enhance_configmap_not_plaintext_mode(self):
+        """When plaintext_mode is False, should return original configmap."""
+        original = {"some": "config"}
+        sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+        result = _enhance_configmap_for_multivalued_primitives(sv, "persons", original, plaintext_mode=False)
+        assert result is original
 
 
 class TestAnnotationBasedDelimiters:
