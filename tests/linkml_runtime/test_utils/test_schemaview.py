@@ -3327,6 +3327,5 @@ def test_induced_slot_alias_not_equal_to_name(slot_name: str, expected_alias: st
     induced = view.induced_slot(slot_name, "MyClass")
 
     assert induced.alias == expected_alias, (
-        f"Expected alias={expected_alias!r} but got {induced.alias!r}. "
-        "Alias should not equal the slot name."
+        f"Expected alias={expected_alias!r} but got {induced.alias!r}. Alias should not equal the slot name."
     )
