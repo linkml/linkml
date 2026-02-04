@@ -1,9 +1,12 @@
 """Tests for SQL Validation Generator."""
 
+import sqlite3
+
 import pytest
 import yaml
 from click.testing import CliRunner
 
+from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlvalidationgen import SQLValidationGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model.meta import SlotDefinition, UniqueKey
@@ -411,3 +414,98 @@ def test_union_all_combination(minimal_schema):
     assert "constraint_type" in queries
     assert "record_id" in queries
     assert "invalid_value" in queries
+
+
+@pytest.mark.slow
+def test_validation_interop_with_valid_data(input_path, tmp_path):
+    """Test validation queries against a real SQLite database with valid data.
+
+    This test verifies interoperability between SQLTableGenerator and
+    SQLValidationGenerator by:
+    1. Creating a database schema using SQLTableGenerator
+    2. Populating it with valid data
+    3. Running validation queries - should find no violations
+    """
+
+    schema_path = str(input_path("kitchen_sink.yaml"))
+    table_gen = SQLTableGenerator(schema_path, dialect="sqlite")
+    ddl = table_gen.generate_ddl()
+
+    # Create SQLite database and execute DDL
+    db_path = tmp_path / "valid_test.db"
+    conn = sqlite3.connect(str(db_path))
+    cursor = conn.cursor()
+    cursor.executescript(ddl)
+
+    cursor.execute('INSERT INTO "Person" (id, name, age_in_years) VALUES (?, ?, ?)', ("P:001", "John Doe", 30))
+    cursor.execute(
+        'INSERT INTO "Person" (id, name, age_in_years) VALUES (?, ?, ?)',
+        ("P:002", "Jane Smith", 0),  # Edge case: minimum valid age
+    )
+    cursor.execute(
+        'INSERT INTO "Person" (id, name, age_in_years) VALUES (?, ?, ?)',
+        ("P:003", "Old Person", 999),  # Edge case: maximum valid age
+    )
+
+    conn.commit()
+
+    # Generate and execute validation queries (skip pattern checks for SQLite since REGEXP is
+    # a module that is not available in standard sqlite)
+    val_gen = SQLValidationGenerator(schema_path, dialect="sqlite", check_patterns=False)
+    validation_query = val_gen.generate_validation_queries()
+
+    cursor.execute(validation_query)
+    violations = cursor.fetchall()
+
+    assert len(violations) == 0, f"Expected no violations but found: {violations}"
+
+    conn.close()
+
+
+@pytest.mark.slow
+def test_validation_interop_with_invalid_data(input_path, tmp_path):
+    """Test validation queries against a real SQLite database with invalid data.
+
+    This test verifies interoperability between SQLTableGenerator and
+    SQLValidationGenerator by:
+    1. Creating a database schema using SQLTableGenerator
+    2. Populating it with invalid data
+    3. Running validation queries - should detect violations
+    """
+    schema_path = str(input_path("kitchen_sink.yaml"))
+    table_gen = SQLTableGenerator(schema_path, dialect="sqlite")
+    ddl = table_gen.generate_ddl()
+
+    # Create SQLite database and execute DDL
+    db_path = tmp_path / "invalid_test.db"
+    conn = sqlite3.connect(str(db_path))
+    cursor = conn.cursor()
+    cursor.executescript(ddl)
+
+    # Note: We test violations that SQL DDL doesn't enforce (range checks, etc.)
+    # SQL UNIQUE/NOT NULL constraints would prevent insertion, pattern checks require
+    # REGEXP to be present in sqlite which it is not by default
+
+    cursor.execute('INSERT INTO "Person" (id, name, age_in_years) VALUES (?, ?, ?)', ("P:001", "Negative Age", -5))
+    cursor.execute('INSERT INTO "Person" (id, name, age_in_years) VALUES (?, ?, ?)', ("P:002", "Too Old", 1000))
+    cursor.execute('INSERT INTO "Person" (id, name, age_in_years) VALUES (?, ?, ?)', ("P:003", "Way Too Old", 5000))
+
+    conn.commit()
+
+    # Generate and execute validation queries (skip pattern checks for SQLite)
+    val_gen = SQLValidationGenerator(schema_path, dialect="sqlite", check_patterns=False)
+    validation_query = val_gen.generate_validation_queries()
+
+    cursor.execute(validation_query)
+    violations = cursor.fetchall()
+
+    assert len(violations) > 0, "Expected to find violations but found none"
+    assert any("range" in str(v).lower() for v in violations), (
+        f"Should detect age range violations. Violations found: {violations}"
+    )
+    invalid_ages = {v[4] for v in violations if v[1] == "age_in_years"}  # invalid_value at index 4
+    assert any(int(age) < 0 or int(age) > 999 for age in invalid_ages if age is not None), (
+        f"Should detect out-of-range ages. Found ages: {invalid_ages}"
+    )
+
+    conn.close()
