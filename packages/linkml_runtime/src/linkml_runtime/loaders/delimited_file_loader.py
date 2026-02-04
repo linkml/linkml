@@ -1,6 +1,6 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple, Union
+from typing import Union
 
 from json_flattener import GlobalConfig, KeyConfig, unflatten_from_csv
 from pydantic import BaseModel
@@ -16,7 +16,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 def _get_list_config_from_annotations(
     schemaview: SchemaView,
     index_slot: SlotDefinitionName = None,
-) -> Tuple[Tuple[str, str], str]:
+) -> tuple[tuple[str, str], str]:
     """
     Read list_syntax and list_delimiter from schema-level annotations.
 
