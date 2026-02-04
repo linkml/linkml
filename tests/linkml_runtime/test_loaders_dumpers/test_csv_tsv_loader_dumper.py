@@ -543,3 +543,61 @@ annotations:
             sv = SchemaView(schema_yaml)
             _, _, strip = _get_list_config_from_annotations(sv, None)
             assert strip is False, f"Expected False for '{false_value}'"
+
+    def test_output_whitespace_stripped_by_default(self, whitespace_schemaview, tmp_path):
+        """Whitespace in values should be stripped when dumping by default."""
+        data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
+        output_file = tmp_path / "output_strip.tsv"
+
+        tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=whitespace_schemaview)
+        content = output_file.read_text()
+
+        # Values should be stripped
+        assert "dog|cat|bird" in content
+        assert "dog   " not in content
+
+    def test_output_whitespace_preserved_with_annotation(self, tmp_path):
+        """With list_strip_whitespace=false, output whitespace should be preserved."""
+        schema_yaml = """
+id: https://example.org/preserve_output
+name: preserve_output
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+  list_strip_whitespace: "false"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+        sv = SchemaView(schema_yaml)
+        data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
+        output_file = tmp_path / "output_preserve.tsv"
+
+        tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=sv)
+        content = output_file.read_text()
+
+        # Whitespace should be preserved
+        assert "dog   |cat  |bird" in content
