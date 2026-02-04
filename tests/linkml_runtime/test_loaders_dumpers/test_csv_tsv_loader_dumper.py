@@ -197,6 +197,130 @@ slots:
     multivalued: true
 """
 
+SCHEMA_WITHOUT_ANNOTATIONS = """
+id: https://example.org/test
+name: no_annotations
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Item:
+    slots:
+      - id
+slots:
+  id:
+    identifier: true
+"""
+
+SCHEMA_WHITESPACE_STRIP = """
+id: https://example.org/whitespace
+name: whitespace_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+SCHEMA_WHITESPACE_PRESERVE = """
+id: https://example.org/preserve
+name: preserve_whitespace
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+  list_strip_whitespace: "false"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+
+def make_delimiter_schema(delimiter: str) -> str:
+    """Factory for creating schemas with custom delimiters."""
+    schema_name = f"test_delimiter_ord{ord(delimiter)}"
+    return f"""
+id: https://example.org/test
+name: {schema_name}
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "{delimiter}"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
 
 @pytest.fixture
 def plaintext_schemaview():
@@ -221,23 +345,7 @@ class TestHelperFunctionDefaults:
 
     def test_get_list_config_without_annotations(self):
         """Schema without annotations should return defaults."""
-        schema_yaml = """
-id: https://example.org/test
-name: no_annotations
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-classes:
-  Item:
-    slots:
-      - id
-slots:
-  id:
-    identifier: true
-"""
-        sv = SchemaView(schema_yaml)
+        sv = SchemaView(SCHEMA_WITHOUT_ANNOTATIONS)
         list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(sv, "id")
         assert list_markers == ("[", "]")
         assert inner_delimiter == "|"
@@ -318,42 +426,7 @@ def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
     Tests that the list_delimiter annotation correctly configures
     the delimiter used for joining/splitting multivalued fields.
     """
-    # Create a valid schema name (delimiters have special chars, use ordinal)
-    schema_name = f"test_delimiter_ord{ord(delimiter)}"
-    schema_yaml = f"""
-id: https://example.org/test
-name: {schema_name}
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-annotations:
-  list_syntax: plaintext
-  list_delimiter: "{delimiter}"
-
-classes:
-  Container:
-    tree_root: true
-    slots:
-      - items
-  Item:
-    slots:
-      - id
-      - tags
-
-slots:
-  items:
-    range: Item
-    multivalued: true
-    inlined_as_list: true
-  id:
-    identifier: true
-  tags:
-    range: string
-    multivalued: true
-"""
-    schemaview = SchemaView(schema_yaml)
+    schemaview = SchemaView(make_delimiter_schema(delimiter))
     data = {"items": [{"id": "1", "tags": test_values}]}
     # Use ordinal for filename to avoid Windows reserved characters (|, etc.)
     output_file = tmp_path / f"delimiter_ord{ord(delimiter)}_test.tsv"
@@ -421,50 +494,23 @@ class TestMultivaluedEdgeCases:
 # -----------------------------------------------------------------------------
 
 
+@pytest.fixture
+def whitespace_schemaview():
+    """Schema with plaintext list syntax for whitespace tests (strip enabled by default)."""
+    return SchemaView(SCHEMA_WHITESPACE_STRIP)
+
+
+@pytest.fixture
+def whitespace_preserve_schemaview():
+    """Schema with whitespace preservation enabled."""
+    return SchemaView(SCHEMA_WHITESPACE_PRESERVE)
+
+
 class TestWhitespaceStripping:
     """Tests for whitespace stripping around list delimiters."""
 
-    @pytest.fixture
-    def whitespace_schemaview(self):
-        """Schema with plaintext list syntax for whitespace tests."""
-        schema_yaml = """
-id: https://example.org/whitespace
-name: whitespace_test
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-annotations:
-  list_syntax: plaintext
-  list_delimiter: "|"
-
-classes:
-  Container:
-    tree_root: true
-    slots:
-      - items
-  Item:
-    slots:
-      - id
-      - tags
-
-slots:
-  items:
-    range: Item
-    multivalued: true
-    inlined_as_list: true
-  id:
-    identifier: true
-  tags:
-    range: string
-    multivalued: true
-"""
-        return SchemaView(schema_yaml)
-
     def test_whitespace_stripped_by_default(self, whitespace_schemaview, tmp_path):
         """Whitespace around delimiters should be stripped by default."""
-        # Create TSV with whitespace around delimiters
         tsv_content = "id\ttags\n1\tred | green | blue\n"
         tsv_file = tmp_path / "whitespace.tsv"
         tsv_file.write_text(tsv_content)
@@ -474,75 +520,42 @@ slots:
         # Whitespace should be stripped
         assert result["items"][0]["tags"] == ["red", "green", "blue"]
 
-    def test_whitespace_preserved_with_annotation(self, tmp_path):
+    def test_whitespace_preserved_with_annotation(self, whitespace_preserve_schemaview, tmp_path):
         """With list_strip_whitespace=false, whitespace should be preserved."""
-        schema_yaml = """
-id: https://example.org/preserve
-name: preserve_whitespace
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-annotations:
-  list_syntax: plaintext
-  list_delimiter: "|"
-  list_strip_whitespace: "false"
-
-classes:
-  Container:
-    tree_root: true
-    slots:
-      - items
-  Item:
-    slots:
-      - id
-      - tags
-
-slots:
-  items:
-    range: Item
-    multivalued: true
-    inlined_as_list: true
-  id:
-    identifier: true
-  tags:
-    range: string
-    multivalued: true
-"""
-        sv = SchemaView(schema_yaml)
         tsv_content = "id\ttags\n1\tred | green | blue\n"
         tsv_file = tmp_path / "preserve_whitespace.tsv"
         tsv_file.write_text(tsv_content)
 
-        result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=sv)
+        result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=whitespace_preserve_schemaview)
 
         # Whitespace should be preserved
         assert result["items"][0]["tags"] == ["red ", " green ", " blue"]
 
-    def test_strip_whitespace_annotation_values(self):
-        """Test various annotation values for list_strip_whitespace."""
-        for true_value in ["true", "True", "yes", "1"]:
-            schema_yaml = f"""
+    @pytest.mark.parametrize("true_value", ["true", "True", "yes", "1"])
+    def test_strip_whitespace_true_values(self, true_value):
+        """Test that various truthy annotation values enable stripping."""
+        schema_yaml = f"""
 id: https://example.org/test
 name: test
 annotations:
   list_strip_whitespace: "{true_value}"
 """
-            sv = SchemaView(schema_yaml)
-            _, _, strip = _get_list_config_from_annotations(sv, None)
-            assert strip is True, f"Expected True for '{true_value}'"
+        sv = SchemaView(schema_yaml)
+        _, _, strip = _get_list_config_from_annotations(sv, None)
+        assert strip is True, f"Expected True for '{true_value}'"
 
-        for false_value in ["false", "False", "no", "0"]:
-            schema_yaml = f"""
+    @pytest.mark.parametrize("false_value", ["false", "False", "no", "0"])
+    def test_strip_whitespace_false_values(self, false_value):
+        """Test that various falsy annotation values disable stripping."""
+        schema_yaml = f"""
 id: https://example.org/test
 name: test
 annotations:
   list_strip_whitespace: "{false_value}"
 """
-            sv = SchemaView(schema_yaml)
-            _, _, strip = _get_list_config_from_annotations(sv, None)
-            assert strip is False, f"Expected False for '{false_value}'"
+        sv = SchemaView(schema_yaml)
+        _, _, strip = _get_list_config_from_annotations(sv, None)
+        assert strip is False, f"Expected False for '{false_value}'"
 
     def test_output_whitespace_stripped_by_default(self, whitespace_schemaview, tmp_path):
         """Whitespace in values should be stripped when dumping by default."""
@@ -556,47 +569,12 @@ annotations:
         assert "dog|cat|bird" in content
         assert "dog   " not in content
 
-    def test_output_whitespace_preserved_with_annotation(self, tmp_path):
+    def test_output_whitespace_preserved_with_annotation(self, whitespace_preserve_schemaview, tmp_path):
         """With list_strip_whitespace=false, output whitespace should be preserved."""
-        schema_yaml = """
-id: https://example.org/preserve_output
-name: preserve_output
-prefixes:
-  linkml: https://w3id.org/linkml/
-imports:
-  - linkml:types
-
-annotations:
-  list_syntax: plaintext
-  list_delimiter: "|"
-  list_strip_whitespace: "false"
-
-classes:
-  Container:
-    tree_root: true
-    slots:
-      - items
-  Item:
-    slots:
-      - id
-      - tags
-
-slots:
-  items:
-    range: Item
-    multivalued: true
-    inlined_as_list: true
-  id:
-    identifier: true
-  tags:
-    range: string
-    multivalued: true
-"""
-        sv = SchemaView(schema_yaml)
         data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
         output_file = tmp_path / "output_preserve.tsv"
 
-        tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=sv)
+        tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=whitespace_preserve_schemaview)
         content = output_file.read_text()
 
         # Whitespace should be preserved
