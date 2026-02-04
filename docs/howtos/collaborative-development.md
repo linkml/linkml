@@ -81,6 +81,7 @@ You may wish to use an existing governance model or community documents as a sta
 - schema.org [how we work](https://schema.org/docs/howwework.html)
 - [GA4GH Constitution](https://www.ga4gh.org/constitution/)
 - [Bioregistry](https://github.com/biopragmatics/bioregistry/blob/main/docs/GOVERNANCE.md)
+- LinkML [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) - norms for AI-assisted contributions
 
 Some things the governance model should cover:
 
