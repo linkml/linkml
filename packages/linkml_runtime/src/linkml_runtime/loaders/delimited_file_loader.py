@@ -16,28 +16,31 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 def _get_list_config_from_annotations(
     schemaview: SchemaView,
     index_slot: SlotDefinitionName = None,
-) -> tuple[tuple[str, str], str]:
+) -> tuple[tuple[str, str], str, bool]:
     """
-    Read list_syntax and list_delimiter from schema-level annotations.
+    Read list_syntax, list_delimiter, and list_strip_whitespace from schema-level annotations.
 
     These annotations control how multivalued fields are serialized in CSV/TSV:
     - list_syntax: "python" (default) uses brackets [a|b|c], "plaintext" has no brackets
     - list_delimiter: character between list items (default "|")
+    - list_strip_whitespace: strip whitespace around delimiter (default true)
 
     Note: These are schema-level only because json-flattener's GlobalConfig
     applies the same markers/delimiter to ALL columns in the CSV/TSV.
 
     Returns:
-        Tuple of (csv_list_markers, csv_inner_delimiter) for GlobalConfig.
+        Tuple of (csv_list_markers, csv_inner_delimiter, strip_whitespace) for GlobalConfig.
         - csv_list_markers: ('[', ']') for python style, ('', '') for plaintext
         - csv_inner_delimiter: the delimiter between list items (default '|')
+        - strip_whitespace: whether to strip whitespace from list items (default True)
     """
     # Default values matching json-flattener defaults
     list_markers = ("[", "]")
     inner_delimiter = "|"
+    strip_whitespace = True  # Default to stripping whitespace
 
     if not schemaview or not schemaview.schema:
-        return list_markers, inner_delimiter
+        return list_markers, inner_delimiter, strip_whitespace
 
     # Check schema-level annotations
     if schemaview.schema.annotations:
@@ -48,8 +51,42 @@ def _get_list_config_from_annotations(
                 list_markers = ("", "")
         if "list_delimiter" in annotations:
             inner_delimiter = annotations["list_delimiter"].value
+        if "list_strip_whitespace" in annotations:
+            value = annotations["list_strip_whitespace"].value
+            # Handle string "false" or boolean False
+            strip_whitespace = str(value).lower() not in ("false", "no", "0")
 
-    return list_markers, inner_delimiter
+    return list_markers, inner_delimiter, strip_whitespace
+
+
+def _strip_whitespace_from_lists(obj: Union[dict, list]) -> Union[dict, list]:
+    """
+    Recursively strip whitespace from string items in lists.
+
+    This post-processes the unflattened data to strip leading/trailing
+    whitespace from list items, handling cases like "a | b | c" being
+    parsed as ['a ', ' b ', ' c'].
+
+    Args:
+        obj: A dict or list from json-flattener unflatten
+
+    Returns:
+        The same structure with whitespace stripped from list string items
+    """
+    if isinstance(obj, dict):
+        return {k: _strip_whitespace_from_lists(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        result = []
+        for item in obj:
+            if isinstance(item, str):
+                result.append(item.strip())
+            elif isinstance(item, (dict, list)):
+                result.append(_strip_whitespace_from_lists(item))
+            else:
+                result.append(item)
+        return result
+    else:
+        return obj
 
 
 def _enhance_configmap_for_multivalued_primitives(
@@ -164,13 +201,24 @@ class DelimitedFileLoader(Loader, ABC):
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
+        list_syntax: str = None,
+        list_delimiter: str = None,
+        list_strip_whitespace: bool = None,
         **kwargs,
     ):
         if schemaview is None:
             schemaview = SchemaView(schema)
 
         # Read list configuration from schema annotations
-        list_markers, inner_delimiter = _get_list_config_from_annotations(schemaview, index_slot)
+        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(schemaview, index_slot)
+
+        # CLI options override schema annotations
+        if list_syntax is not None:
+            list_markers = ("", "") if list_syntax == "plaintext" else ("[", "]")
+        if list_delimiter is not None:
+            inner_delimiter = list_delimiter
+        if list_strip_whitespace is not None:
+            strip_whitespace = list_strip_whitespace
 
         # Plaintext mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
         plaintext_mode = list_markers == ("", "")
@@ -188,4 +236,9 @@ class DelimitedFileLoader(Loader, ABC):
             csv_inner_delimiter=inner_delimiter,
         )
         objs = unflatten_from_csv(input, config=config, **kwargs)
+
+        # Strip whitespace from list items if enabled (default)
+        if strip_whitespace:
+            objs = [_strip_whitespace_from_lists(obj) for obj in objs]
+
         return json.dumps({index_slot: objs})

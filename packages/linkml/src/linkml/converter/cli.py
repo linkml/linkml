@@ -73,6 +73,24 @@ logger = logging.getLogger(__name__)
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
+@click.option(
+    "--list-syntax",
+    type=click.Choice(["python", "plaintext"]),
+    default=None,
+    help="List formatting style for CSV/TSV: 'python' uses brackets [a|b|c], 'plaintext' has no brackets. "
+    "Overrides schema annotation if set.",
+)
+@click.option(
+    "--list-delimiter",
+    default=None,
+    help="Delimiter between list items in CSV/TSV (default: |). Overrides schema annotation if set.",
+)
+@click.option(
+    "--list-strip-whitespace/--no-list-strip-whitespace",
+    default=None,
+    help="Strip whitespace around list delimiters when loading CSV/TSV (default: strip). "
+    "Overrides schema annotation if set.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -90,6 +108,9 @@ def cli(
     validate=None,
     infer=None,
     index_slot=None,
+    list_syntax=None,
+    list_delimiter=None,
+    list_strip_whitespace=None,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -163,6 +184,13 @@ def cli(
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot
         inargs["schema"] = schema
+        # Pass list formatting options (override schema annotations if set)
+        if list_syntax is not None:
+            inargs["list_syntax"] = list_syntax
+        if list_delimiter is not None:
+            inargs["list_delimiter"] = list_delimiter
+        if list_strip_whitespace is not None:
+            inargs["list_strip_whitespace"] = list_strip_whitespace
     obj = loader.load(source=input, target_class=py_target_class, **inargs)
     if infer:
         infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
@@ -195,6 +223,11 @@ def cli(
                 raise Exception("--index-slot is required for CSV output")
         outargs["index_slot"] = index_slot
         outargs["schema"] = schema
+        # Pass list formatting options (override schema annotations if set)
+        if list_syntax is not None:
+            outargs["list_syntax"] = list_syntax
+        if list_delimiter is not None:
+            outargs["list_delimiter"] = list_delimiter
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(obj, output, **outargs)

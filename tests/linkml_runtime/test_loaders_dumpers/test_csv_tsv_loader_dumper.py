@@ -214,9 +214,10 @@ class TestHelperFunctionDefaults:
 
     def test_get_list_config_with_none_schemaview(self):
         """When schemaview is None, should return defaults."""
-        list_markers, inner_delimiter = _get_list_config_from_annotations(None, None)
+        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(None, None)
         assert list_markers == ("[", "]")
         assert inner_delimiter == "|"
+        assert strip_whitespace is True
 
     def test_get_list_config_without_annotations(self):
         """Schema without annotations should return defaults."""
@@ -237,9 +238,10 @@ slots:
     identifier: true
 """
         sv = SchemaView(schema_yaml)
-        list_markers, inner_delimiter = _get_list_config_from_annotations(sv, "id")
+        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(sv, "id")
         assert list_markers == ("[", "]")
         assert inner_delimiter == "|"
+        assert strip_whitespace is True
 
     def test_enhance_configmap_with_none_schemaview(self):
         """When schemaview is None, should return original configmap."""
@@ -412,3 +414,132 @@ class TestMultivaluedEdgeCases:
 
         # Exact behavior TBD - might need escaping or different delimiter
         pytest.skip("Delimiter-in-value escaping not yet implemented")
+
+
+# -----------------------------------------------------------------------------
+# Whitespace stripping tests
+# -----------------------------------------------------------------------------
+
+
+class TestWhitespaceStripping:
+    """Tests for whitespace stripping around list delimiters."""
+
+    @pytest.fixture
+    def whitespace_schemaview(self):
+        """Schema with plaintext list syntax for whitespace tests."""
+        schema_yaml = """
+id: https://example.org/whitespace
+name: whitespace_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+        return SchemaView(schema_yaml)
+
+    def test_whitespace_stripped_by_default(self, whitespace_schemaview, tmp_path):
+        """Whitespace around delimiters should be stripped by default."""
+        # Create TSV with whitespace around delimiters
+        tsv_content = "id\ttags\n1\tred | green | blue\n"
+        tsv_file = tmp_path / "whitespace.tsv"
+        tsv_file.write_text(tsv_content)
+
+        result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=whitespace_schemaview)
+
+        # Whitespace should be stripped
+        assert result["items"][0]["tags"] == ["red", "green", "blue"]
+
+    def test_whitespace_preserved_with_annotation(self, tmp_path):
+        """With list_strip_whitespace=false, whitespace should be preserved."""
+        schema_yaml = """
+id: https://example.org/preserve
+name: preserve_whitespace
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+  list_strip_whitespace: "false"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+        sv = SchemaView(schema_yaml)
+        tsv_content = "id\ttags\n1\tred | green | blue\n"
+        tsv_file = tmp_path / "preserve_whitespace.tsv"
+        tsv_file.write_text(tsv_content)
+
+        result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=sv)
+
+        # Whitespace should be preserved
+        assert result["items"][0]["tags"] == ["red ", " green ", " blue"]
+
+    def test_strip_whitespace_annotation_values(self):
+        """Test various annotation values for list_strip_whitespace."""
+        for true_value in ["true", "True", "yes", "1"]:
+            schema_yaml = f"""
+id: https://example.org/test
+name: test
+annotations:
+  list_strip_whitespace: "{true_value}"
+"""
+            sv = SchemaView(schema_yaml)
+            _, _, strip = _get_list_config_from_annotations(sv, None)
+            assert strip is True, f"Expected True for '{true_value}'"
+
+        for false_value in ["false", "False", "no", "0"]:
+            schema_yaml = f"""
+id: https://example.org/test
+name: test
+annotations:
+  list_strip_whitespace: "{false_value}"
+"""
+            sv = SchemaView(schema_yaml)
+            _, _, strip = _get_list_config_from_annotations(sv, None)
+            assert strip is False, f"Expected False for '{false_value}'"
