@@ -897,10 +897,7 @@ classes:
     data_path.write_text(json.dumps(data), encoding="utf-8")
 
     with pytest.raises(ValueError, match="must define an identifier"):
-        YarrrmlGenerator(
-            str(schema_path),
-            source=f"{data_path.resolve()}~jsonpath"
-        ).serialize()
+        YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath").serialize()
 
 
 @pytest.mark.yarrrml
@@ -946,7 +943,4 @@ classes:
     data_path.write_text(json.dumps(data), encoding="utf-8")
 
     with pytest.raises(ValueError, match="used in multiple owners"):
-        YarrrmlGenerator(
-            str(schema_path),
-            source=f"{data_path.resolve()}~jsonpath"
-        ).serialize()
+        YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath").serialize()
