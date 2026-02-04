@@ -8,6 +8,12 @@ from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionNam
 from linkml_runtime.loaders.json_loader import JSONLoader
 from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.csvutils import get_configmap
+from linkml_runtime.utils.list_utils import (
+    enhance_configmap_for_multivalued_primitives,
+    get_list_config_from_annotations,
+    resolve_list_wrapper,
+    strip_whitespace_from_lists,
+)
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -62,11 +68,44 @@ class DelimitedFileLoader(Loader, ABC):
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
+        list_wrapper: str = None,
+        list_delimiter: str = None,
+        list_strip_whitespace: bool = None,
         **kwargs,
     ):
         if schemaview is None:
             schemaview = SchemaView(schema)
+
+        # Read list configuration from schema annotations
+        list_markers, inner_delimiter, strip_whitespace, _refuse = get_list_config_from_annotations(schemaview)
+
+        # CLI options override schema annotations
+        if list_wrapper is not None:
+            list_markers = resolve_list_wrapper(list_wrapper)
+        if list_delimiter is not None:
+            inner_delimiter = list_delimiter
+        if list_strip_whitespace is not None:
+            strip_whitespace = list_strip_whitespace
+
+        # Unwrapped mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
+        unwrapped_mode = list_markers == ("", "")
+
+        # Get base configmap and enhance with multivalued primitive slots
         configmap = get_configmap(schemaview, index_slot)
-        config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
+        configmap = enhance_configmap_for_multivalued_primitives(
+            schemaview, index_slot, configmap, unwrapped_mode=unwrapped_mode
+        )
+
+        config = GlobalConfig(
+            key_configs=configmap,
+            csv_delimiter=self.delimiter,
+            csv_list_markers=list_markers,
+            csv_inner_delimiter=inner_delimiter,
+        )
         objs = unflatten_from_csv(input, config=config, **kwargs)
+
+        # Strip whitespace from list items if enabled (default)
+        if strip_whitespace:
+            objs = [strip_whitespace_from_lists(obj) for obj in objs]
+
         return json.dumps({index_slot: objs})

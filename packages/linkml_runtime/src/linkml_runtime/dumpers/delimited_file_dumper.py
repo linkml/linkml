@@ -8,6 +8,10 @@ from pydantic import BaseModel
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
+from linkml_runtime.loaders.delimited_file_loader import (
+    _enhance_configmap_for_multivalued_primitives,
+    _get_list_config_from_annotations,
+)
 from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -33,8 +37,25 @@ class DelimitedFileDumper(Dumper, ABC):
         objs = element_j[index_slot]
         if schemaview is None:
             schemaview = SchemaView(schema)
+
+        # Read list configuration from schema annotations
+        list_markers, inner_delimiter = _get_list_config_from_annotations(schemaview, index_slot)
+
+        # Plaintext mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
+        plaintext_mode = list_markers == ("", "")
+
+        # Get base configmap and enhance with multivalued primitive slots
         configmap = get_configmap(schemaview, index_slot)
-        config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
+        configmap = _enhance_configmap_for_multivalued_primitives(
+            schemaview, index_slot, configmap, plaintext_mode=plaintext_mode
+        )
+
+        config = GlobalConfig(
+            key_configs=configmap,
+            csv_delimiter=self.delimiter,
+            csv_list_markers=list_markers,
+            csv_inner_delimiter=inner_delimiter,
+        )
         output = io.StringIO()
         flatten_to_csv(objs, output, config=config, **kwargs)
         return output.getvalue()
