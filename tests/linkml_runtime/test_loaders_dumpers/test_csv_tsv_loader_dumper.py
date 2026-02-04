@@ -139,3 +139,373 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# =============================================================================
+# Integration tests for multivalued primitive CSV/TSV handling (issue #3041)
+#
+# These tests verify end-to-end behavior of loading and dumping CSV/TSV files
+# with multivalued primitive slots (like aliases: string*).
+#
+# Test strategy:
+# 1. Use existing personinfo.yaml schema and example_personinfo_data.yaml
+# 2. Dynamically inject aliases to test multivalued primitive handling
+# 3. This avoids modifying shared test fixtures while testing real-world patterns
+#
+# Related issues:
+# - https://github.com/linkml/linkml/issues/3041 (main issue)
+# - https://github.com/linkml/linkml/issues/2581 (configurable syntax)
+# - https://github.com/turbomam/issues/issues/48 (tracking issue)
+# =============================================================================
+
+# Paths to existing test fixtures
+PERSONINFO_SCHEMA = os.path.join(INPUT_DIR, "personinfo.yaml")
+PERSONINFO_DATA = os.path.join(INPUT_DIR, "example_personinfo_data.yaml")
+
+
+# -----------------------------------------------------------------------------
+# Inline schema for annotation testing
+#
+# We need an inline schema with list_syntax/list_delimiter annotations because
+# the existing personinfo.yaml doesn't have these. This lets us test the
+# annotation-based configuration without modifying shared fixtures.
+# -----------------------------------------------------------------------------
+
+SCHEMA_WITH_PLAINTEXT_ANNOTATIONS = """
+id: https://example.org/test
+name: test_plaintext_annotations
+description: >-
+  Schema with list_syntax=plaintext annotation for testing bracket-free
+  multivalued primitive serialization. This is the format users naturally
+  type in spreadsheets: a|b|c instead of [a|b|c].
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - persons
+  Person:
+    slots:
+      - id
+      - name
+      - aliases
+
+slots:
+  persons:
+    range: Person
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  name:
+    range: string
+  aliases:
+    range: string
+    multivalued: true
+    annotations:
+      list_syntax: plaintext
+      list_delimiter: "|"
+"""
+
+
+# -----------------------------------------------------------------------------
+# Fixtures
+# -----------------------------------------------------------------------------
+
+
+@pytest.fixture
+def personinfo_schemaview():
+    """
+    SchemaView for the existing personinfo.yaml schema.
+
+    This schema has Person with HasAliases mixin, giving it an 'aliases'
+    slot that is multivalued with implicit string range - perfect for
+    testing multivalued primitive handling.
+    """
+    return SchemaView(PERSONINFO_SCHEMA)
+
+
+@pytest.fixture
+def plaintext_schemaview():
+    """Schema with list_syntax=plaintext annotation for bracket-free format."""
+    return SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+
+
+# -----------------------------------------------------------------------------
+# Integration tests using existing personinfo schema and data
+#
+# These tests use dynamic alias injection to add multivalued primitive data
+# to the existing test fixtures without modifying the files.
+# -----------------------------------------------------------------------------
+
+
+class TestPersoninfoAliasesIntegration:
+    """
+    Integration tests using personinfo.yaml schema with dynamically injected aliases.
+
+    The personinfo schema has Person.aliases (multivalued string from HasAliases
+    mixin) which is perfect for testing. We load the existing test data and
+    inject aliases programmatically to test CSV/TSV round-trip behavior.
+    """
+
+    def test_dump_person_with_aliases_to_tsv(self, personinfo_schemaview, tmp_path):
+        """
+        Dumping Person with aliases should include aliases in TSV output.
+
+        We load existing personinfo data, inject aliases, dump to TSV,
+        and verify the aliases appear in the output (in bracket format
+        by default, or plaintext if annotations are added).
+        """
+        import yaml
+
+        # Load existing test data as plain dict (not through linkml loader)
+        # This allows us to inject aliases before converting to objects
+        with open(PERSONINFO_DATA) as f:
+            data = yaml.safe_load(f)
+
+        # Dynamically inject aliases - this is the key pattern for testing
+        # without modifying the shared test data file
+        data["persons"][0]["aliases"] = ["Frederick Bloggs", "Fred B.", "Freddy"]
+        data["persons"][1]["aliases"] = ["Joseph Schmoe", "Joe S."]
+
+        # Dump to TSV
+        output_file = tmp_path / "persons_with_aliases.tsv"
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=personinfo_schemaview)
+
+        # Verify aliases appear in output
+        # content = output_file.read_text()
+        # With default bracket format, expect: [Frederick Bloggs|Fred B.|Freddy]
+        # assert "Frederick Bloggs" in content
+        # assert "Fred B." in content
+        pytest.skip("Multivalued primitive dumping not yet implemented")
+
+    def test_roundtrip_person_aliases(self, personinfo_schemaview, tmp_path):
+        """
+        Round-trip test: dump Person with aliases to TSV, load back, verify data.
+
+        This is the core test for issue #3041 - ensuring multivalued primitive
+        slots survive the CSV/TSV round-trip without data loss.
+        """
+        import yaml
+
+        # Load existing test data as plain dict and inject aliases
+        with open(PERSONINFO_DATA) as f:
+            data = yaml.safe_load(f)
+        original_aliases_p1 = ["Frederick Bloggs", "Fred B."]
+        original_aliases_p2 = ["Joe S."]
+        data["persons"][0]["aliases"] = original_aliases_p1
+        data["persons"][1]["aliases"] = original_aliases_p2
+
+        output_file = tmp_path / "roundtrip_test.tsv"
+
+        # Dump and reload
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=personinfo_schemaview)
+        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
+        #                                      schemaview=personinfo_schemaview)
+
+        # Verify aliases survived round-trip
+        # assert roundtrip["persons"][0]["aliases"] == original_aliases_p1
+        # assert roundtrip["persons"][1]["aliases"] == original_aliases_p2
+        pytest.skip("Round-trip for multivalued primitives not yet implemented")
+
+    def test_load_tsv_with_pipe_delimited_aliases(self, personinfo_schemaview, tmp_path):
+        """
+        Loading TSV with pipe-delimited aliases (no brackets) should work.
+
+        This tests the user's natural input format: typing a|b|c in a
+        spreadsheet cell rather than [a|b|c].
+        """
+        # Create TSV content as a user would type it in a spreadsheet
+        # Note: This is the format that currently FAILS (issue #3041)
+        tsv_content = "id\tname\taliases\nP:001\tfred bloggs\tFrederick Bloggs|Fred B.\nP:002\tjoe schmoe\tJoe S.\n"
+        input_file = tmp_path / "user_input.tsv"
+        input_file.write_text(tsv_content)
+
+        # Load and verify aliases are split into lists
+        # result = tsv_loader.load_as_dict(str(input_file), index_slot="persons",
+        #                                   schemaview=personinfo_schemaview)
+        # assert result["persons"][0]["aliases"] == ["Frederick Bloggs", "Fred B."]
+        # assert result["persons"][1]["aliases"] == ["Joe S."]
+        pytest.skip("Plaintext format loading not yet implemented")
+
+
+# -----------------------------------------------------------------------------
+# Integration tests with annotation-based configuration
+#
+# These tests use inline schemas with list_syntax/list_delimiter annotations
+# to test the configurable delimiter behavior.
+# -----------------------------------------------------------------------------
+
+
+class TestAnnotationBasedDelimiters:
+    """
+    Integration tests for annotation-based delimiter configuration.
+
+    Tests that list_syntax and list_delimiter annotations control how
+    multivalued fields are serialized/deserialized in CSV/TSV.
+    """
+
+    def test_plaintext_annotation_produces_no_brackets(self, plaintext_schemaview, tmp_path):
+        """With list_syntax=plaintext, output should have no brackets."""
+        data = {
+            "persons": [
+                {"id": "1", "name": "Test Person", "aliases": ["Alias One", "Alias Two"]},
+            ]
+        }
+        output_file = tmp_path / "plaintext_test.tsv"
+
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=plaintext_schemaview)
+        # content = output_file.read_text()
+
+        # Should be: Alias One|Alias Two (no brackets)
+        # assert "Alias One|Alias Two" in content
+        # assert "[Alias One|Alias Two]" not in content
+        pytest.skip("Annotation-based dumping not yet implemented")
+
+    def test_plaintext_roundtrip(self, plaintext_schemaview, tmp_path):
+        """Round-trip with plaintext annotations should preserve data."""
+        original_aliases = ["First Alias", "Second Alias", "Third Alias"]
+        data = {"persons": [{"id": "1", "name": "Test", "aliases": original_aliases}]}
+        output_file = tmp_path / "plaintext_roundtrip.tsv"
+
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=plaintext_schemaview)
+        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
+        #                                      schemaview=plaintext_schemaview)
+
+        # assert roundtrip["persons"][0]["aliases"] == original_aliases
+        pytest.skip("Plaintext round-trip not yet implemented")
+
+
+@pytest.mark.parametrize(
+    "delimiter,test_values",
+    [
+        ("|", ["a", "b", "c"]),
+        (";", ["x", "y", "z"]),
+        (",", ["one", "two", "three"]),
+    ],
+)
+def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
+    """
+    Different delimiters should work for round-trip.
+
+    Tests that the list_delimiter annotation correctly configures
+    the delimiter used for joining/splitting multivalued fields.
+    """
+    schema_yaml = f"""
+id: https://example.org/test
+name: test_delimiter_{delimiter}
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+    annotations:
+      list_syntax: plaintext
+      list_delimiter: "{delimiter}"
+"""
+    # schemaview = SchemaView(schema_yaml)
+    # data = {{"items": [{{"id": "1", "tags": test_values}}]}}
+    # output_file = tmp_path / f"delimiter_{delimiter}_test.tsv"
+
+    # tsv_dumper.dump(data, to_file=str(output_file), index_slot="items",
+    #                 schemaview=schemaview)
+    # content = output_file.read_text()
+    # expected = delimiter.join(test_values)
+    # assert expected in content
+
+    # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="items",
+    #                                      schemaview=schemaview)
+    # assert roundtrip["items"][0]["tags"] == test_values
+    pytest.skip("Custom delimiter not yet implemented")
+
+
+# -----------------------------------------------------------------------------
+# Edge case tests
+# -----------------------------------------------------------------------------
+
+
+class TestMultivaluedEdgeCases:
+    """Tests for edge cases in multivalued primitive handling."""
+
+    def test_empty_aliases_list(self, personinfo_schemaview, tmp_path):
+        """Empty aliases list should round-trip correctly (not become [None])."""
+        import yaml
+
+        with open(PERSONINFO_DATA) as f:
+            data = yaml.safe_load(f)
+        data["persons"][0]["aliases"] = []  # Empty list
+
+        output_file = tmp_path / "empty_aliases.tsv"
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=personinfo_schemaview)
+        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
+        #                                      schemaview=personinfo_schemaview)
+
+        # Should be [] or omitted, NOT [None]
+        # aliases = roundtrip["persons"][0].get("aliases")
+        # assert aliases in [None, []]
+        pytest.skip("Empty list handling not yet implemented")
+
+    def test_single_alias(self, personinfo_schemaview, tmp_path):
+        """Single alias (no delimiter needed) should round-trip correctly."""
+        import yaml
+
+        with open(PERSONINFO_DATA) as f:
+            data = yaml.safe_load(f)
+        data["persons"][0]["aliases"] = ["Only One Alias"]
+
+        output_file = tmp_path / "single_alias.tsv"
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=personinfo_schemaview)
+        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
+        #                                      schemaview=personinfo_schemaview)
+
+        # assert roundtrip["persons"][0]["aliases"] == ["Only One Alias"]
+        pytest.skip("Single value handling not yet implemented")
+
+    def test_alias_containing_delimiter(self, plaintext_schemaview, tmp_path):
+        """Alias containing the delimiter character needs proper escaping."""
+        # This is a tricky edge case - what if someone's alias contains a pipe?
+        data = {
+            "persons": [
+                {"id": "1", "name": "Test", "aliases": ["Name|With|Pipes", "Normal"]},
+            ]
+        }
+        output_file = tmp_path / "delimiter_in_value.tsv"
+
+        # This test documents expected behavior - may need escaping strategy
+        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
+        #                 schemaview=plaintext_schemaview)
+        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
+        #                                      schemaview=plaintext_schemaview)
+
+        # Exact behavior TBD - might need escaping or different delimiter
+        pytest.skip("Delimiter-in-value escaping not yet implemented")
