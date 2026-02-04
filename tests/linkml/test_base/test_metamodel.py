@@ -36,7 +36,12 @@ from linkml_runtime.utils.compile_python import compile_python
         pytest.param(
             ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldcontextgen
         ),
-        pytest.param(JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldgen),
+        pytest.param(
+            JSONLDGenerator,
+            ".json",
+            {"base": METAMODEL_NAMESPACE, "context_kwargs": {"model": True}},
+            marks=pytest.mark.jsonldgen,
+        ),
         pytest.param(PythonGenerator, ".py", {}, marks=pytest.mark.pythongen),
         pytest.param(
             SQLAlchemyGenerator, ".sqla.py", {"template": TemplateEnum.DECLARATIVE}, marks=pytest.mark.sqlalchemygen

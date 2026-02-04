@@ -16,12 +16,12 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v6.0.0
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7.1.6
+        uses: astral-sh/setup-uv@v7.2.1
         with:
           version: ${{ env.UV_VERSION }}
 
@@ -29,7 +29,7 @@ jobs:
         run: uv pip install --system requests
 
       - name: Restore link cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .github/link-cache.csv
           key: link-cache-${{ github.run_id }}

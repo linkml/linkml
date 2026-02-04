@@ -7,7 +7,7 @@ from jsonasobj2 import as_dict, as_json, loads
 
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemaloader import SchemaLoader
-from linkml_runtime.linkml_model.meta import SchemaDefinition
+from linkml_runtime.linkml_model.meta import SchemaDefinition, metamodel_version
 
 
 def _verify_schema1_content(
@@ -134,3 +134,36 @@ def test_representation_errors(filename, input_path):
     except Exception as e:
         # If exception raised, log it and optionally check message
         assert isinstance(e, Exception)
+
+
+def test_metamodel_version_preserved_when_defined():
+    """Test that metamodel_version from schema YAML is preserved, not overwritten.
+
+    This addresses issue #2719: when a schema explicitly defines its own
+    metamodel_version, it should be preserved rather than being overwritten
+    by the version from the installed runtime. This is essential for
+    generating the metamodel itself without circular dependencies.
+    """
+    schema_with_version = """
+id: http://example.org/test_metamodel_version
+name: test_metamodel_version
+metamodel_version: "99.0.0"
+"""
+    schema = load_raw_schema(schema_with_version, source_file="test.yaml")
+    # The schema's explicit metamodel_version should be preserved
+    assert schema.metamodel_version == "99.0.0"
+
+
+def test_metamodel_version_set_when_not_defined():
+    """Test that metamodel_version is set from runtime when not in schema.
+
+    When a schema doesn't define its own metamodel_version, the loader
+    should set it from the installed runtime's metamodel_version.
+    """
+    schema_without_version = """
+id: http://example.org/test_no_metamodel_version
+name: test_no_metamodel_version
+"""
+    schema = load_raw_schema(schema_without_version, source_file="test.yaml")
+    # Should use the runtime's metamodel_version
+    assert schema.metamodel_version == metamodel_version

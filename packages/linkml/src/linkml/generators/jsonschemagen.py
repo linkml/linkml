@@ -10,6 +10,7 @@ import click
 from linkml._version import __version__
 from linkml.generators.common import build
 from linkml.generators.common.lifecycle import LifecycleMixin
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_type_designator_value
 from linkml.utils.generator import Generator, shared_arguments
 from linkml.utils.helpers import get_range_associated_slots
@@ -23,7 +24,6 @@ from linkml_runtime.linkml_model.meta import (
     PermissibleValueText,
     PresenceEnum,
     SlotDefinition,
-    metamodel_version,
 )
 from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
@@ -269,6 +269,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     preserve_names: bool = False
     """If true, preserve LinkML element names in JSON Schema output (e.g., for $defs, properties, $ref targets)."""
 
+    expand_subproperty_of: bool = True
+    """
+    If True, expand subproperty_of constraints to enum constraints.
+
+    When a slot has `subproperty_of` set, valid values are the referenced slot
+    and all its descendants (via is_a). Values are formatted according to the
+    slot's range type (CURIE for uriorcurie, full URI for uri, snake_case for string).
+    """
+
     def __post_init__(self):
         if self.topClass:
             logger.warning("topClass is deprecated - use top_class")
@@ -290,7 +299,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
                 "$id": self.schema.id,
-                "metamodel_version": metamodel_version,
+                "metamodel_version": self.schema.metamodel_version,
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
@@ -526,6 +535,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         constraints.add_keyword("const", slot.equals_number)
         if slot.equals_string_in:
             constraints.add_keyword("enum", slot.equals_string_in)
+        # Handle subproperty_of constraint - generates enum from slot hierarchy
+        # Only SlotDefinition has subproperty_of, not AnonymousSlotExpression
+        if self.expand_subproperty_of and isinstance(slot, SlotDefinition) and slot.subproperty_of:
+            subproperty_values = get_subproperty_values(self.schemaview, slot)
+            if subproperty_values:
+                constraints.add_keyword("enum", subproperty_values)
         return constraints
 
     def get_subschema_for_slot(
@@ -779,6 +794,12 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
     default=False,
     show_default=True,
     help="Preserve original LinkML names in JSON Schema output (e.g., for $defs, properties, $ref targets).",
+)
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If set, expand subproperty_of constraints to enum constraints.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

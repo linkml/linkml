@@ -119,3 +119,226 @@ def test_cli_no_print_with_output(kitchen_sink_path, tmp_path):
         result = runner.invoke(cli, [kitchen_sink_path, "--output", tmp_path / "kitchen_sink.ts"])
         assert result.exit_code == 0
         mock_print.assert_not_called()
+
+
+def test_subproperty_of_generates_union_type():
+    """Test that subproperty_of generates TypeScript union type with slot descendants."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = TypescriptGenerator(schema_yaml)
+    tss = gen.serialize()
+
+    # Should generate union type with CURIEs
+    assert '"ex:causes"' in tss
+    assert '"ex:related_to"' in tss
+    assert '"ex:treats"' in tss
+    # Should use union operator
+    assert "|" in tss
+
+
+def test_subproperty_of_with_deeper_hierarchy():
+    """Test that subproperty_of includes all descendants, not just direct children."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  directly_causes:
+    is_a: causes
+    slot_uri: ex:directly_causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = TypescriptGenerator(schema_yaml)
+    tss = gen.serialize()
+
+    # Should include grandchild (directly_causes)
+    assert '"ex:causes"' in tss
+    assert '"ex:directly_causes"' in tss
+    assert '"ex:related_to"' in tss
+    assert '"ex:treats"' in tss
+
+
+def test_subproperty_of_with_string_range():
+    """Test that subproperty_of with string range uses snake_case slot names."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = TypescriptGenerator(schema_yaml)
+    tss = gen.serialize()
+
+    # Should use snake_case slot names for string range
+    assert '"causes"' in tss
+    assert '"related_to"' in tss
+    assert '"treats"' in tss
+
+
+def test_subproperty_of_can_be_disabled():
+    """Test that expand_subproperty_of=False disables union type generation."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = TypescriptGenerator(schema_yaml, expand_subproperty_of=False)
+    tss = gen.serialize()
+
+    # Should NOT generate union type when disabled
+    assert '"ex:causes"' not in tss
+    assert '"ex:related_to"' not in tss
+    # Should use regular string type instead
+    assert "string" in tss
+
+
+def test_subproperty_of_with_slot_usage():
+    """Test that slot_usage subproperty_of narrows the constraint."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  directly_causes:
+    is_a: causes
+    slot_uri: ex:directly_causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+
+classes:
+  Association:
+    slots:
+      - predicate
+  CausalAssociation:
+    is_a: Association
+    slot_usage:
+      predicate:
+        subproperty_of: causes
+"""
+    # Use include_induced_slots=True to ensure slot_usage overrides are rendered
+    gen = TypescriptGenerator(schema_yaml, include_induced_slots=True)
+    tss = gen.serialize()
+
+    # CausalAssociation should have constrained predicate type
+    # It should only include causes and its descendants, not treats
+    # Find the CausalAssociation interface section
+    lines = tss.split("\n")
+    in_causal = False
+    causal_section = []
+    for line in lines:
+        if "interface CausalAssociation" in line:
+            in_causal = True
+        if in_causal:
+            causal_section.append(line)
+            if line.strip() == "}":
+                break
+
+    causal_text = "\n".join(causal_section)
+    # CausalAssociation should have the constrained type
+    assert '"ex:causes"' in causal_text or '"ex:directly_causes"' in causal_text
+    # Should NOT include treats in CausalAssociation
+    assert '"ex:treats"' not in causal_text
