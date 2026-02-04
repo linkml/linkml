@@ -862,3 +862,91 @@ classes:
 
     assert isinstance(friends_po["o"], list)
     assert all(o["type"] == "iri" for o in friends_po["o"])
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_inline_without_identifier_raises(tmp_path: Path):
+    schema = """
+id: https://ex.org/neg1
+name: neg1
+prefixes:
+  ex: https://ex.org/neg1#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      address:
+        range: Address
+        inlined: true
+  Address:
+    attributes:
+      street: {}
+"""
+
+    data = {"items": [{"id": "P1", "address": {"street": "Main"}}]}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="must define an identifier"):
+        YarrrmlGenerator(
+            str(schema_path),
+            source=f"{data_path.resolve()}~jsonpath"
+        ).serialize()
+
+
+@pytest.mark.yarrrml
+def test_yarrrml_e2e_multi_owner_inline_raises(tmp_path: Path):
+    schema = """
+id: https://ex.org/neg2
+name: neg2
+prefixes:
+  ex: https://ex.org/neg2#
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      address:
+        range: Address
+        inlined: true
+
+  Company:
+    attributes:
+      id:
+        identifier: true
+      hq:
+        range: Address
+        inlined: true
+
+  Address:
+    attributes:
+      aid:
+        identifier: true
+"""
+
+    data = {"items": [{"id": "P1"}]}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="used in multiple owners"):
+        YarrrmlGenerator(
+            str(schema_path),
+            source=f"{data_path.resolve()}~jsonpath"
+        ).serialize()
