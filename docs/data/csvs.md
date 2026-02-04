@@ -74,30 +74,44 @@ However, when working with spreadsheets, users often prefer typing values withou
 value1|value2|value3
 ```
 
-You can customize the formatting using slot annotations:
+You can customize the formatting using schema-level annotations:
 
 ```yaml
+id: https://example.org/myschema
+name: myschema
+annotations:
+  list_syntax: plaintext    # removes brackets from all multivalued fields
+  list_delimiter: "|"       # delimiter between values (default)
+
 slots:
   tags:
     range: string
     multivalued: true
-    annotations:
-      list_syntax: plaintext    # removes brackets
-      list_delimiter: "|"       # delimiter between values (default)
+  categories:
+    range: string
+    multivalued: true
 ```
+
+Note: These annotations apply to ALL multivalued fields in the CSV/TSV output.
+This is because the underlying json-flattener library uses a single global
+configuration for list formatting.
 
 #### Available annotations
 
 | Annotation | Values | Default | Description |
 |------------|--------|---------|-------------|
 | `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a|b|c]`, `plaintext` has no brackets `a|b|c` |
-| `list_delimiter` | any string | `|` | Character(s) used to separate list items |
+| `list_delimiter` | any string | `\|` | Character(s) used to separate list items |
 
 #### Examples
 
 **Default behavior (python style):**
 
 ```yaml
+id: https://example.org/default
+name: default_example
+# No annotations - uses default python style
+
 slots:
   aliases:
     range: string
@@ -109,13 +123,16 @@ TSV output: `[Alice|Bob|Charlie]`
 **Plaintext style with pipe delimiter:**
 
 ```yaml
+id: https://example.org/plaintext
+name: plaintext_example
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
 slots:
   aliases:
     range: string
     multivalued: true
-    annotations:
-      list_syntax: plaintext
-      list_delimiter: "|"
 ```
 
 TSV output: `Alice|Bob|Charlie`
@@ -123,38 +140,19 @@ TSV output: `Alice|Bob|Charlie`
 **Plaintext style with semicolon delimiter:**
 
 ```yaml
+id: https://example.org/semicolon
+name: semicolon_example
+annotations:
+  list_syntax: plaintext
+  list_delimiter: ";"
+
 slots:
   categories:
     range: string
     multivalued: true
-    annotations:
-      list_syntax: plaintext
-      list_delimiter: ";"
 ```
 
 TSV output: `category1;category2;category3`
-
-#### Schema-level settings
-
-You can also set these as schema-level defaults using `settings`:
-
-```yaml
-id: https://example.org/myschema
-name: myschema
-settings:
-  list_syntax: plaintext
-  list_delimiter: "|"
-
-slots:
-  tags:
-    multivalued: true
-  categories:
-    multivalued: true
-    annotations:
-      list_delimiter: ";"  # override schema default for this slot
-```
-
-Slot-level annotations take precedence over schema-level settings.
 
 ## Inference of schemas from tabular data
 

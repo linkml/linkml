@@ -136,7 +136,7 @@ SCHEMA_WITH_SCHEMA_LEVEL_ANNOTATIONS = """
 id: https://example.org/test
 name: test_schema_annotations
 description: >-
-  Schema demonstrating schema-level settings with slot-level override.
+  Schema demonstrating schema-level annotations with slot-level override.
   - Schema-level: list_syntax=plaintext, list_delimiter="|"
   - Slot 'categories' overrides with list_delimiter=";"
   This tests the cascading behavior where slot annotations take precedence.
@@ -147,7 +147,7 @@ imports:
 
 default_range: string
 
-settings:
+annotations:
   list_syntax: plaintext
   list_delimiter: "|"
 
