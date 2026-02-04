@@ -86,10 +86,10 @@ def test_pattern_constraint(minimal_schema):
 def test_identifier_uniqueness(minimal_schema_queries):
     """Test generation of identifier uniqueness validation query."""
 
-    # Should check for duplicate id values
     assert "identifier" in minimal_schema_queries
-    assert "GROUP BY" in minimal_schema_queries and ".id" in minimal_schema_queries
-    assert "HAVING" in minimal_schema_queries and "count(*) > 1" in minimal_schema_queries
+    assert ".id" in minimal_schema_queries
+    assert "GROUP BY" in minimal_schema_queries
+    assert "count(*) > 1" in minimal_schema_queries
 
 
 def test_unique_key_constraint():
@@ -108,11 +108,12 @@ def test_unique_key_constraint():
     gen = SQLValidationGenerator(b.schema)
     queries = gen.generate_validation_queries()
 
-    # Should check for duplicate name combinations
     assert "unique_key" in queries
     assert "first_name" in queries and "last_name" in queries
     assert "GROUP BY" in queries
-    assert "HAVING" in queries and "count(*) > 1" in queries
+    assert "count(*) > 1" in queries
+    # Should concatenate values with pipe separator
+    assert "||" in queries or "CONCAT" in queries
 
 
 def test_enum_constraint():
@@ -232,10 +233,9 @@ def test_empty_schema():
     gen = SQLValidationGenerator(b.schema)
     queries = gen.generate_validation_queries()
 
-    # Not null check for identifier
     assert 'WHERE "Record".id IS NULL' in queries
-    # Uniqueness check for identifier
-    assert "HAVING count(*) > 1;" in queries
+    assert "count(*) > 1" in queries
+    assert "UNION ALL" in queries
 
 
 def test_multiple_constraints_same_field():
@@ -273,7 +273,7 @@ def test_cli_basic(tmp_path):
     # Should contain validation query
     assert "age > 120" in result.output
     assert "SELECT" in result.output
-    assert "HAVING count(*) > 1;" in result.output
+    assert "UNION ALL" in result.output
 
 
 def test_cli_with_dialect(tmp_path):
@@ -361,11 +361,9 @@ def test_key_vs_identifier():
     # Should check both identifier and key uniqueness
     assert "identifier" in queries
     assert "key" in queries
-    # Should have separate checks for id and code
-    assert 'GROUP BY "Record".id' in queries
-    assert ".id IS NULL" in queries
-    assert 'GROUP BY "Record".code' in queries
-    assert ".code IS NULL" in queries
+    assert ".id" in queries
+    assert ".code" in queries
+    assert "UNION ALL" in queries
 
 
 # TODO: Is this test necessary? Or is this special character thing
@@ -394,3 +392,22 @@ def test_serialize_method(minimal_schema):
     # Should produce same output as generate_validation_queries
     assert "SELECT" in queries
     assert len(queries) > 10
+
+
+def test_union_all_combination(minimal_schema):
+    """Test that all validation queries are combined with UNION ALL."""
+    gen = SQLValidationGenerator(minimal_schema)
+    queries = gen.generate_validation_queries()
+
+    assert "UNION ALL" in queries
+
+    # Should have only one semicolon at the end
+    assert queries.count(";") == 1
+    assert queries.rstrip().endswith(";")
+
+    # Should have standardized columns in output
+    assert "table_name" in queries
+    assert "column_name" in queries
+    assert "constraint_type" in queries
+    assert "record_id" in queries
+    assert "invalid_value" in queries

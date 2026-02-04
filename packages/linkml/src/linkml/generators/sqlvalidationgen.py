@@ -6,9 +6,10 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
-from sqlalchemy import and_, column, func, literal_column, or_, select, table
+from sqlalchemy import and_, column, func, literal_column, or_, select, table, union_all
 from sqlalchemy.dialects import mysql, oracle, postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
+from sqlalchemy.types import Text
 
 from linkml._version import __version__
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
@@ -24,9 +25,10 @@ class SQLValidationGenerator(Generator):
     """
     A :class:`~linkml.utils.generator.Generator` for creating SQL validation queries.
 
-    This generator creates SELECT statements that identify data entries violating
-    LinkML schema constraints. The queries can be executed against a database to
-    find constraint violations.
+    This generator creates a unified SELECT statement (combining multiple validation
+    checks with UNION ALL) that identifies data entries violating LinkML schema
+    constraints. The query can be executed against a database to find constraint
+    violations.
 
     Supported constraint types:
     - required: Find NULL values in required fields
@@ -34,15 +36,16 @@ class SQLValidationGenerator(Generator):
     - pattern: Find regex pattern violations
     - identifier/key: Find uniqueness violations
     - unique_keys: Find multi-column uniqueness violations
+    - enum: Find values not in the permissible values list
 
     Example:
         >>> gen = SQLValidationGenerator("schema.yaml", dialect="postgresql")
         >>> queries = gen.generate_validation_queries()
         >>> print(queries)
 
-    The generated queries return standardized columns:
+    The generated query returns standardized columns:
     - table_name: The class/table name
-    - column_name: The slot/column name
+    - column_name: The slot/column name (or constraint name for unique_keys)
     - constraint_type: Type of constraint violated
     - record_id: ID of the violating record
     - invalid_value: The value that violates the constraint
@@ -107,18 +110,20 @@ class SQLValidationGenerator(Generator):
         1. Transforms the LinkML schema to a relational model
         2. Iterates through all classes and their slots
         3. Generates validation queries for each constraint type
-        4. Returns all queries as a formatted SQL string
+        4. Combines all queries with UNION ALL into a single result set
+
+        All queries return the same structure:
+        - table_name: The class/table name
+        - column_name: The slot/column name (or constraint name for unique_keys)
+        - constraint_type: Type of constraint violated
+        - record_id: ID of the violating record
+        - invalid_value: The value that violates the constraint
 
         :param kwargs: Additional arguments for schema transformation
         :return: SQL validation queries as a string
         :rtype: str
         """
-        queries = []
-
-        # Add header comment
-        if self.include_comments:
-            header = self._generate_header()
-            queries.append(header)
+        query_objects = []
 
         # Transform schema to relational model
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
@@ -143,41 +148,57 @@ class SQLValidationGenerator(Generator):
                 # Generate validation queries for each constraint type
                 if self.check_required and induced.required:
                     query = self._generate_required_violations(class_name, induced)
-                    if query:
-                        queries.append(query)
+
+                    if query is not None:
+                        query_objects.append(query)
 
                 if self.check_ranges:
                     if induced.minimum_value is not None or induced.maximum_value is not None:
                         query = self._generate_range_violations(class_name, induced)
-                        if query:
-                            queries.append(query)
+                        if query is not None:
+                            query_objects.append(query)
 
                 if self.check_patterns and induced.pattern:
                     query = self._generate_pattern_violations(class_name, induced)
-                    if query:
-                        queries.append(query)
+                    if query is not None:
+                        query_objects.append(query)
 
                 # Check identifier/key uniqueness
                 if induced.identifier or induced.key:
                     query = self._generate_identifier_violations(class_name, induced)
-                    if query:
-                        queries.append(query)
+                    if query is not None:
+                        query_objects.append(query)
 
                 # Check enum constraints
                 if self.check_enums and induced.range and induced.range in sv.all_enums():
                     query = self._generate_enum_violations(class_name, induced, sv)
-                    if query:
-                        queries.append(query)
+                    if query is not None:
+                        query_objects.append(query)
 
             # Check unique_keys constraints (multi-column uniqueness)
             if self.check_unique_keys and class_def.unique_keys:
                 for _, uk in class_def.unique_keys.items():
                     query = self._generate_unique_key_violations(class_name, class_def, uk)
-                    if query:
-                        queries.append(query)
+                    if query is not None:
+                        query_objects.append(query)
 
-        # Join all queries with blank lines
-        result = "\n\n".join(queries)
+        if not query_objects:
+            return ""
+
+        # Combine all queries with UNION ALL using SQLAlchemy
+        combined_query = union_all(*query_objects)
+        compiled_sql = self._compile_query(combined_query)
+
+        # Build final result
+        result_parts = []
+        if self.include_comments:
+            header = self._generate_header()
+            result_parts.extend([header])
+            result_parts.append("")  # blank line after header
+
+        result_parts.append(compiled_sql + ";")
+
+        result = "\n".join(result_parts)
         if result and not result.endswith("\n"):
             result += "\n"
         return result
@@ -192,13 +213,13 @@ class SQLValidationGenerator(Generator):
         -- ===================================================================="""
         return header
 
-    def _generate_required_violations(self, class_name: str, slot: SlotDefinition) -> str:
+    def _generate_required_violations(self, class_name: str, slot: SlotDefinition):
         """
         Generate query to find NULL values in required fields.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with required=True
-        :return: SQL query string
+        :return: SQLAlchemy select object
         """
         tbl = table(class_name, column("id"), column(slot.name))
 
@@ -214,40 +235,28 @@ class SQLValidationGenerator(Generator):
             .where(tbl.c[slot.name].is_(None))
         )
 
-        query_parts = []
-        if self.include_comments:
-            query_parts.append(
-                f"-- Validation: {class_name}.{slot.name} - Required field\n"
-                f"-- Records with NULL values in required field"
-            )
+        return query
 
-        query_parts.append(self._compile_query(query) + ";")
-
-        return "\n".join(query_parts)
-
-    def _generate_range_violations(self, class_name: str, slot: SlotDefinition) -> str:
+    def _generate_range_violations(self, class_name: str, slot: SlotDefinition):
         """
         Generate query to find minimum_value/maximum_value violations.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with min/max constraints
-        :return: SQL query string
+        :return: SQLAlchemy select object or None
         """
         conditions = []
-        constraint_desc = []
 
         tbl = table(class_name, column("id"), column(slot.name))
 
         if slot.minimum_value is not None:
             conditions.append(tbl.c[slot.name] < literal_column(str(slot.minimum_value)))
-            constraint_desc.append(f"minimum_value: {slot.minimum_value}")
 
         if slot.maximum_value is not None:
             conditions.append(tbl.c[slot.name] > literal_column(str(slot.maximum_value)))
-            constraint_desc.append(f"maximum_value: {slot.maximum_value}")
 
         if not conditions:
-            return ""
+            return None
 
         query = (
             select(
@@ -261,18 +270,9 @@ class SQLValidationGenerator(Generator):
             .where(or_(*conditions))
         )
 
-        query_parts = []
-        if self.include_comments:
-            query_parts.append(
-                f"-- Validation: {class_name}.{slot.name} - Range constraint\n"
-                f"-- Constraint: {', '.join(constraint_desc)}"
-            )
+        return query
 
-        query_parts.append(self._compile_query(query) + ";")
-
-        return "\n".join(query_parts)
-
-    def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition) -> str:
+    def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition):
         """
         Generate query to find pattern (regex) violations.
 
@@ -284,7 +284,7 @@ class SQLValidationGenerator(Generator):
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
-        :return: SQL query string
+        :return: SQLAlchemy select object
         """
         tbl = table(class_name, column("id"), column(slot.name))
 
@@ -318,57 +318,46 @@ class SQLValidationGenerator(Generator):
             .where(and_(tbl.c[slot.name].isnot(None), pattern_check))
         )
 
-        query_parts = []
-        if self.include_comments:
-            comment = f"-- Validation: {class_name}.{slot.name} - Pattern constraint\n"
-            comment += f"-- Pattern: {pattern}"
-            if self.dialect == "sqlite":
-                comment += "\n-- Note: SQLite requires REGEXP extension to be loaded"
-            query_parts.append(comment)
+        return query
 
-        query_parts.append(self._compile_query(query) + ";")
-
-        return "\n".join(query_parts)
-
-    def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition) -> str:
+    def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition):
         """
         Generate query to find identifier/key uniqueness violations.
 
-        Finds duplicate values in identifier or key slots.
+        Finds individual records with duplicate values in identifier or key slots.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with identifier=True or key=True
-        :return: SQL query string
+        :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column(slot.name))
+        tbl = table(class_name, column("id"), column(slot.name))
 
         constraint_type = "identifier" if slot.identifier else "key"
 
+        # Subquery to find duplicate values
+        duplicate_subquery = (
+            select(column(slot.name))
+            .select_from(table(class_name, column(slot.name)))
+            .group_by(column(slot.name))
+            .having(func.count() > 1)
+        )
+
+        # Main query to find all records with those duplicate values
         query = (
             select(
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column(f"'{constraint_type}'").label("constraint_type"),
-                column(slot.name).label("duplicate_value"),
-                func.count().label("duplicate_count"),
+                column("id").label("record_id"),
+                column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
-            .group_by(tbl.c[slot.name])
-            .having(func.count() > 1)
+            .where(tbl.c[slot.name].in_(duplicate_subquery))
         )
 
-        query_parts = []
-        if self.include_comments:
-            query_parts.append(
-                f"-- Validation: {class_name}.{slot.name} - {constraint_type.capitalize()} uniqueness\n"
-                f"-- Find duplicate {constraint_type} values"
-            )
+        return query
 
-        query_parts.append(self._compile_query(query) + ";")
-
-        return "\n".join(query_parts)
-
-    def _generate_enum_violations(self, class_name: str, slot: SlotDefinition, sv: SchemaView) -> str:
+    def _generate_enum_violations(self, class_name: str, slot: SlotDefinition, sv: SchemaView):
         """
         Generate query to find enum constraint violations.
 
@@ -377,12 +366,12 @@ class SQLValidationGenerator(Generator):
         :param class_name: Name of the class/table
         :param slot: Slot definition with enum range
         :param sv: SchemaView for looking up enum values
-        :return: SQL query string
+        :return: SQLAlchemy select object or None
         """
         # Get the enum definition
         enum = sv.all_enums().get(slot.range)
         if not enum or not enum.permissible_values:
-            return ""
+            return None
 
         # Get permissible values
         permissible_values = [str(v) for v in enum.permissible_values.keys()]
@@ -401,27 +390,18 @@ class SQLValidationGenerator(Generator):
             .where(and_(tbl.c[slot.name].isnot(None), tbl.c[slot.name].notin_(permissible_values)))
         )
 
-        query_parts = []
-        if self.include_comments:
-            query_parts.append(
-                f"-- Validation: {class_name}.{slot.name} - Enum constraint\n"
-                f"-- Permissible values: {', '.join(permissible_values)}"
-            )
+        return query
 
-        query_parts.append(self._compile_query(query) + ";")
-
-        return "\n".join(query_parts)
-
-    def _generate_unique_key_violations(self, class_name: str, class_def: ClassDefinition, uk) -> str:
+    def _generate_unique_key_violations(self, class_name: str, class_def: ClassDefinition, uk):
         """
         Generate query to find unique_keys violations (multi-column uniqueness).
 
-        Finds duplicate combinations of values across multiple columns.
+        Finds individual records with duplicate combinations of values across multiple columns.
 
         :param class_name: Name of the class/table
         :param class_def: Class definition
         :param uk: UniqueKey definition
-        :return: SQL query string
+        :return: SQLAlchemy select object or None
         """
         # Get column names from unique key slots
         columns = []
@@ -430,41 +410,61 @@ class SQLValidationGenerator(Generator):
                 columns.append(slot_name)
 
         if not columns:
-            return ""
+            return None
 
-        tbl = table(class_name, *[column(col) for col in columns])
+        # Main table with id and all columns
+        tbl = table(class_name, column("id"), *[column(col) for col in columns])
 
-        # Build select columns
-        select_columns = [
-            literal_column(f"'{class_name}'").label("table_name"),
-            literal_column(f"'{uk.unique_key_name}'").label("constraint_name"),
-            literal_column("'unique_key'").label("constraint_type"),
-        ]
+        # Build concatenated value expression (pipe-separated)
+        # Use CAST to ensure all values are strings before concatenation
+        if len(columns) == 1:
+            concat_expr = func.cast(column(columns[0]), Text)
+        else:
+            # Build concatenation: CAST(col1 AS TEXT) || '|' || CAST(col2 AS TEXT) || ...
+            concat_parts = []
+            for i, col in enumerate(columns):
+                concat_parts.append(func.cast(column(col), Text))
+                if i < len(columns) - 1:
+                    concat_parts.append(literal_column("'|'"))
 
-        # Add the unique key columns
-        for col in columns:
-            select_columns.append(column(col))
+            # Chain concatenation operations
+            concat_expr = concat_parts[0]
+            for part in concat_parts[1:]:
+                concat_expr = concat_expr.op("||")(part)
 
-        select_columns.append(func.count().label("duplicate_count"))
+        # Subquery to find duplicate combinations
+        subquery_tbl = table(class_name, *[column(col) for col in columns])
+        duplicate_subquery = (
+            select(*[column(col) for col in columns])
+            .select_from(subquery_tbl)
+            .group_by(*[column(col) for col in columns])
+            .having(func.count() > 1)
+        )
 
-        # Build group by columns
-        group_by_columns = [tbl.c[col] for col in columns]
+        # Build the WHERE clause for multi-column IN
+        if len(columns) == 1:
+            where_clause = tbl.c[columns[0]].in_(duplicate_subquery)
+        else:
+            # For multiple columns, use tuple IN syntax
+            # SQLAlchemy's tuple_() function handles this properly across dialects
+            from sqlalchemy import tuple_
 
-        query = select(*select_columns).select_from(tbl).group_by(*group_by_columns).having(func.count() > 1)
+            where_clause = tuple_(*[tbl.c[col] for col in columns]).in_(duplicate_subquery)
 
-        columns_str = ", ".join(columns)
-
-        query_parts = []
-        if self.include_comments:
-            query_parts.append(
-                f"-- Validation: {class_name} - Unique key constraint\n"
-                f"-- Unique key: {uk.unique_key_name} ({columns_str})\n"
-                f"-- Find duplicate combinations"
+        # Main query to find all records with duplicate combinations
+        query = (
+            select(
+                literal_column(f"'{class_name}'").label("table_name"),
+                literal_column(f"'{uk.unique_key_name}'").label("column_name"),
+                literal_column("'unique_key'").label("constraint_type"),
+                column("id").label("record_id"),
+                concat_expr.label("invalid_value"),
             )
+            .select_from(tbl)
+            .where(where_clause)
+        )
 
-        query_parts.append(self._compile_query(query) + ";")
-
-        return "\n".join(query_parts)
+        return query
 
 
 @shared_arguments(SQLValidationGenerator)
