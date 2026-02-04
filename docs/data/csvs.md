@@ -67,7 +67,7 @@ By default, multivalued fields are serialized with brackets and pipe delimiters:
 [value1|value2|value3]
 ```
 
-This format (called "python" style) works well for round-tripping data through LinkML tools.
+This is called "python" style (bracketed) and works well for round-tripping data through LinkML tools.
 However, when working with spreadsheets, users often prefer typing values without brackets:
 
 ```
@@ -153,6 +153,82 @@ slots:
 ```
 
 TSV output: `category1;category2;category3`
+
+#### Working example
+
+To try this with existing test files in the repository, first compare the default output:
+
+```bash
+linkml-convert -s tests/linkml_runtime/test_loaders_dumpers/models/books_normalized.yaml \
+  -C Shop -S all_book_series -t tsv \
+  tests/linkml_runtime/test_loaders_dumpers/input/books_normalized_01.yaml
+```
+
+This produces python style (bracketed) output like `[scifi|fantasy]`.
+
+To get plaintext output, copy the schema and add the annotations block after `imports:`:
+
+```yaml
+id: https://w3id.org/example
+name: example
+description: example
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
+imports:
+- linkml:types
+# ... rest of schema
+```
+
+Then run with your modified schema:
+
+```bash
+linkml-convert -s my_modified_schema.yaml \
+  -C Shop -S all_book_series -t tsv \
+  tests/linkml_runtime/test_loaders_dumpers/input/books_normalized_01.yaml
+```
+
+This produces plaintext output like `scifi|fantasy` (no brackets).
+
+#### Loading plaintext-delimited TSV back to YAML
+
+The annotations also control how TSV data is parsed back into structured YAML.
+Given a TSV file with plaintext pipe-delimited values:
+
+| id | name | genres |
+|----|------|--------|
+| S001 | Lord of the Rings | fantasy |
+| S002 | The Culture Series | scifi |
+| S003 | Book of the New Sun | scifi|fantasy |
+
+Using a schema with plaintext annotations:
+
+```bash
+linkml-convert -s my_modified_schema.yaml \
+  -C Shop -S all_book_series -t yaml \
+  my_data.tsv
+```
+
+The `scifi|fantasy` value is correctly parsed as a list:
+
+```yaml
+all_book_series:
+- id: S001
+  name: Lord of the Rings
+  genres:
+  - fantasy
+- id: S002
+  name: The Culture Series
+  genres:
+  - scifi
+- id: S003
+  name: Book of the New Sun
+  genres:
+  - scifi
+  - fantasy
+```
 
 ## Inference of schemas from tabular data
 
