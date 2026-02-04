@@ -1,8 +1,8 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Optional, Tuple, Union
 
-from json_flattener import GlobalConfig, unflatten_from_csv
+from json_flattener import GlobalConfig, KeyConfig, unflatten_from_csv
 from pydantic import BaseModel
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
@@ -11,6 +11,124 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
+
+
+def _get_list_config_from_annotations(
+    schemaview: SchemaView,
+    index_slot: SlotDefinitionName = None,
+) -> Tuple[Tuple[str, str], str]:
+    """
+    Read list_syntax and list_delimiter from schema settings or slot annotations.
+
+    Checks in order (first found wins):
+    1. Slot-level annotations on any multivalued slot in the target class
+    2. Schema-level settings
+
+    Returns:
+        Tuple of (csv_list_markers, csv_inner_delimiter) for GlobalConfig.
+        - csv_list_markers: ('[', ']') for python style, ('', '') for plaintext
+        - csv_inner_delimiter: the delimiter between list items (default '|')
+    """
+    # Default values matching json-flattener defaults
+    list_markers = ("[", "]")
+    inner_delimiter = "|"
+
+    if not schemaview:
+        return list_markers, inner_delimiter
+
+    # Check slot-level annotations first (they take precedence)
+    if index_slot:
+        slot = schemaview.get_slot(index_slot)
+        if slot and slot.range and slot.range in schemaview.all_classes():
+            target_class = slot.range
+            for slot_name in schemaview.class_slots(target_class):
+                induced_slot = schemaview.induced_slot(slot_name, target_class)
+                if induced_slot.multivalued and induced_slot.annotations:
+                    annotations = induced_slot.annotations
+                    if "list_syntax" in annotations:
+                        syntax = annotations["list_syntax"].value
+                        if syntax == "plaintext":
+                            list_markers = ("", "")
+                    if "list_delimiter" in annotations:
+                        inner_delimiter = annotations["list_delimiter"].value
+                    # If we found annotations, use them (first slot wins for global config)
+                    if "list_syntax" in annotations or "list_delimiter" in annotations:
+                        return list_markers, inner_delimiter
+
+    # Fall back to schema-level settings
+    if schemaview.schema:
+        settings = schemaview.schema.settings
+        if settings:
+            if "list_syntax" in settings:
+                syntax = settings["list_syntax"].setting_value
+                if syntax == "plaintext":
+                    list_markers = ("", "")
+            if "list_delimiter" in settings:
+                inner_delimiter = settings["list_delimiter"].setting_value
+
+    return list_markers, inner_delimiter
+
+
+def _enhance_configmap_for_multivalued_primitives(
+    schemaview: SchemaView,
+    index_slot: SlotDefinitionName,
+    configmap: dict,
+    plaintext_mode: bool = False,
+) -> dict:
+    """
+    Enhance configmap with KeyConfig entries for multivalued primitive slots.
+
+    The base get_configmap() only creates KeyConfig for class-ranged inlined slots.
+    This function adds KeyConfig(is_list=True) for multivalued primitive slots
+    (like aliases: string*) so json-flattener knows to split/join on delimiter.
+
+    Note: KeyConfig(is_list=True) is only added in plaintext mode because:
+    - In python mode ([a|b|c]), json-flattener already parses brackets correctly
+    - In plaintext mode (a|b|c), we need KeyConfig to tell json-flattener to split
+
+    Args:
+        schemaview: The schema view
+        index_slot: The slot that indexes the top-level objects
+        configmap: The existing configmap from get_configmap()
+        plaintext_mode: If True, add KeyConfig for plaintext list parsing
+
+    Returns:
+        Enhanced configmap with entries for multivalued primitive slots
+    """
+    # Only enhance in plaintext mode - python mode works without KeyConfig
+    if not plaintext_mode:
+        return configmap
+
+    if schemaview is None or index_slot is None:
+        return configmap
+
+    slot = schemaview.get_slot(index_slot)
+    if slot is None or slot.range is None:
+        return configmap
+
+    # Get the class that the index slot points to
+    target_class = slot.range
+    if target_class not in schemaview.all_classes():
+        return configmap
+
+    # Get all classes for type checking
+    all_classes = schemaview.all_classes()
+
+    # Check each slot in the target class for multivalued slots
+    for slot_name in schemaview.class_slots(target_class):
+        # Skip if already in configmap (handled by get_configmap)
+        if slot_name in configmap:
+            continue
+
+        induced_slot = schemaview.induced_slot(slot_name, target_class)
+        if induced_slot.multivalued:
+            slot_range = induced_slot.range
+            # Add KeyConfig for any non-class range (primitives AND enums)
+            # In plaintext mode, all multivalued fields need explicit parsing
+            if slot_range not in all_classes:
+                configmap[slot_name] = KeyConfig(is_list=True)
+
+    return configmap
 
 
 class DelimitedFileLoader(Loader, ABC):
@@ -67,7 +185,24 @@ class DelimitedFileLoader(Loader, ABC):
     ):
         if schemaview is None:
             schemaview = SchemaView(schema)
+
+        # Read list configuration from schema annotations
+        list_markers, inner_delimiter = _get_list_config_from_annotations(schemaview, index_slot)
+
+        # Plaintext mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
+        plaintext_mode = list_markers == ("", "")
+
+        # Get base configmap and enhance with multivalued primitive slots
         configmap = get_configmap(schemaview, index_slot)
-        config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
+        configmap = _enhance_configmap_for_multivalued_primitives(
+            schemaview, index_slot, configmap, plaintext_mode=plaintext_mode
+        )
+
+        config = GlobalConfig(
+            key_configs=configmap,
+            csv_delimiter=self.delimiter,
+            csv_list_markers=list_markers,
+            csv_inner_delimiter=inner_delimiter,
+        )
         objs = unflatten_from_csv(input, config=config, **kwargs)
         return json.dumps({index_slot: objs})

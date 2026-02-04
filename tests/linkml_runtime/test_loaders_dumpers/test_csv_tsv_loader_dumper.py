@@ -360,14 +360,17 @@ class TestAnnotationBasedDelimiters:
         }
         output_file = tmp_path / "plaintext_test.tsv"
 
-        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
-        #                 schemaview=plaintext_schemaview)
-        # content = output_file.read_text()
+        tsv_dumper.dump(
+            data,
+            to_file=str(output_file),
+            index_slot="persons",
+            schemaview=plaintext_schemaview,
+        )
+        content = output_file.read_text()
 
         # Should be: Alias One|Alias Two (no brackets)
-        # assert "Alias One|Alias Two" in content
-        # assert "[Alias One|Alias Two]" not in content
-        pytest.skip("Annotation-based dumping not yet implemented")
+        assert "Alias One|Alias Two" in content
+        assert "[Alias One|Alias Two]" not in content
 
     def test_plaintext_roundtrip(self, plaintext_schemaview, tmp_path):
         """Round-trip with plaintext annotations should preserve data."""
@@ -375,13 +378,15 @@ class TestAnnotationBasedDelimiters:
         data = {"persons": [{"id": "1", "name": "Test", "aliases": original_aliases}]}
         output_file = tmp_path / "plaintext_roundtrip.tsv"
 
-        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
-        #                 schemaview=plaintext_schemaview)
-        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
-        #                                      schemaview=plaintext_schemaview)
+        tsv_dumper.dump(
+            data,
+            to_file=str(output_file),
+            index_slot="persons",
+            schemaview=plaintext_schemaview,
+        )
+        roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
 
-        # assert roundtrip["persons"][0]["aliases"] == original_aliases
-        pytest.skip("Plaintext round-trip not yet implemented")
+        assert roundtrip["persons"][0]["aliases"] == original_aliases
 
 
 @pytest.mark.parametrize(
@@ -399,9 +404,11 @@ def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
     Tests that the list_delimiter annotation correctly configures
     the delimiter used for joining/splitting multivalued fields.
     """
+    # Create a valid schema name (delimiters have special chars, use ordinal)
+    schema_name = f"test_delimiter_ord{ord(delimiter)}"
     schema_yaml = f"""
 id: https://example.org/test
-name: test_delimiter_{delimiter}
+name: {schema_name}
 prefixes:
   linkml: https://w3id.org/linkml/
 imports:
@@ -431,20 +438,17 @@ slots:
       list_syntax: plaintext
       list_delimiter: "{delimiter}"
 """
-    # schemaview = SchemaView(schema_yaml)
-    # data = {{"items": [{{"id": "1", "tags": test_values}}]}}
-    # output_file = tmp_path / f"delimiter_{delimiter}_test.tsv"
+    schemaview = SchemaView(schema_yaml)
+    data = {"items": [{"id": "1", "tags": test_values}]}
+    output_file = tmp_path / f"delimiter_{delimiter}_test.tsv"
 
-    # tsv_dumper.dump(data, to_file=str(output_file), index_slot="items",
-    #                 schemaview=schemaview)
-    # content = output_file.read_text()
-    # expected = delimiter.join(test_values)
-    # assert expected in content
+    tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=schemaview)
+    content = output_file.read_text()
+    expected = delimiter.join(test_values)
+    assert expected in content
 
-    # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="items",
-    #                                      schemaview=schemaview)
-    # assert roundtrip["items"][0]["tags"] == test_values
-    pytest.skip("Custom delimiter not yet implemented")
+    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="items", schemaview=schemaview)
+    assert roundtrip["items"][0]["tags"] == test_values
 
 
 # -----------------------------------------------------------------------------

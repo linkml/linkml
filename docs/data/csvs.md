@@ -59,6 +59,103 @@ The [json-flattener/](https://github.com/cmungall/json-flattener/) library is us
 * multivalued slots are serialized using a `|` separator
 * nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be `persons_name`
 
+### Customizing multivalued field formatting
+
+By default, multivalued fields are serialized with brackets and pipe delimiters:
+
+```
+[value1|value2|value3]
+```
+
+This format (called "python" style) works well for round-tripping data through LinkML tools.
+However, when working with spreadsheets, users often prefer typing values without brackets:
+
+```
+value1|value2|value3
+```
+
+You can customize the formatting using slot annotations:
+
+```yaml
+slots:
+  tags:
+    range: string
+    multivalued: true
+    annotations:
+      list_syntax: plaintext    # removes brackets
+      list_delimiter: "|"       # delimiter between values (default)
+```
+
+#### Available annotations
+
+| Annotation | Values | Default | Description |
+|------------|--------|---------|-------------|
+| `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a|b|c]`, `plaintext` has no brackets `a|b|c` |
+| `list_delimiter` | any string | `|` | Character(s) used to separate list items |
+
+#### Examples
+
+**Default behavior (python style):**
+
+```yaml
+slots:
+  aliases:
+    range: string
+    multivalued: true
+```
+
+TSV output: `[Alice|Bob|Charlie]`
+
+**Plaintext style with pipe delimiter:**
+
+```yaml
+slots:
+  aliases:
+    range: string
+    multivalued: true
+    annotations:
+      list_syntax: plaintext
+      list_delimiter: "|"
+```
+
+TSV output: `Alice|Bob|Charlie`
+
+**Plaintext style with semicolon delimiter:**
+
+```yaml
+slots:
+  categories:
+    range: string
+    multivalued: true
+    annotations:
+      list_syntax: plaintext
+      list_delimiter: ";"
+```
+
+TSV output: `category1;category2;category3`
+
+#### Schema-level settings
+
+You can also set these as schema-level defaults using `settings`:
+
+```yaml
+id: https://example.org/myschema
+name: myschema
+settings:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
+slots:
+  tags:
+    multivalued: true
+  categories:
+    multivalued: true
+    annotations:
+      list_delimiter: ";"  # override schema default for this slot
+```
+
+Slot-level annotations take precedence over schema-level settings.
+
 ## Inference of schemas from tabular data
 
 Use `generalize-tsv` command in the [schema-automator](https://github.com/linkml/schema-automator)
