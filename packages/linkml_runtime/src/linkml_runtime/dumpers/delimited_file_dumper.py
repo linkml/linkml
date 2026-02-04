@@ -29,6 +29,8 @@ class DelimitedFileDumper(Dumper, ABC):
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
+        list_syntax: str = None,
+        list_delimiter: str = None,
         **kwargs,
     ) -> str:
         """Return element formatted as CSV lines"""
@@ -38,8 +40,14 @@ class DelimitedFileDumper(Dumper, ABC):
         if schemaview is None:
             schemaview = SchemaView(schema)
 
-        # Read list configuration from schema annotations
-        list_markers, inner_delimiter = _get_list_config_from_annotations(schemaview, index_slot)
+        # Read list configuration from schema annotations (ignore strip_whitespace for output)
+        list_markers, inner_delimiter, _ = _get_list_config_from_annotations(schemaview, index_slot)
+
+        # CLI options override schema annotations
+        if list_syntax is not None:
+            list_markers = ("", "") if list_syntax == "plaintext" else ("[", "]")
+        if list_delimiter is not None:
+            inner_delimiter = list_delimiter
 
         # Plaintext mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
         plaintext_mode = list_markers == ("", "")

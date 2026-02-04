@@ -102,6 +102,25 @@ configuration for list formatting.
 |------------|--------|---------|-------------|
 | `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a|b|c]`, `plaintext` has no brackets `a|b|c` |
 | `list_delimiter` | any string | `\|` | Character(s) used to separate list items |
+| `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading (e.g., `a | b` → `['a', 'b']`) |
+
+#### CLI options
+
+You can override schema annotations using CLI options on `linkml-convert`:
+
+```bash
+linkml-convert -s schema.yaml -C Container -S items -t tsv \
+  --list-syntax plaintext \
+  --list-delimiter "|" \
+  --list-strip-whitespace \
+  input.yaml
+```
+
+| CLI Option | Description |
+|------------|-------------|
+| `--list-syntax` | `python` or `plaintext` - overrides schema annotation |
+| `--list-delimiter` | Delimiter string - overrides schema annotation |
+| `--list-strip-whitespace` / `--no-list-strip-whitespace` | Strip whitespace (default) or preserve it |
 
 #### Examples
 
