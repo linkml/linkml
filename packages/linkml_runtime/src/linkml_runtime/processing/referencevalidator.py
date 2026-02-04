@@ -737,14 +737,15 @@ class ReferenceValidator:
         # Induced slot
         for slot in target.attributes.values():
             # TODO: required slots MUST be present UNLESS this is a CompactDict
-            if slot.required and slot.alias not in input_object and not (slot.identifier or slot.key):
+            slot_key = slot.alias or slot.name
+            if slot.required and slot_key not in input_object and not (slot.identifier or slot.key):
                 report.add_problem(
                     ConstraintType.RequiredConstraint,
                     slot.name,
                     input_object,
                     predicate=target.name,
                 )
-            if slot.recommended and slot.alias not in input_object and not (slot.identifier or slot.key):
+            if slot.recommended and slot_key not in input_object and not (slot.identifier or slot.key):
                 report.add_problem(
                     ConstraintType.RecommendedConstraint,
                     slot.name,
