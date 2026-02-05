@@ -258,7 +258,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/yarrrml.html">YARRRML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../generators/markdown.html">Markdown</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/yuml.html">YUML</a></li>
@@ -515,12 +514,6 @@ or run <code class="docutils literal notranslate"><span class="pre">linkml</span
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">linkml</span></span></dt>
 <dd></dd></dl>
-
-<dl class="object">
-<dt class="sig sig-object">
-<span class="sig-name descname"><span class="pre">markdown</span></span></dt>
-<dd><p>Generate markdown documentation of a…</p>
-</dd></dl>
 
 <dl class="object">
 <dt class="sig sig-object">
@@ -2684,164 +2677,6 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-linkml-arg-YAMLFILE">
 <span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-linkml-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
-<dd><p>Required argument</p>
-</dd></dl>
-
-</section>
-<section id="linkml-generate-full-markdown">
-<h4>markdown<a class="headerlink" href="#linkml-generate-full-markdown" title="Link to this heading">¶</a></h4>
-<p>Generate markdown documentation of a LinkML model.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p><cite>gen-markdown</cite> is deprecated. Please use <cite>gen-doc</cite> instead.</p>
-</div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>markdown<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
-</pre></div>
-</div>
-<p class="rubric">Options</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-d">
-<span id="cmdoption-linkml-generate-full-markdown-dir"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dir&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-d" title="Link to this definition">¶</a></dt>
-<dd><p><strong>Required</strong> Output directory</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-c">
-<span id="cmdoption-linkml-generate-full-markdown-classes"></span><span class="sig-name descname"><span class="pre">-c</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--classes</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;classes&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-c" title="Link to this definition">¶</a></dt>
-<dd><p>Class(es) to emit</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-M">
-<span id="cmdoption-linkml-generate-full-markdown-map-fields"></span><span class="sig-name descname"><span class="pre">-M</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--map-fields</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;map_fields&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-M" title="Link to this definition">¶</a></dt>
-<dd><p>Map metamodel fields, e.g. slot=field</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-i">
-<span id="cmdoption-linkml-generate-full-markdown-img"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--img</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-i" title="Link to this definition">¶</a></dt>
-<dd><p>Download YUML images to ‘image’ directory</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-I">
-<span id="cmdoption-linkml-generate-full-markdown-index-file"></span><span class="sig-name descname"><span class="pre">-I</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_file&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-I" title="Link to this definition">¶</a></dt>
-<dd><p>Name of markdown file that holds index</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-noimages">
-<span class="sig-name descname"><span class="pre">--noimages</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-noimages" title="Link to this definition">¶</a></dt>
-<dd><p>Do not (re-)generate images</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-noyuml">
-<span class="sig-name descname"><span class="pre">--noyuml</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-noyuml" title="Link to this definition">¶</a></dt>
-<dd><p>Do not add yUML figures to pages</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-notypesdir">
-<span class="sig-name descname"><span class="pre">--notypesdir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-notypesdir" title="Link to this definition">¶</a></dt>
-<dd><p>Do not create a separate types directory</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-warnonexist">
-<span class="sig-name descname"><span class="pre">--warnonexist</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-warnonexist" title="Link to this definition">¶</a></dt>
-<dd><p>Warn if output file already exists</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-V">
-<span id="cmdoption-linkml-generate-full-markdown-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-V" title="Link to this definition">¶</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-f">
-<span id="cmdoption-linkml-generate-full-markdown-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-f" title="Link to this definition">¶</a></dt>
-<dd><p>Output format</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'md'</span></code></p>
-</dd>
-<dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>md</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-metadata">
-<span id="cmdoption-linkml-generate-full-markdown-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-metadata" title="Link to this definition">¶</a></dt>
-<dd><p>Include metadata in output</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-useuris">
-<span id="cmdoption-linkml-generate-full-markdown-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-useuris" title="Link to this definition">¶</a></dt>
-<dd><p>Use class and slot URIs over model uris</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-im">
-<span id="cmdoption-linkml-generate-full-markdown-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-im" title="Link to this definition">¶</a></dt>
-<dd><p>Import mapping file</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-log_level" title="Link to this definition">¶</a></dt>
-<dd><p>Logging level</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'WARNING'</span></code></p>
-</dd>
-<dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>CRITICAL | ERROR | WARNING | INFO | DEBUG</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-v">
-<span id="cmdoption-linkml-generate-full-markdown-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-v" title="Link to this definition">¶</a></dt>
-<dd><p>Verbosity. Takes precedence over –log_level.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-mergeimports">
-<span id="cmdoption-linkml-generate-full-markdown-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-mergeimports" title="Link to this definition">¶</a></dt>
-<dd><p>Merge imports into source file (default=mergeimports)</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-stacktrace">
-<span id="cmdoption-linkml-generate-full-markdown-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-stacktrace" title="Link to this definition">¶</a></dt>
-<dd><p>Print a stack trace when an error occurs</p>
-<dl class="field-list simple">
-<dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<p class="rubric">Arguments</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-markdown-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-markdown-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -5653,7 +5488,6 @@ is conformant to the same LinkML schema.</p>
 <li><a class="reference internal" href="#linkml-generate-full-jsonld">jsonld</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-jsonld-context">jsonld-context</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-linkml">linkml</a></li>
-<li><a class="reference internal" href="#linkml-generate-full-markdown">markdown</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-namespaces">namespaces</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-owl">owl</a></li>
 <li><a class="reference internal" href="#linkml-generate-full-plantuml">plantuml</a></li>

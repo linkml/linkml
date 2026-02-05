@@ -257,7 +257,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/yarrrml.html">YARRRML</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generators/markdown.html">Markdown</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/docgen.html">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/erdiagram.html">ER Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/yuml.html">YUML</a></li>
@@ -412,7 +411,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldcontextgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContextGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONLDGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonschemagen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonSchemaGenerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.markdowngen</span><span class="w"> </span><span class="kn">import</span> <span class="n">MarkdownGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.owlgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OwlSchemaGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.prefixmapgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrefixGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.protogen</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProtoGenerator</span>
@@ -438,11 +436,6 @@
         <span class="p">{</span><span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{parent}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">.context.jsonld&quot;</span><span class="p">},</span>
     <span class="p">),</span>
     <span class="s2">&quot;jsonschema&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">JsonSchemaGenerator</span><span class="p">,</span> <span class="s2">&quot;jsonschema/</span><span class="si">{name}</span><span class="s2">.schema.json&quot;</span><span class="p">,</span> <span class="p">{}),</span>
-    <span class="s2">&quot;markdown&quot;</span><span class="p">:</span> <span class="p">(</span>
-        <span class="n">MarkdownGenerator</span><span class="p">,</span>
-        <span class="s2">&quot;docs/&quot;</span><span class="p">,</span>
-        <span class="p">{</span><span class="s2">&quot;directory&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{parent}</span><span class="s2">/docs&quot;</span><span class="p">,</span> <span class="s2">&quot;index_file&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{name}</span><span class="s2">.md&quot;</span><span class="p">},</span>
-    <span class="p">),</span>
     <span class="s2">&quot;owl&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">OwlSchemaGenerator</span><span class="p">,</span> <span class="s2">&quot;owl/</span><span class="si">{name}</span><span class="s2">.owl.ttl&quot;</span><span class="p">,</span> <span class="p">{}),</span>
     <span class="s2">&quot;prefixmap&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">PrefixGenerator</span><span class="p">,</span> <span class="s2">&quot;prefixmap/</span><span class="si">{name}</span><span class="s2">.yaml&quot;</span><span class="p">,</span> <span class="p">{}),</span>
     <span class="s2">&quot;proto&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">ProtoGenerator</span><span class="p">,</span> <span class="s2">&quot;protobuf/</span><span class="si">{name}</span><span class="s2">.proto&quot;</span><span class="p">,</span> <span class="p">{}),</span>
@@ -546,7 +539,6 @@
 
                 <span class="k">if</span> <span class="n">gen_name</span> <span class="o">!=</span> <span class="s2">&quot;excel&quot;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">gen_path_full</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                        <span class="c1"># markdowngen does not write to a file</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  WRITING TO: </span><span class="si">{</span><span class="n">gen_path_full</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gen_path_full</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
                             <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gen_dump</span><span class="p">)</span>
