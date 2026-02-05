@@ -56,7 +56,7 @@ SCHEMA_WITH_LIST_ANNOTATIONS = """
 id: https://example.org/test
 name: test_annotations
 description: >-
-  Schema with list_syntax and list_delimiter annotations on a slot.
+  Schema with list_syntax and list_delimiter annotations at the schema level.
   This tests the annotation-based configuration approach where:
   - list_syntax: plaintext -> csv_list_markers = ("", "") (no brackets)
   - list_delimiter: "|" -> csv_inner_delimiter = "|"
@@ -64,6 +64,9 @@ prefixes:
   linkml: https://w3id.org/linkml/
 imports:
   - linkml:types
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
 
 classes:
   Container:
@@ -88,9 +91,6 @@ slots:
   tags:
     range: string
     multivalued: true
-    annotations:
-      list_syntax: plaintext
-      list_delimiter: "|"
 """
 
 
@@ -135,15 +135,15 @@ class TestListAnnotationReading:
     - list_delimiter: character used between values (default "|")
     """
 
-    def test_slot_has_list_syntax_annotation(self, schemaview_with_annotations):
-        """Slot annotations should be readable via SchemaView."""
-        slot = schemaview_with_annotations.get_slot("tags")
-        assert slot.annotations is not None
-        assert "list_syntax" in slot.annotations
-        assert slot.annotations["list_syntax"].value == "plaintext"
+    def test_schema_has_list_syntax_annotation(self, schemaview_with_annotations):
+        """Schema-level annotations should be readable via SchemaView."""
+        schema = schemaview_with_annotations.schema
+        assert schema.annotations is not None
+        assert "list_syntax" in schema.annotations
+        assert schema.annotations["list_syntax"].value == "plaintext"
 
-    def test_slot_has_list_delimiter_annotation(self, schemaview_with_annotations):
-        """Slot annotations should include list_delimiter."""
-        slot = schemaview_with_annotations.get_slot("tags")
-        assert "list_delimiter" in slot.annotations
-        assert slot.annotations["list_delimiter"].value == "|"
+    def test_schema_has_list_delimiter_annotation(self, schemaview_with_annotations):
+        """Schema-level annotations should include list_delimiter."""
+        schema = schemaview_with_annotations.schema
+        assert "list_delimiter" in schema.annotations
+        assert schema.annotations["list_delimiter"].value == "|"
