@@ -139,44 +139,52 @@ class SQLValidationGenerator(Generator):
                 # skip if no attributes are present
                 continue
 
+            # Find the identifier slot for this class
+            identifier_slot_name = "id"  # default fallback
+            for slot_name, _ in class_def.attributes.items():
+                induced = sv.induced_slot(slot_name, class_name)
+                if induced.identifier:
+                    identifier_slot_name = slot_name
+                    break
+
             for slot_name, _ in class_def.attributes.items():
                 # Get induced slot to capture inherited constraints
                 induced = sv.induced_slot(slot_name, class_name)
 
                 # Generate validation queries for each constraint type
                 if self.check_required and induced.required:
-                    query = self._generate_required_violations(class_name, induced)
+                    query = self._generate_required_violations(class_name, induced, identifier_slot_name)
 
                     if query is not None:
                         query_objects.append(query)
 
                 if self.check_ranges:
                     if induced.minimum_value is not None or induced.maximum_value is not None:
-                        query = self._generate_range_violations(class_name, induced)
+                        query = self._generate_range_violations(class_name, induced, identifier_slot_name)
                         if query is not None:
                             query_objects.append(query)
 
                 if self.check_patterns and induced.pattern:
-                    query = self._generate_pattern_violations(class_name, induced)
+                    query = self._generate_pattern_violations(class_name, induced, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
 
                 # Check identifier/key uniqueness
                 if induced.identifier or induced.key:
-                    query = self._generate_identifier_violations(class_name, induced)
+                    query = self._generate_identifier_violations(class_name, induced, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
 
                 # Check enum constraints
                 if self.check_enums and induced.range and induced.range in sv.all_enums():
-                    query = self._generate_enum_violations(class_name, induced, sv)
+                    query = self._generate_enum_violations(class_name, induced, sv, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
 
             # Check unique_keys constraints (multi-column uniqueness)
             if self.check_unique_keys and class_def.unique_keys:
                 for _, uk in class_def.unique_keys.items():
-                    query = self._generate_unique_key_violations(class_name, class_def, uk)
+                    query = self._generate_unique_key_violations(class_name, class_def, uk, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
 
@@ -215,22 +223,23 @@ class SQLValidationGenerator(Generator):
         )
         return header
 
-    def _generate_required_violations(self, class_name: str, slot: SlotDefinition):
+    def _generate_required_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find NULL values in required fields.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with required=True
+        :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column("id"), column(slot.name))
+        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
         query = (
             select(
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'required'").label("constraint_type"),
-                column("id").label("record_id"),
+                column(identifier_slot_name).label("record_id"),
                 literal_column("NULL").label("invalid_value"),
             )
             .select_from(tbl)
@@ -239,17 +248,18 @@ class SQLValidationGenerator(Generator):
 
         return query
 
-    def _generate_range_violations(self, class_name: str, slot: SlotDefinition):
+    def _generate_range_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find minimum_value/maximum_value violations.
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with min/max constraints
+        :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
         conditions = []
 
-        tbl = table(class_name, column("id"), column(slot.name))
+        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
         if slot.minimum_value is not None:
             conditions.append(tbl.c[slot.name] < literal_column(str(slot.minimum_value)))
@@ -265,7 +275,7 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'range'").label("constraint_type"),
-                column("id").label("record_id"),
+                column(identifier_slot_name).label("record_id"),
                 column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
@@ -274,7 +284,7 @@ class SQLValidationGenerator(Generator):
 
         return query
 
-    def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition):
+    def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find pattern (regex) violations.
 
@@ -284,9 +294,10 @@ class SQLValidationGenerator(Generator):
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
+        :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column("id"), column(slot.name))
+        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
         pattern = slot.pattern
 
@@ -307,7 +318,7 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'pattern'").label("constraint_type"),
-                column("id").label("record_id"),
+                column(identifier_slot_name).label("record_id"),
                 column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
@@ -316,7 +327,7 @@ class SQLValidationGenerator(Generator):
 
         return query
 
-    def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition):
+    def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find identifier/key uniqueness violations.
 
@@ -324,9 +335,10 @@ class SQLValidationGenerator(Generator):
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with identifier=True or key=True
+        :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object
         """
-        tbl = table(class_name, column("id"), column(slot.name))
+        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
         constraint_type = "identifier" if slot.identifier else "key"
 
@@ -344,7 +356,7 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column(f"'{constraint_type}'").label("constraint_type"),
-                column("id").label("record_id"),
+                column(identifier_slot_name).label("record_id"),
                 column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
@@ -353,7 +365,9 @@ class SQLValidationGenerator(Generator):
 
         return query
 
-    def _generate_enum_violations(self, class_name: str, slot: SlotDefinition, sv: SchemaView):
+    def _generate_enum_violations(
+        self, class_name: str, slot: SlotDefinition, sv: SchemaView, identifier_slot_name: str
+    ):
         """
         Generate query to find enum constraint violations.
 
@@ -362,6 +376,7 @@ class SQLValidationGenerator(Generator):
         :param class_name: Name of the class/table
         :param slot: Slot definition with enum range
         :param sv: SchemaView for looking up enum values
+        :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
         # Get the enum definition
@@ -369,17 +384,16 @@ class SQLValidationGenerator(Generator):
         if not enum or not enum.permissible_values:
             return None
 
-        # Get permissible values
         permissible_values = [str(v) for v in enum.permissible_values.keys()]
 
-        tbl = table(class_name, column("id"), column(slot.name))
+        tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
         query = (
             select(
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{slot.name}'").label("column_name"),
                 literal_column("'enum'").label("constraint_type"),
-                column("id").label("record_id"),
+                column(identifier_slot_name).label("record_id"),
                 column(slot.name).label("invalid_value"),
             )
             .select_from(tbl)
@@ -388,7 +402,9 @@ class SQLValidationGenerator(Generator):
 
         return query
 
-    def _generate_unique_key_violations(self, class_name: str, class_def: ClassDefinition, uk):
+    def _generate_unique_key_violations(
+        self, class_name: str, class_def: ClassDefinition, uk, identifier_slot_name: str
+    ):
         """
         Generate query to find unique_keys violations (multi-column uniqueness).
 
@@ -397,6 +413,7 @@ class SQLValidationGenerator(Generator):
         :param class_name: Name of the class/table
         :param class_def: Class definition
         :param uk: UniqueKey definition
+        :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
         # Get column names from unique key slots
@@ -408,8 +425,8 @@ class SQLValidationGenerator(Generator):
         if not columns:
             return None
 
-        # Main table with id and all columns
-        tbl = table(class_name, column("id"), *[column(col) for col in columns])
+        # Main table with identifier and all columns
+        tbl = table(class_name, column(identifier_slot_name), *[column(col) for col in columns])
 
         # Build concatenated value expression (pipe-separated)
         # Use CAST to ensure all values are strings before concatenation
@@ -453,7 +470,7 @@ class SQLValidationGenerator(Generator):
                 literal_column(f"'{class_name}'").label("table_name"),
                 literal_column(f"'{uk.unique_key_name}'").label("column_name"),
                 literal_column("'unique_key'").label("constraint_type"),
-                column("id").label("record_id"),
+                column(identifier_slot_name).label("record_id"),
                 concat_expr.label("invalid_value"),
             )
             .select_from(tbl)

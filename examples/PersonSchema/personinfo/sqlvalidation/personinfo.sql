@@ -182,13 +182,13 @@ WHERE "ProcedureConcept".name IS NULL
 
 UNION ALL
 
-SELECT 'IntegerPrimaryKeyObject' AS table_name, 'int_id' AS column_name, 'required' AS constraint_type, id AS record_id, NULL AS invalid_value
+SELECT 'IntegerPrimaryKeyObject' AS table_name, 'int_id' AS column_name, 'required' AS constraint_type, int_id AS record_id, NULL AS invalid_value
 FROM "IntegerPrimaryKeyObject"
 WHERE "IntegerPrimaryKeyObject".int_id IS NULL
 
 UNION ALL
 
-SELECT 'IntegerPrimaryKeyObject' AS table_name, 'int_id' AS column_name, 'identifier' AS constraint_type, id AS record_id, int_id AS invalid_value
+SELECT 'IntegerPrimaryKeyObject' AS table_name, 'int_id' AS column_name, 'identifier' AS constraint_type, int_id AS record_id, int_id AS invalid_value
 FROM "IntegerPrimaryKeyObject"
 WHERE "IntegerPrimaryKeyObject".int_id IN (SELECT int_id
 FROM "IntegerPrimaryKeyObject" GROUP BY int_id
