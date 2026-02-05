@@ -21,7 +21,6 @@ from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.utils import datautils
-from linkml.validator import validate as run_validation
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -32,6 +31,7 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+from linkml.validator import validate as run_validation
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition

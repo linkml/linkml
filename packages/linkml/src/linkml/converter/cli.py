@@ -9,7 +9,6 @@ import yaml
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.utils import datautils
-from linkml.validator import validate as run_validation
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -20,6 +19,7 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+from linkml.validator import validate as run_validation
 from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
