@@ -18,7 +18,6 @@ from linkml_runtime.utils.list_utils import (
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-
 # Mapping from boolean_output annotation values to (true_str, false_str)
 BOOLEAN_OUTPUT_FORMATS = {
     "true": ("true", "false"),
