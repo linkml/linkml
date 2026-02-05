@@ -229,6 +229,15 @@ class TestBooleanLoading:
         )
         assert result["items"][0]["is_active"] is False
 
+    def test_multivalued_boolean_coercion(self):
+        """Boolean coercion handles list values in boolean slots."""
+        from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
+
+        obj = {"is_active": ["yes", "no", "ON", "0"], "name": "test"}
+        result = _coerce_boolean_values(obj, {"is_active"})
+        assert result["is_active"] == [True, False, True, False]
+        assert result["name"] == "test"
+
     def test_string_yes_not_coerced_in_string_slot(self, schemaview, tmp_path):
         """String 'yes' in a string slot should NOT be coerced to boolean."""
         tsv_file = tmp_path / "data.tsv"
