@@ -11,7 +11,6 @@ from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-
 # YAML 1.1 boolean values plus numeric 0/1 (case-insensitive for strings)
 TRUTHY_VALUES = frozenset({"true", "yes", "on", "1"})
 FALSY_VALUES = frozenset({"false", "no", "off", "0"})
