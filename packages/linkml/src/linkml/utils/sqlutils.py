@@ -20,7 +20,8 @@ from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
 from linkml.generators.sqltablegen import SQLTableGenerator
-from linkml.utils import datautils, validation
+from linkml.utils import datautils
+from linkml.validator import validate as run_validation
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -399,8 +400,10 @@ def dump(
         if validate:
             if schema is None:
                 raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-            # TODO: use validator framework
-            validation.validate_object(obj, schema)
+            report = run_validation(obj, schema, target_class)
+            if report.results:
+                errors = "\n".join(r.message for r in report.results)
+                raise Exception(f"Validation failed:\n{errors}")
         endpoint.dump(obj)
 
 
