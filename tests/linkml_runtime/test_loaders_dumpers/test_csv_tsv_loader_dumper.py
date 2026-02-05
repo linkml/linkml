@@ -472,19 +472,8 @@ class TestMultivaluedEdgeCases:
     def test_alias_containing_delimiter(self, plaintext_schemaview, tmp_path):
         """Alias containing the delimiter character needs proper escaping."""
         # This is a tricky edge case - what if someone's alias contains a pipe?
-        data = {
-            "persons": [
-                {"id": "1", "name": "Test", "aliases": ["Name|With|Pipes", "Normal"]},
-            ]
-        }
-        output_file = tmp_path / "delimiter_in_value.tsv"
-
-        # This test documents expected behavior - may need escaping strategy
-        # tsv_dumper.dump(data, to_file=str(output_file), index_slot="persons",
-        #                 schemaview=plaintext_schemaview)
-        # roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons",
-        #                                      schemaview=plaintext_schemaview)
-
+        # Example data that would need escaping:
+        #   {"id": "1", "name": "Test", "aliases": ["Name|With|Pipes", "Normal"]}
         # Exact behavior TBD - might need escaping or different delimiter
         pytest.skip("Delimiter-in-value escaping not yet implemented")
 
