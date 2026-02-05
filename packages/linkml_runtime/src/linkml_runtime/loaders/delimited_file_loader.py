@@ -1,8 +1,11 @@
 import json
+import logging
 from abc import ABC, abstractmethod
 from typing import Union
 
 from json_flattener import GlobalConfig, KeyConfig, unflatten_from_csv
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel
 
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
@@ -49,6 +52,11 @@ def _get_list_config_from_annotations(
             syntax = annotations["list_syntax"].value
             if syntax == "plaintext":
                 list_markers = ("", "")
+            elif syntax != "python":
+                logger.warning(
+                    f"Invalid list_syntax value '{syntax}'. Expected 'python' or 'plaintext'. "
+                    "Defaulting to 'python' (bracketed lists)."
+                )
         if "list_delimiter" in annotations:
             inner_delimiter = annotations["list_delimiter"].value
         if "list_strip_whitespace" in annotations:
