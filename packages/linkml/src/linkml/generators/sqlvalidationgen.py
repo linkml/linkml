@@ -7,7 +7,7 @@ from typing import Any
 
 import click
 from sqlalchemy import and_, column, func, literal_column, or_, select, table, union_all
-from sqlalchemy.dialects import mysql, oracle, postgresql
+from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
 from sqlalchemy.types import Text
 
@@ -75,8 +75,6 @@ class SQLValidationGenerator(Generator):
         """
         dialect_map = {
             "postgresql": postgresql.dialect(),
-            "mysql": mysql.dialect(),
-            "oracle": oracle.dialect(),
             "sqlite": sqlite_dialect.dialect(),
         }
         return dialect_map.get(self.dialect, sqlite_dialect.dialect())
@@ -279,8 +277,6 @@ class SQLValidationGenerator(Generator):
         Handles dialect-specific regex syntax:
         - PostgreSQL: ~ operator
         - SQLite: REGEXP function (requires extension)
-        - MySQL: REGEXP operator
-        - Oracle: REGEXP_LIKE function
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
@@ -292,16 +288,12 @@ class SQLValidationGenerator(Generator):
 
         # Generate dialect-specific pattern matching using SQLAlchemy
         # We need to use literal_column for dialect-specific operators
-        # TODO: Is there a way to do his by using sqlalchemy builtin dialect distinction?
         if self.dialect == "postgresql":
             pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
         elif self.dialect == "sqlite":
             # SQLite REGEXP requires extension
             pattern_check = ~literal_column(f"(REGEXP('{pattern}', {slot.name}) = 1)")
-        elif self.dialect == "mysql":
-            pattern_check = ~literal_column(f"{slot.name} REGEXP '{pattern}'")
-        elif self.dialect == "oracle":
-            pattern_check = ~literal_column(f"REGEXP_LIKE({slot.name}, '{pattern}')")
+
         else:
             # Default to PostgreSQL syntax
             pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
@@ -473,7 +465,7 @@ class SQLValidationGenerator(Generator):
     "--dialect",
     default="sqlite",
     show_default=True,
-    help="SQL dialect (sqlite, postgresql, mysql, oracle)",
+    help="SQL dialect (sqlite, postgresql)",
 )
 @click.option(
     "--check-required/--no-check-required",

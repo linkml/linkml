@@ -143,8 +143,6 @@ def test_enum_constraint():
     "dialect,pattern_syntax",
     [
         ("postgresql", "~"),
-        ("mysql", "REGEXP"),
-        ("oracle", "REGEXP_LIKE"),
         ("sqlite", "REGEXP"),
     ],
 )
@@ -298,12 +296,6 @@ def test_cli_with_dialect(tmp_path):
 
     assert result.exit_code == 0
     assert "~" in result.output  # PostgreSQL regex operator
-
-    # Test MySQL dialect
-    result = runner.invoke(cli, [str(schema_path), "--dialect", "mysql"])
-
-    assert result.exit_code == 0
-    assert "REGEXP" in result.output
 
 
 def test_cli_with_options(tmp_path):
