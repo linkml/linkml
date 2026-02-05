@@ -77,18 +77,18 @@ logger = logging.getLogger(__name__)
     "--list-syntax",
     type=click.Choice(["python", "plaintext"]),
     default=None,
-    help="List formatting style for CSV/TSV: 'python' uses brackets ``[a|b|c]``, 'plaintext' has no brackets. "
+    help="List formatting style for CSV/TSV: 'python' wraps lists in brackets, 'plaintext' has no brackets. "
     "Overrides schema annotation if set.",
 )
 @click.option(
     "--list-delimiter",
     default=None,
-    help="Delimiter between list items in CSV/TSV (default: ``|``). Overrides schema annotation if set.",
+    help="Delimiter between list items in CSV/TSV (default: pipe character). Overrides schema annotation if set.",
 )
 @click.option(
     "--list-strip-whitespace/--no-list-strip-whitespace",
     default=None,
-    help="Strip whitespace around list delimiters when loading CSV/TSV (default: strip). "
+    help="Strip whitespace around list delimiters when loading and dumping CSV/TSV (default: strip). "
     "Overrides schema annotation if set.",
 )
 @click.version_option(__version__, "-V", "--version")

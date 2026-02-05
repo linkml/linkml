@@ -102,7 +102,7 @@ configuration for list formatting.
 |------------|--------|---------|-------------|
 | `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a\|b\|c]`, `plaintext` has no brackets `a\|b\|c` |
 | `list_delimiter` | any string | `\|` | Character(s) used to separate list items |
-| `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading (e.g., `a \| b` → `['a', 'b']`) |
+| `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading and dumping (e.g., `a \| b` → `['a', 'b']`) |
 
 #### CLI options
 
