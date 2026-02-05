@@ -73,6 +73,13 @@ logger = logging.getLogger(__name__)
     help="Infer missing slot values",
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
+@click.option(
+    "--boolean-output",
+    type=click.Choice(["true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON", "1"]),
+    default=None,
+    help="Boolean output format for CSV/TSV: controls how True/False are written. "
+    "Overrides schema annotation if set.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -90,6 +97,7 @@ def cli(
     validate=None,
     infer=None,
     index_slot=None,
+    boolean_output=None,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -195,6 +203,9 @@ def cli(
                 raise Exception("--index-slot is required for CSV output")
         outargs["index_slot"] = index_slot
         outargs["schema"] = schema
+        # Pass boolean output format (override schema annotation if set)
+        if boolean_output is not None:
+            outargs["boolean_output"] = boolean_output
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(obj, output, **outargs)

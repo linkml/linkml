@@ -59,6 +59,83 @@ The [json-flattener/](https://github.com/cmungall/json-flattener/) library is us
 * multivalued slots are serialized using a `|` separator
 * nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be `persons_name`
 
+## Boolean Values
+
+Boolean values in CSV/TSV files can be represented in various ways depending on the source (spreadsheets, databases, etc.). LinkML provides flexible handling for both loading and dumping boolean values.
+
+### Loading Booleans
+
+When loading CSV/TSV data, LinkML accepts **YAML 1.1 boolean values plus numeric 0/1** for slots with `range: boolean`:
+
+| Truthy Values | Falsy Values |
+|---------------|--------------|
+| `true`, `True`, `TRUE` | `false`, `False`, `FALSE` |
+| `yes`, `Yes`, `YES` | `no`, `No`, `NO` |
+| `on`, `On`, `ON` | `off`, `Off`, `OFF` |
+| `1` | `0` |
+
+This coercion is **schema-aware** - only values in slots declared as `range: boolean` are converted. String values like "yes" in a text field remain as strings.
+
+### Dumping Booleans
+
+By default, boolean values are output as lowercase `true`/`false`. You can customize the output format using schema annotations or CLI options.
+
+#### Schema Annotation
+
+Add the `boolean_output` annotation at the schema level:
+
+```yaml
+id: https://example.org/myschema
+name: myschema
+annotations:
+  boolean_output: "yes"  # Output booleans as yes/no
+```
+
+Supported values: `true`, `True`, `TRUE`, `yes`, `Yes`, `YES`, `on`, `On`, `ON`, `1`
+
+#### CLI Option
+
+Override the schema annotation with `--boolean-output`:
+
+```bash
+linkml-convert -s schema.yaml -C Container -S items -t tsv \
+  --boolean-output yes \
+  input.yaml
+```
+
+### Example
+
+Given this data:
+
+```yaml
+items:
+  - id: "1"
+    is_active: true
+  - id: "2"
+    is_active: false
+```
+
+Default output:
+```
+id	is_active
+1	true
+2	false
+```
+
+With `--boolean-output yes`:
+```
+id	is_active
+1	yes
+2	no
+```
+
+With `--boolean-output 1`:
+```
+id	is_active
+1	1
+2	0
+```
+
 ## Inference of schemas from tabular data
 
 Use `generalize-tsv` command in the [schema-automator](https://github.com/linkml/schema-automator)
