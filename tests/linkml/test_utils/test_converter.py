@@ -335,3 +335,166 @@ def test_multiple_prefix_options(input_path, cli_runner, tmp_path):
     # The prefix may or may not appear in the output depending on usage,
     # but the command should succeed
     assert rdf_out.exists()
+
+
+# -----------------------------------------------------------------------------
+# CLI tests for list formatting options (issue #3041)
+# -----------------------------------------------------------------------------
+
+LIST_FORMAT_SCHEMA = """
+id: https://example.org/test
+name: list_format_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+LIST_FORMAT_DATA = """
+items:
+  - id: "1"
+    tags:
+      - alpha
+      - beta
+      - gamma
+"""
+
+
+def test_list_syntax_plaintext(cli_runner, tmp_path):
+    """Test --list-syntax plaintext produces output without brackets."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    data_file.write_text(LIST_FORMAT_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "--list-syntax", "plaintext",
+            "-t", "tsv",
+            "-o", str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should have pipe-separated values without brackets
+    assert "alpha|beta|gamma" in content
+    assert "[alpha|beta|gamma]" not in content
+
+
+def test_list_syntax_python(cli_runner, tmp_path):
+    """Test --list-syntax python produces output with brackets."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    data_file.write_text(LIST_FORMAT_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "--list-syntax", "python",
+            "-t", "tsv",
+            "-o", str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should have bracketed values
+    assert "[alpha|beta|gamma]" in content
+
+
+def test_list_delimiter(cli_runner, tmp_path):
+    """Test --list-delimiter uses the specified delimiter."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    data_file.write_text(LIST_FORMAT_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "--list-syntax", "plaintext",
+            "--list-delimiter", ";",
+            "-t", "tsv",
+            "-o", str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should use semicolon delimiter
+    assert "alpha;beta;gamma" in content
+    assert "alpha|beta|gamma" not in content
+
+
+def test_list_strip_whitespace_on_load(cli_runner, tmp_path):
+    """Test --list-strip-whitespace strips whitespace when loading TSV."""
+    schema_file = tmp_path / "schema.yaml"
+    tsv_file = tmp_path / "data.tsv"
+    output_file = tmp_path / "output.yaml"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    # TSV with whitespace around delimiters
+    tsv_file.write_text("id\ttags\n1\talpha | beta | gamma\n")
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "--list-syntax", "plaintext",
+            "--list-strip-whitespace",
+            "-t", "yaml",
+            "-o", str(output_file),
+            str(tsv_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Whitespace should be stripped
+    assert "- alpha" in content
+    assert "- beta" in content
+    assert "- gamma" in content
