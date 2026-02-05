@@ -220,7 +220,7 @@ Command-line options are under active development and are likely to change.
 
     # alternatively you can generate the schemas individually using the --template-path and --template-file arguments
     # instead of --package
-    gen-pandera --template-path panderagen_polars_schema --template-file polars_schema.jinja2 examples/tutorial/tutorial01/personinfo.yaml > personinfo_panderagern_polars_schema.py
+    gen-pandera --template-path panderagen_polars_schema --template-file polars_schema.jinja2 examples/tutorial/tutorial01/personinfo.yaml > personinfo_panderagen_polars_schema.py
 
     # the panderagen schema is the default, but note that it depends on the polars schema
     gen-pandera examples/tutorial/tutorial01/personinfo.yaml > personinfo_panderagen_class_based.py
@@ -264,7 +264,7 @@ Templates
 ---------
 
 The panderagen module uses a templating system that allows generating different target APIs.
-The currently provided templates are the default `panderagen_class_based` template and `panderagen_polars_schema`
+The currently provided templates are the default `panderagen_class_based` template and `panderagen_polars_schema`.
 
 Subclasses of :class:`.DataframeGenerator` serve as a translation layer between
 the source models and schema view from :mod:`linkml_runtime` and the target models under
@@ -277,7 +277,7 @@ Pandera Custom Checks
 
 When possible the Pandera Generator implements LinkML constraints directly as Pandera checks.
 Support for nested columns uses Pandera custom checks to first isolate the nested column
-and then recursvely call Pandera validation.
+and then recursively call Pandera validation.
 
 The generated Pandera class depends on helper methods in the LinkML library at runtime to perform nested checks.
 
@@ -288,7 +288,7 @@ Validation and Lazyframes
 Pandera validation can operate on lazyframes or dataframes. However when a lazyframe is validated,
 checks that require collection are not run. In general this means only schema-level checks are performed on lazyframes.
 The :class:`.LinkmlPanderaValidator` checks whether it is validating a dataframe or lazyframe and maintains
-the same form when making nesteded validation calls.
+the same form when making nested validation calls.
 
 
 Inlined Dictionary Handling
@@ -312,7 +312,7 @@ The generator also generates serialized and loaded forms of the Pandera schema.
 
 Not all of these schemas are needed for every application. The example below shows
 how to use all of them to load a python object into a dataframe. Note the specific model
-does not actually contain dictionaries forms that require a transform.
+does not actually contain dictionary forms that require a transform.
 
 .. code-block:: python
 
@@ -325,10 +325,10 @@ does not actually contain dictionaries forms that require a transform.
 
     # some of the schema forms have informative string representations
     print(f"Panderagen (serialized): {pcb.Person}")
-    print(f"Panderagen (loaded): {ppsl.Person}")
+    print(f"Panderagen (loaded): {psl.Person}")
     print(f"PolaRS load transform: {ppst.Person}")
     print(f"PolaRS schema (serialized): {pps.Person}")
-    print(f"PolaRS schema (loaded): {psl.Person}")
+    print(f"PolaRS schema (loaded): {ppsl.Person}")
 
     p = pl.DataFrame([
           {
@@ -371,7 +371,7 @@ To test panderagen compliance use the `-m panderagen` pytest mark. Use `-m dataf
 
 
 In the tests, the optional LinkML dependencies such as NumPy, PolaRS, and Pandera
-are wrapped in test fixtures and imported using pytest.importerskip.
+are wrapped in test fixtures and imported using pytest.importorskip.
 This prevents test collection errors and skips the tests when the optional packages
 are not installed.
 
