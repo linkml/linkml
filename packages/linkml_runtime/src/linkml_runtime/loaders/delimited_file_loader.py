@@ -71,7 +71,10 @@ def _coerce_boolean_values(obj: dict | list, boolean_slots: set[str]) -> dict | 
         result = {}
         for k, v in obj.items():
             if k in boolean_slots:
-                result[k] = _coerce_single_boolean(v)
+                if isinstance(v, list):
+                    result[k] = [_coerce_single_boolean(item) for item in v]
+                else:
+                    result[k] = _coerce_single_boolean(v)
             elif isinstance(v, (dict, list)):
                 result[k] = _coerce_boolean_values(v, boolean_slots)
             else:
