@@ -99,3 +99,134 @@ def test_version(cli_runner):
     result = cli_runner.invoke(cli, ["--version"])
     assert result.exit_code == 0
     assert "version" in result.stdout
+
+
+# -----------------------------------------------------------------------------
+# CLI tests for boolean output formatting (issue #2580)
+# -----------------------------------------------------------------------------
+
+BOOLEAN_SCHEMA = """
+id: https://example.org/test
+name: boolean_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - is_active
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  is_active:
+    range: boolean
+"""
+
+BOOLEAN_DATA = """
+items:
+  - id: "1"
+    is_active: true
+  - id: "2"
+    is_active: false
+"""
+
+
+def test_boolean_output_default(cli_runner, tmp_path):
+    """Test default boolean output is true/false."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(BOOLEAN_SCHEMA)
+    data_file.write_text(BOOLEAN_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "-t", "tsv",
+            "-o", str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    assert "true" in content.lower()
+    assert "false" in content.lower()
+
+
+def test_boolean_output_yes_no(cli_runner, tmp_path):
+    """Test --boolean-output yes produces yes/no output."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(BOOLEAN_SCHEMA)
+    data_file.write_text(BOOLEAN_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "--boolean-output", "yes",
+            "-t", "tsv",
+            "-o", str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    assert "yes" in content
+    assert "no" in content
+    assert "true" not in content.lower()
+
+
+def test_boolean_output_numeric(cli_runner, tmp_path):
+    """Test --boolean-output 1 produces 1/0 output."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(BOOLEAN_SCHEMA)
+    data_file.write_text(BOOLEAN_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s", str(schema_file),
+            "-C", "Container",
+            "-S", "items",
+            "--boolean-output", "1",
+            "-t", "tsv",
+            "-o", str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should have 1 and 0, not true/false
+    lines = content.strip().split("\n")
+    # Header line + 2 data lines
+    assert len(lines) == 3
+    # Check data lines contain 1 or 0
+    assert "\t1\n" in content or "\t1" in lines[1]
+    assert "\t0\n" in content or "\t0" in lines[2]

@@ -139,3 +139,206 @@ class CsvAndTsvGenTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# =============================================================================
+# pytest-style tests for boolean handling in CSV/TSV (issue #2580)
+#
+# Tests verify that:
+# - YAML 1.1 boolean values plus numeric 0/1 are accepted on load
+# - Boolean output format is configurable via annotation or CLI
+# - Coercion is schema-aware (only for boolean slots)
+# =============================================================================
+
+BOOLEAN_TEST_SCHEMA = """
+id: https://example.org/boolean_test
+name: boolean_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - is_active
+      - name
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  is_active:
+    range: boolean
+  name:
+    range: string
+"""
+
+
+class TestBooleanLoading:
+    """Test loading boolean values from CSV/TSV.
+
+    YAML 1.1 booleans plus numeric 0/1 should be accepted:
+    - Truthy: true, True, TRUE, yes, Yes, YES, on, On, ON, 1
+    - Falsy: false, False, FALSE, no, No, NO, off, Off, OFF, 0
+    """
+
+    @pytest.fixture
+    def schemaview(self, tmp_path):
+        schema_file = tmp_path / "schema.yaml"
+        schema_file.write_text(BOOLEAN_TEST_SCHEMA)
+        return SchemaView(str(schema_file))
+
+    @pytest.mark.parametrize(
+        "truthy_value",
+        ["true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON", "1"],
+    )
+    def test_load_truthy_values(self, schemaview, tmp_path, truthy_value):
+        """All YAML 1.1 truthy values plus '1' should load as True."""
+        tsv_file = tmp_path / "data.tsv"
+        tsv_file.write_text(f"id\tis_active\tname\n1\t{truthy_value}\ttest\n")
+
+        result = tsv_loader.load_as_dict(
+            str(tsv_file),
+            index_slot="items",
+            schemaview=schemaview,
+        )
+        assert result["items"][0]["is_active"] is True
+
+    @pytest.mark.parametrize(
+        "falsy_value",
+        ["false", "False", "FALSE", "no", "No", "NO", "off", "Off", "OFF", "0"],
+    )
+    def test_load_falsy_values(self, schemaview, tmp_path, falsy_value):
+        """All YAML 1.1 falsy values plus '0' should load as False."""
+        tsv_file = tmp_path / "data.tsv"
+        tsv_file.write_text(f"id\tis_active\tname\n1\t{falsy_value}\ttest\n")
+
+        result = tsv_loader.load_as_dict(
+            str(tsv_file),
+            index_slot="items",
+            schemaview=schemaview,
+        )
+        assert result["items"][0]["is_active"] is False
+
+    def test_string_yes_not_coerced_in_string_slot(self, schemaview, tmp_path):
+        """String 'yes' in a string slot should NOT be coerced to boolean."""
+        tsv_file = tmp_path / "data.tsv"
+        tsv_file.write_text("id\tis_active\tname\n1\ttrue\tyes\n")
+
+        result = tsv_loader.load_as_dict(
+            str(tsv_file),
+            index_slot="items",
+            schemaview=schemaview,
+        )
+        # is_active (boolean slot) should be True
+        assert result["items"][0]["is_active"] is True
+        # name (string slot) should remain "yes" not be coerced
+        assert result["items"][0]["name"] == "yes"
+
+
+BOOLEAN_OUTPUT_SCHEMA = """
+id: https://example.org/boolean_output_test
+name: boolean_output_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+annotations:
+  boolean_output: "yes"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - is_active
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  is_active:
+    range: boolean
+"""
+
+
+class TestBooleanDumping:
+    """Test dumping boolean values to CSV/TSV with configurable output format."""
+
+    @pytest.fixture
+    def schemaview_default(self, tmp_path):
+        """Schema with default boolean output (true/false)."""
+        schema_file = tmp_path / "schema.yaml"
+        schema_file.write_text(BOOLEAN_TEST_SCHEMA)
+        return SchemaView(str(schema_file))
+
+    @pytest.fixture
+    def schemaview_yes_no(self, tmp_path):
+        """Schema with boolean_output: yes annotation."""
+        schema_file = tmp_path / "schema.yaml"
+        schema_file.write_text(BOOLEAN_OUTPUT_SCHEMA)
+        return SchemaView(str(schema_file))
+
+    def test_dump_boolean_default_format(self, schemaview_default, tmp_path):
+        """Default boolean output should be 'true'/'false'."""
+        data = {"items": [{"id": "1", "is_active": True, "name": "test"}]}
+        output_file = tmp_path / "output.tsv"
+
+        tsv_dumper.dump(
+            data,
+            to_file=str(output_file),
+            index_slot="items",
+            schemaview=schemaview_default,
+        )
+
+        content = output_file.read_text()
+        assert "true" in content.lower()
+
+    def test_dump_boolean_yes_no_format(self, schemaview_yes_no, tmp_path):
+        """With boolean_output: yes, output should be 'yes'/'no'."""
+        data = {"items": [{"id": "1", "is_active": True}]}
+        output_file = tmp_path / "output.tsv"
+
+        tsv_dumper.dump(
+            data,
+            to_file=str(output_file),
+            index_slot="items",
+            schemaview=schemaview_yes_no,
+        )
+
+        content = output_file.read_text()
+        # Should contain 'yes' not 'true'
+        assert "yes" in content.lower()
+        assert "true" not in content.lower()
+
+    def test_dump_boolean_cli_override(self, schemaview_default, tmp_path):
+        """CLI option should override schema annotation."""
+        data = {"items": [{"id": "1", "is_active": True}]}
+        output_file = tmp_path / "output.tsv"
+
+        tsv_dumper.dump(
+            data,
+            to_file=str(output_file),
+            index_slot="items",
+            schemaview=schemaview_default,
+            boolean_output="1",  # CLI override
+        )
+
+        content = output_file.read_text()
+        # Should contain '1' not 'true'
+        assert "\t1\n" in content or "\t1\t" in content
