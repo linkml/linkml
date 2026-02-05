@@ -34,7 +34,6 @@ def eval_test(target: str, import_module: str) -> None:
     "test_name, import_module",
     [
         ("examples.txt", "tests.linkml.test_notebooks.input.examples"),
-        ("inheritance.txt", "tests.linkml.test_notebooks.input.inheritance"),
     ],
 )
 def test_examples(test_name: str, import_module: str) -> None:

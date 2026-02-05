@@ -19,4 +19,3 @@
 |  gen-python   | [pythongen.py](https://github.com/linkml/linkml/blob/main/linkml/generators/pythongen.py) | PythonGenerator | generate python classes for a model  | [pythongen help](../../tests/test_scripts/output/genpython/help) |
 |  gen-rdf | [rdfgen.py](https://github.com/linkml/linkml/blob/main/linkml/generators/rdfgen.py) | RDFGenerator | generate RDF representation of model | [rdfgen help](../../tests/test_scripts/output/genrdf/help) |
 |  gen-shex   | [shexgen.py](https://github.com/linkml/linkml/blob/main/linkml/generators/shexgen.py) |    ShExGenerator | generate a ShEx model representation  | [shexgen help](../../tests/test_scripts/output/genshex/help) |
-|  gen-yuml   | [yumlgen.py](https://github.com/linkml/linkml/blob/main/linkml/generators/yumlgen.py) |    YumlGenerator | generate YUML representation via [YUML](https://yuml.me/)  | [yumlgen help](../../tests/test_scripts/output/genuml/help) |

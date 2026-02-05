@@ -33,8 +33,6 @@ SKIP_DOMAINS = {
     "example.net",
     # Example/placeholder domains in docs
     "acme.org",
-    # URL extraction issues - URLs contain special chars that break extraction
-    "yuml.me",
     # Unreliable/slow - frequently timeout or rate limit
     "terminusdb.com",
     "xmlns.com",

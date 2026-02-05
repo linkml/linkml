@@ -44,7 +44,6 @@ from linkml.generators.terminusdbgen import cli as gen_terminusdb
 from linkml.generators.typescriptgen import cli as gen_typescript
 from linkml.generators.yamlgen import cli as gen_yaml
 from linkml.generators.yarrrmlgen import cli as gen_yarrrml
-from linkml.generators.yumlgen import cli as gen_yuml
 from linkml.linter.cli import main as linkml_lint
 from linkml.utils.execute_tutorial import cli as run_tutorial
 from linkml.utils.schema_fixer import main as linkml_schema_fixer
@@ -119,7 +118,6 @@ generate.add_command(gen_shacl, name="shacl")
 generate.add_command(gen_sparql, name="sparql")
 generate.add_command(gen_typescript, name="typescript")
 generate.add_command(gen_terminusdb, name="terminusdb")
-generate.add_command(gen_yuml, name="yuml")
 generate.add_command(gen_yaml, name="yaml")
 generate.add_command(gen_erdiagram, name="erdiagram")
 generate.add_command(gen_sqla, name="sqla")
