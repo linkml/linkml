@@ -148,5 +148,3 @@ data_sources:
     assert result.exception is None
     assert result.output == "No issues found\n"
     assert result.exit_code == 0
-
-
