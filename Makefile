@@ -45,7 +45,7 @@ examples/%.owl: examples/%.yaml
 examples/%.ttl: examples/%.yaml
 	$(RUN) gen-rdf $< > $@
 examples/%-docs: examples/%.yaml
-	$(RUN) gen-markdown $< -d $@
+	$(RUN) gen-doc $< -d $@
 
 ## Example instance data products
 examples/%.valid: examples/%-data.json examples/%.schema.json
