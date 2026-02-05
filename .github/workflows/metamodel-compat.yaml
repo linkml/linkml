@@ -45,7 +45,9 @@ jobs:
 
       - name: Run metamodel compatibility tests
         id: run_tests
-        run: uv run pytest tests/linkml/test_metamodel_compat/ --with-slow -v 2>&1 | tee test_output.txt
+        run: |
+          mkdir -p temp
+          uv run pytest tests/linkml/test_metamodel_compat/ --with-slow -v 2>&1 | tee temp/test_output.txt
         continue-on-error: true
 
       - name: Check for existing issue
@@ -71,7 +73,7 @@ jobs:
 
           ### Test Output (last 100 lines)
           ```
-          $(tail -n 100 test_output.txt)
+          $(tail -n 100 temp/test_output.txt)
           ```
 
           ### Next Steps

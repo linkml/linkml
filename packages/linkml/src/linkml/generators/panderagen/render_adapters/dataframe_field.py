@@ -17,6 +17,7 @@ class DataframeField(OOField):
         annotations=None,
         source_slot=None,
         inline_id_column_name: str = None,
+        inline_id_column_type: str = None,
         inline_id_other_name: str = None,
         inline_other_range: str = None,
         reference_class: str = None,
@@ -36,6 +37,8 @@ class DataframeField(OOField):
             additional information
         inline_id_column_name:
             for inlined as simple dict form
+        inline_id_column_type:
+            for inlined as simple dict from
         inline_id_other_name:
             for inlined as simple dict form
         inline_other_range:
@@ -49,6 +52,7 @@ class DataframeField(OOField):
         """
         super().__init__(name, range, default_value, annotations, source_slot)
         self.inline_id_column_name = inline_id_column_name
+        self.inline_id_column_type = inline_id_column_type
         self.inline_id_other_name = inline_id_other_name
         self.inline_other_range = inline_other_range
         self.reference_class = reference_class
@@ -92,3 +96,6 @@ class DataframeField(OOField):
 
     def description(self):
         return self.source_slot.description
+
+    def raise_(self, msg: str):
+        raise Exception(msg)
