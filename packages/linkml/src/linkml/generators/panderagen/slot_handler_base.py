@@ -219,6 +219,9 @@ class SlotHandlerBase(ABC):
         )
 
         field.inline_id_column_name = range_id_slot.name
+        field.inline_id_column_type = self.generator.map_type(
+            self.generator.schemaview.all_types().get(range_id_slot.range)
+        )
         field.inline_other_column_name = range_simple_dict_value_slot.name
 
         other_range = range_simple_dict_value_slot.range
