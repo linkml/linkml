@@ -20,6 +20,7 @@ from linkml.utils.datautils import (
     infer_root_class,
 )
 from linkml.validator import validate as run_validation
+from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
@@ -169,7 +170,8 @@ def cli(
     if validate:
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        report = run_validation(obj, schema, target_class)
+        obj_dict = json_dumper.to_dict(obj)
+        report = run_validation(obj_dict, schema, target_class)
         if report.results:
             errors = "\n".join(r.message for r in report.results)
             raise Exception(f"Validation failed:\n{errors}")

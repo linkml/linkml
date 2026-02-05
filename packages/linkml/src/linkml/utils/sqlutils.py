@@ -33,7 +33,7 @@ from linkml.utils.datautils import (
 )
 from linkml.validator import validate as run_validation
 from linkml_runtime import SchemaView
-from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.dumpers import json_dumper, yaml_dumper
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
@@ -400,7 +400,8 @@ def dump(
         if validate:
             if schema is None:
                 raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-            report = run_validation(obj, schema, target_class)
+            obj_dict = json_dumper.to_dict(obj)
+            report = run_validation(obj_dict, schema, target_class)
             if report.results:
                 errors = "\n".join(r.message for r in report.results)
                 raise Exception(f"Validation failed:\n{errors}")
