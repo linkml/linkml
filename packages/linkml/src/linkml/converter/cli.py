@@ -77,8 +77,7 @@ logger = logging.getLogger(__name__)
     "--boolean-output",
     type=click.Choice(["true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON", "1"]),
     default=None,
-    help="Boolean output format for CSV/TSV: controls how True/False are written. "
-    "Overrides schema annotation if set.",
+    help="Boolean output format for CSV/TSV: controls how True/False are written. Overrides schema annotation if set.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
