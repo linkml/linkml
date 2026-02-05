@@ -100,9 +100,9 @@ configuration for list formatting.
 
 | Annotation | Values | Default | Description |
 |------------|--------|---------|-------------|
-| `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a|b|c]`, `plaintext` has no brackets `a|b|c` |
+| `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a\|b\|c]`, `plaintext` has no brackets `a\|b\|c` |
 | `list_delimiter` | any string | `\|` | Character(s) used to separate list items |
-| `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading (e.g., `a | b` → `['a', 'b']`) |
+| `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading (e.g., `a \| b` → `['a', 'b']`) |
 
 #### CLI options
 
@@ -225,7 +225,7 @@ Given a TSV file with plaintext pipe-delimited values:
 |----|------|--------|
 | S001 | Lord of the Rings | fantasy |
 | S002 | The Culture Series | scifi |
-| S003 | Book of the New Sun | scifi|fantasy |
+| S003 | Book of the New Sun | scifi\|fantasy |
 
 Using a schema with plaintext annotations:
 
