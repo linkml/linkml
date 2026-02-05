@@ -186,6 +186,7 @@ class SQLValidationGenerator(Generator):
         # Combine all queries with UNION ALL using SQLAlchemy
         combined_query = union_all(*query_objects)
         compiled_sql = self._compile_query(combined_query)
+        compiled_sql = compiled_sql.replace(" UNION ALL ", "\n\nUNION ALL\n\n")
 
         # Build final result
         result_parts = []
@@ -203,12 +204,15 @@ class SQLValidationGenerator(Generator):
 
     def _generate_header(self) -> str:
         """Generate a header comment for the SQL output."""
-        header = f"""-- ====================================================================
-        -- SQL Validation Queries
-        -- Generated from LinkML schema
-        -- Generator: {self.generatorname} v{self.generatorversion}
-        -- Dialect: {self.dialect}
-        -- ===================================================================="""
+        header = (
+            "-- ====================================================================\n"
+            "-- SQL Validation Queries\n"
+            "-- Generated from LinkML schema\n"
+            f"-- LinkML v{__version__}\n"
+            f"-- Generator: {self.generatorname} v{self.generatorversion}\n"
+            f"-- Dialect: {self.dialect}\n"
+            "-- ===================================================================="
+        )
         return header
 
     def _generate_required_violations(self, class_name: str, slot: SlotDefinition):
