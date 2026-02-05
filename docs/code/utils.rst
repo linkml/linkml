@@ -81,14 +81,6 @@ linkml.utils.typereferences module
    :undoc-members:
    :show-inheritance:
 
-linkml.utils.validation module
-------------------------------
-
-.. automodule:: linkml.utils.validation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

@@ -239,16 +239,6 @@ DEPRECATIONS = (
         issue=1925,
     ),
     Deprecation(
-        name="validators",
-        deprecated_in=SemVer.from_str("1.8.6"),
-        removed_in=SemVer.from_str("1.10.0"),
-        message=(
-            "linkml.validators and linkml.utils.validation are the older versions "
-            "of linkml.validator and have unmaintained, duplicated functionality"
-        ),
-        recommendation="Update to use linkml.validator",
-    ),
-    Deprecation(
         name="gen-yuml",
         # the last update to any code in yumlgen.py was in v1.8.7
         # we can start considering it as deprecated from this version

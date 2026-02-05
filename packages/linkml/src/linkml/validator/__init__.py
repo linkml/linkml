@@ -1,7 +1,5 @@
 """
-The ``linkml.validator`` package contains a new LinkML validation framework that is more flexible
-than the ``linkml.validators`` package. While that package still exists, it may become deprecated
-in the future.
+The ``linkml.validator`` package contains the LinkML validation framework.
 """
 
 import os
