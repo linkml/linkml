@@ -9,9 +9,9 @@ from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
 from linkml_runtime.loaders.delimited_file_loader import (
-    _enhance_configmap_for_multivalued_primitives,
-    _get_list_config_from_annotations,
-    _strip_whitespace_from_lists,
+    enhance_configmap_for_multivalued_primitives,
+    get_list_config_from_annotations,
+    strip_whitespace_from_lists,
 )
 from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
@@ -43,7 +43,7 @@ class DelimitedFileDumper(Dumper, ABC):
             schemaview = SchemaView(schema)
 
         # Read list configuration from schema annotations
-        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(schemaview, index_slot)
+        list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(schemaview, index_slot)
 
         # CLI options override schema annotations
         if list_syntax is not None:
@@ -55,14 +55,14 @@ class DelimitedFileDumper(Dumper, ABC):
 
         # Strip whitespace from string values in lists if enabled (default)
         if strip_whitespace:
-            objs = [_strip_whitespace_from_lists(obj) for obj in objs]
+            objs = [strip_whitespace_from_lists(obj) for obj in objs]
 
         # Plaintext mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
         plaintext_mode = list_markers == ("", "")
 
         # Get base configmap and enhance with multivalued primitive slots
         configmap = get_configmap(schemaview, index_slot)
-        configmap = _enhance_configmap_for_multivalued_primitives(
+        configmap = enhance_configmap_for_multivalued_primitives(
             schemaview, index_slot, configmap, plaintext_mode=plaintext_mode
         )
 
