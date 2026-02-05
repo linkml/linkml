@@ -16,7 +16,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
-def _get_list_config_from_annotations(
+def get_list_config_from_annotations(
     schemaview: SchemaView,
     index_slot: SlotDefinitionName = None,
 ) -> tuple[tuple[str, str], str, bool]:
@@ -67,7 +67,7 @@ def _get_list_config_from_annotations(
     return list_markers, inner_delimiter, strip_whitespace
 
 
-def _strip_whitespace_from_lists(obj: Union[dict, list]) -> Union[dict, list]:
+def strip_whitespace_from_lists(obj: Union[dict, list]) -> Union[dict, list]:
     """
     Recursively strip whitespace from string items in lists.
 
@@ -82,14 +82,14 @@ def _strip_whitespace_from_lists(obj: Union[dict, list]) -> Union[dict, list]:
         The same structure with whitespace stripped from list string items
     """
     if isinstance(obj, dict):
-        return {k: _strip_whitespace_from_lists(v) for k, v in obj.items()}
+        return {k: strip_whitespace_from_lists(v) for k, v in obj.items()}
     elif isinstance(obj, list):
         result = []
         for item in obj:
             if isinstance(item, str):
                 result.append(item.strip())
             elif isinstance(item, (dict, list)):
-                result.append(_strip_whitespace_from_lists(item))
+                result.append(strip_whitespace_from_lists(item))
             else:
                 result.append(item)
         return result
@@ -97,7 +97,7 @@ def _strip_whitespace_from_lists(obj: Union[dict, list]) -> Union[dict, list]:
         return obj
 
 
-def _enhance_configmap_for_multivalued_primitives(
+def enhance_configmap_for_multivalued_primitives(
     schemaview: SchemaView,
     index_slot: SlotDefinitionName,
     configmap: dict,
@@ -218,7 +218,7 @@ class DelimitedFileLoader(Loader, ABC):
             schemaview = SchemaView(schema)
 
         # Read list configuration from schema annotations
-        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(schemaview, index_slot)
+        list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(schemaview, index_slot)
 
         # CLI options override schema annotations
         if list_syntax is not None:
@@ -233,7 +233,7 @@ class DelimitedFileLoader(Loader, ABC):
 
         # Get base configmap and enhance with multivalued primitive slots
         configmap = get_configmap(schemaview, index_slot)
-        configmap = _enhance_configmap_for_multivalued_primitives(
+        configmap = enhance_configmap_for_multivalued_primitives(
             schemaview, index_slot, configmap, plaintext_mode=plaintext_mode
         )
 
@@ -247,6 +247,6 @@ class DelimitedFileLoader(Loader, ABC):
 
         # Strip whitespace from list items if enabled (default)
         if strip_whitespace:
-            objs = [_strip_whitespace_from_lists(obj) for obj in objs]
+            objs = [strip_whitespace_from_lists(obj) for obj in objs]
 
         return json.dumps({index_slot: objs})

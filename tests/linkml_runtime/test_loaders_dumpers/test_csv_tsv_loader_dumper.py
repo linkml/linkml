@@ -9,8 +9,8 @@ from jsonasobj2 import as_json_obj
 from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
 from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.loaders.delimited_file_loader import (
-    _get_list_config_from_annotations,
-    _enhance_configmap_for_multivalued_primitives,
+    get_list_config_from_annotations,
+    enhance_configmap_for_multivalued_primitives,
 )
 from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.schemaview import SchemaView
@@ -145,24 +145,9 @@ if __name__ == "__main__":
     unittest.main()
 
 
-# =============================================================================
-# Integration tests for multivalued primitive CSV/TSV handling (issue #3041)
-#
-# Tests use inline schemas with list_syntax/list_delimiter annotations to
-# verify configurable delimiter behavior for multivalued fields.
-#
-# Related issues:
-# - https://github.com/linkml/linkml/issues/3041 (main issue)
-# - https://github.com/linkml/linkml/issues/2581 (configurable syntax)
-# =============================================================================
-
 SCHEMA_WITH_PLAINTEXT_ANNOTATIONS = """
 id: https://example.org/test
 name: test_plaintext_annotations
-description: >-
-  Schema with list_syntax=plaintext annotation for testing bracket-free
-  multivalued primitive serialization. This is the format users naturally
-  type in spreadsheets: a|b|c instead of [a|b|c].
 prefixes:
   linkml: https://w3id.org/linkml/
 imports:
@@ -324,91 +309,96 @@ slots:
 
 @pytest.fixture
 def plaintext_schemaview():
-    """Schema with list_syntax=plaintext annotation for bracket-free format."""
+    """Schema with list_syntax=plaintext annotation."""
     return SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
 
 
-# -----------------------------------------------------------------------------
-# Unit tests for helper functions (defensive paths)
-# -----------------------------------------------------------------------------
+@pytest.fixture
+def whitespace_schemaview():
+    """Schema with plaintext list syntax (strip enabled by default)."""
+    return SchemaView(SCHEMA_WHITESPACE_STRIP)
 
 
-class TestHelperFunctionDefaults:
-    """Unit tests for helper function edge cases and defaults."""
-
-    def test_get_list_config_with_none_schemaview(self):
-        """When schemaview is None, should return defaults."""
-        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(None, None)
-        assert list_markers == ("[", "]")
-        assert inner_delimiter == "|"
-        assert strip_whitespace is True
-
-    def test_get_list_config_without_annotations(self):
-        """Schema without annotations should return defaults."""
-        sv = SchemaView(SCHEMA_WITHOUT_ANNOTATIONS)
-        list_markers, inner_delimiter, strip_whitespace = _get_list_config_from_annotations(sv, "id")
-        assert list_markers == ("[", "]")
-        assert inner_delimiter == "|"
-        assert strip_whitespace is True
-
-    def test_enhance_configmap_with_none_schemaview(self):
-        """When schemaview is None, should return original configmap."""
-        original = {"some": "config"}
-        result = _enhance_configmap_for_multivalued_primitives(None, "slot", original, plaintext_mode=True)
-        assert result is original
-
-    def test_enhance_configmap_not_plaintext_mode(self):
-        """When plaintext_mode is False, should return original configmap."""
-        original = {"some": "config"}
-        sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
-        result = _enhance_configmap_for_multivalued_primitives(sv, "persons", original, plaintext_mode=False)
-        assert result is original
+@pytest.fixture
+def whitespace_preserve_schemaview():
+    """Schema with list_strip_whitespace=false."""
+    return SchemaView(SCHEMA_WHITESPACE_PRESERVE)
 
 
-class TestAnnotationBasedDelimiters:
-    """
-    Integration tests for annotation-based delimiter configuration.
+# Helper function defaults
 
-    Tests that list_syntax and list_delimiter annotations control how
-    multivalued fields are serialized/deserialized in CSV/TSV.
-    """
 
-    def test_plaintext_annotation_produces_no_brackets(self, plaintext_schemaview, tmp_path):
-        """With list_syntax=plaintext, output should have no brackets."""
-        data = {
-            "persons": [
-                {"id": "1", "name": "Test Person", "aliases": ["Alias One", "Alias Two"]},
-            ]
-        }
-        output_file = tmp_path / "plaintext_test.tsv"
+def test_get_list_config_with_none_schemaview():
+    """When schemaview is None, should return defaults."""
+    list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(None, None)
+    assert list_markers == ("[", "]")
+    assert inner_delimiter == "|"
+    assert strip_whitespace is True
 
-        tsv_dumper.dump(
-            data,
-            to_file=str(output_file),
-            index_slot="persons",
-            schemaview=plaintext_schemaview,
-        )
-        content = output_file.read_text()
 
-        # Should be: Alias One|Alias Two (no brackets)
-        assert "Alias One|Alias Two" in content
-        assert "[Alias One|Alias Two]" not in content
+def test_get_list_config_without_annotations():
+    """Schema without annotations should return defaults."""
+    sv = SchemaView(SCHEMA_WITHOUT_ANNOTATIONS)
+    list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(sv, "id")
+    assert list_markers == ("[", "]")
+    assert inner_delimiter == "|"
+    assert strip_whitespace is True
 
-    def test_plaintext_roundtrip(self, plaintext_schemaview, tmp_path):
-        """Round-trip with plaintext annotations should preserve data."""
-        original_aliases = ["First Alias", "Second Alias", "Third Alias"]
-        data = {"persons": [{"id": "1", "name": "Test", "aliases": original_aliases}]}
-        output_file = tmp_path / "plaintext_roundtrip.tsv"
 
-        tsv_dumper.dump(
-            data,
-            to_file=str(output_file),
-            index_slot="persons",
-            schemaview=plaintext_schemaview,
-        )
-        roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
+def test_enhance_configmap_with_none_schemaview():
+    """When schemaview is None, should return original configmap."""
+    original = {"some": "config"}
+    result = enhance_configmap_for_multivalued_primitives(None, "slot", original, plaintext_mode=True)
+    assert result is original
 
-        assert roundtrip["persons"][0]["aliases"] == original_aliases
+
+def test_enhance_configmap_not_plaintext_mode():
+    """When plaintext_mode is False, should return original configmap."""
+    original = {"some": "config"}
+    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+    result = enhance_configmap_for_multivalued_primitives(sv, "persons", original, plaintext_mode=False)
+    assert result is original
+
+
+# Annotation-based delimiters
+
+
+def test_plaintext_annotation_produces_no_brackets(plaintext_schemaview, tmp_path):
+    """With list_syntax=plaintext, output should have no brackets."""
+    data = {
+        "persons": [
+            {"id": "1", "name": "Test Person", "aliases": ["Alias One", "Alias Two"]},
+        ]
+    }
+    output_file = tmp_path / "plaintext_test.tsv"
+
+    tsv_dumper.dump(
+        data,
+        to_file=str(output_file),
+        index_slot="persons",
+        schemaview=plaintext_schemaview,
+    )
+    content = output_file.read_text()
+
+    assert "Alias One|Alias Two" in content
+    assert "[Alias One|Alias Two]" not in content
+
+
+def test_plaintext_roundtrip(plaintext_schemaview, tmp_path):
+    """Round-trip with plaintext annotations should preserve data."""
+    original_aliases = ["First Alias", "Second Alias", "Third Alias"]
+    data = {"persons": [{"id": "1", "name": "Test", "aliases": original_aliases}]}
+    output_file = tmp_path / "plaintext_roundtrip.tsv"
+
+    tsv_dumper.dump(
+        data,
+        to_file=str(output_file),
+        index_slot="persons",
+        schemaview=plaintext_schemaview,
+    )
+    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
+
+    assert roundtrip["persons"][0]["aliases"] == original_aliases
 
 
 @pytest.mark.parametrize(
@@ -420,15 +410,9 @@ class TestAnnotationBasedDelimiters:
     ],
 )
 def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
-    """
-    Different delimiters should work for round-trip.
-
-    Tests that the list_delimiter annotation correctly configures
-    the delimiter used for joining/splitting multivalued fields.
-    """
+    """Different delimiters should round-trip correctly."""
     schemaview = SchemaView(make_delimiter_schema(delimiter))
     data = {"items": [{"id": "1", "tags": test_values}]}
-    # Use ordinal for filename to avoid Windows reserved characters (|, etc.)
     output_file = tmp_path / f"delimiter_ord{ord(delimiter)}_test.tsv"
 
     tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=schemaview)
@@ -440,131 +424,106 @@ def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
     assert roundtrip["items"][0]["tags"] == test_values
 
 
-# -----------------------------------------------------------------------------
-# Edge case tests
-# -----------------------------------------------------------------------------
+# Edge cases
 
 
-class TestMultivaluedEdgeCases:
-    """Tests for edge cases in multivalued primitive handling."""
-
-    def test_empty_aliases_list(self, plaintext_schemaview, tmp_path):
-        """Empty aliases list should round-trip correctly (not become [None])."""
-        # Note: Empty lists cause issues in json_clean with None values.
-        # This is a known edge case that needs separate handling.
-        pytest.skip("Empty list handling has json_clean bug - needs separate fix")
-
-    def test_single_alias(self, plaintext_schemaview, tmp_path):
-        """Single alias (no delimiter needed) should round-trip correctly."""
-        data = {"persons": [{"id": "1", "name": "Test Person", "aliases": ["Only One Alias"]}]}
-
-        output_file = tmp_path / "single_alias.tsv"
-        tsv_dumper.dump(
-            data,
-            to_file=str(output_file),
-            index_slot="persons",
-            schemaview=plaintext_schemaview,
-        )
-        roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
-
-        assert roundtrip["persons"][0]["aliases"] == ["Only One Alias"]
-
-    def test_alias_containing_delimiter(self, plaintext_schemaview, tmp_path):
-        """Alias containing the delimiter character needs proper escaping."""
-        # This is a tricky edge case - what if someone's alias contains a pipe?
-        # Example data that would need escaping:
-        #   {"id": "1", "name": "Test", "aliases": ["Name|With|Pipes", "Normal"]}
-        # Exact behavior TBD - might need escaping or different delimiter
-        pytest.skip("Delimiter-in-value escaping not yet implemented")
+@pytest.mark.skip(reason="Empty list handling has json_clean bug - needs separate fix")
+def test_empty_aliases_list(plaintext_schemaview, tmp_path):
+    """Empty aliases list should round-trip correctly."""
+    pass
 
 
-# -----------------------------------------------------------------------------
-# Whitespace stripping tests
-# -----------------------------------------------------------------------------
+def test_single_alias(plaintext_schemaview, tmp_path):
+    """Single alias (no delimiter needed) should round-trip correctly."""
+    data = {"persons": [{"id": "1", "name": "Test Person", "aliases": ["Only One Alias"]}]}
+
+    output_file = tmp_path / "single_alias.tsv"
+    tsv_dumper.dump(
+        data,
+        to_file=str(output_file),
+        index_slot="persons",
+        schemaview=plaintext_schemaview,
+    )
+    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
+
+    assert roundtrip["persons"][0]["aliases"] == ["Only One Alias"]
 
 
-@pytest.fixture
-def whitespace_schemaview():
-    """Schema with plaintext list syntax for whitespace tests (strip enabled by default)."""
-    return SchemaView(SCHEMA_WHITESPACE_STRIP)
+@pytest.mark.skip(reason="Delimiter-in-value escaping not yet implemented")
+def test_alias_containing_delimiter(plaintext_schemaview, tmp_path):
+    """Alias containing the delimiter character needs escaping."""
+    pass
 
 
-@pytest.fixture
-def whitespace_preserve_schemaview():
-    """Schema with whitespace preservation enabled."""
-    return SchemaView(SCHEMA_WHITESPACE_PRESERVE)
+# Whitespace stripping
 
 
-class TestWhitespaceStripping:
-    """Tests for whitespace stripping around list delimiters."""
+def test_whitespace_stripped_by_default(whitespace_schemaview, tmp_path):
+    """Whitespace around delimiters should be stripped by default."""
+    tsv_content = "id\ttags\n1\tred | green | blue\n"
+    tsv_file = tmp_path / "whitespace.tsv"
+    tsv_file.write_text(tsv_content)
 
-    def test_whitespace_stripped_by_default(self, whitespace_schemaview, tmp_path):
-        """Whitespace around delimiters should be stripped by default."""
-        tsv_content = "id\ttags\n1\tred | green | blue\n"
-        tsv_file = tmp_path / "whitespace.tsv"
-        tsv_file.write_text(tsv_content)
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=whitespace_schemaview)
+    assert result["items"][0]["tags"] == ["red", "green", "blue"]
 
-        result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=whitespace_schemaview)
 
-        # Whitespace should be stripped
-        assert result["items"][0]["tags"] == ["red", "green", "blue"]
+def test_whitespace_preserved_with_annotation(whitespace_preserve_schemaview, tmp_path):
+    """With list_strip_whitespace=false, whitespace should be preserved."""
+    tsv_content = "id\ttags\n1\tred | green | blue\n"
+    tsv_file = tmp_path / "preserve_whitespace.tsv"
+    tsv_file.write_text(tsv_content)
 
-    def test_whitespace_preserved_with_annotation(self, whitespace_preserve_schemaview, tmp_path):
-        """With list_strip_whitespace=false, whitespace should be preserved."""
-        tsv_content = "id\ttags\n1\tred | green | blue\n"
-        tsv_file = tmp_path / "preserve_whitespace.tsv"
-        tsv_file.write_text(tsv_content)
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=whitespace_preserve_schemaview)
+    assert result["items"][0]["tags"] == ["red ", " green ", " blue"]
 
-        result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=whitespace_preserve_schemaview)
 
-        # Whitespace should be preserved
-        assert result["items"][0]["tags"] == ["red ", " green ", " blue"]
-
-    @pytest.mark.parametrize("true_value", ["true", "True", "yes", "1"])
-    def test_strip_whitespace_true_values(self, true_value):
-        """Test that various truthy annotation values enable stripping."""
-        schema_yaml = f"""
+@pytest.mark.parametrize("true_value", ["true", "True", "yes", "1"])
+def test_strip_whitespace_true_values(true_value):
+    """Various truthy annotation values should enable stripping."""
+    schema_yaml = f"""
 id: https://example.org/test
 name: test
 annotations:
   list_strip_whitespace: "{true_value}"
 """
-        sv = SchemaView(schema_yaml)
-        _, _, strip = _get_list_config_from_annotations(sv, None)
-        assert strip is True, f"Expected True for '{true_value}'"
+    sv = SchemaView(schema_yaml)
+    _, _, strip = get_list_config_from_annotations(sv, None)
+    assert strip is True, f"Expected True for '{true_value}'"
 
-    @pytest.mark.parametrize("false_value", ["false", "False", "no", "0"])
-    def test_strip_whitespace_false_values(self, false_value):
-        """Test that various falsy annotation values disable stripping."""
-        schema_yaml = f"""
+
+@pytest.mark.parametrize("false_value", ["false", "False", "no", "0"])
+def test_strip_whitespace_false_values(false_value):
+    """Various falsy annotation values should disable stripping."""
+    schema_yaml = f"""
 id: https://example.org/test
 name: test
 annotations:
   list_strip_whitespace: "{false_value}"
 """
-        sv = SchemaView(schema_yaml)
-        _, _, strip = _get_list_config_from_annotations(sv, None)
-        assert strip is False, f"Expected False for '{false_value}'"
+    sv = SchemaView(schema_yaml)
+    _, _, strip = get_list_config_from_annotations(sv, None)
+    assert strip is False, f"Expected False for '{false_value}'"
 
-    def test_output_whitespace_stripped_by_default(self, whitespace_schemaview, tmp_path):
-        """Whitespace in values should be stripped when dumping by default."""
-        data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
-        output_file = tmp_path / "output_strip.tsv"
 
-        tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=whitespace_schemaview)
-        content = output_file.read_text()
+def test_output_whitespace_stripped_by_default(whitespace_schemaview, tmp_path):
+    """Whitespace in values should be stripped when dumping."""
+    data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
+    output_file = tmp_path / "output_strip.tsv"
 
-        # Values should be stripped
-        assert "dog|cat|bird" in content
-        assert "dog   " not in content
+    tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=whitespace_schemaview)
+    content = output_file.read_text()
 
-    def test_output_whitespace_preserved_with_annotation(self, whitespace_preserve_schemaview, tmp_path):
-        """With list_strip_whitespace=false, output whitespace should be preserved."""
-        data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
-        output_file = tmp_path / "output_preserve.tsv"
+    assert "dog|cat|bird" in content
+    assert "dog   " not in content
 
-        tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=whitespace_preserve_schemaview)
-        content = output_file.read_text()
 
-        # Whitespace should be preserved
-        assert "dog   |cat  |bird" in content
+def test_output_whitespace_preserved_with_annotation(whitespace_preserve_schemaview, tmp_path):
+    """With list_strip_whitespace=false, output whitespace should be preserved."""
+    data = {"items": [{"id": "1", "tags": ["dog   ", "cat  ", "bird"]}]}
+    output_file = tmp_path / "output_preserve.tsv"
+
+    tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=whitespace_preserve_schemaview)
+    content = output_file.read_text()
+
+    assert "dog   |cat  |bird" in content
