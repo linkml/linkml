@@ -28,7 +28,6 @@ __all__ = [
     "jsonldcontextgen",
     "jsonldgen",
     "jsonschemagen",
-    "markdowngen",
     "namespacegen",
     "owlgen",
     "plantumlgen",
