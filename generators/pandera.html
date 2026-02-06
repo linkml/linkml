@@ -408,7 +408,7 @@
 for data validation on dataframe-like objects.
 <a class="reference external" href="https://docs.pola.rs/">PolaRS</a> is a fast dataframe library.</p>
 <p>The Pandera Generator produces Pandera models using the class-based API
-using the PolaRS integration.</p>
+using the PolaRS integration. It can also produce PolaRS schemas for use in loading data.</p>
 <p>The implementation of the generator is incomplete. Because Pandera is a dataframe library,
 the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
 <cite>tests/linkml/test_generators/test_panderagen.py</cite> also has an example using supported LinkML features.</p>
@@ -418,14 +418,13 @@ the first priority is implementing models of literal and nested data types and c
 <li><p>enums</p></li>
 <li><p>constraints: required, pattern, minimum_value, maximum_value, multivalued</p></li>
 <li><p>inlining: nested single-valued objects, lists of literals, lists of objects</p></li>
-<li><p><strong>note:</strong> nested dictionary collections (including ‘simple’ dicts) inlining is inefficient and incomplete, use inlined-as-list instead.</p></li>
 </ul>
 <p>Future priorities that are currently not supported include:</p>
 <ul class="simple">
 <li><p>foreign key association to other tables</p></li>
 <li><p>model and slot inheritance</p></li>
 <li><p>aliases</p></li>
-<li><p>different target dataframe libraries</p></li>
+<li><p>additional target dataframe libraries</p></li>
 </ul>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
@@ -630,6 +629,48 @@ the first priority is implementing models of literal and nested data types and c
 </dd></dl>
 
 </section>
+<p>The Python code is written to a package directory if the <cite>–package</cite> command line option is provided.
+Otherwise the code is written to the console if only generation of a single module is specified.</p>
+</section>
+<section id="usage-example">
+<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
+<p>Generate the package from tutorial 01 using the <cite>gen-pandera</cite> command
+Command-line options are under active development and are likely to change.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># recommended is to generate a package with all schema forms</span>
+gen-pandera<span class="w"> </span>--package<span class="w"> </span>personinfo<span class="w"> </span>examples/tutorial/tutorial01/personinfo.yaml
+
+<span class="c1"># alternatively you can generate the schemas individually using the --template-path and --template-file arguments</span>
+<span class="c1"># instead of --package</span>
+gen-pandera<span class="w"> </span>--template-path<span class="w"> </span>panderagen_polars_schema<span class="w"> </span>--template-file<span class="w"> </span>polars_schema.jinja2<span class="w"> </span>examples/tutorial/tutorial01/personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo_panderagen_polars_schema.py
+
+<span class="c1"># the panderagen schema is the default, but note that it depends on the polars schema</span>
+gen-pandera<span class="w"> </span>examples/tutorial/tutorial01/personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo_panderagen_class_based.py
+</pre></div>
+</div>
+<p>Run an example program to create a one row dataframe and validate it.
+No exceptions are raised because the data matches the model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_polars_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">personinfo_pl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_class_based</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">personinfo_pa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+
+<span class="c1"># generated schema is more reliable than PolaRS inferred schema</span>
+<span class="n">dataframe</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+  <span class="p">[</span>
+      <span class="p">{</span>
+      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="s2">&quot;32&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;phone&quot;</span><span class="p">:</span> <span class="s2">&quot;555-555-5555&quot;</span>
+      <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="n">schema</span> <span class="o">=</span> <span class="n">personinfo_pl</span><span class="o">.</span><span class="n">Person</span>
+<span class="p">)</span>
+
+<span class="c1"># Pandera validation supports more LinkML features than PolaRS.</span>
+<span class="c1"># Would throw an exception if validation failed.</span>
+<span class="n">personinfo_pa</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="generator">
 <h2>Generator<a class="headerlink" href="#generator" title="Link to this heading">¶</a></h2>
@@ -655,68 +696,113 @@ the first priority is implementing models of literal and nested data types and c
 <section id="templates">
 <h2>Templates<a class="headerlink" href="#templates" title="Link to this heading">¶</a></h2>
 <p>The panderagen module uses a templating system that allows generating different target APIs.
-The only template currently provided is the default <cite>panderagen_class_based</cite> template.</p>
-<p>The <a class="reference internal" href="#linkml.generators.panderagen.PanderaDataframeGenerator" title="linkml.generators.panderagen.PanderaDataframeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PanderaDataframeGenerator</span></code></a> then serves as a translation layer between
-the source models from <code class="xref py py-mod docutils literal notranslate"><span class="pre">linkml_runtime</span></code> and the target models under
+The currently provided templates are the default <cite>panderagen_class_based</cite> template and <cite>panderagen_polars_schema</cite>.</p>
+<p>Subclasses of <code class="xref py py-class docutils literal notranslate"><span class="pre">DataframeGenerator</span></code> serve as a translation layer between
+the source models and schema view from <code class="xref py py-mod docutils literal notranslate"><span class="pre">linkml_runtime</span></code> and the target models under
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">panderagen</span></code> , making clear what is needed to generate
 schema code as well as what parts of the linkml metamodel are supported.</p>
 </section>
-<section id="additional-notes">
-<h2>Additional Notes<a class="headerlink" href="#additional-notes" title="Link to this heading">¶</a></h2>
+<section id="pandera-custom-checks">
+<h2>Pandera Custom Checks<a class="headerlink" href="#pandera-custom-checks" title="Link to this heading">¶</a></h2>
 <p>When possible the Pandera Generator implements LinkML constraints directly as Pandera checks.
 Support for nested columns uses Pandera custom checks to first isolate the nested column
-and then recursvely call Pandera validation.</p>
-<p>The Python code is currently output to the console.
-The generated class depends on helper methods in the LinkML library at runtime to perform nested checks.</p>
+and then recursively call Pandera validation.</p>
+<p>The generated Pandera class depends on helper methods in the LinkML library at runtime to perform nested checks.</p>
 </section>
-<section id="usage-example">
-<h2>Usage Example<a class="headerlink" href="#usage-example" title="Link to this heading">¶</a></h2>
-<p>Generate the class from tutorial 01 using the <cite>gen-pandera</cite> command</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-pandera<span class="w"> </span>examples/tutorial/tutorial01/personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo_pandera.py
-</pre></div>
-</div>
-<p>Run an example program to create a one row dataframe and validate it.
-No exceptions are raised because the data matches the model.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">personinfo_pandera</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person</span>
+<section id="validation-and-lazyframes">
+<h2>Validation and Lazyframes<a class="headerlink" href="#validation-and-lazyframes" title="Link to this heading">¶</a></h2>
+<p>Pandera validation can operate on lazyframes or dataframes. However when a lazyframe is validated,
+checks that require collection are not run. In general this means only schema-level checks are performed on lazyframes.
+The <code class="xref py py-class docutils literal notranslate"><span class="pre">LinkmlPanderaValidator</span></code> checks whether it is validating a dataframe or lazyframe and maintains
+the same form when making nested validation calls.</p>
+</section>
+<section id="inlined-dictionary-handling">
+<h2>Inlined Dictionary Handling<a class="headerlink" href="#inlined-dictionary-handling" title="Link to this heading">¶</a></h2>
+<p>Many dataframe libraries do not handle dictionaries efficiently. Inlining objects as lists is an efficient alternative.
+The pandera generator supports transforming dictionaries to lists either at load time (preferred) or at validation time.</p>
+<p>The implementation of the load-time transform makes use of several generated schemas:
+- PolaRS serialized form
+- PolaRS loaded form
+- Pandera serialized form
+- Pandera loaded form</p>
+<p>The PolaRS serialized form represents any inlined dictionary as an opaque pl.Object.
+This schema is compatible with loading dataframes using <cite>polars.read_json</cite> or <cite>pl.DataFrame()</cite>.
+The PolaRS loaded form uses lists rather than dictionaries for inlining.
+To transform between the forms, the pandera generator can also generate a load transform module.
+The transform currently only implements the load direction.
+The generator also generates serialized and loaded forms of the Pandera schema.</p>
+<p>Not all of these schemas are needed for every application. The example below shows
+how to use all of them to load a python object into a dataframe. Note the specific model
+does not actually contain dictionary forms that require a transform.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_class_based</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pcb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_polars_schema_loaded</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ppsl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_polars_schema_transform</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ppst</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_polars_schema</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">personinfo.panderagen_schema_loaded</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">psl</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">polars</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
 
-<span class="n">dataframe</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-  <span class="p">[</span>
+<span class="c1"># some of the schema forms have informative string representations</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Panderagen (serialized): </span><span class="si">{</span><span class="n">pcb</span><span class="o">.</span><span class="n">Person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Panderagen (loaded): </span><span class="si">{</span><span class="n">psl</span><span class="o">.</span><span class="n">Person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PolaRS load transform: </span><span class="si">{</span><span class="n">ppst</span><span class="o">.</span><span class="n">Person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PolaRS schema (serialized): </span><span class="si">{</span><span class="n">pps</span><span class="o">.</span><span class="n">Person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PolaRS schema (loaded): </span><span class="si">{</span><span class="n">ppsl</span><span class="o">.</span><span class="n">Person</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
       <span class="p">{</span>
-      <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;ORCID:1234&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Clark Kent&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="s2">&quot;32&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;phone&quot;</span><span class="p">:</span> <span class="s2">&quot;555-555-5555&quot;</span>
+        <span class="s2">&quot;full_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Old Joe Clark&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="mi">23</span>
       <span class="p">}</span>
-  <span class="p">]</span>
+    <span class="p">],</span>
+    <span class="n">schema</span><span class="o">=</span><span class="n">pps</span><span class="o">.</span><span class="n">Person</span>
 <span class="p">)</span>
-<span class="n">Person</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)</span>
+<span class="n">pcb</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="n">p_loaded</span> <span class="o">=</span> <span class="n">ppst</span><span class="o">.</span><span class="n">Person</span><span class="p">()</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="n">psl</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">p_loaded</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="development-notes">
 <h2>Development Notes<a class="headerlink" href="#development-notes" title="Link to this heading">¶</a></h2>
-<p>This generator primarily supports Pandera, which is a validator. The underlying dataframe libraries are only partially supported.
-As a consequence, loading data from many of the unit tests (into a dataframe format) can be challenging when the library
-does not support some of the LinkML conventions. These include ‘simple’ dict inlining and polymorphism from row to row.</p>
+<p>This generator supports Pandera, which is a validator. To assist with loading or constructing dataframes that conform to the model,
+the underlying PolaRS dataframe schema is also generated. Transforming the forms found in the unit tests and existing models are also
+prioritized in future development.</p>
 <p>Following nested objects (and eventually foreign-key associations) relies on using PolaRS expressions API for efficiency.
 These may make greater use of the Narwhals API for more general support of additional dataframe libraries in the future.</p>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<p>The panderagen package is tested against the subset of the LinkML compliance tests
+that it currently implements. There is also a specific test for the generator that
+emphasizes the dataframe nature of the validation.</p>
+<p>To test panderagen compliance use the <cite>-m panderagen</cite> pytest mark. Use <cite>-m dataframe_polars_schema</cite> for the PolaRS compliance.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-m<span class="w"> </span>panderagen<span class="w"> </span>tests/linkml/test_compliance
+pytest<span class="w"> </span>-m<span class="w"> </span>dataframe_polars_schema<span class="w"> </span>tests/linkml/test_compliance
+</pre></div>
+</div>
+<p>In the tests, the optional LinkML dependencies such as NumPy, PolaRS, and Pandera
+are wrapped in test fixtures and imported using pytest.importorskip.
+This prevents test collection errors and skips the tests when the optional packages
+are not installed.</p>
 </section>
 <section id="future-roadmap">
 <h2>Future Roadmap<a class="headerlink" href="#future-roadmap" title="Link to this heading">¶</a></h2>
 <p>The following major features need to be prioritized</p>
 <ul class="simple">
+<li><p>ability to generate a schema from examples/PersonSchema/personinfo.yaml</p></li>
 <li><p>Foreign key associations</p></li>
+<li><p>Expand the transformer model to support literal types (datetime cases) and boolean constraints.</p></li>
 <li><p>Model and slot inheritance, including abstract models</p></li>
-<li><p>Make transformer module more general rather than performing operations only at validation time.</p></li>
 <li><p>Generalize support for additional dataframe libraries
-- PolaRS independent of Pandera to help loading tables prior to validation
 - Parquet/PyArrow storage formats
 - PySpark (also supported by Pandera)
-- Narwhals (general dataframe API wrapper)</p></li>
+- Narwhals (general dataframe API wrapper)
+- Ibis (portable dataframe library)</p></li>
 <li><p>Improve modularity
 - leverage and align with existing linkml-runtime modules and tables</p></li>
-<li><p>Conversion mechanism (loaders) for models using inlined-as-dictionary and inlined-as-simple-dict forms to inlined-as-list.</p></li>
 <li><p>Top-level validator cli tool under linkml/validators</p></li>
 <li><p>Ability to use the generated Pandera without a runtime LinkML dependency.</p></li>
 <li><p>Cardinality checks over entire dataframe columns</p></li>
@@ -788,14 +874,17 @@ These may make greater use of the Narwhals API for more general support of addit
 <li><a class="reference internal" href="#gen-pandera">gen-pandera</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#usage-example">Usage Example</a></li>
 <li><a class="reference internal" href="#generator">Generator</a><ul>
 <li><a class="reference internal" href="#linkml.generators.panderagen.PanderaDataframeGenerator"><code class="docutils literal notranslate"><span class="pre">PanderaDataframeGenerator</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#templates">Templates</a></li>
-<li><a class="reference internal" href="#additional-notes">Additional Notes</a></li>
-<li><a class="reference internal" href="#usage-example">Usage Example</a></li>
+<li><a class="reference internal" href="#pandera-custom-checks">Pandera Custom Checks</a></li>
+<li><a class="reference internal" href="#validation-and-lazyframes">Validation and Lazyframes</a></li>
+<li><a class="reference internal" href="#inlined-dictionary-handling">Inlined Dictionary Handling</a></li>
 <li><a class="reference internal" href="#development-notes">Development Notes</a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
 <li><a class="reference internal" href="#future-roadmap">Future Roadmap</a></li>
 </ul>
 </li>
