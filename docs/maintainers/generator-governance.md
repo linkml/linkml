@@ -24,7 +24,7 @@ linking to the relevant issue trackers makes it possible to route questions,
 reviews, and decisions to the right people, and to identify generators that need
 new maintainers or should be deprecated.
 
-Current line attribution per generator/validator based on `git blame`, run on the 4th February 2026 (Lines reflect the current codebase, not historical contributions). These serve as _candidates_ to form generator-level governance teams, and do not constitue the final structure. The idea is to (1) define the teams collaboratively (and organically as issues arise) and (2) enshrine editorial policies in CODEOWNERS.
+Current line attribution per generator/validator based on `git blame`, run on the 4th February 2026 (Lines reflect the current codebase, not historical contributions). These serve as _candidates_ to form generator-level governance teams, and do not constitute the final structure. The idea is to (1) define the teams collaboratively (and organically as issues arise) and (2) enshrine editorial policies in CODEOWNERS.
 
 ## Generators
 
