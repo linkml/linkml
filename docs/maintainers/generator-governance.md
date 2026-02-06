@@ -814,4 +814,3 @@ Validates RDF data against a LinkML schema using SPARQL queries.
 | Isaac To | @candleindark | 5 |
 | David Linke | @dalito | 2 |
 | Corey Cox | @amc-corey-cox | 2 |
-
