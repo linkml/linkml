@@ -14,7 +14,7 @@ Contact Sarah Gehrke on [Slack](https://join.slack.com/t/obo-communitygroup/shar
 
 ## Helpful links
 - [Community Meeting Agenda](https://docs.google.com/document/d/1MStpDyh9LOZYJTjLtnpOsNYc3HaeU-bz0CHAI9xOjfQ/edit?tab=t.0#heading=h.6sqkx1xhumse): In this document you can find the zoom link to join the monthly call as well as recordings of previous sessions.
-- As of 2026, community calls are recorded and uploaded to the [LinkML Youtube channel](https://www.youtube.com/@LinkML-org) to view anytime. 
+- As of 2026, community calls are recorded and uploaded to the [LinkML Youtube channel](https://www.youtube.com/@LinkML-org) to view anytime.
 
 ## Schedule
 
