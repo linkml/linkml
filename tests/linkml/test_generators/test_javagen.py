@@ -7,7 +7,28 @@ PACKAGE = "org.sink.kitchen"
 
 def test_javagen_records(kitchen_sink_path, tmp_path):
     """Generate java records"""
-    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE, generate_records=True)
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), template_variant="records")
+    assert_file_contains(
+        tmp_path / "Address.java",
+        "public record Address(String street, String city, BigDecimal altitude)",
+        after="package org.sink.kitchen",
+    )
+
+
+def test_javagen_with_custom_template(kitchen_sink_path, tmp_path):
+    """Generate java records with a custom template.
+
+    This should yield the same code as the test above, but by forcefully
+    specifying the class-records template, instead of specifying the "records"
+    variant and letting the generator pick the corresponding template.
+    """
+
+    gen = JavaGenerator(
+        kitchen_sink_path,
+        package=PACKAGE,
+        template_file="packages/linkml/src/linkml/generators/javagen/class-records.jinja2",
+    )
     gen.serialize(directory=str(tmp_path))
     assert_file_contains(
         tmp_path / "Address.java",
