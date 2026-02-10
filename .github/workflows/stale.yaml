@@ -1,0 +1,55 @@
+name: 'Manage stale issues'
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  stale:
+    if: github.repository == 'linkml/linkml'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          # Timeframes from issue #3080
+          days-before-stale: 1080    # 3 years
+          days-before-close: 90      # +3 months
+
+          # Disable for PRs
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+
+          # Labels
+          stale-issue-label: 'stale'
+
+          # Exempt labels (issues with these won't be marked stale)
+          exempt-issue-labels: 'pinned,security,blocked,bug'
+
+          # Stale message (from issue #3080)
+          stale-issue-message: |
+            Hi! This issue has had no activity for a long time, so we're marking it as stale as part of our regular triage.
+
+            This does **not** mean the idea isn't valuable. It usually just means that priorities, context, or available information may have changed.
+
+            If this issue is still relevant, please leave a comment with:
+            - why it matters now, and
+            - any updated context or concrete next steps.
+
+            If there's no activity in the next 3 months, the issue will be closed automatically—but it can always be reopened later.
+
+            Thank you for being part of the community!
+
+          close-issue-message: |
+            This issue has been automatically closed due to inactivity.
+
+            If this is still relevant, please feel free to reopen it with updated context, or open a new issue linking to this one.
+
+          # Operations per run (avoid rate limits)
+          operations-per-run: 100
+
+          # Close reason
+          close-issue-reason: 'not_planned'
