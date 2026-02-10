@@ -214,9 +214,8 @@ linkml:uriorcurie a linkml:TypeDefinition ;
     linkml:uri xsd:anyURI .
 
 linkml:AnyValue a linkml:ClassDefinition ;
+    skos:exactMatch linkml:Any ;
     skos:inScheme linkml:extensions ;
-    skos:mappingRelation linkml:Any ;
-    linkml:class_uri linkml:Any ;
     linkml:definition_uri linkml:AnyValue ;
     linkml:imported_from "linkml:extensions" ;
     linkml:slot_usage [ ] .
@@ -255,8 +254,8 @@ linkml:extension_value a linkml:SlotDefinition ;
 
 linkml:Annotatable a linkml:ClassDefinition ;
     skos:definition "mixin for classes that support annotations" ;
+    skos:exactMatch linkml:Annotatable ;
     skos:inScheme linkml:annotations ;
-    linkml:class_uri linkml:Annotatable ;
     linkml:definition_uri linkml:Annotatable ;
     linkml:mixin true ;
     linkml:slot_usage [ ] ;
@@ -264,8 +263,8 @@ linkml:Annotatable a linkml:ClassDefinition ;
 
 linkml:Extensible a linkml:ClassDefinition ;
     skos:definition "mixin for classes that support extension" ;
+    skos:exactMatch linkml:Extensible ;
     skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extensible ;
     linkml:definition_uri linkml:Extensible ;
     linkml:imported_from "linkml:extensions" ;
     linkml:mixin true ;
@@ -274,8 +273,8 @@ linkml:Extensible a linkml:ClassDefinition ;
 
 linkml:Annotation a linkml:ClassDefinition ;
     skos:definition "a tag/value pair with the semantics of OWL Annotation" ;
+    skos:exactMatch linkml:Annotation ;
     skos:inScheme linkml:annotations ;
-    linkml:class_uri linkml:Annotation ;
     linkml:definition_uri linkml:Annotation ;
     linkml:is_a linkml:Extension ;
     linkml:mixins linkml:Annotatable ;
@@ -346,8 +345,8 @@ linkml:annotations a linkml:SchemaDefinition,
 
 linkml:Extension a linkml:ClassDefinition ;
     skos:definition "a tag/value pair used to add non-model information to an entry" ;
+    skos:exactMatch linkml:Extension ;
     skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extension ;
     linkml:definition_uri linkml:Extension ;
     linkml:imported_from "linkml:extensions" ;
     linkml:slot_usage [ ] ;
@@ -368,4 +367,3 @@ linkml:extensions a linkml:SlotDefinition ;
     linkml:owner linkml:Extensible ;
     linkml:range linkml:Extension ;
     linkml:slot_uri linkml:extensions .
-

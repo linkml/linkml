@@ -250,9 +250,8 @@ ex:string a linkml:TypeDefinition ;
     linkml:uri xsd:string .
 
 ex:C1 a linkml:ClassDefinition ;
-    skos:exactMatch ex:mapping1 ;
+    skos:exactMatch ex:C1,
+        ex:mapping1 ;
     skos:inScheme <http://example.org/sample/example163d> ;
-    linkml:class_uri ex:C1 ;
     linkml:definition_uri ex:C1 ;
     linkml:slot_usage [ ] .
-

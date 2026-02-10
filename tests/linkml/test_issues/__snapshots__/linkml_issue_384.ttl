@@ -8,10 +8,10 @@
 
 <https://w3id.org/linkml/examples/personinfo/personinfo> a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
-    sh:declare [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
-            sh:prefix "ex" ],
-        [ sh:namespace schema1: ;
+    sh:declare [ sh:namespace schema1: ;
             sh:prefix "sdo" ],
+        [ sh:namespace <https://w3id.org/linkml/examples/personinfo/> ;
+            sh:prefix "ex" ],
         [ sh:namespace linkml: ;
             sh:prefix "linkml" ] ;
     linkml:classes <https://w3id.org/linkml/examples/personinfo/GeoAge>,
@@ -384,10 +384,10 @@
     linkml:multivalued true .
 
 <https://w3id.org/linkml/examples/personinfo/GeoObject> a linkml:ClassDefinition ;
+    skos:exactMatch <ex:GeoObject> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
         <https://w3id.org/linkml/examples/personinfo/aliases> ;
-    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
     linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/GeoObject> ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;
@@ -405,14 +405,24 @@
     linkml:slot_uri <https://w3id.org/linkml/examples/personinfo/id> .
 
 <https://w3id.org/linkml/examples/personinfo/GeoAge> a linkml:ClassDefinition ;
+    skos:exactMatch <ex:GeoAge> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/unit>,
         <https://w3id.org/linkml/examples/personinfo/value> ;
-    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
     linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/GeoAge> ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://w3id.org/linkml/examples/personinfo/geoAge__unit>,
         <https://w3id.org/linkml/examples/personinfo/geoAge__value> .
+
+<https://w3id.org/linkml/examples/personinfo/Organization> a linkml:ClassDefinition ;
+    skos:exactMatch <ex:Organization> ;
+    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
+    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Organization> ;
+    linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
+    linkml:slot_usage [ ] ;
+    linkml:slots <https://w3id.org/linkml/examples/personinfo/Organization_full_name>,
+        <https://w3id.org/linkml/examples/personinfo/Organization_parent>,
+        <https://w3id.org/linkml/examples/personinfo/id> .
 
 <https://w3id.org/linkml/examples/personinfo/full_name> a linkml:SlotDefinition ;
     dcterms:title "full name" ;
@@ -442,31 +452,20 @@
     linkml:imported_from "linkml:types" ;
     linkml:uri xsd:string .
 
-<https://w3id.org/linkml/examples/personinfo/Organization> a linkml:ClassDefinition ;
-    skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
-    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/Organization> ;
-    linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Organization> ;
-    linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
-    linkml:slot_usage [ ] ;
-    linkml:slots <https://w3id.org/linkml/examples/personinfo/Organization_full_name>,
-        <https://w3id.org/linkml/examples/personinfo/Organization_parent>,
-        <https://w3id.org/linkml/examples/personinfo/id> .
-
 <https://w3id.org/linkml/examples/personinfo/Thing> a linkml:ClassDefinition ;
+    skos:exactMatch <ex:Thing> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
-    linkml:class_uri <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://w3id.org/linkml/examples/personinfo/full_name>,
         <https://w3id.org/linkml/examples/personinfo/id> .
 
 <https://w3id.org/linkml/examples/personinfo/Person> a linkml:ClassDefinition ;
+    skos:exactMatch <sdo:Person> ;
     skos:inScheme <https://w3id.org/linkml/examples/personinfo> ;
-    skos:mappingRelation <sdo:Person> ;
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
         <https://w3id.org/linkml/examples/personinfo/aliases>,
         <https://w3id.org/linkml/examples/personinfo/phone> ;
-    linkml:class_uri schema1:Person ;
     linkml:definition_uri <https://w3id.org/linkml/examples/personinfo/Person> ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;
@@ -476,4 +475,3 @@
         <https://w3id.org/linkml/examples/personinfo/person__age>,
         <https://w3id.org/linkml/examples/personinfo/person__aliases>,
         <https://w3id.org/linkml/examples/personinfo/person__phone> .
-
