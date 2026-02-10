@@ -174,7 +174,7 @@ slots:
     in_subset:
       - BasicSubset
     see_also:
-      - implements
+      - linkml:implements
 
   implements:
     domain: element
@@ -225,8 +225,8 @@ slots:
     range: uriorcurie
     readonly: filled in by the schema loader or schema view
     see_also:
-      - class_uri
-      - slot_uri
+      - linkml:class_uri
+      - linkml:slot_uri
 
   id_prefixes:
     domain: element
@@ -275,7 +275,7 @@ slots:
     description: >-
       A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
     see_also:
-      - aliases
+      - linkml:aliases
       
   aliases:
     aliases:
@@ -1257,7 +1257,7 @@ slots:
       - SpecificationSubset
       - BasicSubset
     see_also:
-      - definition_uri
+      - linkml:definition_uri
       - https://linkml.io/linkml/schemas/uris-and-mappings.html
 
   subclass_of:
@@ -1480,7 +1480,7 @@ slots:
       - SpecificationSubset
       - BasicSubset
     see_also:
-      - definition_uri
+      - linkml:definition_uri
       - https://linkml.io/linkml/schemas/uris-and-mappings.html
 
   multivalued:
@@ -1588,7 +1588,7 @@ slots:
     in_subset:
       - SpecificationSubset
     see_also:
-      - equals_expression
+      - linkml:equals_expression
 
   implicit_prefix:
     domain: slot_expression
@@ -1869,7 +1869,7 @@ slots:
       - BasicSubset
       - RelationalModelProfile
     see_also:
-      - unique_keys
+      - linkml:unique_keys
 
   identifier:
     rank: 5
@@ -1886,7 +1886,7 @@ slots:
       - code
     see_also:
       - https://en.wikipedia.org/wiki/Identifier
-      - unique_keys
+      - linkml:unique_keys
     comments:
       - identifier is inherited
       - a key slot is automatically required.  Identifiers cannot be optional
