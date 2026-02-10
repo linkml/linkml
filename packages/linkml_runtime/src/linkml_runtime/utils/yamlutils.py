@@ -213,10 +213,9 @@ class YAMLRoot(JsonObj):
                         order_up(k, v)
                     elif isinstance(v, (dict, JsonObj)):
                         form_1({k: v})
-                    elif not isinstance(v, list):
-                        order_up(k, slot_type(*[k, v]))
                     else:
-                        raise ValueError(f"Unrecognized entry: {loc(k)}: {str(v)}")
+                        # SimpleDict form: value may be scalar or list (multivalued)
+                        order_up(k, slot_type(*[k, v]))
         self[slot_name] = cooked_slot
 
     def _normalize_inlined_slot(
