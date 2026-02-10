@@ -394,110 +394,21 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.generators.javagen</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib.util</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span><span class="p">,</span> <span class="n">Template</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeDefinition</span>
 
-<span class="n">default_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">{#-</span>
-
-<span class="s2">  Jinja2 Template for a Java class with Lombok @Data annotation</span>
-<span class="s2">  Annotation details at https://projectlombok.org</span>
-<span class="s2">-#}</span>
-<span class="s2">package {{ doc.package }};</span>
-
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f metamodel_version -%}</span>
-<span class="s2">/* metamodel_version: {{metamodel_version}} */</span>
-<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f model_version -%}</span>
-<span class="s2">/* version: {{model_version}} */</span>
-<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f cls -%}</span>
-<span class="s2">import java.util.List;</span>
-<span class="s2">import lombok.*;</span>
-
-<span class="s2">{</span><span class="si">%   i</span><span class="s2">f cls.source_class.description -%}</span>
-<span class="s2">/**</span>
-<span class="s2">  {{ cls.source_class.description }}</span>
-<span class="s2">**/</span>
-<span class="s2">{</span><span class="si">%   e</span><span class="s2">ndif -%}</span>
-<span class="s2">@Data</span>
-<span class="s2">@EqualsAndHashCode(callSuper=false)</span>
-<span class="s2">public{</span><span class="si">% i</span><span class="s2">f cls.abstract %} abstract{</span><span class="si">% e</span><span class="s2">ndif %} class {{ cls.name }} {</span><span class="si">% i</span><span class="s2">f cls.is_a -%} extends {{ cls.is_a }} {</span><span class="si">%- e</span><span class="s2">ndif %} {</span>
-<span class="s2">{</span><span class="si">%   f</span><span class="s2">or f in cls.fields %}</span>
-<span class="s2">  private {{f.range}} {{ f.name }};</span>
-<span class="s2">{</span><span class="si">%-  e</span><span class="s2">ndfor %}</span>
-
-<span class="s2">{</span><span class="si">% e</span><span class="s2">lif enum -%}</span>
-
-<span class="s2">import java.util.Map;</span>
-<span class="s2">import java.util.HashMap;</span>
-<span class="s2">import java.util.Collections;</span>
-
-<span class="s2">import com.fasterxml.jackson.annotation.JsonCreator;</span>
-
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f enum.description %}/**</span>
-<span class="s2"> * {{ enum.description }}</span>
-<span class="s2"> */</span>
-<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">public enum {{ enum.name }} {</span>
-<span class="s2">{</span><span class="si">%- f</span><span class="s2">or value in enum.values[0:-1] %}</span>
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f value.description %}</span>
-<span class="s2">  /**</span>
-<span class="s2">   * {{ value.description }}</span>
-<span class="s2">   */</span>
-<span class="s2">{</span><span class="si">%- e</span><span class="s2">ndif %}</span>
-<span class="s2">  {{ value.label|upper }}(&quot;{{ value.text }}&quot;),</span>
-<span class="s2">{</span><span class="si">%- e</span><span class="s2">ndfor %}</span>
-<span class="s2">{</span><span class="si">%- i</span><span class="s2">f enum.values %}</span>
-<span class="s2">{</span><span class="si">% i</span><span class="s2">f enum.values[-1].description %}</span>
-<span class="s2">  /**</span>
-<span class="s2">   * {{ enum.values[-1].description }}</span>
-<span class="s2">   */</span>
-<span class="s2">{</span><span class="si">%- e</span><span class="s2">ndif %}</span>
-<span class="s2">  {{ enum.values[-1].label|upper }}(&quot;{{ enum.values[-1].text }}&quot;);</span>
-<span class="s2">  {</span><span class="si">%- e</span><span class="s2">lse %}</span>
-<span class="s2">  ;{</span><span class="si">% e</span><span class="s2">ndif %}</span>
-
-<span class="s2">  private final static Map&lt;String, {{ enum.name }}&gt; MAP;</span>
-
-<span class="s2">  static {</span>
-<span class="s2">    Map&lt;String, {{ enum.name }}&gt; map = new HashMap&lt;String, {{ enum.name }}&gt;();</span>
-<span class="s2">    for ( {{ enum.name }} value : {{ enum.name }}.values() ) {</span>
-<span class="s2">      map.put(value.toString(), value);</span>
-<span class="s2">    }</span>
-
-<span class="s2">    MAP = Collections.unmodifiableMap(map);</span>
-<span class="s2">  }</span>
-
-<span class="s2">  private final String repr;</span>
-
-<span class="s2">  {{ enum.name }}(String repr) {</span>
-<span class="s2">    this.repr = repr;</span>
-<span class="s2">  }</span>
-
-<span class="s2">  @Override</span>
-<span class="s2">  public String toString() {</span>
-<span class="s2">    return repr;</span>
-<span class="s2">  }</span>
-
-<span class="s2">  @JsonCreator</span>
-<span class="s2">  public static {{ enum.name }} fromString(String v) {</span>
-<span class="s2">    return MAP.get(v);</span>
-<span class="s2">  }</span>
-
-<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif -%}</span>
-<span class="s2">}&quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<span class="n">DEFAULT_TEMPLATE_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;javagen&quot;</span>
 
 <span class="n">TYPEMAP</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;xsd:string&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
@@ -515,6 +426,74 @@
 <span class="n">TYPE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;0f&quot;</span><span class="p">,</span> <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;0d&quot;</span><span class="p">,</span> <span class="s2">&quot;String&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">}</span>
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">TemplateCache</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cache for template objects.</span>
+
+<span class="sd">    The purpose of this class is twofold:</span>
+
+<span class="sd">    * It implements the logic needed to find the correct template based on (1)</span>
+<span class="sd">      which templates are available, (2) which type of object is a template</span>
+<span class="sd">      required for, (3) whether a specific “variant“ of templates has been</span>
+<span class="sd">      requested.</span>
+<span class="sd">    * It keeps templates that have already been read from disk in memory, so</span>
+<span class="sd">      that we don’t have to read them over again when the same template is used</span>
+<span class="sd">      many times (which should be the typical case).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Template</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds all templates in the specified directory to the cache.&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">template_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.jinja2&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">stem</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">force_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the template to systematically use for all objects.</span>
+
+<span class="sd">        This method is used to implement the `--template-file` option, allowing</span>
+<span class="sd">        users to forcibly use one specific template file, regardless of the</span>
+<span class="sd">        contents of the templates directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="p">[</span><span class="s2">&quot;__FORCE__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template_file</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="n">variant</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Template</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Finds the template for a given object.</span>
+
+<span class="sd">        :param name: The name of the object for which a template is required.</span>
+<span class="sd">        :param fallback: The name of the fallback template to use if there is</span>
+<span class="sd">            no specific template for the given object name.</span>
+<span class="sd">        :param variant: The name of an optional template variant.</span>
+<span class="sd">        :return: The requested template, or None if no suitable template is</span>
+<span class="sd">            available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">candidate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;__FORCE__&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">variant</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">variant</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">candidate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fallback</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">variant</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">candidate</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">candidate</span><span class="p">]</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">[</span><span class="n">candidate</span><span class="p">]</span>
+
+
 <div class="viewcode-block" id="JavaGenerator">
 <a class="viewcode-back" href="../../../generators/java.html#linkml.generators.javagen.JavaGenerator">[docs]</a>
 <span class="nd">@dataclass</span>
@@ -522,10 +501,14 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generates java code from a LinkML schema.</span>
 
-<span class="sd">    Two styles are supported:</span>
+<span class="sd">    This generators supports an arbitrary number of different styles through</span>
+<span class="sd">    the use of “template variants“.</span>
 
-<span class="sd">    - java classes, using lombok annotations</span>
-<span class="sd">    - java records</span>
+<span class="sd">    Currently, two variants are available:</span>
+
+<span class="sd">    - the default variant represents LinkML classes as Java classes carrying</span>
+<span class="sd">      Lombok annotations (https://projectlombok.org);</span>
+<span class="sd">    - the `records` variant represents LinkML classes as Java 16 records.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ClassVars</span>
@@ -535,15 +518,22 @@
     <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;java&quot;</span>
 
     <span class="c1"># ObjectVars</span>
-    <span class="n">generate_records</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True then use java records (introduced in java 14) rather than classes&quot;&quot;&quot;</span>
-
     <span class="n">template_file</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">template_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">template_cache</span><span class="p">:</span> <span class="n">TemplateCache</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">TemplateCache</span><span class="p">())</span>
 
     <span class="n">gen_classvars</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">gen_slots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">genmeta</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">emit_metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span><span class="n">DEFAULT_TEMPLATE_DIR</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">add_directory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">force_template</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">TYPE_DEFAULTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
@@ -564,29 +554,27 @@
 
 <div class="viewcode-block" id="JavaGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_records</span><span class="p">:</span>
-            <span class="n">package_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">origin</span><span class="p">)</span>
-            <span class="n">javagen_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">package_dir</span><span class="p">,</span> <span class="s2">&quot;javagen&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="n">loader</span> <span class="o">=</span> <span class="n">FileSystemLoader</span><span class="p">(</span><span class="n">javagen_folder</span><span class="p">)</span>
-            <span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
-            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;java_record_template.jinja2&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">template_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">template_file</span><span class="p">:</span>
-                <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">default_template</span><span class="p">)</span>
-
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_variant</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">oodocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_documents</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span>
         <span class="k">for</span> <span class="n">oodoc</span> <span class="ow">in</span> <span class="n">oodocs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
                 <span class="bp">cls</span> <span class="o">=</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="n">enum</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;class&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">cls</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="n">enum</span> <span class="o">=</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">code</span> <span class="o">=</span> <span class="n">template_obj</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;enum&quot;</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">oodoc</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">template_variant</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># This should never happen as the default template directory</span>
+                <span class="c1"># (which is always queried as a last resort) should always</span>
+                <span class="c1"># contain at least a default `class` template and a default</span>
+                <span class="c1"># `enum` template.</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing template&quot;</span><span class="p">)</span>
+
+            <span class="n">code</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
                 <span class="n">doc</span><span class="o">=</span><span class="n">oodoc</span><span class="p">,</span>
                 <span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span>
                 <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span>
@@ -611,11 +599,22 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output directory for individually generated class files&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--package&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Package name where relevant for generated class files&quot;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--template-file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional jinja2 template to use for class generation&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--template-dir&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">exists</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file_okay</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dir_okay</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">path_type</span><span class="o">=</span><span class="n">Path</span><span class="p">),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Directory containing the Jinja2 templates to use&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--template-variant&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Use the specified template variant&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--template-file&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Optional jinja2 template to use for class generation</span>
+<span class="s2">            (takes precedence over --template-dir)&quot;&quot;&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--generate-records/--no-generate-records&quot;</span><span class="p">,</span>
     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Optional Java 17 record implementation&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Optional Java 17 record implementation</span>
+<span class="s2">            (deprecated, use --template-variant=records instead)&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--true-enums/--no-true-enums&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Treat enums as distinct types rather than strings&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
@@ -624,6 +623,8 @@
     <span class="n">yamlfile</span><span class="p">,</span>
     <span class="n">output_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">package</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">template_variant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">template_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">generate_records</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -635,18 +636,24 @@
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate java classes to represent a LinkML model&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">generate_records</span><span class="p">:</span>
+        <span class="n">template_variant</span> <span class="o">=</span> <span class="s2">&quot;records&quot;</span>
+    <span class="k">if</span> <span class="n">template_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">template_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">template_variant</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;--template-file will take precedence over --template-dir and --template-variant&quot;</span><span class="p">)</span>
+
     <span class="n">JavaGenerator</span><span class="p">(</span>
         <span class="n">yamlfile</span><span class="p">,</span>
         <span class="n">package</span><span class="o">=</span><span class="n">package</span><span class="p">,</span>
+        <span class="n">template_dir</span><span class="o">=</span><span class="n">template_dir</span><span class="p">,</span>
         <span class="n">template_file</span><span class="o">=</span><span class="n">template_file</span><span class="p">,</span>
-        <span class="n">generate_records</span><span class="o">=</span><span class="n">generate_records</span><span class="p">,</span>
         <span class="n">emit_metadata</span><span class="o">=</span><span class="n">head</span><span class="p">,</span>
         <span class="n">genmeta</span><span class="o">=</span><span class="n">genmeta</span><span class="p">,</span>
         <span class="n">gen_classvars</span><span class="o">=</span><span class="n">classvars</span><span class="p">,</span>
         <span class="n">gen_slots</span><span class="o">=</span><span class="n">slots</span><span class="p">,</span>
         <span class="n">true_enums</span><span class="o">=</span><span class="n">true_enums</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">template_variant</span><span class="o">=</span><span class="n">template_variant</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

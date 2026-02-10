@@ -1945,13 +1945,27 @@ schema with structs that implement the classes in that schema.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-java-generate-records">
 <span id="cmdoption-linkml-generate-full-java-no-generate-records"></span><span class="sig-name descname"><span class="pre">--generate-records</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-generate-records</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-java-generate-records" title="Link to this definition">¶</a></dt>
-<dd><p>Optional Java 17 record implementation</p>
+<dd><p>Optional Java 17 record implementation
+(deprecated, use –template-variant=records instead)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-java-template-file">
 <span class="sig-name descname"><span class="pre">--template-file</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_file&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-java-template-file" title="Link to this definition">¶</a></dt>
-<dd><p>Optional jinja2 template to use for class generation</p>
+<dd><p>Optional jinja2 template to use for class generation
+(takes precedence over –template-dir)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-java-template-variant">
+<span class="sig-name descname"><span class="pre">--template-variant</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_variant&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-java-template-variant" title="Link to this definition">¶</a></dt>
+<dd><p>Use the specified template variant</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-java-template-dir">
+<span class="sig-name descname"><span class="pre">--template-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_dir&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-java-template-dir" title="Link to this definition">¶</a></dt>
+<dd><p>Directory containing the Jinja2 templates to use</p>
 </dd></dl>
 
 <dl class="std option">
