@@ -10,7 +10,6 @@ import yaml
 from pydantic import BaseModel, Field
 
 from linkml._version import __version__
-from linkml.utils import datautils
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader, default_loader_for_file
 from linkml.validator.plugins import ValidationPlugin
@@ -62,9 +61,6 @@ def _resolve_loaders(loader_config: Iterable[Union[str, dict[str, dict[str, str]
     return loaders
 
 
-DEPRECATED = "[DEPRECATED: only used in legacy mode]"
-
-
 @click.command(name="validate")
 @click.option(
     "-s",
@@ -89,27 +85,6 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
     help="Exit after the first validation failure is found. If not specified all validation failures are reported.",
 )
 @click.option(
-    "--legacy-mode",
-    is_flag=True,
-    default=False,
-    help="Use legacy linkml-validate behavior.",
-)
-@click.option("--module", "-m", help=f"{DEPRECATED} Path to python datamodel module")
-@click.option(
-    "--input-format",
-    "-f",
-    type=click.Choice(list(datautils.dumpers_loaders.keys())),
-    help=f"{DEPRECATED} Input format. Inferred from input suffix if not specified",
-)
-@click.option("--index-slot", "-S", help=f"{DEPRECATED} top level slot. Required for CSV dumping/loading")
-@click.option(
-    "--include-range-class-descendants/--no-range-class-descendants",
-    default=False,
-    show_default=False,
-    help=f"{DEPRECATED} When handling range constraints, include all descendants of the range "
-    "class instead of just the range class",
-)
-@click.option(
     "--include-context/--no-include-context",
     "-D",
     default=False,
@@ -118,58 +93,17 @@ DEPRECATED = "[DEPRECATED: only used in legacy mode]"
 )
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
-@click.pass_context
 def cli(
-    context: click.Context,
     schema: Optional[Path],
     target_class: Optional[str],
     config: Optional[str],
     data_sources: tuple[str],
     exit_on_first_failure: bool,
-    legacy_mode: bool,
-    module: Optional[str],
-    input_format: Optional[str],
-    index_slot: Optional[str],
-    include_range_class_descendants: bool,
     include_context: bool,
 ):
     """
     Validate data according to a LinkML Schema
     """
-    if legacy_mode:
-        from linkml.validators import jsonschemavalidator
-
-        return context.invoke(
-            jsonschemavalidator.cli,
-            input=data_sources[0] if len(data_sources) > 0 else None,
-            module=module,
-            target_class=target_class,
-            input_format=input_format,
-            schema=str(schema) if schema else None,
-            index_slot=index_slot,
-            exit_on_first_failure=exit_on_first_failure,
-            include_range_class_descendants=include_range_class_descendants,
-        )
-
-    if module is not None:
-        click.secho("Warning: the -m/--module option is deprecated except in legacy mode.", fg="yellow")
-    if input_format is not None:
-        click.secho(
-            "Warning: the -f/--input-format option is deprecated except in legacy mode. By "
-            "default source loaders are automatically chosen based on file extension. If a loader "
-            "needs to manually specified use the data_sources section of a custom config file.",
-            fg="yellow",
-        )
-    if index_slot is not None:
-        click.secho("Warning: the -S/--index-slot option is deprecated except in legacy mode.", fg="yellow")
-    if include_range_class_descendants:
-        click.secho(
-            "Warning: the --include-range-class-descendants deprecated except in legacy mode. "
-            "This behavior is now the default of the JsonschemaValidationPlugin. If you need to "
-            "disable it use the plugins section of a custom config file.",
-            fg="yellow",
-        )
-
     config_args = {
         "schema": schema,
         "target_class": target_class,
