@@ -567,6 +567,17 @@ on a collection of classes is as follows:</p>
 </ul>
 </li>
 </ol>
+<p>The primary value slot may be single-valued or multivalued. When multivalued, the SimpleDict form accepts a list as the value:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Schema: Tag has identifier &#39;name&#39; and multivalued slot &#39;aliases&#39;</span>
+<span class="c1"># SimpleDict form:</span>
+<span class="nt">tags</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">important</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">critical</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">urgent</span>
+<span class="w">  </span><span class="nt">optional</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nice-to-have</span>
+</pre></div>
+</div>
 </section>
 <section id="inlining-with-non-json-serializations">
 <h2>Inlining with non-JSON serializations<a class="headerlink" href="#inlining-with-non-json-serializations" title="Link to this heading">¶</a></h2>
