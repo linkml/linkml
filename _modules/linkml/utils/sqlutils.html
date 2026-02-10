@@ -416,7 +416,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pythongen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PythonGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqlalchemygen</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyGenerator</span><span class="p">,</span> <span class="n">TemplateEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqltablegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLTableGenerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">datautils</span><span class="p">,</span> <span class="n">validation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">datautils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.datautils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_get_context</span><span class="p">,</span>
     <span class="n">_get_format</span><span class="p">,</span>
@@ -427,8 +427,9 @@
     <span class="n">infer_index_slot</span><span class="p">,</span>
     <span class="n">infer_root_class</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate</span> <span class="k">as</span> <span class="n">run_validation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_dumper</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">json_dumper</span><span class="p">,</span> <span class="n">yaml_dumper</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.compile_python</span><span class="w"> </span><span class="kn">import</span> <span class="n">compile_python</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.enumerations</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnumDefinitionImpl</span>
@@ -819,8 +820,11 @@
         <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;--schema must be passed in order to validate. Suppress with --no-validate&quot;</span><span class="p">)</span>
-            <span class="c1"># TODO: use validator framework</span>
-            <span class="n">validation</span><span class="o">.</span><span class="n">validate_object</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+            <span class="n">obj_dict</span> <span class="o">=</span> <span class="n">json_dumper</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">report</span> <span class="o">=</span> <span class="n">run_validation</span><span class="p">(</span><span class="n">obj_dict</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">results</span><span class="p">:</span>
+                <span class="n">errors</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">results</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validation failed:</span><span class="se">\n</span><span class="si">{</span><span class="n">errors</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">endpoint</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
 

@@ -402,9 +402,7 @@
         <article role="main" id="furo-main-content">
           <section id="module-linkml.validator">
 <span id="validator"></span><h1>Validator<a class="headerlink" href="#module-linkml.validator" title="Link to this heading">¶</a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">linkml.validator</span></code> package contains a new LinkML validation framework that is more flexible
-than the <code class="docutils literal notranslate"><span class="pre">linkml.validators</span></code> package. While that package still exists, it may become deprecated
-in the future.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">linkml.validator</span></code> package contains the LinkML validation framework.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.validator.Validator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.validator.</span></span><span class="sig-name descname"><span class="pre">Validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TextIO" title="(in Python v3.14)"><span class="pre">TextIO</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_plugins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#linkml.validator.plugins.ValidationPlugin" title="linkml.validator.plugins.validation_plugin.ValidationPlugin"><span class="pre">ValidationPlugin</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/validator/validator.html#Validator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.validator.Validator" title="Link to this definition">¶</a></dt>
@@ -755,41 +753,6 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">False</
 <dt class="sig sig-object std" id="cmdoption-linkml-validate-exit-on-first-failure">
 <span class="sig-name descname"><span class="pre">--exit-on-first-failure</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-exit-on-first-failure" title="Link to this definition">¶</a></dt>
 <dd><p>Exit after the first validation failure is found. If not specified all validation failures are reported.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-legacy-mode">
-<span class="sig-name descname"><span class="pre">--legacy-mode</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-legacy-mode" title="Link to this definition">¶</a></dt>
-<dd><p>Use legacy linkml-validate behavior.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-m">
-<span id="cmdoption-linkml-validate-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;module&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-m" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] Path to python datamodel module</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-f">
-<span id="cmdoption-linkml-validate-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-f" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] Input format. Inferred from input suffix if not specified</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options<span class="colon">:</span></dt>
-<dd class="field-odd"><p>yml | yaml | json | rdf | ttl | json-ld | csv | tsv</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-S">
-<span id="cmdoption-linkml-validate-index-slot"></span><span class="sig-name descname"><span class="pre">-S</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-slot</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_slot&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-S" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] top level slot. Required for CSV dumping/loading</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-include-range-class-descendants">
-<span id="cmdoption-linkml-validate-no-range-class-descendants"></span><span class="sig-name descname"><span class="pre">--include-range-class-descendants</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-range-class-descendants</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-include-range-class-descendants" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] When handling range constraints, include all descendants of the range class instead of just the range class</p>
 </dd></dl>
 
 <dl class="std option">

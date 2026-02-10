@@ -434,41 +434,6 @@
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-legacy-mode">
-<span class="sig-name descname"><span class="pre">--legacy-mode</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-legacy-mode" title="Link to this definition">¶</a></dt>
-<dd><p>Use legacy linkml-validate behavior.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-m">
-<span id="cmdoption-linkml-validate-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;module&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-m" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] Path to python datamodel module</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-f">
-<span id="cmdoption-linkml-validate-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-f" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] Input format. Inferred from input suffix if not specified</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options<span class="colon">:</span></dt>
-<dd class="field-odd"><p>yml | yaml | json | rdf | ttl | json-ld | csv | tsv</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-S">
-<span id="cmdoption-linkml-validate-index-slot"></span><span class="sig-name descname"><span class="pre">-S</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-slot</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_slot&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-S" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] top level slot. Required for CSV dumping/loading</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-include-range-class-descendants">
-<span id="cmdoption-linkml-validate-no-range-class-descendants"></span><span class="sig-name descname"><span class="pre">--include-range-class-descendants</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-range-class-descendants</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-include-range-class-descendants" title="Link to this definition">¶</a></dt>
-<dd><p>[DEPRECATED: only used in legacy mode] When handling range constraints, include all descendants of the range class instead of just the range class</p>
-</dd></dl>
-
-<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-validate-D">
 <span id="cmdoption-linkml-validate-include-context"></span><span id="cmdoption-linkml-validate-no-include-context"></span><span class="sig-name descname"><span class="pre">-D</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--include-context</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-include-context</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-D" title="Link to this definition">¶</a></dt>
 <dd><p>Include additional context when reporting of validation errors.</p>
@@ -492,153 +457,6 @@
 <dd><p>Optional argument(s)</p>
 </dd></dl>
 
-</section>
-<section id="plugins">
-<h2>Plugins<a class="headerlink" href="#plugins" title="Link to this heading">¶</a></h2>
-<section id="linkml-validate-jsonschema">
-<h3>linkml validate jsonschema<a class="headerlink" href="#linkml-validate-jsonschema" title="Link to this heading">¶</a></h3>
-<p>Validates instance data</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>validate<span class="w"> </span>jsonschema<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT
-</pre></div>
-</div>
-<p class="rubric">Options</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-m">
-<span id="cmdoption-linkml-validate-jsonschema-module"></span><span class="sig-name descname"><span class="pre">-m</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--module</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;module&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-m" title="Link to this definition">¶</a></dt>
-<dd><p>Path to python datamodel module</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-f">
-<span id="cmdoption-linkml-validate-jsonschema-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-f" title="Link to this definition">¶</a></dt>
-<dd><p>Input format. Inferred from input suffix if not specified</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options<span class="colon">:</span></dt>
-<dd class="field-odd"><p>yml | yaml | json | rdf | ttl | json-ld | csv | tsv</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-C">
-<span id="cmdoption-linkml-validate-jsonschema-target-class"></span><span class="sig-name descname"><span class="pre">-C</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--target-class</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;target_class&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-C" title="Link to this definition">¶</a></dt>
-<dd><p>name of class in datamodel that the root node instantiates</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-S">
-<span id="cmdoption-linkml-validate-jsonschema-index-slot"></span><span class="sig-name descname"><span class="pre">-S</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--index-slot</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_slot&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-S" title="Link to this definition">¶</a></dt>
-<dd><p>top level slot. Required for CSV dumping/loading</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-s">
-<span id="cmdoption-linkml-validate-jsonschema-schema"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;schema&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-s" title="Link to this definition">¶</a></dt>
-<dd><p>Path to schema specified as LinkML yaml</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-exit-on-first-failure">
-<span id="cmdoption-linkml-validate-jsonschema-no-exit-on-first-failure"></span><span class="sig-name descname"><span class="pre">--exit-on-first-failure</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-exit-on-first-failure</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-exit-on-first-failure" title="Link to this definition">¶</a></dt>
-<dd><p>Exit after the first validation failure is found. If not specified all validation failures are reported.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-include-range-class-descendants">
-<span id="cmdoption-linkml-validate-jsonschema-no-range-class-descendants"></span><span class="sig-name descname"><span class="pre">--include-range-class-descendants</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-range-class-descendants</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-include-range-class-descendants" title="Link to this definition">¶</a></dt>
-<dd><p>When handling range constraints, include all descendants of the range class instead of just the range class</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-V">
-<span id="cmdoption-linkml-validate-jsonschema-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-V" title="Link to this definition">¶</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-<p class="rubric">Arguments</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-jsonschema-arg-INPUT">
-<span class="sig-name descname"><span class="pre">INPUT</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-jsonschema-arg-INPUT" title="Link to this definition">¶</a></dt>
-<dd><p>Required argument</p>
-</dd></dl>
-
-</section>
-<section id="linkml-validate-sparql">
-<h3>linkml validate sparql<a class="headerlink" href="#linkml-validate-sparql" title="Link to this heading">¶</a></h3>
-<p>Validates sparql</p>
-<p>Example:</p>
-<blockquote>
-<div><p>linkml-sparql-validate -U <a class="reference external" href="http://sparql.hegroup.org/sparql">http://sparql.hegroup.org/sparql</a> -s tests/test_validation/input/omo.yaml</p>
-</div></blockquote>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>validate<span class="w"> </span>sparql<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
-</pre></div>
-</div>
-<p class="rubric">Options</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-G">
-<span id="cmdoption-linkml-validate-sparql-named-graph"></span><span class="sig-name descname"><span class="pre">-G</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--named-graph</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;named_graph&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-G" title="Link to this definition">¶</a></dt>
-<dd><p>Constrain query to a named graph</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-i">
-<span id="cmdoption-linkml-validate-sparql-input"></span><span class="sig-name descname"><span class="pre">-i</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-i" title="Link to this definition">¶</a></dt>
-<dd><p>Input file to validate</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-U">
-<span id="cmdoption-linkml-validate-sparql-endpoint-url"></span><span class="sig-name descname"><span class="pre">-U</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--endpoint-url</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;endpoint_url&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-U" title="Link to this definition">¶</a></dt>
-<dd><p>URL of sparql endpoint</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-L">
-<span id="cmdoption-linkml-validate-sparql-limit"></span><span class="sig-name descname"><span class="pre">-L</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--limit</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;limit&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-L" title="Link to this definition">¶</a></dt>
-<dd><p>Max results per query</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-o">
-<span id="cmdoption-linkml-validate-sparql-output"></span><span class="sig-name descname"><span class="pre">-o</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-o" title="Link to this definition">¶</a></dt>
-<dd><p>Path to report file</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-f">
-<span id="cmdoption-linkml-validate-sparql-input-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--input-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;input_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-f" title="Link to this definition">¶</a></dt>
-<dd><p>Input format. Inferred from input suffix if not specified</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options<span class="colon">:</span></dt>
-<dd class="field-odd"><p>yml | yaml | json | rdf | ttl | json-ld | csv | tsv</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-t">
-<span id="cmdoption-linkml-validate-sparql-output-format"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--output-format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;output_format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-t" title="Link to this definition">¶</a></dt>
-<dd><p>Output format. Inferred from output suffix if not specified</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options<span class="colon">:</span></dt>
-<dd class="field-odd"><p>yml | yaml | json | rdf | ttl | json-ld | csv | tsv</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-s">
-<span id="cmdoption-linkml-validate-sparql-schema"></span><span class="sig-name descname"><span class="pre">-s</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;schema&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-s" title="Link to this definition">¶</a></dt>
-<dd><p>Path to schema specified as LinkML yaml</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-linkml-validate-sparql-V">
-<span id="cmdoption-linkml-validate-sparql-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-sparql-V" title="Link to this definition">¶</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-</section>
 </section>
 </section>
 
@@ -699,11 +517,6 @@
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a><ul>
 <li><a class="reference internal" href="#linkml-validate">linkml validate</a></li>
-<li><a class="reference internal" href="#plugins">Plugins</a><ul>
-<li><a class="reference internal" href="#linkml-validate-jsonschema">linkml validate jsonschema</a></li>
-<li><a class="reference internal" href="#linkml-validate-sparql">linkml validate sparql</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
