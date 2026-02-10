@@ -30,7 +30,6 @@ try running them with `--help` and see what happens!
 - {ref}`gen-java <generators/java:gen-java>`
 - {ref}`gen-jsonld <generators/jsonld:gen-jsonld>`
 - {ref}`gen-json-schema <generators/json-schema:gen-json-schema>`
-- {ref}`gen-markdown <generators/markdown:gen-markdown>`
 - `gen-doc`
 - `gen-namespace`
 - {ref}`gen-owl <generators/owl:gen-owl>`

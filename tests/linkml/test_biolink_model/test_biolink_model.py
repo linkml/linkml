@@ -26,7 +26,6 @@ pytestmark = pytest.mark.biolink
 @pytest.mark.parametrize(
     "generator,extension,gen_kwargs,serialize_kwargs",
     [
-        # (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
         pytest.param(OwlSchemaGenerator, ".owl.ttl", {"useuris": False}, {}, marks=[pytest.mark.owlgen]),
         pytest.param(
             RDFGenerator,
