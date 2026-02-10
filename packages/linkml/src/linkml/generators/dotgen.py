@@ -18,7 +18,7 @@ from linkml_runtime.utils.formatutils import underscore
 valid_formats = sorted(list(FORMATS))
 
 
-@deprecated("Replaced by yuml/mermaid")
+@deprecated("Replaced by mermaid")
 @dataclass
 class DotGenerator(Generator):
     """
