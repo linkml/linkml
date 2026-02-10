@@ -45,7 +45,6 @@ try running them with `--help` and see what happens!
 - {ref}`gen-sparql <generators/sparql:gen-sparql>`
 - {ref}`gen-typescript <generators/typescript:gen-typescript>`
 - {ref}`gen-terminusdb <generators/terminusdb:gen-terminusdb>`
-- `gen-yuml`
 - `gen-yaml`
 - {ref}`gen-erdiagram <generators/erdiagram:gen-erdiagram>`
 - {ref}`gen-sqla <generators/sqlalchemy:gen-sqla>`

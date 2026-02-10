@@ -259,7 +259,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/yarrrml.html">YARRRML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/docgen.html">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/erdiagram.html">ER Diagrams</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../generators/yuml.html">YUML</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/project-generator.html">Project Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../generators/python.html">Python</a></li>
@@ -629,21 +628,7 @@
 
 
 
-<span class="n">DEPRECATIONS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">Deprecation</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;gen-yuml&quot;</span><span class="p">,</span>
-        <span class="c1"># the last update to any code in yumlgen.py was in v1.8.7</span>
-        <span class="c1"># we can start considering it as deprecated from this version</span>
-        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.8.7&quot;</span><span class="p">),</span>
-        <span class="n">removed_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.10.0&quot;</span><span class="p">),</span>
-        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;gen-yuml has been deprecated and is no longer supported. &quot;</span>
-            <span class="s2">&quot;It has been replaced by more feature-rich diagram generators such as &quot;</span>
-            <span class="s2">&quot;gen-doc (embedded mermaid diagrams), gen-plantuml, gen-mermaid-class-diagram, and gen-erdiagram.&quot;</span>
-        <span class="p">),</span>
-        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Update to use `gen-doc`, `gen-plantuml`, `gen-mermaid-class-diagram`, or `gen-erdiagram`&quot;</span><span class="p">,</span>
-    <span class="p">),</span>
-<span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
+<span class="n">DEPRECATIONS</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
 
