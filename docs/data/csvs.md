@@ -103,6 +103,7 @@ configuration for list formatting.
 | `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a\|b\|c]`, `plaintext` has no brackets `a\|b\|c` |
 | `list_delimiter` | any string | `\|` | Character(s) used to separate list items |
 | `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading and dumping (e.g., `a \| b` → `['a', 'b']`) |
+| `refuse_delimiter_in_data` | `true`, `false` | `false` | Raise an error before serializing if any multivalued field value contains the delimiter character. Prevents silent data corruption during round-tripping. |
 
 #### CLI options
 
@@ -121,6 +122,7 @@ linkml-convert -s schema.yaml -C Container -S items -t tsv \
 | `--list-syntax` | `python` or `plaintext` - overrides schema annotation |
 | `--list-delimiter` | Delimiter string - overrides schema annotation |
 | `--list-strip-whitespace` / `--no-list-strip-whitespace` | Strip whitespace from list values (default: strip) |
+| `--refuse-delimiter-in-data` / `--no-refuse-delimiter-in-data` | Raise an error if any multivalued value contains the delimiter (default: allow) |
 
 All three options apply to both input (loading) and output (dumping):
 

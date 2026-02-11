@@ -91,6 +91,12 @@ logger = logging.getLogger(__name__)
     help="Strip whitespace around list delimiters when loading and dumping CSV/TSV (default: strip). "
     "Overrides schema annotation if set.",
 )
+@click.option(
+    "--refuse-delimiter-in-data/--no-refuse-delimiter-in-data",
+    default=None,
+    help="Raise an error if any multivalued field value contains the list delimiter character. "
+    "Prevents silent data corruption during round-tripping. Overrides schema annotation if set.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -111,6 +117,7 @@ def cli(
     list_syntax=None,
     list_delimiter=None,
     list_strip_whitespace=None,
+    refuse_delimiter_in_data=None,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -191,6 +198,7 @@ def cli(
             inargs["list_delimiter"] = list_delimiter
         if list_strip_whitespace is not None:
             inargs["list_strip_whitespace"] = list_strip_whitespace
+        # refuse_delimiter_in_data only applies to dumping (output), not loading
     obj = loader.load(source=input, target_class=py_target_class, **inargs)
     if infer:
         infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
@@ -230,6 +238,8 @@ def cli(
             outargs["list_delimiter"] = list_delimiter
         if list_strip_whitespace is not None:
             outargs["list_strip_whitespace"] = list_strip_whitespace
+        if refuse_delimiter_in_data is not None:
+            outargs["refuse_delimiter_in_data"] = refuse_delimiter_in_data
     dumper = get_dumper(output_format)
     if output is not None:
         dumper.dump(obj, output, **outargs)
