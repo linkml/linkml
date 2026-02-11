@@ -476,9 +476,9 @@ def test_whitespace_preserved_with_annotation(whitespace_preserve_schemaview, tm
     assert result["items"][0]["tags"] == ["red ", " green ", " blue"]
 
 
-@pytest.mark.parametrize("true_value", ["true", "True", "yes", "1"])
+@pytest.mark.parametrize("true_value", ["true", "True", "TRUE"])
 def test_strip_whitespace_true_values(true_value):
-    """Various truthy annotation values should enable stripping."""
+    """Case-insensitive 'true' annotation values should enable stripping."""
     schema_yaml = f"""
 id: https://example.org/test
 name: test
@@ -490,9 +490,9 @@ annotations:
     assert strip is True, f"Expected True for '{true_value}'"
 
 
-@pytest.mark.parametrize("false_value", ["false", "False", "no", "0"])
+@pytest.mark.parametrize("false_value", ["false", "False", "FALSE"])
 def test_strip_whitespace_false_values(false_value):
-    """Various falsy annotation values should disable stripping."""
+    """Case-insensitive 'false' annotation values should disable stripping."""
     schema_yaml = f"""
 id: https://example.org/test
 name: test
@@ -502,6 +502,22 @@ annotations:
     sv = SchemaView(schema_yaml)
     _, _, strip = get_list_config_from_annotations(sv, None)
     assert strip is False, f"Expected False for '{false_value}'"
+
+
+@pytest.mark.parametrize("invalid_value", ["yes", "no", "1", "0", "on", "off"])
+def test_strip_whitespace_invalid_values_default_to_true(invalid_value, caplog):
+    """Invalid annotation values should warn and default to true (stripping enabled)."""
+    schema_yaml = f"""
+id: https://example.org/test
+name: test
+annotations:
+  list_strip_whitespace: "{invalid_value}"
+"""
+    sv = SchemaView(schema_yaml)
+    with caplog.at_level(logging.WARNING):
+        _, _, strip = get_list_config_from_annotations(sv, None)
+    assert strip is True, f"Expected True (default) for invalid value '{invalid_value}'"
+    assert "Invalid list_strip_whitespace value" in caplog.text
 
 
 def test_output_whitespace_stripped_by_default(whitespace_schemaview, tmp_path):
