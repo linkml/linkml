@@ -403,6 +403,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dateutil.parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParserError</span><span class="p">,</span> <span class="n">parse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">hbreader</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileInfo</span><span class="p">,</span> <span class="n">HBType</span><span class="p">,</span> <span class="n">detect_type</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.mergeutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_from_schema</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaDefinition</span><span class="p">,</span> <span class="n">metamodel_version</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.loaders</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaml_loader</span>
@@ -436,7 +437,8 @@
     <span class="n">source_file_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">base_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">merge_modules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">emit_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">emit_metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load and flatten SchemaDefinition from a file name, a URL or a block of text</span>
 
@@ -452,6 +454,10 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_name_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">emit_metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;metadata-flag&quot;</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="n">emit_metadata</span>
 
     <span class="c1"># Passing a URL or file name</span>
     <span class="k">if</span> <span class="n">detect_type</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">HBType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">HBType</span><span class="o">.</span><span class="n">STRINGABLE</span><span class="p">):</span>
@@ -493,7 +499,7 @@
         <span class="c1"># TODO: figure out how to generate this from the default_prefix and namespace map</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Schema identifier must be supplied&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">emit_metadata</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file</span>
         <span class="n">src_date</span> <span class="o">=</span> <span class="n">schema_metadata</span><span class="o">.</span><span class="n">source_file_date</span>
         <span class="k">try</span><span class="p">:</span>

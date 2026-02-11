@@ -411,11 +411,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="c1"># Stolen from https://github.com/pypa/packaging/blob/main/src/packaging/version.py</span>
 <span class="c1"># Updated to include major, minor, and patch versions</span>
@@ -621,21 +622,38 @@
 
 <div class="viewcode-block" id="Deprecation.warn">
 <a class="viewcode-back" href="../../../maintainers/deprecation.html#linkml.utils.Deprecation.warn">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">warn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deprecated</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="c1"># ensure filter has expected value</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="n">stack_level</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
 
 
-<span class="n">DEPRECATIONS</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
+<span class="n">DEPRECATIONS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;metadata-flag&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.9.6&quot;</span><span class="p">),</span>
+        <span class="n">removed_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.13.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Use of flags `head` or `emit_metadata` to get a metadata header &quot;</span>
+            <span class="s2">&quot;on some generators is no longer supported. &quot;</span>
+            <span class="s2">&quot;Flags `head`, `emit_metadata` and `metadata` were being used for &quot;</span>
+            <span class="s2">&quot;the same purpose. &quot;</span>
+            <span class="s2">&quot;They have been unified, leaving only the flag `metadata`.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Use flag `metadata` instead&quot;</span><span class="p">,</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">1799</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
 
 
 <div class="viewcode-block" id="deprecation_warning">
 <a class="viewcode-back" href="../../../maintainers/deprecation.html#linkml.utils.deprecation_warning">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">deprecation_warning</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deprecation_warning</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stack_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Call this with the name of the deprecation object wherever the deprecated functionality will be used</span>
 
@@ -658,9 +676,67 @@
         <span class="k">return</span>
 
     <span class="k">if</span> <span class="n">dep</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">EMITTED</span><span class="p">:</span>
-        <span class="n">dep</span><span class="o">.</span><span class="n">warn</span><span class="p">()</span>
+        <span class="n">dep</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">stack_level</span><span class="p">)</span>
 
     <span class="n">EMITTED</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+
+<span class="n">METADATA_FLAG</span> <span class="o">=</span> <span class="s2">&quot;metadata-flag&quot;</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="deprecated_fields">
+<a class="viewcode-back" href="../../../maintainers/deprecation.html#linkml.utils.deprecated_fields">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">deprecated_fields</span><span class="p">(</span><span class="n">deprecated_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator to handle deprecated fields in dataclasses.</span>
+
+<span class="sd">    :param deprecated_map: Mapping from old field names to new field names</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="c1"># Store the original __init__ method</span>
+        <span class="n">original_init</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span>
+
+        <span class="c1"># Create a new __init__ that handles deprecated fields</span>
+        <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">original_init</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">new_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="c1"># Process kwargs to handle deprecated fields</span>
+            <span class="k">for</span> <span class="n">old_field</span><span class="p">,</span> <span class="n">new_field</span> <span class="ow">in</span> <span class="n">deprecated_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">old_field</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">new_field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="n">new_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">old_field</span><span class="p">]</span>
+                    <span class="c1"># Remove the old field to prevent the &quot;unexpected keyword argument&quot; error</span>
+                    <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">old_field</span><span class="p">]</span>
+
+            <span class="c1"># Call the original __init__ with the processed kwargs</span>
+            <span class="n">original_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Replace the __init__ method</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="fm">__init__</span> <span class="o">=</span> <span class="n">new_init</span>
+
+        <span class="c1"># Add property accessors for deprecated fields</span>
+        <span class="k">for</span> <span class="n">old_field</span><span class="p">,</span> <span class="n">new_field</span> <span class="ow">in</span> <span class="n">deprecated_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># Create a property for the deprecated field using a closure</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">make_property</span><span class="p">(</span><span class="n">new_name</span><span class="p">):</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">)</span>
+
+                <span class="k">def</span><span class="w"> </span><span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+                    <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">stack_level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+
+            <span class="c1"># Add the property to the class</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">old_field</span><span class="p">,</span> <span class="n">make_property</span><span class="p">(</span><span class="n">new_field</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">cls</span>
+
+    <span class="k">return</span> <span class="n">decorator</span></div>
 
 </pre></div>
         </article>

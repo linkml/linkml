@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -394,7 +394,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
@@ -406,6 +406,19 @@
 <figure class="align-default">
 <img alt="../_images/deprecation_plot.png" class="plot-directive" src="../_images/deprecation_plot.png" />
 </figure>
+<section id="metadata-flag">
+<h2>metadata-flag<a class="headerlink" href="#metadata-flag" title="Link to this heading">¶</a></h2>
+<div class="warning admonition">
+<p class="admonition-title">Deprecated</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.9.6.</span></p>
+</div>
+<p><em>Removed in 1.13.0</em></p>
+<p>See also: <a class="reference external" href="https://github.com/linkml/linkml/issues/1799">#1799</a></p>
+</div>
+<p>Use of flags <cite>head</cite> or <cite>emit_metadata</cite> to get a metadata header on some generators is no longer supported. Flags <cite>head</cite>, <cite>emit_metadata</cite> and <cite>metadata</cite> were being used for the same purpose. They have been unified, leaving only the flag <cite>metadata</cite>.</p>
+<p><strong>Recommendation:</strong> Use flag <cite>metadata</cite> instead</p>
+</section>
 </section>
 
         </article>
@@ -451,8 +464,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Deprecation Log</a><ul>
+<li><a class="reference internal" href="#metadata-flag">metadata-flag</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

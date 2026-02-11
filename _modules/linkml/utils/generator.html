@@ -427,6 +427,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOCAL_METAMODEL_YAML_FILE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.cli.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEFAULT_LOG_LEVEL_INT</span><span class="p">,</span> <span class="n">log_level_option</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">METADATA_FLAG</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.mergeutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">alias_root</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.schemaloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.typereferences</span><span class="w"> </span><span class="kn">import</span> <span class="n">References</span>
@@ -600,8 +601,6 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
-        <span class="c1"># TODO: remove aliasing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uses_schemaloader</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_using_schemaloader</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -650,7 +649,7 @@
                 <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
                 <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span>
                 <span class="n">mergeimports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
-                <span class="n">emit_metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">source_file_date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_date</span><span class="p">,</span>
                 <span class="n">source_file_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_file_size</span><span class="p">,</span>
             <span class="p">)</span>
@@ -690,6 +689,14 @@
 <span class="sd">        :return: Generated output</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">deprecation_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;emit_metadata&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="s2">&quot;head&quot;</span><span class="p">:</span> <span class="s2">&quot;metadata&quot;</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">deprecation_map</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">flag</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">deprecation_warning</span><span class="p">(</span><span class="n">METADATA_FLAG</span><span class="p">)</span>
+                <span class="n">new_flag</span> <span class="o">=</span> <span class="n">deprecation_map</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">new_flag</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">flag</span><span class="p">]</span>
 
         <span class="c1"># the default is to use the Visitor Pattern; each individual generator may</span>
         <span class="c1"># choose to override methods {visit,end}_{element}.</span>
