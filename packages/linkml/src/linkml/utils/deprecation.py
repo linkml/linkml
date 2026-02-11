@@ -16,11 +16,12 @@ To deprecate something:
 
 """
 
+import functools
 import re
 import warnings
 from dataclasses import dataclass
 from importlib.metadata import version
-from typing import Optional
+from typing import Optional, TypeVar
 
 # Stolen from https://github.com/pypa/packaging/blob/main/src/packaging/version.py
 # Updated to include major, minor, and patch versions
@@ -213,17 +214,34 @@ class Deprecation:
             return False
         return SemVer.from_package("linkml") >= self.removed_in
 
-    def warn(self, **kwargs):
+    def warn(self, stack_level=3, **kwargs):
         if self.deprecated:
-            warnings.warn(message=str(self), category=DeprecationWarning, stacklevel=3, **kwargs)
+            # ensure filter has expected value
+            warnings.filterwarnings("default", category=DeprecationWarning)
+            warnings.warn(message=str(self), category=DeprecationWarning, stacklevel=stack_level, **kwargs)
 
 
-DEPRECATIONS = ()  # type: tuple[Deprecation, ...]
+DEPRECATIONS = (
+    Deprecation(
+        name="metadata-flag",
+        deprecated_in=SemVer.from_str("1.9.6"),
+        removed_in=SemVer.from_str("1.13.0"),
+        message=(
+            "Use of flags `head` or `emit_metadata` to get a metadata header "
+            "on some generators is no longer supported. "
+            "Flags `head`, `emit_metadata` and `metadata` were being used for "
+            "the same purpose. "
+            "They have been unified, leaving only the flag `metadata`."
+        ),
+        recommendation="Use flag `metadata` instead",
+        issue=1799,
+    ),
+)  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
 
 
-def deprecation_warning(name: str):
+def deprecation_warning(name: str, stack_level: int = 3):
     """
     Call this with the name of the deprecation object wherever the deprecated functionality will be used
 
@@ -246,6 +264,61 @@ def deprecation_warning(name: str):
         return
 
     if dep.name not in EMITTED:
-        dep.warn()
+        dep.warn(stack_level)
 
     EMITTED.add(name)
+
+
+METADATA_FLAG = "metadata-flag"
+T = TypeVar("T")
+
+
+def deprecated_fields(deprecated_map: dict[str, str]):
+    """
+    Decorator to handle deprecated fields in dataclasses.
+
+    :param deprecated_map: Mapping from old field names to new field names
+    """
+
+    def decorator(cls: type[T]) -> type[T]:
+        # Store the original __init__ method
+        original_init = cls.__init__
+
+        # Create a new __init__ that handles deprecated fields
+        @functools.wraps(original_init)
+        def new_init(self, *args, **kwargs):
+            # Process kwargs to handle deprecated fields
+            for old_field, new_field in deprecated_map.items():
+                if old_field in kwargs:
+                    deprecation_warning(METADATA_FLAG, stack_level=4)
+                    if new_field not in kwargs:
+                        kwargs[new_field] = kwargs[old_field]
+                    # Remove the old field to prevent the "unexpected keyword argument" error
+                    del kwargs[old_field]
+
+            # Call the original __init__ with the processed kwargs
+            original_init(self, *args, **kwargs)
+
+        # Replace the __init__ method
+        cls.__init__ = new_init
+
+        # Add property accessors for deprecated fields
+        for old_field, new_field in deprecated_map.items():
+            # Create a property for the deprecated field using a closure
+            def make_property(new_name):
+                def getter(self):
+                    deprecation_warning(METADATA_FLAG, stack_level=4)
+                    return getattr(self, new_name)
+
+                def setter(self, value):
+                    deprecation_warning(METADATA_FLAG, stack_level=4)
+                    setattr(self, new_name, value)
+
+                return property(getter, setter)
+
+            # Add the property to the class
+            setattr(cls, old_field, make_property(new_field))
+
+        return cls
+
+    return decorator

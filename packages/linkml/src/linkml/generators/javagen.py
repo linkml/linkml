@@ -9,6 +9,7 @@ from jinja2 import Template
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import TypeDefinition
 
@@ -98,6 +99,7 @@ class TemplateCache:
         return self.templates[candidate]
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class JavaGenerator(OOCodeGenerator):
     """
@@ -127,7 +129,6 @@ class JavaGenerator(OOCodeGenerator):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
-    emit_metadata: bool = True
 
     def __post_init__(self) -> None:
         self.template_cache.add_directory(DEFAULT_TEMPLATE_DIR)
@@ -225,8 +226,8 @@ def cli(
     template_variant=None,
     template_file=None,
     generate_records=False,
-    head=True,
-    emit_metadata=False,
+    head=None,
+    emit_metadata=None,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -240,12 +241,21 @@ def cli(
         if template_dir is not None or template_variant is not None:
             logging.warning("--template-file will take precedence over --template-dir and --template-variant")
 
+    # default is adding metadata to the generated code
+    if "metadata" not in args:
+        args["metadata"] = True
+    # deprecated arguments are replaced, head overwrites emit_metadata
+    if emit_metadata is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = emit_metadata
+    if head is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = head
     JavaGenerator(
         yamlfile,
         package=package,
         template_dir=template_dir,
         template_file=template_file,
-        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
