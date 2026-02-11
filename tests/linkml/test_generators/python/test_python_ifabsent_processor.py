@@ -470,6 +470,30 @@ def test_bnode_default_value():
     )
 
 
+def test_default_ns_returns_none():
+    """default_ns ifabsent value is handled at runtime in __post_init__,
+    so the ifabsent processor should return None (no static default)."""
+    schema = (
+        base_schema
+        + """
+      - name: default_prefix
+        range: string
+        ifabsent: default_ns
+    """
+    )
+    schema_view = SchemaView(schema)
+
+    processor = PythonIfAbsentProcessor(schema_view)
+
+    assert (
+        processor.process_slot(
+            schema_view.all_slots()[SlotDefinitionName("default_prefix")],
+            schema_view.all_classes()[ClassDefinitionName("Student")],
+        )
+        is None
+    )
+
+
 @pytest.mark.parametrize("cls_name", ["Inheritance", "Base"])
 def test_custom_types(cls_name, input_path):
     """
