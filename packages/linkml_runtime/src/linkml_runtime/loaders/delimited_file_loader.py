@@ -60,9 +60,14 @@ def get_list_config_from_annotations(
         if "list_delimiter" in annotations:
             inner_delimiter = annotations["list_delimiter"].value
         if "list_strip_whitespace" in annotations:
-            value = annotations["list_strip_whitespace"].value
-            # Handle string "false" or boolean False
-            strip_whitespace = str(value).lower() not in ("false", "no", "0")
+            value = str(annotations["list_strip_whitespace"].value).lower()
+            if value not in ("true", "false"):
+                logger.warning(
+                    f"Invalid list_strip_whitespace value '{value}'. "
+                    "Expected 'true' or 'false'. Defaulting to true."
+                )
+            else:
+                strip_whitespace = value == "true"
 
     return list_markers, inner_delimiter, strip_whitespace
 
