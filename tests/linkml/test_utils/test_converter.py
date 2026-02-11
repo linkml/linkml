@@ -523,3 +523,105 @@ def test_list_strip_whitespace_on_load(cli_runner, tmp_path):
     assert "- alpha" in content
     assert "- beta" in content
     assert "- gamma" in content
+
+
+REFUSE_DELIMITER_SCHEMA = """
+id: https://example.org/test
+name: refuse_delimiter_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+REFUSE_DELIMITER_DATA = """
+items:
+  - id: "1"
+    tags:
+      - "safe"
+      - "has|pipe"
+"""
+
+
+def test_refuse_delimiter_in_data_cli(cli_runner, tmp_path):
+    """Test --refuse-delimiter-in-data flag raises error when data contains delimiter."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(REFUSE_DELIMITER_SCHEMA)
+    data_file.write_text(REFUSE_DELIMITER_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-syntax",
+            "plaintext",
+            "--refuse-delimiter-in-data",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code != 0
+    assert "list delimiter" in str(result.exception)
+
+
+def test_no_refuse_delimiter_in_data_cli(cli_runner, tmp_path):
+    """Test --no-refuse-delimiter-in-data flag allows data containing delimiter."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(REFUSE_DELIMITER_SCHEMA)
+    data_file.write_text(REFUSE_DELIMITER_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-syntax",
+            "plaintext",
+            "--no-refuse-delimiter-in-data",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0

@@ -19,31 +19,35 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 def get_list_config_from_annotations(
     schemaview: SchemaView,
     index_slot: SlotDefinitionName = None,
-) -> tuple[tuple[str, str], str, bool]:
+) -> tuple[tuple[str, str], str, bool, bool]:
     """
-    Read list_syntax, list_delimiter, and list_strip_whitespace from schema-level annotations.
+    Read list_syntax, list_delimiter, list_strip_whitespace, and refuse_delimiter_in_data
+    from schema-level annotations.
 
     These annotations control how multivalued fields are serialized in CSV/TSV:
     - list_syntax: "python" (default) uses brackets [a|b|c], "plaintext" has no brackets
     - list_delimiter: character between list items (default "|")
     - list_strip_whitespace: strip whitespace around delimiter (default true)
+    - refuse_delimiter_in_data: raise ValueError if a multivalued value contains the delimiter (default false)
 
     Note: These are schema-level only because json-flattener's GlobalConfig
     applies the same markers/delimiter to ALL columns in the CSV/TSV.
 
     Returns:
-        Tuple of (csv_list_markers, csv_inner_delimiter, strip_whitespace) for GlobalConfig.
+        Tuple of (csv_list_markers, csv_inner_delimiter, strip_whitespace, refuse_delimiter_in_data).
         - csv_list_markers: ('[', ']') for python style, ('', '') for plaintext
         - csv_inner_delimiter: the delimiter between list items (default '|')
         - strip_whitespace: whether to strip whitespace from list items (default True)
+        - refuse_delimiter_in_data: whether to raise on delimiter-in-value conflicts (default False)
     """
     # Default values matching json-flattener defaults
     list_markers = ("[", "]")
     inner_delimiter = "|"
     strip_whitespace = True  # Default to stripping whitespace
+    refuse_delimiter_in_data = False  # Default to allowing delimiter in data
 
     if not schemaview or not schemaview.schema:
-        return list_markers, inner_delimiter, strip_whitespace
+        return list_markers, inner_delimiter, strip_whitespace, refuse_delimiter_in_data
 
     # Check schema-level annotations
     if schemaview.schema.annotations:
@@ -67,8 +71,17 @@ def get_list_config_from_annotations(
                 )
             else:
                 strip_whitespace = value == "true"
+        if "refuse_delimiter_in_data" in annotations:
+            value = str(annotations["refuse_delimiter_in_data"].value).lower()
+            if value not in ("true", "false"):
+                logger.warning(
+                    f"Invalid refuse_delimiter_in_data value '{value}'. "
+                    "Expected 'true' or 'false'. Defaulting to false."
+                )
+            else:
+                refuse_delimiter_in_data = value == "true"
 
-    return list_markers, inner_delimiter, strip_whitespace
+    return list_markers, inner_delimiter, strip_whitespace, refuse_delimiter_in_data
 
 
 def strip_whitespace_from_lists(obj: Union[dict, list]) -> Union[dict, list]:
@@ -163,6 +176,62 @@ def enhance_configmap_for_multivalued_primitives(
     return configmap
 
 
+def check_data_for_delimiter(
+    objs: list[dict],
+    delimiter: str,
+    schemaview: SchemaView,
+    index_slot: SlotDefinitionName,
+) -> None:
+    """
+    Check that no string value in a multivalued slot contains the list delimiter.
+
+    When refuse_delimiter_in_data is enabled, this function is called before
+    serialization to prevent silent data corruption during round-tripping.
+
+    Args:
+        objs: The list of dicts about to be serialized (one dict per row).
+        delimiter: The list delimiter character (e.g. "|").
+        schemaview: The schema view for looking up slot metadata.
+        index_slot: The top-level index slot name.
+
+    Raises:
+        ValueError: If any string value in a multivalued slot contains the delimiter.
+    """
+    # Identify multivalued primitive/enum slots (same logic as enhance_configmap)
+    multivalued_slots: set[str] = set()
+    if schemaview is not None and index_slot is not None:
+        slot = schemaview.get_slot(index_slot)
+        if slot is not None and slot.range is not None:
+            target_class = slot.range
+            all_classes = schemaview.all_classes()
+            if target_class in all_classes:
+                for slot_name in schemaview.class_slots(target_class):
+                    induced_slot = schemaview.induced_slot(slot_name, target_class)
+                    if induced_slot.multivalued:
+                        slot_range = induced_slot.range
+                        if slot_range not in all_classes:
+                            multivalued_slots.add(slot_name)
+
+    if not multivalued_slots:
+        return
+
+    for obj in objs:
+        for slot_name in multivalued_slots:
+            values = obj.get(slot_name)
+            if not isinstance(values, list):
+                continue
+            for value in values:
+                if isinstance(value, str) and delimiter in value:
+                    raise ValueError(
+                        f"Multivalued slot '{slot_name}' contains a value "
+                        f"that includes the list delimiter '{delimiter}': "
+                        f"'{value}'. This would cause silent data corruption "
+                        f"during round-tripping. Either change the delimiter, "
+                        f"remove the delimiter character from the data, or "
+                        f"disable refuse_delimiter_in_data."
+                    )
+
+
 class DelimitedFileLoader(Loader, ABC):
     @property
     @abstractmethod
@@ -222,7 +291,9 @@ class DelimitedFileLoader(Loader, ABC):
             schemaview = SchemaView(schema)
 
         # Read list configuration from schema annotations
-        list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(schemaview, index_slot)
+        list_markers, inner_delimiter, strip_whitespace, _refuse = get_list_config_from_annotations(
+            schemaview, index_slot
+        )
 
         # CLI options override schema annotations
         if list_syntax is not None:

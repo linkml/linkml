@@ -8,6 +8,7 @@ from jsonasobj2 import as_json_obj
 from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
 from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.loaders.delimited_file_loader import (
+    check_data_for_delimiter,
     get_list_config_from_annotations,
     enhance_configmap_for_multivalued_primitives,
 )
@@ -328,19 +329,21 @@ def whitespace_preserve_schemaview():
 
 def test_get_list_config_with_none_schemaview():
     """When schemaview is None, should return defaults."""
-    list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(None, None)
+    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(None, None)
     assert list_markers == ("[", "]")
     assert inner_delimiter == "|"
     assert strip_whitespace is True
+    assert refuse is False
 
 
 def test_get_list_config_without_annotations():
     """Schema without annotations should return defaults."""
     sv = SchemaView(SCHEMA_WITHOUT_ANNOTATIONS)
-    list_markers, inner_delimiter, strip_whitespace = get_list_config_from_annotations(sv, "id")
+    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(sv, "id")
     assert list_markers == ("[", "]")
     assert inner_delimiter == "|"
     assert strip_whitespace is True
+    assert refuse is False
 
 
 def test_enhance_configmap_with_none_schemaview():
@@ -486,7 +489,7 @@ annotations:
   list_strip_whitespace: "{true_value}"
 """
     sv = SchemaView(schema_yaml)
-    _, _, strip = get_list_config_from_annotations(sv, None)
+    _, _, strip, _ = get_list_config_from_annotations(sv, None)
     assert strip is True, f"Expected True for '{true_value}'"
 
 
@@ -500,7 +503,7 @@ annotations:
   list_strip_whitespace: "{false_value}"
 """
     sv = SchemaView(schema_yaml)
-    _, _, strip = get_list_config_from_annotations(sv, None)
+    _, _, strip, _ = get_list_config_from_annotations(sv, None)
     assert strip is False, f"Expected False for '{false_value}'"
 
 
@@ -515,7 +518,7 @@ annotations:
 """
     sv = SchemaView(schema_yaml)
     with caplog.at_level(logging.WARNING):
-        _, _, strip = get_list_config_from_annotations(sv, None)
+        _, _, strip, _ = get_list_config_from_annotations(sv, None)
     assert strip is True, f"Expected True (default) for invalid value '{invalid_value}'"
     assert "Invalid list_strip_whitespace value" in caplog.text
 
@@ -541,3 +544,200 @@ def test_output_whitespace_preserved_with_annotation(whitespace_preserve_schemav
     content = output_file.read_text()
 
     assert "dog   |cat  |bird" in content
+
+
+# refuse_delimiter_in_data tests
+
+
+SCHEMA_REFUSE_DELIMITER = """
+id: https://example.org/refuse
+name: refuse_delimiter_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+  refuse_delimiter_in_data: "true"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+SCHEMA_REFUSE_DELIMITER_BRACKET = """
+id: https://example.org/refuse_bracket
+name: refuse_delimiter_bracket_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: python
+  list_delimiter: "|"
+  refuse_delimiter_in_data: "true"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+SCHEMA_REFUSE_DELIMITER_SEMICOLON = """
+id: https://example.org/refuse_semi
+name: refuse_delimiter_semicolon_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: ";"
+  refuse_delimiter_in_data: "true"
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+
+def test_refuse_delimiter_in_data_raises_on_conflict(tmp_path):
+    """Plaintext mode: value containing pipe should raise ValueError when refuse_delimiter_in_data is true."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
+    data = {"items": [{"id": "1", "tags": ["safe", "has|pipe"]}]}
+
+    with pytest.raises(ValueError, match="list delimiter"):
+        tsv_dumper.dumps(data, index_slot="items", schemaview=sv)
+
+
+def test_refuse_delimiter_in_data_raises_bracket_mode(tmp_path):
+    """Bracket mode: value containing pipe should raise ValueError when refuse_delimiter_in_data is true."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER_BRACKET)
+    data = {"items": [{"id": "1", "tags": ["safe", "has|pipe"]}]}
+
+    with pytest.raises(ValueError, match="list delimiter"):
+        tsv_dumper.dumps(data, index_slot="items", schemaview=sv)
+
+
+def test_refuse_delimiter_in_data_false_allows_conflict():
+    """Default (false): value containing pipe should NOT raise an error."""
+    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+    data = {"persons": [{"id": "1", "name": "Test", "aliases": ["has|pipe"]}]}
+
+    # Should not raise - refuse_delimiter_in_data defaults to false
+    result = tsv_dumper.dumps(data, index_slot="persons", schemaview=sv)
+    assert result is not None
+
+
+def test_refuse_delimiter_in_data_custom_delimiter():
+    """Semicolon delimiter: value containing semicolon should raise ValueError."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER_SEMICOLON)
+    data = {"items": [{"id": "1", "tags": ["safe", "has;semi"]}]}
+
+    with pytest.raises(ValueError, match="list delimiter"):
+        tsv_dumper.dumps(data, index_slot="items", schemaview=sv)
+
+
+def test_refuse_delimiter_in_data_cli_override(tmp_path):
+    """CLI override: refuse_delimiter_in_data=True passed to dumps should raise even without annotation."""
+    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+    data = {"persons": [{"id": "1", "name": "Test", "aliases": ["has|pipe"]}]}
+
+    with pytest.raises(ValueError, match="list delimiter"):
+        tsv_dumper.dumps(data, index_slot="persons", schemaview=sv, refuse_delimiter_in_data=True)
+
+
+def test_refuse_delimiter_in_data_cli_override_false():
+    """CLI override: refuse_delimiter_in_data=False should suppress the annotation."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
+    data = {"items": [{"id": "1", "tags": ["has|pipe"]}]}
+
+    # Annotation says true, but CLI override says false
+    result = tsv_dumper.dumps(data, index_slot="items", schemaview=sv, refuse_delimiter_in_data=False)
+    assert result is not None
+
+
+def test_get_list_config_refuse_delimiter_annotation():
+    """get_list_config_from_annotations should read refuse_delimiter_in_data."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
+    _, _, _, refuse = get_list_config_from_annotations(sv, "items")
+    assert refuse is True
+
+
+def test_get_list_config_refuse_delimiter_default():
+    """Default refuse_delimiter_in_data should be False."""
+    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+    _, _, _, refuse = get_list_config_from_annotations(sv, "persons")
+    assert refuse is False
+
+
+def test_check_data_for_delimiter_raises():
+    """check_data_for_delimiter should raise ValueError for conflicts."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
+    objs = [{"id": "1", "tags": ["good", "bad|value"]}]
+
+    with pytest.raises(ValueError, match="bad\\|value"):
+        check_data_for_delimiter(objs, "|", sv, "items")
+
+
+def test_check_data_for_delimiter_no_conflict():
+    """check_data_for_delimiter should pass silently when no conflict exists."""
+    sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
+    objs = [{"id": "1", "tags": ["good", "also_good"]}]
+
+    # Should not raise
+    check_data_for_delimiter(objs, "|", sv, "items")
