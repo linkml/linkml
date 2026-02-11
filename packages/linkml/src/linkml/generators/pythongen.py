@@ -948,11 +948,11 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
-            # If we don't have an identifier, we will use the first required field as the key.
-            # This is needed for both inlined_as_dict and inlined_as_list, since both
-            # _normalize_inlined_as_dict and _normalize_inlined_as_list require a key_name
-            # to handle dict input from YAML.
-            if not identifier:
+            # If we don't have an identifier, and we are expecting to be inlined first class elements
+            # (inlined_as_list is not True), we will use the first required field as the key.
+            #  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to
+            #  True
+            if not identifier and not slot.inlined_as_list:
                 for range_slot_name in slot_range_cls.slots:
                     range_slot = self.schema.slots[range_slot_name]
                     if range_slot.required:
