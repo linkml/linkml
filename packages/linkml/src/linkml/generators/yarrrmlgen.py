@@ -52,8 +52,6 @@ class YarrrmlGenerator(Generator):
         sv = self.schemaview
         mappings: dict[str, Any] = {}
 
-        inline_targets: set[str] = set()
-        non_inline_targets: set[str] = set()
         inline_owners: dict[str, list[tuple[str, str]]] = {}
 
         for owner in sv.all_classes().values():
@@ -71,12 +69,9 @@ class YarrrmlGenerator(Generator):
                     inlined = False
 
                 if inlined:
-                    inline_targets.add(range_cls.name)
                     alias = decl.alias if decl and decl.alias else s.alias
                     var = alias or s.name
                     inline_owners.setdefault(range_cls.name, []).append((owner.name, var))
-                else:
-                    non_inline_targets.add(range_cls.name)
 
         for cls in sv.all_classes().values():
             mapping_dict: dict[str, Any] = {}
@@ -90,10 +85,15 @@ class YarrrmlGenerator(Generator):
                             f"{[o[0] for o in owners]}. This is not supported."
                         )
                     owner_name, slot_var = owners[0]
-                    owner_iterator = self._iterator_for_class(sv.get_class(owner_name))
-                    mapping_dict["sources"] = [[self.source, f"{owner_iterator}.{slot_var}"]]
+                    owner_cls = sv.get_class(owner_name)
+                    owner_iterator = self._iterator_for_class(owner_cls)
+                    mapping_dict["sources"] = [
+                        [self.source, f"{owner_iterator}.{slot_var}"]
+                    ]
                 else:
-                    mapping_dict["sources"] = [[self.source, self._iterator_for_class(cls)]]
+                    mapping_dict["sources"] = [
+                        [self.source, self._iterator_for_class(cls)]
+                    ]
             else:
                 mapping_dict["sources"] = [[self.source]]
 
