@@ -25,14 +25,7 @@ The JSON-Schema that is generated should be the same as in the previous example:
 gen-json-schema personinfo.yaml
 ```
 
-And just as a reminder, we can look at the UML for the schema:
-
-
-```bash
-gen-yuml personinfo.yaml
-```
-
-![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++-%20persons%200..*%3E[Person%7Cid:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F],[Container])
+You can visualize the schema using `gen-erdiagram` or `gen-doc`.
 
 See {ref}`FAQ: attributes vs slots <faq/modeling:when should i use attributes vs slots?>`
 
@@ -145,16 +138,7 @@ slots:
 
 Note that our container object now contains two kinds of lists: people and organization
 
-Here is the schema:
-
-```bash
-gen-yuml personinfo-with-inheritance.yaml
-```
-
-Renders as:
-
-![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing%7Cid:string;full_name:string]%5E-[Person%7Cphone:string%20%3F;age:integer%20%3F;aliases:string%20*;id(i):string;full_name(i):string],[NamedThing]%5E-[Organization%7Cmission_statement:string%20%3F;aliases:string%20*;id(i):string;full_name(i):string],[Container]++-%20persons%200..*%3E[Person],[Person]uses%20-.-%3E[HasAliases%7Caliases:string%20*],[Container]++-%20organizations%200..*%3E[Organization],[Organization]uses%20-.-%3E[HasAliases],[Person]uses%20-.-%3E[HasAliases],[Organization]uses%20-.-%3E[HasAliases],[Container])
-
+You can visualize this schema using `gen-erdiagram personinfo-with-inheritance.yaml`.
 
 Let's take a look at the JSON schema:
 
@@ -302,12 +286,7 @@ enums:
 
 ```
 
-```bash
-gen-yuml slot-usage-example.yaml
-```
-
-![img](https://yuml.me/diagram/nofunky;dir:TB/class/[NamedThing%7Cid:string;full_name:string%20%3F]%3Crelated_to%200..1-%20[Relationship%7Cduration:integer%20%3F;relationship_type:string%20%3F],[Relationship]%5E-[OrganizationalRelationship%7Crelationship_type:OrganizationalRelationshipType%20%3F;duration(i):integer%20%3F],[Relationship]%5E-[FamilialRelationship%7Crelationship_type:FamilialRelationshipType%20%3F;duration(i):integer%20%3F],[Organization%7Cid(i):string;full_name(i):string%20%3F]%3Crelated_to%201..1-%20[OrganizationalRelationship],[Person%7Cid(i):string;full_name(i):string%20%3F]++-%20has_organizational_relationships%200..*%3E[OrganizationalRelationship],[FamilialRelationship]%3Chas_familial_relationships%200..*-++[Person],[FamilialRelationship]-%20related_to%201..1%3E[Person],[Container]++-%20persons%200..*%3E[Person],[NamedThing]%5E-[Person],[OrganizationalRelationship]-%20related_to%201..1%3E[Organization],[Container]++-%20organizations%200..*%3E[Organization],[NamedThing]%5E-[Organization],[Relationship]-%20related_to%200..1%3E[NamedThing],[NamedThing]%5E-[Person],[NamedThing]%5E-[Organization],[Person]++-%20has_familial_relationships%200..*%3E[FamilialRelationship],[Container])
-
+You can visualize this schema using `gen-erdiagram slot-usage-example.yaml`.
 
 Here we have a fairly generic class `Relationship` that holds a relationship a person can hold to another entity such as another person or an organization.
 

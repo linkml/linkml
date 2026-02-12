@@ -12,6 +12,7 @@ from jsonasobj2 import as_json, items, loads
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
 from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -29,6 +30,7 @@ from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
+@deprecated_fields({"emit_metadata": "metadata"})
 @dataclass
 class JSONLDGenerator(Generator):
     """
@@ -174,7 +176,7 @@ class JSONLDGenerator(Generator):
             # context = [METAMODEL_CONTEXT_URI, f'file://./{model_context}']
             # TODO: The _visit function above alters the schema in situ
             # force some context_kwargs
-            context_kwargs["emit_metadata"] = False
+            context_kwargs["metadata"] = False
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]

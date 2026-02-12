@@ -8,15 +8,8 @@ from typing import (
     Union,
 )
 
-from pydantic import VERSION as PYDANTIC_VERSION
-
-from linkml.utils.deprecation import deprecation_warning
 from linkml_runtime.linkml_model import Element
 from linkml_runtime.linkml_model.meta import ArrayExpression, DimensionExpression
-
-if int(PYDANTIC_VERSION[0]) < 2:
-    # Support for having pydantic 1 installed in the same environment will be dropped in 1.9.0
-    deprecation_warning("pydantic-v1")
 
 if sys.version_info.minor < 12:
     from typing_extensions import TypeAliasType

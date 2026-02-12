@@ -22,7 +22,6 @@ from linkml.generators.jsonldcontextgen import cli as gen_jsonld_context
 from linkml.generators.jsonldgen import cli as gen_jsonld
 from linkml.generators.jsonschemagen import cli as gen_json_schema
 from linkml.generators.linkmlgen import cli as gen_linkml
-from linkml.generators.markdowngen import cli as gen_markdown
 from linkml.generators.namespacegen import cli as gen_namespaces
 from linkml.generators.owlgen import cli as gen_owl
 from linkml.generators.panderagen import cli as gen_pandera
@@ -45,7 +44,6 @@ from linkml.generators.terminusdbgen import cli as gen_terminusdb
 from linkml.generators.typescriptgen import cli as gen_typescript
 from linkml.generators.yamlgen import cli as gen_yaml
 from linkml.generators.yarrrmlgen import cli as gen_yarrrml
-from linkml.generators.yumlgen import cli as gen_yuml
 from linkml.linter.cli import main as linkml_lint
 from linkml.utils.execute_tutorial import cli as run_tutorial
 from linkml.utils.schema_fixer import main as linkml_schema_fixer
@@ -105,7 +103,6 @@ generate.add_command(gen_graphql, name="graphql")
 generate.add_command(gen_java, name="java")
 generate.add_command(gen_jsonld, name="jsonld")
 generate.add_command(gen_json_schema, name="json-schema")
-generate.add_command(gen_markdown, name="markdown")
 generate.add_command(gen_doc, name="doc")
 generate.add_command(gen_namespaces, name="namespaces")
 generate.add_command(gen_owl, name="owl")
@@ -121,7 +118,6 @@ generate.add_command(gen_shacl, name="shacl")
 generate.add_command(gen_sparql, name="sparql")
 generate.add_command(gen_typescript, name="typescript")
 generate.add_command(gen_terminusdb, name="terminusdb")
-generate.add_command(gen_yuml, name="yuml")
 generate.add_command(gen_yaml, name="yaml")
 generate.add_command(gen_erdiagram, name="erdiagram")
 generate.add_command(gen_sqla, name="sqla")

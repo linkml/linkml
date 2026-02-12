@@ -42,7 +42,7 @@ def test_generator_initialization(kitchen_sink_path):
 def test_deprecated_decorator(kitchen_sink_path):
     """Test that DotGenerator is marked as deprecated"""
     # Check if creating an instance triggers a deprecation warning
-    with pytest.warns(DeprecationWarning, match="Replaced by yuml/mermaid"):
+    with pytest.warns(DeprecationWarning, match="Replaced by mermaid"):
         DotGenerator(kitchen_sink_path)
 
 

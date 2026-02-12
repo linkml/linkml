@@ -8,7 +8,7 @@ import yaml
 
 from linkml._version import __version__
 from linkml.generators.pythongen import PythonGenerator
-from linkml.utils import datautils, validation
+from linkml.utils import datautils
 from linkml.utils.datautils import (
     _get_context,
     _get_format,
@@ -19,6 +19,8 @@ from linkml.utils.datautils import (
     infer_index_slot,
     infer_root_class,
 )
+from linkml.validator import validate as run_validation
+from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import Prefix
 from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
@@ -168,8 +170,11 @@ def cli(
     if validate:
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
-        # TODO: use validator framework
-        validation.validate_object(obj, schema)
+        obj_dict = json_dumper.to_dict(obj)
+        report = run_validation(obj_dict, schema, target_class)
+        if report.results:
+            errors = "\n".join(r.message for r in report.results)
+            raise Exception(f"Validation failed:\n{errors}")
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":

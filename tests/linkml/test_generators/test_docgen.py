@@ -1,7 +1,5 @@
 """
 Tests generation of markdown and similar documents
-
-Note that docgen replaces markdowngen
 """
 
 import logging

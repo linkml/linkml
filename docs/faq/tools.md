@@ -236,15 +236,13 @@ gen-doc --dialect myst ...
 
 ## Can I customize the Markdown generation for my schema site?
 
-For some purposes, the generic schema documentation provided by `gen-markdown` may look too... generic.
-
 You can customize markdown generation using your own templates. This requires a basic understanding of Jinja2 templates.
 
 The protocol is:
 
 1. copy the jinja templates from [docgen](https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen) to your own repo in a folder `templates`
 2. customize these templates
-3. run `gen-docs --template-directory templates -d docs my_schema.yaml`
+3. run `gen-doc --template-directory templates -d docs my_schema.yaml`
 4. run `mkdocs serve` to test locally
 5. iterate until they look how you want, then deploy (e.g. `mkdocs gh-deploy`)
 
