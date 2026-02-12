@@ -26,13 +26,12 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
     "click",
@@ -92,8 +91,7 @@ quiet-level = 3
 extend-exclude = []
 force-exclude = true
 line-length = 120
-# Assume Python 3.9
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 
@@ -198,7 +196,7 @@ max-complexity = 15
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["lint", "py{39,310,311,312,313}"]
+env_list = ["lint", "py{310,311,312,313}"]
 
 [tool.tox.env_run_base]
 allowlist_externals = ["uv"]

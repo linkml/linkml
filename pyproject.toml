@@ -55,7 +55,7 @@ quiet-level = 3
 
 [tool.black]
 line-length = 120
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+target-version = ["py310", "py311", "py312", "py313"]
 force-exclude = '''
 /(
   # default exclude
@@ -120,8 +120,7 @@ extend-exclude = [
 ]
 force-exclude = true
 line-length = 120
-# Assume Python 3.9
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 extend-ignore = ["E203"]
@@ -149,7 +148,7 @@ known-first-party = ["linkml", "linkml_runtime"]
 
 [tool.tox]
 requires = ["tox>=4", "tox-uv"]
-env_list = ["lint", "py{39,310,311,312,313}"]
+env_list = ["lint", "py{310,311,312,313}"]
 
 [tool.tox.env_run_base]
 runner = "uv-venv-lock-runner"
