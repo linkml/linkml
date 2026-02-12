@@ -87,13 +87,9 @@ class YarrrmlGenerator(Generator):
                     owner_name, slot_var = owners[0]
                     owner_cls = sv.get_class(owner_name)
                     owner_iterator = self._iterator_for_class(owner_cls)
-                    mapping_dict["sources"] = [
-                        [self.source, f"{owner_iterator}.{slot_var}"]
-                    ]
+                    mapping_dict["sources"] = [[self.source, f"{owner_iterator}.{slot_var}"]]
                 else:
-                    mapping_dict["sources"] = [
-                        [self.source, self._iterator_for_class(cls)]
-                    ]
+                    mapping_dict["sources"] = [[self.source, self._iterator_for_class(cls)]]
             else:
                 mapping_dict["sources"] = [[self.source]]
 
