@@ -7,7 +7,7 @@ from linkml_runtime.linkml_model import (
 
 
 class PythonIfAbsentProcessor(IfAbsentProcessor):
-    UNIMPLEMENTED_DEFAULT_VALUES = ["class_curie", "class_uri", "slot_uri", "slot_curie", "default_range", "default_ns"]
+    UNIMPLEMENTED_DEFAULT_VALUES = ["class_curie", "class_uri", "slot_uri", "slot_curie", "default_range"]
 
     def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
         if default_value in self.UNIMPLEMENTED_DEFAULT_VALUES:
@@ -15,6 +15,11 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
 
         if default_value == "bnode":
             return True, "bnode()"
+
+        if default_value == "default_ns":
+            # default_ns depends on self.id at runtime, so no static default is possible.
+            # The actual initialization is handled in __post_init__ by pythongen's gen_postinit().
+            return True, None
 
         return False, None
 
