@@ -1554,7 +1554,7 @@ def test_template_render():
 
     class InnerTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "inner.jinja"
-        value: Union[int, str] = 1
+        value: int | str = 1
 
     class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
@@ -1639,7 +1639,7 @@ def test_arrays_anyshape_union():
     """
 
     class MyModel(BaseModel):
-        array: AnyShapeArray[Union[int, float]]
+        array: AnyShapeArray[int | float]
 
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
@@ -1669,7 +1669,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
         class MyModel(BaseModel):
             array: AnyShapeArray[dtype]
-            dummy: Optional[AnyShapeArray[str]] = None
+            dummy: AnyShapeArray[str] | None = None
 
     schema = MyModel.model_json_schema()
     array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
@@ -3140,26 +3140,3 @@ classes:
     # InteractionAssociation should have narrowed constraint
     # (interacts_with and its descendants only)
     assert 'Literal["interacts_with", "physically_interacts_with"]' in code
-
-
-def test_crappy_stdlib_set_removed():
-    """
-    After support for <3.10 is dropped, remove the dang stdlib list stub
-
-    since this is just a tidiness test rather than a correctness test,
-    wrap the whole thing in a try and self-contain its imports
-    """
-    try:
-        from importlib.metadata import metadata
-
-        from packaging.specifiers import SpecifierSet
-        from packaging.version import Version
-
-        linkml_meta = metadata("linkml")
-        req_python = SpecifierSet(linkml_meta.json["requires_python"])
-        assert req_python.contains(Version("3.9")), (
-            "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
-        )
-        "and then REMOVE THIS TEST!"
-    except Exception:
-        pass
