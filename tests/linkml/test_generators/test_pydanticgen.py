@@ -807,7 +807,7 @@ classes:
 
 
 @pytest.mark.parametrize(
-    "value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid",
+    "value, required, minimum_cardinality, maximum_cardinality, exact_cardinality, valid",
     (
         (
             None,
@@ -860,7 +860,7 @@ classes:
         ([1, 2, 3], True, 3, 3, 3, True),
     ),
 )
-def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid):
+def test_pydantic_cardinality(value, required, minimum_cardinality, maximum_cardinality, exact_cardinality, valid):
     """
     Ensure that the cardinality constraints for list length are correctly applied
     to the generated pydantic model, using SchemaBuilder.
@@ -874,7 +874,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
                 range="float",
                 multivalued=True,
                 required=required,
-                minimum_cardinality=minimium_cardinality,
+                minimum_cardinality=minimum_cardinality,
                 maximum_cardinality=maximum_cardinality,
                 exact_cardinality=exact_cardinality,
             )
@@ -890,7 +890,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
     field = cls.model_fields["cardinality_array"]
 
     assert field.is_required() == required
-    assert field.annotation == list[float] if required else Optional[list[float]]
+    assert field.annotation == list[float] if required else list[float] | None
 
     # filter down the metadata to only min_length and max_length entries
     min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
@@ -901,9 +901,9 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
         assert len(max_length) == 1
         assert exact_cardinality == min_length[0]
         assert exact_cardinality == max_length[0]
-    if minimium_cardinality:
+    if minimum_cardinality:
         assert len(min_length) == 1
-        assert minimium_cardinality == min_length[0]
+        assert minimum_cardinality == min_length[0]
     if maximum_cardinality:
         assert len(max_length) == 1
         assert maximum_cardinality == max_length[0]
@@ -1067,7 +1067,7 @@ def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expecte
         (
             'object_id: Optional[str] = Field(default=None, description="Unique UUID for each object")',
             "object_id",
-            Optional[str],
+            str | None,
             None,
             "Unique UUID for each object",
         ),
@@ -1656,7 +1656,7 @@ def test_arrays_anyshape_union():
     (
         (None, [{}]),
         (int, [{"type": "integer"}]),
-        (Union[int, float], [{"type": "integer"}, {"type": "number"}]),
+        (int | float, [{"type": "integer"}, {"type": "number"}]),
     ),
 )
 def test_arrays_anyshape_json_schema(dtype, expected):

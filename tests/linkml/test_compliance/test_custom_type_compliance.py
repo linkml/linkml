@@ -72,7 +72,7 @@ def test_typeof(framework, linkml_type, example_value):
     )
     expected_behavior = None
     v = example_value
-    is_valid = isinstance(v, (type_py_cls, type(None)))
+    is_valid = isinstance(v, type_py_cls | type(None))
     bool2int = isinstance(v, bool) and linkml_type == "integer"
     if bool2int:
         is_valid = False

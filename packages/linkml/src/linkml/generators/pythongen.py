@@ -2,12 +2,11 @@ import keyword
 import logging
 import os
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Optional, Union
 
 import click
 from rdflib import URIRef
@@ -301,7 +300,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 if e.imported_from:
                     self.add_entry(e.imported_from, camelcase(e.name))
 
-            def add_entry(innerself, path: Union[str, URIRef], name: str) -> None:
+            def add_entry(innerself, path: str | URIRef, name: str) -> None:
                 path = str(self.namespaces.uri_for(path) if ":" in path else path)
                 if path.startswith(linkml_files.LINKML_NAMESPACE):
                     model_base = "." if self.genmeta else "linkml_runtime.linkml_model."
@@ -629,9 +628,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     def range_cardinality(
         self,
         slot: SlotDefinition,
-        cls: Optional[ClassDefinition],
+        cls: ClassDefinition | None,
         positional_allowed: bool,
-    ) -> tuple[str, Optional[str]]:
+    ) -> tuple[str, str | None]:
         """
         Return the range type including initializers, etc.
         Generate a class variable declaration for the supplied slot.  Note: the positional_allowed attribute works,
@@ -690,7 +689,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         else:
             return f"Optional[{range_type}]", "None"
 
-    def class_reference_type(self, slot: SlotDefinition, cls: Optional[ClassDefinition]) -> tuple[str, str, str]:
+    def class_reference_type(self, slot: SlotDefinition, cls: ClassDefinition | None) -> tuple[str, str, str]:
         """
         Return the type of slot referencing a class
 
@@ -811,7 +810,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 return self._roll_up_type(t.typeof)
         return typ_name
 
-    def gen_constructor(self, cls: ClassDefinition) -> Optional[str]:
+    def gen_constructor(self, cls: ClassDefinition) -> str | None:
         """
         Generate python constructor for class
 
@@ -870,7 +869,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             rlines.append("")
         return ("\n\t" if len(rlines) > 0 else "") + "\n\t".join(rlines)
 
-    def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> Optional[str]:
+    def gen_postinit(self, cls: ClassDefinition, slot: SlotDefinition) -> str | None:
         """Generate python post init rules for slot in class"""
         rlines: list[str] = []
 
@@ -1024,7 +1023,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             if self.schema.slots[slot_name].key or self.schema.slots[slot_name].identifier
         ]
 
-    def key_name_for(self, class_name: ClassDefinitionName) -> Optional[str]:
+    def key_name_for(self, class_name: ClassDefinitionName) -> str | None:
         for slot_name in self.primary_keys_for(self.schema.classes[class_name]):
             return self.formatted_element_name(class_name, True) + camelcase(slot_name)
         return None
@@ -1059,7 +1058,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 return False  # Occurs before
         return True
 
-    def python_uri_for(self, uriorcurie: Union[str, URIRef]) -> tuple[str, Optional[str]]:
+    def python_uri_for(self, uriorcurie: str | URIRef) -> tuple[str, str | None]:
         """Return the python form of uriorcurie
         :param uriorcurie:
         :return: URI and CURIE form

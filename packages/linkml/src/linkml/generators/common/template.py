@@ -6,7 +6,7 @@ See :mod:`.linkml.generators.pydanticgen.template` for example implementation
 
 from collections.abc import Generator
 from copy import copy
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar, Union
 
 from jinja2 import Environment
 from pydantic import BaseModel, Field, field_validator
@@ -30,7 +30,7 @@ class TemplateModel(BaseModel):
 
     meta_exclude: ClassVar[list[str]] = None
 
-    def render(self, environment: Optional[Environment] = None, **kwargs) -> str:
+    def render(self, environment: Environment | None = None, **kwargs) -> str:
         """
         Recursively render a template model to a string.
 
@@ -81,7 +81,7 @@ class ObjectImport(BaseModel):
     """
 
     name: str
-    alias: Optional[str] = None
+    alias: str | None = None
 
 
 class Import(TemplateModel):
@@ -90,8 +90,8 @@ class Import(TemplateModel):
     """
 
     module: str
-    alias: Optional[str] = None
-    objects: Optional[list[ObjectImport]] = None
+    alias: str | None = None
+    objects: list[ObjectImport] | None = None
     is_schema: bool = False
     """
     Whether or not this ``Import`` is importing another schema imported by the main schema --
@@ -202,14 +202,14 @@ class Imports(TemplateModel):
     Defines methods for adding, iterating, and indexing from within the :attr:`Imports.imports` list.
     """
 
-    imports: list[Union[Import, ConditionalImport]] = Field(default_factory=list)
+    imports: list[Import | ConditionalImport] = Field(default_factory=list)
     render_sorted: bool = True
     """When rendering, render in sorted groups"""
 
     @classmethod
     def _merge(
-        cls, imports: list[Union[Import, ConditionalImport]], other: Union[Import, "Imports", list[Import]]
-    ) -> list[Union[Import, ConditionalImport]]:
+        cls, imports: list[Import | ConditionalImport], other: Union[Import, "Imports", list[Import]]
+    ) -> list[Import | ConditionalImport]:
         """
         Add a new import to an existing imports list, handling deduplication and flattening.
 
@@ -280,7 +280,7 @@ class Imports(TemplateModel):
     def __iter__(self) -> Generator[Import, None, None]:
         yield from self.imports
 
-    def __getitem__(self, item: Union[int, str]) -> Import:
+    def __getitem__(self, item: int | str) -> Import:
         if isinstance(item, int):
             return self.imports[item]
         elif isinstance(item, str):
@@ -321,9 +321,7 @@ class Imports(TemplateModel):
 
     @field_validator("imports", mode="after")
     @classmethod
-    def imports_are_merged(
-        cls, imports: list[Union[Import, ConditionalImport]]
-    ) -> list[Union[Import, ConditionalImport]]:
+    def imports_are_merged(cls, imports: list[Import | ConditionalImport]) -> list[Import | ConditionalImport]:
         """
         When creating from a list of imports, construct model as if we have done so by iteratively
         constructing with __add__ calls
@@ -351,7 +349,7 @@ class Imports(TemplateModel):
             i.sort()
         self.imports = imports
 
-    def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
+    def render(self, environment: Environment | None = None, black: bool = False) -> str:
         if self.render_sorted:
             self.sort()
         rendered = super().render(environment=environment, black=black)
@@ -359,9 +357,9 @@ class Imports(TemplateModel):
 
 
 def _render(
-    item: Union[TemplateModel, Any, list[Union[Any, TemplateModel]], dict[str, Union[Any, TemplateModel]]],
+    item: TemplateModel | Any | list[Any | TemplateModel] | dict[str, Any | TemplateModel],
     environment: Environment,
-) -> Union[str, list[str], dict[str, str]]:
+) -> str | list[str] | dict[str, str]:
     if isinstance(item, TemplateModel):
         return item.render(environment)
     elif isinstance(item, list):

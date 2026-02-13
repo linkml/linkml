@@ -1,7 +1,6 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 from jinja2 import Template
@@ -123,7 +122,7 @@ class GolangGenerator(Generator):
             alias = element.alias
         return underscore(alias)
 
-    def classref(self, cls: ClassDefinition) -> Optional[str]:
+    def classref(self, cls: ClassDefinition) -> str | None:
         """
         Returns the class name for the class that holds a reference (foreign key) to members of this class
 
@@ -139,7 +138,7 @@ class GolangGenerator(Generator):
         else:
             return None
 
-    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
+    def get_identifier_or_key_slot(self, cn: ClassDefinitionName) -> SlotDefinition | None:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(cn)
         if id_slot:

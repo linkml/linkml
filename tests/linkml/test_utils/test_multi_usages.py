@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pytest
 
 from linkml.utils.schemaloader import SchemaLoader
@@ -10,10 +8,10 @@ from linkml_runtime.utils.yamlutils import as_yaml
 def _eval_expected(
     schema: SchemaDefinition,
     slotname: str,
-    alias: Optional[str],
+    alias: str | None,
     domain_of: str,
-    is_a: Optional[str],
-    usage_slot_name: Optional[str],
+    is_a: str | None,
+    usage_slot_name: str | None,
     range: str,
 ) -> None:
     slot = schema.slots[slotname]

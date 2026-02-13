@@ -6,7 +6,6 @@ import os
 from csv import DictWriter
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional
 
 import click
 
@@ -35,16 +34,16 @@ class CsvGenerator(Generator):
     requires_metamodel = False
 
     # ObjectVars
-    sep: Optional[str] = None
+    sep: str | None = None
     """Separator for columns"""
 
-    closure: Optional[set[ClassDefinitionName]] = None
+    closure: set[ClassDefinitionName] | None = None
     """List of classes to include in output"""
 
-    writer: Optional[DictWriter] = None
+    writer: DictWriter | None = None
     """Python dictwriter"""
 
-    _str_io: Optional[StringIO] = None
+    _str_io: StringIO | None = None
     """String that the writer outputs to"""
 
     def __post_init__(self):

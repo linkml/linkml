@@ -1,7 +1,8 @@
 import json
 import os
+from collections.abc import Callable
 from io import TextIOWrapper
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union
+from typing import TYPE_CHECKING, Any
 
 import yaml
 from jsonasobj2 import JsonObj, loads
@@ -10,11 +11,11 @@ if TYPE_CHECKING:
     from linkml_runtime.utils.namespaces import Namespaces
 
 
-CONTEXT_TYPE = Union[str, dict, JsonObj]
-CONTEXTS_PARAM_TYPE = Optional[Union[CONTEXT_TYPE, list[CONTEXT_TYPE]]]
+CONTEXT_TYPE = str | dict | JsonObj
+CONTEXTS_PARAM_TYPE = list[CONTEXT_TYPE] | CONTEXT_TYPE | None
 
 
-def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = None) -> JsonObj:
+def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Any | None = None) -> JsonObj:
     """Take a list of JSON-LD contexts, which can be one of:
         * the name of a JSON-LD file
         * the URI of a JSON-lD file
@@ -32,21 +33,21 @@ def merge_contexts(contexts: CONTEXTS_PARAM_TYPE = None, base: Optional[Any] = N
     :return: aggregated context
     """
 
-    def prune_context_node(ctxt: Union[str, JsonObj]) -> Union[str, JsonObj]:
+    def prune_context_node(ctxt: str | JsonObj) -> str | JsonObj:
         return ctxt["@context"] if isinstance(ctxt, JsonObj) and "@context" in ctxt else ctxt
 
     def to_file_uri(fname: str) -> str:
         return "file://" + fname
 
     context_list = []
-    for context in [] if contexts is None else [contexts] if not isinstance(contexts, (list, tuple, set)) else contexts:
+    for context in [] if contexts is None else [contexts] if not isinstance(contexts, list | tuple | set) else contexts:
         if isinstance(context, str):
             # One of filename, URL or json text
             if context.strip().startswith("{"):
                 context = loads(context)
             elif "://" not in context:
                 context = to_file_uri(context)
-        elif not isinstance(context, (JsonObj, str)):
+        elif not isinstance(context, JsonObj | str):
             context = JsonObj(**context)  # dict
         context_list.append(prune_context_node(context))
     if base:
@@ -86,9 +87,7 @@ def map_import(importmap: dict[str, str], namespaces: Callable[[], "Namespaces"]
     return importmap.get(sname, sname)  # It may also use URI or other forms
 
 
-def parse_import_map(
-    map_: Optional[Union[str, dict[str, str], TextIOWrapper]], base: Optional[str] = None
-) -> dict[str, str]:
+def parse_import_map(map_: str | dict[str, str] | TextIOWrapper | None, base: str | None = None) -> dict[str, str]:
     """
     Process the import map
     :param map_: A map location, the JSON for a map, YAML for a map or an existing dictionary

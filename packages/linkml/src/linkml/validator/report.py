@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -25,9 +25,9 @@ class ValidationResult(BaseModel):
     type: str
     severity: Severity
     message: str
-    instance: Optional[Any] = None
-    instance_index: Optional[int] = None
-    instantiates: Optional[str] = None
+    instance: Any | None = None
+    instance_index: int | None = None
+    instantiates: str | None = None
     context: list[str] = []
 
     # The source object that caused this validation result

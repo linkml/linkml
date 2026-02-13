@@ -76,18 +76,18 @@ class SemVer:
     major: int = 0
     minor: int = 0
     patch: int = 0
-    epoch: Optional[int] = None
-    pre: Optional[str] = None
-    pre_l: Optional[str] = None
-    pre_n: Optional[str] = None
-    post: Optional[str] = None
-    post_n1: Optional[str] = None
-    post_l: Optional[str] = None
-    post_n2: Optional[str] = None
-    dev: Optional[str] = None
-    dev_l: Optional[str] = None
-    dev_n: Optional[str] = None
-    local: Optional[str] = None
+    epoch: int | None = None
+    pre: str | None = None
+    pre_l: str | None = None
+    pre_n: str | None = None
+    post: str | None = None
+    post_n1: str | None = None
+    post_l: str | None = None
+    post_n2: str | None = None
+    dev: str | None = None
+    dev_l: str | None = None
+    dev_n: str | None = None
+    local: str | None = None
 
     def __post_init__(self):
         self.major = int(self.major)
@@ -174,11 +174,11 @@ class Deprecation:
     """Message to be displayed explaining the deprecation"""
     deprecated_in: SemVer
     """Version that the feature was deprecated in"""
-    removed_in: Optional[SemVer] = None
+    removed_in: SemVer | None = None
     """Version that the feature will be removed in"""
-    recommendation: Optional[str] = None
+    recommendation: str | None = None
     """Recommendation about what to do to replace the deprecated behavior"""
-    issue: Optional[int] = None
+    issue: int | None = None
     """GitHub version describing deprecation"""
 
     def __post_init__(self):

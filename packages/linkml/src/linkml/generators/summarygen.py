@@ -4,7 +4,6 @@ import os
 from csv import DictWriter
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional
 
 import click
 
@@ -22,11 +21,11 @@ class SummaryGenerator(Generator):
     valid_formats = ["tsv"]
 
     dirname: str = None
-    classtab: Optional[DictWriter] = None
-    slottab: Optional[DictWriter] = None
+    classtab: DictWriter | None = None
+    slottab: DictWriter | None = None
     dialect: str = "excel-tab"
 
-    _str_io: Optional[StringIO] = None
+    _str_io: StringIO | None = None
 
     def visit_schema(self, **_) -> None:
         self._str_io = StringIO()
@@ -80,7 +79,7 @@ class SummaryGenerator(Generator):
             }
         )
 
-    def end_schema(self, **kwargs) -> Optional[str]:
+    def end_schema(self, **kwargs) -> str | None:
         return self._str_io.getvalue()
 
 

@@ -7,7 +7,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 from jsonasobj2 import JsonObj, as_json
@@ -47,25 +47,25 @@ class ContextGenerator(Generator):
     context_body: dict = field(default_factory=lambda: dict())
     slot_class_maps: dict = field(default_factory=lambda: dict())
     metadata: bool = False
-    model: Optional[bool] = True
-    base: Optional[Union[str, Namespace]] = None
-    output: Optional[str] = None
-    prefixes: Optional[bool] = True
-    flatprefixes: Optional[bool] = False
-    fix_multivalue_containers: Optional[bool] = False
+    model: bool | None = True
+    base: str | Namespace | None = None
+    output: str | None = None
+    prefixes: bool | None = True
+    flatprefixes: bool | None = False
+    fix_multivalue_containers: bool | None = False
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
     embed_context_in_frame: bool = False
     frame_body: dict = field(default_factory=lambda: dict())
-    frame_root: Optional[str] = None
+    frame_root: str | None = None
 
     def __post_init__(self) -> None:
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
-    def visit_schema(self, base: Optional[Union[str, Namespace]] = None, output: Optional[str] = None, **_):
+    def visit_schema(self, base: str | Namespace | None = None, output: str | None = None, **_):
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
@@ -91,11 +91,11 @@ class ContextGenerator(Generator):
 
     def end_schema(
         self,
-        base: Optional[Union[str, Namespace]] = None,
-        output: Optional[str] = None,
-        prefixes: Optional[bool] = None,
-        flatprefixes: Optional[bool] = None,
-        model: Optional[bool] = None,
+        base: str | Namespace | None = None,
+        output: str | None = None,
+        prefixes: bool | None = None,
+        flatprefixes: bool | None = None,
+        model: bool | None = None,
         **_,
     ) -> str:
         if base is None:
@@ -262,11 +262,11 @@ class ContextGenerator(Generator):
 
     def serialize(
         self,
-        base: Optional[Union[str, Namespace]] = None,
-        output: Optional[str] = None,
-        prefixes: Optional[bool] = None,
-        flatprefixes: Optional[bool] = None,
-        model: Optional[bool] = None,
+        base: str | Namespace | None = None,
+        output: str | None = None,
+        prefixes: bool | None = None,
+        flatprefixes: bool | None = None,
+        model: bool | None = None,
         **kwargs,
     ) -> str:
         return super().serialize(
