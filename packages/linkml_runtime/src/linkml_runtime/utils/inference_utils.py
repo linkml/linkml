@@ -1,7 +1,8 @@
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 from jsonasobj2 import JsonObj, items
 
@@ -60,11 +61,11 @@ class Policy(Enum):
 
 def generate_slot_value(
     obj: YAMLRoot,
-    slot_name: Union[str, SlotDefinitionName],
+    slot_name: str | SlotDefinitionName,
     schemaview: SchemaView,
-    class_name: Union[str, ClassDefinitionName] = None,
+    class_name: str | ClassDefinitionName = None,
     config: Config = Config(),
-) -> Optional[Any]:
+) -> Any | None:
     """
     Infer the value of a slot for a given object
 
@@ -103,9 +104,9 @@ def generate_slot_value(
 
 def infer_slot_value(
     obj: YAMLRoot,
-    slot_name: Union[str, SlotDefinitionName],
+    slot_name: str | SlotDefinitionName,
     schemaview: SchemaView,
-    class_name: Union[str, ClassDefinitionName] = None,
+    class_name: str | ClassDefinitionName = None,
     policy: Policy = Policy.STRICT,
     config: Config = Config(),
 ):
@@ -141,7 +142,7 @@ def infer_slot_value(
 def infer_all_slot_values(
     obj: YAMLRoot,
     schemaview: SchemaView,
-    class_name: Union[str, ClassDefinitionName] = None,
+    class_name: str | ClassDefinitionName = None,
     policy: Policy = Policy.STRICT,
     config: Config = Config(),
 ):

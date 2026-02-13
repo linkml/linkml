@@ -80,7 +80,7 @@ class Loader(ABC):
         :return: instance of target_class
         """
         results = self.load_any(*args, **kwargs)
-        if isinstance(results, (BaseModel, YAMLRoot)):
+        if isinstance(results, BaseModel | YAMLRoot):
             return results
         msg = f"Result is not an instance of BaseModel or YAMLRoot: {type(results)}"
         raise ValueError(msg)

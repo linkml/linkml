@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Union
 
 from pydantic import BaseModel
 
@@ -9,7 +8,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 class Dumper(ABC):
     """Abstract base class for all dumpers"""
 
-    def dump(self, element: Union[BaseModel, YAMLRoot], to_file: str, **_) -> None:
+    def dump(self, element: BaseModel | YAMLRoot, to_file: str, **_) -> None:
         """
         Write element to to_file
         :param element: LinkML object to be dumped
@@ -20,7 +19,7 @@ class Dumper(ABC):
             output_file.write(self.dumps(element, **_))
 
     @abstractmethod
-    def dumps(self, element: Union[BaseModel, YAMLRoot], **_) -> str:
+    def dumps(self, element: BaseModel | YAMLRoot, **_) -> str:
         """
         Convert element to a string
         @param element: Union[BaseModel, YAMLRoot] object to be rendered

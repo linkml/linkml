@@ -2,7 +2,6 @@ import logging
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 import click
 from jinja2 import Template
@@ -65,7 +64,7 @@ class TemplateCache:
 
         self.template_files["__FORCE__"] = template_file
 
-    def get_template(self, name: str, fallback: str = "class", variant: Optional[str] = None) -> Optional[Template]:
+    def get_template(self, name: str, fallback: str = "class", variant: str | None = None) -> Template | None:
         """Finds the template for a given object.
 
         :param name: The name of the object for which a template is required.
@@ -76,7 +75,7 @@ class TemplateCache:
             available.
         """
 
-        candidate: Optional[Path] = None
+        candidate: Path | None = None
 
         candidate = self.template_files.get("__FORCE__")
 
@@ -122,8 +121,8 @@ class JavaGenerator(OOCodeGenerator):
     file_extension = "java"
 
     # ObjectVars
-    template_file: Optional[str] = None
-    template_dir: Optional[Path] = None
+    template_file: str | None = None
+    template_dir: Path | None = None
     template_cache: TemplateCache = field(default_factory=lambda: TemplateCache())
 
     gen_classvars: bool = True
@@ -155,7 +154,7 @@ class JavaGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
-    def serialize(self, directory: str, template_variant: Optional[str] = None, **kwargs) -> None:
+    def serialize(self, directory: str, template_variant: str | None = None, **kwargs) -> None:
         oodocs = self.create_documents()
         self.directory = directory
         for oodoc in oodocs:

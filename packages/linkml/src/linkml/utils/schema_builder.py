@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -41,10 +41,10 @@ class SchemaBuilder:
 
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     """Initialized name for the schema."""
 
-    id: Optional[str] = None
+    id: str | None = None
     """Initialized id for the schema."""
 
     schema: SchemaDefinition = None
@@ -59,9 +59,9 @@ class SchemaBuilder:
 
     def add_class(
         self,
-        cls: Union[ClassDefinition, dict, str],
-        slots: Union[dict, list[Union[str, SlotDefinition]]] = None,
-        slot_usage: Union[dict[str, SlotDefinition], dict[str, Any], list[SlotDefinition]] = None,
+        cls: ClassDefinition | dict | str,
+        slots: dict | list[str | SlotDefinition] = None,
+        slot_usage: dict[str, SlotDefinition] | dict[str, Any] | list[SlotDefinition] = None,
         replace_if_present=False,
         use_attributes=False,
         **kwargs,
@@ -125,7 +125,7 @@ class SchemaBuilder:
 
     def add_slot(
         self,
-        slot: Union[SlotDefinition, dict, str],
+        slot: SlotDefinition | dict | str,
         class_name: str = None,
         replace_if_present=False,
         **kwargs,
@@ -166,8 +166,8 @@ class SchemaBuilder:
 
     def add_enum(
         self,
-        enum_def: Union[EnumDefinition, dict, str],
-        permissible_values: list[Union[str, PermissibleValue]] = None,
+        enum_def: EnumDefinition | dict | str,
+        permissible_values: list[str | PermissibleValue] = None,
         replace_if_present=False,
         **kwargs,
     ) -> "SchemaBuilder":
@@ -234,7 +234,7 @@ class SchemaBuilder:
 
     def add_type(
         self,
-        type: Union[TypeDefinition, dict, str],
+        type: TypeDefinition | dict | str,
         typeof: str = None,
         uri: str = None,
         replace_if_present=False,

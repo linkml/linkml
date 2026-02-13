@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import (
     ClassVar,
-    Optional,
     TypeVar,
     Union,
 )
@@ -204,7 +203,7 @@ class ArrayRangeGenerator(ABC):
 
     REPR: ClassVar[ArrayRepresentation]
 
-    def __init__(self, array: Optional[ArrayExpression], dtype: Union[str, Element]):
+    def __init__(self, array: ArrayExpression | None, dtype: str | Element):
         self.array = array
         self.dtype = dtype
 
@@ -251,7 +250,7 @@ class ArrayRangeGenerator(ABC):
         raise ValueError(f"Generator for array representation {repr} not found!")
 
     @abstractmethod
-    def _any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
+    def _any_shape(self, array: ArrayRepresentation | None = None) -> RangeResult:
         """Any shaped array!"""
         pass
 
@@ -307,7 +306,7 @@ class ListOfListsArray(ArrayRangeGenerator):
 
         return RangeResult(range=range, imports=_ConListImports)
 
-    def _any_shape(self, array: Optional[ArrayExpression] = None, with_inner_union: bool = False) -> RangeResult:
+    def _any_shape(self, array: ArrayExpression | None = None, with_inner_union: bool = False) -> RangeResult:
         """
         An AnyShaped array (using :class:`.AnyShapeArray` )
 
@@ -460,7 +459,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         return result
 
     @staticmethod
-    def ndarray_annotation(shape: Optional[list[Union[int, str]]] = None, dtype: Optional[str] = None) -> str:
+    def ndarray_annotation(shape: list[int | str] | None = None, dtype: str | None = None) -> str:
         """
         Make a stringified :class:`numpydantic.NDArray` annotation for a given shape
         and dtype.
@@ -504,7 +503,7 @@ class NumpydanticArray(ArrayRangeGenerator):
         else:
             return shape
 
-    def _any_shape(self, array: Optional[ArrayRepresentation] = None) -> RangeResult:
+    def _any_shape(self, array: ArrayRepresentation | None = None) -> RangeResult:
         """
         Any shaped array, either an unparameterized :class:`numpydantic.NDArray`
         if dtype is :class:`typing.Any` , or like ``NDArray[Any, {self.dtype}]``

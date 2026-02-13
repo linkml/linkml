@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import NamedTuple, Optional, Union
+from typing import NamedTuple
 from urllib.parse import urljoin
 
 import requests
@@ -96,7 +96,7 @@ class _Path:
         return {k: v for k, v in cls.__dict__.items() if not k.startswith("_")}
 
     @classmethod
-    def get(cls, item: Union[str, Format]) -> FormatPath:
+    def get(cls, item: str | Format) -> FormatPath:
         if isinstance(item, Format):
             item = item.name.upper()
         return getattr(cls, item)
@@ -165,8 +165,8 @@ def GITHUB_IO_PATH_FOR(source: Source, fmt: Format, version="latest") -> str:
 def GITHUB_PATH_FOR(
     source: Source,
     fmt: Format,
-    release: Optional[Union[ReleaseTag, str]] = ReleaseTag.CURRENT,
-    branch: Optional[str] = "main",
+    release: ReleaseTag | str | None = ReleaseTag.CURRENT,
+    branch: str | None = "main",
 ) -> str:
     def do_request(url) -> object:
         resp = requests.get(url)
@@ -220,9 +220,7 @@ class ModelFile:
         def file(self) -> str:
             return LOCAL_PATH_FOR(self._model, self._format)
 
-        def github_loc(
-            self, tag: Optional[str] = None, branch: Optional[str] = None, release: ReleaseTag = None
-        ) -> str:
+        def github_loc(self, tag: str | None = None, branch: str | None = None, release: ReleaseTag = None) -> str:
             if not tag and not branch and not release:
                 return GITHUB_IO_PATH_FOR(self._model, self._format)
             if tag:

@@ -18,7 +18,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from io import StringIO
-from typing import TextIO, Union, cast
+from typing import TextIO, cast
 
 import pytest
 
@@ -51,7 +51,7 @@ class GeneratorTest(Generator):
 
     def __xxxinit__(
         self,
-        schema: Union[str, TextIO, SchemaDefinition],
+        schema: str | TextIO | SchemaDefinition,
         fmt: str = "txt",
         metadata: bool = False,
     ) -> None:

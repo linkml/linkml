@@ -2,7 +2,6 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Union
 
 import click
 import pydantic
@@ -240,7 +239,7 @@ class ERDiagramGenerator(Generator):
 
     def serialize_classes(
         self,
-        class_names: list[Union[str, ClassDefinitionName]],
+        class_names: list[str | ClassDefinitionName],
         follow_references=False,
         max_hops: int = None,
         include_upstream: bool = False,
@@ -510,7 +509,7 @@ class ERDiagramGenerator(Generator):
 def cli(
     yamlfile,
     classes: list[str],
-    max_hops: Optional[int],
+    max_hops: int | None,
     follow_references: bool,
     include_upstream: bool = False,
     **args,

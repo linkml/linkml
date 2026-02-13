@@ -2,7 +2,7 @@ import operator
 from collections.abc import Collection
 from copy import deepcopy
 from itertools import product
-from typing import Any, Optional
+from typing import Any
 
 
 def member_of(item: Any, collection: Collection[Any]) -> bool:
@@ -248,7 +248,7 @@ def eliminate_implications(expr: Expression) -> Expression:
         # Recursively eliminate implications from Ands:
         # Tr(P1 & P2 & ... & Pn) is equivalent to Tr(P1) & Tr(P2) & ... & Tr(Pn)
         expr.operands = list(map(eliminate_implications, expr.operands))
-    elif isinstance(expr, Not) and isinstance(expr.operand, (And, Or, Implies, Iff)):
+    elif isinstance(expr, Not) and isinstance(expr.operand, And | Or | Implies | Iff):
         # Recursively eliminate implications from Nots:
         # Tr(~(P1)) is equivalent to ~Tr(P1)
         expr.operand = eliminate_implications(expr.operand)
@@ -270,7 +270,7 @@ def move_not_inwards(expr: Expression) -> Expression:
         return And(*[Not(operand) for operand in expr.operand.operands])
     elif isinstance(expr, And) or isinstance(expr, Or):
         expr.operands = list(map(move_not_inwards, expr.operands))
-    elif isinstance(expr, Not) and isinstance(expr.operand, (And, Or)):
+    elif isinstance(expr, Not) and isinstance(expr.operand, And | Or):
         expr.operand = move_not_inwards(expr.operand)
     return expr
 
@@ -319,7 +319,7 @@ def distribute_and_over_or(expr: Expression) -> Expression:
     return expr
 
 
-def is_contradiction(expr: Expression, apply_dnf=False) -> Optional[bool]:
+def is_contradiction(expr: Expression, apply_dnf=False) -> bool | None:
     """
     Check if the given expression is a contradiction.
 
@@ -403,7 +403,7 @@ def is_contradiction(expr: Expression, apply_dnf=False) -> Optional[bool]:
     return None
 
 
-def evals_to_true(expr: Expression, apply_dnf=False) -> Optional[bool]:
+def evals_to_true(expr: Expression, apply_dnf=False) -> bool | None:
     """
     Two-valued logic
 
@@ -526,7 +526,7 @@ def simplify(expr: Expression) -> Expression:
         return Bottom()
     if evals_to_true(expr):
         return Top()
-    if isinstance(expr, (And, Or)):
+    if isinstance(expr, And | Or):
         modified = True
         while modified:
             modified = False
@@ -641,7 +641,7 @@ def _unsat(x: Expression, y: Expression) -> bool:
     return False
 
 
-def compose_operators(boolean_op: type[Expression], op1: str, v1: Any, op2: str, v2: Any) -> Optional[tuple]:
+def compose_operators(boolean_op: type[Expression], op1: str, v1: Any, op2: str, v2: Any) -> tuple | None:
     """
     Compose two expressions.
 

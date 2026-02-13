@@ -4,7 +4,7 @@ import os
 from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 from jsonasobj2 import as_json, items, loads
@@ -71,8 +71,8 @@ class JSONLDGenerator(Generator):
             node["@type"] = typ
         return node
 
-    def _visit(self, node: Any) -> Optional[Any]:
-        if isinstance(node, (YAMLRoot, dict)):
+    def _visit(self, node: Any) -> Any | None:
+        if isinstance(node, YAMLRoot | dict):
             if isinstance(node, YAMLRoot):
                 node = self._add_type(node)
             for k, v in list(items(node)):
@@ -154,9 +154,7 @@ class JSONLDGenerator(Generator):
     def visit_subset(self, ss: SubsetDefinition) -> None:
         self._visit(ss)
 
-    def end_schema(
-        self, context: Union[str, Sequence[str], None] = None, context_kwargs: Union[dict, None] = None, **_
-    ) -> str:
+    def end_schema(self, context: str | Sequence[str] | None = None, context_kwargs: dict | None = None, **_) -> str:
         default_context_kwargs = {"model": False}
         if context_kwargs is None:
             context_kwargs = default_context_kwargs
@@ -204,7 +202,7 @@ class JSONLDGenerator(Generator):
         return out
 
     def serialize(
-        self, context: Union[str, Sequence[str], None] = None, context_kwargs: Union[dict, None] = None, **kwargs
+        self, context: str | Sequence[str] | None = None, context_kwargs: dict | None = None, **kwargs
     ) -> str:
         """
         Serialize the model to JSON-LD

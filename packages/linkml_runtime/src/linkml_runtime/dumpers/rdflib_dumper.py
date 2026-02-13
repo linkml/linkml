@@ -1,6 +1,6 @@
 import logging
 import urllib
-from typing import Any, Optional, Union
+from typing import Any
 
 from curies import Converter
 from pydantic import BaseModel
@@ -28,9 +28,9 @@ class RDFLibDumper(Dumper):
 
     def as_rdf_graph(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         schemaview: SchemaView,
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        prefix_map: dict[str, str] | Converter | None = None,
     ) -> Graph:
         """
         Dumps from element to an rdflib Graph,
@@ -151,11 +151,11 @@ class RDFLibDumper(Dumper):
 
     def dump(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         to_file: str,
         schemaview: SchemaView = None,
         fmt: str = "turtle",
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        prefix_map: dict[str, str] | Converter | None = None,
         **args,
     ) -> None:
         """
@@ -172,10 +172,10 @@ class RDFLibDumper(Dumper):
 
     def dumps(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         schemaview: SchemaView = None,
-        fmt: Optional[str] = "turtle",
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        fmt: str | None = "turtle",
+        prefix_map: dict[str, str] | Converter | None = None,
     ) -> str:
         """
         Convert element into an RDF graph guided by the schema
@@ -188,7 +188,7 @@ class RDFLibDumper(Dumper):
         """
         return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).serialize(format=fmt)
 
-    def _as_uri(self, element_id: str, id_slot: Optional[SlotDefinition], schemaview: SchemaView) -> URIRef:
+    def _as_uri(self, element_id: str, id_slot: SlotDefinition | None, schemaview: SchemaView) -> URIRef:
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):
             return URIRef(urllib.parse.quote(element_id))
         else:

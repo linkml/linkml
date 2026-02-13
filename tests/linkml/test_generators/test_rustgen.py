@@ -7,7 +7,6 @@ import sys
 import textwrap
 import zipfile
 from pathlib import Path
-from typing import Optional
 
 import pytest
 import yaml
@@ -72,7 +71,7 @@ def _build_rust_crate(out_dir: Path, context: str = "") -> list[Path]:
     return wheels
 
 
-def _run_stubgen_binary(out_dir: Path, extra_args: Optional[list[str]] = None, context: str = "") -> None:
+def _run_stubgen_binary(out_dir: Path, extra_args: list[str] | None = None, context: str = "") -> None:
     """Run the generated stub_gen binary to (re)generate or validate PyO3 stubs."""
 
     cmd = ["cargo", "run", "--bin", "stub_gen", "--features", "stubgen"]

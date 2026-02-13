@@ -168,7 +168,7 @@ def test_remove_empty_items():
         actual = remove_empty_items(thing)
         assert expected == actual, f"Input = {thing}"
         assert not isinstance(actual, JsonObj), "JSON objects are never returned"
-        if isinstance(expected, (dict, list)):
+        if isinstance(expected, dict | list):
             assert id(expected) != id(actual), f"Copy of {thing} was not returned"
             assert id(actual) not in seen, "remove_empty_items should always return a new thing"
             save.append(actual)
