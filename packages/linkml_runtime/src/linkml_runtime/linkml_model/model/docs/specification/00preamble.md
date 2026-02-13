@@ -2,7 +2,7 @@
 
 Authors:
 
- - Chris Mungall, Lawrence Berkeley National Laboratory 
+ - Chris Mungall, Lawrence Berkeley National Laboratory
  - Harold Solbrig, Johns Hopkins University
 
 ## Abstract
@@ -25,4 +25,3 @@ This is a draft specification open from comments to all.
 ### License
 
 This specification, like all parts of LinkML are in the public domain under a Creative Commons Zero license waiver.
-

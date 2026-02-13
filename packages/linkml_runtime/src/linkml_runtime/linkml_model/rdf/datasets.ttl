@@ -742,6 +742,3 @@ linkml:datasets a linkml:SchemaDefinition ;
             linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ] .
-
-
-

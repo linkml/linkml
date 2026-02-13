@@ -251,6 +251,3 @@
             linkml:name "decimal" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ] ;
     linkml:version "2.0.0" .
-
-
-
