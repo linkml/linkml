@@ -2,7 +2,7 @@
 
 **Validation** is a procedure that takes as input a LinkML instance and a schema, and will
 run a collection of *checks* against that instance.
-
+    
 The validation procedure will produce output that can be used to determine if the instance is *structurally and semantically valid* according to the schema.
 
 The formal specification of the validation procedure takes as input a *derived* schema *m<sup>D</sup>*:
@@ -35,137 +35,29 @@ The following holds for any validation procedure:
 
 ## Types of checks
 
-| Check                 | Type      | Description                     | SHACL                             |
-|-----------------------|-----------|---------------------------------|-----------------------------------|
-| `Required`            | ERROR     | slot MUST be present            | `MinCountConstraintComponent`     |
-| `Recommended`         | WARNING   | slot SHOULD be present          | `MinCountConstraintComponent`     |
-| `Singlevalued`        | ERROR     | slot MUST NOT be collection     | `MaxCountConstraintComponent`     |
-| `Multivalued`         | ERROR     | slot MUST be collection         | `MinCountConstraintComponent`     |
-| `Inlined`             | ERROR     | object value MUST be nested     |                                   |
-| `Referenced`          | ERROR     | object value MUST NOT be nested |                                   |
-| `ClassRange`          | ERROR     | class matches range             | `ClassConstraintComponent`        |
-| `Datatype`            | ERROR     | datatype matches range          | `DatatypeConstraintComponent`     |
-| `NodeKind`            | ERROR     | range metatype                  | `NodeKindConstraintComponent`     |
-| `MinimumValue`        | ERROR     | value of slot MUST NOT be lower | `MinInclusiveConstraintComponent` |
-| `MaximumValue`        | ERROR     | value of slot MUST NOT exceed   | `MaxInclusiveConstraintComponent` |
-| `Pattern`             | ERROR     | string value MUST match         | `PatternConstraintComponent`      |
-| `EqualsExpression`    | INFERENCE | value MUST be equal to          | `EqualsConstraintComponent`       |
-| `StringSerialization` | INFERENCE |                                 | `EqualsConstraintComponent`       |
-| `TypeDesignator`      | INFERENCE |                                 |                                   |
+| Check                 | Type      | Description            | SHACL                             |
+|-----------------------|-----------|------------------------|-----------------------------------|
+| `Required`            | ERROR     |                        | `MinCountConstraintComponent`     |
+| `Recommended`         | WARNING   |                        | `MinCountConstraintComponent`     |
+| `Singlevalued`        | ERROR     |                        | `MaxCountConstraintComponent`     |
+| `Multivalued`         | ERROR     |                        | `MinCountConstraintComponent`     |
+| `Inlined`             | ERROR     |                        |                                   |
+| `Referenced`          | ERROR     |                        |                                   |
+| `ClassRange`          | ERROR     | class matches range    | `ClassConstraintComponent`        |
+| `Datatype`            | ERROR     | datatype matches range | `DatatypeConstraintComponent`     |
+| `NodeKind`            | ERROR     | range metatype         | `NodeKindConstraintComponent`     |
+| `MinimumValue`        | ERROR     |                        | `MinInclusiveConstraintComponent` |
+| `MaximumValue`        | ERROR     |                        | `MaxInclusiveConstraintComponent` |
+| `Pattern`             | ERROR     |                        | `PatternConstraintComponent`      |
+| `EqualsExpression`    | INFERENCE |                        | `EqualsConstraintComponent`       |
+| `StringSerialization` | INFERENCE |                        | `EqualsConstraintComponent`       |
+| `TypeDesignator`      | INFERENCE |                        |                                   |
 
 For the `INFERENCE` type, the validation procedure MAY fill in missing values in the instance.
 There is only an error if the inferred value is not consistent with the asserted value.
 
 ## Validation procedure for instances
 
-### Validation against an element
-
-To **Validate** an instance `i` against an element `e` and a schema `m` , perform the following steps. They return
-a **ValidationResult** object.
-
-**Validate**(*i*, *e*, *m*):
-
-* Set *errors* to an empty list
-* Set *problems* to an empty list
-* For each *e'* in *e*.`all_of` + **Parents**(*e*):
-    - Set *r* to **Validate**(*i*, *e'*, *m*)
-    - If *r.error* is `True`, append *r* to *errors*
-    - If *r.problem* is `True`, append *r* to *problems*
-* For each *e'* in *e*.`none_of`:
-    - Set *r* to **ValidateAssignment**(*i*, *e'*, *m*)
-    - If *r.error* is `False`, append *r* to *errors*
-* If *e*.`any_of` is set:
-    - Set *any_of_results* to `{` **ValidateAssignment**(*i*, *e'*, *m*) : *e'* in *e*.`any_of` `}`
-    - Set *any_of_passes* to `{` *r* : *r* in *any_of_results* if *r.error* is `False` `}`
-    - If *any_of_passes* is empty, append *s* to *errors*
-    - If *any_of_passes* is not empty, append *any_of_passes*`[0].types` to *types* (greedy non-determinism)
-* If *s*.`exactly_one_of` is set:
-    - Set *exactly_one_of_results* to `{` **ValidateAssignment**(*i*, *s'*, *m*) : *s'* in *s*.`exactly_one_of` `}`
-    - Set *exactly_one_of_passes* to `{` *r* : *r* in *exactly_one_of_results* if *r.error* is `False` `}`
-    - If *len*(*exactly_one_of_passes*) is not 1, append *s* to *errors*
-    - otherwise append *exactly_one_of_passes*`[0].types` to *types*
-* If *i* is a **InstanceOfType**:
-    - if *e* is not a **TypeDefinition**:
-        - append **DatatypeCheck**(*e*) to *errors*
-* If *i* is a **InstanceOfEnum**:
-    - if *e* is not a **EnumDefinition**:
-        - append **DatatypeCheck**(*e*) to *errors*
-    - if *i* is not in *e*.`permissible_values`:
-        - append **PermissibleValueCheck**(*e*) to *errors*
-* If *i* is a **InstanceOfClass**:
-    - for each *sn*, *j* in *i*.`assignments`:
-        - Set *s* to **Resolve**(*sn*)
-            - append **ValidateAssignment**(*j*, *s'*, *m*) to *errors* // todo
-* Return **ValidationResult**(*i*, **errors**, **problems**, **e**)
-
-### Validation of an assignment
-
-To perform a **ValidateAssignment** operation on an instance `i` against a **SlotExpression** *s* and schema `m` perform the following steps.
-They return a **ValidationResult** object.
-
-**ValidateAssignment**(*i*, *s*, *m*):
-
-* Set *errors* to an empty list
-* Set *problems* to an empty list
-* Set *types* to an empty list
-* For each *s'* in *s*.`all_of` + **Resolve**(*s*.`is_a` + *s*.`mixins`):
-    - Set *r* to **ValidateAssignment**(*i*, *s'*, *m*)
-    - If *r.error* is `True`, append *r* to *errors*
-    - If *r.problem* is `True`, append *r* to *problems*
-    - If *r.error* is `False`, append *r.types* to *types*
-* For each *s'* in *s*.`none_of`:
-    - Set *r* to **ValidateAssignment**(*i*, *s'*, *m*)
-    - If *r.error* is `False`, append *r* to *errors*
-* If *s*.`any_of` is set:
-    - Set *any_of_results* to `{` **ValidateAssignment**(*i*, *s'*, *m*) : *s'* in *s*.`any_of` `}`
-    - Set *any_of_passes* to `{` *r* : *r* in *any_of_results* if *r.error* is `False` `}`
-    - If *any_of_passes* is empty, append *s* to *errors*
-    - If *any_of_passes* is not empty, append *any_of_passes*`[0].types` to *types* (greedy non-determinism)
-* If *s*.`exactly_one_of` is set:
-    - Set *exactly_one_of_results* to `{` **ValidateAssignment**(*i*, *s'*, *m*) : *s'* in *s*.`exactly_one_of` `}`
-    - Set *exactly_one_of_passes* to `{` *r* : *r* in *exactly_one_of_results* if *r.error* is `False` `}`
-    - If *len*(*exactly_one_of_passes*) is not 1, append *s* to *errors*
-    - otherwise append *exactly_one_of_passes*`[0].types` to *types*
-* If *s*.`required` is `True`:
-   - if *i* is `None` then append *s* to *errors*
-* If *s*.`recommended` is `True`:
-   - if *i* is `None` then append *s* to *problems*
-* If *s*.`range` is set:
-   - append *s.range* to *types*
-* If *s*`.multivalued` is `True`:
-    - if *i* is not a **Collection**:
-        - add **MinCountConstraintComponent**(i) to *errors*
-    - else:
-        - copy *s* to *s'*
-        - set *s'*`.multivalued to `False`
-        - for *i'* in **AtomicMembers**(i):
-            - append **ValidateAssignment**(*i'*, *s'*, *m*) to *errors* and *problems*
-* If *s*`.multivalued` is `False`:
-    * If *i* is a **Collection**:
-        - add **MaxCountConstraintComponent**(i) to *errors*
-    * If *s*.`maximum_value` is set:
-        - If *i* is not `None` and *i* > *s*.`maximum_value`, append *s* to *errors*
-    * If *s*.`minimum_value` is set:
-        - If *i* is not `None` and *i* < *s*.`minimum_value`, append *s* to *errors*
-    * If *s*.`pattern` is set:
-        - If *i* is not `None` and *i* does not match *s*.`pattern`, append *s* to *errors*
-    * If *s*.`equals_expression` is set:
-        - If *i* is not `None` and *i* != *Eval*(*s*.`equals_expression`), append *s* to *errors*
-    * If *s*.`equals_string` is set:
-        - If *i* is not `None` and *i* != *s*.`equals_string`, append *s* to *errors*
-    * If *s*.`range` is set:
-        - Set *r* to **Validate**(*i*, *s*.`range`, *m*)
-        - append *r*.`errors` to *errors*
-        - append *r*.`problems` to *problems*
-* Return **ValidationResult**(*i*, **errors**, **problems**, **types**)
-
-
-**ValidateClassInstance**(*i*, *s*, *m*):
-
-* for each *sn*, *j* in *i*.`assignments`:
-    - Set *s* to **Resolve**(*sn*)
-    - for each *s'* in **GetSlotExpressions**(*sn*, *types*)
-        - append **ValidateAssignment**(*v*, *s'*, *m*) to *errors*
 
 ```
 Validate(i, m, t):
@@ -323,7 +215,7 @@ In all cases, the semantics are as follows:
   * for lists of length 2 this is the same as the logical XOR operator
 - all_of: true if there are no members that evaluate to false
   * for empty lists this is always true
-
+   
 ### Rule evaluation
 
 For each rule `r` in *C*.rules:
@@ -379,7 +271,7 @@ classes:
 
 #### Annotation validation
 
-By default, all annotation tags and values are valid.
+By default, all annotation tags and values are valid. 
 
 LinkML 1.6 introduces the ability to validate annotation tags and values.
 
@@ -410,3 +302,6 @@ classes:
       description: an expert review of a schema element
       review: string
 ```
+
+
+

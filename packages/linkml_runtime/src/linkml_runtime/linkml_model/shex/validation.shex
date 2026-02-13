@@ -57,3 +57,6 @@ reporting:ValidationResult CLOSED {
        rdf:type [ sh1:ValidationResult ] ?
     )
 }
+
+
+
