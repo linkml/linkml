@@ -1337,19 +1337,14 @@
         <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">:</span>
             <span class="n">slot_range_cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]</span>
             <span class="n">identifier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="n">slot_range_cls</span><span class="p">)</span>
-            <span class="c1"># If we don&#39;t have an identifier, and we are expecting to be inlined first class elements</span>
-            <span class="c1"># (inlined_as_list is not True), we will use the first required field as the key.</span>
-            <span class="c1">#  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to</span>
-            <span class="c1">#  True</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">identifier</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">range_slot_name</span> <span class="ow">in</span> <span class="n">slot_range_cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                     <span class="n">range_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">range_slot_name</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">range_slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">range_slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="n">range_slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
                         <span class="n">identifier</span> <span class="o">=</span> <span class="n">range_slot</span><span class="o">.</span><span class="n">name</span>
                         <span class="k">break</span>
                 <span class="n">keyed</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Place for future expansion</span>
                 <span class="n">keyed</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">if</span> <span class="n">identifier</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
