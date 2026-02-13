@@ -59,6 +59,203 @@ The [json-flattener/](https://github.com/cmungall/json-flattener/) library is us
 * multivalued slots are serialized using a `|` separator
 * nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be `persons_name`
 
+### Customizing multivalued field formatting
+
+By default, multivalued fields are serialized with brackets and pipe delimiters:
+
+```
+[value1|value2|value3]
+```
+
+This is called "python" style (bracketed) and works well for round-tripping data through LinkML tools.
+However, when working with spreadsheets, users often prefer typing values without brackets:
+
+```
+value1|value2|value3
+```
+
+You can customize the formatting using schema-level annotations:
+
+```yaml
+id: https://example.org/myschema
+name: myschema
+annotations:
+  list_syntax: plaintext    # removes brackets from all multivalued fields
+  list_delimiter: "|"       # delimiter between values (default)
+
+slots:
+  tags:
+    range: string
+    multivalued: true
+  categories:
+    range: string
+    multivalued: true
+```
+
+Note: These annotations apply to ALL multivalued fields in the CSV/TSV output.
+This is because the underlying json-flattener library uses a single global
+configuration for list formatting.
+
+#### Available annotations
+
+| Annotation | Values | Default | Description |
+|------------|--------|---------|-------------|
+| `list_syntax` | `python`, `plaintext` | `python` | `python` uses brackets `[a\|b\|c]`, `plaintext` has no brackets `a\|b\|c` |
+| `list_delimiter` | any string | `\|` | Character(s) used to separate list items |
+| `list_strip_whitespace` | `true`, `false` | `true` | Strip whitespace around delimiters when loading and dumping (e.g., `a \| b` → `['a', 'b']`) |
+| `refuse_delimiter_in_data` | `true`, `false` | `false` | Raise an error before serializing if any multivalued field value contains the delimiter character. Prevents silent data corruption during round-tripping. |
+
+#### CLI options
+
+You can override schema annotations using CLI options on `linkml-convert`:
+
+```bash
+linkml-convert -s schema.yaml -C Container -S items -t tsv \
+  --list-syntax plaintext \
+  --list-delimiter "|" \
+  --list-strip-whitespace \
+  input.yaml
+```
+
+| CLI Option | Description |
+|------------|-------------|
+| `--list-syntax` | `python` or `plaintext` - overrides schema annotation |
+| `--list-delimiter` | Delimiter string - overrides schema annotation |
+| `--list-strip-whitespace` / `--no-list-strip-whitespace` | Strip whitespace from list values (default: strip) |
+| `--refuse-delimiter-in-data` / `--no-refuse-delimiter-in-data` | Raise an error if any multivalued value contains the delimiter (default: allow) |
+
+All three options apply to both input (loading) and output (dumping):
+
+- **On input**: `a | b | c` is parsed as `['a', 'b', 'c']` (stripped) or `['a ', ' b ', ' c']` (preserved)
+- **On output**: `['dog   ', 'cat']` is written as `dog|cat` (stripped) or `dog   |cat` (preserved)
+
+#### Examples
+
+**Default behavior (python style):**
+
+```yaml
+id: https://example.org/default
+name: default_example
+# No annotations - uses default python style
+
+slots:
+  aliases:
+    range: string
+    multivalued: true
+```
+
+TSV output: `[Alice|Bob|Charlie]`
+
+**Plaintext style with pipe delimiter:**
+
+```yaml
+id: https://example.org/plaintext
+name: plaintext_example
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
+slots:
+  aliases:
+    range: string
+    multivalued: true
+```
+
+TSV output: `Alice|Bob|Charlie`
+
+**Plaintext style with semicolon delimiter:**
+
+```yaml
+id: https://example.org/semicolon
+name: semicolon_example
+annotations:
+  list_syntax: plaintext
+  list_delimiter: ";"
+
+slots:
+  categories:
+    range: string
+    multivalued: true
+```
+
+TSV output: `category1;category2;category3`
+
+#### Working example
+
+To try this with existing test files in the repository, first compare the default output:
+
+```bash
+linkml-convert -s tests/linkml_runtime/test_loaders_dumpers/models/books_normalized.yaml \
+  -C Shop -S all_book_series -t tsv \
+  tests/linkml_runtime/test_loaders_dumpers/input/books_normalized_01.yaml
+```
+
+This produces python style (bracketed) output like `[scifi|fantasy]`.
+
+To get plaintext output, copy the schema and add the annotations block after `imports:`:
+
+```yaml
+id: https://w3id.org/example
+name: example
+description: example
+
+annotations:
+  list_syntax: plaintext
+  list_delimiter: "|"
+
+imports:
+- linkml:types
+# ... rest of schema
+```
+
+Then run with your modified schema:
+
+```bash
+linkml-convert -s my_modified_schema.yaml \
+  -C Shop -S all_book_series -t tsv \
+  tests/linkml_runtime/test_loaders_dumpers/input/books_normalized_01.yaml
+```
+
+This produces plaintext output like `scifi|fantasy` (no brackets).
+
+#### Loading plaintext-delimited TSV back to YAML
+
+The annotations also control how TSV data is parsed back into structured YAML.
+Given a TSV file with plaintext pipe-delimited values:
+
+| id | name | genres |
+|----|------|--------|
+| S001 | Lord of the Rings | fantasy |
+| S002 | The Culture Series | scifi |
+| S003 | Book of the New Sun | scifi\|fantasy |
+
+Using a schema with plaintext annotations:
+
+```bash
+linkml-convert -s my_modified_schema.yaml \
+  -C Shop -S all_book_series -t yaml \
+  my_data.tsv
+```
+
+The `scifi|fantasy` value is correctly parsed as a list:
+
+```yaml
+all_book_series:
+- id: S001
+  name: Lord of the Rings
+  genres:
+  - fantasy
+- id: S002
+  name: The Culture Series
+  genres:
+  - scifi
+- id: S003
+  name: Book of the New Sun
+  genres:
+  - scifi
+  - fantasy
+```
+
 ## Inference of schemas from tabular data
 
 Use `generalize-tsv` command in the [schema-automator](https://github.com/linkml/schema-automator)
