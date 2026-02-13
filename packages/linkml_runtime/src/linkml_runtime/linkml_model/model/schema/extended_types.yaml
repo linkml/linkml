@@ -1,0 +1,152 @@
+title: Core LinkML metamodel extended types
+name: extended_types
+id: https://w3id.org/linkml/extended_types
+
+description: Extensions to core LinkML types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+  schema: http://schema.org/
+
+default_prefix: linkml
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+
+  Any:
+    class_uri: linkml:Any
+    description: An unconstrained type or object
+
+types:
+
+  any_number:
+    description: A number of any type
+    union_of:
+      - integer
+      - float
+      - decimal
+
+  signedinteger:
+    typeof: integer
+    description: An integer that may be negative
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.signedinteger
+
+  unsignedinteger:
+    uri: xsd:unsignedInt
+    typeof: integer
+    description: An integer that is non-negative
+    minimum_value: 0
+    see_also:
+      - https://www.w3.org/TR/xmlschema-2/#nonNegativeInteger
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.unsignedinteger
+
+  int8:
+    aliases:
+      - byte
+      - b
+    typeof: signedinteger
+    description: An 8-bit signed integer
+    minimum_value: -128
+    maximum_value: 127
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.byte
+
+  int16:
+    aliases:
+      - short
+      - h
+    typeof: signedinteger
+    description: A 16-bit signed integer
+    minimum_value: -32_768
+    maximum_value: 32_767
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.short
+
+  int32:
+    aliases:
+      - intc
+      - i
+    typeof: signedinteger
+    description: A 32-bit signed integer
+    minimum_value: -2_147_483_648
+    maximum_value: 2_147_483_647
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.intc
+
+  int64:
+    aliases:
+      - long
+      - l
+      - int_
+    typeof: signedinteger
+    description: A 64-bit signed integer
+    minimum_value: -9_223_372_036_854_775_808
+    maximum_value: 9_223_372_036_854_775_807
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.int_
+
+  uint8:
+    aliases:
+      - ubyte
+      - B
+    typeof: unsignedinteger
+    description: An 8-bit unsigned integer
+    maximum_value: 255
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.uint8
+
+  uint16:
+    aliases:
+      - ushort
+      - H
+    typeof: unsignedinteger
+    description: A 16-bit unsigned integer
+    maximum_value: 65_535
+
+  uint32:
+    aliases:
+      - uintc
+      - I
+    typeof: unsignedinteger
+    description: A 32-bit unsigned integer
+    maximum_value: 4_294_967_295
+
+  uint64:
+    aliases:
+      - ulong
+      - L
+      - uint_
+    typeof: unsignedinteger
+    description: A 64-bit unsigned integer
+    maximum_value: 18_446_744_073_709_551_615
+
+  float16:
+    aliases:
+      - half
+      - e
+    typeof: float
+    description: A 16-bit floating point number
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.half
+
+  float32:
+    aliases:
+      - f
+    typeof: float
+    description: A 32-bit floating point number
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float32
+
+  float64:
+    aliases:
+      - d
+    typeof: float
+    description: A 64-bit floating point number
+    see_also:
+      - https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64

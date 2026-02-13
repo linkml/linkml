@@ -874,6 +874,15 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         """Generate python post init rules for slot in class"""
         rlines: list[str] = []
 
+        # default_ns: initialize slot from the schema id at runtime, but only
+        # when the containing class has an 'id' slot (e.g. SchemaDefinition).
+        if slot.ifabsent == "default_ns" and any(s == "id" for s in cls.slots):
+            aliased_slot_name = self.slot_name(slot.name)
+            rlines.append(f"if self.{aliased_slot_name} is None:")
+            rlines.append(f"\tself.{aliased_slot_name} = sfx(str(self.id))")
+            rlines.append("")
+            return "\n\t\t".join(rlines)
+
         if slot.range in self.schema.classes:
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
                 return ""
