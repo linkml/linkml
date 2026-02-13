@@ -1675,17 +1675,20 @@ def test_all_aliases(schema_view_no_imports: SchemaView) -> None:
 def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     """Tests the alias slot.
 
-    The induced slot alias should always be populated. For induced slots, it should default to the
-    name field if not present.
+    The induced slot alias should only be populated when it differs from the slot name.
+    See https://github.com/linkml/linkml/issues/2911
     """
     view = schema_view_no_imports
-    for c in view.all_classes().values():
-        for s in view.class_induced_slots(c.name):
-            assert s.alias is not None  # Assert that alias is not None
 
+    # Test explicit alias that differs from name
     postal_code_slot = view.induced_slot("postal code", "Address")
-    assert postal_code_slot.name == "postal code"  # Assert name is 'postal code'
-    assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
+    assert postal_code_slot.name == "postal code"
+    assert postal_code_slot.alias == "zip"
+
+    # Test that alias is None when it would equal the name (after underscoring)
+    aliases_slot = view.induced_slot("aliases", "HasAliases")
+    assert aliases_slot.name == "aliases"
+    assert aliases_slot.alias is None  # Not set because underscore("aliases") == "aliases"
 
 
 """Tests of SchemaView range-related functions.
@@ -3304,3 +3307,28 @@ def test_add_delete_get_entity(
     # expect that retrieving the entity will return an error if strict mode is on
     with pytest.raises(ValueError, match=f"No such {type_for_methods}"):
         getattr(view, get_method)(entity_name, strict=True)
+
+
+@pytest.mark.parametrize(
+    ("slot_name", "expected_alias"),
+    [
+        ("my_slot", None),  # underscore("my_slot") == "my_slot" == name → no alias
+        ("mySlot", None),  # underscore("mySlot") == "mySlot" == name → no alias
+        ("my slot", "my_slot"),  # underscore("my slot") == "my_slot" != name → alias set
+    ],
+)
+def test_induced_slot_alias_not_equal_to_name(slot_name: str, expected_alias: str | None) -> None:
+    """Test that induced_slot does not set alias when it equals slot name.
+
+    See https://github.com/linkml/linkml/issues/2911
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("MyClass", slots=[slot_name]))
+    view.add_slot(SlotDefinition(slot_name, range="string"))
+
+    induced = view.induced_slot(slot_name, "MyClass")
+
+    assert induced.alias == expected_alias, (
+        f"Expected alias={expected_alias!r} but got {induced.alias!r}. Alias should not equal the slot name."
+    )
