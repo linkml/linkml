@@ -11,7 +11,7 @@ metadata = Base.metadata
 
 class Anything(Base):
     """
-    
+    None
     """
     __tablename__ = 'Anything'
 
@@ -2155,9 +2155,32 @@ class TypeMapping(Base):
     
 
 
+class ExtraSlotsExpression(Base):
+    """
+    An expression that defines how to handle additional data in an instance of class
+beyond the slots/attributes defined for that class. 
+See `extra_slots` for usage examples.
+
+    """
+    __tablename__ = 'extra_slots_expression'
+
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
+    allowed = Column(Boolean())
+    range_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
+    range_expression = relationship("AnonymousClassExpression", uselist=False, foreign_keys=[range_expression_id])
+    
+
+    def __repr__(self):
+        return f"extra_slots_expression(id={self.id},allowed={self.allowed},range_expression_id={self.range_expression_id},)"
+
+
+
+    
+
+
 class AnyValue(Base):
     """
-    
+    None
     """
     __tablename__ = 'AnyValue'
 
@@ -2293,7 +2316,7 @@ class UnitOfMeasure(Base):
 
 class CommonMetadataTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_todos'
 
@@ -2311,7 +2334,7 @@ class CommonMetadataTodos(Base):
 
 class CommonMetadataNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_notes'
 
@@ -2329,7 +2352,7 @@ class CommonMetadataNotes(Base):
 
 class CommonMetadataComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_comments'
 
@@ -2347,7 +2370,7 @@ class CommonMetadataComments(Base):
 
 class CommonMetadataInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_in_subset'
 
@@ -2365,7 +2388,7 @@ class CommonMetadataInSubset(Base):
 
 class CommonMetadataSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_see_also'
 
@@ -2383,7 +2406,7 @@ class CommonMetadataSeeAlso(Base):
 
 class CommonMetadataAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_aliases'
 
@@ -2401,7 +2424,7 @@ class CommonMetadataAliases(Base):
 
 class CommonMetadataMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_mappings'
 
@@ -2419,7 +2442,7 @@ class CommonMetadataMappings(Base):
 
 class CommonMetadataExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_exact_mappings'
 
@@ -2437,7 +2460,7 @@ class CommonMetadataExactMappings(Base):
 
 class CommonMetadataCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_close_mappings'
 
@@ -2455,7 +2478,7 @@ class CommonMetadataCloseMappings(Base):
 
 class CommonMetadataRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_related_mappings'
 
@@ -2473,7 +2496,7 @@ class CommonMetadataRelatedMappings(Base):
 
 class CommonMetadataNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_narrow_mappings'
 
@@ -2491,7 +2514,7 @@ class CommonMetadataNarrowMappings(Base):
 
 class CommonMetadataBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_broad_mappings'
 
@@ -2509,7 +2532,7 @@ class CommonMetadataBroadMappings(Base):
 
 class CommonMetadataContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_contributors'
 
@@ -2527,7 +2550,7 @@ class CommonMetadataContributors(Base):
 
 class CommonMetadataCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_category'
 
@@ -2545,7 +2568,7 @@ class CommonMetadataCategory(Base):
 
 class CommonMetadataKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'common_metadata_keyword'
 
@@ -2563,7 +2586,7 @@ class CommonMetadataKeyword(Base):
 
 class ElementIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_id_prefixes'
 
@@ -2581,7 +2604,7 @@ class ElementIdPrefixes(Base):
 
 class ElementImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_implements'
 
@@ -2599,7 +2622,7 @@ class ElementImplements(Base):
 
 class ElementInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_instantiates'
 
@@ -2617,7 +2640,7 @@ class ElementInstantiates(Base):
 
 class ElementTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_todos'
 
@@ -2635,7 +2658,7 @@ class ElementTodos(Base):
 
 class ElementNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_notes'
 
@@ -2653,7 +2676,7 @@ class ElementNotes(Base):
 
 class ElementComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_comments'
 
@@ -2671,7 +2694,7 @@ class ElementComments(Base):
 
 class ElementInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_in_subset'
 
@@ -2689,7 +2712,7 @@ class ElementInSubset(Base):
 
 class ElementSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_see_also'
 
@@ -2707,7 +2730,7 @@ class ElementSeeAlso(Base):
 
 class ElementAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_aliases'
 
@@ -2725,7 +2748,7 @@ class ElementAliases(Base):
 
 class ElementMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_mappings'
 
@@ -2743,7 +2766,7 @@ class ElementMappings(Base):
 
 class ElementExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_exact_mappings'
 
@@ -2761,7 +2784,7 @@ class ElementExactMappings(Base):
 
 class ElementCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_close_mappings'
 
@@ -2779,7 +2802,7 @@ class ElementCloseMappings(Base):
 
 class ElementRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_related_mappings'
 
@@ -2797,7 +2820,7 @@ class ElementRelatedMappings(Base):
 
 class ElementNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_narrow_mappings'
 
@@ -2815,7 +2838,7 @@ class ElementNarrowMappings(Base):
 
 class ElementBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_broad_mappings'
 
@@ -2833,7 +2856,7 @@ class ElementBroadMappings(Base):
 
 class ElementContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_contributors'
 
@@ -2851,7 +2874,7 @@ class ElementContributors(Base):
 
 class ElementCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_category'
 
@@ -2869,7 +2892,7 @@ class ElementCategory(Base):
 
 class ElementKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'element_keyword'
 
@@ -2887,7 +2910,7 @@ class ElementKeyword(Base):
 
 class SchemaDefinitionImports(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_imports'
 
@@ -2905,7 +2928,7 @@ class SchemaDefinitionImports(Base):
 
 class SchemaDefinitionEmitPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_emit_prefixes'
 
@@ -2923,7 +2946,7 @@ class SchemaDefinitionEmitPrefixes(Base):
 
 class SchemaDefinitionDefaultCuriMaps(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_default_curi_maps'
 
@@ -2941,7 +2964,7 @@ class SchemaDefinitionDefaultCuriMaps(Base):
 
 class SchemaDefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_id_prefixes'
 
@@ -2959,7 +2982,7 @@ class SchemaDefinitionIdPrefixes(Base):
 
 class SchemaDefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_implements'
 
@@ -2977,7 +3000,7 @@ class SchemaDefinitionImplements(Base):
 
 class SchemaDefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_instantiates'
 
@@ -2995,7 +3018,7 @@ class SchemaDefinitionInstantiates(Base):
 
 class SchemaDefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_todos'
 
@@ -3013,7 +3036,7 @@ class SchemaDefinitionTodos(Base):
 
 class SchemaDefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_notes'
 
@@ -3031,7 +3054,7 @@ class SchemaDefinitionNotes(Base):
 
 class SchemaDefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_comments'
 
@@ -3049,7 +3072,7 @@ class SchemaDefinitionComments(Base):
 
 class SchemaDefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_in_subset'
 
@@ -3067,7 +3090,7 @@ class SchemaDefinitionInSubset(Base):
 
 class SchemaDefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_see_also'
 
@@ -3085,7 +3108,7 @@ class SchemaDefinitionSeeAlso(Base):
 
 class SchemaDefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_aliases'
 
@@ -3103,7 +3126,7 @@ class SchemaDefinitionAliases(Base):
 
 class SchemaDefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_mappings'
 
@@ -3121,7 +3144,7 @@ class SchemaDefinitionMappings(Base):
 
 class SchemaDefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_exact_mappings'
 
@@ -3139,7 +3162,7 @@ class SchemaDefinitionExactMappings(Base):
 
 class SchemaDefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_close_mappings'
 
@@ -3157,7 +3180,7 @@ class SchemaDefinitionCloseMappings(Base):
 
 class SchemaDefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_related_mappings'
 
@@ -3175,7 +3198,7 @@ class SchemaDefinitionRelatedMappings(Base):
 
 class SchemaDefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_narrow_mappings'
 
@@ -3193,7 +3216,7 @@ class SchemaDefinitionNarrowMappings(Base):
 
 class SchemaDefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_broad_mappings'
 
@@ -3211,7 +3234,7 @@ class SchemaDefinitionBroadMappings(Base):
 
 class SchemaDefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_contributors'
 
@@ -3229,7 +3252,7 @@ class SchemaDefinitionContributors(Base):
 
 class SchemaDefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_category'
 
@@ -3247,7 +3270,7 @@ class SchemaDefinitionCategory(Base):
 
 class SchemaDefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'schema_definition_keyword'
 
@@ -3265,7 +3288,7 @@ class SchemaDefinitionKeyword(Base):
 
 class TypeExpressionEqualsStringIn(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_expression_equals_string_in'
 
@@ -3283,7 +3306,7 @@ class TypeExpressionEqualsStringIn(Base):
 
 class TypeExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_expression_none_of'
 
@@ -3301,7 +3324,7 @@ class TypeExpressionNoneOf(Base):
 
 class TypeExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_expression_exactly_one_of'
 
@@ -3319,7 +3342,7 @@ class TypeExpressionExactlyOneOf(Base):
 
 class TypeExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_expression_any_of'
 
@@ -3337,7 +3360,7 @@ class TypeExpressionAnyOf(Base):
 
 class TypeExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_expression_all_of'
 
@@ -3355,7 +3378,7 @@ class TypeExpressionAllOf(Base):
 
 class AnonymousTypeExpressionEqualsStringIn(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_type_expression_equals_string_in'
 
@@ -3373,7 +3396,7 @@ class AnonymousTypeExpressionEqualsStringIn(Base):
 
 class AnonymousTypeExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_type_expression_none_of'
 
@@ -3391,7 +3414,7 @@ class AnonymousTypeExpressionNoneOf(Base):
 
 class AnonymousTypeExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_type_expression_exactly_one_of'
 
@@ -3409,7 +3432,7 @@ class AnonymousTypeExpressionExactlyOneOf(Base):
 
 class AnonymousTypeExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_type_expression_any_of'
 
@@ -3427,7 +3450,7 @@ class AnonymousTypeExpressionAnyOf(Base):
 
 class AnonymousTypeExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_type_expression_all_of'
 
@@ -3445,7 +3468,7 @@ class AnonymousTypeExpressionAllOf(Base):
 
 class TypeDefinitionUnionOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_union_of'
 
@@ -3463,7 +3486,7 @@ class TypeDefinitionUnionOf(Base):
 
 class TypeDefinitionEqualsStringIn(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_equals_string_in'
 
@@ -3481,7 +3504,7 @@ class TypeDefinitionEqualsStringIn(Base):
 
 class TypeDefinitionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_none_of'
 
@@ -3499,7 +3522,7 @@ class TypeDefinitionNoneOf(Base):
 
 class TypeDefinitionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_exactly_one_of'
 
@@ -3517,7 +3540,7 @@ class TypeDefinitionExactlyOneOf(Base):
 
 class TypeDefinitionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_any_of'
 
@@ -3535,7 +3558,7 @@ class TypeDefinitionAnyOf(Base):
 
 class TypeDefinitionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_all_of'
 
@@ -3553,7 +3576,7 @@ class TypeDefinitionAllOf(Base):
 
 class TypeDefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_id_prefixes'
 
@@ -3571,7 +3594,7 @@ class TypeDefinitionIdPrefixes(Base):
 
 class TypeDefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_implements'
 
@@ -3589,7 +3612,7 @@ class TypeDefinitionImplements(Base):
 
 class TypeDefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_instantiates'
 
@@ -3607,7 +3630,7 @@ class TypeDefinitionInstantiates(Base):
 
 class TypeDefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_todos'
 
@@ -3625,7 +3648,7 @@ class TypeDefinitionTodos(Base):
 
 class TypeDefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_notes'
 
@@ -3643,7 +3666,7 @@ class TypeDefinitionNotes(Base):
 
 class TypeDefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_comments'
 
@@ -3661,7 +3684,7 @@ class TypeDefinitionComments(Base):
 
 class TypeDefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_in_subset'
 
@@ -3679,7 +3702,7 @@ class TypeDefinitionInSubset(Base):
 
 class TypeDefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_see_also'
 
@@ -3697,7 +3720,7 @@ class TypeDefinitionSeeAlso(Base):
 
 class TypeDefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_aliases'
 
@@ -3715,7 +3738,7 @@ class TypeDefinitionAliases(Base):
 
 class TypeDefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_mappings'
 
@@ -3733,7 +3756,7 @@ class TypeDefinitionMappings(Base):
 
 class TypeDefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_exact_mappings'
 
@@ -3751,7 +3774,7 @@ class TypeDefinitionExactMappings(Base):
 
 class TypeDefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_close_mappings'
 
@@ -3769,7 +3792,7 @@ class TypeDefinitionCloseMappings(Base):
 
 class TypeDefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_related_mappings'
 
@@ -3787,7 +3810,7 @@ class TypeDefinitionRelatedMappings(Base):
 
 class TypeDefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_narrow_mappings'
 
@@ -3805,7 +3828,7 @@ class TypeDefinitionNarrowMappings(Base):
 
 class TypeDefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_broad_mappings'
 
@@ -3823,7 +3846,7 @@ class TypeDefinitionBroadMappings(Base):
 
 class TypeDefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_contributors'
 
@@ -3841,7 +3864,7 @@ class TypeDefinitionContributors(Base):
 
 class TypeDefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_category'
 
@@ -3859,7 +3882,7 @@ class TypeDefinitionCategory(Base):
 
 class TypeDefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_definition_keyword'
 
@@ -3877,7 +3900,7 @@ class TypeDefinitionKeyword(Base):
 
 class SubsetDefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_id_prefixes'
 
@@ -3895,7 +3918,7 @@ class SubsetDefinitionIdPrefixes(Base):
 
 class SubsetDefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_implements'
 
@@ -3913,7 +3936,7 @@ class SubsetDefinitionImplements(Base):
 
 class SubsetDefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_instantiates'
 
@@ -3931,7 +3954,7 @@ class SubsetDefinitionInstantiates(Base):
 
 class SubsetDefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_todos'
 
@@ -3949,7 +3972,7 @@ class SubsetDefinitionTodos(Base):
 
 class SubsetDefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_notes'
 
@@ -3967,7 +3990,7 @@ class SubsetDefinitionNotes(Base):
 
 class SubsetDefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_comments'
 
@@ -3985,7 +4008,7 @@ class SubsetDefinitionComments(Base):
 
 class SubsetDefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_in_subset'
 
@@ -4003,7 +4026,7 @@ class SubsetDefinitionInSubset(Base):
 
 class SubsetDefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_see_also'
 
@@ -4021,7 +4044,7 @@ class SubsetDefinitionSeeAlso(Base):
 
 class SubsetDefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_aliases'
 
@@ -4039,7 +4062,7 @@ class SubsetDefinitionAliases(Base):
 
 class SubsetDefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_mappings'
 
@@ -4057,7 +4080,7 @@ class SubsetDefinitionMappings(Base):
 
 class SubsetDefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_exact_mappings'
 
@@ -4075,7 +4098,7 @@ class SubsetDefinitionExactMappings(Base):
 
 class SubsetDefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_close_mappings'
 
@@ -4093,7 +4116,7 @@ class SubsetDefinitionCloseMappings(Base):
 
 class SubsetDefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_related_mappings'
 
@@ -4111,7 +4134,7 @@ class SubsetDefinitionRelatedMappings(Base):
 
 class SubsetDefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_narrow_mappings'
 
@@ -4129,7 +4152,7 @@ class SubsetDefinitionNarrowMappings(Base):
 
 class SubsetDefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_broad_mappings'
 
@@ -4147,7 +4170,7 @@ class SubsetDefinitionBroadMappings(Base):
 
 class SubsetDefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_contributors'
 
@@ -4165,7 +4188,7 @@ class SubsetDefinitionContributors(Base):
 
 class SubsetDefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_category'
 
@@ -4183,7 +4206,7 @@ class SubsetDefinitionCategory(Base):
 
 class SubsetDefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'subset_definition_keyword'
 
@@ -4201,7 +4224,7 @@ class SubsetDefinitionKeyword(Base):
 
 class DefinitionMixins(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_mixins'
 
@@ -4219,7 +4242,7 @@ class DefinitionMixins(Base):
 
 class DefinitionApplyTo(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_apply_to'
 
@@ -4237,7 +4260,7 @@ class DefinitionApplyTo(Base):
 
 class DefinitionValuesFrom(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_values_from'
 
@@ -4255,7 +4278,7 @@ class DefinitionValuesFrom(Base):
 
 class DefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_id_prefixes'
 
@@ -4273,7 +4296,7 @@ class DefinitionIdPrefixes(Base):
 
 class DefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_implements'
 
@@ -4291,7 +4314,7 @@ class DefinitionImplements(Base):
 
 class DefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_instantiates'
 
@@ -4309,7 +4332,7 @@ class DefinitionInstantiates(Base):
 
 class DefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_todos'
 
@@ -4327,7 +4350,7 @@ class DefinitionTodos(Base):
 
 class DefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_notes'
 
@@ -4345,7 +4368,7 @@ class DefinitionNotes(Base):
 
 class DefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_comments'
 
@@ -4363,7 +4386,7 @@ class DefinitionComments(Base):
 
 class DefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_in_subset'
 
@@ -4381,7 +4404,7 @@ class DefinitionInSubset(Base):
 
 class DefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_see_also'
 
@@ -4399,7 +4422,7 @@ class DefinitionSeeAlso(Base):
 
 class DefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_aliases'
 
@@ -4417,7 +4440,7 @@ class DefinitionAliases(Base):
 
 class DefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_mappings'
 
@@ -4435,7 +4458,7 @@ class DefinitionMappings(Base):
 
 class DefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_exact_mappings'
 
@@ -4453,7 +4476,7 @@ class DefinitionExactMappings(Base):
 
 class DefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_close_mappings'
 
@@ -4471,7 +4494,7 @@ class DefinitionCloseMappings(Base):
 
 class DefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_related_mappings'
 
@@ -4489,7 +4512,7 @@ class DefinitionRelatedMappings(Base):
 
 class DefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_narrow_mappings'
 
@@ -4507,7 +4530,7 @@ class DefinitionNarrowMappings(Base):
 
 class DefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_broad_mappings'
 
@@ -4525,7 +4548,7 @@ class DefinitionBroadMappings(Base):
 
 class DefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_contributors'
 
@@ -4543,7 +4566,7 @@ class DefinitionContributors(Base):
 
 class DefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_category'
 
@@ -4561,7 +4584,7 @@ class DefinitionCategory(Base):
 
 class DefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'definition_keyword'
 
@@ -4579,7 +4602,7 @@ class DefinitionKeyword(Base):
 
 class EnumExpressionInclude(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_expression_include'
 
@@ -4597,7 +4620,7 @@ class EnumExpressionInclude(Base):
 
 class EnumExpressionMinus(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_expression_minus'
 
@@ -4615,7 +4638,7 @@ class EnumExpressionMinus(Base):
 
 class EnumExpressionInherits(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_expression_inherits'
 
@@ -4633,7 +4656,7 @@ class EnumExpressionInherits(Base):
 
 class EnumExpressionConcepts(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_expression_concepts'
 
@@ -4651,7 +4674,7 @@ class EnumExpressionConcepts(Base):
 
 class AnonymousEnumExpressionInclude(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_enum_expression_include'
 
@@ -4669,7 +4692,7 @@ class AnonymousEnumExpressionInclude(Base):
 
 class AnonymousEnumExpressionMinus(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_enum_expression_minus'
 
@@ -4687,7 +4710,7 @@ class AnonymousEnumExpressionMinus(Base):
 
 class AnonymousEnumExpressionInherits(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_enum_expression_inherits'
 
@@ -4705,7 +4728,7 @@ class AnonymousEnumExpressionInherits(Base):
 
 class AnonymousEnumExpressionConcepts(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_enum_expression_concepts'
 
@@ -4723,7 +4746,7 @@ class AnonymousEnumExpressionConcepts(Base):
 
 class EnumDefinitionInclude(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_include'
 
@@ -4741,7 +4764,7 @@ class EnumDefinitionInclude(Base):
 
 class EnumDefinitionMinus(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_minus'
 
@@ -4759,7 +4782,7 @@ class EnumDefinitionMinus(Base):
 
 class EnumDefinitionInherits(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_inherits'
 
@@ -4777,7 +4800,7 @@ class EnumDefinitionInherits(Base):
 
 class EnumDefinitionConcepts(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_concepts'
 
@@ -4795,7 +4818,7 @@ class EnumDefinitionConcepts(Base):
 
 class EnumDefinitionMixins(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_mixins'
 
@@ -4813,7 +4836,7 @@ class EnumDefinitionMixins(Base):
 
 class EnumDefinitionApplyTo(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_apply_to'
 
@@ -4831,7 +4854,7 @@ class EnumDefinitionApplyTo(Base):
 
 class EnumDefinitionValuesFrom(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_values_from'
 
@@ -4849,7 +4872,7 @@ class EnumDefinitionValuesFrom(Base):
 
 class EnumDefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_id_prefixes'
 
@@ -4867,7 +4890,7 @@ class EnumDefinitionIdPrefixes(Base):
 
 class EnumDefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_implements'
 
@@ -4885,7 +4908,7 @@ class EnumDefinitionImplements(Base):
 
 class EnumDefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_instantiates'
 
@@ -4903,7 +4926,7 @@ class EnumDefinitionInstantiates(Base):
 
 class EnumDefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_todos'
 
@@ -4921,7 +4944,7 @@ class EnumDefinitionTodos(Base):
 
 class EnumDefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_notes'
 
@@ -4939,7 +4962,7 @@ class EnumDefinitionNotes(Base):
 
 class EnumDefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_comments'
 
@@ -4957,7 +4980,7 @@ class EnumDefinitionComments(Base):
 
 class EnumDefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_in_subset'
 
@@ -4975,7 +4998,7 @@ class EnumDefinitionInSubset(Base):
 
 class EnumDefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_see_also'
 
@@ -4993,7 +5016,7 @@ class EnumDefinitionSeeAlso(Base):
 
 class EnumDefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_aliases'
 
@@ -5011,7 +5034,7 @@ class EnumDefinitionAliases(Base):
 
 class EnumDefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_mappings'
 
@@ -5029,7 +5052,7 @@ class EnumDefinitionMappings(Base):
 
 class EnumDefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_exact_mappings'
 
@@ -5047,7 +5070,7 @@ class EnumDefinitionExactMappings(Base):
 
 class EnumDefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_close_mappings'
 
@@ -5065,7 +5088,7 @@ class EnumDefinitionCloseMappings(Base):
 
 class EnumDefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_related_mappings'
 
@@ -5083,7 +5106,7 @@ class EnumDefinitionRelatedMappings(Base):
 
 class EnumDefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_narrow_mappings'
 
@@ -5101,7 +5124,7 @@ class EnumDefinitionNarrowMappings(Base):
 
 class EnumDefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_broad_mappings'
 
@@ -5119,7 +5142,7 @@ class EnumDefinitionBroadMappings(Base):
 
 class EnumDefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_contributors'
 
@@ -5137,7 +5160,7 @@ class EnumDefinitionContributors(Base):
 
 class EnumDefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_category'
 
@@ -5155,7 +5178,7 @@ class EnumDefinitionCategory(Base):
 
 class EnumDefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_definition_keyword'
 
@@ -5173,7 +5196,7 @@ class EnumDefinitionKeyword(Base):
 
 class EnumBindingTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_todos'
 
@@ -5191,7 +5214,7 @@ class EnumBindingTodos(Base):
 
 class EnumBindingNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_notes'
 
@@ -5209,7 +5232,7 @@ class EnumBindingNotes(Base):
 
 class EnumBindingComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_comments'
 
@@ -5227,7 +5250,7 @@ class EnumBindingComments(Base):
 
 class EnumBindingInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_in_subset'
 
@@ -5245,7 +5268,7 @@ class EnumBindingInSubset(Base):
 
 class EnumBindingSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_see_also'
 
@@ -5263,7 +5286,7 @@ class EnumBindingSeeAlso(Base):
 
 class EnumBindingAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_aliases'
 
@@ -5281,7 +5304,7 @@ class EnumBindingAliases(Base):
 
 class EnumBindingMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_mappings'
 
@@ -5299,7 +5322,7 @@ class EnumBindingMappings(Base):
 
 class EnumBindingExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_exact_mappings'
 
@@ -5317,7 +5340,7 @@ class EnumBindingExactMappings(Base):
 
 class EnumBindingCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_close_mappings'
 
@@ -5335,7 +5358,7 @@ class EnumBindingCloseMappings(Base):
 
 class EnumBindingRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_related_mappings'
 
@@ -5353,7 +5376,7 @@ class EnumBindingRelatedMappings(Base):
 
 class EnumBindingNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_narrow_mappings'
 
@@ -5371,7 +5394,7 @@ class EnumBindingNarrowMappings(Base):
 
 class EnumBindingBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_broad_mappings'
 
@@ -5389,7 +5412,7 @@ class EnumBindingBroadMappings(Base):
 
 class EnumBindingContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_contributors'
 
@@ -5407,7 +5430,7 @@ class EnumBindingContributors(Base):
 
 class EnumBindingCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_category'
 
@@ -5425,7 +5448,7 @@ class EnumBindingCategory(Base):
 
 class EnumBindingKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'enum_binding_keyword'
 
@@ -5443,7 +5466,7 @@ class EnumBindingKeyword(Base):
 
 class ReachabilityQuerySourceNodes(Base):
     """
-    
+    None
     """
     __tablename__ = 'reachability_query_source_nodes'
 
@@ -5461,7 +5484,7 @@ class ReachabilityQuerySourceNodes(Base):
 
 class ReachabilityQueryRelationshipTypes(Base):
     """
-    
+    None
     """
     __tablename__ = 'reachability_query_relationship_types'
 
@@ -5479,7 +5502,7 @@ class ReachabilityQueryRelationshipTypes(Base):
 
 class StructuredAliasCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_category'
 
@@ -5497,7 +5520,7 @@ class StructuredAliasCategory(Base):
 
 class StructuredAliasContexts(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_contexts'
 
@@ -5515,7 +5538,7 @@ class StructuredAliasContexts(Base):
 
 class StructuredAliasTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_todos'
 
@@ -5533,7 +5556,7 @@ class StructuredAliasTodos(Base):
 
 class StructuredAliasNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_notes'
 
@@ -5551,7 +5574,7 @@ class StructuredAliasNotes(Base):
 
 class StructuredAliasComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_comments'
 
@@ -5569,7 +5592,7 @@ class StructuredAliasComments(Base):
 
 class StructuredAliasInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_in_subset'
 
@@ -5587,7 +5610,7 @@ class StructuredAliasInSubset(Base):
 
 class StructuredAliasSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_see_also'
 
@@ -5605,7 +5628,7 @@ class StructuredAliasSeeAlso(Base):
 
 class StructuredAliasAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_aliases'
 
@@ -5623,7 +5646,7 @@ class StructuredAliasAliases(Base):
 
 class StructuredAliasMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_mappings'
 
@@ -5641,7 +5664,7 @@ class StructuredAliasMappings(Base):
 
 class StructuredAliasExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_exact_mappings'
 
@@ -5659,7 +5682,7 @@ class StructuredAliasExactMappings(Base):
 
 class StructuredAliasCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_close_mappings'
 
@@ -5677,7 +5700,7 @@ class StructuredAliasCloseMappings(Base):
 
 class StructuredAliasRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_related_mappings'
 
@@ -5695,7 +5718,7 @@ class StructuredAliasRelatedMappings(Base):
 
 class StructuredAliasNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_narrow_mappings'
 
@@ -5713,7 +5736,7 @@ class StructuredAliasNarrowMappings(Base):
 
 class StructuredAliasBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_broad_mappings'
 
@@ -5731,7 +5754,7 @@ class StructuredAliasBroadMappings(Base):
 
 class StructuredAliasContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_contributors'
 
@@ -5749,7 +5772,7 @@ class StructuredAliasContributors(Base):
 
 class StructuredAliasKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'structured_alias_keyword'
 
@@ -5767,7 +5790,7 @@ class StructuredAliasKeyword(Base):
 
 class AnonymousExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_todos'
 
@@ -5785,7 +5808,7 @@ class AnonymousExpressionTodos(Base):
 
 class AnonymousExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_notes'
 
@@ -5803,7 +5826,7 @@ class AnonymousExpressionNotes(Base):
 
 class AnonymousExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_comments'
 
@@ -5821,7 +5844,7 @@ class AnonymousExpressionComments(Base):
 
 class AnonymousExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_in_subset'
 
@@ -5839,7 +5862,7 @@ class AnonymousExpressionInSubset(Base):
 
 class AnonymousExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_see_also'
 
@@ -5857,7 +5880,7 @@ class AnonymousExpressionSeeAlso(Base):
 
 class AnonymousExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_aliases'
 
@@ -5875,7 +5898,7 @@ class AnonymousExpressionAliases(Base):
 
 class AnonymousExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_mappings'
 
@@ -5893,7 +5916,7 @@ class AnonymousExpressionMappings(Base):
 
 class AnonymousExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_exact_mappings'
 
@@ -5911,7 +5934,7 @@ class AnonymousExpressionExactMappings(Base):
 
 class AnonymousExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_close_mappings'
 
@@ -5929,7 +5952,7 @@ class AnonymousExpressionCloseMappings(Base):
 
 class AnonymousExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_related_mappings'
 
@@ -5947,7 +5970,7 @@ class AnonymousExpressionRelatedMappings(Base):
 
 class AnonymousExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_narrow_mappings'
 
@@ -5965,7 +5988,7 @@ class AnonymousExpressionNarrowMappings(Base):
 
 class AnonymousExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_broad_mappings'
 
@@ -5983,7 +6006,7 @@ class AnonymousExpressionBroadMappings(Base):
 
 class AnonymousExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_contributors'
 
@@ -6001,7 +6024,7 @@ class AnonymousExpressionContributors(Base):
 
 class AnonymousExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_category'
 
@@ -6019,7 +6042,7 @@ class AnonymousExpressionCategory(Base):
 
 class AnonymousExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_expression_keyword'
 
@@ -6037,7 +6060,7 @@ class AnonymousExpressionKeyword(Base):
 
 class PathExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_none_of'
 
@@ -6055,7 +6078,7 @@ class PathExpressionNoneOf(Base):
 
 class PathExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_any_of'
 
@@ -6073,7 +6096,7 @@ class PathExpressionAnyOf(Base):
 
 class PathExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_all_of'
 
@@ -6091,7 +6114,7 @@ class PathExpressionAllOf(Base):
 
 class PathExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_exactly_one_of'
 
@@ -6109,7 +6132,7 @@ class PathExpressionExactlyOneOf(Base):
 
 class PathExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_todos'
 
@@ -6127,7 +6150,7 @@ class PathExpressionTodos(Base):
 
 class PathExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_notes'
 
@@ -6145,7 +6168,7 @@ class PathExpressionNotes(Base):
 
 class PathExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_comments'
 
@@ -6163,7 +6186,7 @@ class PathExpressionComments(Base):
 
 class PathExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_in_subset'
 
@@ -6181,7 +6204,7 @@ class PathExpressionInSubset(Base):
 
 class PathExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_see_also'
 
@@ -6199,7 +6222,7 @@ class PathExpressionSeeAlso(Base):
 
 class PathExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_aliases'
 
@@ -6217,7 +6240,7 @@ class PathExpressionAliases(Base):
 
 class PathExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_mappings'
 
@@ -6235,7 +6258,7 @@ class PathExpressionMappings(Base):
 
 class PathExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_exact_mappings'
 
@@ -6253,7 +6276,7 @@ class PathExpressionExactMappings(Base):
 
 class PathExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_close_mappings'
 
@@ -6271,7 +6294,7 @@ class PathExpressionCloseMappings(Base):
 
 class PathExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_related_mappings'
 
@@ -6289,7 +6312,7 @@ class PathExpressionRelatedMappings(Base):
 
 class PathExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_narrow_mappings'
 
@@ -6307,7 +6330,7 @@ class PathExpressionNarrowMappings(Base):
 
 class PathExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_broad_mappings'
 
@@ -6325,7 +6348,7 @@ class PathExpressionBroadMappings(Base):
 
 class PathExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_contributors'
 
@@ -6343,7 +6366,7 @@ class PathExpressionContributors(Base):
 
 class PathExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_category'
 
@@ -6361,7 +6384,7 @@ class PathExpressionCategory(Base):
 
 class PathExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'path_expression_keyword'
 
@@ -6379,7 +6402,7 @@ class PathExpressionKeyword(Base):
 
 class SlotExpressionEqualsStringIn(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_expression_equals_string_in'
 
@@ -6397,7 +6420,7 @@ class SlotExpressionEqualsStringIn(Base):
 
 class SlotExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_expression_none_of'
 
@@ -6415,7 +6438,7 @@ class SlotExpressionNoneOf(Base):
 
 class SlotExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_expression_exactly_one_of'
 
@@ -6433,7 +6456,7 @@ class SlotExpressionExactlyOneOf(Base):
 
 class SlotExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_expression_any_of'
 
@@ -6451,7 +6474,7 @@ class SlotExpressionAnyOf(Base):
 
 class SlotExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_expression_all_of'
 
@@ -6469,7 +6492,7 @@ class SlotExpressionAllOf(Base):
 
 class AnonymousSlotExpressionEqualsStringIn(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_equals_string_in'
 
@@ -6487,7 +6510,7 @@ class AnonymousSlotExpressionEqualsStringIn(Base):
 
 class AnonymousSlotExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_none_of'
 
@@ -6505,7 +6528,7 @@ class AnonymousSlotExpressionNoneOf(Base):
 
 class AnonymousSlotExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_exactly_one_of'
 
@@ -6523,7 +6546,7 @@ class AnonymousSlotExpressionExactlyOneOf(Base):
 
 class AnonymousSlotExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_any_of'
 
@@ -6541,7 +6564,7 @@ class AnonymousSlotExpressionAnyOf(Base):
 
 class AnonymousSlotExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_all_of'
 
@@ -6559,7 +6582,7 @@ class AnonymousSlotExpressionAllOf(Base):
 
 class AnonymousSlotExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_todos'
 
@@ -6577,7 +6600,7 @@ class AnonymousSlotExpressionTodos(Base):
 
 class AnonymousSlotExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_notes'
 
@@ -6595,7 +6618,7 @@ class AnonymousSlotExpressionNotes(Base):
 
 class AnonymousSlotExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_comments'
 
@@ -6613,7 +6636,7 @@ class AnonymousSlotExpressionComments(Base):
 
 class AnonymousSlotExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_in_subset'
 
@@ -6631,7 +6654,7 @@ class AnonymousSlotExpressionInSubset(Base):
 
 class AnonymousSlotExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_see_also'
 
@@ -6649,7 +6672,7 @@ class AnonymousSlotExpressionSeeAlso(Base):
 
 class AnonymousSlotExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_aliases'
 
@@ -6667,7 +6690,7 @@ class AnonymousSlotExpressionAliases(Base):
 
 class AnonymousSlotExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_mappings'
 
@@ -6685,7 +6708,7 @@ class AnonymousSlotExpressionMappings(Base):
 
 class AnonymousSlotExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_exact_mappings'
 
@@ -6703,7 +6726,7 @@ class AnonymousSlotExpressionExactMappings(Base):
 
 class AnonymousSlotExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_close_mappings'
 
@@ -6721,7 +6744,7 @@ class AnonymousSlotExpressionCloseMappings(Base):
 
 class AnonymousSlotExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_related_mappings'
 
@@ -6739,7 +6762,7 @@ class AnonymousSlotExpressionRelatedMappings(Base):
 
 class AnonymousSlotExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_narrow_mappings'
 
@@ -6757,7 +6780,7 @@ class AnonymousSlotExpressionNarrowMappings(Base):
 
 class AnonymousSlotExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_broad_mappings'
 
@@ -6775,7 +6798,7 @@ class AnonymousSlotExpressionBroadMappings(Base):
 
 class AnonymousSlotExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_contributors'
 
@@ -6793,7 +6816,7 @@ class AnonymousSlotExpressionContributors(Base):
 
 class AnonymousSlotExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_category'
 
@@ -6811,7 +6834,7 @@ class AnonymousSlotExpressionCategory(Base):
 
 class AnonymousSlotExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression_keyword'
 
@@ -6829,7 +6852,7 @@ class AnonymousSlotExpressionKeyword(Base):
 
 class SlotDefinitionDomainOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_domain_of'
 
@@ -6847,7 +6870,7 @@ class SlotDefinitionDomainOf(Base):
 
 class SlotDefinitionDisjointWith(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_disjoint_with'
 
@@ -6865,7 +6888,7 @@ class SlotDefinitionDisjointWith(Base):
 
 class SlotDefinitionUnionOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_union_of'
 
@@ -6883,7 +6906,7 @@ class SlotDefinitionUnionOf(Base):
 
 class SlotDefinitionTypeMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_type_mappings'
 
@@ -6901,7 +6924,7 @@ class SlotDefinitionTypeMappings(Base):
 
 class SlotDefinitionEqualsStringIn(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_equals_string_in'
 
@@ -6919,7 +6942,7 @@ class SlotDefinitionEqualsStringIn(Base):
 
 class SlotDefinitionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_none_of'
 
@@ -6937,7 +6960,7 @@ class SlotDefinitionNoneOf(Base):
 
 class SlotDefinitionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_exactly_one_of'
 
@@ -6955,7 +6978,7 @@ class SlotDefinitionExactlyOneOf(Base):
 
 class SlotDefinitionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_any_of'
 
@@ -6973,7 +6996,7 @@ class SlotDefinitionAnyOf(Base):
 
 class SlotDefinitionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_all_of'
 
@@ -6991,7 +7014,7 @@ class SlotDefinitionAllOf(Base):
 
 class SlotDefinitionMixins(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_mixins'
 
@@ -7009,7 +7032,7 @@ class SlotDefinitionMixins(Base):
 
 class SlotDefinitionApplyTo(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_apply_to'
 
@@ -7027,7 +7050,7 @@ class SlotDefinitionApplyTo(Base):
 
 class SlotDefinitionValuesFrom(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_values_from'
 
@@ -7045,7 +7068,7 @@ class SlotDefinitionValuesFrom(Base):
 
 class SlotDefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_id_prefixes'
 
@@ -7063,7 +7086,7 @@ class SlotDefinitionIdPrefixes(Base):
 
 class SlotDefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_implements'
 
@@ -7081,7 +7104,7 @@ class SlotDefinitionImplements(Base):
 
 class SlotDefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_instantiates'
 
@@ -7099,7 +7122,7 @@ class SlotDefinitionInstantiates(Base):
 
 class SlotDefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_todos'
 
@@ -7117,7 +7140,7 @@ class SlotDefinitionTodos(Base):
 
 class SlotDefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_notes'
 
@@ -7135,7 +7158,7 @@ class SlotDefinitionNotes(Base):
 
 class SlotDefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_comments'
 
@@ -7153,7 +7176,7 @@ class SlotDefinitionComments(Base):
 
 class SlotDefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_in_subset'
 
@@ -7171,7 +7194,7 @@ class SlotDefinitionInSubset(Base):
 
 class SlotDefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_see_also'
 
@@ -7189,7 +7212,7 @@ class SlotDefinitionSeeAlso(Base):
 
 class SlotDefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_aliases'
 
@@ -7207,7 +7230,7 @@ class SlotDefinitionAliases(Base):
 
 class SlotDefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_mappings'
 
@@ -7225,7 +7248,7 @@ class SlotDefinitionMappings(Base):
 
 class SlotDefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_exact_mappings'
 
@@ -7243,7 +7266,7 @@ class SlotDefinitionExactMappings(Base):
 
 class SlotDefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_close_mappings'
 
@@ -7261,7 +7284,7 @@ class SlotDefinitionCloseMappings(Base):
 
 class SlotDefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_related_mappings'
 
@@ -7279,7 +7302,7 @@ class SlotDefinitionRelatedMappings(Base):
 
 class SlotDefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_narrow_mappings'
 
@@ -7297,7 +7320,7 @@ class SlotDefinitionNarrowMappings(Base):
 
 class SlotDefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_broad_mappings'
 
@@ -7315,7 +7338,7 @@ class SlotDefinitionBroadMappings(Base):
 
 class SlotDefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_contributors'
 
@@ -7333,7 +7356,7 @@ class SlotDefinitionContributors(Base):
 
 class SlotDefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_category'
 
@@ -7351,7 +7374,7 @@ class SlotDefinitionCategory(Base):
 
 class SlotDefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'slot_definition_keyword'
 
@@ -7369,7 +7392,7 @@ class SlotDefinitionKeyword(Base):
 
 class ClassExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_expression_any_of'
 
@@ -7387,7 +7410,7 @@ class ClassExpressionAnyOf(Base):
 
 class ClassExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_expression_exactly_one_of'
 
@@ -7405,7 +7428,7 @@ class ClassExpressionExactlyOneOf(Base):
 
 class ClassExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_expression_none_of'
 
@@ -7423,7 +7446,7 @@ class ClassExpressionNoneOf(Base):
 
 class ClassExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_expression_all_of'
 
@@ -7441,7 +7464,7 @@ class ClassExpressionAllOf(Base):
 
 class AnonymousClassExpressionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_any_of'
 
@@ -7459,7 +7482,7 @@ class AnonymousClassExpressionAnyOf(Base):
 
 class AnonymousClassExpressionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_exactly_one_of'
 
@@ -7477,7 +7500,7 @@ class AnonymousClassExpressionExactlyOneOf(Base):
 
 class AnonymousClassExpressionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_none_of'
 
@@ -7495,7 +7518,7 @@ class AnonymousClassExpressionNoneOf(Base):
 
 class AnonymousClassExpressionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_all_of'
 
@@ -7513,7 +7536,7 @@ class AnonymousClassExpressionAllOf(Base):
 
 class AnonymousClassExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_todos'
 
@@ -7531,7 +7554,7 @@ class AnonymousClassExpressionTodos(Base):
 
 class AnonymousClassExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_notes'
 
@@ -7549,7 +7572,7 @@ class AnonymousClassExpressionNotes(Base):
 
 class AnonymousClassExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_comments'
 
@@ -7567,7 +7590,7 @@ class AnonymousClassExpressionComments(Base):
 
 class AnonymousClassExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_in_subset'
 
@@ -7585,7 +7608,7 @@ class AnonymousClassExpressionInSubset(Base):
 
 class AnonymousClassExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_see_also'
 
@@ -7603,7 +7626,7 @@ class AnonymousClassExpressionSeeAlso(Base):
 
 class AnonymousClassExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_aliases'
 
@@ -7621,7 +7644,7 @@ class AnonymousClassExpressionAliases(Base):
 
 class AnonymousClassExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_mappings'
 
@@ -7639,7 +7662,7 @@ class AnonymousClassExpressionMappings(Base):
 
 class AnonymousClassExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_exact_mappings'
 
@@ -7657,7 +7680,7 @@ class AnonymousClassExpressionExactMappings(Base):
 
 class AnonymousClassExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_close_mappings'
 
@@ -7675,7 +7698,7 @@ class AnonymousClassExpressionCloseMappings(Base):
 
 class AnonymousClassExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_related_mappings'
 
@@ -7693,7 +7716,7 @@ class AnonymousClassExpressionRelatedMappings(Base):
 
 class AnonymousClassExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_narrow_mappings'
 
@@ -7711,7 +7734,7 @@ class AnonymousClassExpressionNarrowMappings(Base):
 
 class AnonymousClassExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_broad_mappings'
 
@@ -7729,7 +7752,7 @@ class AnonymousClassExpressionBroadMappings(Base):
 
 class AnonymousClassExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_contributors'
 
@@ -7747,7 +7770,7 @@ class AnonymousClassExpressionContributors(Base):
 
 class AnonymousClassExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_category'
 
@@ -7765,7 +7788,7 @@ class AnonymousClassExpressionCategory(Base):
 
 class AnonymousClassExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression_keyword'
 
@@ -7783,7 +7806,7 @@ class AnonymousClassExpressionKeyword(Base):
 
 class ClassDefinitionSlots(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_slots'
 
@@ -7801,7 +7824,7 @@ class ClassDefinitionSlots(Base):
 
 class ClassDefinitionUnionOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_union_of'
 
@@ -7819,7 +7842,7 @@ class ClassDefinitionUnionOf(Base):
 
 class ClassDefinitionDefiningSlots(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_defining_slots'
 
@@ -7837,7 +7860,7 @@ class ClassDefinitionDefiningSlots(Base):
 
 class ClassDefinitionDisjointWith(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_disjoint_with'
 
@@ -7855,7 +7878,7 @@ class ClassDefinitionDisjointWith(Base):
 
 class ClassDefinitionAnyOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_any_of'
 
@@ -7873,7 +7896,7 @@ class ClassDefinitionAnyOf(Base):
 
 class ClassDefinitionExactlyOneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_exactly_one_of'
 
@@ -7891,7 +7914,7 @@ class ClassDefinitionExactlyOneOf(Base):
 
 class ClassDefinitionNoneOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_none_of'
 
@@ -7909,7 +7932,7 @@ class ClassDefinitionNoneOf(Base):
 
 class ClassDefinitionAllOf(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_all_of'
 
@@ -7927,7 +7950,7 @@ class ClassDefinitionAllOf(Base):
 
 class ClassDefinitionMixins(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_mixins'
 
@@ -7945,7 +7968,7 @@ class ClassDefinitionMixins(Base):
 
 class ClassDefinitionApplyTo(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_apply_to'
 
@@ -7963,7 +7986,7 @@ class ClassDefinitionApplyTo(Base):
 
 class ClassDefinitionValuesFrom(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_values_from'
 
@@ -7981,7 +8004,7 @@ class ClassDefinitionValuesFrom(Base):
 
 class ClassDefinitionIdPrefixes(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_id_prefixes'
 
@@ -7999,7 +8022,7 @@ class ClassDefinitionIdPrefixes(Base):
 
 class ClassDefinitionImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_implements'
 
@@ -8017,7 +8040,7 @@ class ClassDefinitionImplements(Base):
 
 class ClassDefinitionInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_instantiates'
 
@@ -8035,7 +8058,7 @@ class ClassDefinitionInstantiates(Base):
 
 class ClassDefinitionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_todos'
 
@@ -8053,7 +8076,7 @@ class ClassDefinitionTodos(Base):
 
 class ClassDefinitionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_notes'
 
@@ -8071,7 +8094,7 @@ class ClassDefinitionNotes(Base):
 
 class ClassDefinitionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_comments'
 
@@ -8089,7 +8112,7 @@ class ClassDefinitionComments(Base):
 
 class ClassDefinitionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_in_subset'
 
@@ -8107,7 +8130,7 @@ class ClassDefinitionInSubset(Base):
 
 class ClassDefinitionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_see_also'
 
@@ -8125,7 +8148,7 @@ class ClassDefinitionSeeAlso(Base):
 
 class ClassDefinitionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_aliases'
 
@@ -8143,7 +8166,7 @@ class ClassDefinitionAliases(Base):
 
 class ClassDefinitionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_mappings'
 
@@ -8161,7 +8184,7 @@ class ClassDefinitionMappings(Base):
 
 class ClassDefinitionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_exact_mappings'
 
@@ -8179,7 +8202,7 @@ class ClassDefinitionExactMappings(Base):
 
 class ClassDefinitionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_close_mappings'
 
@@ -8197,7 +8220,7 @@ class ClassDefinitionCloseMappings(Base):
 
 class ClassDefinitionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_related_mappings'
 
@@ -8215,7 +8238,7 @@ class ClassDefinitionRelatedMappings(Base):
 
 class ClassDefinitionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_narrow_mappings'
 
@@ -8233,7 +8256,7 @@ class ClassDefinitionNarrowMappings(Base):
 
 class ClassDefinitionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_broad_mappings'
 
@@ -8251,7 +8274,7 @@ class ClassDefinitionBroadMappings(Base):
 
 class ClassDefinitionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_contributors'
 
@@ -8269,7 +8292,7 @@ class ClassDefinitionContributors(Base):
 
 class ClassDefinitionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_category'
 
@@ -8287,7 +8310,7 @@ class ClassDefinitionCategory(Base):
 
 class ClassDefinitionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_definition_keyword'
 
@@ -8305,7 +8328,7 @@ class ClassDefinitionKeyword(Base):
 
 class ClassRuleTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_todos'
 
@@ -8323,7 +8346,7 @@ class ClassRuleTodos(Base):
 
 class ClassRuleNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_notes'
 
@@ -8341,7 +8364,7 @@ class ClassRuleNotes(Base):
 
 class ClassRuleComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_comments'
 
@@ -8359,7 +8382,7 @@ class ClassRuleComments(Base):
 
 class ClassRuleInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_in_subset'
 
@@ -8377,7 +8400,7 @@ class ClassRuleInSubset(Base):
 
 class ClassRuleSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_see_also'
 
@@ -8395,7 +8418,7 @@ class ClassRuleSeeAlso(Base):
 
 class ClassRuleAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_aliases'
 
@@ -8413,7 +8436,7 @@ class ClassRuleAliases(Base):
 
 class ClassRuleMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_mappings'
 
@@ -8431,7 +8454,7 @@ class ClassRuleMappings(Base):
 
 class ClassRuleExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_exact_mappings'
 
@@ -8449,7 +8472,7 @@ class ClassRuleExactMappings(Base):
 
 class ClassRuleCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_close_mappings'
 
@@ -8467,7 +8490,7 @@ class ClassRuleCloseMappings(Base):
 
 class ClassRuleRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_related_mappings'
 
@@ -8485,7 +8508,7 @@ class ClassRuleRelatedMappings(Base):
 
 class ClassRuleNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_narrow_mappings'
 
@@ -8503,7 +8526,7 @@ class ClassRuleNarrowMappings(Base):
 
 class ClassRuleBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_broad_mappings'
 
@@ -8521,7 +8544,7 @@ class ClassRuleBroadMappings(Base):
 
 class ClassRuleContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_contributors'
 
@@ -8539,7 +8562,7 @@ class ClassRuleContributors(Base):
 
 class ClassRuleCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_category'
 
@@ -8557,7 +8580,7 @@ class ClassRuleCategory(Base):
 
 class ClassRuleKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'class_rule_keyword'
 
@@ -8575,7 +8598,7 @@ class ClassRuleKeyword(Base):
 
 class ArrayExpressionDimensions(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_dimensions'
 
@@ -8593,7 +8616,7 @@ class ArrayExpressionDimensions(Base):
 
 class ArrayExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_todos'
 
@@ -8611,7 +8634,7 @@ class ArrayExpressionTodos(Base):
 
 class ArrayExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_notes'
 
@@ -8629,7 +8652,7 @@ class ArrayExpressionNotes(Base):
 
 class ArrayExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_comments'
 
@@ -8647,7 +8670,7 @@ class ArrayExpressionComments(Base):
 
 class ArrayExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_in_subset'
 
@@ -8665,7 +8688,7 @@ class ArrayExpressionInSubset(Base):
 
 class ArrayExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_see_also'
 
@@ -8683,7 +8706,7 @@ class ArrayExpressionSeeAlso(Base):
 
 class ArrayExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_aliases'
 
@@ -8701,7 +8724,7 @@ class ArrayExpressionAliases(Base):
 
 class ArrayExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_mappings'
 
@@ -8719,7 +8742,7 @@ class ArrayExpressionMappings(Base):
 
 class ArrayExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_exact_mappings'
 
@@ -8737,7 +8760,7 @@ class ArrayExpressionExactMappings(Base):
 
 class ArrayExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_close_mappings'
 
@@ -8755,7 +8778,7 @@ class ArrayExpressionCloseMappings(Base):
 
 class ArrayExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_related_mappings'
 
@@ -8773,7 +8796,7 @@ class ArrayExpressionRelatedMappings(Base):
 
 class ArrayExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_narrow_mappings'
 
@@ -8791,7 +8814,7 @@ class ArrayExpressionNarrowMappings(Base):
 
 class ArrayExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_broad_mappings'
 
@@ -8809,7 +8832,7 @@ class ArrayExpressionBroadMappings(Base):
 
 class ArrayExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_contributors'
 
@@ -8827,7 +8850,7 @@ class ArrayExpressionContributors(Base):
 
 class ArrayExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_category'
 
@@ -8845,7 +8868,7 @@ class ArrayExpressionCategory(Base):
 
 class ArrayExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'array_expression_keyword'
 
@@ -8863,7 +8886,7 @@ class ArrayExpressionKeyword(Base):
 
 class DimensionExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_todos'
 
@@ -8881,7 +8904,7 @@ class DimensionExpressionTodos(Base):
 
 class DimensionExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_notes'
 
@@ -8899,7 +8922,7 @@ class DimensionExpressionNotes(Base):
 
 class DimensionExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_comments'
 
@@ -8917,7 +8940,7 @@ class DimensionExpressionComments(Base):
 
 class DimensionExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_in_subset'
 
@@ -8935,7 +8958,7 @@ class DimensionExpressionInSubset(Base):
 
 class DimensionExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_see_also'
 
@@ -8953,7 +8976,7 @@ class DimensionExpressionSeeAlso(Base):
 
 class DimensionExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_aliases'
 
@@ -8971,7 +8994,7 @@ class DimensionExpressionAliases(Base):
 
 class DimensionExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_mappings'
 
@@ -8989,7 +9012,7 @@ class DimensionExpressionMappings(Base):
 
 class DimensionExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_exact_mappings'
 
@@ -9007,7 +9030,7 @@ class DimensionExpressionExactMappings(Base):
 
 class DimensionExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_close_mappings'
 
@@ -9025,7 +9048,7 @@ class DimensionExpressionCloseMappings(Base):
 
 class DimensionExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_related_mappings'
 
@@ -9043,7 +9066,7 @@ class DimensionExpressionRelatedMappings(Base):
 
 class DimensionExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_narrow_mappings'
 
@@ -9061,7 +9084,7 @@ class DimensionExpressionNarrowMappings(Base):
 
 class DimensionExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_broad_mappings'
 
@@ -9079,7 +9102,7 @@ class DimensionExpressionBroadMappings(Base):
 
 class DimensionExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_contributors'
 
@@ -9097,7 +9120,7 @@ class DimensionExpressionContributors(Base):
 
 class DimensionExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_category'
 
@@ -9115,7 +9138,7 @@ class DimensionExpressionCategory(Base):
 
 class DimensionExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'dimension_expression_keyword'
 
@@ -9133,7 +9156,7 @@ class DimensionExpressionKeyword(Base):
 
 class PatternExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_todos'
 
@@ -9151,7 +9174,7 @@ class PatternExpressionTodos(Base):
 
 class PatternExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_notes'
 
@@ -9169,7 +9192,7 @@ class PatternExpressionNotes(Base):
 
 class PatternExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_comments'
 
@@ -9187,7 +9210,7 @@ class PatternExpressionComments(Base):
 
 class PatternExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_in_subset'
 
@@ -9205,7 +9228,7 @@ class PatternExpressionInSubset(Base):
 
 class PatternExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_see_also'
 
@@ -9223,7 +9246,7 @@ class PatternExpressionSeeAlso(Base):
 
 class PatternExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_aliases'
 
@@ -9241,7 +9264,7 @@ class PatternExpressionAliases(Base):
 
 class PatternExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_mappings'
 
@@ -9259,7 +9282,7 @@ class PatternExpressionMappings(Base):
 
 class PatternExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_exact_mappings'
 
@@ -9277,7 +9300,7 @@ class PatternExpressionExactMappings(Base):
 
 class PatternExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_close_mappings'
 
@@ -9295,7 +9318,7 @@ class PatternExpressionCloseMappings(Base):
 
 class PatternExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_related_mappings'
 
@@ -9313,7 +9336,7 @@ class PatternExpressionRelatedMappings(Base):
 
 class PatternExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_narrow_mappings'
 
@@ -9331,7 +9354,7 @@ class PatternExpressionNarrowMappings(Base):
 
 class PatternExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_broad_mappings'
 
@@ -9349,7 +9372,7 @@ class PatternExpressionBroadMappings(Base):
 
 class PatternExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_contributors'
 
@@ -9367,7 +9390,7 @@ class PatternExpressionContributors(Base):
 
 class PatternExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_category'
 
@@ -9385,7 +9408,7 @@ class PatternExpressionCategory(Base):
 
 class PatternExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'pattern_expression_keyword'
 
@@ -9403,7 +9426,7 @@ class PatternExpressionKeyword(Base):
 
 class ImportExpressionTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_todos'
 
@@ -9421,7 +9444,7 @@ class ImportExpressionTodos(Base):
 
 class ImportExpressionNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_notes'
 
@@ -9439,7 +9462,7 @@ class ImportExpressionNotes(Base):
 
 class ImportExpressionComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_comments'
 
@@ -9457,7 +9480,7 @@ class ImportExpressionComments(Base):
 
 class ImportExpressionInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_in_subset'
 
@@ -9475,7 +9498,7 @@ class ImportExpressionInSubset(Base):
 
 class ImportExpressionSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_see_also'
 
@@ -9493,7 +9516,7 @@ class ImportExpressionSeeAlso(Base):
 
 class ImportExpressionAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_aliases'
 
@@ -9511,7 +9534,7 @@ class ImportExpressionAliases(Base):
 
 class ImportExpressionMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_mappings'
 
@@ -9529,7 +9552,7 @@ class ImportExpressionMappings(Base):
 
 class ImportExpressionExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_exact_mappings'
 
@@ -9547,7 +9570,7 @@ class ImportExpressionExactMappings(Base):
 
 class ImportExpressionCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_close_mappings'
 
@@ -9565,7 +9588,7 @@ class ImportExpressionCloseMappings(Base):
 
 class ImportExpressionRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_related_mappings'
 
@@ -9583,7 +9606,7 @@ class ImportExpressionRelatedMappings(Base):
 
 class ImportExpressionNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_narrow_mappings'
 
@@ -9601,7 +9624,7 @@ class ImportExpressionNarrowMappings(Base):
 
 class ImportExpressionBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_broad_mappings'
 
@@ -9619,7 +9642,7 @@ class ImportExpressionBroadMappings(Base):
 
 class ImportExpressionContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_contributors'
 
@@ -9637,7 +9660,7 @@ class ImportExpressionContributors(Base):
 
 class ImportExpressionCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_category'
 
@@ -9655,7 +9678,7 @@ class ImportExpressionCategory(Base):
 
 class ImportExpressionKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'import_expression_keyword'
 
@@ -9673,7 +9696,7 @@ class ImportExpressionKeyword(Base):
 
 class PermissibleValueInstantiates(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_instantiates'
 
@@ -9691,7 +9714,7 @@ class PermissibleValueInstantiates(Base):
 
 class PermissibleValueImplements(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_implements'
 
@@ -9709,7 +9732,7 @@ class PermissibleValueImplements(Base):
 
 class PermissibleValueMixins(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_mixins'
 
@@ -9727,7 +9750,7 @@ class PermissibleValueMixins(Base):
 
 class PermissibleValueTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_todos'
 
@@ -9745,7 +9768,7 @@ class PermissibleValueTodos(Base):
 
 class PermissibleValueNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_notes'
 
@@ -9763,7 +9786,7 @@ class PermissibleValueNotes(Base):
 
 class PermissibleValueComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_comments'
 
@@ -9781,7 +9804,7 @@ class PermissibleValueComments(Base):
 
 class PermissibleValueInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_in_subset'
 
@@ -9799,7 +9822,7 @@ class PermissibleValueInSubset(Base):
 
 class PermissibleValueSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_see_also'
 
@@ -9817,7 +9840,7 @@ class PermissibleValueSeeAlso(Base):
 
 class PermissibleValueAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_aliases'
 
@@ -9835,7 +9858,7 @@ class PermissibleValueAliases(Base):
 
 class PermissibleValueMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_mappings'
 
@@ -9853,7 +9876,7 @@ class PermissibleValueMappings(Base):
 
 class PermissibleValueExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_exact_mappings'
 
@@ -9871,7 +9894,7 @@ class PermissibleValueExactMappings(Base):
 
 class PermissibleValueCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_close_mappings'
 
@@ -9889,7 +9912,7 @@ class PermissibleValueCloseMappings(Base):
 
 class PermissibleValueRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_related_mappings'
 
@@ -9907,7 +9930,7 @@ class PermissibleValueRelatedMappings(Base):
 
 class PermissibleValueNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_narrow_mappings'
 
@@ -9925,7 +9948,7 @@ class PermissibleValueNarrowMappings(Base):
 
 class PermissibleValueBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_broad_mappings'
 
@@ -9943,7 +9966,7 @@ class PermissibleValueBroadMappings(Base):
 
 class PermissibleValueContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_contributors'
 
@@ -9961,7 +9984,7 @@ class PermissibleValueContributors(Base):
 
 class PermissibleValueCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_category'
 
@@ -9979,7 +10002,7 @@ class PermissibleValueCategory(Base):
 
 class PermissibleValueKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'permissible_value_keyword'
 
@@ -9997,7 +10020,7 @@ class PermissibleValueKeyword(Base):
 
 class UniqueKeyUniqueKeySlots(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_unique_key_slots'
 
@@ -10015,7 +10038,7 @@ class UniqueKeyUniqueKeySlots(Base):
 
 class UniqueKeyTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_todos'
 
@@ -10033,7 +10056,7 @@ class UniqueKeyTodos(Base):
 
 class UniqueKeyNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_notes'
 
@@ -10051,7 +10074,7 @@ class UniqueKeyNotes(Base):
 
 class UniqueKeyComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_comments'
 
@@ -10069,7 +10092,7 @@ class UniqueKeyComments(Base):
 
 class UniqueKeyInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_in_subset'
 
@@ -10087,7 +10110,7 @@ class UniqueKeyInSubset(Base):
 
 class UniqueKeySeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_see_also'
 
@@ -10105,7 +10128,7 @@ class UniqueKeySeeAlso(Base):
 
 class UniqueKeyAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_aliases'
 
@@ -10123,7 +10146,7 @@ class UniqueKeyAliases(Base):
 
 class UniqueKeyMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_mappings'
 
@@ -10141,7 +10164,7 @@ class UniqueKeyMappings(Base):
 
 class UniqueKeyExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_exact_mappings'
 
@@ -10159,7 +10182,7 @@ class UniqueKeyExactMappings(Base):
 
 class UniqueKeyCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_close_mappings'
 
@@ -10177,7 +10200,7 @@ class UniqueKeyCloseMappings(Base):
 
 class UniqueKeyRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_related_mappings'
 
@@ -10195,7 +10218,7 @@ class UniqueKeyRelatedMappings(Base):
 
 class UniqueKeyNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_narrow_mappings'
 
@@ -10213,7 +10236,7 @@ class UniqueKeyNarrowMappings(Base):
 
 class UniqueKeyBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_broad_mappings'
 
@@ -10231,7 +10254,7 @@ class UniqueKeyBroadMappings(Base):
 
 class UniqueKeyContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_contributors'
 
@@ -10249,7 +10272,7 @@ class UniqueKeyContributors(Base):
 
 class UniqueKeyCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_category'
 
@@ -10267,7 +10290,7 @@ class UniqueKeyCategory(Base):
 
 class UniqueKeyKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'unique_key_keyword'
 
@@ -10285,7 +10308,7 @@ class UniqueKeyKeyword(Base):
 
 class TypeMappingTodos(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_todos'
 
@@ -10303,7 +10326,7 @@ class TypeMappingTodos(Base):
 
 class TypeMappingNotes(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_notes'
 
@@ -10321,7 +10344,7 @@ class TypeMappingNotes(Base):
 
 class TypeMappingComments(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_comments'
 
@@ -10339,7 +10362,7 @@ class TypeMappingComments(Base):
 
 class TypeMappingInSubset(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_in_subset'
 
@@ -10357,7 +10380,7 @@ class TypeMappingInSubset(Base):
 
 class TypeMappingSeeAlso(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_see_also'
 
@@ -10375,7 +10398,7 @@ class TypeMappingSeeAlso(Base):
 
 class TypeMappingAliases(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_aliases'
 
@@ -10393,7 +10416,7 @@ class TypeMappingAliases(Base):
 
 class TypeMappingMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_mappings'
 
@@ -10411,7 +10434,7 @@ class TypeMappingMappings(Base):
 
 class TypeMappingExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_exact_mappings'
 
@@ -10429,7 +10452,7 @@ class TypeMappingExactMappings(Base):
 
 class TypeMappingCloseMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_close_mappings'
 
@@ -10447,7 +10470,7 @@ class TypeMappingCloseMappings(Base):
 
 class TypeMappingRelatedMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_related_mappings'
 
@@ -10465,7 +10488,7 @@ class TypeMappingRelatedMappings(Base):
 
 class TypeMappingNarrowMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_narrow_mappings'
 
@@ -10483,7 +10506,7 @@ class TypeMappingNarrowMappings(Base):
 
 class TypeMappingBroadMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_broad_mappings'
 
@@ -10501,7 +10524,7 @@ class TypeMappingBroadMappings(Base):
 
 class TypeMappingContributors(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_contributors'
 
@@ -10519,7 +10542,7 @@ class TypeMappingContributors(Base):
 
 class TypeMappingCategory(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_category'
 
@@ -10537,7 +10560,7 @@ class TypeMappingCategory(Base):
 
 class TypeMappingKeyword(Base):
     """
-    
+    None
     """
     __tablename__ = 'type_mapping_keyword'
 
@@ -10555,7 +10578,7 @@ class TypeMappingKeyword(Base):
 
 class UnitOfMeasureExactMappings(Base):
     """
-    
+    None
     """
     __tablename__ = 'UnitOfMeasure_exact_mappings'
 
@@ -11445,6 +11468,8 @@ class SlotExpression(Expression):
     has_member = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[has_member_id])
     all_members_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
     all_members = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[all_members_id])
+    array_id = Column(Integer(), ForeignKey('array_expression.id'))
+    array = relationship("ArrayExpression", uselist=False, foreign_keys=[array_id])
     
     
     # One-To-Many: OneToAnyMapping(source_class='slot_expression', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -11473,7 +11498,7 @@ class SlotExpression(Expression):
     
 
     def __repr__(self):
-        return f"slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},)"
+        return f"slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
 
 
 
@@ -11487,7 +11512,7 @@ class SlotExpression(Expression):
 
 class AnonymousSlotExpression(AnonymousExpression):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_slot_expression'
 
@@ -11538,6 +11563,8 @@ class AnonymousSlotExpression(AnonymousExpression):
     has_member = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[has_member_id])
     all_members_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
     all_members = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[all_members_id])
+    array_id = Column(Integer(), ForeignKey('array_expression.id'))
+    array = relationship("ArrayExpression", uselist=False, foreign_keys=[array_id])
     
     
     # One-To-Many: OneToAnyMapping(source_class='anonymous_slot_expression', source_slot='bindings', mapping_type=None, target_class='enum_binding', target_slot='anonymous_slot_expression_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -11660,7 +11687,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     
 
     def __repr__(self):
-        return f"anonymous_slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},)"
+        return f"anonymous_slot_expression(id={self.id},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
 
 
 
@@ -11674,7 +11701,7 @@ class AnonymousSlotExpression(AnonymousExpression):
 
 class AnonymousClassExpression(AnonymousExpression):
     """
-    
+    None
     """
     __tablename__ = 'anonymous_class_expression'
 
@@ -12303,8 +12330,6 @@ class SlotDefinition(Definition):
     class_expression_id = Column(Integer(), ForeignKey('class_expression.id'))
     anonymous_class_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
     class_definition_name = Column(Text(), ForeignKey('class_definition.name'))
-    array_id = Column(Integer(), ForeignKey('array_expression.id'))
-    array = relationship("ArrayExpression", uselist=False, foreign_keys=[array_id])
     path_rule_id = Column(Integer(), ForeignKey('path_expression.id'))
     path_rule = relationship("PathExpression", uselist=False, foreign_keys=[path_rule_id])
     range_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
@@ -12323,6 +12348,8 @@ class SlotDefinition(Definition):
     has_member = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[has_member_id])
     all_members_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
     all_members = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[all_members_id])
+    array_id = Column(Integer(), ForeignKey('array_expression.id'))
+    array = relationship("ArrayExpression", uselist=False, foreign_keys=[array_id])
     
     
     # ManyToMany
@@ -12493,7 +12520,7 @@ class SlotDefinition(Definition):
     
 
     def __repr__(self):
-        return f"slot_definition(singular_name={self.singular_name},domain={self.domain},slot_uri={self.slot_uri},inherited={self.inherited},readonly={self.readonly},ifabsent={self.ifabsent},list_elements_unique={self.list_elements_unique},list_elements_ordered={self.list_elements_ordered},shared={self.shared},key={self.key},identifier={self.identifier},designates_type={self.designates_type},alias={self.alias},owner={self.owner},subproperty_of={self.subproperty_of},symmetric={self.symmetric},reflexive={self.reflexive},locally_reflexive={self.locally_reflexive},irreflexive={self.irreflexive},asymmetric={self.asymmetric},transitive={self.transitive},inverse={self.inverse},is_class_field={self.is_class_field},transitive_form_of={self.transitive_form_of},reflexive_transitive_form_of={self.reflexive_transitive_form_of},role={self.role},is_usage_slot={self.is_usage_slot},usage_slot_name={self.usage_slot_name},relational_role={self.relational_role},slot_group={self.slot_group},is_grouping_slot={self.is_grouping_slot},children_are_mutually_disjoint={self.children_are_mutually_disjoint},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},class_expression_id={self.class_expression_id},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},array_id={self.array_id},path_rule_id={self.path_rule_id},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},)"
+        return f"slot_definition(singular_name={self.singular_name},domain={self.domain},slot_uri={self.slot_uri},inherited={self.inherited},readonly={self.readonly},ifabsent={self.ifabsent},list_elements_unique={self.list_elements_unique},list_elements_ordered={self.list_elements_ordered},shared={self.shared},key={self.key},identifier={self.identifier},designates_type={self.designates_type},alias={self.alias},owner={self.owner},subproperty_of={self.subproperty_of},symmetric={self.symmetric},reflexive={self.reflexive},locally_reflexive={self.locally_reflexive},irreflexive={self.irreflexive},asymmetric={self.asymmetric},transitive={self.transitive},inverse={self.inverse},is_class_field={self.is_class_field},transitive_form_of={self.transitive_form_of},reflexive_transitive_form_of={self.reflexive_transitive_form_of},role={self.role},is_usage_slot={self.is_usage_slot},usage_slot_name={self.usage_slot_name},relational_role={self.relational_role},slot_group={self.slot_group},is_grouping_slot={self.is_grouping_slot},children_are_mutually_disjoint={self.children_are_mutually_disjoint},range={self.range},required={self.required},recommended={self.recommended},multivalued={self.multivalued},inlined={self.inlined},inlined_as_list={self.inlined_as_list},pattern={self.pattern},implicit_prefix={self.implicit_prefix},value_presence={self.value_presence},equals_string={self.equals_string},equals_number={self.equals_number},equals_expression={self.equals_expression},exact_cardinality={self.exact_cardinality},minimum_cardinality={self.minimum_cardinality},maximum_cardinality={self.maximum_cardinality},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},class_expression_id={self.class_expression_id},anonymous_class_expression_id={self.anonymous_class_expression_id},class_definition_name={self.class_definition_name},path_rule_id={self.path_rule_id},range_expression_id={self.range_expression_id},enum_range_id={self.enum_range_id},minimum_value_id={self.minimum_value_id},maximum_value_id={self.maximum_value_id},structured_pattern_id={self.structured_pattern_id},unit_id={self.unit_id},has_member_id={self.has_member_id},all_members_id={self.all_members_id},array_id={self.array_id},)"
 
 
 
@@ -12517,6 +12544,7 @@ class ClassDefinition(Definition):
     slot_names_unique = Column(Boolean())
     represents_relationship = Column(Boolean())
     children_are_mutually_disjoint = Column(Boolean())
+    alias = Column(Text())
     is_a = Column(Text(), ForeignKey('class_definition.name'))
     abstract = Column(Boolean())
     mixin = Column(Boolean())
@@ -12541,6 +12569,8 @@ class ClassDefinition(Definition):
     status = Column(Text())
     rank = Column(Integer())
     schema_definition_name = Column(Text(), ForeignKey('schema_definition.name'))
+    extra_slots_id = Column(Integer(), ForeignKey('extra_slots_expression.id'))
+    extra_slots = relationship("ExtraSlotsExpression", uselist=False, foreign_keys=[extra_slots_id])
     
     
     # ManyToMany
@@ -12726,7 +12756,7 @@ class ClassDefinition(Definition):
     
 
     def __repr__(self):
-        return f"class_definition(class_uri={self.class_uri},subclass_of={self.subclass_of},tree_root={self.tree_root},slot_names_unique={self.slot_names_unique},represents_relationship={self.represents_relationship},children_are_mutually_disjoint={self.children_are_mutually_disjoint},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},)"
+        return f"class_definition(class_uri={self.class_uri},subclass_of={self.subclass_of},tree_root={self.tree_root},slot_names_unique={self.slot_names_unique},represents_relationship={self.represents_relationship},children_are_mutually_disjoint={self.children_are_mutually_disjoint},alias={self.alias},is_a={self.is_a},abstract={self.abstract},mixin={self.mixin},string_serialization={self.string_serialization},name={self.name},id_prefixes_are_closed={self.id_prefixes_are_closed},definition_uri={self.definition_uri},conforms_to={self.conforms_to},description={self.description},title={self.title},deprecated={self.deprecated},from_schema={self.from_schema},imported_from={self.imported_from},source={self.source},in_language={self.in_language},deprecated_element_has_exact_replacement={self.deprecated_element_has_exact_replacement},deprecated_element_has_possible_replacement={self.deprecated_element_has_possible_replacement},created_by={self.created_by},created_on={self.created_on},last_updated_on={self.last_updated_on},modified_by={self.modified_by},status={self.status},rank={self.rank},schema_definition_name={self.schema_definition_name},extra_slots_id={self.extra_slots_id},)"
 
 
 

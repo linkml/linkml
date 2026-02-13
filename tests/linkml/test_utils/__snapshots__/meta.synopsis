@@ -1,19 +1,19 @@
 
-Classes: 45
-	Referenced by: 28 classes, 234 slots, 0 types, 0 enums 
-	Root: 31
-	Leaf: 39
-	Standalone: 44
+Classes: 46
+	Referenced by: 29 classes, 235 slots, 0 types, 0 enums 
+	Root: 32
+	Leaf: 40
+	Standalone: 45
 	Declared mixin: 7
 	Undeclared mixin: 1
 		enum_expression
 	Abstract: 5
 
-Slots: 269
-	Referenced by: 41 classes, 63 slots, 0 types, 0 enums 
-	Root: 206
-	Leaf: 241
-	Standalone: 272
+Slots: 271
+	Referenced by: 42 classes, 63 slots, 0 types, 0 enums 
+	Root: 208
+	Leaf: 243
+	Standalone: 275
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 8
@@ -35,10 +35,10 @@ Slots: 269
 		"structured_imports": "schema_definition"
 		"structured_pattern": "definition"
 		"union_of": "element"
-	Domain unspecified: 56
+	Domain unspecified: 57
 	Ranges:
 		Type:
-			boolean: 41
+			boolean: 42
 			datetime: 4
 			integer: 9
 			ncname: 7
@@ -67,6 +67,7 @@ Slots: 269
 			example: 1
 			expression: 6
 			extension: 1
+			extra_slots_expression: 1
 			import_expression: 1
 			local_name: 1
 			match_query: 1
@@ -90,7 +91,7 @@ Slots: 269
 			relational_role_enum: 1
 
 Types: 19
-	Referenced by: 0 classes, 158 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 159 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

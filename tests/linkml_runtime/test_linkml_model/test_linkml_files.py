@@ -21,6 +21,8 @@ from linkml_runtime.linkml_model.linkml_files import (
     _Path,
 )
 
+_LOCAL_BASE = Path(LOCAL_BASE) if not isinstance(LOCAL_BASE, Path) else LOCAL_BASE
+
 EXPECTED_FORMATS = [
     (source, fmt) for source, fmt in product(Source, Format) if (fmt not in META_ONLY or source == Source.META)
 ]
@@ -62,14 +64,14 @@ def test_no_unmapped_dirs():
     """
     EXCLUDES = ("__pycache__",)
 
-    expected = {LOCAL_BASE / _Path.get(fmt.name).path for fmt in Format}
-    expected.add(LOCAL_BASE / "model")
+    expected = {_LOCAL_BASE / _Path.get(fmt.name).path for fmt in Format}
+    expected.add(_LOCAL_BASE / "model")
 
-    actual = {a_dir for a_dir in LOCAL_BASE.iterdir() if a_dir.is_dir() and a_dir.name not in EXCLUDES}
+    actual = {a_dir for a_dir in _LOCAL_BASE.iterdir() if a_dir.is_dir() and a_dir.name not in EXCLUDES}
     # Special case the root directory
-    actual.add(LOCAL_BASE)
+    actual.add(_LOCAL_BASE)
     # Special case YAML which is in a subdirectory - we've checked for existence above
-    actual.add(LOCAL_BASE / _Path.get("YAML").path)
+    actual.add(_LOCAL_BASE / _Path.get("YAML").path)
     assert expected == actual
 
 

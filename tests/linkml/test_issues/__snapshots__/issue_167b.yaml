@@ -339,10 +339,6 @@ slots:
   extension_value:
     name: extension_value
     definition_uri: https://w3id.org/linkml/extension_value
-    annotations:
-      simple_dict_value:
-        tag: simple_dict_value
-        value: true
     description: the actual annotation
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions
