@@ -463,6 +463,3 @@
             linkml:name "ncname" ;
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#string" ] .
-
-
-

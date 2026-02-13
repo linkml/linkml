@@ -311,6 +311,3 @@
             linkml:imported_from "linkml:types" ;
             linkml:name "decimal" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ] .
-
-
-
