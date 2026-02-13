@@ -1013,6 +1013,13 @@
                         "valueExpr": "https://w3id.org/linkml/AnonymousSlotExpression",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/array",
+                        "valueExpr": "https://w3id.org/linkml/ArrayExpression",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
@@ -1689,6 +1696,20 @@
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/children_are_mutually_disjoint",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/extra_slots",
+                        "valueExpr": "https://w3id.org/linkml/ExtraSlotsExpression",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#prefLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
                         "min": 0,
                         "max": 1
                      },
@@ -4059,6 +4080,59 @@
       },
       {
          "type": "Shape",
+         "id": "https://w3id.org/linkml/ExtraSlotsExpression",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/ExtraSlotsExpression_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/Expression_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/Expression"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/allowed",
+                        "valueExpr": "https://w3id.org/linkml/Boolean",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/range_expression",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousClassExpression",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/ExtraSlotsExpression"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
          "id": "https://w3id.org/linkml/ImportExpression",
          "closed": true,
          "expression": {
@@ -5918,13 +5992,6 @@
                      },
                      {
                         "type": "TripleConstraint",
-                        "predicate": "https://w3id.org/linkml/array",
-                        "valueExpr": "https://w3id.org/linkml/ArrayExpression",
-                        "min": 0,
-                        "max": 1
-                     },
-                     {
-                        "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/inherited",
                         "valueExpr": "https://w3id.org/linkml/Boolean",
                         "min": 0,
@@ -6393,6 +6460,13 @@
                         "valueExpr": "https://w3id.org/linkml/AnonymousSlotExpression",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/array",
+                        "valueExpr": "https://w3id.org/linkml/ArrayExpression",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
@@ -6642,6 +6716,13 @@
                         "valueExpr": "https://w3id.org/linkml/AnonymousSlotExpression",
                         "min": 0,
                         "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/array",
+                        "valueExpr": "https://w3id.org/linkml/ArrayExpression",
+                        "min": 0,
+                        "max": 1
                      }
                   ]
                },
