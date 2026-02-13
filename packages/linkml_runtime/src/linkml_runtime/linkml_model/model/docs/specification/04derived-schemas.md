@@ -37,7 +37,7 @@ default_prefix: person
 imports:
   - linkml:types
   - core
-  
+
 classes:
   Person:
     is_a: NameThing
@@ -77,7 +77,7 @@ prefixes:
 default_prefix: person
 imports:
   - linkml:types
-  
+
 classes:
   NamedThing:
     attributes:
@@ -107,7 +107,7 @@ The function **L**(*v*) normalizes `v` to a list/collection:
 i.e.
 
 ```
-L(v) = 
+L(v) =
   [] if v == None
   v if v == [...]
   [v] otherwise
@@ -135,7 +135,7 @@ In the metamodel, the identifier **SlotDefinitionName** is always `name`, so thi
 When a CURIE is expanded, it is first decomposed according to the grammar defined in [W3 CURIE specification](https://www.w3.org/TR/curie/):
 
 > curie       :=   [ [ prefix ] ':' ] reference
-> 
+>
 > prefix      :=   [NCName](http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName)
 >
 > reference   :=   irelative-ref (as defined in [IRI](https://www.w3.org/TR/curie/#ref_IRI))
@@ -182,10 +182,10 @@ The notation **i**.`<slot>` denotes a function that looks up the slot assignment
 in instance `i`. If `i` is a **InstanceOfReference** it is first *Resolved*, as per the table above. If `i` is collection of
 references, then each element is resolved.
 
-### Closure Function 
+### Closure Function
 
 The function **C**(*e*, *f*) takes as input an element *e* and a function *f* and returns
-the mathematical closure of *f* 
+the mathematical closure of *f*
 
 ```
 C(e, f) = { f(e) } U { f(e') | e' in C(e, f) }
@@ -207,7 +207,7 @@ C*(e, f) = C(e, f) U { e }
 
 The ancestors function **A** returns the **Closure** of the **Parents** function
 
-> **A**(*e*) = **C**(*e*, **P**) 
+> **A**(*e*) = **C**(*e*, **P**)
 
 The function **ReflexiveAncestors** **A*** uses the **ReflexiveClosure**.
 
@@ -243,7 +243,7 @@ The applicable slots for a class are all valid slots to use for an instance of t
 It is the set of all direct slots for that class and its ancestors.
 
 > **ApplicableSlots**(*c*) = <sub>*c'* ∈ **A***(*c*)</sub> **DirectSlots**(*c'*)
-> 
+>
 > **DirectSlots(c)** = **L**(c.`slots`) ∪ **L**(c.`attributes`)
 
 ### Algorithm: Combine Slots
@@ -251,7 +251,7 @@ It is the set of all direct slots for that class and its ancestors.
 The combine slot algorithm takes two slots s1 and s2. s1 is assumed to have *precedence* over s2.
 
 ```
-CombineSlots(s1, s2) = 
+CombineSlots(s1, s2) =
   s = SlotDefinition()
   for ms in MetaModel.slots:
     s.ms = CombineSlotsMetaslots(ms, s1.ms, s2.ms)
@@ -272,7 +272,7 @@ The `CombineSlotsMetaslots` function is evaluated by looking up the table below:
 | `.range == boolean`      |        |        | `v1 OR v2`                  |
 |                          |        |        | `v1`                        |
 
-The preconditions are matched in order of precedence, thus if no 
+The preconditions are matched in order of precedence, thus if no
 preconditions save the last one match, then the value is taken from the
 first, higher precedence slot.
 
@@ -287,7 +287,7 @@ CombineSchemas(m1, m2):
   m.types = CombineElements(m1.types, m2.types)
   m.slots = CombineElements(m1.slots, m2.slots)
   m.enums = CombineElements(m1.enums, m2.enums)
-  m.subsets = CombineElements(m1.subsets, m2.subsets)  
+  m.subsets = CombineElements(m1.subsets, m2.subsets)
 ```
 
 ```
@@ -303,7 +303,7 @@ CombineElements(E1, E2):
     if e.id in E1ids:
       raise Error
     else:
-      yield e    
+      yield e
 ```
 
 ### Algorithm: Calculate Derived Slot
@@ -324,20 +324,20 @@ DerivedSlot(m,s,c):
     for s' in A(s):
       for ms in MetaModel.slots:
         if ms.inheritable:
-          d.ms = CombineSlotsMetaslots(ms, d.ms, m.slots[s'].ms)   
-  AddMissingValues(d, c) 
+          d.ms = CombineSlotsMetaslots(ms, d.ms, m.slots[s'].ms)
+  AddMissingValues(d, c)
   return d
 ```
 
 The `ApplySlotUsage` function iteratively combines the value of the `slot_usage` and `attributes`
 metaslots for a class, and then for class ancestors, with mixins having priority.
-   
+
 ```
 ApplySlotUsage(d, s, c):
   for s' in { c.slot_usage, c.attributes}
     s' = CombineSlots(d, s')
   for c' in **L**(c.`mixins`) ∪ **L**(c.`is_a`)
-    ApplySlotUsage(d, s, c') 
+    ApplySlotUsage(d, s, c')
 ```
 
 The function `AddMissingValues(s, c)` is calculated for a **SlotDefinition** according to the following table
@@ -369,7 +369,7 @@ indicated by `r.source_ontology`. Each such ontology has a *graph presentation* 
 query is resolved against. Each resource may choose to present itself as a graph in an application
 specific way. For OWL ontologies, it is recommended that the OWL TBox is presented as a graph
 following the Relation Graph pattern, i.e. axioms such as `A SubClassOf R some B` are presented as
-edges from `A` to `B` with label `R`. 
+edges from `A` to `B` with label `R`.
 
 ```
 ResolveQuery(q: EnumExpression):

@@ -29,7 +29,7 @@ elements provided in the metamodel. For example, elements in schemas can have *i
 
 The subset of the metamodel that corresponds to the specification is called the SpecificationProfile, and it is found at:
 
-* [https://w3id.org/linkml/SpecificationSubset](https://w3id.org/linkml/SpecificationSubset) 
+* [https://w3id.org/linkml/SpecificationSubset](https://w3id.org/linkml/SpecificationSubset)
 
 ### YAML representation of schemas
 
@@ -44,8 +44,8 @@ See  [section 6](06mapping) for rules for mapping to YAML.
 To help understand the basic concepts, it can be helpful to think about analogous structures in other frameworks.
 However, it should be understood these are not precisely equivalent.
 
- * ClassDefinitions are analogous to: 
-      - [classes](https://en.wikipedia.org/wiki/Class_(computer_programming)) in object-oriented languages 
+ * ClassDefinitions are analogous to:
+      - [classes](https://en.wikipedia.org/wiki/Class_(computer_programming)) in object-oriented languages
       - tables in relational databases and spreadsheets
       - owl:Class entities in RDFS/OWL
  * SlotDefinitions are analogous to:
@@ -55,10 +55,10 @@ However, it should be understood these are not precisely equivalent.
      - rdf:Property entities in RDFS/OWL
  * EnumDefinitions are analogous to:
      - [enumerated types](https://en.wikipedia.org/wiki/Enumerated_type) in programming languages and some relational systems
-     - drop-down selections in spreadsheets       
+     - drop-down selections in spreadsheets
      - Note however that in LinkML enums are optionally backed by stronger semantics with enum elements (permissible values) mapped to vocabularies or ontologies
  * TypeDefinitions are analogous to:
-     - [data types](https://en.wikipedia.org/wiki/Data_type) in most object-oriented languages 
+     - [data types](https://en.wikipedia.org/wiki/Data_type) in most object-oriented languages
      - primitive types in database systems
      - extensible types in some systems
      - rdf:Literals in RDF
@@ -127,7 +127,7 @@ SchemaDefinition(
   slots=[...],
   enums=[...],
   types=[...],
-)  
+)
 ```
 
 ### Schema example, YAML
@@ -201,7 +201,7 @@ classDiagram
 ClassExpression "1" --> "*" AnonymousClassExpression: any_of
 ClassExpression "1" --> "*" AnonymousClassExpression: exactly_one_of
 ClassExpression "1" --> "*" AnonymousClassExpression: none_of
-ClassExpression "1" --> "*" AnonymousClassExpression: all_of      
+ClassExpression "1" --> "*" AnonymousClassExpression: all_of
 ClassDefinition --|> ClassExpression: mixin
 ClassDefinition --|> Element: is_a
 AnonymousClassExpression --|> ClassExpression
@@ -247,10 +247,10 @@ of ClassDefinitions.
 
 ### Class Definition Example, Functional Syntax
 
-A collection of ClassDefinition instances might look 
+A collection of ClassDefinition instances might look
 
 ```python
-[  
+[
    ClassDefinition(
     name=String^"NamedThing",
     abstract=True,
@@ -381,7 +381,7 @@ class SlotExpression {
 SlotExpression  "1" --> "*" AnonymousSlotExpression: any_of
 SlotExpression  "1" --> "*" AnonymousSlotExpression: exactly_one_of
 SlotExpression  "1" --> "*" AnonymousSlotExpression: none_of
-SlotExpression  "1" --> "*" AnonymousSlotExpression: all_of   
+SlotExpression  "1" --> "*" AnonymousSlotExpression: all_of
 class SlotDefinition {
   +SlotDefinitionName name
   +boolean identifier
@@ -404,7 +404,7 @@ class SlotDefinition {
   +boolean locally_reflexive
   +boolean transitive
   +SlotDefinition transitive_form_of
-  +SlotDefinition reflexive_transitive_form_of 
+  +SlotDefinition reflexive_transitive_form_of
   +SlotDefinition inverse
 }
 SlotDefinition --|> SlotExpression: mixin
@@ -481,7 +481,7 @@ class EnumExpression {
 EnumExpression "*" --> AnonymousEnumExpression: any_of
 EnumExpression "*" --> AnonymousEnumExpression: exactly_one_of
 EnumExpression "*" --> AnonymousEnumExpression: none_of
-EnumExpression "*" --> AnonymousEnumExpression: all_of   
+EnumExpression "*" --> AnonymousEnumExpression: all_of
 class EnumDefinition {
   +EnumDefinitionName name
 }
@@ -539,7 +539,7 @@ class TypeExpression {
 TypeExpression "*" --> AnonymousTypeExpression: any_of
 TypeExpression "*" --> AnonymousTypeExpression: exactly_one_of
 TypeExpression "*" --> AnonymousTypeExpression: none_of
-TypeExpression "*" --> AnonymousTypeExpression: all_of   
+TypeExpression "*" --> AnonymousTypeExpression: all_of
 AnonymousTypeExpression --|> TypeExpression
 TypeDefinition --|> TypeExpression
 class TypeDefinition {
@@ -784,11 +784,5 @@ SchemaDefinition(
        ...
      ),
   ]
-)  
+)
 ```
-
-
-
-
-
-
