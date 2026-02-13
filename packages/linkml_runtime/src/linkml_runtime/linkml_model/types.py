@@ -1,42 +1,72 @@
 # Auto generated from types.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-02-08T21:17:30
+# Generation date: 2026-02-13T15:18:51
 # Schema: types
 #
 # id: https://w3id.org/linkml/types
 # description: Shared type definitions for the core LinkML mode and metamodel
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
-
-from linkml_runtime.utils.curienamespace import CurieNamespace
-from linkml_runtime.utils.metamodelcore import (
-    URI,
-    Bool,
-    Curie,
-    Decimal,
-    ElementIdentifier,
-    NCName,
-    NodeIdentifier,
-    URIorCURIE,
-    XSDDate,
-    XSDDateTime,
-    XSDTime,
+import dataclasses
+import re
+from dataclasses import dataclass
+from datetime import (
+    date,
+    datetime,
+    time
 )
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
+
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+from linkml_runtime.utils.metamodelcore import Bool, Curie, Decimal, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
 metamodel_version = "1.7.0"
 version = None
 
 # Namespaces
-LINKML = CurieNamespace("linkml", "https://w3id.org/linkml/")
-SCHEMA = CurieNamespace("schema", "http://schema.org/")
-SHEX = CurieNamespace("shex", "http://www.w3.org/ns/shex#")
-XSD = CurieNamespace("xsd", "http://www.w3.org/2001/XMLSchema#")
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LINKML
 
 
 # Types
 class String(str):
-    """A character string"""
-
+    """ A character string """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "string"
@@ -44,8 +74,7 @@ class String(str):
 
 
 class Integer(int):
-    """An integer"""
-
+    """ An integer """
     type_class_uri = XSD["integer"]
     type_class_curie = "xsd:integer"
     type_name = "integer"
@@ -53,8 +82,7 @@ class Integer(int):
 
 
 class Boolean(Bool):
-    """A binary (true or false) value"""
-
+    """ A binary (true or false) value """
     type_class_uri = XSD["boolean"]
     type_class_curie = "xsd:boolean"
     type_name = "boolean"
@@ -62,8 +90,7 @@ class Boolean(Bool):
 
 
 class Float(float):
-    """A real number that conforms to the xsd:float specification"""
-
+    """ A real number that conforms to the xsd:float specification """
     type_class_uri = XSD["float"]
     type_class_curie = "xsd:float"
     type_name = "float"
@@ -71,8 +98,7 @@ class Float(float):
 
 
 class Double(float):
-    """A real number that conforms to the xsd:double specification"""
-
+    """ A real number that conforms to the xsd:double specification """
     type_class_uri = XSD["double"]
     type_class_curie = "xsd:double"
     type_name = "double"
@@ -80,8 +106,7 @@ class Double(float):
 
 
 class Decimal(Decimal):
-    """A real number with arbitrary precision that conforms to the xsd:decimal specification"""
-
+    """ A real number with arbitrary precision that conforms to the xsd:decimal specification """
     type_class_uri = XSD["decimal"]
     type_class_curie = "xsd:decimal"
     type_name = "decimal"
@@ -89,8 +114,7 @@ class Decimal(Decimal):
 
 
 class Time(XSDTime):
-    """A time object represents a (local) time of day, independent of any particular day"""
-
+    """ A time object represents a (local) time of day, independent of any particular day """
     type_class_uri = XSD["time"]
     type_class_curie = "xsd:time"
     type_name = "time"
@@ -98,8 +122,7 @@ class Time(XSDTime):
 
 
 class Date(XSDDate):
-    """a date (year, month and day) in an idealized calendar"""
-
+    """ a date (year, month and day) in an idealized calendar """
     type_class_uri = XSD["date"]
     type_class_curie = "xsd:date"
     type_name = "date"
@@ -107,8 +130,7 @@ class Date(XSDDate):
 
 
 class Datetime(XSDDateTime):
-    """The combination of a date and time"""
-
+    """ The combination of a date and time """
     type_class_uri = XSD["dateTime"]
     type_class_curie = "xsd:dateTime"
     type_name = "datetime"
@@ -116,8 +138,7 @@ class Datetime(XSDDateTime):
 
 
 class DateOrDatetime(str):
-    """Either a date or a datetime"""
-
+    """ Either a date or a datetime """
     type_class_uri = LINKML["DateOrDatetime"]
     type_class_curie = "linkml:DateOrDatetime"
     type_name = "date_or_datetime"
@@ -125,8 +146,7 @@ class DateOrDatetime(str):
 
 
 class Uriorcurie(URIorCURIE):
-    """a URI or a CURIE"""
-
+    """ a URI or a CURIE """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uriorcurie"
@@ -134,8 +154,7 @@ class Uriorcurie(URIorCURIE):
 
 
 class Curie(Curie):
-    """a compact URI"""
-
+    """ a compact URI """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "curie"
@@ -143,8 +162,7 @@ class Curie(Curie):
 
 
 class Uri(URI):
-    """a complete URI"""
-
+    """ a complete URI """
     type_class_uri = XSD["anyURI"]
     type_class_curie = "xsd:anyURI"
     type_name = "uri"
@@ -152,8 +170,7 @@ class Uri(URI):
 
 
 class Ncname(NCName):
-    """Prefix part of CURIE"""
-
+    """ Prefix part of CURIE """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "ncname"
@@ -161,8 +178,7 @@ class Ncname(NCName):
 
 
 class Objectidentifier(ElementIdentifier):
-    """A URI or CURIE that represents an object in the model."""
-
+    """ A URI or CURIE that represents an object in the model. """
     type_class_uri = SHEX["iri"]
     type_class_curie = "shex:iri"
     type_name = "objectidentifier"
@@ -170,8 +186,7 @@ class Objectidentifier(ElementIdentifier):
 
 
 class Nodeidentifier(NodeIdentifier):
-    """A URI, CURIE or BNODE that represents a node in a model."""
-
+    """ A URI, CURIE or BNODE that represents a node in a model. """
     type_class_uri = SHEX["nonLiteral"]
     type_class_curie = "shex:nonLiteral"
     type_name = "nodeidentifier"
@@ -179,8 +194,7 @@ class Nodeidentifier(NodeIdentifier):
 
 
 class Jsonpointer(str):
-    """A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form."""
-
+    """ A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form. """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "jsonpointer"
@@ -188,8 +202,7 @@ class Jsonpointer(str):
 
 
 class Jsonpath(str):
-    """A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form."""
-
+    """ A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form. """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "jsonpath"
@@ -197,8 +210,7 @@ class Jsonpath(str):
 
 
 class Sparqlpath(str):
-    """A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF."""
-
+    """ A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF. """
     type_class_uri = XSD["string"]
     type_class_curie = "xsd:string"
     type_name = "sparqlpath"
@@ -208,9 +220,12 @@ class Sparqlpath(str):
 # Class references
 
 
+
+
 # Enumerations
 
 
 # Slots
 class slots:
     pass
+
