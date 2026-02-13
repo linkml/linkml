@@ -616,8 +616,8 @@ class SchemaDefinition(Element):
             self.default_curi_maps = [self.default_curi_maps] if self.default_curi_maps is not None else []
         self.default_curi_maps = [v if isinstance(v, str) else str(v) for v in self.default_curi_maps]
 
-        if self.default_prefix is not None and not isinstance(self.default_prefix, str):
-            self.default_prefix = str(self.default_prefix)
+        if self.default_prefix is None:
+            self.default_prefix = sfx(str(self.id))
 
         if self.default_range is not None and not isinstance(self.default_range, TypeDefinitionName):
             self.default_range = TypeDefinitionName(self.default_range)
