@@ -940,19 +940,14 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
-            # If we don't have an identifier, and we are expecting to be inlined first class elements
-            # (inlined_as_list is not True), we will use the first required field as the key.
-            #  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to
-            #  True
-            if not identifier and not slot.inlined_as_list:
+            if not identifier:
                 for range_slot_name in slot_range_cls.slots:
                     range_slot = self.schema.slots[range_slot_name]
-                    if range_slot.required:
+                    if range_slot.required and range_slot.range not in self.schema.classes:
                         identifier = range_slot.name
                         break
                 keyed = False
             else:
-                # Place for future expansion
                 keyed = True
             if identifier:
                 if not slot.inlined_as_list:
