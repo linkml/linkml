@@ -2,7 +2,7 @@
 
 **Validation** is a procedure that takes as input a LinkML instance and a schema, and will
 run a collection of *checks* against that instance.
-    
+
 The validation procedure will produce output that can be used to determine if the instance is *structurally and semantically valid* according to the schema.
 
 The formal specification of the validation procedure takes as input a *derived* schema *m<sup>D</sup>*:
@@ -215,7 +215,7 @@ In all cases, the semantics are as follows:
   * for lists of length 2 this is the same as the logical XOR operator
 - all_of: true if there are no members that evaluate to false
   * for empty lists this is always true
-   
+
 ### Rule evaluation
 
 For each rule `r` in *C*.rules:
@@ -271,7 +271,7 @@ classes:
 
 #### Annotation validation
 
-By default, all annotation tags and values are valid. 
+By default, all annotation tags and values are valid.
 
 LinkML 1.6 introduces the ability to validate annotation tags and values.
 
@@ -302,6 +302,3 @@ classes:
       description: an expert review of a schema element
       review: string
 ```
-
-
-

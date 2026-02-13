@@ -24,6 +24,7 @@ class _AutoName(Enum):
 
 class Source(_AutoName):
     """LinkML package source name"""
+
     META = auto()
     TYPES = auto()
     MAPPINGS = auto()
@@ -33,6 +34,7 @@ class Source(_AutoName):
 
 class Format(_AutoName):
     """LinkML package formats"""
+
     EXCEL = auto()
     GRAPHQL = auto()
     JSON = auto()
@@ -60,6 +62,7 @@ _PathInfo = namedtuple("_PathInfo", ["path", "extension"])
 
 class _Path:
     """LinkML Relative paths — maps each Format to its directory and file extension."""
+
     EXCEL = _PathInfo("excel", "xlsx")
     GRAPHQL = _PathInfo("graphql", "graphql")
     JSON = _PathInfo("json", "json")
@@ -108,6 +111,7 @@ class ReleaseTag(_AutoName):
     """Release tags
     LATEST - the absolute latest in the supplied branch
     CURRENT - the latest _released_ version in the supplied branch"""
+
     LATEST = auto()
     CURRENT = auto()
 
@@ -122,7 +126,7 @@ def _build_path(source: Source, fmt: Format) -> str:
 
 
 def _build_loc(base: str, source: Source, fmt: Format) -> str:
-    return f"{base}{_build_path(source, fmt)}".replace('blob/', '')
+    return f"{base}{_build_path(source, fmt)}".replace("blob/", "")
 
 
 def URL_FOR(source: Source, fmt: Format) -> str:
@@ -139,10 +143,12 @@ def GITHUB_IO_PATH_FOR(source: Source, fmt: Format) -> str:
     return _build_loc(GITHUB_IO_BASE, source, fmt)
 
 
-def GITHUB_PATH_FOR(source: Source,
-                    fmt: Format,
-                    release: Optional[Union[ReleaseTag, str]] = ReleaseTag.CURRENT,
-                    branch: Optional[str] = "main") -> str:
+def GITHUB_PATH_FOR(
+    source: Source,
+    fmt: Format,
+    release: Optional[Union[ReleaseTag, str]] = ReleaseTag.CURRENT,
+    branch: Optional[str] = "main",
+) -> str:
     def do_request(url) -> object:
         resp = requests.get(url)
         if resp.ok:
@@ -152,7 +158,7 @@ def GITHUB_PATH_FOR(source: Source,
     def tag_to_commit(tag: str) -> str:
         tags = do_request(f"{GITHUB_API_BASE}tags?per_page=100")
         for tagent in tags:
-            if tagent['name'] == tag:
+            if tagent["name"] == tag:
                 return _build_loc(f"{GITHUB_BASE}blob/{tagent['commit']['sha']}/", source, fmt)
         raise ValueError(f"Tag: {tag} not found!")
 
@@ -166,7 +172,7 @@ def GITHUB_PATH_FOR(source: Source,
     # Return the latest published version
     elif release is ReleaseTag.CURRENT:
         release = do_request(f"{GITHUB_API_BASE}releases/latest")
-        return tag_to_commit(release['tag_name'])
+        return tag_to_commit(release["tag_name"])
 
     # Return a specific tag
     else:
@@ -194,7 +200,9 @@ class ModelFile:
         def file(self) -> str:
             return LOCAL_PATH_FOR(self._model, self._format)
 
-        def github_loc(self, tag: Optional[str] = None, branch: Optional[str] = None, release: ReleaseTag = None) -> str:
+        def github_loc(
+            self, tag: Optional[str] = None, branch: Optional[str] = None, release: ReleaseTag = None
+        ) -> str:
             if not tag and not branch and not release:
                 return GITHUB_IO_PATH_FOR(self._model, self._format)
             if tag:

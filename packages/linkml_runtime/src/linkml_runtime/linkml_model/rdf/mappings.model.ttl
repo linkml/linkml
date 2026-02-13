@@ -247,6 +247,3 @@
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#string" ] ;
     linkml:version "2.0.0" .
-
-
-

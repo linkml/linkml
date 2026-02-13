@@ -96,7 +96,7 @@ For example, when mapping to Rust, a generator MAY choose to map to either struc
 or to struct/enum/trait combinations, depending on whether polymorphism is used
 in the schema.
 
-A mapping MAY be non-isomorphic (i.e not one-to-one). For example, 
+A mapping MAY be non-isomorphic (i.e not one-to-one). For example,
 in languages that have a split between
 interface-like constructs and concrete class-like constructs, a generator MAY choose to
 implement a mapping where each LinkML class creates *both* structures, in order
@@ -181,7 +181,7 @@ guidelines should be followed:
     - otherwise the ordering MUST correspond to the order in which slots or attributes are specified
         - starting from the is_a root, working down the is_a hierarchy
         - `slots` order prioritized over `attributes`
-- if the target language and idiom uses builder patterns then these may be used        
+- if the target language and idiom uses builder patterns then these may be used
 
 ### Mapping of schema-level slots
 
@@ -232,4 +232,3 @@ type generated LinkML classes.
 ## Loaders and Dumpers
 
 ## Packages and package distribution
-

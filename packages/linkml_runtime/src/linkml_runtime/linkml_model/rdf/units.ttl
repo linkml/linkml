@@ -463,6 +463,3 @@
             linkml:name "boolean" ;
             linkml:repr "bool" ;
             linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ] .
-
-
-
