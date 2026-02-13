@@ -2379,7 +2379,7 @@
       "definition_uri": "https://w3id.org/linkml/slot_usage",
       "description": "the refinement of a slot in the context of the containing class definition.",
       "comments": [
-        "Many slots may be re-used across different classes, but the meaning of the slot may be refined by context. For example, a generic association model may use slots subject/predicate/object with generic semantics and minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may specify both local naming (e.g. subject=disease) and local constraints"
+        "Many slots may be reused across different classes, but the meaning of the slot may be refined by context. For example, a generic association model may use slots subject/predicate/object with generic semantics and minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may specify both local naming (e.g. subject=disease) and local constraints"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -2431,10 +2431,11 @@
       "status": "testing",
       "domain": "SlotExpression",
       "slot_uri": "https://w3id.org/linkml/range_expression",
-      "owner": "SlotExpression",
+      "owner": "ExtraSlotsExpression",
       "domain_of": [
         "PathExpression",
-        "SlotExpression"
+        "SlotExpression",
+        "ExtraSlotsExpression"
       ],
       "range": "AnonymousClassExpression",
       "inlined": true,
@@ -3051,6 +3052,85 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "extra_slots",
+      "definition_uri": "https://w3id.org/linkml/extra_slots",
+      "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - \n  forbid all additional data (default) \n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n",
+      "examples": [
+        {
+          "value": "JsonObj(allowed=True)",
+          "description": "Allow all additional data",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(allowed=False)",
+          "description": "Forbid any additional data",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(range_expression=JsonObj(range='string'))",
+          "description": "Allow additional data that are strings",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(range_expression=JsonObj(range='AClassDefinition'))",
+          "description": "Allow additional data if they are instances of the class definition \"AClassDefinition\"",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(range_expression=JsonObj(any_of=[{'range': 'string'}, {'range': 'integer'}]))",
+          "description": "allow additional data if they are either strings or integers",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(range_expression=JsonObj(range='integer', multivalued=True, maximum_cardinality=5))",
+          "description": "Allow additional data if they are lists of integers of at most length 5.\nNote that this does *not* mean that a maximum of 5 extra slots are allowed.\n",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(range_expression=JsonObj(range='integer', required=True))",
+          "description": "Allow additional data if they are integers. \n`required` is meaningless in this context and ignored, since by definition all \"extra\" slots are optional.\n",
+          "@type": "Example"
+        },
+        {
+          "value": "JsonObj(allowed=False, range_expression=JsonObj(range='string'))",
+          "description": "A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the \n`anonymous_slot_expression` will be ignored.\n",
+          "@type": "Example"
+        }
+      ],
+      "in_subset": [
+        "SpecificationSubset",
+        "BasicSubset"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "ClassDefinition",
+      "slot_uri": "https://w3id.org/linkml/extra_slots",
+      "owner": "ClassDefinition",
+      "domain_of": [
+        "ClassDefinition"
+      ],
+      "range": "ExtraSlotsExpression",
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
+      "name": "allowed",
+      "definition_uri": "https://w3id.org/linkml/allowed",
+      "description": "Whether or not something is allowed. Usage defined by context.",
+      "in_subset": [
+        "SpecificationSubset",
+        "BasicSubset"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "slot_uri": "https://w3id.org/linkml/allowed",
+      "owner": "ExtraSlotsExpression",
+      "domain_of": [
+        "ExtraSlotsExpression"
+      ],
+      "range": "boolean",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "domain",
       "definition_uri": "https://w3id.org/linkml/domain",
       "description": "defines the type of the subject of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts that X is an instance of C1\n",
@@ -3073,7 +3153,8 @@
       "definition_uri": "https://w3id.org/linkml/range",
       "description": "defines the type of the object of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts Y is an instance of C2\n",
       "comments": [
-        "range is underspecified, as not all elements can appear as the range of a slot."
+        "range is underspecified, as not all elements can appear as the range of a slot.",
+        "to use a URI or CURIE as the range, create a class with the URI or curie as the class_uri"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -3103,7 +3184,8 @@
       "definition_uri": "https://w3id.org/linkml/slot_uri",
       "description": "URI of the class that provides a semantic interpretation of the slot in a linked data context. The URI may come from any namespace and may be shared between schemas.",
       "comments": [
-        "Assigning slot_uris can provide additional hooks for interoperation, indicating a common conceptual model"
+        "Assigning slot_uris can provide additional hooks for interoperation, indicating a common conceptual model",
+        "To use a URI or CURIE as a range, create a class with the URI or CURIE as the class_uri"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -3159,9 +3241,9 @@
       "domain": "SlotDefinition",
       "slot_uri": "https://w3id.org/linkml/array",
       "inherited": true,
-      "owner": "SlotDefinition",
+      "owner": "array",
       "domain_of": [
-        "SlotDefinition"
+        "SlotExpression"
       ],
       "range": "ArrayExpression",
       "inlined": true,
@@ -3929,6 +4011,7 @@
       "owner": "DimensionExpression",
       "domain_of": [
         "SlotDefinition",
+        "ClassDefinition",
         "DimensionExpression"
       ],
       "range": "string",
@@ -4444,7 +4527,7 @@
     {
       "name": "string_serialization",
       "definition_uri": "https://w3id.org/linkml/string_serialization",
-      "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
+      "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -5382,13 +5465,6 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
-      "annotations": [
-        {
-          "tag": "simple_dict_value",
-          "value": true,
-          "@type": "Annotation"
-        }
-      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
@@ -5763,7 +5839,8 @@
       "definition_uri": "https://w3id.org/linkml/range",
       "description": "defines the type of the object of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts Y is an instance of C2\n",
       "comments": [
-        "range is underspecified, as not all elements can appear as the range of a slot."
+        "range is underspecified, as not all elements can appear as the range of a slot.",
+        "to use a URI or CURIE as the range, create a class with the URI or curie as the class_uri"
       ],
       "in_subset": [
         "SpecificationSubset",
@@ -7556,7 +7633,8 @@
         "slot_expression_none_of",
         "slot_expression_exactly_one_of",
         "slot_expression_any_of",
-        "slot_expression_all_of"
+        "slot_expression_all_of",
+        "array"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SlotExpression",
@@ -7634,7 +7712,8 @@
         "slot_expression_none_of",
         "slot_expression_exactly_one_of",
         "slot_expression_any_of",
-        "slot_expression_all_of"
+        "slot_expression_all_of",
+        "array"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/AnonymousSlotExpression",
@@ -7719,7 +7798,6 @@
         "singular_name",
         "domain",
         "slot_uri",
-        "array",
         "inherited",
         "readonly",
         "ifabsent",
@@ -7785,7 +7863,8 @@
         "slot_expression_none_of",
         "slot_expression_exactly_one_of",
         "slot_expression_any_of",
-        "slot_expression_all_of"
+        "slot_expression_all_of",
+        "array"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/SlotDefinition",
@@ -7954,6 +8033,8 @@
         "represents_relationship",
         "class_definition_disjoint_with",
         "children_are_mutually_disjoint",
+        "extra_slots",
+        "alias",
         "class_definition_is_a",
         "class_definition_mixins",
         "class_definition_apply_to",
@@ -8537,6 +8618,22 @@
       "@type": "ClassDefinition"
     },
     {
+      "name": "ExtraSlotsExpression",
+      "definition_uri": "https://w3id.org/linkml/ExtraSlotsExpression",
+      "description": "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class. \nSee `extra_slots` for usage examples.\n",
+      "from_schema": "https://w3id.org/linkml/meta",
+      "mixins": [
+        "Expression"
+      ],
+      "slots": [
+        "allowed",
+        "range_expression"
+      ],
+      "slot_usage": {},
+      "class_uri": "https://w3id.org/linkml/ExtraSlotsExpression",
+      "@type": "ClassDefinition"
+    },
+    {
       "name": "AnyValue",
       "definition_uri": "https://w3id.org/linkml/AnyValue",
       "from_schema": "https://w3id.org/linkml/extensions",
@@ -8748,6 +8845,10 @@
       "all_of": {
         "@type": "@id",
         "@id": "all_of"
+      },
+      "allowed": {
+        "@type": "xsd:boolean",
+        "@id": "allowed"
       },
       "source": {
         "@type": "xsd:anyURI",
@@ -8991,6 +9092,10 @@
       "extensions": {
         "@type": "@id",
         "@id": "extensions"
+      },
+      "extra_slots": {
+        "@type": "@id",
+        "@id": "extra_slots"
       },
       "followed_by": {
         "@type": "@id",
@@ -9667,6 +9772,9 @@
       },
       "Extension": {
         "@id": "Extension"
+      },
+      "ExtraSlotsExpression": {
+        "@id": "ExtraSlotsExpression"
       },
       "ImportExpression": {
         "@id": "ImportExpression"
