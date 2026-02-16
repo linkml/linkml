@@ -4,6 +4,8 @@ Comprehensive tests for the Golang generator.
 Tests the new golanggen package implementation based on pydanticgen architecture.
 """
 
+from pathlib import Path
+
 import pytest
 from linkml.generators.golanggen import GolangGenerator
 
@@ -209,3 +211,64 @@ def test_golanggen_backwards_compatibility():
 
     # Both should be the same class
     assert NewGen is DirectGen
+
+
+def test_golanggen_template_dir_overrides_struct(kitchen_sink_path, tmp_path):
+    """Test that --template-dir overrides individual templates."""
+    # Create a custom struct template that adds a marker comment
+    custom_template = tmp_path / "struct.go.jinja"
+    custom_template.write_text(
+        "// CUSTOM TEMPLATE\n"
+        "{% if description %}\n"
+        "// {{ description }}\n"
+        "{% endif -%}\n"
+        "type {{ name }} struct {\n"
+        "{% if embedded_structs %}\n"
+        "{% for embed in embedded_structs %}\n"
+        "\t{{ embed }}\n"
+        "{% endfor %}\n"
+        "{% endif -%}\n"
+        "{% if fields %}\n"
+        "{% for field in fields.values() %}\n"
+        "{{ field }}\n"
+        "{% endfor -%}\n"
+        "{% endif %}\n"
+        "}\n"
+    )
+
+    gen = GolangGenerator(kitchen_sink_path, template_dir=str(tmp_path))
+    code = gen.serialize()
+
+    # The custom marker should appear in output
+    assert "// CUSTOM TEMPLATE" in code
+    # Other templates (module, field, enum) should still render from defaults
+    assert "package kitchen" in code
+
+
+def test_golanggen_template_dir_fallback(kitchen_sink_path, tmp_path):
+    """Test that templates not in template_dir fall back to defaults."""
+    # Empty directory — all templates should fall back to the built-in ones
+    gen = GolangGenerator(kitchen_sink_path, template_dir=str(tmp_path))
+    code = gen.serialize()
+
+    # Should still produce valid output using default templates
+    assert "package kitchen" in code
+    assert "type Person struct {" in code.replace(" ", "").replace("\t", "") or "type Person struct" in code
+
+
+def test_golanggen_template_dir_nonexistent_raises():
+    """Test that a nonexistent template_dir raises an error in the CLI."""
+    from click.testing import CliRunner
+    from linkml.generators.golanggen.golanggen import cli
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "tests/linkml_runtime/test_utils/input/kitchen_sink.yaml",
+            "--template-dir",
+            "/nonexistent/path",
+        ],
+    )
+    assert result.exit_code != 0
+    assert "does not exist" in str(result.exception)

@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 import click
-from jinja2 import Environment
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 
 from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
@@ -91,6 +91,15 @@ class GolangGenerator(OOCodeGenerator):
 
     use_time_package: bool = True
     """Import time package when needed for date/datetime types"""
+
+    template_dir: Optional[Union[str, Path]] = None
+    """
+    Override templates for each GolangTemplateModel.
+
+    Directory with templates that override the default templates.
+    If a matching template is not found in the override directory,
+    the default templates will be used.
+    """
 
     # Private attributes
     _needs_time: bool = field(default=False, init=False)
@@ -377,11 +386,28 @@ class GolangGenerator(OOCodeGenerator):
         else:
             module = self.render()
 
-        return module.render()
+        return module.render(environment=self._template_environment())
 
     def _template_environment(self) -> Environment:
-        """Get the Jinja2 template environment."""
-        return GolangModule.environment()
+        """Get the Jinja2 template environment.
+
+        If :attr:`template_dir` is set, templates in that directory take
+        priority over the built-in defaults via a :class:`jinja2.ChoiceLoader`.
+        """
+        env = GolangModule.environment()
+        if self.template_dir is not None:
+            loader = ChoiceLoader([FileSystemLoader(self.template_dir), env.loader])
+            env.loader = loader
+        return env
+
+
+_TEMPLATE_NAMES = [
+    "module.go.jinja",
+    "struct.go.jinja",
+    "field.go.jinja",
+    "enum.go.jinja",
+    "imports.go.jinja",
+]
 
 
 @shared_arguments(GolangGenerator)
@@ -390,9 +416,26 @@ class GolangGenerator(OOCodeGenerator):
     type=str,
     help="Override the Go package name (default: derived from schema name)",
 )
+@click.option(
+    "--template-dir",
+    type=click.Path(),
+    help="""
+Optional jinja2 template directory to use for Go code generation.
+
+Pass a directory containing templates with the same name as any of the default
+GolangTemplateModel templates to override them. The given directory will be
+searched for matching templates, and use the default templates as a fallback
+if an override is not found.
+
+Available templates to override:
+
+\b
+"""
+    + "\n".join(["- " + name for name in _TEMPLATE_NAMES]),
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="golang")
-def cli(yamlfile, package_name: Optional[str] = None, **args):
+def cli(yamlfile, package_name: Optional[str] = None, template_dir: Optional[str] = None, **args):
     """
     Generate Golang structs from a LinkML schema.
 
@@ -402,7 +445,11 @@ def cli(yamlfile, package_name: Optional[str] = None, **args):
     - JSON tags for serialization
     - Struct embedding for inheritance
     """
-    gen = GolangGenerator(yamlfile, package_name=package_name, **args)
+    if template_dir is not None:
+        if not Path(template_dir).exists():
+            raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
+
+    gen = GolangGenerator(yamlfile, package_name=package_name, template_dir=template_dir, **args)
     print(gen.serialize())
 
 
