@@ -1,0 +1,23 @@
+{% if is_type_alias %}
+{% if description %}
+// {{ description }}
+{% endif -%}
+type {{ name }} = {{ type_alias_value }}
+{% else %}
+{% if description %}
+// {{ description }}
+{% endif -%}
+type {{ name }} struct {
+{% if embedded_structs %}
+	// Embedded types for inheritance
+{% for embed in embedded_structs %}
+	{{ embed }} `json:",inline"`
+{% endfor %}
+{% endif -%}
+{% if fields %}
+{% for field in fields.values() %}
+{{ field }}
+{% endfor -%}
+{% endif %}
+}
+{% endif %}

@@ -1,0 +1,9 @@
+{% if description %}// {{ description }}
+{% endif %}type {{ name }} {{ type }}
+
+const (
+{% for val in values.values() %}
+{% if val.description %}	// {{ val.description }}
+{% endif %}	{{ val.name }} {{ name }} = {% if type == "string" %}"{{ val.value }}"{% else %}{{ val.value }}{% endif %}
+
+{% endfor %})
