@@ -102,15 +102,14 @@ class SQLValidationGenerator(Generator):
 
     def generate_validation_queries(self, **kwargs: dict[str, Any]) -> str:
         """
-        Generate SQL validation queries for all constraints in the schema.
+        Generate SQL validation queries for constraints in the schema.
 
         This method:
-        1. Transforms the LinkML schema to a relational model
-        2. Iterates through all classes and their slots
-        3. Generates validation queries for each constraint type
-        4. Combines all queries with UNION ALL into a single result set
+        1. Iterates through all classes and their slots
+        2. Generates validation queries for constraint types
+        3. Combines all queries with UNION ALL into a single result set
 
-        All queries return the same structure:
+        All results are returned in one table with these columns:
         - table_name: The class/table name
         - column_name: The slot/column name (or constraint name for unique_keys)
         - constraint_type: Type of constraint violated
@@ -194,6 +193,7 @@ class SQLValidationGenerator(Generator):
         # Combine all queries with UNION ALL using SQLAlchemy
         combined_query = union_all(*query_objects)
         compiled_sql = self._compile_query(combined_query)
+        # Improve readability by adding line breaks
         compiled_sql = compiled_sql.replace(" UNION ALL ", "\n\nUNION ALL\n\n")
 
         # Build final result
