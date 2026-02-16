@@ -90,7 +90,7 @@ schema to other frameworks:
 - Convert to [JSON-Schema](../generators/json-schema) and using JSON-Schema validators
 - Convert to [SHACL](/generators/shacl) or [ShEx](../generators/shex) and validate your RDF data
 - Convert to Python [dataclasses](../generators/python) or  [pydantic](../generators/pydantic) for easy use within applications
-- Generate [SQL Schemas](../generators/sqltable) or  [SQL Alchemy](../generators/sqlalchemy) for use with relational databases and validate your database with [SQL Validation](../generators/sqltvalidation)
+- Generate [SQL Schemas](../generators/sqltable) or  [SQL Alchemy](../generators/sqlalchemy) for use with relational databases and validate your database with [SQL Validation](../generators/sqlvalidation)
 
 
 ## Feature: Generation of documentation and websites
