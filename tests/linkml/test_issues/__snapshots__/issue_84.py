@@ -124,9 +124,7 @@ class Biosample(YAMLRoot):
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
 
-        if not isinstance(self.annotations, list):
-            self.annotations = [self.annotations] if self.annotations is not None else []
-        self.annotations = [v if isinstance(v, Annotation) else Annotation(**as_dict(v)) for v in self.annotations]
+        self._normalize_inlined_as_list(slot_name="annotations", slot_type=Annotation, key_name="has raw value", keyed=False)
 
         if not isinstance(self.alternate_identifiers, list):
             self.alternate_identifiers = [self.alternate_identifiers] if self.alternate_identifiers is not None else []

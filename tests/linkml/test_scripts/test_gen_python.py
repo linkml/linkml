@@ -18,7 +18,7 @@ def gen_and_comp_python(
     python_base: Optional[str] = None,
 ) -> None:
     """Generate yaml_file into python_file and compare it against master_file"""
-    arglist = [str(schema), "--no-head"] + (addl_args if addl_args else [])
+    arglist = [str(schema), "--no-metadata"] + (addl_args if addl_args else [])
 
     runner = CliRunner()
     result = runner.invoke(cli, arglist)
@@ -74,3 +74,37 @@ def test_gen_classvars_slots(input_path, snapshot):
     gen_and_comp_python(
         input_path("inheritedid.yaml"), snapshot("genpython/inheritedid_ncvs.py"), ["--no-classvars", "--no-slots"]
     )
+
+
+@pytest.mark.parametrize("flag", ["metadata", "no-metadata"])
+def test_metadata_flag(flag: str) -> None:
+    """Test that metadata is only generated, when flag active"""
+    runner = CliRunner()
+    result = runner.invoke(cli, [f"--{flag}", KITCHEN_SINK_PATH])
+    assert result.exit_code == 0
+
+    lines = result.output.splitlines()
+    matched_lines = [
+        True
+        for line in lines
+        if line.startswith("# Auto generated from ")
+        or line.startswith("# Generation date: ")
+        or line.startswith("# Schema: ")
+    ]
+    if flag == "metadata":
+        assert matched_lines
+    else:
+        assert not matched_lines
+
+
+def test_head_deprecated():
+    'Test that expected deprecation warning appears when using "--head"'
+    runner = CliRunner(mix_stderr=False)
+    with pytest.warns() as record:
+        result = runner.invoke(cli, ["--head", KITCHEN_SINK_PATH])
+    deprecation_shown = False
+    for warning in record:
+        if warning.category is DeprecationWarning and str(warning.message).startswith("[metadata-flag] DEPRECATED"):
+            deprecation_shown = True
+    assert result.exit_code == 0
+    assert deprecation_shown
