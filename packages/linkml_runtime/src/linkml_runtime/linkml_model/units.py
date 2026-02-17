@@ -1,5 +1,5 @@
 # Auto generated from units.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-02-13T15:18:52
+# Generation date: 2026-02-17T18:49:38
 # Schema: units
 #
 # id: https://w3id.org/linkml/units
