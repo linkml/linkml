@@ -1,7 +1,7 @@
 import copy
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import TextIO
 from urllib.parse import urlparse
 
 import yaml
@@ -31,14 +31,14 @@ SchemaDefinition.MissingRequiredField = mrf
 
 
 def load_raw_schema(
-    data: Union[str, dict, TextIO, Path],
-    source_file: Optional[str] = None,
-    source_file_date: Optional[str] = None,
-    source_file_size: Optional[int] = None,
-    base_dir: Optional[str] = None,
-    merge_modules: Optional[bool] = True,
-    metadata: Optional[bool] = True,
-    emit_metadata: Optional[bool] = None,
+    data: str | dict | TextIO | Path,
+    source_file: str | None = None,
+    source_file_date: str | None = None,
+    source_file_size: int | None = None,
+    base_dir: str | None = None,
+    merge_modules: bool | None = True,
+    metadata: bool | None = True,
+    emit_metadata: bool | None = None,
 ) -> SchemaDefinition:
     """Load and flatten SchemaDefinition from a file name, a URL or a block of text
 
@@ -69,7 +69,7 @@ def load_raw_schema(
         data = str(data)
 
     # Convert the input into a valid SchemaDefinition
-    if isinstance(data, (str, dict, TextIO)):
+    if isinstance(data, str | dict | TextIO):
         # TODO: Build a generic loader that detects type from suffix or content and invokes the appropriate loader
         schema_metadata = FileInfo()
         schema_metadata.source_file = source_file

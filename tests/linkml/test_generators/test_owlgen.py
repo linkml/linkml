@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 
 import pytest
 from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
@@ -255,7 +254,7 @@ class PermissibleValueURIMixture(Enum):
 @pytest.mark.parametrize("permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture])
 def test_permissible_values(
     default_permissible_value_type: str,
-    pv_implements: Union[str, None, tuple[str, str]],
+    pv_implements: str | None | tuple[str, str],
     permissible_value_uri_mixture: PermissibleValueURIMixture,
 ):
     """

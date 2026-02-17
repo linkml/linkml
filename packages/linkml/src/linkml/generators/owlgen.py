@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 import rdflib
@@ -128,10 +128,10 @@ class OwlSchemaGenerator(Generator):
     add_root_classes: bool = False
 
     add_ols_annotations: bool = True
-    graph: Optional[Graph] = None
+    graph: Graph | None = None
     """Mutable graph that is being built up during OWL generation."""
 
-    top_value_uri: Optional[URIRef] = None
+    top_value_uri: URIRef | None = None
     """If metaclasses=True, then this property is used to connect object shadows to literals"""
 
     type_objects: bool = True
@@ -150,12 +150,12 @@ class OwlSchemaGenerator(Generator):
     mixins_as_expressions: bool = None
     """EXPERIMENTAL: If True, use OWL existential restrictions to represent mixins"""
 
-    default_permissible_value_type: Union[str, URIRef] = field(default_factory=lambda: OWL.Class)
+    default_permissible_value_type: str | URIRef = field(default_factory=lambda: OWL.Class)
 
     slot_is_literal_map: Mapping[str, set[bool]] = field(default_factory=lambda: defaultdict(set))
     """DEPRECATED: use node_owltypes"""
 
-    node_owltypes: Mapping[Union[BNode, URIRef], set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
+    node_owltypes: Mapping[BNode | URIRef, set[OWL_TYPE]] = field(default_factory=lambda: defaultdict(set))
     """rdfs:Datatype, owl:Thing"""
 
     simplify: bool = True
@@ -229,7 +229,7 @@ class OwlSchemaGenerator(Generator):
         data = self.graph.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
         return data
 
-    def add_metadata(self, e: Union[Definition, PermissibleValue], uri: URIRef) -> None:
+    def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
         Add annotation properties.
 
@@ -383,7 +383,7 @@ class OwlSchemaGenerator(Generator):
                 Collection(self.graph, uk_props_listnode, uk_props)
                 self.graph.add((subject_expr, OWL.hasKey, uk_props_listnode))
 
-        def condition_to_bnode(expr: AnonymousClassExpression) -> Optional[BNode]:
+        def condition_to_bnode(expr: AnonymousClassExpression) -> BNode | None:
             # inner function: translate a LinkML class expression to an OWL class expression.
             ixn_listnode = self.transform_class_expression(expr, quantifier_predicate=OWL.someValuesFrom)
             if not ixn_listnode:
@@ -426,7 +426,7 @@ class OwlSchemaGenerator(Generator):
             else:
                 self.graph.add((subject_expr, RDFS.subClassOf, superclass_expr))
 
-    def get_own_slots(self, cls: Union[ClassDefinition, AnonymousClassExpression]) -> list[SlotDefinition]:
+    def get_own_slots(self, cls: ClassDefinition | AnonymousClassExpression) -> list[SlotDefinition]:
         """
         Get the slots that are defined on a class, excluding those that are inherited.
 
@@ -465,7 +465,7 @@ class OwlSchemaGenerator(Generator):
 
     def transform_class_expression(
         self,
-        cls: Union[ClassDefinition, AnonymousClassExpression],
+        cls: ClassDefinition | AnonymousClassExpression,
         quantifier_predicate: URIRef = OWL.allValuesFrom,
     ) -> BNode:
         """
@@ -560,8 +560,8 @@ class OwlSchemaGenerator(Generator):
 
     def slot_node_owltypes(
         self,
-        slot: Union[SlotDefinition, AnonymousSlotExpression],
-        owning_class: Optional[Union[ClassDefinition, AnonymousClassExpression]] = None,
+        slot: SlotDefinition | AnonymousSlotExpression,
+        owning_class: ClassDefinition | AnonymousClassExpression | None = None,
     ) -> set[URIRef]:
         """
         Determine the OWL types of a named slot or slot expression
@@ -592,11 +592,11 @@ class OwlSchemaGenerator(Generator):
 
     def transform_class_slot_expression(
         self,
-        cls: Optional[Union[ClassDefinition, AnonymousClassExpression]],
-        slot: Union[SlotDefinition, AnonymousSlotExpression],
+        cls: ClassDefinition | AnonymousClassExpression | None,
+        slot: SlotDefinition | AnonymousSlotExpression,
         main_slot: SlotDefinition = None,
         owl_types: set[OWL_TYPE] = None,
-    ) -> Optional[Union[BNode, URIRef]]:
+    ) -> BNode | URIRef | None:
         """
         Take a ClassExpression and SlotExpression combination and transform to a node.
 
@@ -684,8 +684,8 @@ class OwlSchemaGenerator(Generator):
 
     def add_constraints(
         self,
-        element: Union[SlotDefinition, AnonymousSlotExpression, TypeDefinition, AnonymousTypeExpression],
-        is_literal: Optional[bool] = None,
+        element: SlotDefinition | AnonymousSlotExpression | TypeDefinition | AnonymousTypeExpression,
+        is_literal: bool | None = None,
     ) -> tuple[list[BNode], set[OWL_TYPE]]:
         owl_types = set()
         owl_exprs = []
@@ -847,8 +847,8 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((type_uri, OWL.equivalentClass, ixn))
 
     def _get_metatype(
-        self, element: Union[Definition, PermissibleValue], default_value: Optional[Union[str, URIRef]] = None
-    ) -> Optional[URIRef]:
+        self, element: Definition | PermissibleValue, default_value: str | URIRef | None = None
+    ) -> URIRef | None:
         impls = []
         if isinstance(element, Definition):
             impls.extend(element.implements)
@@ -970,7 +970,7 @@ class OwlSchemaGenerator(Generator):
                 if not isinstance(pv_node, Literal):
                     g.add((pv_node, sub_pred, enum_uri))
 
-    def _add_rule(self, subject: Union[URIRef, BNode], rule: ClassRule, cls: ClassDefinition):
+    def _add_rule(self, subject: URIRef | BNode, rule: ClassRule, cls: ClassDefinition):
         if not self.use_swrl:
             return
         logger.warning("SWRL support is experimental and incomplete")
@@ -984,7 +984,7 @@ class OwlSchemaGenerator(Generator):
 
     def _add_rule_condition(
         self,
-        subject: Union[URIRef, BNode],
+        subject: URIRef | BNode,
         condition: AnonymousClassExpression,
         cls: ClassDefinition,
     ) -> list[BNode]:
@@ -1005,7 +1005,7 @@ class OwlSchemaGenerator(Generator):
             return True
         return profile in self.metadata_profiles or profile == self.metadata_profile
 
-    def _get_owltypes(self, current: set[OWL_TYPE], exprs: list[Union[BNode, URIRef]]) -> set[OWL_TYPE]:
+    def _get_owltypes(self, current: set[OWL_TYPE], exprs: list[BNode | URIRef]) -> set[OWL_TYPE]:
         """
         Gets the OWL types of specified expressions plus current owl types.
 
@@ -1036,7 +1036,7 @@ class OwlSchemaGenerator(Generator):
             if isinstance(obj, BNode):
                 triples.extend(graph.triples((obj, None, None)))
 
-    def _some_values_from(self, property: URIRef, filler: Union[URIRef, BNode]) -> BNode:
+    def _some_values_from(self, property: URIRef, filler: URIRef | BNode) -> BNode:
         if not property:
             raise ValueError(f"Property is required, filler: {filler}")
         if not filler:
@@ -1047,7 +1047,7 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, OWL.someValuesFrom, filler))
         return node
 
-    def _has_value(self, property: URIRef, filler: Union[URIRef, BNode, Literal]) -> BNode:
+    def _has_value(self, property: URIRef, filler: URIRef | BNode | Literal) -> BNode:
         node = BNode()
         self.graph.add((node, RDF.type, OWL.Restriction))
         self.graph.add((node, OWL.onProperty, property))
@@ -1058,14 +1058,14 @@ class OwlSchemaGenerator(Generator):
     def _swrl_var(var: str) -> URIRef:
         return URIRef(var)
 
-    def _swrl_class_atom(self, cls_ref: Union[BNode, URIRef], var: str) -> BNode:
+    def _swrl_class_atom(self, cls_ref: BNode | URIRef, var: str) -> BNode:
         node = BNode()
         self.graph.add((node, RDF.type, SWRL.ClassAtom))
         self.graph.add((node, SWRL.classPredicate, cls_ref))
         self.graph.add((node, SWRL.argument1, self._swrl_var(var)))
         return node
 
-    def _swrl_abox_atom(self, pred_ref: Union[BNode, URIRef], arg1: str, arg2: str) -> BNode:
+    def _swrl_abox_atom(self, pred_ref: BNode | URIRef, arg1: str, arg2: str) -> BNode:
         node = BNode()
         self.graph.add((node, RDF.type, SWRL.IndividualPropertyAtom))
         self.graph.add((node, SWRL.classPredicate, pred_ref))
@@ -1085,8 +1085,8 @@ class OwlSchemaGenerator(Generator):
         return URIRef("https://w3id.org/linkml/" + name)
 
     def _complement_of_union_of(
-        self, exprs: list[Union[BNode, URIRef]], owl_types: set[OWL_TYPE] = None, **kwargs
-    ) -> Optional[Union[BNode, URIRef]]:
+        self, exprs: list[BNode | URIRef], owl_types: set[OWL_TYPE] = None, **kwargs
+    ) -> BNode | URIRef | None:
         if not exprs:
             raise ValueError("Must pass at least one")
         neg_expr = BNode()
@@ -1101,16 +1101,16 @@ class OwlSchemaGenerator(Generator):
 
         return neg_expr
 
-    def _intersection_of(self, exprs: list[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _intersection_of(self, exprs: list[BNode | URIRef], **kwargs) -> BNode | URIRef | None:
         return self._boolean_expression(exprs, OWL.intersectionOf, **kwargs)
 
-    def _union_of(self, exprs: list[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _union_of(self, exprs: list[BNode | URIRef], **kwargs) -> BNode | URIRef | None:
         return self._boolean_expression(exprs, OWL.unionOf, **kwargs)
 
-    def _object_one_of(self, exprs: list[Union[BNode, URIRef]], **kwargs) -> Optional[Union[BNode, URIRef]]:
+    def _object_one_of(self, exprs: list[BNode | URIRef], **kwargs) -> BNode | URIRef | None:
         return self._boolean_expression(exprs, OWL.oneOf, **kwargs)
 
-    def _exactly_one_of(self, exprs: list[Union[BNode, URIRef]]) -> Optional[Union[BNode, URIRef]]:
+    def _exactly_one_of(self, exprs: list[BNode | URIRef]) -> BNode | URIRef | None:
         if not exprs:
             raise ValueError("Must pass at least one")
         if len(exprs) == 1:
@@ -1122,7 +1122,7 @@ class OwlSchemaGenerator(Generator):
             sub_exprs.append(self._intersection_of([x, neg_expr]))
         return self._union_of(sub_exprs)
 
-    def _datatype_restriction(self, datatype: URIRef, facets: list[Union[BNode, URIRef]]) -> BNode:
+    def _datatype_restriction(self, datatype: URIRef, facets: list[BNode | URIRef]) -> BNode:
         node = BNode()
         graph = self.graph
         graph.add((node, RDF.type, RDFS.Datatype))
@@ -1132,7 +1132,7 @@ class OwlSchemaGenerator(Generator):
         graph.add((node, OWL.withRestrictions, listnode))
         return node
 
-    def _facet(self, typ: URIRef, val: Union[Literal, Any]):
+    def _facet(self, typ: URIRef, val: Literal | Any):
         if not isinstance(val, Literal):
             val = Literal(val)
         node = BNode()
@@ -1141,11 +1141,11 @@ class OwlSchemaGenerator(Generator):
 
     def _boolean_expression(
         self,
-        exprs: list[Union[BNode, URIRef, Literal]],
+        exprs: list[BNode | URIRef | Literal],
         predicate: URIRef,
-        node: Optional[URIRef] = None,
+        node: URIRef | None = None,
         owl_types: set[OWL_TYPE] = None,
-    ) -> Optional[Union[BNode, URIRef]]:
+    ) -> BNode | URIRef | None:
         graph = self.graph
         if [x for x in exprs if x is None]:
             logger.warning(f"Null expr in: {exprs} for {predicate} {node}")
@@ -1191,11 +1191,11 @@ class OwlSchemaGenerator(Generator):
     def _mixin_grouping_class_uri():
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
 
-    def _class_uri(self, cn: Union[str, ClassDefinitionName]) -> URIRef:
+    def _class_uri(self, cn: str | ClassDefinitionName) -> URIRef:
         c = self.schemaview.get_class(cn)
         return URIRef(self.schemaview.get_uri(c, expand=True, native=self.use_native_uris))
 
-    def _enum_uri(self, en: Union[str, EnumDefinitionName]) -> URIRef:
+    def _enum_uri(self, en: str | EnumDefinitionName) -> URIRef:
         sv = self.schemaview
         e = sv.get_enum(en, strict=True)
         uri = e.enum_uri
@@ -1204,7 +1204,7 @@ class OwlSchemaGenerator(Generator):
         # TODO: allow control over URIs
         return URIRef(self.schemaview.expand_curie(uri))
 
-    def _prop_uri(self, pn: Union[SlotDefinition, SlotDefinitionName]) -> URIRef:
+    def _prop_uri(self, pn: SlotDefinition | SlotDefinitionName) -> URIRef:
         if isinstance(pn, SlotDefinition):
             p = pn
         else:
@@ -1218,7 +1218,7 @@ class OwlSchemaGenerator(Generator):
             default_prefix = self.schemaview.schema.default_prefix or ""
             return URIRef(self.schemaview.expand_curie(f"{default_prefix}:{underscore(p.name)}"))
 
-    def _schema_uri(self, scn: Union[str, SchemaDefinitionName]) -> URIRef:
+    def _schema_uri(self, scn: str | SchemaDefinitionName) -> URIRef:
         if ":" in scn:
             return URIRef(self.schemaview.expand_curie(scn))
         else:
@@ -1245,7 +1245,7 @@ class OwlSchemaGenerator(Generator):
         return URIRef(expanded)
 
     def _permissible_value_uri(
-        self, pv: Union[str, PermissibleValue], enum_uri: str, enum_def: EnumDefinition = None
+        self, pv: str | PermissibleValue, enum_uri: str, enum_def: EnumDefinition = None
     ) -> URIRef:
         if isinstance(pv, str):
             pv_name = pv

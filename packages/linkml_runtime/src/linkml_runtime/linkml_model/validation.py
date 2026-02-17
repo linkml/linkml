@@ -7,7 +7,7 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar, Union
 
 from jsonasobj2 import as_dict
 from rdflib import URIRef
@@ -53,7 +53,7 @@ class ValidationReport(YAMLRoot):
     class_name: ClassVar[str] = "ValidationReport"
     class_model_uri: ClassVar[URIRef] = REPORTING.ValidationReport
 
-    results: Optional[Union[Union[dict, "ValidationResult"], list[Union[dict, "ValidationResult"]]]] = empty_list()
+    results: Union[dict, "ValidationResult"] | list[Union[dict, "ValidationResult"]] | None = empty_list()
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.results, list):
@@ -76,15 +76,15 @@ class ValidationResult(YAMLRoot):
     class_name: ClassVar[str] = "ValidationResult"
     class_model_uri: ClassVar[URIRef] = REPORTING.ValidationResult
 
-    type: Optional[Union[str, NodeIdentifier]] = None
-    severity: Optional[Union[str, "SeverityOptions"]] = None
-    subject: Optional[Union[str, NodeIdentifier]] = None
-    instantiates: Optional[Union[str, NodeIdentifier]] = None
-    predicate: Optional[Union[str, NodeIdentifier]] = None
-    object: Optional[Union[str, NodeIdentifier]] = None
-    object_str: Optional[str] = None
-    node_source: Optional[Union[str, NodeIdentifier]] = None
-    info: Optional[str] = None
+    type: str | NodeIdentifier | None = None
+    severity: Union[str, "SeverityOptions"] | None = None
+    subject: str | NodeIdentifier | None = None
+    instantiates: str | NodeIdentifier | None = None
+    predicate: str | NodeIdentifier | None = None
+    object: str | NodeIdentifier | None = None
+    object_str: str | None = None
+    node_source: str | NodeIdentifier | None = None
+    info: str | None = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.type is not None and not isinstance(self.type, NodeIdentifier):
@@ -165,7 +165,7 @@ slots.type = Slot(
     curie=SH.curie("sourceConstraintComponent"),
     model_uri=REPORTING.type,
     domain=None,
-    range=Optional[Union[str, NodeIdentifier]],
+    range=str | NodeIdentifier | None,
 )
 
 slots.subject = Slot(
@@ -174,7 +174,7 @@ slots.subject = Slot(
     curie=SH.curie("focusNode"),
     model_uri=REPORTING.subject,
     domain=None,
-    range=Optional[Union[str, NodeIdentifier]],
+    range=str | NodeIdentifier | None,
 )
 
 slots.instantiates = Slot(
@@ -183,7 +183,7 @@ slots.instantiates = Slot(
     curie=REPORTING.curie("instantiates"),
     model_uri=REPORTING.instantiates,
     domain=None,
-    range=Optional[Union[str, NodeIdentifier]],
+    range=str | NodeIdentifier | None,
 )
 
 slots.predicate = Slot(
@@ -192,7 +192,7 @@ slots.predicate = Slot(
     curie=REPORTING.curie("predicate"),
     model_uri=REPORTING.predicate,
     domain=None,
-    range=Optional[Union[str, NodeIdentifier]],
+    range=str | NodeIdentifier | None,
 )
 
 slots.object = Slot(
@@ -201,7 +201,7 @@ slots.object = Slot(
     curie=SH.curie("value"),
     model_uri=REPORTING.object,
     domain=None,
-    range=Optional[Union[str, NodeIdentifier]],
+    range=str | NodeIdentifier | None,
 )
 
 slots.object_str = Slot(
@@ -210,7 +210,7 @@ slots.object_str = Slot(
     curie=REPORTING.curie("object_str"),
     model_uri=REPORTING.object_str,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.node_source = Slot(
@@ -219,7 +219,7 @@ slots.node_source = Slot(
     curie=REPORTING.curie("node_source"),
     model_uri=REPORTING.node_source,
     domain=None,
-    range=Optional[Union[str, NodeIdentifier]],
+    range=str | NodeIdentifier | None,
 )
 
 slots.severity = Slot(
@@ -228,7 +228,7 @@ slots.severity = Slot(
     curie=REPORTING.curie("severity"),
     model_uri=REPORTING.severity,
     domain=None,
-    range=Optional[Union[str, "SeverityOptions"]],
+    range=Union[str, "SeverityOptions"] | None,
 )
 
 slots.info = Slot(
@@ -237,7 +237,7 @@ slots.info = Slot(
     curie=REPORTING.curie("info"),
     model_uri=REPORTING.info,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.validationReport__results = Slot(
@@ -246,5 +246,5 @@ slots.validationReport__results = Slot(
     curie=REPORTING.curie("results"),
     model_uri=REPORTING.validationReport__results,
     domain=None,
-    range=Optional[Union[Union[dict, ValidationResult], list[Union[dict, ValidationResult]]]],
+    range=dict | ValidationResult | list[dict | ValidationResult] | None,
 )

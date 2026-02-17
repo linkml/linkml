@@ -7,7 +7,7 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional, Union
+from typing import Any, ClassVar
 
 from rdflib import URIRef
 
@@ -50,14 +50,14 @@ class UnitOfMeasure(YAMLRoot):
     class_name: ClassVar[str] = "UnitOfMeasure"
     class_model_uri: ClassVar[URIRef] = LINKML.UnitOfMeasure
 
-    symbol: Optional[str] = None
-    abbreviation: Optional[str] = None
-    descriptive_name: Optional[str] = None
-    exact_mappings: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
-    ucum_code: Optional[str] = None
-    derivation: Optional[str] = None
-    has_quantity_kind: Optional[Union[str, URIorCURIE]] = None
-    iec61360code: Optional[str] = None
+    symbol: str | None = None
+    abbreviation: str | None = None
+    descriptive_name: str | None = None
+    exact_mappings: str | URIorCURIE | list[str | URIorCURIE] | None = empty_list()
+    ucum_code: str | None = None
+    derivation: str | None = None
+    has_quantity_kind: str | URIorCURIE | None = None
+    iec61360code: str | None = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.symbol is not None and not isinstance(self.symbol, str):
@@ -102,7 +102,7 @@ slots.unit = Slot(
     curie=QUDT.curie("unit"),
     model_uri=LINKML.unit,
     domain=None,
-    range=Optional[Union[dict, UnitOfMeasure]],
+    range=dict | UnitOfMeasure | None,
 )
 
 slots.ucum_code = Slot(
@@ -111,7 +111,7 @@ slots.ucum_code = Slot(
     curie=QUDT.curie("ucumCode"),
     model_uri=LINKML.ucum_code,
     domain=UnitOfMeasure,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.derivation = Slot(
@@ -120,7 +120,7 @@ slots.derivation = Slot(
     curie=LINKML.curie("derivation"),
     model_uri=LINKML.derivation,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.has_quantity_kind = Slot(
@@ -129,7 +129,7 @@ slots.has_quantity_kind = Slot(
     curie=QUDT.curie("hasQuantityKind"),
     model_uri=LINKML.has_quantity_kind,
     domain=None,
-    range=Optional[Union[str, URIorCURIE]],
+    range=str | URIorCURIE | None,
 )
 
 slots.iec61360code = Slot(
@@ -138,7 +138,7 @@ slots.iec61360code = Slot(
     curie=QUDT.curie("iec61360Code"),
     model_uri=LINKML.iec61360code,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.symbol = Slot(
@@ -147,7 +147,7 @@ slots.symbol = Slot(
     curie=QUDT.curie("symbol"),
     model_uri=LINKML.symbol,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.abbreviation = Slot(
@@ -156,7 +156,7 @@ slots.abbreviation = Slot(
     curie=QUDT.curie("abbreviation"),
     model_uri=LINKML.abbreviation,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.descriptive_name = Slot(
@@ -165,5 +165,5 @@ slots.descriptive_name = Slot(
     curie=RDFS.curie("label"),
     model_uri=LINKML.descriptive_name,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )

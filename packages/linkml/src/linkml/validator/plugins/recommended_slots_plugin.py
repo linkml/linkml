@@ -1,5 +1,4 @@
 from collections.abc import Iterator
-from typing import Optional
 
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
@@ -11,7 +10,7 @@ class RecommendedSlotsPlugin(ValidationPlugin):
 
     def process(self, instance: dict, context: ValidationContext) -> Iterator[ValidationResult]:
         def _do_process(
-            instance: dict, class_name: str, location: Optional[list[str]] = None
+            instance: dict, class_name: str, location: list[str] | None = None
         ) -> Iterator[ValidationResult]:
             if not isinstance(instance, dict):
                 return

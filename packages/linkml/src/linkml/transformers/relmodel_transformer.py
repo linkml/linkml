@@ -1,7 +1,6 @@
 import logging
 from copy import copy
 from dataclasses import dataclass, field
-from typing import Optional
 
 from sqlalchemy import Enum
 
@@ -38,7 +37,7 @@ class Link:
     Foreign key reference
     """
 
-    source_class: Optional[str]  # optional for top-level slots
+    source_class: str | None  # optional for top-level slots
     source_slot: str
     target_class: str
     target_slot: str = None
@@ -405,7 +404,7 @@ class RelationalModelTransformer:
         return result
 
     @staticmethod
-    def get_direct_identifier_attribute(sv: SchemaView, cn: ClassDefinitionName) -> Optional[SlotDefinition]:
+    def get_direct_identifier_attribute(sv: SchemaView, cn: ClassDefinitionName) -> SlotDefinition | None:
         c = sv.get_class(cn)
         for a in c.attributes.values():
             if a.identifier:

@@ -1,7 +1,6 @@
 import io
 import json
 from abc import ABC, abstractmethod
-from typing import Union
 
 from json_flattener import GlobalConfig, flatten_to_csv
 from pydantic import BaseModel
@@ -22,7 +21,7 @@ class DelimitedFileDumper(Dumper, ABC):
 
     def dumps(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
