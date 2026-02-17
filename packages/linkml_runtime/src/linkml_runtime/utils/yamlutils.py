@@ -135,9 +135,10 @@ class YAMLRoot(JsonObj):
                     f"Slot: {loc(slot_name)} - attribute {loc(key_name)} "
                     f"value ({loc(cooked_entry[key_name])}) does not match key ({loc(key)})"
                 )
-            if keyed and key in cooked_keys:
-                raise ValueError(f"{loc(key)}: duplicate key")
-            cooked_keys.add(key)
+            if keyed:
+                if key in cooked_keys:
+                    raise ValueError(f"{loc(key)}: duplicate key")
+                cooked_keys.add(key)
             if is_list:
                 cooked_slot.append(cooked_entry)
             else:
