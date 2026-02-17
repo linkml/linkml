@@ -58,7 +58,7 @@ For small schemas with limited inheritance, it should be possible to mentally pi
 
 There are a few strategies:
 
-* Use [gen-doc](https://linkml.io/linkml/generators/markdown) to make markdown that can be viewed using mkdocs
+* Use [gen-doc](https://linkml.io/linkml/generators/docgen) to make markdown that can be viewed using mkdocs
     * note you get this "for free" if you set up your project using the LinkML project copier template
 * Use [gen-owl](https://linkml.io/linkml/generators/owl) to make an OWL ontology, which can be browsed:
     * Using an ontology editing tool like Protege
@@ -187,7 +187,7 @@ See the [tool developer guide](https://linkml.io/linkml/developers/tool-develope
 
 Yes!
 
-See the [markdown generator](https://linkml.io/linkml/generators/markdown) for details.
+See the [markdown generator](https://linkml.io/linkml/generators/docgen) for details.
 
 If you run:
 
