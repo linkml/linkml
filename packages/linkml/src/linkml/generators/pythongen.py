@@ -16,6 +16,7 @@ import linkml
 from linkml._version import __version__
 from linkml.generators.pydanticgen.template import Import, Imports, ObjectImport
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
+from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import linkml_files
@@ -37,6 +38,7 @@ from linkml_runtime.utils.metamodelcore import builtinnames
 logger = logging.getLogger(__name__)
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class PythonGenerator(Generator):
     """
@@ -57,7 +59,6 @@ class PythonGenerator(Generator):
     gen_classvars: bool = True
     gen_slots: bool = True
     genmeta: bool = False
-    emit_metadata: bool = True
     dataclass_repr: bool = False
     """
     Whether generated dataclasses should also generate a default __repr__ method.
@@ -244,13 +245,13 @@ class PythonGenerator(Generator):
             f"""# Auto generated from {self.schema.source_file} by {self.generatorname} version: {self.generatorversion}
 # Generation date: {self.schema.generation_date}
 # Schema: {self.schema.name}
-#"""
-            if self.emit_metadata and self.schema.generation_date
+#
+"""
+            if self.metadata and self.schema.generation_date
             else ""
         )
 
-        return f"""{head}
-# id: {self.schema.id}
+        return f"""{head}# id: {self.schema.id}
 # description: {split_description}
 # license: {be(self.schema.license)}
 
@@ -873,6 +874,15 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         """Generate python post init rules for slot in class"""
         rlines: list[str] = []
 
+        # default_ns: initialize slot from the schema id at runtime, but only
+        # when the containing class has an 'id' slot (e.g. SchemaDefinition).
+        if slot.ifabsent == "default_ns" and any(s == "id" for s in cls.slots):
+            aliased_slot_name = self.slot_name(slot.name)
+            rlines.append(f"if self.{aliased_slot_name} is None:")
+            rlines.append(f"\tself.{aliased_slot_name} = sfx(str(self.id))")
+            rlines.append("")
+            return "\n\t\t".join(rlines)
+
         if slot.range in self.schema.classes:
             if self.is_class_unconstrained(self.schema.classes[slot.range]):
                 return ""
@@ -939,19 +949,14 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         elif slot.inlined:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
-            # If we don't have an identifier, and we are expecting to be inlined first class elements
-            # (inlined_as_list is not True), we will use the first required field as the key.
-            #  Note that this may not always work, but the workaround is straight forward -- set inlined_as_list to
-            #  True
-            if not identifier and not slot.inlined_as_list:
+            if not identifier:
                 for range_slot_name in slot_range_cls.slots:
                     range_slot = self.schema.slots[range_slot_name]
-                    if range_slot.required:
+                    if range_slot.required and range_slot.range not in self.schema.classes:
                         identifier = range_slot.name
                         break
                 keyed = False
             else:
-                # Place for future expansion
                 keyed = True
             if identifier:
                 if not slot.inlined_as_list:
@@ -1265,7 +1270,7 @@ class {enum_name}(EnumDefinitionImpl):
 
 @shared_arguments(PythonGenerator)
 @click.command(name="python")
-@click.option("--head/--no-head", default=True, show_default=True, help="Emit metadata heading")
+@click.option("--head/--no-head", default=None, help="Emit metadata heading")
 @click.option(
     "--genmeta/--no-genmeta",
     default=False,
@@ -1293,7 +1298,7 @@ class {enum_name}(EnumDefinitionImpl):
 @click.version_option(__version__, "-V", "--version")
 def cli(
     yamlfile,
-    head=True,
+    head=None,
     genmeta=False,
     classvars=True,
     slots=True,
@@ -1301,9 +1306,12 @@ def cli(
     **args,
 ):
     """Generate python classes to represent a LinkML model"""
+    # if specified, `head` determine the value of `metadata`
+    if head is not None:
+        deprecation_warning("metadata-flag")
+        args["metadata"] = head
     gen = PythonGenerator(
         yamlfile,
-        emit_metadata=head,
         genmeta=genmeta,
         gen_classvars=classvars,
         gen_slots=slots,
@@ -1312,7 +1320,7 @@ def cli(
     if validate:
         mod = gen.compile_module()
         logger.info(f"Module {mod} compiled successfully")
-    print(gen.serialize(emit_metadata=head, **args))
+    print(gen.serialize(**args))
 
 
 if __name__ == "__main__":
