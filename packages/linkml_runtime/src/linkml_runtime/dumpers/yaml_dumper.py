@@ -1,5 +1,3 @@
-from typing import Union
-
 import yaml
 from pydantic import BaseModel
 
@@ -9,7 +7,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 class YAMLDumper(Dumper):
-    def dumps(self, element: Union[BaseModel, YAMLRoot], **kwargs) -> str:
+    def dumps(self, element: BaseModel | YAMLRoot, **kwargs) -> str:
         """Return element formatted as a YAML string"""
         # Internal note: remove_empty_items will also convert Decimals to int/float;
         # this is necessary until https://github.com/yaml/pyyaml/pull/372 is merged

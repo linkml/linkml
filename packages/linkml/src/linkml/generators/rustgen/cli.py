@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, get_args
+from typing import get_args
 
 import click
 
@@ -63,9 +63,9 @@ def cli(
     force: bool = False,
     pyo3: bool = False,
     serde: bool = False,
-    crate_name: Optional[str] = None,
+    crate_name: str | None = None,
     handwritten_lib: bool = False,
-    output: Optional[Path] = None,
+    output: Path | None = None,
     **kwargs,
 ):
     gen = RustGenerator(

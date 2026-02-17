@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import IO, Any, Optional
+from typing import IO, Any
 
 import click
 
@@ -14,7 +14,7 @@ def plural(word: str, count: int):
 
 
 class TerminalFormatter(Formatter):
-    def __init__(self, file: Optional[IO[Any]] = None, verbose: bool = False) -> None:
+    def __init__(self, file: IO[Any] | None = None, verbose: bool = False) -> None:
         super().__init__(file)
         self.verbose = verbose
         self.problem_counts = defaultdict(int)

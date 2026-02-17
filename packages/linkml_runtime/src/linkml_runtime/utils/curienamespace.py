@@ -1,10 +1,8 @@
-from typing import Optional, Union
-
 from rdflib import Namespace, URIRef
 
 
 class CurieNamespace(Namespace):
-    def __new__(cls, prefix: str, value: Union[str, URIRef]):
+    def __new__(cls, prefix: str, value: str | URIRef):
         value = str(value)
         try:
             rt = str.__new__(cls, value)
@@ -13,5 +11,5 @@ class CurieNamespace(Namespace):
         rt.prefix = prefix
         return rt
 
-    def curie(self, reference: Optional[str] = "") -> str:
+    def curie(self, reference: str | None = "") -> str:
         return self.prefix + ":" + reference

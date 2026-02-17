@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from deprecated.classic import deprecated
 
@@ -66,16 +66,16 @@ SCHEMA_ELEMENTS = [CLASSES, SLOTS, ENUMS, SUBSETS, TYPES]
 
 WINDOWS = sys.platform == "win32"
 
-CLASS_NAME = Union[ClassDefinitionName, str]
-SLOT_NAME = Union[SlotDefinitionName, str]
-SUBSET_NAME = Union[SubsetDefinitionName, str]
-TYPE_NAME = Union[TypeDefinitionName, str]
-ENUM_NAME = Union[EnumDefinitionName, str]
+CLASS_NAME = ClassDefinitionName | str
+SLOT_NAME = SlotDefinitionName | str
+SUBSET_NAME = SubsetDefinitionName | str
+TYPE_NAME = TypeDefinitionName | str
+ENUM_NAME = EnumDefinitionName | str
 
 ElementType = TypeVar("ElementType", bound=Element)
-ElementNameType = TypeVar("ElementNameType", bound=Union[ElementName, str])
+ElementNameType = TypeVar("ElementNameType", bound=ElementName | str)
 DefinitionType = TypeVar("DefinitionType", bound=Definition)
-DefinitionNameType = TypeVar("DefinitionNameType", bound=Union[DefinitionName, str])
+DefinitionNameType = TypeVar("DefinitionNameType", bound=DefinitionName | str)
 ElementDict = dict[ElementNameType, ElementType]
 DefDict = dict[DefinitionNameType, DefinitionType]
 
@@ -881,7 +881,7 @@ class SchemaView:
         """
         children = []
         for el in self.all_elements().values():
-            if isinstance(el, (ClassDefinition, SlotDefinition, EnumDefinition)):
+            if isinstance(el, ClassDefinition | SlotDefinition | EnumDefinition):
                 if el.is_a and el.is_a == name:
                     children.append(el.name)
                 if mixin and el.mixins and name in el.mixins:
@@ -1501,7 +1501,7 @@ class SchemaView:
         e = self.get_element(element_name, imports=imports)
         m_dict = {}
 
-        if isinstance(e, (ClassDefinition, SlotDefinition, TypeDefinition)):
+        if isinstance(e, ClassDefinition | SlotDefinition | TypeDefinition):
             m_dict = {
                 "self": [self.get_uri(element_name, imports=imports, expand=False)],
                 "native": [self.get_uri(element_name, imports=imports, expand=False, native=True)],
@@ -1691,7 +1691,7 @@ class SchemaView:
                 # 1. if v2:
                 # 2. if v2 is not None and
                 #    (
-                #      (isinstance(v2, (dict, list)) and v2) or
+                #      (isinstance(v2, dict | list) and v2) or
                 #      (isinstance(v2, JsonObj) and as_dict(v2))
                 #    )
                 elif not is_empty(v2):

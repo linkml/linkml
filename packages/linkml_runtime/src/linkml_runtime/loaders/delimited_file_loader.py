@@ -1,6 +1,5 @@
 import json
 from abc import ABC, abstractmethod
-from typing import Union
 
 from json_flattener import GlobalConfig, unflatten_from_csv
 from pydantic import BaseModel
@@ -26,17 +25,17 @@ class DelimitedFileLoader(Loader, ABC):
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
         **kwargs,
-    ) -> Union[dict, list[dict]]:
+    ) -> dict | list[dict]:
         json_str = self._get_json_str_to_load(source, index_slot, schema, schemaview, **kwargs)
         return JSONLoader().load_as_dict(json_str)
 
-    def load_any(self, *args, **kwargs) -> Union[YAMLRoot, list[YAMLRoot]]:
+    def load_any(self, *args, **kwargs) -> YAMLRoot | list[YAMLRoot]:
         return self.load(*args, **kwargs)
 
     def loads(
         self,
         input,
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        target_class: type[BaseModel | YAMLRoot],
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
@@ -48,7 +47,7 @@ class DelimitedFileLoader(Loader, ABC):
     def load(
         self,
         source: str,
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        target_class: type[BaseModel | YAMLRoot],
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,

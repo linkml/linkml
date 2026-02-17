@@ -12,7 +12,7 @@ This package provides:
 import inspect
 import logging
 from collections.abc import Iterator, Mapping
-from typing import Any, Union
+from typing import Any
 
 from linkml_runtime.utils import eval_utils
 from linkml_runtime.utils.schemaview import SchemaView
@@ -115,7 +115,7 @@ class ObjectIndex:
         else:
             return ProxyObject(obj, _db=self)
 
-    def _key(self, obj: Any) -> tuple[Union[str, YAMLRoot], str]:
+    def _key(self, obj: Any) -> tuple[str | YAMLRoot, str]:
         """
         Returns primary key value for this object.
 
