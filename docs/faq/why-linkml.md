@@ -292,7 +292,7 @@ There are a number of reasons to use LinkML over UML:
 
 Currently there is no way to generate complete UML from a LinkML schema.
 
-However, the yUML generator (used in [the markdown generator](https://linkml.io/linkml/generators/markdown.html)) can be used to make yUML diagrams for any class or schema.
+However, [the doc generator](https://linkml.io/linkml/generators/docgen.html) can be used to make Mermaid class diagrams for any class or schema.
 
 ## Why should I use LinkML over OWL?
 
