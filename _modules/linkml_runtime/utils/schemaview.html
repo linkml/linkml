@@ -2047,7 +2047,10 @@
                     <span class="n">element_aliases</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">structured_aliases</span> <span class="ow">and</span> <span class="n">el</span><span class="o">.</span><span class="n">structured_aliases</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">sa</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">structured_aliases</span><span class="p">:</span>
-                    <span class="n">element_aliases</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sa</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                        <span class="n">element_aliases</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">element_aliases</span><span class="p">[</span><span class="n">el</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">literal_form</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">element_aliases</span></div>
 
