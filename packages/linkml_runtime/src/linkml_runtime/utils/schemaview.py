@@ -1480,7 +1480,10 @@ class SchemaView:
                     element_aliases[el.name].append(a)
             if el.structured_aliases and el.structured_aliases is not None:
                 for sa in el.structured_aliases:
-                    element_aliases[el.name].append(sa.literal_form)
+                    if isinstance(sa, str):
+                        element_aliases[el.name].append(sa)
+                    else:
+                        element_aliases[el.name].append(sa.literal_form)
 
         return element_aliases
 
