@@ -409,7 +409,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">PurePath</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">deprecated.classic</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated</span>
 
@@ -461,16 +461,16 @@
 
 <span class="n">WINDOWS</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span>
 
-<span class="n">CLASS_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-<span class="n">SLOT_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">SlotDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-<span class="n">SUBSET_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">SubsetDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-<span class="n">TYPE_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">TypeDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
-<span class="n">ENUM_NAME</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">EnumDefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">CLASS_NAME</span> <span class="o">=</span> <span class="n">ClassDefinitionName</span> <span class="o">|</span> <span class="nb">str</span>
+<span class="n">SLOT_NAME</span> <span class="o">=</span> <span class="n">SlotDefinitionName</span> <span class="o">|</span> <span class="nb">str</span>
+<span class="n">SUBSET_NAME</span> <span class="o">=</span> <span class="n">SubsetDefinitionName</span> <span class="o">|</span> <span class="nb">str</span>
+<span class="n">TYPE_NAME</span> <span class="o">=</span> <span class="n">TypeDefinitionName</span> <span class="o">|</span> <span class="nb">str</span>
+<span class="n">ENUM_NAME</span> <span class="o">=</span> <span class="n">EnumDefinitionName</span> <span class="o">|</span> <span class="nb">str</span>
 
 <span class="n">ElementType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ElementType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Element</span><span class="p">)</span>
-<span class="n">ElementNameType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ElementNameType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">ElementName</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
+<span class="n">ElementNameType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ElementNameType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">ElementName</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span>
 <span class="n">DefinitionType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Definition</span><span class="p">)</span>
-<span class="n">DefinitionNameType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionNameType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="n">DefinitionName</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span>
+<span class="n">DefinitionNameType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DefinitionNameType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">DefinitionName</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span>
 <span class="n">ElementDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ElementNameType</span><span class="p">,</span> <span class="n">ElementType</span><span class="p">]</span>
 <span class="n">DefDict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="n">DefinitionNameType</span><span class="p">,</span> <span class="n">DefinitionType</span><span class="p">]</span>
 
@@ -1364,7 +1364,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_elements</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="n">EnumDefinition</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">el</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">and</span> <span class="n">el</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                     <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">mixin</span> <span class="ow">and</span> <span class="n">el</span><span class="o">.</span><span class="n">mixins</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">el</span><span class="o">.</span><span class="n">mixins</span><span class="p">:</span>
@@ -2071,7 +2071,7 @@
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
         <span class="n">m_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="n">TypeDefinition</span><span class="p">):</span>
             <span class="n">m_dict</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;self&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)],</span>
                 <span class="s2">&quot;native&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_uri</span><span class="p">(</span><span class="n">element_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">native</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
@@ -2279,7 +2279,7 @@
                 <span class="c1"># 1. if v2:</span>
                 <span class="c1"># 2. if v2 is not None and</span>
                 <span class="c1">#    (</span>
-                <span class="c1">#      (isinstance(v2, (dict, list)) and v2) or</span>
+                <span class="c1">#      (isinstance(v2, dict | list) and v2) or</span>
                 <span class="c1">#      (isinstance(v2, JsonObj) and as_dict(v2))</span>
                 <span class="c1">#    )</span>
                 <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_empty</span><span class="p">(</span><span class="n">v2</span><span class="p">):</span>

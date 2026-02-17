@@ -394,9 +394,10 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml_runtime.utils.inference_utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">JsonObj</span><span class="p">,</span> <span class="n">items</span>
 
@@ -461,11 +462,11 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">generate_slot_value</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span>
-    <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span>
+    <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">SlotDefinitionName</span><span class="p">,</span>
     <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
-    <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ClassDefinitionName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(),</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Infer the value of a slot for a given object</span>
 
@@ -506,9 +507,9 @@
 <a class="viewcode-back" href="../../../developers/inference.html#linkml_runtime.utils.inference_utils.infer_slot_value">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">infer_slot_value</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span>
-    <span class="n">slot_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinitionName</span><span class="p">],</span>
+    <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">SlotDefinitionName</span><span class="p">,</span>
     <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
-    <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ClassDefinitionName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(),</span>
 <span class="p">):</span>
@@ -547,7 +548,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">infer_all_slot_values</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">YAMLRoot</span><span class="p">,</span>
     <span class="n">schemaview</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
-    <span class="n">class_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ClassDefinitionName</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="o">.</span><span class="n">STRICT</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">Config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(),</span>
 <span class="p">):</span>

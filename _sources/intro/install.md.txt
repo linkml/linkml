@@ -13,8 +13,7 @@ Get the latest version of Python at https://www.python.org/downloads/ or with yo
 You can verify that Python is installed by typing `python` from your shell; you should see something like:
 
 ```bash
-Python 3.9.5 (v3.9.5:0a7dcbdb13, May  3 2021, 13:17:02)
-[Clang 6.0 (clang-600.0.57)] on darwin
+Python 3.13.11 (tags/v3.13.11:6278944, Dec  5 2025, 16:26:58) [MSC v.1944 64 bit (AMD64)] on win32
 Type "help", "copyright", "credits" or "license" for more information.
 >>>
 ```

@@ -393,9 +393,7 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml_runtime.dumpers.yaml_dumper</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers.dumper_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dumper</span>
@@ -408,7 +406,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">YAMLDumper</span><span class="p">(</span><span class="n">Dumper</span><span class="p">):</span>
 <div class="viewcode-block" id="YAMLDumper.dumps">
 <a class="viewcode-back" href="../../../developers/loaders-and-dumpers.html#linkml_runtime.dumpers.YAMLDumper.dumps">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">YAMLRoot</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">BaseModel</span> <span class="o">|</span> <span class="n">YAMLRoot</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return element formatted as a YAML string&quot;&quot;&quot;</span>
         <span class="c1"># Internal note: remove_empty_items will also convert Decimals to int/float;</span>
         <span class="c1"># this is necessary until https://github.com/yaml/pyyaml/pull/372 is merged</span>

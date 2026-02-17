@@ -394,7 +394,6 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.utils.schemasynopsis</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib</span><span class="w"> </span><span class="kn">import</span> <span class="n">URIRef</span>
 
@@ -426,7 +425,7 @@
 
 
 
-<span class="n">ClassOrSlotName</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">TypeDefinitionName</span><span class="p">]</span>
+<span class="n">ClassOrSlotName</span> <span class="o">=</span> <span class="n">ClassDefinitionName</span> <span class="o">|</span> <span class="n">TypeDefinitionName</span>
 
 
 <div class="viewcode-block" id="SchemaSynopsis">
@@ -665,7 +664,7 @@
 <div class="viewcode-block" id="SchemaSynopsis.errors">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.errors">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">errors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">format_undefineds</span><span class="p">(</span><span class="n">refs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypedNode</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">format_undefineds</span><span class="p">(</span><span class="n">refs</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">TypedNode</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
             <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">TypedNode</span><span class="o">.</span><span class="n">yaml_loc</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">]</span>
 
         <span class="n">rval</span> <span class="o">=</span> <span class="p">[]</span>
