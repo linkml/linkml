@@ -5,7 +5,7 @@ from collections import OrderedDict
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import Optional, TextIO, Union, cast
+from typing import TextIO, cast
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
@@ -38,17 +38,17 @@ lgr = logging.getLogger(__name__)
 class SchemaLoader:
     def __init__(
         self,
-        data: Union[str, TextIO, SchemaDefinition, dict, Path],
-        base_dir: Optional[str] = None,
-        namespaces: Optional[Namespaces] = None,
-        useuris: Optional[bool] = None,
-        importmap: Optional[Mapping[str, str]] = None,
-        logger: Optional[logging.Logger] = None,
-        mergeimports: Optional[bool] = True,
-        metadata: Optional[bool] = True,
-        emit_metadata: Optional[bool] = None,
-        source_file_date: Optional[str] = None,
-        source_file_size: Optional[int] = None,
+        data: str | TextIO | SchemaDefinition | dict | Path,
+        base_dir: str | None = None,
+        namespaces: Namespaces | None = None,
+        useuris: bool | None = None,
+        importmap: Mapping[str, str] | None = None,
+        logger: logging.Logger | None = None,
+        mergeimports: bool | None = True,
+        metadata: bool | None = True,
+        emit_metadata: bool | None = None,
+        source_file_date: str | None = None,
+        source_file_size: int | None = None,
     ) -> None:
         """Constructor - load and process a YAML or pre-processed schema
 
@@ -84,8 +84,8 @@ class SchemaLoader:
         self.importmap = parse_import_map(importmap, self.base_dir) if importmap is not None else dict()
         self.source_file_date = source_file_date
         self.source_file_size = source_file_size
-        self.synopsis: Optional[SchemaSynopsis] = None
-        self.schema_location: Optional[str] = None
+        self.synopsis: SchemaSynopsis | None = None
+        self.schema_location: str | None = None
         self.schema_defaults: dict[str, str] = {}  # Map from schema URI to default namespace
         self.merge_modules = mergeimports
         self.metadata = metadata
@@ -944,7 +944,7 @@ class SchemaLoader:
     def schema_errors(self) -> list[str]:
         return self.synopsis.errors() if self.synopsis else ["resolve() must be run before error check"]
 
-    def slot_definition_for(self, slotname: SlotDefinitionName, cls: ClassDefinition) -> Optional[SlotDefinition]:
+    def slot_definition_for(self, slotname: SlotDefinitionName, cls: ClassDefinition) -> SlotDefinition | None:
         """Find the most proximal definition for slotname in the context of cls"""
         if cls.is_a:
             if cls.is_a not in self.schema.classes:
@@ -1020,11 +1020,11 @@ class SchemaLoader:
         return underscore(slot.alias if slot.alias else slot.name)
 
     @staticmethod
-    def raise_value_error(error: str, loc_str: Optional[Union[TypedNode, str]] = None) -> None:
+    def raise_value_error(error: str, loc_str: TypedNode | str | None = None) -> None:
         SchemaLoader.raise_value_errors(error, loc_str)
 
     @staticmethod
-    def raise_value_errors(error: str, loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]]) -> None:
+    def raise_value_errors(error: str, loc_str: str | TypedNode | Iterator[TypedNode] | None) -> None:
         if isinstance(loc_str, list):
             locs = "\n".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
             raise ValueError(f"{locs} {error}")
@@ -1034,7 +1034,7 @@ class SchemaLoader:
     def logger_warning(
         self,
         warning: str,
-        loc_str: Optional[Union[str, TypedNode, Iterator[TypedNode]]],
+        loc_str: str | TypedNode | Iterator[TypedNode] | None,
     ) -> None:
         if isinstance(loc_str, list):
             locs = "\n\t".join(TypedNode.yaml_loc(e, suffix="") for e in loc_str)
@@ -1042,7 +1042,7 @@ class SchemaLoader:
         else:
             self.logger.warning(f"{warning}\n\t{TypedNode.yaml_loc(loc_str, suffix='')}")
 
-    def _get_base_dir(self, stated_base: str) -> Optional[str]:
+    def _get_base_dir(self, stated_base: str) -> str | None:
         if stated_base:
             return stated_base
         elif self.schema.source_file:

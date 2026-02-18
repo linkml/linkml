@@ -1,7 +1,7 @@
 import logging
 import os
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable
 
 import click
 from jsonasobj2 import JsonObj, as_dict

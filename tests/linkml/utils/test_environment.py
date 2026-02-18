@@ -5,11 +5,11 @@ import os
 import shutil
 import sys
 import unittest
+from collections.abc import Callable
 from enum import Enum
 from importlib import import_module
 from io import StringIO
 from pathlib import Path
-from typing import Callable, Optional, Union
 
 from linkml import LOCAL_MAPPINGS_YAML_FILE, LOCAL_METAMODEL_YAML_FILE, LOCAL_TYPES_YAML_FILE
 from linkml_runtime.linkml_model import linkml_files
@@ -107,7 +107,7 @@ class TestEnvironment:
         """
         return self.actual_path(*path, is_dir=is_dir)
 
-    def log(self, file_or_directory: str, message: Optional[str] = None) -> None:
+    def log(self, file_or_directory: str, message: str | None = None) -> None:
         self._log.log(file_or_directory, message)
 
     @property
@@ -136,7 +136,7 @@ class TestEnvironment:
                 TestEnvironment.make_testing_directory(full_path, clear=clear and i == len(paths) - 1)
         return full_path
 
-    def string_comparator(self, expected: str, actual: str) -> Optional[str]:
+    def string_comparator(self, expected: str, actual: str) -> str | None:
         """
         Compare two strings w/ embedded line feeds.  Return a simple match/nomatch output message
         :param expected: expected string
@@ -167,7 +167,7 @@ class TestEnvironment:
             with open(safety_file, "w") as f:
                 f.write("Generated for safety.  Directory will not be cleared if this file is not present")
 
-    def generate_directory(self, dirname: Union[str, list[str]], generator: Callable[[str], None]) -> None:
+    def generate_directory(self, dirname: str | list[str], generator: Callable[[str], None]) -> None:
         """
         Invoke the generator and compare the output in a temp directory to the output directory.  Report the results
         and then update the output directory
@@ -192,8 +192,8 @@ class TestEnvironment:
 
     def generate_single_file(
         self,
-        filename: Union[str, list[str]],
-        generator: Callable[[Optional[str]], Optional[str]],
+        filename: str | list[str],
+        generator: Callable[[str | None], str | None],
         value_is_returned: bool = False,
         filtr: Callable[[str], str] = None,
         comparator: Callable[[str, str], str] = None,

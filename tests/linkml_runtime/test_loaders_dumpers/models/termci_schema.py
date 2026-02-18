@@ -153,7 +153,7 @@ class ConceptSystem(YAMLRoot):
 
         if self.contents is None:
             self.contents = []
-        if not isinstance(self.contents, (list, dict)):
+        if not isinstance(self.contents, list | dict):
             self.contents = [self.contents]
         self._normalize_inlined_slot(
             slot_name="contents", slot_type=ConceptReference, key_name="uri", inlined_as_list=True, keyed=True
@@ -182,7 +182,7 @@ class Package(YAMLRoot):
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.system is None:
             self.system = []
-        if not isinstance(self.system, (list, dict)):
+        if not isinstance(self.system, list | dict):
             self.system = [self.system]
         self._normalize_inlined_slot(
             slot_name="system", slot_type=ConceptSystem, key_name="namespace", inlined_as_list=True, keyed=True

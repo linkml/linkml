@@ -127,7 +127,7 @@ def test_add_class_with_extra_kwargs(
 
     builder = SchemaBuilder()
 
-    if not isinstance(cls, (str, dict, ClassDefinition)):
+    if not isinstance(cls, str | dict | ClassDefinition):
         with pytest.raises(TypeError, match="cls must be"):
             builder.add_class(cls, **extra_kwargs)
     elif extra_kwargs.keys() - class_meta_slots:
@@ -191,7 +191,7 @@ def test_add_enum_with_extra_permissible_values(
     """
     builder = SchemaBuilder()
 
-    if any(not isinstance(pv, (str, PermissibleValue)) for pv in permissible_values):
+    if any(not isinstance(pv, str | PermissibleValue) for pv in permissible_values):
         with pytest.raises(TypeError, match="permissible value must be"):
             builder.add_enum(enum_def, permissible_values=permissible_values)
     else:
@@ -239,7 +239,7 @@ def test_add_enum_with_extra_kwargs(
 
     builder = SchemaBuilder()
 
-    if not isinstance(enum_def, (str, dict, EnumDefinition)):
+    if not isinstance(enum_def, str | dict | EnumDefinition):
         with pytest.raises(TypeError, match="enum_def must be"):
             builder.add_enum(enum_def, **extra_kwargs)
     elif extra_kwargs.keys() - enum_meta_slots:

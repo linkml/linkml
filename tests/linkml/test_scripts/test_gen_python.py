@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 import pytest
 from click.testing import CliRunner
@@ -14,8 +13,8 @@ pytestmark = pytest.mark.pythongen
 def gen_and_comp_python(
     schema: Path,
     snapshot: Snapshot,
-    addl_args: Optional[list[str]] = None,
-    python_base: Optional[str] = None,
+    addl_args: list[str] | None = None,
+    python_base: str | None = None,
 ) -> None:
     """Generate yaml_file into python_file and compare it against master_file"""
     arglist = [str(schema), "--no-metadata"] + (addl_args if addl_args else [])

@@ -1,7 +1,6 @@
 import importlib
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 
@@ -41,7 +40,7 @@ class DataframeGeneratorCli:
 
     generator: DataframeGenerator
     template_path: str = DEFAULT_TEMPLATE_PATH
-    template_file: Optional[str] = None
+    template_file: str | None = None
 
     def read_validator_helper(self) -> str:
         """
@@ -62,7 +61,7 @@ class DataframeGeneratorCli:
             logger.warning(f"Unable to read linkml_pandera_validator module: {e}")
             return None
 
-    def serialize(self, directory: Optional[str] = None, rendered_module: Optional[OODocument] = None) -> str:
+    def serialize(self, directory: str | None = None, rendered_module: OODocument | None = None) -> str:
         """
         Serialize the dataframe schema to a Python module as a string
         """

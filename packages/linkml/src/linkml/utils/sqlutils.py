@@ -5,7 +5,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 from pydantic import BaseModel
@@ -61,15 +61,15 @@ class SQLStore:
     - mapping your data/objects in any LinkML compliant data format (json. yaml, rdf) into ORM objects
     """
 
-    schema: Optional[Union[str, Path, SchemaDefinition]] = None
-    schemaview: Optional[SchemaView] = None
-    engine: Optional[Engine] = None
-    database_path: Union[str, Path] = None
+    schema: str | Path | SchemaDefinition | None = None
+    schemaview: SchemaView | None = None
+    engine: Engine | None = None
+    database_path: str | Path = None
     use_memory: bool = False
     """https://docs.sqlalchemy.org/en/20/dialects/sqlite.html#using-a-memory-database-in-multiple-threads"""
 
-    module: Optional[ModuleType] = None
-    native_module: Optional[ModuleType] = None
+    module: ModuleType | None = None
+    native_module: ModuleType | None = None
     include_schema_in_database: bool = False
 
     def __post_init__(self):
@@ -78,7 +78,7 @@ class SQLStore:
         if self.schema is not None and self.schemaview is None:
             self.schemaview = SchemaView(self.schema)
 
-    def db_exists(self, create=True, force=False) -> Optional[str]:
+    def db_exists(self, create=True, force=False) -> str | None:
         """
         check if database exists, optionally create if not present
 
@@ -138,7 +138,7 @@ class SQLStore:
         self.native_module = gen.compile_module()
         return self.native_module
 
-    def load(self, target_class: Union[str, type[YAMLRoot]] = None) -> YAMLRoot:
+    def load(self, target_class: str | type[YAMLRoot] = None) -> YAMLRoot:
         """
         Loads a LinkML object from the wrapped SQLite database
 
@@ -147,7 +147,7 @@ class SQLStore:
         """
         return self.load_all(target_class=target_class)[0]
 
-    def load_all(self, target_class: Union[str, type[YAMLRoot]] = None) -> list[YAMLRoot]:
+    def load_all(self, target_class: str | type[YAMLRoot] = None) -> list[YAMLRoot]:
         if target_class is None:
             target_class_name = infer_root_class(self.schemaview)
             target_class = self.native_module.__dict__[target_class_name]
@@ -191,7 +191,7 @@ class SQLStore:
                 return nu_typ
         raise ValueError(f"Could not find: {typ}")
 
-    def to_sqla(self, obj: Union[YAMLRoot, list]) -> Any:
+    def to_sqla(self, obj: YAMLRoot | list) -> Any:
         """
         Translate native LinkML object to SQLAlchemy declarative module
 
@@ -236,7 +236,7 @@ class SQLStore:
         else:
             return obj
 
-    def from_sqla(self, obj: Any) -> Optional[Union[YAMLRoot, list[YAMLRoot]]]:
+    def from_sqla(self, obj: Any) -> YAMLRoot | list[YAMLRoot] | None:
         """
         Translate from SQLAlchemy declarative module to native LinkML
 

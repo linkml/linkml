@@ -1,5 +1,4 @@
 import json
-from typing import Optional, Union
 
 from hbreader import hbread
 from pydantic import BaseModel
@@ -13,7 +12,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 
 class RDFDumper(Dumper):
     def as_rdf_graph(
-        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE, namespaces: CONTEXT_TYPE = None
+        self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE, namespaces: CONTEXT_TYPE = None
     ) -> Graph:
         """
         Convert element into an RDF graph guided by the context(s) in contexts
@@ -68,7 +67,7 @@ class RDFDumper(Dumper):
 
     def dump(
         self,
-        element: Union[BaseModel, YAMLRoot],
+        element: BaseModel | YAMLRoot,
         to_file: str,
         contexts: CONTEXTS_PARAM_TYPE = None,
         fmt: str = "turtle",
@@ -91,7 +90,7 @@ class RDFDumper(Dumper):
         super().dump(element, to_file, contexts=contexts, fmt=fmt)
 
     def dumps(
-        self, element: Union[BaseModel, YAMLRoot], contexts: CONTEXTS_PARAM_TYPE = None, fmt: Optional[str] = "turtle"
+        self, element: BaseModel | YAMLRoot, contexts: CONTEXTS_PARAM_TYPE = None, fmt: str | None = "turtle"
     ) -> str:
         """
         Convert element into an RDF graph guided by the context(s) in contexts

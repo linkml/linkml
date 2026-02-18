@@ -3,7 +3,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Note: The underlying types are a union of any built-in python datatype + any type defined in
 #       linkml-runtime/utils/metamodelcore.py
 # Note the keys are all lower case
-json_schema_types: dict[str, tuple[str, Optional[str]]] = {
+json_schema_types: dict[str, tuple[str, str | None]] = {
     "int": ("integer", None),
     "integer": ("integer", None),
     "bool": ("boolean", None),
@@ -70,7 +70,7 @@ class JsonSchema(dict):
             identifier_name = self._lax_forward_refs.pop(canonical_name)
             self.add_lax_def(canonical_name, identifier_name)
 
-    def add_lax_def(self, names: Union[str, list[str]], identifier_name: str) -> None:
+    def add_lax_def(self, names: str | list[str], identifier_name: str) -> None:
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         # Maps e.g. Person --> Person__identifier_optional
@@ -148,7 +148,7 @@ class JsonSchema(dict):
         return json.dumps(self, **kwargs)
 
     @classmethod
-    def ref_for(cls, class_name: Union[str, list[str]], identifier_optional: bool = False, required: bool = True):
+    def ref_for(cls, class_name: str | list[str], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
             def_name = class_name if cls.PRESERVE_NAMES else camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
@@ -241,16 +241,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     materialize_patterns: bool = False
 
     # @deprecated("Use top_class")
-    topClass: Optional[str] = None
+    topClass: str | None = None
 
-    not_closed: Optional[bool] = True
+    not_closed: bool | None = True
     """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
     indent: int = 4
 
     inline: bool = False
 
-    top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
+    top_class: ClassDefinitionName | str | None = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
     include_range_class_descendants: bool = False
@@ -404,7 +404,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
-    ) -> Union[None, JsonSchema]:
+    ) -> None | JsonSchema:
         if not cls:
             return None
 
@@ -478,8 +478,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         self.top_level_schema.add_def(enum.name, enum_schema)
 
     def get_type_info_for_slot_subschema(
-        self, slot: Union[SlotDefinition, AnonymousSlotExpression]
-    ) -> tuple[str, str, Union[str, list[str]]]:
+        self, slot: SlotDefinition | AnonymousSlotExpression
+    ) -> tuple[str, str, str | list[str]]:
         # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         typ = None
         # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
@@ -515,7 +515,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         return (typ, fmt, reference)
 
-    def get_value_constraints_for_slot(self, slot: Union[SlotDefinition, AnonymousSlotExpression, None]) -> JsonSchema:
+    def get_value_constraints_for_slot(self, slot: SlotDefinition | AnonymousSlotExpression | None) -> JsonSchema:
         if slot is None:
             return JsonSchema()
 
@@ -544,7 +544,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return constraints
 
     def get_subschema_for_slot(
-        self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False, include_null: bool = True
+        self, slot: SlotDefinition | AnonymousSlotExpression, omit_type: bool = False, include_null: bool = True
     ) -> JsonSchema:
         """
         Args:
