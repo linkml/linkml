@@ -81,6 +81,3 @@ PREFIX qudt: <http://qudt.org/schema/qudt/>
        rdf:type [ qudt:Unit ] ?
     )
 }
-
-
-

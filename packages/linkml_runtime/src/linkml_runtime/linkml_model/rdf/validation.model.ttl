@@ -311,6 +311,3 @@
             linkml:name "objectidentifier" ;
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/ns/shex#iri" ] .
-
-
-

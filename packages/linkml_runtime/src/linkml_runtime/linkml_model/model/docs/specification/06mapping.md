@@ -140,10 +140,10 @@ Two RDF translations can be specified:
 - Translation via JSON-LD, which combines
     1. Translation of a LinkML **SchemaDefinition** to a **JSON-LD Context**
     2. The standard translation of LinkML instances to JSON
-   
+
 Both translations make use of the **prefixes** provided in the schema
 
-The semantic content of both is equivalent. 
+The semantic content of both is equivalent.
 
 ### Mapping of CURIEs to URIs
 
@@ -176,7 +176,7 @@ The following three functions are used when mapping LinkML instances to RDF:
 
 ### Direct Translation of instance graphs to RDF
 
-A translation **Tr**<sub>R</sub> operates on an instance `i`, which is matched against the first column here, generating triples in the second column, and returning the value in the final column. 
+A translation **Tr**<sub>R</sub> operates on an instance `i`, which is matched against the first column here, generating triples in the second column, and returning the value in the final column.
 
 | *i*                                         | Triples                                        | Returns            |
 |---------------------------------------------|------------------------------------------------|--------------------|

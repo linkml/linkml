@@ -247,6 +247,3 @@
             linkml:repr "str" ;
             linkml:uri "https://w3id.org/linkml/DateOrDatetime" ] ;
     linkml:version "2.0.0" .
-
-
-

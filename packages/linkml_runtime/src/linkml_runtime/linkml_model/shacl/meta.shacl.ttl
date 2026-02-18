@@ -1761,7 +1761,7 @@ linkml:DimensionExpression a sh:NodeShape ;
 
 linkml:ExtraSlotsExpression a sh:NodeShape ;
     rdfs:comment """An expression that defines how to handle additional data in an instance of class
-beyond the slots/attributes defined for that class. 
+beyond the slots/attributes defined for that class.
 See `extra_slots` for usage examples.
 """ ;
     sh:closed true ;
@@ -5125,8 +5125,8 @@ Note that this does *not* define the constraints that are placed on additional s
 
 Possible values:
 - `allowed: true` - allow all additional data
-- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - 
-  forbid all additional data (default) 
+- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -
+  forbid all additional data (default)
 - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
 """ ;
             sh:maxCount 1 ;
@@ -7216,4 +7216,3 @@ linkml:Extension a sh:NodeShape ;
             sh:order 0 ;
             sh:path linkml:extension_tag ] ;
     sh:targetClass linkml:Extension .
-

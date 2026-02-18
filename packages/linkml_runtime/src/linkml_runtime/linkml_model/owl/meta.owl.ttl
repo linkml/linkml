@@ -293,7 +293,7 @@ linkml:ExtraSlotsExpression a owl:Class,
             owl:onProperty linkml:range_expression ],
         linkml:Expression ;
     skos:definition """An expression that defines how to handle additional data in an instance of class
-beyond the slots/attributes defined for that class. 
+beyond the slots/attributes defined for that class.
 See `extra_slots` for usage examples.
 """ ;
     skos:inScheme linkml:meta .
@@ -1371,8 +1371,8 @@ Note that this does *not* define the constraints that are placed on additional s
 
 Possible values:
 - `allowed: true` - allow all additional data
-- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - 
-  forbid all additional data (default) 
+- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -
+  forbid all additional data (default)
 - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
 """ ;
     skos:inScheme linkml:meta .
@@ -5153,4 +5153,3 @@ linkml:SlotDefinition a owl:Class,
     skos:definition "an element that describes how instances are related to other instances" ;
     skos:inScheme linkml:meta ;
     sh:order 3 .
-

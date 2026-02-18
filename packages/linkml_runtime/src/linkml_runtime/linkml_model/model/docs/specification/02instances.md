@@ -16,7 +16,7 @@ We also include UML-style diagrams for informative purposes.
 An instance is a tree-like structure conforming to either one of four *definition* types, or a *collection*, or the special token `None`. The four definition types are subdivided into instances of classes (aka objects), or atomic instances:
 
 > **Instance** := **None** | **InstanceOfClass** | **AtomicInstance** | **CollectionInstance**
- 
+
 > **AtomicInstance** := **InstanceOfType** | **InstanceOfEnum** | **InstanceOfReference**
 
 ```mermaid
@@ -28,7 +28,7 @@ classDiagram
     AtomicInstance <|-- InstanceOfEnum
     Instance <|-- CollectionInstance
     Instance <-- None
-    
+
 ```
 
 ### Definition Types and Names
@@ -89,15 +89,15 @@ Here the **ClassDefinitionName** is `Person`, and the **SlotDefinitionName**s ar
 
 There are 3 types of primitive (aka atomic aka scalar) instances, each is a pair consisting of (1) a *Name* of the element instantiated (2) an atomic value. Different syntaxes are used to unambiguously distinguish the different types of primitive instances.
 
-> **InstanceOfType** := **TypeDefinitionName** '^' **AtomicValue** 
+> **InstanceOfType** := **TypeDefinitionName** '^' **AtomicValue**
 
 > **InstanceOfEnum** := **EnumDefinitionName** '[' **PermissibleValue** ']'
-> 
+>
 > **PermissibleValue** := **AtomicValue**
 
-> **InstanceOfReference** := **ClassDefinitionName** '&' **ObjectReference** 
-> 
-> **ObjectReference** := **AtomicValue** 
+> **InstanceOfReference** := **ClassDefinitionName** '&' **ObjectReference**
+>
+> **ObjectReference** := **AtomicValue**
 
 ```mermaid
 classDiagram
@@ -140,7 +140,7 @@ An atomic value is either a string or number or boolean, where numbers can be fl
 
 > **Exponent** ::= ('e' | 'E') ['+' | '-'] **Digits**
 
-> **DecimalValue** ::= ['+' | '-'] **Digits** '.' **Digits** 
+> **DecimalValue** ::= ['+' | '-'] **Digits** '.' **Digits**
 
 > **IntegerValue** ::= ['+' | '-'] **Digits**
 
@@ -178,7 +178,7 @@ In this example, the **TypeDefinitionName** is `Integer`, and the **AtomicValue*
 
 Note that this is necessarily a syntactically valid Instance according to this part of the specification. Part 6 describes schema-level validation, and for this to be valid according to a schema, that schema must (a) provide a TypeDefinition with the name "Integer" (b) map this to an XSD number type (presumably, xsd:integer).
 
-Note that the following is *syntactically valid*: 
+Note that the following is *syntactically valid*:
 
 ```python
 Integer^"ABC"
@@ -261,7 +261,7 @@ Person(
       related_to=Person&"SSN:456"
     )
   ]
-)                
+)
 ```
 
 ## Identity conditions
@@ -289,7 +289,7 @@ if
   all(a_i in Assignments_i if any(a_j in Assignments_j if a_i == a_j)) and
   all(a_j in Assignments_j if any(a_i in Assignments_i if a_i == a_j))
 then
-  i == j   
+  i == j
 ```
 
 Two slot value assignments are identical if either (1) either is None (b) slot and value match
@@ -297,7 +297,7 @@ Two slot value assignments are identical if either (1) either is None (b) slot a
 Assignment identity conditions:
 
 ```
-if 
+if
   a_i == <SlotName>=<Value_i> and a_j == <SlotName>=<Value_j> and Value_i == Value_j
 then
   a_i == a_j
