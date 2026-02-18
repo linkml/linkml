@@ -222,4 +222,28 @@ class GolangModule(GolangTemplateModel):
 
     @computed_field
     def struct_names(self) -> list[str]:
+        """All non-alias struct names."""
         return [s.name for s in self.structs.values() if not getattr(s, "is_type_alias", False)]
+
+    @computed_field
+    def root_struct_names(self) -> list[str]:
+        """Struct names that are never used as a field type in any other struct.
+
+        A "root class" is one that only appears at the top level of a document,
+        i.e. it is never referenced as the type of a field (directly, as a
+        pointer, or as a slice element) in any struct.
+        """
+        # Collect every struct name that appears as a field type somewhere
+        referenced: set[str] = set()
+        for struct in self.structs.values():
+            if not struct.fields:
+                continue
+            for field in struct.fields.values():
+                # Strip slice prefix ``[]`` and pointer prefix ``*``
+                base = field.type.lstrip("*")
+                if base.startswith("[]"):
+                    base = base[2:].lstrip("*")
+                if base in self.structs:
+                    referenced.add(base)
+
+        return [name for name in self.struct_names if name not in referenced]
