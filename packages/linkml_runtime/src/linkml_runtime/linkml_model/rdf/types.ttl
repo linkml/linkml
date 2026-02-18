@@ -140,3 +140,6 @@
             linkml:repr "str" ;
             linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ] ;
     linkml:version "2.0.0" .
+
+
+

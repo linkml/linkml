@@ -5465,6 +5465,13 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
+      "annotations": [
+        {
+          "tag": "simple_dict_value",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
@@ -8778,7 +8785,7 @@
   "source_file": "meta.yaml",
   "source_file_date": "2026-01-15T18:51:07",
   "source_file_size": 99810,
-  "generation_date": "2026-02-17T18:49:41",
+  "generation_date": "2026-02-18T21:04:59",
   "@type": "SchemaDefinition",
   "@context": [
     "staging/jsonld/meta.context.jsonld",
