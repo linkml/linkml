@@ -1,11 +1,11 @@
 {% if is_type_alias %}
 {% if description %}
-// {{ description }}
+{{ description | go_comment }}
 {% endif -%}
 type {{ name }} = {{ type_alias_value }}
 {% else %}
 {% if description %}
-// {{ description }}
+{{ description | go_comment }}
 {% endif -%}
 type {{ name }} struct {
 {% if embedded_structs %}

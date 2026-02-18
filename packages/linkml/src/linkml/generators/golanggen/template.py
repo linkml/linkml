@@ -41,6 +41,9 @@ class GolangTemplateModel(TemplateModel):
         trim_blocks=True,
         lstrip_blocks=True,
     )
+    _environment.filters["go_comment"] = lambda text, indent="": (
+        "\n".join(f"{indent}// {line}" if line.strip() else f"{indent}//" for line in text.splitlines())
+    )
 
     meta_exclude: ClassVar[list[str]] = None
 

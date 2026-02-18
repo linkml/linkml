@@ -311,6 +311,81 @@ def test_comments_from_descriptions():
     assert "// A human being" in code
 
 
+MULTILINE_DESCRIPTION_SCHEMA = """
+id: https://example.org/multiline
+name: multiline_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+enums:
+  Priority:
+    description: |
+      Task priority levels.
+      Use HIGH sparingly.
+    permissible_values:
+      LOW:
+        description: |
+          Low priority.
+          Can be deferred.
+      HIGH:
+
+classes:
+  Task:
+    description: |
+      A task to complete.
+      This spans multiple lines.
+    slots:
+      - title
+      - note
+
+slots:
+  title:
+    range: string
+    required: true
+    identifier: true
+  note:
+    range: string
+    description: |
+      An optional note.
+      May contain details.
+"""
+
+
+@pytest.mark.parametrize(
+    "fragment",
+    [
+        # struct description: every line prefixed with //
+        "// A task to complete.\n// This spans multiple lines.",
+        # field description (indented)
+        "\t// An optional note.\n\t// May contain details.",
+        # enum type description
+        "// Task priority levels.\n// Use HIGH sparingly.",
+        # enum value description (indented)
+        "\t// Low priority.\n\t// Can be deferred.",
+    ],
+    ids=[
+        "struct_multiline",
+        "field_multiline",
+        "enum_type_multiline",
+        "enum_value_multiline",
+    ],
+)
+def test_multiline_descriptions_go_comment(fragment):
+    """Test that multi-line descriptions are rendered with // on every line."""
+    code = GolangGenerator(schema=MULTILINE_DESCRIPTION_SCHEMA).serialize()
+    assert fragment in code, f"Expected {fragment!r} in generated code"
+
+
+def test_single_line_description_unchanged():
+    """Test that single-line descriptions still render correctly."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA).serialize()
+    assert "// A human being" in code
+
+
 def test_package_name_derived():
     """Test that the package name is derived from the schema name."""
     module = GolangGenerator(schema=SIMPLE_SCHEMA).render()

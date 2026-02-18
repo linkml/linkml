@@ -1,9 +1,9 @@
-{% if description %}// {{ description }}
+{% if description %}{{ description | go_comment }}
 {% endif %}type {{ name }} {{ type }}
 
 const (
 {% for val in values.values() %}
-{% if val.description %}	// {{ val.description }}
+{% if val.description %}{{ val.description | go_comment("\t") }}
 {% endif %}	{{ val.name }} {{ name }} = {% if type == "string" %}"{{ val.value }}"{% else %}{{ val.value }}{% endif %}
 
 {% endfor %})
