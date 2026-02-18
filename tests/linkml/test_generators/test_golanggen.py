@@ -369,6 +369,141 @@ def test_root_struct_names_no_references():
     assert "Person" in module.root_struct_names
 
 
+def test_default_value_for_type():
+    """Test Go zero-value defaults for various types."""
+    gen = GolangGenerator(schema=SIMPLE_SCHEMA)
+    assert gen.default_value_for_type("string") == '""'
+    assert gen.default_value_for_type("int") == "0"
+    assert gen.default_value_for_type("bool") == "false"
+    assert gen.default_value_for_type("float64") == "0.0"
+    assert gen.default_value_for_type("time.Time") == "time.Time{}"
+    assert gen.default_value_for_type("SomeStruct") == "nil"
+
+
+def test_serialize_with_prerendered_module():
+    """Test serialize() when given a pre-rendered module."""
+    gen = GolangGenerator(schema=SIMPLE_SCHEMA)
+    module = gen.render()
+    code = gen.serialize(rendered_module=module)
+    assert "package simple" in code
+    assert "type Person struct" in code
+
+
+def test_enum_field_type_in_struct():
+    """Test that enum-typed fields use the enum name as Go type."""
+    module = GolangGenerator(schema=ENUM_SCHEMA).render()
+    widget = module.structs["Widget"]
+    assert widget.fields["color"].type == "Color"
+    assert widget.fields["status"].type == "Status"
+
+
+def test_package_name_no_underscore():
+    """Test package name derivation when schema name has no underscore."""
+    schema = """
+id: https://example.org/myschema
+name: myschema
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Foo:
+    slots:
+      - bar
+slots:
+  bar:
+    range: string
+"""
+    module = GolangGenerator(schema=schema).render()
+    assert module.package_name == "myschema"
+
+
+def test_cli_happy_path(tmp_path):
+    """Test the CLI generates output successfully."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_file)])
+    assert result.exit_code == 0
+    assert "package simple" in result.output
+    assert "type Person struct" in result.output
+
+
+def test_cli_with_package_name(tmp_path):
+    """Test CLI --package-name flag."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_file), "--package-name", "mypkg"])
+    assert result.exit_code == 0
+    assert "package mypkg" in result.output
+
+
+def test_cli_with_template_dir(tmp_path):
+    """Test CLI --template-dir flag with a valid directory."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+
+    template_dir = tmp_path / "templates"
+    template_dir.mkdir()
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_file), "--template-dir", str(template_dir)])
+    assert result.exit_code == 0
+    assert "package simple" in result.output
+
+
+def test_import_model():
+    """Test Import template model rendering."""
+    from linkml.generators.golanggen.template import Import
+
+    imp = Import(module="fmt")
+    assert imp.group == "stdlib"
+    rendered = imp.render()
+    assert '"fmt"' in rendered
+
+    imp_ext = Import(module="github.com/example/pkg")
+    assert imp_ext.group == "thirdparty"
+
+    imp_alias = Import(module="github.com/example/pkg", alias="mypkg")
+    rendered_alias = imp_alias.render()
+    assert "mypkg" in rendered_alias
+
+
+def test_imports_sort():
+    """Test that imports are sorted by group then alphabetically."""
+    from linkml.generators.golanggen.template import Import, Imports
+
+    imports = Imports(
+        imports=[
+            Import(module="github.com/example/z"),
+            Import(module="fmt"),
+            Import(module="github.com/example/a"),
+            Import(module="time"),
+        ]
+    )
+    imports.sort()
+    modules = [i.module for i in imports.imports]
+    assert modules == ["fmt", "time", "github.com/example/a", "github.com/example/z"]
+
+
 def test_backwards_compatibility():
     """Test that the generator is importable from both locations."""
     from linkml.generators.golanggen import GolangGenerator as NewGen
