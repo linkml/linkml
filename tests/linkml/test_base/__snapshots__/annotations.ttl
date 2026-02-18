@@ -1,298 +1,230 @@
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix pav: <http://purl.org/pav/> .
-@prefix schema1: <http://schema.org/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix shex: <http://www.w3.org/ns/shex#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 linkml:boolean a linkml:TypeDefinition ;
-    skos:definition "A binary (true or false) value" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
-    skos:exactMatch schema1:Boolean ;
-    skos:inScheme linkml:types ;
+    skos:exactMatch "schema:Boolean"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "Bool" ;
-    linkml:definition_uri linkml:Boolean ;
+    linkml:definition_uri "https://w3id.org/linkml/Boolean"^^xsd:anyURI ;
+    linkml:description "A binary (true or false) value" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "bool" ;
-    linkml:uri xsd:boolean .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI .
 
 linkml:curie a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.w3.org/TR/curie/" ;
-    skos:definition "a compact URI" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     skos:note "in RDF serializations this MUST be expanded to a URI",
         "in non-RDF serializations MAY be serialized as the compact representation" ;
     linkml:base "Curie" ;
-    linkml:definition_uri linkml:Curie ;
+    linkml:definition_uri "https://w3id.org/linkml/Curie"^^xsd:anyURI ;
+    linkml:description "a compact URI" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:string .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
 
 linkml:date a linkml:TypeDefinition ;
-    skos:definition "a date (year, month and day) in an idealized calendar" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
         "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-    skos:exactMatch schema1:Date ;
-    skos:inScheme linkml:types ;
+    skos:exactMatch "schema:Date"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "XSDDate" ;
-    linkml:definition_uri linkml:Date ;
+    linkml:definition_uri "https://w3id.org/linkml/Date"^^xsd:anyURI ;
+    linkml:description "a date (year, month and day) in an idealized calendar" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:date .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#date"^^xsd:anyURI .
 
 linkml:date_or_datetime a linkml:TypeDefinition ;
-    skos:definition "Either a date or a datetime" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "str" ;
-    linkml:definition_uri linkml:DateOrDatetime ;
+    linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI ;
+    linkml:description "Either a date or a datetime" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri linkml:DateOrDatetime .
+    linkml:uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI .
 
 linkml:datetime a linkml:TypeDefinition ;
-    skos:definition "The combination of a date and time" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
-    skos:exactMatch schema1:DateTime ;
-    skos:inScheme linkml:types ;
+    skos:exactMatch "schema:DateTime"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "XSDDateTime" ;
-    linkml:definition_uri linkml:Datetime ;
+    linkml:definition_uri "https://w3id.org/linkml/Datetime"^^xsd:anyURI ;
+    linkml:description "The combination of a date and time" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:dateTime .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime"^^xsd:anyURI .
 
 linkml:decimal a linkml:TypeDefinition ;
-    skos:broadMatch schema1:Number ;
-    skos:definition "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    skos:broadMatch "schema:Number"^^xsd:anyURI ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "Decimal" ;
-    linkml:definition_uri linkml:Decimal ;
+    linkml:definition_uri "https://w3id.org/linkml/Decimal"^^xsd:anyURI ;
+    linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
     linkml:imported_from "linkml:types" ;
-    linkml:uri xsd:decimal .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#decimal"^^xsd:anyURI .
 
 linkml:double a linkml:TypeDefinition ;
-    skos:closeMatch schema1:Float ;
-    skos:definition "A real number that conforms to the xsd:double specification" ;
+    skos:closeMatch "schema:Float"^^xsd:anyURI ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "float" ;
-    linkml:definition_uri linkml:Double ;
+    linkml:definition_uri "https://w3id.org/linkml/Double"^^xsd:anyURI ;
+    linkml:description "A real number that conforms to the xsd:double specification" ;
     linkml:imported_from "linkml:types" ;
-    linkml:uri xsd:double .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI .
 
 linkml:float a linkml:TypeDefinition ;
-    skos:definition "A real number that conforms to the xsd:float specification" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
-    skos:exactMatch schema1:Float ;
-    skos:inScheme linkml:types ;
+    skos:exactMatch "schema:Float"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "float" ;
-    linkml:definition_uri linkml:Float ;
+    linkml:definition_uri "https://w3id.org/linkml/Float"^^xsd:anyURI ;
+    linkml:description "A real number that conforms to the xsd:float specification" ;
     linkml:imported_from "linkml:types" ;
-    linkml:uri xsd:float .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#float"^^xsd:anyURI .
 
 linkml:integer a linkml:TypeDefinition ;
-    skos:definition "An integer" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
-    skos:exactMatch schema1:Integer ;
-    skos:inScheme linkml:types ;
+    skos:exactMatch "schema:Integer"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "int" ;
-    linkml:definition_uri linkml:Integer ;
+    linkml:definition_uri "https://w3id.org/linkml/Integer"^^xsd:anyURI ;
+    linkml:description "An integer" ;
     linkml:imported_from "linkml:types" ;
-    linkml:uri xsd:integer .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI .
 
 linkml:jsonpath a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" ;
-    skos:definition "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "str" ;
-    linkml:definition_uri linkml:Jsonpath ;
+    linkml:definition_uri "https://w3id.org/linkml/Jsonpath"^^xsd:anyURI ;
+    linkml:description "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:string .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
 
 linkml:jsonpointer a linkml:TypeDefinition ;
     dcterms:conformsTo "https://datatracker.ietf.org/doc/html/rfc6901" ;
-    skos:definition "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "str" ;
-    linkml:definition_uri linkml:Jsonpointer ;
+    linkml:definition_uri "https://w3id.org/linkml/Jsonpointer"^^xsd:anyURI ;
+    linkml:description "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:string .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
 
 linkml:ncname a linkml:TypeDefinition ;
-    skos:definition "Prefix part of CURIE" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "NCName" ;
-    linkml:definition_uri linkml:Ncname ;
+    linkml:definition_uri "https://w3id.org/linkml/Ncname"^^xsd:anyURI ;
+    linkml:description "Prefix part of CURIE" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:string .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
 
 linkml:nodeidentifier a linkml:TypeDefinition ;
-    skos:definition "A URI, CURIE or BNODE that represents a node in a model." ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "NodeIdentifier" ;
-    linkml:definition_uri linkml:Nodeidentifier ;
+    linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier"^^xsd:anyURI ;
+    linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri shex:nonLiteral .
+    linkml:uri "http://www.w3.org/ns/shex#nonLiteral"^^xsd:anyURI .
 
 linkml:objectidentifier a linkml:TypeDefinition ;
-    skos:definition "A URI or CURIE that represents an object in the model." ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     skos:note "Used for inheritance and type checking" ;
     linkml:base "ElementIdentifier" ;
-    linkml:definition_uri linkml:Objectidentifier ;
+    linkml:definition_uri "https://w3id.org/linkml/Objectidentifier"^^xsd:anyURI ;
+    linkml:description "A URI or CURIE that represents an object in the model." ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri shex:iri .
+    linkml:uri "http://www.w3.org/ns/shex#iri"^^xsd:anyURI .
 
 linkml:sparqlpath a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.w3.org/TR/sparql11-query/#propertypaths" ;
-    skos:definition "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "str" ;
-    linkml:definition_uri linkml:Sparqlpath ;
+    linkml:definition_uri "https://w3id.org/linkml/Sparqlpath"^^xsd:anyURI ;
+    linkml:description "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:string .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
 
 linkml:time a linkml:TypeDefinition ;
-    skos:definition "A time object represents a (local) time of day, independent of any particular day" ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
         "URI is dateTime because OWL reasoners do not work with straight date or time" ;
-    skos:exactMatch schema1:Time ;
-    skos:inScheme linkml:types ;
+    skos:exactMatch "schema:Time"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "XSDTime" ;
-    linkml:definition_uri linkml:Time ;
+    linkml:definition_uri "https://w3id.org/linkml/Time"^^xsd:anyURI ;
+    linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:time .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#time"^^xsd:anyURI .
 
 linkml:uri a linkml:TypeDefinition ;
     dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
-    skos:closeMatch schema1:URL ;
-    skos:definition "a complete URI" ;
+    skos:closeMatch "schema:URL"^^xsd:anyURI ;
     skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
-    skos:inScheme linkml:types ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     skos:note "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" ;
     linkml:base "URI" ;
-    linkml:definition_uri linkml:Uri ;
+    linkml:definition_uri "https://w3id.org/linkml/Uri"^^xsd:anyURI ;
+    linkml:description "a complete URI" ;
     linkml:imported_from "linkml:types" ;
     linkml:repr "str" ;
-    linkml:uri xsd:anyURI .
-
-linkml:string a linkml:TypeDefinition ;
-    skos:definition "A character string" ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
-    skos:exactMatch schema1:Text ;
-    skos:inScheme linkml:types ;
-    linkml:base "str" ;
-    linkml:definition_uri linkml:String ;
-    linkml:imported_from "linkml:types" ;
-    linkml:uri xsd:string .
-
-linkml:uriorcurie a linkml:TypeDefinition ;
-    skos:definition "a URI or a CURIE" ;
-    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
-    skos:inScheme linkml:types ;
-    linkml:base "URIorCURIE" ;
-    linkml:definition_uri linkml:Uriorcurie ;
-    linkml:imported_from "linkml:types" ;
-    linkml:repr "str" ;
-    linkml:uri xsd:anyURI .
+    linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
 
 linkml:AnyValue a linkml:ClassDefinition ;
-    skos:inScheme linkml:extensions ;
-    skos:mappingRelation linkml:Any ;
-    linkml:class_uri linkml:Any ;
-    linkml:definition_uri linkml:AnyValue ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    skos:mappingRelation "linkml:Any"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
     linkml:imported_from "linkml:extensions" ;
     linkml:slot_usage [ ] .
 
-linkml:extension_tag a linkml:SlotDefinition ;
-    skos:definition "a tag associated with an extension" ;
-    skos:inScheme linkml:extensions ;
-    skos:prefLabel "tag" ;
-    linkml:definition_uri linkml:extension_tag ;
-    linkml:domain linkml:Extension ;
-    linkml:domain_of linkml:Extension ;
-    linkml:imported_from "linkml:extensions" ;
-    linkml:key true ;
-    linkml:owner linkml:Extension ;
-    linkml:range linkml:uriorcurie ;
-    linkml:required true ;
-    linkml:slot_uri linkml:tag .
+linkml:string a linkml:TypeDefinition ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:exactMatch "schema:Text"^^xsd:anyURI ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "str" ;
+    linkml:definition_uri "https://w3id.org/linkml/String"^^xsd:anyURI ;
+    linkml:description "A character string" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
 
-linkml:extension_value a linkml:SlotDefinition ;
-    skos:definition "the actual annotation" ;
-    skos:inScheme linkml:extensions ;
-    skos:prefLabel "value" ;
-    linkml:annotations [ a linkml:Annotation ;
-            skos:example true ;
-            linkml:tag linkml:simple_dict_value ] ;
-    linkml:definition_uri linkml:extension_value ;
-    linkml:domain linkml:Extension ;
-    linkml:domain_of linkml:Extension ;
-    linkml:imported_from "linkml:extensions" ;
-    linkml:inlined true ;
-    linkml:inlined_as_list true ;
-    linkml:owner linkml:Extension ;
-    linkml:range linkml:AnyValue ;
-    linkml:required true ;
-    linkml:slot_uri linkml:value .
-
-linkml:Annotatable a linkml:ClassDefinition ;
-    skos:definition "mixin for classes that support annotations" ;
-    skos:inScheme linkml:annotations ;
-    linkml:class_uri linkml:Annotatable ;
-    linkml:definition_uri linkml:Annotatable ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:annotations .
-
-linkml:Extensible a linkml:ClassDefinition ;
-    skos:definition "mixin for classes that support extension" ;
-    skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extensible ;
-    linkml:definition_uri linkml:Extensible ;
-    linkml:imported_from "linkml:extensions" ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:extensions .
-
-linkml:Annotation a linkml:ClassDefinition ;
-    skos:definition "a tag/value pair with the semantics of OWL Annotation" ;
-    skos:inScheme linkml:annotations ;
-    linkml:class_uri linkml:Annotation ;
-    linkml:definition_uri linkml:Annotation ;
-    linkml:is_a linkml:Extension ;
-    linkml:mixins linkml:Annotatable ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:annotations,
-        linkml:extension_tag,
-        linkml:extension_value,
-        linkml:extensions .
+linkml:uriorcurie a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "URIorCURIE" ;
+    linkml:definition_uri "https://w3id.org/linkml/Uriorcurie"^^xsd:anyURI ;
+    linkml:description "a URI or a CURIE" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
 
 linkml:annotations a linkml:SchemaDefinition,
         linkml:SlotDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     pav:version "2.0.0" ;
-    skos:definition "Annotations mixin",
-        "a collection of tag/text tuples with the semantics of OWL Annotation" ;
-    skos:inScheme linkml:annotations ;
-    sh:declare [ sh:namespace linkml: ;
+    skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    sh:declare [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
             sh:prefix "linkml" ] ;
     linkml:classes linkml:Annotatable,
         linkml:Annotation,
@@ -301,22 +233,24 @@ linkml:annotations a linkml:SchemaDefinition,
         linkml:Extension ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;
-    linkml:definition_uri linkml:annotations ;
+    linkml:definition_uri "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:description "Annotations mixin",
+        "a collection of tag/text tuples with the semantics of OWL Annotation" ;
     linkml:domain linkml:Annotatable ;
     linkml:domain_of linkml:Annotatable,
         linkml:Annotation ;
     linkml:emit_prefixes "linkml" ;
     linkml:generation_date "2000-01-01T00:00:00"^^xsd:dateTime ;
-    linkml:id linkml:annotations ;
-    linkml:imports linkml:extensions,
-        linkml:types ;
+    linkml:id "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:imports "linkml:extensions"^^xsd:anyURI,
+        "linkml:types"^^xsd:anyURI ;
     linkml:inlined true ;
     linkml:is_a linkml:extensions ;
     linkml:metamodel_version "1.7.0" ;
     linkml:multivalued true ;
     linkml:owner linkml:Annotation ;
     linkml:range linkml:Annotation ;
-    linkml:slot_uri linkml:annotations ;
+    linkml:slot_uri "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
     linkml:slots linkml:annotations,
         linkml:extension_tag,
         linkml:extension_value,
@@ -344,21 +278,71 @@ linkml:annotations a linkml:SchemaDefinition,
         linkml:uri,
         linkml:uriorcurie .
 
-linkml:Extension a linkml:ClassDefinition ;
-    skos:definition "a tag/value pair used to add non-model information to an entry" ;
-    skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extension ;
-    linkml:definition_uri linkml:Extension ;
+linkml:extension_tag a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    skos:prefLabel "tag" ;
+    linkml:definition_uri "https://w3id.org/linkml/extension_tag"^^xsd:anyURI ;
+    linkml:description "a tag associated with an extension" ;
+    linkml:domain linkml:Extension ;
+    linkml:domain_of linkml:Extension ;
     linkml:imported_from "linkml:extensions" ;
+    linkml:key true ;
+    linkml:owner linkml:Extension ;
+    linkml:range linkml:uriorcurie ;
+    linkml:required true ;
+    linkml:slot_uri "https://w3id.org/linkml/tag"^^xsd:anyURI .
+
+linkml:extension_value a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    skos:prefLabel "value" ;
+    linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
+    linkml:description "the actual annotation" ;
+    linkml:domain linkml:Extension ;
+    linkml:domain_of linkml:Extension ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:inlined true ;
+    linkml:inlined_as_list true ;
+    linkml:owner linkml:Extension ;
+    linkml:range linkml:AnyValue ;
+    linkml:required true ;
+    linkml:slot_uri "https://w3id.org/linkml/value"^^xsd:anyURI .
+
+linkml:Annotatable a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
+    linkml:description "mixin for classes that support annotations" ;
+    linkml:mixin true ;
     linkml:slot_usage [ ] ;
-    linkml:slots linkml:extension_tag,
+    linkml:slots linkml:annotations .
+
+linkml:Annotation a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
+    linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
+    linkml:is_a linkml:Extension ;
+    linkml:mixins linkml:Annotatable ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:annotations,
+        linkml:extension_tag,
         linkml:extension_value,
         linkml:extensions .
 
+linkml:Extensible a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:description "mixin for classes that support extension" ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extensions .
+
 linkml:extensions a linkml:SlotDefinition ;
-    skos:definition "a tag/text tuple attached to an arbitrary element" ;
-    skos:inScheme linkml:extensions ;
-    linkml:definition_uri linkml:extensions ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:description "a tag/text tuple attached to an arbitrary element" ;
     linkml:domain linkml:Extensible ;
     linkml:domain_of linkml:Extensible,
         linkml:Extension ;
@@ -367,5 +351,15 @@ linkml:extensions a linkml:SlotDefinition ;
     linkml:multivalued true ;
     linkml:owner linkml:Extensible ;
     linkml:range linkml:Extension ;
-    linkml:slot_uri linkml:extensions .
+    linkml:slot_uri "https://w3id.org/linkml/extensions"^^xsd:anyURI .
 
+linkml:Extension a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
+    linkml:description "a tag/value pair used to add non-model information to an entry" ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extension_tag,
+        linkml:extension_value,
+        linkml:extensions .
