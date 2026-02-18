@@ -2,7 +2,6 @@ import abc
 import re
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Optional
 
 from linkml.utils.generator import Generator
 from linkml_runtime.linkml_model.meta import (
@@ -57,10 +56,10 @@ class OOClass:
 
     # ObjectVars
     name: SAFE_NAME
-    description: Optional[SAFE_NAME] = None
-    is_a: Optional[SAFE_NAME] = None
-    mixin: Optional[bool] = None
-    abstract: Optional[bool] = None
+    description: SAFE_NAME | None = None
+    is_a: SAFE_NAME | None = None
+    mixin: bool | None = None
+    abstract: bool | None = None
     mixins: list[SAFE_NAME] = field(default_factory=lambda: [])
     fields: list[OOField] = field(default_factory=lambda: [])
     all_fields: list[OOField] = field(default_factory=lambda: [])
@@ -77,7 +76,7 @@ class OOEnumValue:
 
     label: str
     text: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 @dataclass
@@ -88,7 +87,7 @@ class OOEnum:
 
     name: SAFE_NAME
     values: list[OOEnumValue] = field(default_factory=lambda: [])
-    description: Optional[str] = None
+    description: str | None = None
 
 
 @dataclass

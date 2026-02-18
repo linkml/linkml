@@ -29,13 +29,12 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Healthcare Industry",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
@@ -94,7 +93,7 @@ dev = [
   "coverage >= 6.4.1",
   "tox >= 4",
   "tox-uv",
-  "myst-nb >= 1.0.0; python_version >= '3.9'",
+  "myst-nb >= 1.0.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
   "rich >= 13.7.1",
   "gql>=4.0.0",
@@ -164,7 +163,6 @@ gen-shacl = "linkml.generators.shaclgen:cli"
 gen-sparql = "linkml.generators.sparqlgen:cli"
 gen-typescript = "linkml.generators.typescriptgen:cli"
 gen-terminusdb = "linkml.generators.terminusdbgen:cli"
-gen-yuml = "linkml.generators.yumlgen:cli"
 gen-yaml = "linkml.generators.yamlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
 gen-rust = "linkml.generators.rustgen.cli:cli"
@@ -178,8 +176,6 @@ linkml-convert = "linkml.converter.cli:cli"
 linkml-lint = "linkml.linter.cli:main"
 linkml-sqldb = "linkml.utils.sqlutils:main"
 linkml-validate = "linkml.validator.cli:cli"
-linkml-jsonschema-validate = "linkml.validators.jsonschemavalidator:cli"
-linkml-sparql-validate = "linkml.validators.sparqlvalidator:cli"
 linkml-run-examples = "linkml.workspaces.example_runner:cli"
 gen-excel = "linkml.generators.excelgen:cli"
 gen-sssom = "linkml.generators.sssomgen:cli"

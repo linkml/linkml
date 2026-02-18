@@ -1,7 +1,6 @@
 import re
 from contextlib import redirect_stdout
 from io import StringIO
-from typing import Optional, Union
 
 from rdflib import RDF, Graph
 from rdflib.compare import IsomorphicGraph, graph_diff, to_isomorphic
@@ -14,7 +13,7 @@ from tests import SKIP_RDF_COMPARE, SKIP_RDF_COMPARE_REASON
 TYPE = LINKML
 
 
-def to_graph(inp: Union[Graph, str], fmt: Optional[str] = "turtle") -> Graph:
+def to_graph(inp: Graph | str, fmt: str | None = "turtle") -> Graph:
     """
     Convert inp into a graph
     :param inp: Graph, file name, url or text
@@ -44,10 +43,10 @@ def print_triples(g: Graph) -> None:
 
 
 def compare_rdf(
-    expected: Union[Graph, str],
-    actual: Union[Graph, str],
-    fmt: Optional[str] = "turtle",
-) -> Optional[str]:
+    expected: Graph | str,
+    actual: Graph | str,
+    fmt: str | None = "turtle",
+) -> str | None:
     """
     Compare expected to actual, returning a string if there is a difference
     :param expected: expected RDF. Can be Graph, file name, uri or text

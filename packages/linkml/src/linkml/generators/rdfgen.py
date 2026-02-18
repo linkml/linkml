@@ -9,7 +9,6 @@ import os
 import urllib.parse as urlparse
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 from rdflib import Graph
@@ -47,7 +46,7 @@ class RDFGenerator(Generator):
     def _data(self, g: Graph) -> str:
         return g.serialize(format="turtle" if self.format == "ttl" else self.format)
 
-    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> str:
+    def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],

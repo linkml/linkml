@@ -7,8 +7,9 @@ https://plantuml.com/
 import base64
 import os
 import zlib
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional, cast
+from typing import cast
 
 import click
 import requests
@@ -39,26 +40,26 @@ class PlantumlGenerator(Generator):
     visit_all_class_slots = False
     preserve_names: bool = False
 
-    referenced: Optional[set[ClassDefinitionName]] = None  # List of classes that have to be emitted
-    generated: Optional[set[ClassDefinitionName]] = None  # List of classes that have been emitted
-    class_generated: Optional[set[ClassDefinitionName]] = None  # Class definitions that have been emitted
-    associations_generated: Optional[set[ClassDefinitionName]] = None  # Classes with associations generated
-    focus_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be completely filled
-    gen_classes: Optional[set[ClassDefinitionName]] = None  # Classes to be generated
-    output_file_name: Optional[str] = None  # Location of output file if directory used
+    referenced: set[ClassDefinitionName] | None = None  # List of classes that have to be emitted
+    generated: set[ClassDefinitionName] | None = None  # List of classes that have been emitted
+    class_generated: set[ClassDefinitionName] | None = None  # Class definitions that have been emitted
+    associations_generated: set[ClassDefinitionName] | None = None  # Classes with associations generated
+    focus_classes: set[ClassDefinitionName] | None = None  # Classes to be completely filled
+    gen_classes: set[ClassDefinitionName] | None = None  # Classes to be generated
+    output_file_name: str | None = None  # Location of output file if directory used
 
     classes: set[ClassDefinitionName] = None
-    directory: Optional[str] = None
-    kroki_server: Optional[str] = "https://kroki.io"
+    directory: str | None = None
+    kroki_server: str | None = "https://kroki.io"
     tooltips_flag: bool = False
     dry_run: bool = False
 
     def visit_schema(
         self,
         classes: set[ClassDefinitionName] = None,
-        directory: Optional[str] = None,
+        directory: str | None = None,
         **_,
-    ) -> Optional[str]:
+    ) -> str | None:
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:

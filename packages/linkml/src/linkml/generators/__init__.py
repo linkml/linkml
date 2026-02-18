@@ -40,7 +40,6 @@ __all__ = [
     "sssomgen",
     "summarygen",
     "yamlgen",
-    "yumlgen",
     "OwlSchemaGenerator",
     "PydanticGenerator",
     "PanderaDataframeGenerator",

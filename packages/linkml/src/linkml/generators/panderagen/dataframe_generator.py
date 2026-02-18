@@ -7,7 +7,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from types import ModuleType
-from typing import Optional
 
 from jinja2 import Environment, PackageLoader
 
@@ -107,7 +106,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         jinja_env = Environment(loader=PackageLoader("linkml.generators.panderagen", template_path))
         return jinja_env.get_template(template_filename)
 
-    def serialize(self, directory: str = None, rendered_module: Optional[OODocument] = None) -> str:
+    def serialize(self, directory: str = None, rendered_module: OODocument | None = None) -> str:
         """
         Serialize the dataframe schema to a Python module as a string
         """

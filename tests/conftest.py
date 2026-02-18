@@ -2,11 +2,12 @@ import os
 import re
 import shutil
 import sys
+import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
 from pathlib import Path
-from typing import Callable, Optional, Union
 
 import docker
 import pytest
@@ -14,6 +15,7 @@ import requests_cache
 from _pytest.assertion.util import _diff_text
 
 import tests
+from linkml.utils.deprecation import EMITTED
 from linkml_runtime.linkml_model.meta import SchemaDefinition
 from tests.linkml.utils.compare_rdf import compare_rdf
 from tests.linkml.utils.dirutils import are_dir_trees_equal
@@ -58,9 +60,9 @@ class Snapshot(ABC):
 
 
 class SnapshotFile(Snapshot):
-    def __init__(self, path: Path, config: pytest.Config, *, rdf_format: Optional[str] = None) -> None:
+    def __init__(self, path: Path, config: pytest.Config, *, rdf_format: str | None = None) -> None:
         super().__init__(path, config)
-        self.rdf_format: Optional[bool] = rdf_format
+        self.rdf_format: bool | None = rdf_format
 
     def __repr__(self):
         with open(self.path, encoding="utf-8") as snapshot_file:
@@ -132,15 +134,15 @@ class SnapshotDirectory(Snapshot):
 
 
 @pytest.fixture
-def snapshot_path(request) -> Callable[[Union[str, Path]], Path]:
-    def get_path(relative_path: Union[str, Path]):
+def snapshot_path(request) -> Callable[[str | Path], Path]:
+    def get_path(relative_path: str | Path):
         return request.path.parent / "__snapshots__" / relative_path
 
     return get_path
 
 
 @pytest.fixture
-def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, Path]], Snapshot]:
+def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[str | Path], Snapshot]:
     # Patching SchemaDefinition's setter here prevents metadata that can be variable
     # between systems from entering the snapshot files. This could be part of its own
     # fixture but it's not clear if it would be useful outside of tests that
@@ -158,7 +160,7 @@ def snapshot(snapshot_path, pytestconfig, monkeypatch) -> Callable[[Union[str, P
 
     monkeypatch.setattr(SchemaDefinition, "__setattr__", patched)
 
-    def get_snapshot(relative_path: Union[str, Path], **kwargs):
+    def get_snapshot(relative_path: str | Path, **kwargs):
         path = snapshot_path(relative_path)
         if not path.suffix:
             return SnapshotDirectory(path, pytestconfig)
@@ -282,9 +284,8 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         items.remove(test_deps[0])
         items.append(test_deps[0])
 
-    # numpydantic only supported python>=3.9
-    if sys.version_info.minor < 9 or version("pydantic").startswith("1"):
-        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported in python>=3.9 and with pydantic>=2")
+    if version("pydantic").startswith("1"):
+        skip_npd = pytest.mark.skip(reason="Numpydantic is only supported for pydantic>=2")
         for item in items:
             if item.get_closest_marker("pydanticgen_npd"):
                 item.add_marker(skip_npd)
@@ -314,6 +315,14 @@ def pytest_sessionstart(session: pytest.Session):
 
     _monkeypatch_pyshex()
 
+    # Clear all warning registries at session start
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
+
 
 def _monkeypatch_pyshex():
     import sys
@@ -333,6 +342,15 @@ def _monkeypatch_pyshex():
     typing_io.TextIO = TextIO
     typing.io = typing_io
     sys.modules["typing.io"] = typing_io
+
+
+def pytest_runtest_setup(item):
+    # Clear warning registries before each test
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.simplefilter("always")
 
 
 def pytest_assertrepr_compare(config, op, left, right):
@@ -406,6 +424,27 @@ def mock_black_import():
 
     sys.modules.update(removed)
     sys.meta_path.remove(meta_finder)
+
+
+@pytest.fixture(autouse=True)
+def reset_warnings():
+    """Reset warnings for each test."""
+    # Pre-test cleanup
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+
+    warnings.resetwarnings()
+    warnings.simplefilter("always")
+    EMITTED.clear()
+
+    yield
+
+    # Post-test cleanup
+    for module in list(sys.modules.values()):
+        if hasattr(module, "__warningregistry__"):
+            del module.__warningregistry__
+    EMITTED.clear()
 
 
 # --------------------------------------------------

@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 
@@ -27,7 +26,7 @@ class ProtoGenerator(Generator):
     # ObjectVars
     relative_slot_num: int = 0
 
-    def visit_schema(self, **kwargs) -> Optional[str]:
+    def visit_schema(self, **kwargs) -> str | None:
         return self.generate_header()
 
     def generate_header(self) -> str:
@@ -40,7 +39,7 @@ class ProtoGenerator(Generator):
         out = "\n".join(items) + "\n"
         return out
 
-    def visit_class(self, cls: ClassDefinition) -> Optional[str]:
+    def visit_class(self, cls: ClassDefinition) -> str | None:
         if cls.mixin or cls.abstract or not cls.slots:
             return None
         items = []

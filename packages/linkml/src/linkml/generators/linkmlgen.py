@@ -1,7 +1,6 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Union
 
 import click
 
@@ -14,7 +13,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 logger = logging.getLogger(__name__)
 
 # type annotation for file name
-FILE_TYPE = Union[str, bytes, os.PathLike]
+FILE_TYPE = str | bytes | os.PathLike
 
 
 @dataclass
