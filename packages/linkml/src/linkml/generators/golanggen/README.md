@@ -101,11 +101,13 @@ Rendered in two contexts:
 |---|---|---|
 | `imports` | `list[str]` | List of rendered individual imports |
 
-## Pro tip: Include extra manifest
+## Pro tip: Include extra manifests
 
-You can include extra manifest with following trick:
+You can include extra manifests with following trick:
 
-First create in your directory structure a new jinja template file: `jsonld_wrapper.go.jinja`. Example:
+First create in your directory structure a new jinja template file.
+
+Example: `jsonld_wrapper.go.jinja`
 
 ```jinja
 // JsonLD{{ name }} is a JSON-LD wrapper for {{ name }}

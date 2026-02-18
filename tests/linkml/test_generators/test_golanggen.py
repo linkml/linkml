@@ -1,223 +1,392 @@
 """
-Comprehensive tests for the Golang generator.
+Tests for the Golang generator.
 
-Tests the new golanggen package implementation based on pydanticgen architecture.
+Tests the golanggen package implementation based on pydanticgen architecture.
+Schemas are defined inline to keep tests self-contained.
 """
 
-from pathlib import Path
-
 import pytest
+
 from linkml.generators.golanggen import GolangGenerator
 
 
-def test_golanggen_kitchen_sink(kitchen_sink_path):
-    """Test golang generation with kitchen sink schema."""
-    code = GolangGenerator(kitchen_sink_path, mergeimports=True).serialize()
+# ---------------------------------------------------------------------------
+# Shared inline schemas
+# ---------------------------------------------------------------------------
 
-    def assert_in(s: str) -> None:
-        """Assert string is in code (ignoring whitespace)."""
-        assert s.replace(" ", "") in code.replace(" ", ""), f"Expected to find: {s}"
+SIMPLE_SCHEMA = """
+id: https://example.org/simple
+name: simple_test
+default_range: string
 
-    # Test package declaration
-    assert "package kitchen" in code, "Missing package declaration"
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
 
-    # Test struct generation
-    assert_in("type Person struct {")
-    assert_in("type Address struct {")
-    assert_in("type Organization struct {")
+imports:
+  - linkml:types
 
-    # Test inheritance via embedding (Person embeds HasAliases mixin)
-    assert_in("HasAliases")  # Mixin should be embedded
+classes:
+  Person:
+    description: A human being
+    slots:
+      - name
+      - age
+      - email
 
-    # Test fields
-    assert_in("HasFamilialRelationships []*FamilialRelationship")
-    assert_in("Name string")
-    assert_in("AgeInYears int")
+slots:
+  name:
+    range: string
+    required: true
+    identifier: true
+  age:
+    range: integer
+  email:
+    range: string
+"""
 
-    # Test JSON tags
-    assert 'json:"' in code, "Missing JSON tags"
-    assert 'json:"name' in code, "Missing name JSON tag"
-    assert_in('json:"age_in_years')
+INHERITANCE_SCHEMA = """
+id: https://example.org/inheritance
+name: inheritance_test
+default_range: string
 
-    # Test enums
-    assert "type FamilialRelationshipType string" in code, "Missing enum type"
-    assert "const (" in code, "Missing const block"
-    assert_in("FamilialRelationshipTypeSIBLINGOF")
-    assert_in("FamilialRelationshipTypePARENTOF")
-    assert_in("FamilialRelationshipTypeCHILDOF")
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
 
-    # Test multivalued fields as slices
-    assert "[]" in code, "Missing slice types for multivalued fields"
+imports:
+  - linkml:types
+
+classes:
+  NamedThing:
+    description: A generic named entity
+    slots:
+      - id
+      - name
+
+  Person:
+    is_a: NamedThing
+    description: A human being
+    slots:
+      - age
+
+  Employee:
+    is_a: Person
+    description: A person with a job
+    slots:
+      - company
+
+slots:
+  id:
+    range: string
+    required: true
+    identifier: true
+  name:
+    range: string
+  age:
+    range: integer
+  company:
+    range: string
+"""
+
+ENUM_SCHEMA = """
+id: https://example.org/enum
+name: enum_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+imports:
+  - linkml:types
+
+enums:
+  Color:
+    permissible_values:
+      RED:
+      GREEN:
+      BLUE:
+
+  Status:
+    description: Object status
+    permissible_values:
+      ACTIVE:
+      INACTIVE:
+      PENDING:
+
+classes:
+  Widget:
+    slots:
+      - color
+      - status
+
+slots:
+  color:
+    range: Color
+  status:
+    range: Status
+"""
+
+COMPOSITION_SCHEMA = """
+id: https://example.org/composition
+name: composition_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+imports:
+  - linkml:types
+
+classes:
+  Address:
+    description: A postal address
+    slots:
+      - street
+      - city
+
+  Person:
+    description: A human being
+    slots:
+      - name
+      - address
+      - friends
+
+  Dataset:
+    description: A top-level container
+    slots:
+      - persons
+
+slots:
+  street:
+    range: string
+  city:
+    range: string
+  name:
+    range: string
+    required: true
+    identifier: true
+  address:
+    range: Address
+  friends:
+    range: Person
+    multivalued: true
+  persons:
+    range: Person
+    multivalued: true
+    inlined_as_list: true
+"""
 
 
-def test_golanggen_enums(kitchen_sink_path):
-    """Test enum generation."""
-    gen = GolangGenerator(kitchen_sink_path)
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+
+def test_struct_generation():
+    """Test basic struct generation from a simple schema."""
+    gen = GolangGenerator(schema=SIMPLE_SCHEMA)
     module = gen.render()
 
-    # Check enums were generated
-    assert "FamilialRelationshipType" in module.enums
-    enum = module.enums["FamilialRelationshipType"]
-
-    assert enum.name == "FamilialRelationshipType"
-    assert enum.type == "string"
-    assert len(enum.values) > 0
-
-    # Check enum constants
-    assert "SIBLING_OF" in enum.values
-    assert "PARENT_OF" in enum.values
-    assert "CHILD_OF" in enum.values
-
-
-def test_golanggen_structs(kitchen_sink_path):
-    """Test struct generation."""
-    gen = GolangGenerator(kitchen_sink_path)
-    module = gen.render()
-
-    # Check structs were generated
     assert "Person" in module.structs
     person = module.structs["Person"]
-
     assert person.name == "Person"
-    assert person.description is not None or person.description is None  # May or may not have description
+    assert person.description == "A human being"
     assert person.fields is not None
-    assert len(person.fields) > 0
+
+    field_go_names = {f.go_name for f in person.fields.values()}
+    assert "Name" in field_go_names
+    assert "Age" in field_go_names
+    assert "Email" in field_go_names
 
 
-def test_golanggen_inheritance(kitchen_sink_path):
-    """Test that inheritance is handled via struct embedding."""
-    gen = GolangGenerator(kitchen_sink_path)
-    module = gen.render()
+def test_serialized_output():
+    """Test that serialized output contains expected Go constructs."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA).serialize()
 
-    # Adult inherits from Person
-    adult = module.structs.get("Adult")
-    if adult:
-        assert adult.embedded_structs is not None
-        assert "Person" in adult.embedded_structs
+    assert "package simple" in code
+    assert "type Person struct {" in code
+    assert 'json:"name"' in code
+    assert 'json:"age' in code
+    assert 'omitempty' in code
 
 
-def test_golanggen_fields(kitchen_sink_path):
-    """Test field generation."""
-    gen = GolangGenerator(kitchen_sink_path)
-    module = gen.render()
+def test_inheritance_embedding():
+    """Test that is_a produces struct embedding with json:",inline" tag."""
+    code = GolangGenerator(schema=INHERITANCE_SCHEMA).serialize()
+
+    # Person embeds NamedThing
+    assert 'NamedThing `json:",inline"`' in code
+    # Employee embeds Person
+    assert 'Person `json:",inline"`' in code
+
+    # Verify via the model too
+    module = GolangGenerator(schema=INHERITANCE_SCHEMA).render()
 
     person = module.structs["Person"]
+    assert person.embedded_structs == ["NamedThing"]
 
-    # Check that fields exist
-    assert person.fields is not None
-    field_names = [f.go_name for f in person.fields.values()]
+    employee = module.structs["Employee"]
+    assert employee.embedded_structs == ["Person"]
 
-    # Person should have some expected fields
-    # Note: actual field names depend on schema, these are examples
-    assert len(field_names) > 0
-
-
-def test_golanggen_package_name():
-    """Test package name generation and override."""
-    # Test with simple schema name
-    gen = GolangGenerator("tests/linkml_runtime/test_utils/input/kitchen_sink.yaml")
-    module = gen.render()
-    assert module.package_name == "kitchen"
-
-    # Test with package name override
-    gen = GolangGenerator(
-        "tests/linkml_runtime/test_utils/input/kitchen_sink.yaml",
-        package_name="custompackage"
-    )
-    module = gen.render()
-    assert module.package_name == "custompackage"
+    # Direct slots only — inherited ones come via embedding
+    person_field_names = {f.go_name for f in person.fields.values()}
+    assert "Age" in person_field_names
+    # "Id" and "Name" are inherited, so must NOT appear as direct fields
+    assert "Id" not in person_field_names
+    assert "Name" not in person_field_names
 
 
-def test_golanggen_imports(kitchen_sink_path):
-    """Test import generation."""
-    gen = GolangGenerator(kitchen_sink_path)
+def test_enum_generation():
+    """Test enum / const block generation."""
+    gen = GolangGenerator(schema=ENUM_SCHEMA)
     module = gen.render()
 
-    # If schema uses date/time types, time package should be imported
-    # This depends on the schema content
-    serialized = gen.serialize()
+    assert "Color" in module.enums
+    color = module.enums["Color"]
+    assert color.type == "string"
+    assert "RED" in color.values
+    assert "GREEN" in color.values
+    assert "BLUE" in color.values
 
-    # Check import block format if any imports exist
-    if module.imports.imports:
-        assert "import (" in serialized
+    assert "Status" in module.enums
+    status = module.enums["Status"]
+    assert status.description == "Object status"
 
-
-def test_golanggen_json_tags(kitchen_sink_path):
-    """Test JSON tag generation."""
-    code = GolangGenerator(kitchen_sink_path).serialize()
-
-    # Check JSON tags are present
-    assert "`json:" in code
-    assert "omitempty" in code  # Optional fields should have omitempty
-
-
-def test_golanggen_multivalued_fields(kitchen_sink_path):
-    """Test multivalued field handling."""
-    gen = GolangGenerator(kitchen_sink_path)
-    module = gen.render()
-
-    # Find a struct with multivalued fields
-    # In kitchen_sink, Person has has_familial_relationships which is multivalued
-    person = module.structs.get("Person")
-    if person and person.fields:
-        # Look for slice types
-        field_types = [f.type for f in person.fields.values()]
-        slice_fields = [t for t in field_types if t.startswith("[]")]
-        # At least some fields should be slices
-        assert len(slice_fields) > 0, "Expected some multivalued fields to be slices"
-
-
-def test_golanggen_type_mapping(kitchen_sink_path):
-    """Test that LinkML types are correctly mapped to Go types."""
-    code = GolangGenerator(kitchen_sink_path).serialize()
-
-    # Check for various Go types
-    assert " string" in code or " string " in code, "Missing string type"
-    assert " int" in code or " int " in code, "Missing int type"
-
-    # If schema has float fields
-    if "float" in code.lower() or "height" in code.lower():
-        assert "float64" in code, "Float should map to float64"
-
-
-def test_golanggen_comments(kitchen_sink_path):
-    """Test that descriptions are converted to comments."""
-    gen = GolangGenerator(kitchen_sink_path)
-    module = gen.render()
-
-    # Check that at least some structs or fields have descriptions
-    has_descriptions = False
-    for struct in module.structs.values():
-        if struct.description:
-            has_descriptions = True
-            break
-        if struct.fields:
-            for field in struct.fields.values():
-                if field.description:
-                    has_descriptions = True
-                    break
-
-    # Serialize and check for comments in output
     code = gen.serialize()
-    if has_descriptions:
-        assert "//" in code, "Expected Go comments for descriptions"
+    assert "type Color string" in code
+    assert "const (" in code
+    assert 'ColorRED Color = "RED"' in code
 
 
-def test_golanggen_backwards_compatibility():
-    """Test backwards compatibility with old golanggen module."""
-    # Should be able to import from both locations
+@pytest.mark.parametrize(
+    "slot_name, expected_type",
+    [
+        ("name", "string"),
+        ("age", "int"),
+    ],
+    ids=["string_slot", "integer_slot"],
+)
+def test_type_mapping(slot_name, expected_type):
+    """Test that LinkML types are correctly mapped to Go types."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA).render()
+    person = module.structs["Person"]
+    field = person.fields[slot_name]
+    assert field.type == expected_type
+
+
+def test_multivalued_fields():
+    """Test that multivalued slots produce Go slice types."""
+    module = GolangGenerator(schema=COMPOSITION_SCHEMA).render()
+    person = module.structs["Person"]
+
+    friends = person.fields["friends"]
+    assert friends.type.startswith("[]"), f"Expected slice type, got {friends.type}"
+
+
+def test_optional_pointer_for_class_range():
+    """Test that an optional slot with a class range produces a pointer type."""
+    module = GolangGenerator(schema=COMPOSITION_SCHEMA).render()
+    person = module.structs["Person"]
+
+    address_field = person.fields["address"]
+    assert address_field.type == "*Address"
+
+
+def test_json_tags():
+    """Test JSON struct tags with omitempty for optional fields."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA).serialize()
+
+    # required + identifier → no omitempty
+    assert 'json:"name"' in code
+    # optional fields → omitempty
+    assert 'json:"age,omitempty"' in code
+    assert 'json:"email,omitempty"' in code
+
+
+def test_comments_from_descriptions():
+    """Test that class descriptions produce Go comments."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA).serialize()
+    assert "// A human being" in code
+
+
+def test_package_name_derived():
+    """Test that the package name is derived from the schema name."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA).render()
+    assert module.package_name == "simple"
+
+
+def test_package_name_override():
+    """Test that --package-name overrides the derived value."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, package_name="mypkg").render()
+    assert module.package_name == "mypkg"
+
+
+def test_imports_time_package():
+    """Test that the time package is imported when date/time types are used."""
+    schema = """
+id: https://example.org/dates
+name: dates_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+imports:
+  - linkml:types
+
+classes:
+  Event:
+    slots:
+      - started_at
+
+slots:
+  started_at:
+    range: date
+"""
+    code = GolangGenerator(schema=schema).serialize()
+    assert '"time"' in code
+    assert "time.Time" in code
+
+
+def test_root_struct_names():
+    """Test that root_struct_names excludes classes used as field types."""
+    module = GolangGenerator(schema=COMPOSITION_SCHEMA).render()
+
+    # Address is referenced by Person.address → not root
+    # Person is referenced by Dataset.persons and Person.friends → not root
+    # Dataset is never referenced as a field type → root
+    assert "Dataset" in module.root_struct_names
+    assert "Address" not in module.root_struct_names
+    assert "Person" not in module.root_struct_names
+
+
+def test_root_struct_names_no_references():
+    """When no class references another, all are root classes."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA).render()
+    assert "Person" in module.root_struct_names
+
+
+def test_backwards_compatibility():
+    """Test that the generator is importable from both locations."""
     from linkml.generators.golanggen import GolangGenerator as NewGen
     from linkml.generators.golanggen.golanggen import GolangGenerator as DirectGen
 
-    # Both should be the same class
     assert NewGen is DirectGen
 
 
-def test_golanggen_template_dir_overrides_struct(kitchen_sink_path, tmp_path):
+# ---------------------------------------------------------------------------
+# Template-dir tests
+# ---------------------------------------------------------------------------
+
+
+def test_template_dir_overrides_struct(tmp_path):
     """Test that --template-dir overrides individual templates."""
-    # Create a custom struct template that adds a marker comment
-    custom_template = tmp_path / "struct.go.jinja"
-    custom_template.write_text(
+    custom_struct = tmp_path / "struct.go.jinja"
+    custom_struct.write_text(
         "// CUSTOM TEMPLATE\n"
         "{% if description %}\n"
         "// {{ description }}\n"
@@ -236,39 +405,87 @@ def test_golanggen_template_dir_overrides_struct(kitchen_sink_path, tmp_path):
         "}\n"
     )
 
-    gen = GolangGenerator(kitchen_sink_path, template_dir=str(tmp_path))
-    code = gen.serialize()
-
-    # The custom marker should appear in output
+    code = GolangGenerator(schema=SIMPLE_SCHEMA, template_dir=str(tmp_path)).serialize()
     assert "// CUSTOM TEMPLATE" in code
-    # Other templates (module, field, enum) should still render from defaults
-    assert "package kitchen" in code
+    assert "package simple" in code
 
 
-def test_golanggen_template_dir_fallback(kitchen_sink_path, tmp_path):
-    """Test that templates not in template_dir fall back to defaults."""
-    # Empty directory — all templates should fall back to the built-in ones
-    gen = GolangGenerator(kitchen_sink_path, template_dir=str(tmp_path))
-    code = gen.serialize()
-
-    # Should still produce valid output using default templates
-    assert "package kitchen" in code
-    assert "type Person struct {" in code.replace(" ", "").replace("\t", "") or "type Person struct" in code
+def test_template_dir_fallback(tmp_path):
+    """Test that an empty template-dir falls back to built-in templates."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA, template_dir=str(tmp_path)).serialize()
+    assert "package simple" in code
+    assert "type Person struct" in code
 
 
-def test_golanggen_template_dir_nonexistent_raises():
+def test_template_dir_nonexistent_raises(tmp_path):
     """Test that a nonexistent template_dir raises an error in the CLI."""
     from click.testing import CliRunner
+
     from linkml.generators.golanggen.golanggen import cli
 
+    # Write a minimal schema file so the CLI positional arg is valid
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+
     runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "tests/linkml_runtime/test_utils/input/kitchen_sink.yaml",
-            "--template-dir",
-            "/nonexistent/path",
-        ],
-    )
+    result = runner.invoke(cli, [str(schema_file), "--template-dir", "/nonexistent/path"])
     assert result.exit_code != 0
     assert "does not exist" in str(result.exception)
+
+
+def test_template_dir_jsonld_wrapper(tmp_path):
+    """Test custom module template that includes jsonld_wrapper for root classes only."""
+    # Create a custom module template that includes jsonld_wrapper
+    module_tpl = tmp_path / "module.go.jinja"
+    module_tpl.write_text(
+        "// Code generated by linkml-golanggen. DO NOT EDIT.\n"
+        "package {{ package_name }}\n"
+        "\n"
+        "import (\n"
+        '{% if imports and imports.strip() %}\n'
+        '{{ imports | replace("import (", "") | replace(")", "") }}\n'
+        "{% endif %}\n"
+        '\t"encoding/json"\n'
+        '\t"reflect"\n'
+        ")\n"
+        "{% if enums %}\n"
+        "{% for e in enums.values() %}\n"
+        "{{ e }}\n"
+        "{% endfor %}\n"
+        "{% endif %}\n"
+        "{% for s in structs.values() %}\n"
+        "{{ s }}\n"
+        "{% endfor %}\n"
+        "{% for name in root_struct_names %}\n"
+        '{% include "jsonld_wrapper.go.jinja" %}\n'
+        "{% endfor %}\n"
+    )
+
+    # Create the jsonld_wrapper template
+    wrapper_tpl = tmp_path / "jsonld_wrapper.go.jinja"
+    wrapper_tpl.write_text(
+        "\n"
+        "// JsonLD{{ name }} is a JSON-LD wrapper for {{ name }}\n"
+        "type JsonLD{{ name }} struct {\n"
+        '\tContext     map[string]interface{} `json:"@context"`\n'
+        '\tPayloadType string                 `json:"@type"`\n'
+        '\tPayload     {{ name }}             `json:",inline"`\n'
+        "}\n"
+    )
+
+    code = GolangGenerator(schema=COMPOSITION_SCHEMA, template_dir=str(tmp_path)).serialize()
+
+    # Dataset is a root class → wrapper generated
+    assert "type JsonLDDataset struct {" in code
+    assert "// JsonLDDataset is a JSON-LD wrapper for Dataset" in code
+
+    # Address and Person are referenced as field types → no wrapper
+    assert "JsonLDAddress" not in code
+    assert "JsonLDPerson" not in code
+
+    # Basic structure still present
+    assert "type Person struct {" in code
+    assert "type Address struct {" in code
+    assert "type Dataset struct {" in code
+    assert '"encoding/json"' in code
+    assert '"reflect"' in code
