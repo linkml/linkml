@@ -26,8 +26,8 @@ AI review tools (Claude, Copilot, CodeRabbit, etc.) provide **automated quality 
 
 ## AI-Assisted Discussions
 
-AI tools can be helpful **thinking aids** when preparing to participate in  
-[LinkML discussions](https://github.com/orgs/linkml/discussions/) and  
+AI tools can be helpful **thinking aids** when preparing to participate in
+[LinkML discussions](https://github.com/orgs/linkml/discussions/) and
 [issues](https://github.com/linkml/linkml/issues).
 
 They may be used to:
@@ -35,7 +35,7 @@ They may be used to:
 - Explore alternative framings or options
 - Help draft *your* contribution for clarity and structure
 
-However, discussions exist to **surface, negotiate, and consolidate human judgement**.  
+However, discussions exist to **surface, negotiate, and consolidate human judgement**.
 They are not a channel for autonomous or proxy AI participation.
 
 **AI systems MUST NOT be used to directly post comments, replies, or messages** in:
@@ -46,7 +46,7 @@ They are not a channel for autonomous or proxy AI participation.
 All discussion contributions must reflect a **human position** that the author is prepared to explain, revise, and defend. Posting AI-generated commentary as an independent “voice” undermines trust, accountability, and the purpose of deliberation.
 
 In short:
-- AI may *support* participation  
+- AI may *support* participation
 - Humans must *own* participation
 
 ## When to Disclose AI Assistance
