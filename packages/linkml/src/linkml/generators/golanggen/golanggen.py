@@ -9,13 +9,11 @@ import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, Union
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.golanggen.build import FieldResult, StructResult
 from linkml.generators.golanggen.template import (
     GolangConstant,
@@ -26,6 +24,7 @@ from linkml.generators.golanggen.template import (
     Import,
     Imports,
 )
+from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.utils.formatutils import camelcase, underscore
@@ -77,7 +76,7 @@ class GolangGenerator(OOCodeGenerator):
     file_extension = "go"
 
     # ObjectVars
-    package_name: Optional[str] = None
+    package_name: str | None = None
     """Override the package name. If None, derived from schema name."""
 
     gen_slots: bool = True
@@ -92,7 +91,7 @@ class GolangGenerator(OOCodeGenerator):
     use_time_package: bool = True
     """Import time package when needed for date/datetime types"""
 
-    template_dir: Optional[Union[str, Path]] = None
+    template_dir: str | Path | None = None
     """
     Override templates for each GolangTemplateModel.
 
@@ -371,7 +370,7 @@ class GolangGenerator(OOCodeGenerator):
 
         return module
 
-    def serialize(self, rendered_module: Optional[GolangModule] = None) -> str:
+    def serialize(self, rendered_module: GolangModule | None = None) -> str:
         """
         Serialize the schema to a Go source code string.
 
@@ -435,7 +434,7 @@ Available templates to override:
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="golang")
-def cli(yamlfile, package_name: Optional[str] = None, template_dir: Optional[str] = None, **args):
+def cli(yamlfile, package_name: str | None = None, template_dir: str | None = None, **args):
     """
     Generate Golang structs from a LinkML schema.
 

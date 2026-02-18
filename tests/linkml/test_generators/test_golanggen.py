@@ -9,7 +9,6 @@ import pytest
 
 from linkml.generators.golanggen import GolangGenerator
 
-
 # ---------------------------------------------------------------------------
 # Shared inline schemas
 # ---------------------------------------------------------------------------
@@ -210,7 +209,7 @@ def test_serialized_output():
     assert "type Person struct {" in code
     assert 'json:"name"' in code
     assert 'json:"age' in code
-    assert 'omitempty' in code
+    assert "omitempty" in code
 
 
 def test_inheritance_embedding():
@@ -442,7 +441,7 @@ def test_template_dir_jsonld_wrapper(tmp_path):
         "package {{ package_name }}\n"
         "\n"
         "import (\n"
-        '{% if imports and imports.strip() %}\n'
+        "{% if imports and imports.strip() %}\n"
         '{{ imports | replace("import (", "") | replace(")", "") }}\n'
         "{% endif %}\n"
         '\t"encoding/json"\n'

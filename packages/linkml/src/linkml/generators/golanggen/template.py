@@ -1,19 +1,10 @@
 """Template models for Golang code generation."""
 
-from keyword import iskeyword
-from typing import Any, ClassVar, Literal, Optional, Union, get_args
-
-try:
-    from typing import Self
-except ImportError:
-    from typing_extensions import Self
+from typing import Any, ClassVar, Literal, get_args
 
 from jinja2 import Environment, PackageLoader
-from pydantic import BaseModel, Field, computed_field, field_validator, model_validator
+from pydantic import BaseModel, Field, computed_field, field_validator
 
-from linkml.generators.common.template import (
-    ConditionalImport as ConditionalImport_,
-)
 from linkml.generators.common.template import (
     Import as Import_,
 )
@@ -24,7 +15,6 @@ from linkml.generators.common.template import (
     ObjectImport,  # noqa: F401
     TemplateModel,
 )
-
 
 IMPORT_GROUPS = Literal["stdlib", "thirdparty", "local"]
 """
@@ -54,7 +44,7 @@ class GolangTemplateModel(TemplateModel):
 
     meta_exclude: ClassVar[list[str]] = None
 
-    def render(self, environment: Optional[Environment] = None, **kwargs) -> str:
+    def render(self, environment: Environment | None = None, **kwargs) -> str:
         """
         Recursively render a template model to a string.
 
@@ -78,8 +68,8 @@ class GolangConstant(BaseModel):
     """
 
     name: str
-    value: Optional[str] = None
-    description: Optional[str] = None
+    value: str | None = None
+    description: str | None = None
 
 
 class GolangEnum(GolangTemplateModel):
@@ -91,7 +81,7 @@ class GolangEnum(GolangTemplateModel):
 
     name: str
     type: str = "string"
-    description: Optional[str] = None
+    description: str | None = None
     values: dict[str, GolangConstant] = Field(default_factory=dict)
 
 
@@ -110,9 +100,9 @@ class GolangField(GolangTemplateModel):
     required: bool = False
     identifier: bool = False
     key: bool = False
-    description: Optional[str] = None
-    pattern: Optional[str] = None
-    meta: Optional[dict[str, Any]] = None
+    description: str | None = None
+    pattern: str | None = None
+    meta: dict[str, Any] | None = None
     omitempty: bool = True  # Whether to add omitempty to JSON tag
 
 
@@ -125,12 +115,12 @@ class GolangStruct(GolangTemplateModel):
     meta_exclude: ClassVar[list[str]] = ["slots", "is_a"]
 
     name: str
-    description: Optional[str] = None
-    embedded_structs: Optional[list[str]] = None  # For inheritance via embedding
-    fields: Optional[dict[str, GolangField]] = None
-    meta: Optional[dict[str, Any]] = None
+    description: str | None = None
+    embedded_structs: list[str] | None = None  # For inheritance via embedding
+    fields: dict[str, GolangField] | None = None
+    meta: dict[str, Any] | None = None
     is_type_alias: bool = False
-    type_alias_value: Optional[str] = None
+    type_alias_value: str | None = None
 
 
 class Import(Import_, GolangTemplateModel):
@@ -208,14 +198,14 @@ class GolangModule(GolangTemplateModel):
     meta_exclude: ClassVar[str] = ["slots"]
 
     package_name: str
-    imports: Union[Imports, list[Import]] = Imports()
+    imports: Imports | list[Import] = Imports()
     enums: dict[str, GolangEnum] = Field(default_factory=dict)
     structs: dict[str, GolangStruct] = Field(default_factory=dict)
-    meta: Optional[dict[str, Any]] = None
+    meta: dict[str, Any] | None = None
 
     @field_validator("imports", mode="after")
     @classmethod
-    def cast_imports(cls, imports: Union[Imports, list[Import]]) -> Imports:
+    def cast_imports(cls, imports: Imports | list[Import]) -> Imports:
         if isinstance(imports, list):
             imports = Imports(imports=imports)
         return imports

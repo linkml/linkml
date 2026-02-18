@@ -1,7 +1,7 @@
 """Build result classes for Golang generator."""
 
 from pathlib import Path
-from typing import Optional, TypeVar, Union
+from typing import TypeVar
 
 from linkml.generators.common.build import (
     BuildResult,
@@ -23,7 +23,7 @@ class GolangBuildResult(BuildResult):
     BuildResult parent class for golang generator
     """
 
-    imports: Optional[Union[list[Import], Imports]] = None
+    imports: list[Import] | Imports | None = None
 
     def merge(self, other: T) -> T:
         """
@@ -64,4 +64,4 @@ class SplitResult(SchemaResult):
     main: bool = False
     path: Path
     serialized_module: str
-    module_import: Optional[str] = None
+    module_import: str | None = None
