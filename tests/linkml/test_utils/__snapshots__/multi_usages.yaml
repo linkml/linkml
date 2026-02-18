@@ -347,6 +347,8 @@ classes:
     name: root_class
     definition_uri: http://example.org/multi_usages/RootClass
     from_schema: http://example.org/multi_usages
+    exact_mappings:
+    - http://example.org/multi_usages/RootClass
     slots:
     - s1
     class_uri: http://example.org/multi_usages/RootClass
@@ -354,6 +356,8 @@ classes:
     name: child_class1
     definition_uri: http://example.org/multi_usages/ChildClass1
     from_schema: http://example.org/multi_usages
+    exact_mappings:
+    - http://example.org/multi_usages/ChildClass1
     is_a: root_class
     slots:
     - child_class1_s1
@@ -368,6 +372,8 @@ classes:
     name: child_class2
     definition_uri: http://example.org/multi_usages/ChildClass2
     from_schema: http://example.org/multi_usages
+    exact_mappings:
+    - http://example.org/multi_usages/ChildClass2
     is_a: child_class1
     slots:
     - child_class2_s1
@@ -382,6 +388,8 @@ classes:
     name: child_class3
     definition_uri: http://example.org/multi_usages/ChildClass3
     from_schema: http://example.org/multi_usages
+    exact_mappings:
+    - http://example.org/multi_usages/ChildClass3
     is_a: child_class2
     slots:
     - child_class3_s1

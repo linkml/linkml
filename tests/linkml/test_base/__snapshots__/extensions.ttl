@@ -214,9 +214,8 @@ linkml:uriorcurie a linkml:TypeDefinition ;
     linkml:uri xsd:anyURI .
 
 linkml:AnyValue a linkml:ClassDefinition ;
+    skos:exactMatch linkml:Any ;
     skos:inScheme linkml:extensions ;
-    skos:mappingRelation linkml:Any ;
-    linkml:class_uri linkml:Any ;
     linkml:definition_uri linkml:AnyValue ;
     linkml:slot_usage [ ] .
 
@@ -252,8 +251,8 @@ linkml:extension_value a linkml:SlotDefinition ;
 
 linkml:Extensible a linkml:ClassDefinition ;
     skos:definition "mixin for classes that support extension" ;
+    skos:exactMatch linkml:Extensible ;
     skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extensible ;
     linkml:definition_uri linkml:Extensible ;
     linkml:mixin true ;
     linkml:slot_usage [ ] ;
@@ -261,8 +260,8 @@ linkml:Extensible a linkml:ClassDefinition ;
 
 linkml:Extension a linkml:ClassDefinition ;
     skos:definition "a tag/value pair used to add non-model information to an entry" ;
+    skos:exactMatch linkml:Extension ;
     skos:inScheme linkml:extensions ;
-    linkml:class_uri linkml:Extension ;
     linkml:definition_uri linkml:Extension ;
     linkml:slot_usage [ ] ;
     linkml:slots linkml:extension_tag,
@@ -322,4 +321,3 @@ linkml:extensions a linkml:SchemaDefinition,
         linkml:time,
         linkml:uri,
         linkml:uriorcurie .
-

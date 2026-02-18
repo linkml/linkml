@@ -82,6 +82,8 @@ classes:
     name: c1
     definition_uri: http://example.org/tests/issue18/C1
     from_schema: http://example.org/tests/issue18
+    exact_mappings:
+    - http://example.org/tests/issue18/C1
     slots:
     - c1s1
     - c1s2
@@ -90,6 +92,8 @@ classes:
     name: c2
     definition_uri: http://example.org/tests/issue18/C2
     from_schema: http://example.org/tests/issue18
+    exact_mappings:
+    - http://example.org/tests/issue18/C2
     slots:
     - c2s1
     - c2s1
@@ -98,6 +102,8 @@ classes:
     name: c3
     definition_uri: http://example.org/tests/issue18/C3
     from_schema: http://example.org/tests/issue18
+    exact_mappings:
+    - http://example.org/tests/issue18/C3
     slots:
     - c3s1
     class_uri: http://example.org/tests/issue18/C3
@@ -105,6 +111,8 @@ classes:
     name: c4
     definition_uri: http://example.org/tests/issue18/C4
     from_schema: http://example.org/tests/issue18
+    exact_mappings:
+    - http://example.org/tests/issue18/C4
     class_uri: http://example.org/tests/issue18/C4
 metamodel_version: 1.7.0
 source_file: issue_18.yaml
