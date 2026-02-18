@@ -30,11 +30,8 @@ LOCAL_MODEL_YAML_FILES = (
 
 # Local location of jsonld and context.jsonld files
 LOCAL_METAMODEL_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.META, Format.JSONLD)
-LOCAL_METAMODEL_JSONLD_FILE = linkml_files.LOCAL_PATH_FOR(Source.META, Format.JSON)
 LOCAL_TYPES_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.JSONLD)
-LOCAL_TYPES_JSONLD_FILE = linkml_files.LOCAL_PATH_FOR(Source.TYPES, Format.JSON)
 LOCAL_MAPPINGS_LDCONTEXT_FILE = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.JSONLD)
-LOCAL_MAPPINGS_JSONLD_FILE = linkml_files.LOCAL_PATH_FOR(Source.MAPPINGS, Format.JSON)
 
 # Local location of metamodel shex file
 LOCAL_SHEXJ_FILE_NAME = linkml_files.LOCAL_PATH_FOR(Source.META, Format.SHEXJ)
