@@ -53,6 +53,19 @@ TYPE_MAP = {
     "ncname": "string",
 }
 
+# Go primitive types eligible for pointer promotion via ``nullable_primitives``
+GO_PRIMITIVE_TYPES = frozenset({
+    "string",
+    "int",
+    "int8",
+    "int16",
+    "int32",
+    "int64",
+    "float32",
+    "float64",
+    "bool",
+})
+
 
 @dataclass
 class GolangGenerator(OOCodeGenerator):
@@ -90,6 +103,19 @@ class GolangGenerator(OOCodeGenerator):
 
     use_time_package: bool = True
     """Import time package when needed for date/datetime types"""
+
+    alphabetical_sort: bool = False
+    """Sort structs and enums alphabetically by name for deterministic output."""
+
+    nullable_primitives: bool = False
+    """
+    Use pointer types for optional primitive fields (e.g. ``*string``, ``*int``, ``*bool``).
+
+    When False (default), optional primitives use bare Go types and ``omitempty``
+    omits zero values (``""``, ``0``, ``false``).  When True, optional primitives
+    become pointers so that ``omitempty`` only omits ``nil``, preserving
+    intentional zero values.
+    """
 
     template_dir: str | Path | None = None
     """
@@ -279,6 +305,16 @@ class GolangGenerator(OOCodeGenerator):
             # Default to string
             base_type = "string"
 
+        # Use pointer for optional primitive types when nullable_primitives is enabled.
+        # Slices are already nil-able, so skip multivalued slots.
+        if (
+            self.nullable_primitives
+            and not slot.multivalued
+            and base_type in GO_PRIMITIVE_TYPES
+            and not (slot.required or slot.identifier or slot.key)
+        ):
+            base_type = f"*{base_type}"
+
         # Handle multivalued slots
         if slot.multivalued:
             return f"[]{base_type}"
@@ -353,6 +389,11 @@ class GolangGenerator(OOCodeGenerator):
             struct_result = self.generate_struct(cls)
             structs[struct_result.struct.name] = struct_result.struct
 
+        # Sort alphabetically for deterministic output
+        if self.alphabetical_sort:
+            enums = dict(sorted(enums.items()))
+            structs = dict(sorted(structs.items()))
+
         # Build imports
         imports = Imports()
         if self._needs_time and self.use_time_package:
@@ -416,6 +457,18 @@ _TEMPLATE_NAMES = [
     help="Override the Go package name (default: derived from schema name)",
 )
 @click.option(
+    "--alphabetical-sort/--no-alphabetical-sort",
+    default=False,
+    show_default=True,
+    help="Sort structs and enums alphabetically for deterministic output.",
+)
+@click.option(
+    "--nullable-primitives/--no-nullable-primitives",
+    default=False,
+    show_default=True,
+    help="Use pointer types for optional primitives so omitempty only triggers on nil.",
+)
+@click.option(
     "--template-dir",
     type=click.Path(),
     help="""
@@ -434,7 +487,14 @@ Available templates to override:
 )
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="golang")
-def cli(yamlfile, package_name: str | None = None, template_dir: str | None = None, **args):
+def cli(
+    yamlfile,
+    package_name: str | None = None,
+    alphabetical_sort: bool = False,
+    nullable_primitives: bool = False,
+    template_dir: str | None = None,
+    **args,
+):
     """
     Generate Golang structs from a LinkML schema.
 
@@ -448,7 +508,14 @@ def cli(yamlfile, package_name: str | None = None, template_dir: str | None = No
         if not Path(template_dir).exists():
             raise FileNotFoundError(f"The template directory {template_dir} does not exist!")
 
-    gen = GolangGenerator(yamlfile, package_name=package_name, template_dir=template_dir, **args)
+    gen = GolangGenerator(
+        yamlfile,
+        package_name=package_name,
+        alphabetical_sort=alphabetical_sort,
+        nullable_primitives=nullable_primitives,
+        template_dir=template_dir,
+        **args,
+    )
     print(gen.serialize())
 
 

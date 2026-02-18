@@ -623,3 +623,196 @@ def test_template_dir_jsonld_wrapper(tmp_path):
     assert "type Dataset struct {" in code
     assert '"encoding/json"' in code
     assert '"reflect"' in code
+
+
+# ---------------------------------------------------------------------------
+# Alphabetical sort tests
+# ---------------------------------------------------------------------------
+
+
+def test_alphabetical_sort_structs():
+    """Test that alphabetical_sort orders structs by name."""
+    module = GolangGenerator(schema=COMPOSITION_SCHEMA, alphabetical_sort=True).render()
+    struct_names = list(module.structs.keys())
+    assert struct_names == sorted(struct_names), f"Structs not alphabetically sorted: {struct_names}"
+
+
+def test_alphabetical_sort_enums():
+    """Test that alphabetical_sort orders enums by name."""
+    module = GolangGenerator(schema=ENUM_SCHEMA, alphabetical_sort=True).render()
+    enum_names = list(module.enums.keys())
+    assert enum_names == sorted(enum_names), f"Enums not alphabetically sorted: {enum_names}"
+
+
+def test_alphabetical_sort_serialized_order():
+    """Test that struct definitions appear in alphabetical order in generated code."""
+    code = GolangGenerator(schema=COMPOSITION_SCHEMA, alphabetical_sort=True).serialize()
+    # Address < Dataset < Person
+    addr_pos = code.index("type Address struct")
+    dataset_pos = code.index("type Dataset struct")
+    person_pos = code.index("type Person struct")
+    assert addr_pos < dataset_pos < person_pos
+
+
+def test_alphabetical_sort_disabled_by_default():
+    """Test that alphabetical_sort is off by default (topological order preserved)."""
+    gen = GolangGenerator(schema=COMPOSITION_SCHEMA)
+    assert gen.alphabetical_sort is False
+
+
+# ---------------------------------------------------------------------------
+# Nullable primitives tests
+# ---------------------------------------------------------------------------
+
+
+def test_nullable_primitives_pointer_types():
+    """Test that nullable_primitives adds pointer prefix to optional primitive fields."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=True).render()
+    person = module.structs["Person"]
+
+    # 'age' is optional integer → *int
+    assert person.fields["age"].type == "*int"
+    # 'email' is optional string → *string
+    assert person.fields["email"].type == "*string"
+
+
+def test_nullable_primitives_required_fields_unchanged():
+    """Test that required/identifier fields are not turned into pointers."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=True).render()
+    person = module.structs["Person"]
+
+    # 'name' is required + identifier → stays string (no pointer)
+    assert person.fields["name"].type == "string"
+
+
+def test_nullable_primitives_class_range_unchanged():
+    """Test that class-range optional fields are not double-pointered."""
+    module = GolangGenerator(schema=COMPOSITION_SCHEMA, nullable_primitives=True).render()
+    person = module.structs["Person"]
+
+    # 'address' is optional class range → still *Address (not **Address)
+    assert person.fields["address"].type == "*Address"
+
+
+def test_nullable_primitives_multivalued_unchanged():
+    """Test that multivalued primitive fields are not given pointer element types."""
+    schema = """
+id: https://example.org/multitest
+name: multitest
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  TagBag:
+    slots:
+      - tags
+
+slots:
+  tags:
+    range: string
+    multivalued: true
+"""
+    module = GolangGenerator(schema=schema, nullable_primitives=True).render()
+    tagbag = module.structs["TagBag"]
+
+    # multivalued string → []string, NOT []*string (slices are already nil-able)
+    assert tagbag.fields["tags"].type == "[]string"
+
+
+def test_nullable_primitives_serialized_output():
+    """Test that serialized output uses pointer syntax for optional primitives."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=True).serialize()
+
+    # optional int → *int
+    assert "*int" in code
+    # optional string → *string
+    assert "*string" in code
+    # required identifier stays bare string
+    assert 'Name string `json:"name"' in code
+
+
+def test_nullable_primitives_disabled_by_default():
+    """Test that nullable_primitives is off by default."""
+    gen = GolangGenerator(schema=SIMPLE_SCHEMA)
+    assert gen.nullable_primitives is False
+
+
+def test_nullable_primitives_bool_field():
+    """Test that optional bool fields become *bool with nullable_primitives."""
+    schema = """
+id: https://example.org/booltest
+name: booltest
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Feature:
+    slots:
+      - name
+      - enabled
+      - count
+
+slots:
+  name:
+    range: string
+    required: true
+    identifier: true
+  enabled:
+    range: boolean
+  count:
+    range: integer
+"""
+    module = GolangGenerator(schema=schema, nullable_primitives=True).render()
+    feature = module.structs["Feature"]
+
+    assert feature.fields["enabled"].type == "*bool"
+    assert feature.fields["count"].type == "*int"
+    assert feature.fields["name"].type == "string"  # required → no pointer
+
+
+# ---------------------------------------------------------------------------
+# CLI tests for new flags
+# ---------------------------------------------------------------------------
+
+
+def test_cli_alphabetical_sort(tmp_path):
+    """Test CLI --alphabetical-sort flag."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(COMPOSITION_SCHEMA)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_file), "--alphabetical-sort"])
+    assert result.exit_code == 0
+    code = result.output
+    addr_pos = code.index("type Address struct")
+    dataset_pos = code.index("type Dataset struct")
+    person_pos = code.index("type Person struct")
+    assert addr_pos < dataset_pos < person_pos
+
+
+def test_cli_nullable_primitives(tmp_path):
+    """Test CLI --nullable-primitives flag."""
+    from click.testing import CliRunner
+
+    from linkml.generators.golanggen.golanggen import cli
+
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_file), "--nullable-primitives"])
+    assert result.exit_code == 0
+    assert "*int" in result.output
+    assert "*string" in result.output
