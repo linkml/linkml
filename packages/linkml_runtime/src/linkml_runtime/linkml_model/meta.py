@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:25
+# Generation date: 2026-02-18T21:04:52
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -197,7 +197,7 @@ class CommonMetadata(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.description is not None and not isinstance(self.description, str):
             self.description = str(self.description)
 
@@ -263,7 +263,7 @@ class CommonMetadata(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -393,7 +393,7 @@ class Element(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, ElementName):
@@ -493,7 +493,7 @@ class Element(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -610,9 +610,7 @@ class SchemaDefinition(Element):
     ] = empty_dict()
     bindings: Optional[Union[Union[dict, "EnumBinding"], list[Union[dict, "EnumBinding"]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
-        if self.default_prefix is None:
-            self.default_prefix = sfx(str(self.id))
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, SchemaDefinitionName):
@@ -643,8 +641,8 @@ class SchemaDefinition(Element):
             self.default_curi_maps = [self.default_curi_maps] if self.default_curi_maps is not None else []
         self.default_curi_maps = [v if isinstance(v, str) else str(v) for v in self.default_curi_maps]
 
-        if self.default_prefix is not None and not isinstance(self.default_prefix, str):
-            self.default_prefix = str(self.default_prefix)
+        if self.default_prefix is None:
+            self.default_prefix = sfx(str(self.id))
 
         if self.default_range is not None and not isinstance(self.default_range, TypeDefinitionName):
             self.default_range = TypeDefinitionName(self.default_range)
@@ -729,7 +727,7 @@ class AnonymousTypeExpression(YAMLRoot):
         empty_list()
     )
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.pattern is not None and not isinstance(self.pattern, str):
             self.pattern = str(self.pattern)
 
@@ -832,7 +830,7 @@ class TypeDefinition(Element):
         empty_list()
     )
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, TypeDefinitionName):
@@ -919,7 +917,7 @@ class SubsetDefinition(Element):
 
     name: Union[str, SubsetDefinitionName] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, SubsetDefinitionName):
@@ -950,7 +948,7 @@ class Definition(Element):
     values_from: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     string_serialization: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.is_a is not None and not isinstance(self.is_a, DefinitionName):
             self.is_a = DefinitionName(self.is_a)
 
@@ -1012,7 +1010,7 @@ class AnonymousEnumExpression(YAMLRoot):
     matches: Optional[Union[dict, "MatchQuery"]] = None
     concepts: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.code_set is not None and not isinstance(self.code_set, URIorCURIE):
             self.code_set = URIorCURIE(self.code_set)
 
@@ -1094,7 +1092,7 @@ class EnumDefinition(Definition):
     matches: Optional[Union[dict, "MatchQuery"]] = None
     concepts: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, EnumDefinitionName):
@@ -1211,7 +1209,7 @@ class EnumBinding(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.range is not None and not isinstance(self.range, EnumDefinitionName):
             self.range = EnumDefinitionName(self.range)
 
@@ -1293,7 +1291,7 @@ class EnumBinding(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -1371,7 +1369,7 @@ class MatchQuery(YAMLRoot):
     identifier_pattern: Optional[str] = None
     source_ontology: Optional[Union[str, URIorCURIE]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.identifier_pattern is not None and not isinstance(self.identifier_pattern, str):
             self.identifier_pattern = str(self.identifier_pattern)
 
@@ -1402,7 +1400,7 @@ class ReachabilityQuery(YAMLRoot):
     include_self: Optional[Union[bool, Bool]] = None
     traverse_up: Optional[Union[bool, Bool]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.source_ontology is not None and not isinstance(self.source_ontology, URIorCURIE):
             self.source_ontology = URIorCURIE(self.source_ontology)
 
@@ -1489,7 +1487,7 @@ class StructuredAlias(YAMLRoot):
     rank: Optional[int] = None
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.literal_form):
             self.MissingRequiredField("literal_form")
         if not isinstance(self.literal_form, str):
@@ -1575,7 +1573,7 @@ class StructuredAlias(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -1675,20 +1673,20 @@ class TypeExpression(Expression):
     equals_number: Optional[int] = None
     minimum_value: Optional[Union[dict, Anything]] = None
     maximum_value: Optional[Union[dict, Anything]] = None
-    none_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]] = (
+    none_of: Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]] = (
         empty_list()
     )
     exactly_one_of: Optional[
-        Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]
+        Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]
     ] = empty_list()
-    any_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]] = (
+    any_of: Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]] = (
         empty_list()
     )
-    all_of: Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]] = (
+    all_of: Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]] = (
         empty_list()
     )
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.pattern is not None and not isinstance(self.pattern, str):
             self.pattern = str(self.pattern)
 
@@ -1762,18 +1760,18 @@ class EnumExpression(Expression):
             list[Union[dict, "PermissibleValue"]],
         ]
     ] = empty_dict()
-    include: Optional[Union[Union[dict, "AnonymousEnumExpression"], list[Union[dict, "AnonymousEnumExpression"]]]] = (
+    include: Optional[Union[Union[dict, AnonymousEnumExpression], list[Union[dict, AnonymousEnumExpression]]]] = (
         empty_list()
     )
-    minus: Optional[Union[Union[dict, "AnonymousEnumExpression"], list[Union[dict, "AnonymousEnumExpression"]]]] = (
+    minus: Optional[Union[Union[dict, AnonymousEnumExpression], list[Union[dict, AnonymousEnumExpression]]]] = (
         empty_list()
     )
     inherits: Optional[Union[Union[str, EnumDefinitionName], list[Union[str, EnumDefinitionName]]]] = empty_list()
-    reachable_from: Optional[Union[dict, "ReachabilityQuery"]] = None
-    matches: Optional[Union[dict, "MatchQuery"]] = None
+    reachable_from: Optional[Union[dict, ReachabilityQuery]] = None
+    matches: Optional[Union[dict, MatchQuery]] = None
     concepts: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.code_set is not None and not isinstance(self.code_set, URIorCURIE):
             self.code_set = URIorCURIE(self.code_set)
 
@@ -1876,7 +1874,7 @@ class AnonymousExpression(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
@@ -1946,7 +1944,7 @@ class AnonymousExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -2072,7 +2070,7 @@ class PathExpression(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.followed_by is not None and not isinstance(self.followed_by, PathExpression):
             self.followed_by = PathExpression(**as_dict(self.followed_by))
 
@@ -2172,7 +2170,7 @@ class PathExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -2258,6 +2256,7 @@ class SlotExpression(Expression):
         "exact_cardinality",
         "minimum_cardinality",
         "maximum_cardinality",
+        "array",
     ]
 
     class_class_uri: ClassVar[URIRef] = LINKML["SlotExpression"]
@@ -2302,8 +2301,9 @@ class SlotExpression(Expression):
     all_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], list[Union[dict, "AnonymousSlotExpression"]]]] = (
         empty_list()
     )
+    array: Optional[Union[dict, "ArrayExpression"]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.range is not None and not isinstance(self.range, ElementName):
             self.range = ElementName(self.range)
 
@@ -2400,6 +2400,9 @@ class SlotExpression(Expression):
             v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.all_of
         ]
 
+        if self.array is not None and not isinstance(self.array, ArrayExpression):
+            self.array = ArrayExpression(**as_dict(self.array))
+
         super().__post_init__(**kwargs)
 
 
@@ -2424,6 +2427,7 @@ class AnonymousSlotExpression(AnonymousExpression):
         "exact_cardinality",
         "minimum_cardinality",
         "maximum_cardinality",
+        "array",
     ]
 
     class_class_uri: ClassVar[URIRef] = LINKML["AnonymousSlotExpression"]
@@ -2468,8 +2472,9 @@ class AnonymousSlotExpression(AnonymousExpression):
     all_of: Optional[Union[Union[dict, "AnonymousSlotExpression"], list[Union[dict, "AnonymousSlotExpression"]]]] = (
         empty_list()
     )
+    array: Optional[Union[dict, "ArrayExpression"]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.range is not None and not isinstance(self.range, ElementName):
             self.range = ElementName(self.range)
 
@@ -2566,6 +2571,9 @@ class AnonymousSlotExpression(AnonymousExpression):
             v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.all_of
         ]
 
+        if self.array is not None and not isinstance(self.array, ArrayExpression):
+            self.array = ArrayExpression(**as_dict(self.array))
+
         super().__post_init__(**kwargs)
 
 
@@ -2577,7 +2585,6 @@ class SlotDefinition(Definition):
 
     _inherited_slots: ClassVar[list[str]] = [
         "domain",
-        "array",
         "inherited",
         "readonly",
         "ifabsent",
@@ -2607,6 +2614,7 @@ class SlotDefinition(Definition):
         "exact_cardinality",
         "minimum_cardinality",
         "maximum_cardinality",
+        "array",
     ]
 
     class_class_uri: ClassVar[URIRef] = LINKML["SlotDefinition"]
@@ -2618,7 +2626,6 @@ class SlotDefinition(Definition):
     singular_name: Optional[str] = None
     domain: Optional[Union[str, ClassDefinitionName]] = None
     slot_uri: Optional[Union[str, URIorCURIE]] = None
-    array: Optional[Union[dict, "ArrayExpression"]] = None
     inherited: Optional[Union[bool, Bool]] = None
     readonly: Optional[str] = None
     ifabsent: Optional[str] = None
@@ -2695,8 +2702,9 @@ class SlotDefinition(Definition):
     all_of: Optional[Union[Union[dict, AnonymousSlotExpression], list[Union[dict, AnonymousSlotExpression]]]] = (
         empty_list()
     )
+    array: Optional[Union[dict, "ArrayExpression"]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, SlotDefinitionName):
@@ -2710,9 +2718,6 @@ class SlotDefinition(Definition):
 
         if self.slot_uri is not None and not isinstance(self.slot_uri, URIorCURIE):
             self.slot_uri = URIorCURIE(self.slot_uri)
-
-        if self.array is not None and not isinstance(self.array, ArrayExpression):
-            self.array = ArrayExpression(**as_dict(self.array))
 
         if self.inherited is not None and not isinstance(self.inherited, Bool):
             self.inherited = Bool(self.inherited)
@@ -2935,6 +2940,9 @@ class SlotDefinition(Definition):
             v if isinstance(v, AnonymousSlotExpression) else AnonymousSlotExpression(**as_dict(v)) for v in self.all_of
         ]
 
+        if self.array is not None and not isinstance(self.array, ArrayExpression):
+            self.array = ArrayExpression(**as_dict(self.array))
+
         super().__post_init__(**kwargs)
 
 
@@ -2967,7 +2975,7 @@ class ClassExpression(YAMLRoot):
         Union[dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], list[Union[dict, SlotDefinition]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.any_of, list):
             self.any_of = [self.any_of] if self.any_of is not None else []
         self.any_of = [
@@ -3029,7 +3037,7 @@ class AnonymousClassExpression(AnonymousExpression):
         Union[dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], list[Union[dict, SlotDefinition]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.is_a is not None and not isinstance(self.is_a, DefinitionName):
             self.is_a = DefinitionName(self.is_a)
 
@@ -3107,6 +3115,8 @@ class ClassDefinition(Definition):
         empty_list()
     )
     children_are_mutually_disjoint: Optional[Union[bool, Bool]] = None
+    extra_slots: Optional[Union[dict, "ExtraSlotsExpression"]] = None
+    alias: Optional[str] = None
     is_a: Optional[Union[str, ClassDefinitionName]] = None
     mixins: Optional[Union[Union[str, ClassDefinitionName], list[Union[str, ClassDefinitionName]]]] = empty_list()
     apply_to: Optional[Union[Union[str, ClassDefinitionName], list[Union[str, ClassDefinitionName]]]] = empty_list()
@@ -3126,7 +3136,7 @@ class ClassDefinition(Definition):
         Union[dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], list[Union[dict, SlotDefinition]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.name):
             self.MissingRequiredField("name")
         if not isinstance(self.name, ClassDefinitionName):
@@ -3190,6 +3200,12 @@ class ClassDefinition(Definition):
             self.children_are_mutually_disjoint, Bool
         ):
             self.children_are_mutually_disjoint = Bool(self.children_are_mutually_disjoint)
+
+        if self.extra_slots is not None and not isinstance(self.extra_slots, ExtraSlotsExpression):
+            self.extra_slots = ExtraSlotsExpression(**as_dict(self.extra_slots))
+
+        if self.alias is not None and not isinstance(self.alias, str):
+            self.alias = str(self.alias)
 
         if self.is_a is not None and not isinstance(self.is_a, ClassDefinitionName):
             self.is_a = ClassDefinitionName(self.is_a)
@@ -3313,7 +3329,7 @@ class ClassRule(ClassLevelRule):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.preconditions is not None and not isinstance(self.preconditions, AnonymousClassExpression):
             self.preconditions = AnonymousClassExpression(**as_dict(self.preconditions))
 
@@ -3404,7 +3420,7 @@ class ClassRule(ClassLevelRule):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -3525,7 +3541,7 @@ class ArrayExpression(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.exact_number_dimensions is not None and not isinstance(self.exact_number_dimensions, int):
             self.exact_number_dimensions = int(self.exact_number_dimensions)
 
@@ -3607,7 +3623,7 @@ class ArrayExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -3729,7 +3745,7 @@ class DimensionExpression(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.alias is not None and not isinstance(self.alias, str):
             self.alias = str(self.alias)
 
@@ -3811,7 +3827,7 @@ class DimensionExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -3932,7 +3948,7 @@ class PatternExpression(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.syntax is not None and not isinstance(self.syntax, str):
             self.syntax = str(self.syntax)
 
@@ -4011,7 +4027,7 @@ class PatternExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -4134,7 +4150,7 @@ class ImportExpression(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.import_from):
             self.MissingRequiredField("import_from")
         if not isinstance(self.import_from, URIorCURIE):
@@ -4214,7 +4230,7 @@ class ImportExpression(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -4291,7 +4307,7 @@ class Setting(YAMLRoot):
     setting_key: Union[str, SettingSettingKey] = None
     setting_value: str = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.setting_key):
             self.MissingRequiredField("setting_key")
         if not isinstance(self.setting_key, SettingSettingKey):
@@ -4321,7 +4337,7 @@ class Prefix(YAMLRoot):
     prefix_prefix: Union[str, PrefixPrefixPrefix] = None
     prefix_reference: Union[str, URI] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.prefix_prefix):
             self.MissingRequiredField("prefix_prefix")
         if not isinstance(self.prefix_prefix, PrefixPrefixPrefix):
@@ -4351,7 +4367,7 @@ class LocalName(YAMLRoot):
     local_name_source: Union[str, LocalNameLocalNameSource] = None
     local_name_value: str = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.local_name_source):
             self.MissingRequiredField("local_name_source")
         if not isinstance(self.local_name_source, LocalNameLocalNameSource):
@@ -4382,7 +4398,7 @@ class Example(YAMLRoot):
     description: Optional[str] = None
     object: Optional[Union[dict, Anything]] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.value is not None and not isinstance(self.value, str):
             self.value = str(self.value)
 
@@ -4408,7 +4424,7 @@ class AltDescription(YAMLRoot):
     source: Union[str, AltDescriptionSource] = None
     description: str = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.source):
             self.MissingRequiredField("source")
         if not isinstance(self.source, AltDescriptionSource):
@@ -4484,7 +4500,7 @@ class PermissibleValue(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.text):
             self.MissingRequiredField("text")
         if not isinstance(self.text, PermissibleValueText):
@@ -4580,7 +4596,7 @@ class PermissibleValue(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -4699,7 +4715,7 @@ class UniqueKey(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.unique_key_name):
             self.MissingRequiredField("unique_key_name")
         if not isinstance(self.unique_key_name, UniqueKeyUniqueKeyName):
@@ -4785,7 +4801,7 @@ class UniqueKey(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -4846,7 +4862,7 @@ class UniqueKey(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class TypeMapping(YAMLRoot):
     """
     Represents how a slot or type can be serialized to a format.
@@ -4904,7 +4920,7 @@ class TypeMapping(YAMLRoot):
     categories: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
     keywords: Optional[Union[str, list[str]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.framework):
             self.MissingRequiredField("framework")
         if not isinstance(self.framework, TypeMappingFramework):
@@ -4985,7 +5001,7 @@ class TypeMapping(YAMLRoot):
             self.aliases = [self.aliases] if self.aliases is not None else []
         self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
 
-        self._normalize_inlined_as_dict(
+        self._normalize_inlined_as_list(
             slot_name="structured_aliases", slot_type=StructuredAlias, key_name="literal_form", keyed=False
         )
 
@@ -5042,6 +5058,34 @@ class TypeMapping(YAMLRoot):
         if not isinstance(self.keywords, list):
             self.keywords = [self.keywords] if self.keywords is not None else []
         self.keywords = [v if isinstance(v, str) else str(v) for v in self.keywords]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class ExtraSlotsExpression(YAMLRoot):
+    """
+    An expression that defines how to handle additional data in an instance of class
+    beyond the slots/attributes defined for that class.
+    See `extra_slots` for usage examples.
+    """
+
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = LINKML["ExtraSlotsExpression"]
+    class_class_curie: ClassVar[str] = "linkml:ExtraSlotsExpression"
+    class_name: ClassVar[str] = "extra_slots_expression"
+    class_model_uri: ClassVar[URIRef] = LINKML.ExtraSlotsExpression
+
+    allowed: Optional[Union[bool, Bool]] = None
+    range_expression: Optional[Union[dict, AnonymousClassExpression]] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self.allowed is not None and not isinstance(self.allowed, Bool):
+            self.allowed = Bool(self.allowed)
+
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
+            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
 
         super().__post_init__(**kwargs)
 
@@ -5592,7 +5636,7 @@ slots.include = Slot(
     curie=LINKML.curie("include"),
     model_uri=LINKML.include,
     domain=EnumExpression,
-    range=Optional[Union[Union[dict, "AnonymousEnumExpression"], list[Union[dict, "AnonymousEnumExpression"]]]],
+    range=Optional[Union[Union[dict, AnonymousEnumExpression], list[Union[dict, AnonymousEnumExpression]]]],
 )
 
 slots.minus = Slot(
@@ -5601,7 +5645,7 @@ slots.minus = Slot(
     curie=LINKML.curie("minus"),
     model_uri=LINKML.minus,
     domain=EnumExpression,
-    range=Optional[Union[Union[dict, "AnonymousEnumExpression"], list[Union[dict, "AnonymousEnumExpression"]]]],
+    range=Optional[Union[Union[dict, AnonymousEnumExpression], list[Union[dict, AnonymousEnumExpression]]]],
 )
 
 slots.inherits = Slot(
@@ -5619,7 +5663,7 @@ slots.matches = Slot(
     curie=LINKML.curie("matches"),
     model_uri=LINKML.matches,
     domain=EnumExpression,
-    range=Optional[Union[dict, "MatchQuery"]],
+    range=Optional[Union[dict, MatchQuery]],
 )
 
 slots.identifier_pattern = Slot(
@@ -5646,7 +5690,7 @@ slots.reachable_from = Slot(
     curie=LINKML.curie("reachable_from"),
     model_uri=LINKML.reachable_from,
     domain=EnumExpression,
-    range=Optional[Union[dict, "ReachabilityQuery"]],
+    range=Optional[Union[dict, ReachabilityQuery]],
 )
 
 slots.source_ontology = Slot(
@@ -6177,6 +6221,24 @@ slots.slot_names_unique = Slot(
     curie=LINKML.curie("slot_names_unique"),
     model_uri=LINKML.slot_names_unique,
     domain=Definition,
+    range=Optional[Union[bool, Bool]],
+)
+
+slots.extra_slots = Slot(
+    uri=LINKML.extra_slots,
+    name="extra_slots",
+    curie=LINKML.curie("extra_slots"),
+    model_uri=LINKML.extra_slots,
+    domain=ClassDefinition,
+    range=Optional[Union[dict, "ExtraSlotsExpression"]],
+)
+
+slots.allowed = Slot(
+    uri=LINKML.allowed,
+    name="allowed",
+    curie=LINKML.curie("allowed"),
+    model_uri=LINKML.allowed,
+    domain=None,
     range=Optional[Union[bool, Bool]],
 )
 
@@ -7137,7 +7199,7 @@ slots.type_expression_any_of = Slot(
     curie=LINKML.curie("any_of"),
     model_uri=LINKML.type_expression_any_of,
     domain=None,
-    range=Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]],
+    range=Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]],
 )
 
 slots.type_expression_all_of = Slot(
@@ -7146,7 +7208,7 @@ slots.type_expression_all_of = Slot(
     curie=LINKML.curie("all_of"),
     model_uri=LINKML.type_expression_all_of,
     domain=None,
-    range=Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]],
+    range=Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]],
 )
 
 slots.type_expression_exactly_one_of = Slot(
@@ -7155,7 +7217,7 @@ slots.type_expression_exactly_one_of = Slot(
     curie=LINKML.curie("exactly_one_of"),
     model_uri=LINKML.type_expression_exactly_one_of,
     domain=None,
-    range=Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]],
+    range=Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]],
 )
 
 slots.type_expression_none_of = Slot(
@@ -7164,7 +7226,7 @@ slots.type_expression_none_of = Slot(
     curie=LINKML.curie("none_of"),
     model_uri=LINKML.type_expression_none_of,
     domain=None,
-    range=Optional[Union[Union[dict, "AnonymousTypeExpression"], list[Union[dict, "AnonymousTypeExpression"]]]],
+    range=Optional[Union[Union[dict, AnonymousTypeExpression], list[Union[dict, AnonymousTypeExpression]]]],
 )
 
 slots.type_definition_union_of = Slot(

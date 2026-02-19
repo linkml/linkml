@@ -38,8 +38,6 @@ slots:
     alias: value
     required: true
     range: AnyValue
-    annotations:
-      simple_dict_value: true
 
 
 classes:

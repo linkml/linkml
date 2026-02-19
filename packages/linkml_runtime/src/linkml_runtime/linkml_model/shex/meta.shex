@@ -1,3 +1,4 @@
+# metamodel_version: 1.7.0
 BASE <https://w3id.org/linkml/>
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -201,7 +202,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
-          <all_of> @<AnonymousSlotExpression> *
+          <all_of> @<AnonymousSlotExpression> * ;
+          <array> @<ArrayExpression> ?
        ) ;
        rdf:type [ <AnonymousSlotExpression> ] ?
     )
@@ -311,6 +313,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <represents_relationship> @<Boolean> ? ;
           <disjoint_with> @<ClassDefinition> * ;
           <children_are_mutually_disjoint> @<Boolean> ? ;
+          <extra_slots> @<ExtraSlotsExpression> ? ;
+          skos:prefLabel @<String> ? ;
           <mixins> @<ClassDefinition> * ;
           <apply_to> @<ClassDefinition> * ;
           <any_of> @<AnonymousClassExpression> * ;
@@ -699,6 +703,16 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     } OR @<Annotation>
 )
 
+<ExtraSlotsExpression> CLOSED {
+    (  $<ExtraSlotsExpression_tes> (  &<Expression_tes> ;
+          rdf:type [ <Expression> ] ? ;
+          <allowed> @<Boolean> ? ;
+          <range_expression> @<AnonymousClassExpression> ?
+       ) ;
+       rdf:type [ <ExtraSlotsExpression> ] ?
+    )
+}
+
 <ImportExpression> CLOSED {
     (  $<ImportExpression_tes> (  &<Extensible_tes> ;
           rdf:type [ <Extensible> ] ? ;
@@ -990,7 +1004,6 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <singular_name> @<String> ? ;
           <domain> @<ClassDefinition> ? ;
           <slot_uri> @<Uriorcurie> ? ;
-          <array> @<ArrayExpression> ? ;
           <inherited> @<Boolean> ? ;
           <readonly> @<String> ? ;
           <ifabsent> @<String> ? ;
@@ -1057,7 +1070,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
-          <all_of> @<AnonymousSlotExpression> *
+          <all_of> @<AnonymousSlotExpression> * ;
+          <array> @<ArrayExpression> ?
        ) ;
        rdf:type [ <SlotDefinition> ]
     )
@@ -1095,7 +1109,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <none_of> @<AnonymousSlotExpression> * ;
           <exactly_one_of> @<AnonymousSlotExpression> * ;
           <any_of> @<AnonymousSlotExpression> * ;
-          <all_of> @<AnonymousSlotExpression> *
+          <all_of> @<AnonymousSlotExpression> * ;
+          <array> @<ArrayExpression> ?
        ) ;
        rdf:type [ <SlotExpression> ] ?
     )

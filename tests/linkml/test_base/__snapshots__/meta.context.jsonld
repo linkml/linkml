@@ -63,6 +63,10 @@
          "@type": "@id",
          "@id": "all_of"
       },
+      "allowed": {
+         "@type": "xsd:boolean",
+         "@id": "allowed"
+      },
       "source": {
          "@type": "xsd:anyURI",
          "@id": "dcterms:source"
@@ -305,6 +309,10 @@
       "extensions": {
          "@type": "@id",
          "@id": "extensions"
+      },
+      "extra_slots": {
+         "@type": "@id",
+         "@id": "extra_slots"
       },
       "followed_by": {
          "@type": "@id",
@@ -982,6 +990,9 @@
       },
       "Extension": {
          "@id": "Extension"
+      },
+      "ExtraSlotsExpression": {
+         "@id": "ExtraSlotsExpression"
       },
       "ImportExpression": {
          "@id": "ImportExpression"
