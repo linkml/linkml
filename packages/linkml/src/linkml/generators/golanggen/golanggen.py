@@ -121,6 +121,17 @@ class GolangGenerator(OOCodeGenerator):
     preserving intentional zero values.
     """
 
+    named_slot_types: bool = False
+    """
+    Generate named Go types for parent slots that have ``is_a`` children.
+
+    When enabled, a slot like ``signature`` with children ``owner_signature``
+    and ``witness_signature`` produces ``type Signature string`` and all child
+    slots use ``Signature`` instead of the bare ``string``.  This adds
+    compile-time type safety between slot families.  Named slot types follow
+    the same pointer rules as regular primitives.
+    """
+
     template_dir: str | Path | None = None
     """
     Override templates for each GolangTemplateModel.
@@ -132,7 +143,8 @@ class GolangGenerator(OOCodeGenerator):
 
     # Private attributes
     _needs_time: bool = field(default=False, init=False)
-    _type_defs: dict[str, str] = field(default_factory=dict, init=False)
+    _type_defs: dict[str, tuple[str, str | None]] = field(default_factory=dict, init=False)
+    _parent_slot_names: set[str] = field(default_factory=set, init=False)
 
     # Go zero-value defaults by type
     GO_TYPE_DEFAULTS = {
@@ -193,8 +205,44 @@ class GolangGenerator(OOCodeGenerator):
             go_type = "string"
 
         alias_name = f"{camelcase(class_name)}Id"
-        self._type_defs[alias_name] = go_type
+        self._type_defs[alias_name] = (go_type, None)
         return alias_name
+
+    def _named_type_for_slot(self, slot_name: str) -> str:
+        """
+        Return a named Go type for a parent slot that has ``is_a`` children.
+
+        Creates a type definition (e.g. ``type Signature string``) and returns
+        its name so child slots can use it instead of the bare primitive.  The
+        definition is cached in :attr:`_type_defs` so each parent slot produces
+        at most one type definition.
+
+        Args:
+            slot_name: The LinkML slot name (must be a parent slot).
+
+        Returns:
+            The Go type-definition name (e.g. ``"Signature"``).
+        """
+        type_name = camelcase(slot_name)
+        if type_name in self._type_defs:
+            return type_name
+
+        sv = self.schemaview
+        slot = sv.get_slot(slot_name)
+        slot_range = slot.range if slot.range else "string"
+
+        if slot_range in sv.all_types():
+            t = sv.get_type(slot_range)
+            if t.base and t.base in TYPE_MAP:
+                go_type = TYPE_MAP[t.base]
+            else:
+                go_type = "string"
+        else:
+            go_type = "string"
+
+        description = slot.description if slot.description else None
+        self._type_defs[type_name] = (go_type, description)
+        return type_name
 
     @staticmethod
     def sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
@@ -349,17 +397,31 @@ class GolangGenerator(OOCodeGenerator):
             # Default to string
             base_type = "string"
 
+        # If the slot's is_a parent is a parent slot, use the named type.
+        # If the slot itself is a parent slot, also use its own named type.
+        if slot.is_a and slot.is_a in self._parent_slot_names:
+            base_type = self._named_type_for_slot(slot.is_a)
+        elif slot.name in self._parent_slot_names:
+            base_type = self._named_type_for_slot(slot.name)
+
+        # Resolve the underlying Go type for pointer-promotion checks.
+        # Named slot types backed by primitives follow the same rules.
+        td = self._type_defs.get(base_type)
+        underlying_type = td[0] if td else base_type
+
         # time.Time is always a pointer when optional (single-valued, not
         # required/identifier/key).  Unlike plain primitives this is not gated
         # by ``nullable_primitives`` because Go's zero ``time.Time{}`` is
         # almost never a meaningful value.
         is_optional = not (slot.required or slot.identifier or slot.key)
-        if base_type == "time.Time" and not slot.multivalued and is_optional:
-            base_type = "*time.Time"
+        if underlying_type == "time.Time" and not slot.multivalued and is_optional:
+            base_type = f"*{base_type}"
 
         # Use pointer for optional primitive types when nullable_primitives is enabled.
         # Slices are already nil-able, so skip multivalued slots.
-        elif self.nullable_primitives and not slot.multivalued and base_type in GO_PRIMITIVE_TYPES and is_optional:
+        elif (
+            self.nullable_primitives and not slot.multivalued and underlying_type in GO_PRIMITIVE_TYPES and is_optional
+        ):
             base_type = f"*{base_type}"
 
         # Handle multivalued slots
@@ -411,6 +473,13 @@ class GolangGenerator(OOCodeGenerator):
         self._type_defs = {}
         self._needs_time = False
 
+        # Precompute which slots have is_a children (parent slots get named types)
+        self._parent_slot_names = set()
+        if self.named_slot_types:
+            for slot_name in sv.all_slots():
+                if sv.slot_children(slot_name):
+                    self._parent_slot_names.add(slot_name)
+
         # Determine package name
         package_name = self.package_name
         if package_name is None:
@@ -439,9 +508,11 @@ class GolangGenerator(OOCodeGenerator):
             structs[struct_result.struct.name] = struct_result.struct
 
         # Add type definitions for referenced (non-inlined) class identifiers
-        for td_name, go_type in self._type_defs.items():
+        # and named slot types.
+        for td_name, (go_type, description) in self._type_defs.items():
             structs[td_name] = GolangStruct(
                 name=td_name,
+                description=description,
                 is_type_alias=True,
                 type_alias_value=go_type,
             )
@@ -526,6 +597,12 @@ _TEMPLATE_NAMES = [
     help="Use pointer types for optional primitives so omitempty only triggers on nil.",
 )
 @click.option(
+    "--named-slot-types/--no-named-slot-types",
+    default=False,
+    show_default=True,
+    help="Generate named Go types for parent slots with is_a children for type safety.",
+)
+@click.option(
     "--template-dir",
     type=click.Path(),
     help="""
@@ -549,6 +626,7 @@ def cli(
     package_name: str | None = None,
     alphabetical_sort: bool = False,
     nullable_primitives: bool = True,
+    named_slot_types: bool = False,
     template_dir: str | None = None,
     **args,
 ):
@@ -570,6 +648,7 @@ def cli(
         package_name=package_name,
         alphabetical_sort=alphabetical_sort,
         nullable_primitives=nullable_primitives,
+        named_slot_types=named_slot_types,
         template_dir=template_dir,
         **args,
     )

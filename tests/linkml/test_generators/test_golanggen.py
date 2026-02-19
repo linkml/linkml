@@ -1079,3 +1079,156 @@ slots:
     assert shape.fields["vertices"].type == "[]Point"
     # No type alias should be generated
     assert "PointId" not in module.structs
+
+
+# ---------------------------------------------------------------------------
+# Slot is_a (named slot types) tests
+# ---------------------------------------------------------------------------
+
+SLOT_ISA_SCHEMA = """
+id: https://example.org/slot_isa
+name: slot_isa_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Document:
+    slots:
+      - signature
+      - owner_signature
+      - witness_signature
+      - score
+      - final_score
+
+slots:
+  signature:
+    range: string
+    description: A base signature slot
+  owner_signature:
+    is_a: signature
+    range: string
+    required: true
+  witness_signature:
+    is_a: signature
+    range: string
+  score:
+    range: integer
+    description: A base score slot
+  final_score:
+    is_a: score
+    range: integer
+"""
+
+
+def test_slot_is_a_disabled_by_default():
+    """named_slot_types is off by default — child slots use bare primitives."""
+    gen = GolangGenerator(schema=SLOT_ISA_SCHEMA)
+    assert gen.named_slot_types is False
+
+    module = gen.render()
+    doc = module.structs["Document"]
+    assert doc.fields["owner_signature"].type == "string"
+    assert doc.fields["witness_signature"].type == "*string"
+    assert "Signature" not in module.structs
+
+
+def test_slot_is_a_produces_named_type():
+    """Parent slot with children generates a named type definition."""
+    code = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True).serialize()
+    assert "type Signature string" in code
+
+
+def test_slot_is_a_child_uses_parent_type():
+    """Child slot uses the parent named type, not the bare primitive."""
+    module = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True).render()
+    doc = module.structs["Document"]
+
+    # owner_signature is required → bare Signature (no pointer)
+    assert doc.fields["owner_signature"].type == "Signature"
+    # witness_signature is optional → pointer to Signature
+    assert doc.fields["witness_signature"].type == "*Signature"
+
+
+def test_slot_is_a_pointer_when_optional():
+    """Optional child slot becomes *ParentType with nullable_primitives."""
+    module = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True, nullable_primitives=True).render()
+    doc = module.structs["Document"]
+
+    assert doc.fields["witness_signature"].type == "*Signature"
+
+
+def test_slot_is_a_required_no_pointer():
+    """Required child slot stays ParentType (no pointer)."""
+    module = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True, nullable_primitives=True).render()
+    doc = module.structs["Document"]
+
+    assert doc.fields["owner_signature"].type == "Signature"
+
+
+def test_slot_is_a_multivalued():
+    """Multivalued child slot becomes []ParentType."""
+    schema = """
+id: https://example.org/slot_isa_multi
+name: slot_isa_multi_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Document:
+    slots:
+      - signature
+      - all_signatures
+
+slots:
+  signature:
+    range: string
+  all_signatures:
+    is_a: signature
+    range: string
+    multivalued: true
+"""
+    module = GolangGenerator(schema=schema, named_slot_types=True).render()
+    doc = module.structs["Document"]
+
+    assert doc.fields["all_signatures"].type == "[]Signature"
+
+
+def test_slot_is_a_integer_range():
+    """Named slot type works for non-string primitives (e.g., type Score int)."""
+    code = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True).serialize()
+    assert "type Score int" in code
+
+    module = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True).render()
+    doc = module.structs["Document"]
+
+    # final_score is optional integer child → *Score
+    assert doc.fields["final_score"].type == "*Score"
+
+
+def test_slot_is_a_parent_used_directly():
+    """A parent slot used directly on a class also uses the named type."""
+    module = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True).render()
+    doc = module.structs["Document"]
+
+    # signature is the parent slot, optional → *Signature
+    assert doc.fields["signature"].type == "*Signature"
+    # score is the parent slot, optional → *Score
+    assert doc.fields["score"].type == "*Score"
+
+
+def test_slot_is_a_description_on_type():
+    """Parent slot description appears as a Go comment above the type definition."""
+    code = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True).serialize()
+
+    # Signature has description "A base signature slot"
+    assert "// A base signature slot\ntype Signature string" in code
+    # Score has description "A base score slot"
+    assert "// A base score slot\ntype Score int" in code
