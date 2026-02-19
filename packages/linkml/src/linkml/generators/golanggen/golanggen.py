@@ -67,6 +67,7 @@ GO_PRIMITIVE_TYPES = frozenset(
         "float32",
         "float64",
         "bool",
+        "time.Time",
     }
 )
 
