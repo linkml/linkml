@@ -267,13 +267,17 @@ def test_enum_generation():
     "slot_name, expected_type",
     [
         ("name", "string"),
-        ("age", "int"),
-        ("score", "float64"),
+        ("age", "*int"),
+        ("score", "*float64"),
     ],
     ids=["string_slot", "integer_slot", "decimal_slot"],
 )
 def test_type_mapping(slot_name, expected_type):
-    """Test that LinkML types are correctly mapped to Go types."""
+    """Test that LinkML types are correctly mapped to Go types.
+
+    nullable_primitives is True by default, so optional primitives are pointers.
+    The ``name`` slot is required + identifier, so it stays a bare string.
+    """
     module = GolangGenerator(schema=SIMPLE_SCHEMA).render()
     person = module.structs["Person"]
     field = person.fields[slot_name]
@@ -402,9 +406,7 @@ def test_package_name_override():
     assert module.package_name == "mypkg"
 
 
-def test_imports_time_package():
-    """Test that the time package is imported when date/time types are used."""
-    schema = """
+TIME_SCHEMA = """
 id: https://example.org/dates
 name: dates_test
 default_range: string
@@ -420,14 +422,39 @@ classes:
   Event:
     slots:
       - started_at
+      - created_at
+      - timestamps
 
 slots:
   started_at:
     range: date
+  created_at:
+    range: datetime
+    required: true
+  timestamps:
+    range: date
+    multivalued: true
 """
-    code = GolangGenerator(schema=schema).serialize()
+
+
+def test_imports_time_package():
+    """Test that the time package is imported when date/time types are used."""
+    code = GolangGenerator(schema=TIME_SCHEMA).serialize()
     assert '"time"' in code
     assert "time.Time" in code
+
+
+def test_time_always_pointer_when_optional():
+    """time.Time is always a pointer when optional, regardless of nullable_primitives."""
+    module = GolangGenerator(schema=TIME_SCHEMA, nullable_primitives=False).render()
+    event = module.structs["Event"]
+
+    # optional date → *time.Time (always, even with nullable_primitives=False)
+    assert event.fields["started_at"].type == "*time.Time"
+    # required datetime → time.Time (no pointer)
+    assert event.fields["created_at"].type == "time.Time"
+    # multivalued date → []time.Time (slices are already nil-able)
+    assert event.fields["timestamps"].type == "[]time.Time"
 
 
 def test_root_struct_names():
@@ -822,10 +849,10 @@ def test_nullable_primitives_serialized_output():
     assert 'Name string `json:"name"' in code
 
 
-def test_nullable_primitives_disabled_by_default():
-    """Test that nullable_primitives is off by default."""
+def test_nullable_primitives_enabled_by_default():
+    """Test that nullable_primitives is on by default."""
     gen = GolangGenerator(schema=SIMPLE_SCHEMA)
-    assert gen.nullable_primitives is False
+    assert gen.nullable_primitives is True
 
 
 def test_nullable_primitives_bool_field():

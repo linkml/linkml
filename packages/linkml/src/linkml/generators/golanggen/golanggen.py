@@ -67,7 +67,6 @@ GO_PRIMITIVE_TYPES = frozenset(
         "float32",
         "float64",
         "bool",
-        "time.Time",
     }
 )
 
@@ -112,14 +111,14 @@ class GolangGenerator(OOCodeGenerator):
     alphabetical_sort: bool = False
     """Sort structs and enums alphabetically by name for deterministic output."""
 
-    nullable_primitives: bool = False
+    nullable_primitives: bool = True
     """
     Use pointer types for optional primitive fields (e.g. ``*string``, ``*int``, ``*bool``).
 
-    When False (default), optional primitives use bare Go types and ``omitempty``
-    omits zero values (``""``, ``0``, ``false``).  When True, optional primitives
-    become pointers so that ``omitempty`` only omits ``nil``, preserving
-    intentional zero values.
+    When False, optional primitives use bare Go types and ``omitempty``
+    omits zero values (``""``, ``0``, ``false``).  When True (default), optional
+    primitives become pointers so that ``omitempty`` only omits ``nil``,
+    preserving intentional zero values.
     """
 
     template_dir: str | Path | None = None
@@ -350,14 +349,17 @@ class GolangGenerator(OOCodeGenerator):
             # Default to string
             base_type = "string"
 
+        # time.Time is always a pointer when optional (single-valued, not
+        # required/identifier/key).  Unlike plain primitives this is not gated
+        # by ``nullable_primitives`` because Go's zero ``time.Time{}`` is
+        # almost never a meaningful value.
+        is_optional = not (slot.required or slot.identifier or slot.key)
+        if base_type == "time.Time" and not slot.multivalued and is_optional:
+            base_type = "*time.Time"
+
         # Use pointer for optional primitive types when nullable_primitives is enabled.
         # Slices are already nil-able, so skip multivalued slots.
-        if (
-            self.nullable_primitives
-            and not slot.multivalued
-            and base_type in GO_PRIMITIVE_TYPES
-            and not (slot.required or slot.identifier or slot.key)
-        ):
+        elif self.nullable_primitives and not slot.multivalued and base_type in GO_PRIMITIVE_TYPES and is_optional:
             base_type = f"*{base_type}"
 
         # Handle multivalued slots
@@ -519,7 +521,7 @@ _TEMPLATE_NAMES = [
 )
 @click.option(
     "--nullable-primitives/--no-nullable-primitives",
-    default=False,
+    default=True,
     show_default=True,
     help="Use pointer types for optional primitives so omitempty only triggers on nil.",
 )
@@ -546,7 +548,7 @@ def cli(
     yamlfile,
     package_name: str | None = None,
     alphabetical_sort: bool = False,
-    nullable_primitives: bool = False,
+    nullable_primitives: bool = True,
     template_dir: str | None = None,
     **args,
 ):
