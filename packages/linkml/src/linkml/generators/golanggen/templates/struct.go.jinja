@@ -2,7 +2,7 @@
 {% if description %}
 {{ description | go_comment }}
 {% endif -%}
-type {{ name }} = {{ type_alias_value }}
+type {{ name }} {{ type_alias_value }}
 {% else %}
 {% if description %}
 {{ description | go_comment }}

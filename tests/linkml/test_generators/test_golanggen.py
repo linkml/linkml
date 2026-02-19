@@ -32,6 +32,7 @@ classes:
       - name
       - age
       - email
+      - score
 
 slots:
   name:
@@ -42,6 +43,8 @@ slots:
     range: integer
   email:
     range: string
+  score:
+    range: decimal
 """
 
 INHERITANCE_SCHEMA = """
@@ -265,8 +268,9 @@ def test_enum_generation():
     [
         ("name", "string"),
         ("age", "int"),
+        ("score", "float64"),
     ],
-    ids=["string_slot", "integer_slot"],
+    ids=["string_slot", "integer_slot", "decimal_slot"],
 )
 def test_type_mapping(slot_name, expected_type):
     """Test that LinkML types are correctly mapped to Go types."""
@@ -891,3 +895,152 @@ def test_cli_nullable_primitives(tmp_path):
     assert result.exit_code == 0
     assert "*int" in result.output
     assert "*string" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Inlined vs referenced tests
+# ---------------------------------------------------------------------------
+
+REFERENCED_SCHEMA = """
+id: https://example.org/referenced
+name: referenced_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  KeyedInt:
+    slots:
+      - id
+      - value
+
+  Container:
+    tree_root: true
+    slots:
+      - items
+      - single_ref
+
+slots:
+  id:
+    range: string
+    identifier: true
+  value:
+    range: integer
+    required: true
+  items:
+    range: KeyedInt
+    multivalued: true
+  single_ref:
+    range: KeyedInt
+"""
+
+
+def test_referenced_multivalued_uses_id_type():
+    """When a class has an identifier and inlined is not set, multivalued slots
+    should use the identifier type, not the full struct."""
+    module = GolangGenerator(schema=REFERENCED_SCHEMA).render()
+    container = module.structs["Container"]
+
+    # multivalued, not inlined → []KeyedIntId
+    assert container.fields["items"].type == "[]KeyedIntId"
+
+
+def test_referenced_single_valued_uses_pointer_id_type():
+    """A single-valued non-inlined optional slot uses *IdType."""
+    module = GolangGenerator(schema=REFERENCED_SCHEMA).render()
+    container = module.structs["Container"]
+
+    # single-valued, optional, not inlined → *KeyedIntId
+    assert container.fields["single_ref"].type == "*KeyedIntId"
+
+
+def test_referenced_generates_type_definition():
+    """Non-inlined references produce a named Go type definition."""
+    code = GolangGenerator(schema=REFERENCED_SCHEMA).serialize()
+
+    assert "type KeyedIntId string" in code
+
+
+def test_inlined_as_list_uses_full_struct():
+    """When inlined_as_list is set, the full struct should be used."""
+    schema = """
+id: https://example.org/inlined
+name: inlined_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Item:
+    slots:
+      - id
+      - label
+
+  Bag:
+    slots:
+      - contents
+
+slots:
+  id:
+    range: string
+    identifier: true
+  label:
+    range: string
+  contents:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+"""
+    module = GolangGenerator(schema=schema).render()
+    bag = module.structs["Bag"]
+
+    # explicitly inlined → []Item, not []ItemId
+    assert bag.fields["contents"].type == "[]Item"
+
+
+def test_no_identifier_auto_inlined():
+    """A class with no identifier is always inlined (no way to reference it)."""
+    schema = """
+id: https://example.org/noid
+name: noid_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Point:
+    slots:
+      - x
+      - y
+
+  Shape:
+    slots:
+      - vertices
+
+slots:
+  x:
+    range: integer
+    required: true
+  y:
+    range: integer
+    required: true
+  vertices:
+    range: Point
+    multivalued: true
+"""
+    module = GolangGenerator(schema=schema).render()
+    shape = module.structs["Shape"]
+
+    # Point has no identifier → auto-inlined → []Point
+    assert shape.fields["vertices"].type == "[]Point"
+    # No type alias should be generated
+    assert "PointId" not in module.structs

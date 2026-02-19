@@ -41,6 +41,8 @@ TYPE_MAP = {
     "integer": "int",
     "Bool": "bool",
     "boolean": "bool",
+    "Decimal": "float64",
+    "decimal": "float64",
     "float": "float64",
     "double": "float64",
     "XSDDate": "time.Time",
@@ -54,17 +56,19 @@ TYPE_MAP = {
 }
 
 # Go primitive types eligible for pointer promotion via ``nullable_primitives``
-GO_PRIMITIVE_TYPES = frozenset({
-    "string",
-    "int",
-    "int8",
-    "int16",
-    "int32",
-    "int64",
-    "float32",
-    "float64",
-    "bool",
-})
+GO_PRIMITIVE_TYPES = frozenset(
+    {
+        "string",
+        "int",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "float32",
+        "float64",
+        "bool",
+    }
+)
 
 
 @dataclass
@@ -128,6 +132,7 @@ class GolangGenerator(OOCodeGenerator):
 
     # Private attributes
     _needs_time: bool = field(default=False, init=False)
+    _type_defs: dict[str, str] = field(default_factory=dict, init=False)
 
     # Go zero-value defaults by type
     GO_TYPE_DEFAULTS = {
@@ -157,6 +162,39 @@ class GolangGenerator(OOCodeGenerator):
             The zero value literal for that type
         """
         return self.GO_TYPE_DEFAULTS.get(typ, "nil")
+
+    def _reference_type_for_class(self, class_name: str) -> str:
+        """
+        Return a Go type name for referencing a class by its identifier.
+
+        When a slot with a class range is not inlined, the serialised form
+        contains only the identifier value, not the full object.  This method
+        creates a named Go type definition (e.g. ``type PersonId string``)
+        and returns its name so it can be used as the field type.
+
+        Args:
+            class_name: The LinkML class name whose identifier type is needed.
+
+        Returns:
+            The Go type-definition name (e.g. ``"PersonId"``).
+        """
+        sv = self.schemaview
+        id_slot = sv.get_identifier_slot(class_name)
+        if id_slot is None:
+            logger.warning(f"No identifier slot for {class_name}, falling back to string")
+            go_type = "string"
+        elif id_slot.range and id_slot.range in sv.all_types():
+            t = sv.get_type(id_slot.range)
+            if t.base and t.base in TYPE_MAP:
+                go_type = TYPE_MAP[t.base]
+            else:
+                go_type = "string"
+        else:
+            go_type = "string"
+
+        alias_name = f"{camelcase(class_name)}Id"
+        self._type_defs[alias_name] = go_type
+        return alias_name
 
     @staticmethod
     def sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
@@ -282,10 +320,16 @@ class GolangGenerator(OOCodeGenerator):
 
         # Determine base type
         if slot_range in sv.all_classes():
-            # Reference to another class
-            base_type = camelcase(slot_range)
-            # Use pointer for optional complex types
-            if not (slot.required or slot.identifier or slot.key):
+            if sv.is_inlined(slot):
+                # Inlined: embed the full struct
+                base_type = camelcase(slot_range)
+            else:
+                # Referenced: use the identifier type
+                base_type = self._reference_type_for_class(slot_range)
+            # Use pointer for optional complex types (single-valued only;
+            # slices are already nil-able and the pointer is added before
+            # the multivalued check below)
+            if not slot.multivalued and not (slot.required or slot.identifier or slot.key):
                 base_type = f"*{base_type}"
         elif slot_range in sv.all_enums():
             # Reference to enum
@@ -361,6 +405,8 @@ class GolangGenerator(OOCodeGenerator):
             GolangModule containing all generated structs and enums
         """
         sv: SchemaView = self.schemaview
+        self._type_defs = {}
+        self._needs_time = False
 
         # Determine package name
         package_name = self.package_name
@@ -388,6 +434,14 @@ class GolangGenerator(OOCodeGenerator):
         for cls in sorted_classes:
             struct_result = self.generate_struct(cls)
             structs[struct_result.struct.name] = struct_result.struct
+
+        # Add type definitions for referenced (non-inlined) class identifiers
+        for td_name, go_type in self._type_defs.items():
+            structs[td_name] = GolangStruct(
+                name=td_name,
+                is_type_alias=True,
+                type_alias_value=go_type,
+            )
 
         # Sort alphabetically for deterministic output
         if self.alphabetical_sort:
