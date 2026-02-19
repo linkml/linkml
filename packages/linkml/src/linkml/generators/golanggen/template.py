@@ -225,7 +225,22 @@ class GolangModule(GolangTemplateModel):
         A "root class" is one that only appears at the top level of a document,
         i.e. it is never referenced as the type of a field (directly, as a
         pointer, or as a slice element) in any struct.
+
+        When a slot references a class by its identifier (non-inlined), the
+        field type is a type-alias like ``PersonId`` rather than ``Person``.
+        This method resolves such aliases back to their original struct name
+        so that the original class is correctly excluded from root structs.
         """
+        # Build a mapping from type-alias names back to the original struct
+        # name.  Type aliases follow the convention ``{ClassName}Id``.
+        alias_to_struct: dict[str, str] = {}
+        real_struct_names = set(self.struct_names)
+        for s in self.structs.values():
+            if s.is_type_alias and s.name.endswith("Id"):
+                original = s.name[:-2]
+                if original in real_struct_names:
+                    alias_to_struct[s.name] = original
+
         # Collect every struct name that appears as a field type somewhere
         referenced: set[str] = set()
         for struct in self.structs.values():
@@ -238,5 +253,9 @@ class GolangModule(GolangTemplateModel):
                     base = base[2:].lstrip("*")
                 if base in self.structs:
                     referenced.add(base)
+                    # If the field type is a type alias, also mark the
+                    # original struct as referenced.
+                    if base in alias_to_struct:
+                        referenced.add(alias_to_struct[base])
 
         return [name for name in self.struct_names if name not in referenced]

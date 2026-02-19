@@ -442,6 +442,14 @@ def test_root_struct_names():
     assert "Person" not in module.root_struct_names
 
 
+def test_root_struct_names_non_inlined():
+    """Classes referenced via non-inlined slots (type aliases) are not root."""
+    module = GolangGenerator(schema=REFERENCED_SCHEMA).render()
+    # Container is the root; KeyedInt is referenced via KeyedIntId alias
+    assert "Container" in module.root_struct_names
+    assert "KeyedInt" not in module.root_struct_names
+
+
 def test_root_struct_names_no_references():
     """When no class references another, all are root classes."""
     module = GolangGenerator(schema=SIMPLE_SCHEMA).render()
