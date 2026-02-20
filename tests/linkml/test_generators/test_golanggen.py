@@ -444,17 +444,33 @@ def test_imports_time_package():
     assert "time.Time" in code
 
 
-def test_time_always_pointer_when_optional():
-    """time.Time is always a pointer when optional, regardless of nullable_primitives."""
-    module = GolangGenerator(schema=TIME_SCHEMA, nullable_primitives=False).render()
+def test_time_pointer_when_nullable_primitives_enabled():
+    """time.Time is a pointer when optional and nullable_primitives is True."""
+    module = GolangGenerator(schema=TIME_SCHEMA, nullable_primitives=True).render()
     event = module.structs["Event"]
 
-    # optional date → *time.Time (always, even with nullable_primitives=False)
+    # optional date → *time.Time (pointer with nullable_primitives)
     assert event.fields["started_at"].type == "*time.Time"
     # required datetime → time.Time (no pointer)
     assert event.fields["created_at"].type == "time.Time"
     # multivalued date → []time.Time (slices are already nil-able)
     assert event.fields["timestamps"].type == "[]time.Time"
+
+
+def test_time_bare_with_omitzero_when_nullable_primitives_disabled():
+    """time.Time uses bare type + omitzero when nullable_primitives is False."""
+    module = GolangGenerator(schema=TIME_SCHEMA, nullable_primitives=False).render()
+    event = module.structs["Event"]
+
+    # optional date → bare time.Time (no pointer), omitzero=True
+    assert event.fields["started_at"].type == "time.Time"
+    assert event.fields["started_at"].omitzero is True
+    # required datetime → time.Time (no pointer, no omitzero)
+    assert event.fields["created_at"].type == "time.Time"
+    assert event.fields["created_at"].omitzero is False
+    # multivalued date → []time.Time (no omitzero)
+    assert event.fields["timestamps"].type == "[]time.Time"
+    assert event.fields["timestamps"].omitzero is False
 
 
 def test_root_struct_names():
@@ -890,6 +906,150 @@ slots:
     assert feature.fields["enabled"].type == "*bool"
     assert feature.fields["count"].type == "*int"
     assert feature.fields["name"].type == "string"  # required → no pointer
+
+
+# ---------------------------------------------------------------------------
+# omitzero tests (nullable_primitives=False)
+# ---------------------------------------------------------------------------
+
+
+def test_omitzero_on_optional_primitives():
+    """When nullable_primitives=False, optional primitives get omitzero."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=False).render()
+    person = module.structs["Person"]
+
+    # optional int → bare int, omitzero=True
+    assert person.fields["age"].type == "int"
+    assert person.fields["age"].omitzero is True
+    # optional string → bare string, omitzero=True
+    assert person.fields["email"].type == "string"
+    assert person.fields["email"].omitzero is True
+    # optional float64 → bare float64, omitzero=True
+    assert person.fields["score"].type == "float64"
+    assert person.fields["score"].omitzero is True
+
+
+def test_omitzero_not_on_required_fields():
+    """Required/identifier fields never get omitzero."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=False).render()
+    person = module.structs["Person"]
+
+    assert person.fields["name"].omitzero is False
+
+
+def test_omitzero_not_when_nullable_primitives_enabled():
+    """When nullable_primitives=True (default), omitzero is never set."""
+    module = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=True).render()
+    person = module.structs["Person"]
+
+    assert person.fields["age"].omitzero is False
+    assert person.fields["email"].omitzero is False
+
+
+def test_omitzero_not_on_multivalued():
+    """Multivalued fields do not get omitzero (slices are already nil-able)."""
+    schema = """
+id: https://example.org/multitest
+name: multitest
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  TagBag:
+    slots:
+      - tags
+      - dates
+
+slots:
+  tags:
+    range: string
+    multivalued: true
+  dates:
+    range: date
+    multivalued: true
+"""
+    module = GolangGenerator(schema=schema, nullable_primitives=False).render()
+    tagbag = module.structs["TagBag"]
+
+    assert tagbag.fields["tags"].type == "[]string"
+    assert tagbag.fields["tags"].omitzero is False
+    assert tagbag.fields["dates"].type == "[]time.Time"
+    assert tagbag.fields["dates"].omitzero is False
+
+
+def test_omitzero_serialized_output():
+    """Test that omitzero appears in the serialized JSON tags."""
+    code = GolangGenerator(schema=SIMPLE_SCHEMA, nullable_primitives=False).serialize()
+
+    # optional fields get omitempty,omitzero
+    assert 'json:"age,omitempty,omitzero"' in code
+    assert 'json:"email,omitempty,omitzero"' in code
+    # required+identifier → no omitempty, no omitzero
+    assert 'json:"name"' in code
+
+
+def test_omitzero_time_serialized_output():
+    """Test that time.Time fields get omitzero when nullable_primitives is disabled."""
+    code = GolangGenerator(schema=TIME_SCHEMA, nullable_primitives=False).serialize()
+
+    # optional time.Time → bare type with omitempty,omitzero
+    assert 'json:"started_at,omitempty,omitzero"' in code
+    # required time.Time → no omitempty, no omitzero
+    assert 'json:"created_at"' in code
+
+
+def test_omitzero_bool_field():
+    """Test that optional bool gets omitzero when nullable_primitives=False."""
+    schema = """
+id: https://example.org/booltest
+name: booltest
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Feature:
+    slots:
+      - name
+      - enabled
+
+slots:
+  name:
+    range: string
+    required: true
+    identifier: true
+  enabled:
+    range: boolean
+"""
+    module = GolangGenerator(schema=schema, nullable_primitives=False).render()
+    feature = module.structs["Feature"]
+
+    assert feature.fields["enabled"].type == "bool"
+    assert feature.fields["enabled"].omitzero is True
+    assert feature.fields["name"].omitzero is False
+
+
+def test_omitzero_with_named_slot_types():
+    """Named slot types backed by primitives also get omitzero when nullable_primitives=False."""
+    module = GolangGenerator(schema=SLOT_ISA_SCHEMA, named_slot_types=True, nullable_primitives=False).render()
+    doc = module.structs["Document"]
+
+    # witness_signature is optional, backed by string → omitzero
+    assert doc.fields["witness_signature"].type == "Signature"
+    assert doc.fields["witness_signature"].omitzero is True
+    # owner_signature is required → no omitzero
+    assert doc.fields["owner_signature"].type == "Signature"
+    assert doc.fields["owner_signature"].omitzero is False
+    # final_score is optional, backed by int → omitzero
+    assert doc.fields["final_score"].type == "Score"
+    assert doc.fields["final_score"].omitzero is True
 
 
 # ---------------------------------------------------------------------------

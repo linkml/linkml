@@ -107,6 +107,7 @@ class GolangField(GolangTemplateModel):
     pattern: str | None = None
     meta: dict[str, Any] | None = None
     omitempty: bool = True  # Whether to add omitempty to JSON tag
+    omitzero: bool = False  # Whether to add omitzero to JSON tag (Go 1.24+)
 
 
 class GolangStruct(GolangTemplateModel):

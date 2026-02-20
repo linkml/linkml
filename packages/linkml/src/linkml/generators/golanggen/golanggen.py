@@ -115,10 +115,14 @@ class GolangGenerator(OOCodeGenerator):
     """
     Use pointer types for optional primitive fields (e.g. ``*string``, ``*int``, ``*bool``).
 
-    When False, optional primitives use bare Go types and ``omitempty``
-    omits zero values (``""``, ``0``, ``false``).  When True (default), optional
-    primitives become pointers so that ``omitempty`` only omits ``nil``,
-    preserving intentional zero values.
+    When True (default), optional primitives and ``time.Time`` fields become
+    pointers so that ``omitempty`` only omits ``nil``, preserving intentional
+    zero values.
+
+    When False, optional primitives and ``time.Time`` use bare Go types.
+    The ``omitzero`` JSON struct tag (Go 1.24+) is added alongside
+    ``omitempty`` so that zero values — including ``time.Time{}`` — are
+    correctly omitted during JSON marshalling.
     """
 
     named_slot_types: bool = False
@@ -174,6 +178,23 @@ class GolangGenerator(OOCodeGenerator):
             The zero value literal for that type
         """
         return self.GO_TYPE_DEFAULTS.get(typ, "nil")
+
+    def _resolve_underlying_type(self, go_type: str) -> str:
+        """
+        Resolve a Go type through type definitions to get the underlying primitive type.
+
+        Named slot types (e.g. ``Signature``) and reference types (e.g. ``PersonId``)
+        are backed by a primitive.  This method returns the underlying type so callers
+        can check whether it is a primitive or ``time.Time``.
+
+        Args:
+            go_type: The Go type string, possibly a named type.
+
+        Returns:
+            The underlying Go type (e.g. ``"string"``, ``"int"``, ``"time.Time"``).
+        """
+        td = self._type_defs.get(go_type)
+        return td[0] if td else go_type
 
     def _reference_type_for_class(self, class_name: str) -> str:
         """
@@ -337,6 +358,18 @@ class GolangGenerator(OOCodeGenerator):
 
         go_type = self.generate_go_type(slot, cls)
 
+        # When pointers are not used (nullable_primitives=False), add the
+        # ``omitzero`` JSON tag for optional primitive and time.Time fields.
+        # ``omitzero`` (Go 1.24+) correctly omits zero values including
+        # ``time.Time{}`` which ``omitempty`` alone does not handle.
+        omitzero = False
+        if not self.nullable_primitives:
+            is_optional = not ((slot.required or False) or (slot.identifier or False) or (slot.key or False))
+            if is_optional and not slot.multivalued:
+                underlying = self._resolve_underlying_type(go_type)
+                if underlying in GO_PRIMITIVE_TYPES or underlying == "time.Time":
+                    omitzero = True
+
         field = GolangField(
             name=slot.name,
             go_name=go_name,
@@ -347,6 +380,7 @@ class GolangGenerator(OOCodeGenerator):
             key=slot.key or False,
             description=slot.description if slot.description else None,
             pattern=slot.pattern if slot.pattern else None,
+            omitzero=omitzero,
         )
 
         result = FieldResult(field=field, source=slot)
@@ -406,23 +440,22 @@ class GolangGenerator(OOCodeGenerator):
 
         # Resolve the underlying Go type for pointer-promotion checks.
         # Named slot types backed by primitives follow the same rules.
-        td = self._type_defs.get(base_type)
-        underlying_type = td[0] if td else base_type
+        underlying_type = self._resolve_underlying_type(base_type)
 
-        # time.Time is always a pointer when optional (single-valued, not
-        # required/identifier/key).  Unlike plain primitives this is not gated
-        # by ``nullable_primitives`` because Go's zero ``time.Time{}`` is
-        # almost never a meaningful value.
+        # Pointer promotion for optional fields.
+        #
+        # When ``nullable_primitives`` is True (default), optional primitives
+        # and ``time.Time`` become pointers so ``omitempty`` only omits
+        # ``nil``, preserving intentional zero values.
+        #
+        # When ``nullable_primitives`` is False, bare types are used instead
+        # and the ``omitzero`` JSON tag (Go 1.24+) is added in
+        # :meth:`generate_field` to correctly omit zero values including
+        # ``time.Time{}``.
         is_optional = not (slot.required or slot.identifier or slot.key)
-        if underlying_type == "time.Time" and not slot.multivalued and is_optional:
-            base_type = f"*{base_type}"
-
-        # Use pointer for optional primitive types when nullable_primitives is enabled.
-        # Slices are already nil-able, so skip multivalued slots.
-        elif (
-            self.nullable_primitives and not slot.multivalued and underlying_type in GO_PRIMITIVE_TYPES and is_optional
-        ):
-            base_type = f"*{base_type}"
+        if self.nullable_primitives and not slot.multivalued and is_optional:
+            if underlying_type == "time.Time" or underlying_type in GO_PRIMITIVE_TYPES:
+                base_type = f"*{base_type}"
 
         # Handle multivalued slots
         if slot.multivalued:
