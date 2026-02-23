@@ -1,7 +1,3 @@
-# Auto generated from default_namespace.yaml by pythongen.py version: 0.0.1
-# Generation date: 2000-01-01T00:00:00
-# Schema: namespace
-#
 # id: http://example.org/tests/namespace
 # description:
 # license: https://creativecommons.org/publicdomain/zero/1.0/

@@ -1,10 +1,9 @@
 import json
 import os
-from typing import Optional, Union
 
 
-def flatten_dict(ctxt: str, base: str, seen: Optional[list[str]] = None) -> dict:
-    def map_context(ctxt_ent: Union[str, dict, list], seen: list[str]) -> Union[dict, list]:
+def flatten_dict(ctxt: str, base: str, seen: list[str] | None = None) -> dict:
+    def map_context(ctxt_ent: str | dict | list, seen: list[str]) -> dict | list:
         if isinstance(ctxt_ent, str):
             ent_dict = flatten_dict(ctxt_ent, base, seen)
             return ent_dict["@context"] if "@context" in ent_dict else ent_dict

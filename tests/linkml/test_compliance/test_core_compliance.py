@@ -1,6 +1,5 @@
 """Compliance tests for core constructs."""
 
-import sys
 import unicodedata
 from _decimal import Decimal
 
@@ -180,7 +179,7 @@ def test_type_range(framework, linkml_type, example_value):
     schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
     expected_behavior = None
     v = example_value
-    is_valid = isinstance(v, (type_py_cls, type(None)))
+    is_valid = isinstance(v, type_py_cls | type(None))
     bool2int = isinstance(v, bool) and linkml_type == "integer"
     if bool2int:
         is_valid = False
@@ -192,11 +191,7 @@ def test_type_range(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
-            # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
-            # what their docs say should happen or why it only affects older Python version.
-            expected_behavior = ValidationBehavior.COERCES
-        elif linkml_type == "boolean" and not isinstance(v, int) and v != "1":
+        if linkml_type == "boolean" and not isinstance(v, int) and v != "1":
             pass
         else:
             if framework in [PYDANTIC, PYTHON_DATACLASSES]:

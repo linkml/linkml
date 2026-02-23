@@ -26,8 +26,6 @@ called whatever you like. You can also annotate this with
 
 For example, in the [PersonSchema](https://github.com/linkml/linkml/tree/main/examples/PersonSchema) schema, the Container class has two possible index slots:
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Person],[Organization],[Organization]<organizations%200..*-++[Container],[Person]<persons%200..*-++[Container])](https://yuml.me/diagram/nofunky;dir:TB/class/[Person],[Organization],[Organization]<organizations%200..*-++[Container],[Person]<persons%200..*-++[Container])
-
 * persons: points at a list of Person objects
 * organizations: points at a list of Organization objects
 

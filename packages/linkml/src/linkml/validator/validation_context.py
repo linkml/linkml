@@ -1,7 +1,6 @@
 import json
 import os
 from functools import lru_cache
-from typing import Optional
 
 import jsonschema
 from jsonschema.protocols import Validator
@@ -15,7 +14,7 @@ from linkml_runtime.linkml_model import SchemaDefinition
 class ValidationContext:
     """Provides state that may be shared between validation plugins"""
 
-    def __init__(self, schema: SchemaDefinition, target_class: Optional[str] = None) -> None:
+    def __init__(self, schema: SchemaDefinition, target_class: str | None = None) -> None:
         # Since SchemaDefinition is not hashable, to make caching simpler we store the schema
         # in a "private" property and assume it never changes.
         self._schema = schema
@@ -36,7 +35,7 @@ class ValidationContext:
         *,
         closed: bool,
         include_range_class_descendants: bool,
-        path_override: Optional[os.PathLike] = None,
+        path_override: os.PathLike | None = None,
     ) -> Validator:
         if path_override:
             with open(path_override) as json_schema_file:
@@ -66,7 +65,7 @@ class ValidationContext:
             extra_fields="forbid" if closed else "ignore" if closed is None else "allow",
         ).compile_module()
 
-    def _get_target_class(self, target_class: Optional[str] = None) -> str:
+    def _get_target_class(self, target_class: str | None = None) -> str:
         if target_class is None:
             return infer_root_class(self._schema_view)
         else:

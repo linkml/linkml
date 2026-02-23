@@ -1,7 +1,7 @@
 import json
 import logging
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import TextIO
 
 from hbreader import FileInfo
 from pydantic import BaseModel
@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 class JSONLoader(Loader):
     def load_as_dict(
-        self, source: Union[str, dict, TextIO], *, base_dir: Optional[str] = None, metadata: Optional[FileInfo] = None
-    ) -> Union[dict, list[dict]]:
+        self, source: str | dict | TextIO, *, base_dir: str | None = None, metadata: FileInfo | None = None
+    ) -> dict | list[dict]:
         data = self._read_source(
             source,
             base_dir=base_dir,
@@ -27,13 +27,13 @@ class JSONLoader(Loader):
 
     def load_any(
         self,
-        source: Union[str, dict, TextIO, Path],
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        source: str | dict | TextIO | Path,
+        target_class: type[BaseModel | YAMLRoot],
         *,
-        base_dir: Optional[str] = None,
-        metadata: Optional[FileInfo] = None,
+        base_dir: str | None = None,
+        metadata: FileInfo | None = None,
         **_,
-    ) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    ) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         """
         Load the JSON in source into the python target_class structure
 

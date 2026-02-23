@@ -20,11 +20,11 @@ import logging
 import os
 import re
 import sys
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Callable, ClassVar, Optional, TextIO, Union, cast
+from typing import ClassVar, TextIO, Union, cast
 
 import click
 from click import Argument, Command, Option
@@ -32,6 +32,7 @@ from jsonasobj2 import JsonObj
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
+from linkml.utils.deprecation import METADATA_FLAG, deprecation_warning
 from linkml.utils.mergeutils import alias_root
 from linkml.utils.schemaloader import SchemaLoader
 from linkml.utils.typereferences import References
@@ -118,10 +119,10 @@ class Generator(metaclass=abc.ABCMeta):
     """Visitor ClassVar: True means visit class slots in alphabetical order"""
 
     # Object-level Vars
-    schemaview: Optional[SchemaView] = None
+    schemaview: SchemaView | None = None
     """A wrapper onto the schema object"""
 
-    format: Optional[str] = None
+    format: str | None = None
     """expected output format"""
 
     file_extension: ClassVar[str] = None
@@ -129,32 +130,32 @@ class Generator(metaclass=abc.ABCMeta):
     metadata: bool = True
     """True means include date, generator, etc. information in source header if appropriate"""
 
-    useuris: Optional[bool] = None
+    useuris: bool | None = None
     """True means declared class slot uri's are used.  False means use model uris"""
 
-    log_level: Optional[int] = DEFAULT_LOG_LEVEL_INT
+    log_level: int | None = DEFAULT_LOG_LEVEL_INT
     """Logging level, 0 is minimum"""
 
-    mergeimports: Optional[bool] = True
+    mergeimports: bool | None = True
     """True means merge non-linkml sources into importing package.  False means separate packages"""
 
-    source_file_date: Optional[str] = None
+    source_file_date: str | None = None
     """Modification date of input source file"""
 
-    source_file_size: Optional[int] = None
+    source_file_size: int | None = None
     """Size of the source file in bytes"""
 
-    logger: Optional[logging.Logger] = None
+    logger: logging.Logger | None = None
     """Logger to use for logging messages"""
 
-    verbose: Optional[bool] = None
+    verbose: bool | None = None
     """Verbosity"""
 
-    output: Optional[str] = None
+    output: str | None = None
     """Path to output file. Note all generators may not implement this
     uniformly, see https://github.com/linkml/linkml/issues/923"""
 
-    namespaces: Optional[Namespaces] = None
+    namespaces: Namespaces | None = None
     """All prefix expansions used"""
 
     directory_output: bool = False
@@ -167,7 +168,7 @@ class Generator(metaclass=abc.ABCMeta):
     metamodel_name_map: dict[str, str] = None
     """Allows mapping of names of metamodel elements such as slot, etc"""
 
-    importmap: Optional[Union[str, Optional[Mapping[str, str]]]] = None
+    importmap: str | Mapping[str, str] | None | None = None
     """File name of import mapping file -- maps import name/uri to target"""
 
     emit_prefixes: set[str] = field(default_factory=lambda: set())
@@ -179,7 +180,7 @@ class Generator(metaclass=abc.ABCMeta):
     stacktrace: bool = False
     """True means print stack trace, false just error message"""
 
-    include: Optional[Union[str, Path, SchemaDefinition]] = None
+    include: str | Path | SchemaDefinition | None = None
     """If set, include extra schema outside of the imports mechanism"""
 
     def __post_init__(self) -> None:
@@ -203,15 +204,13 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(schema, Path):
             schema = str(schema)
 
-        # TODO: remove aliasing
-        self.emit_metadata = self.metadata
         if self.uses_schemaloader:
             self._initialize_using_schemaloader(schema)
         else:
             self.logger.info(f"Using SchemaView with im={self.importmap} // base_dir={self.base_dir}")
             self.schemaview = SchemaView(schema, importmap=self.importmap, base_dir=self.base_dir)
             if self.include:
-                if isinstance(self.include, (str, Path)):
+                if isinstance(self.include, str | Path):
                     self.include = SchemaView(self.include, importmap=self.importmap, base_dir=self.base_dir).schema
                 self.schemaview.merge_schema(self.include)
             self.schema = self.schemaview.schema
@@ -253,7 +252,7 @@ class Generator(metaclass=abc.ABCMeta):
                 importmap=self.importmap,
                 logger=self.logger,
                 mergeimports=self.mergeimports,
-                emit_metadata=self.metadata,
+                metadata=self.metadata,
                 source_file_date=self.source_file_date,
                 source_file_size=self.source_file_size,
             )
@@ -291,6 +290,14 @@ class Generator(metaclass=abc.ABCMeta):
         :return: Generated output
         """
         out = ""
+
+        deprecation_map = {"emit_metadata": "metadata", "head": "metadata"}
+        for flag in deprecation_map:
+            if flag in kwargs:
+                deprecation_warning(METADATA_FLAG)
+                new_flag = deprecation_map[flag]
+                kwargs[new_flag] = kwargs[flag]
+                del kwargs[flag]
 
         # the default is to use the Visitor Pattern; each individual generator may
         # choose to override methods {visit,end}_{element}.
@@ -354,21 +361,21 @@ class Generator(metaclass=abc.ABCMeta):
             out += "\n"
         return out
 
-    def visit_schema(self, **kwargs) -> Optional[str]:
+    def visit_schema(self, **kwargs) -> str | None:
         """Visited once at the beginning of generation
 
         @param kwargs: Arguments passed through from CLI -- implementation dependent
         """
         ...
 
-    def end_schema(self, **kwargs) -> Optional[str]:
+    def end_schema(self, **kwargs) -> str | None:
         """Visited once at the end of generation
 
         @param kwargs: Arguments passed through from CLI -- implementation dependent
         """
         ...
 
-    def visit_class(self, cls: ClassDefinition) -> Optional[Union[str, bool]]:
+    def visit_class(self, cls: ClassDefinition) -> str | bool | None:
         """Visited once per schema class
 
         @param cls: class being visited
@@ -376,14 +383,14 @@ class Generator(metaclass=abc.ABCMeta):
         """
         return True
 
-    def end_class(self, cls: ClassDefinition) -> Optional[str]:
+    def end_class(self, cls: ClassDefinition) -> str | None:
         """Visited after visit_class_slots (if visit_class returned true)
 
         @param cls: class being visited
         """
         ...
 
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> Optional[str]:
+    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str | None:
         """Visited for each slot in a class.  If class level visit_all_slots is true, this is visited once
         for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwise, just the own slots.
 
@@ -393,7 +400,7 @@ class Generator(metaclass=abc.ABCMeta):
         """
         ...
 
-    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> Optional[str]:
+    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> str | None:
         """Visited once for every slot definition in the schema.
 
         @param aliased_slot_name: Aliased name of the slot.  May not be unique
@@ -401,21 +408,21 @@ class Generator(metaclass=abc.ABCMeta):
         """
         ...
 
-    def visit_type(self, typ: TypeDefinition) -> Optional[str]:
+    def visit_type(self, typ: TypeDefinition) -> str | None:
         """Visited once for every type definition in the schema
 
         @param typ: Type definition
         """
         ...
 
-    def visit_subset(self, subset: SubsetDefinition) -> Optional[str]:
+    def visit_subset(self, subset: SubsetDefinition) -> str | None:
         """Visited once for every subset definition in the schema
 
         #param subset: Subset definition
         """
         ...
 
-    def visit_enum(self, enum: EnumDefinition) -> Optional[str]:
+    def visit_enum(self, enum: EnumDefinition) -> str | None:
         """Visited once for every enum definition in the schema
 
         @param enum: Enum definition
@@ -425,7 +432,7 @@ class Generator(metaclass=abc.ABCMeta):
     # =============================
     # Helper methods
     # =============================
-    def own_slots(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> list[SlotDefinition]:
+    def own_slots(self, cls: ClassDefinitionName | ClassDefinition) -> list[SlotDefinition]:
         """Return the list of slots owned the class definition.  An "own slot" is any ``cls`` slot that does not appear
         in the class is_a parent.  Own_slots include:
 
@@ -451,15 +458,15 @@ class Generator(metaclass=abc.ABCMeta):
                 seen.add(sname_base)
         return sorted(rval, key=lambda s: s.name) if self.sort_class_slots else rval
 
-    def own_slot_names(self, cls: Union[ClassDefinitionName, ClassDefinition]) -> list[SlotDefinitionName]:
+    def own_slot_names(self, cls: ClassDefinitionName | ClassDefinition) -> list[SlotDefinitionName]:
         return [slot.name for slot in self.own_slots(cls)]
 
     def all_slots(
         self,
-        cls: Union[ClassDefinitionName, ClassDefinition],
+        cls: ClassDefinitionName | ClassDefinition,
         *,
         cls_slots_first: bool = False,
-        seen: Optional[set[ClassDefinitionName]] = None,
+        seen: set[ClassDefinitionName] | None = None,
     ) -> list[SlotDefinition]:
         """Return all slots that are part of the class definition.  This includes all is_a, mixin and apply_to slots
         but does NOT include slot_usage targets.  If class B has a slot_usage entry for slot "s", only the slot
@@ -494,9 +501,7 @@ class Generator(metaclass=abc.ABCMeta):
                     seen.add(sname_base)
             return sorted(rval, key=lambda s: s.name) if self.sort_class_slots else rval
 
-    def parent(
-        self, element: Union[ClassDefinition, SlotDefinition]
-    ) -> Optional[Union[ClassDefinition, SlotDefinition]]:
+    def parent(self, element: ClassDefinition | SlotDefinition) -> ClassDefinition | SlotDefinition | None:
         """Return the parent of element, if any"""
         return (
             None
@@ -508,7 +513,7 @@ class Generator(metaclass=abc.ABCMeta):
             )
         )
 
-    def ancestors(self, element: Union[ClassDefinition, SlotDefinition]) -> list[ElementName]:
+    def ancestors(self, element: ClassDefinition | SlotDefinition) -> list[ElementName]:
         """Return an ordered list of ancestor names for the supplied slot or class
 
         @param element: Slot or class name or definition
@@ -516,14 +521,14 @@ class Generator(metaclass=abc.ABCMeta):
         """
         return [element.name] + ([] if element.is_a is None else self.ancestors(self.parent(element)))
 
-    def neighborhood(self, elements: Union[str, ElementName, list[ElementName]]) -> References:
+    def neighborhood(self, elements: str | ElementName | list[ElementName]) -> References:
         """Return a list of all slots, classes and types that touch any element in elements, including the element
         itself
 
         @param elements: Element names to do proximity with
         @return: All slots and classes that touch element
         """
-        if isinstance(elements, (str, ElementName)):
+        if isinstance(elements, str | ElementName):
             elements = [elements]
         touches = References()
         for element in elements:
@@ -605,9 +610,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return [formatted_typ_name]
 
-    def class_identifier(
-        self, def_or_name: Union[str, ClassDefinition, TypeDefinition]
-    ) -> Optional[SlotDefinitionName]:
+    def class_identifier(self, def_or_name: str | ClassDefinition | TypeDefinition) -> SlotDefinitionName | None:
         """
         Return the class identifier if any
 
@@ -627,14 +630,14 @@ class Generator(metaclass=abc.ABCMeta):
         return None
 
     @staticmethod
-    def enum_identifier_path(enum_or_enumname: Union[str, EnumDefinition]) -> list[str]:
+    def enum_identifier_path(enum_or_enumname: str | EnumDefinition) -> list[str]:
         """Return an enum_identifier path"""
         return [
             "str",
             camelcase(enum_or_enumname.name if isinstance(enum_or_enumname, EnumDefinition) else enum_or_enumname),
         ]
 
-    def class_identifier_path(self, cls_or_clsname: Union[str, ClassDefinition], force_non_key: bool) -> list[str]:
+    def class_identifier_path(self, cls_or_clsname: str | ClassDefinition, force_non_key: bool) -> list[str]:
         """
         Return the path closure to a class identifier if the class has a key and force_non_key is false otherwise
         return a dictionary closure.
@@ -666,7 +669,7 @@ class Generator(metaclass=abc.ABCMeta):
                 return self.class_identifier_path(cls.is_a, False) + [pathname]
         return self.slot_range_path(identifier_slot) + [pathname]
 
-    def slot_range_path(self, slot_or_name: Union[str, SlotDefinition]) -> list[str]:
+    def slot_range_path(self, slot_or_name: str | SlotDefinition) -> list[str]:
         """
         Return an ordered list of slot ranges from distal to proximal
 
@@ -687,7 +690,7 @@ class Generator(metaclass=abc.ABCMeta):
             # Class
             return self.class_identifier_path(slot.range, bool(slot.inlined))
 
-    def aliased_slot_name(self, slot: Union[SlotDefinitionName, SlotDefinition]) -> SlotDefinitionName:
+    def aliased_slot_name(self, slot: SlotDefinitionName | SlotDefinition) -> SlotDefinitionName:
         """Return the overloaded slot name -- the alias if one exists otherwise the actual name
 
         @param slot: either a slot name or a definition
@@ -697,7 +700,7 @@ class Generator(metaclass=abc.ABCMeta):
             slot = self.schema.slots[cast(SlotDefinitionName, slot)]
         return slot.alias if slot.alias else slot.name
 
-    def class_or_type_for(self, name: str) -> Optional[Element]:
+    def class_or_type_for(self, name: str) -> Element | None:
         """
         Return the corresponding class or type for name
         """
@@ -725,7 +728,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return "Unknown_" + camelcase(name)
 
-    def slot_for(self, name: str) -> Optional[Element]:
+    def slot_for(self, name: str) -> Element | None:
         return self.schema.slots.get(name)
 
     def slot_name(self, name: str) -> str:
@@ -736,16 +739,14 @@ class Generator(metaclass=abc.ABCMeta):
         slot = self.slot_for(name)
         return underscore(self.aliased_slot_name(slot) if slot else ("unknown " + name))
 
-    def subset_for(self, name: str) -> Optional[Element]:
+    def subset_for(self, name: str) -> Element | None:
         return self.schema.subsets.get(name)
 
     def subset_name(self, name: str) -> str:
         subset = self.subset_for(name)
         return ("" if subset else "Unknown_") + camelcase(name)
 
-    def formatted_element_name(
-        self, el_or_elname: Union[ElementName, Element], is_range_name: bool = False
-    ) -> Optional[str]:
+    def formatted_element_name(self, el_or_elname: ElementName | Element, is_range_name: bool = False) -> str | None:
         """
         Return the default format for the name or the referenced element.  Slots are under_scored, all others are
         CamelCased. Slot names are the alias, not the actual name
@@ -769,7 +770,7 @@ class Generator(metaclass=abc.ABCMeta):
             elif el_or_elname in self.schema.subsets:
                 return self.subset_name(el_or_elname)
             return None
-        elif isinstance(el_or_elname, (ClassDefinition, TypeDefinition)):
+        elif isinstance(el_or_elname, ClassDefinition | TypeDefinition):
             return self.class_or_type_name(el_or_elname.name)
         elif isinstance(el_or_elname, SlotDefinition):
             return self.slot_name(el_or_elname.name)
@@ -778,7 +779,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return None
 
-    def obj_for(self, el_or_elname: str, is_range_name: bool = False) -> Optional[Element]:
+    def obj_for(self, el_or_elname: str, is_range_name: bool = False) -> Element | None:
         if is_range_name:
             return (
                 self.class_or_type_for(el_or_elname)
@@ -794,7 +795,7 @@ class Generator(metaclass=abc.ABCMeta):
         else:
             return self.class_or_type_for(el_or_elname)
 
-    def default_prefix(self) -> Optional[str]:
+    def default_prefix(self) -> str | None:
         """Return the default prefix for the schema
 
         @return: URI or NCNAME of default prefix"""

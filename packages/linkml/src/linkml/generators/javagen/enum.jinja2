@@ -1,0 +1,70 @@
+{#-
+
+  Jinja2 Template for a standard Java enum
+-#}
+package {{ doc.package }};
+
+{% if metamodel_version -%}
+/* metamodel_version: {{metamodel_version}} */
+{% endif -%}
+{% if model_version -%}
+/* version: {{model_version}} */
+{% endif -%}
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
+{% if enum.description %}/**
+ * {{ enum.description }}
+ */
+{% endif -%}
+public enum {{ enum.name }} {
+{%- for value in enum.values[0:-1] %}
+{% if value.description %}
+  /**
+   * {{ value.description }}
+   */
+{%- endif %}
+  {{ value.label|upper }}("{{ value.text }}"),
+{%- endfor %}
+{%- if enum.values %}
+{% if enum.values[-1].description %}
+  /**
+   * {{ enum.values[-1].description }}
+   */
+{%- endif %}
+  {{ enum.values[-1].label|upper }}("{{ enum.values[-1].text }}");
+  {%- else %}
+  ;{% endif %}
+
+  private final static Map<String, {{ enum.name }}> MAP;
+
+  static {
+    Map<String, {{ enum.name }}> map = new HashMap<String, {{ enum.name }}>();
+    for ( {{ enum.name }} value : {{ enum.name }}.values() ) {
+      map.put(value.toString(), value);
+    }
+
+    MAP = Collections.unmodifiableMap(map);
+  }
+
+  private final String repr;
+
+  {{ enum.name }}(String repr) {
+    this.repr = repr;
+  }
+
+  @Override
+  public String toString() {
+    return repr;
+  }
+
+  @JsonCreator
+  public static {{ enum.name }} fromString(String v) {
+    return MAP.get(v);
+  }
+
+}

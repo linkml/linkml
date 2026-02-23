@@ -15,7 +15,6 @@ from linkml.generators.graphqlgen import GraphqlGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
-from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.protogen import ProtoGenerator
@@ -41,11 +40,6 @@ GEN_MAP = {
         {"context": "{parent}/{name}.context.jsonld"},
     ),
     "jsonschema": (JsonSchemaGenerator, "jsonschema/{name}.schema.json", {}),
-    "markdown": (
-        MarkdownGenerator,
-        "docs/",
-        {"directory": "{parent}/docs", "index_file": "{name}.md"},
-    ),
     "owl": (OwlSchemaGenerator, "owl/{name}.owl.ttl", {}),
     "prefixmap": (PrefixGenerator, "prefixmap/{name}.yaml", {}),
     "proto": (ProtoGenerator, "protobuf/{name}.proto", {}),
@@ -147,7 +141,6 @@ class ProjectGenerator:
 
                 if gen_name != "excel":
                     if gen_path_full.suffix != "":
-                        # markdowngen does not write to a file
                         logger.info(f"  WRITING TO: {gen_path_full}")
                         with open(gen_path_full, "w", encoding="UTF-8") as stream:
                             stream.write(gen_dump)

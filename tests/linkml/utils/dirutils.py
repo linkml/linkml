@@ -2,7 +2,6 @@ import filecmp
 import os
 from contextlib import redirect_stdout
 from io import StringIO
-from typing import Optional
 
 from tests.linkml.utils.filters import ldcontext_metadata_filter
 
@@ -70,7 +69,7 @@ def _do_cmp(f1, f2):
 filecmp._do_cmp = _do_cmp
 
 
-def are_dir_trees_equal(dir1: str, dir2: str) -> Optional[str]:
+def are_dir_trees_equal(dir1: str, dir2: str) -> str | None:
     """
     Compare two directories recursively. Files in each directory are
     assumed to be equal if their names and contents are equal.

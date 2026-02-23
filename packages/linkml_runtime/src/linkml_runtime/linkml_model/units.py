@@ -1,5 +1,5 @@
 # Auto generated from units.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:33
+# Generation date: 2026-02-18T21:04:55
 # Schema: units
 #
 # id: https://w3id.org/linkml/units
@@ -36,7 +36,7 @@ DEFAULT_ = LINKML
 # Class references
 
 
-@dataclass
+@dataclass(repr=False)
 class UnitOfMeasure(YAMLRoot):
     """
     A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other
@@ -59,7 +59,7 @@ class UnitOfMeasure(YAMLRoot):
     has_quantity_kind: Optional[Union[str, URIorCURIE]] = None
     iec61360code: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
 

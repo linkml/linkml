@@ -15,7 +15,7 @@ from copy import copy
 from dataclasses import dataclass, field
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 import click
 import yaml
@@ -230,7 +230,7 @@ class Report:
         problem_type: ConstraintType,
         instantiates: str,
         subject: Any,
-        predicate: Optional[str] = None,
+        predicate: str | None = None,
         **kwargs,
     ):
         result = ValidationResult(
@@ -303,7 +303,7 @@ def _add_pk(obj: dict, pk_slot_name: str, pk_val: Any) -> dict:
     return obj
 
 
-def _simple_to_dict(obj: Union[dict, Any], simple_value_slot_name: str) -> dict:
+def _simple_to_dict(obj: dict | Any, simple_value_slot_name: str) -> dict:
     """Make a new Dict from a simple value"""
     if isinstance(obj, dict):
         return obj
@@ -339,7 +339,7 @@ class ReferenceValidator:
     filter_invalid_objects: bool = False
     """If True, then remove any invalid objects from the tree"""
 
-    auto_type_designator: Optional[str] = None
+    auto_type_designator: str | None = None
     """Set to equal "@type" for JSON-LD serialization"""
 
     skip_validation: bool = None
@@ -354,7 +354,7 @@ class ReferenceValidator:
     def __post_init__(self):
         self.derived_schema = self.schemaview.materialize_derived_schema()
 
-    def validate(self, input_object: Any, target: Optional[str] = None) -> Report:
+    def validate(self, input_object: Any, target: str | None = None) -> Report:
         """
         Validate an instance according to the schema
 
@@ -370,8 +370,8 @@ class ReferenceValidator:
     def normalize(
         self,
         input_object: Any,
-        target: Optional[str] = None,
-        report: Optional[Report] = None,
+        target: str | None = None,
+        report: Report | None = None,
     ) -> Any:
         """
         Normalize an instance according to the schema
@@ -386,7 +386,7 @@ class ReferenceValidator:
             report = Report()
         return self.normalize_slot_value(input_object, parent_slot, report)
 
-    def _create_index_slot(self, target: Optional[str] = None, input_object: Any = None) -> SlotDefinition:
+    def _create_index_slot(self, target: str | None = None, input_object: Any = None) -> SlotDefinition:
         """
         Create a parent slot that points at the target element.
 
@@ -404,7 +404,7 @@ class ReferenceValidator:
             slot.multivalued = True
         return slot
 
-    def _schema_root(self, target: Optional[str] = None) -> Optional[ClassDefinitionName]:
+    def _schema_root(self, target: str | None = None) -> ClassDefinitionName | None:
         if target is not None:
             return ClassDefinitionName(target)
         roots = [r.name for r in self.derived_schema.classes.values() if r.tree_root]
@@ -558,7 +558,7 @@ class ReferenceValidator:
         pk_slot_name: SlotDefinitionName,
         report: Report,
     ) -> Any:
-        if not isinstance(input_object, (list, dict)):
+        if not isinstance(input_object, list | dict):
             # Atom -> List
             report.add_collection_form_normalization(
                 ConstraintType.MultiValuedConstraint,
@@ -804,7 +804,7 @@ class ReferenceValidator:
     def normalize_type(
         self,
         input_object: Any,
-        target: Optional[TypeDefinition],
+        target: TypeDefinition | None,
         report: Report,
         parent_slot: SlotDefinition = None,
     ) -> Any:
@@ -881,7 +881,7 @@ class ReferenceValidator:
     def subsumes(self, parent: ClassDefinition, child: ClassDefinition):
         return parent.name in self.schemaview.class_ancestors(child.name, reflexive=True)
 
-    def _slot_range_element(self, slot: SlotDefinition) -> Optional[Element]:
+    def _slot_range_element(self, slot: SlotDefinition) -> Element | None:
         ds = self.derived_schema
         sr = slot.range
         if sr in ds.classes:
@@ -919,7 +919,7 @@ class ReferenceValidator:
         # TODO: make this configurable
         return True
 
-    def _slot_as_simple_dict_value_slot(self, slot: SlotDefinition) -> Optional[SlotDefinition]:
+    def _slot_as_simple_dict_value_slot(self, slot: SlotDefinition) -> SlotDefinition | None:
         if not slot.inlined or slot.inlined_as_list:
             return False
         range_element = self._slot_range_element(slot)
@@ -928,14 +928,14 @@ class ReferenceValidator:
             if len(non_pk_atts) == 1:
                 return non_pk_atts[0]
 
-    def _identifier_slot_name(self, cls: ClassDefinition) -> Optional[SlotDefinitionName]:
+    def _identifier_slot_name(self, cls: ClassDefinition) -> SlotDefinitionName | None:
         for slot in cls.attributes.values():
             if slot.identifier:
                 return slot.name
             if slot.key:
                 return slot.name
 
-    def _identifier_slot(self, cls: ClassDefinition) -> Optional[SlotDefinition]:
+    def _identifier_slot(self, cls: ClassDefinition) -> SlotDefinition | None:
         for slot in cls.attributes.values():
             if slot.identifier:
                 return slot
@@ -968,7 +968,7 @@ class ReferenceValidator:
     def _matches_slot_expression(
         self,
         slot_value: Any,
-        expr: Union[SlotDefinition, AnonymousSlotExpression],
+        expr: SlotDefinition | AnonymousSlotExpression,
         input_object: dict,
     ) -> bool:
         for x in expr.none_of:
