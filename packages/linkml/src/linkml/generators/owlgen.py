@@ -555,19 +555,50 @@ class OwlSchemaGenerator(Generator):
             if isinstance(cls, AnonymousClassExpression):
                 # cardinality constraints only belong at the top level
                 continue
-            min_card = 1 if slot.required or top_slot.required else 0
-            if not (self.skip_min_zero_cardinality_axioms and min_card == 0):
-                min_card_expr = BNode()
-                owl_exprs.append(min_card_expr)
-                graph.add((min_card_expr, RDF.type, OWL.Restriction))
-                graph.add((min_card_expr, OWL.minCardinality, Literal(min_card)))
-                graph.add((min_card_expr, OWL.onProperty, slot_uri))
-            if not slot.multivalued and not top_slot.multivalued:
-                max_card_expr = BNode()
-                owl_exprs.append(max_card_expr)
-                graph.add((max_card_expr, RDF.type, OWL.Restriction))
-                graph.add((max_card_expr, OWL.maxCardinality, Literal(1)))
-                graph.add((max_card_expr, OWL.onProperty, slot_uri))
+
+            ### Cardinality axioms
+            # determine min_card
+            if slot.minimum_cardinality is not None:
+                min_card = slot.minimum_cardinality
+            elif top_slot.minimum_cardinality is not None:
+                min_card = top_slot.minimum_cardinality
+            elif slot.required or top_slot.required:
+                min_card = 1
+            else:
+                min_card = 0
+            # determine max_card
+            if slot.maximum_cardinality is not None:
+                max_card = slot.maximum_cardinality
+            elif top_slot.maximum_cardinality is not None:
+                max_card = top_slot.maximum_cardinality
+            elif not slot.multivalued and not top_slot.multivalued:
+                max_card = 1
+            else:
+                max_card = None  # unbounded
+            # warn if explicit cardinality bounds are set without multivalued
+            if (
+                (
+                    slot.minimum_cardinality is not None
+                    or slot.maximum_cardinality is not None
+                    or top_slot.minimum_cardinality is not None
+                    or top_slot.maximum_cardinality is not None
+                )
+                and not slot.multivalued
+                and not top_slot.multivalued
+            ):
+                logger.warning(
+                    f"Slot '{slot.name}' has minimum_cardinality or maximum_cardinality set "
+                    f"but multivalued is not set; assuming multivalued=True."
+                )
+            # generate axioms
+            if min_card is not None and min_card == max_card:
+                owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.cardinality, min_card))
+            else:
+                if not (self.skip_min_zero_cardinality_axioms and min_card == 0):
+                    owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.minCardinality, min_card))
+                if max_card is not None:
+                    owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
+
             if slot.has_member:
                 has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
                 if has_member_expr:
@@ -1105,6 +1136,13 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, RDF.type, OWL.Restriction))
         self.graph.add((node, OWL.onProperty, property))
         self.graph.add((node, OWL.hasValue, filler))
+        return node
+
+    def _add_cardinality_restriction(self, property: URIRef, cardinality_property: URIRef, cardinality: int) -> BNode:
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.Restriction))
+        self.graph.add((node, cardinality_property, Literal(cardinality)))
+        self.graph.add((node, OWL.onProperty, property))
         return node
 
     @staticmethod

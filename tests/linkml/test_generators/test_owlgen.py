@@ -425,8 +425,9 @@ def test_skip_min_zero_cardinality_axioms(skip_min_zero_cardinality_axioms: bool
         assert Literal(0) not in min_card_values, "minCardinality 0 should be suppressed"
     else:
         assert Literal(0) in min_card_values, "minCardinality 0 should be present"
-    # minCardinality 1 (required slot) must always be present
-    assert Literal(1) in min_card_values, "minCardinality 1 must not be suppressed"
+    # required + non-multivalued → min=1, max=1 → collapsed to owl:cardinality 1 (never suppressed)
+    exact_card_values = _restriction_values(g, OWL.cardinality)
+    assert Literal(1) in exact_card_values, "owl:cardinality 1 for required slot must not be suppressed"
 
 
 @pytest.mark.parametrize("skip_vacuous_local_range_axioms", [True, False])
@@ -465,3 +466,111 @@ def test_skip_vacuous_local_range_axioms(skip_vacuous_local_range_axioms: bool) 
         assert target_uri in avf_values, "allValuesFrom for global slot should be present"
     # Attribute slots carry the only range info — must never be suppressed.
     assert attr_target_uri in avf_values, "allValuesFrom for attribute slot must not be suppressed"
+
+
+@pytest.mark.parametrize(
+    "slot_kwargs,expected_exact,expected_min,expected_max",
+    [
+        pytest.param(
+            {"required": True},
+            1,
+            None,
+            None,
+            id="required-non-multivalued-collapses-to-cardinality-1",
+        ),
+        pytest.param(
+            {"required": True, "multivalued": True},
+            None,
+            1,
+            None,
+            id="required-multivalued-min-1-no-max",
+        ),
+        pytest.param(
+            {},
+            None,
+            0,
+            1,
+            id="optional-non-multivalued-min-0-max-1",
+        ),
+        pytest.param(
+            {"multivalued": True},
+            None,
+            0,
+            None,
+            id="optional-multivalued-min-0-no-max",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 2, "multivalued": True},
+            None,
+            2,
+            None,
+            id="explicit-minimum-cardinality",
+        ),
+        pytest.param(
+            {"maximum_cardinality": 5, "multivalued": True},
+            None,
+            0,
+            5,
+            id="explicit-maximum-cardinality",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 2, "maximum_cardinality": 5, "multivalued": True},
+            None,
+            2,
+            5,
+            id="explicit-min-max-different",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 3, "maximum_cardinality": 3, "multivalued": True},
+            3,
+            None,
+            None,
+            id="explicit-min-equals-max-collapses-to-cardinality",
+        ),
+    ],
+)
+def test_slot_cardinality_axioms(
+    slot_kwargs: dict,
+    expected_exact: int | None,
+    expected_min: int | None,
+    expected_max: int | None,
+) -> None:
+    """Test that OWL cardinality axioms are generated correctly from slot properties.
+
+    Covers minimum_cardinality, maximum_cardinality, required, and multivalued,
+    including the optimisation where min==max is collapsed to a single
+    owl:cardinality restriction instead of separate min/max restrictions.
+    """
+    sb = SchemaBuilder()
+    sb.add_class(
+        "MyClass",
+        slots=[SlotDefinition("my_slot", range="string", **slot_kwargs)],
+    )
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+
+    exact_values = _restriction_values(g, OWL.cardinality)
+    min_values = _restriction_values(g, OWL.minCardinality)
+    max_values = _restriction_values(g, OWL.maxCardinality)
+
+    if expected_exact is not None:
+        assert Literal(expected_exact) in exact_values
+        assert not min_values, f"expected no owl:minCardinality when min==max, got {min_values}"
+        assert not max_values, f"expected no owl:maxCardinality when min==max, got {max_values}"
+    else:
+        assert not exact_values, f"expected no owl:cardinality, got {exact_values}"
+        if expected_min is not None:
+            assert Literal(expected_min) in min_values
+        else:
+            assert not min_values, f"expected no owl:minCardinality, got {min_values}"
+        if expected_max is not None:
+            assert Literal(expected_max) in max_values
+        else:
+            assert not max_values, f"expected no owl:maxCardinality, got {max_values}"
