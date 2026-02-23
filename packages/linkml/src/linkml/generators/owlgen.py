@@ -1481,6 +1481,8 @@ class OwlSchemaGenerator(Generator):
         "If true, suppress owl:minCardinality 0 restrictions. "
         "Such axioms are vacuously satisfied by every individual and never carry information."
     ),
+)
+@click.option(
     "--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of",
     default=False,
     show_default=True,

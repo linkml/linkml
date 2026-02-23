@@ -585,6 +585,25 @@ def test_slot_cardinality_axioms(
             assert Literal(expected_max) in max_values
         else:
             assert not max_values, f"expected no owl:maxCardinality, got {max_values}"
+
+
+@pytest.mark.parametrize("enum_inherits_as_subclass_of", [True, False])
+def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> None:
+    """Test that enum inherits relationships are translated to rdfs:subClassOf when the flag is set.
+
+    With the flag enabled, a child enum that lists a parent in its inherits field should
+    be asserted as a subclass of that parent in the generated OWL. With the flag disabled
+    (the default), no such axiom should be emitted.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("ParentEnum", permissible_values=["A", "B"])
+    sb.add_enum("ChildEnum", permissible_values=["A"], inherits=["ParentEnum"])
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
         enum_inherits_as_subclass_of=enum_inherits_as_subclass_of,
     )
     g = Graph()
