@@ -447,6 +447,17 @@ def test_skip_vacuous_local_range_axioms(skip_vacuous_local_range_axioms: bool) 
     sb.add_class("MyClass", slots=["global_slot"])
     # Attribute slot — stored in class.attributes, no global rdfs:range; allValuesFrom is essential.
     sb.schema.classes["MyClass"].attributes["attr_slot"] = SlotDefinition("attr_slot", range="AttributeTarget")
+@pytest.mark.parametrize("enum_inherits_as_subclass_of", [True, False])
+def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> None:
+    """Test that enum inherits relationships are translated to rdfs:subClassOf when the flag is set.
+
+    With the flag enabled, a child enum that lists a parent in its inherits field should
+    be asserted as a subclass of that parent in the generated OWL. With the flag disabled
+    (the default), no such axiom should be emitted.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("ParentEnum", permissible_values=["A", "B"])
+    sb.add_enum("ChildEnum", permissible_values=["A"], inherits=["ParentEnum"])
     sb.add_defaults()
     gen = OwlSchemaGenerator(
         sb.schema,
@@ -574,3 +585,12 @@ def test_slot_cardinality_axioms(
             assert Literal(expected_max) in max_values
         else:
             assert not max_values, f"expected no owl:maxCardinality, got {max_values}"
+        enum_inherits_as_subclass_of=enum_inherits_as_subclass_of,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    subclass_axiom = (EX.ChildEnum, RDFS.subClassOf, EX.ParentEnum)
+    if enum_inherits_as_subclass_of:
+        assert subclass_axiom in g
+    else:
+        assert subclass_axiom not in g

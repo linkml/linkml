@@ -183,6 +183,8 @@ class OwlSchemaGenerator(Generator):
     or the same URI as the property's globally declared rdfs:range (entailed, hence
     vacuous in context). Attribute slots, which have no global rdfs:range, are
     unaffected."""
+    enum_inherits_as_subclass_of: bool = False
+    """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
 
     def as_graph(self) -> Graph:
         """
@@ -937,6 +939,9 @@ class OwlSchemaGenerator(Generator):
             else:
                 has_parent = True
             self.graph.add((enum_uri, RDFS.subClassOf, parent))
+        if self.enum_inherits_as_subclass_of:
+            for parent_name in e.inherits:
+                self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
         if self.metaclasses:
@@ -1476,6 +1481,10 @@ class OwlSchemaGenerator(Generator):
         "If true, suppress owl:minCardinality 0 restrictions. "
         "Such axioms are vacuously satisfied by every individual and never carry information."
     ),
+    "--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of",
+    default=False,
+    show_default=True,
+    help="If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
