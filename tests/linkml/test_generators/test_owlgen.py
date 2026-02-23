@@ -384,3 +384,84 @@ def test_permissible_values(
             assert isinstance(pv, URIRef) or isinstance(pv, Literal)
         else:
             raise AssertionError("all combinations must be accounted for")
+
+
+def _restriction_values(g: Graph, predicate: URIRef) -> list:
+    """Collect the objects of *predicate* across all OWL restriction nodes in *g*."""
+    results = []
+    for r in g.subjects(RDF.type, OWL.Restriction):
+        for obj in g.objects(r, predicate):
+            results.append(obj)
+    return results
+
+
+@pytest.mark.parametrize("skip_min_zero_cardinality_axioms", [True, False])
+def test_skip_min_zero_cardinality_axioms(skip_min_zero_cardinality_axioms: bool) -> None:
+    """Test that owl:minCardinality 0 axioms are suppressed when the flag is set.
+
+    Non-required slots produce a minCardinality 0 restriction by default (vacuous).
+    Required slots still produce minCardinality 1, which must never be suppressed.
+    """
+    sb = SchemaBuilder()
+    sb.add_class(
+        "MyClass",
+        slots=[
+            SlotDefinition("optional_slot", range="string"),
+            SlotDefinition("required_slot", range="string", required=True),
+        ],
+    )
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        skip_min_zero_cardinality_axioms=skip_min_zero_cardinality_axioms,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    min_card_values = _restriction_values(g, OWL.minCardinality)
+    if skip_min_zero_cardinality_axioms:
+        assert Literal(0) not in min_card_values, "minCardinality 0 should be suppressed"
+    else:
+        assert Literal(0) in min_card_values, "minCardinality 0 should be present"
+    # minCardinality 1 (required slot) must always be present
+    assert Literal(1) in min_card_values, "minCardinality 1 must not be suppressed"
+
+
+@pytest.mark.parametrize("skip_vacuous_local_range_axioms", [True, False])
+def test_skip_vacuous_local_range_axioms(skip_vacuous_local_range_axioms: bool) -> None:
+    """Test that vacuous owl:allValuesFrom restrictions are suppressed when the flag is set.
+
+    A global slot receives a global rdfs:range axiom on the OWL property; an allValuesFrom
+    with the same filler is therefore entailed (vacuous) and can be dropped.  An attribute
+    slot (defined in class.attributes) has *no* global rdfs:range, so its allValuesFrom is
+    the only range declaration and must never be suppressed.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Target")
+    sb.add_class("AttributeTarget")
+    # Global slot — will get rdfs:range Target at property level; local allValuesFrom is vacuous.
+    sb.add_slot(SlotDefinition("global_slot", range="Target"))
+    sb.add_class("MyClass", slots=["global_slot"])
+    # Attribute slot — stored in class.attributes, no global rdfs:range; allValuesFrom is essential.
+    sb.schema.classes["MyClass"].attributes["attr_slot"] = SlotDefinition("attr_slot", range="AttributeTarget")
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        skip_vacuous_local_range_axioms=skip_vacuous_local_range_axioms,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    avf_values = _restriction_values(g, OWL.allValuesFrom)
+    target_uri = EX.Target
+    attr_target_uri = EX.AttributeTarget
+    if skip_vacuous_local_range_axioms:
+        assert target_uri not in avf_values, "vacuous allValuesFrom (global slot) should be suppressed"
+    else:
+        assert target_uri in avf_values, "allValuesFrom for global slot should be present"
+    # Attribute slots carry the only range info — must never be suppressed.
+    assert attr_target_uri in avf_values, "allValuesFrom for attribute slot must not be suppressed"
