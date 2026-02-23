@@ -222,13 +222,16 @@ If the PyPI release failed, make fixes, [delete](https://docs.github.com/en/ente
 
 ### PRs
 
-* PRs should be in a DRAFT state until they are ready for review and tests are passing. Draft PRs minimize notification noise for maintainers—GitHub sends notifications on PR creation and each automated review, which can overwhelm those subscribed to "All Activity."
-* PRs should be reviewed by at least one other person.
+* PRs MUST be in a DRAFT state until they are ready for review and tests are passing. Draft PRs minimize notification noise for maintainers—GitHub sends notifications on PR creation and each automated review, which can overwhelm those subscribed to "All Activity."
+* PRs MUST be reviewed by at least one member of the [LinkML developer team](https://github.com/orgs/linkml/teams/developers).
   * All automated tests should be passing via GitHub actions before a code review is requested.
-  * Reviews can be requested of any contributing member of the LinkML organization.
+  * Reviews can be requested of any member of [the LinkML developer team](https://github.com/orgs/linkml/teams/developers).
+* PRs SHOULD be linked to at least one issue in on the [LinkML issue tracker](https://github.com/linkml/linkml/issues/). This ensures that the community is aware of the work before it has started, understands its motivation and is able to respond before the work is performed. This also helps with process management and progress reporting. CODEOWNERs may choose to ignore this recommendation - the assumption being that this responsibility can add unnecessary busy work if larger tasks are broken into multiple small PRs.
+* All _open_ PRs MUST be assigned to someone to be reviewed / processed by the core team. This assignment means: the author (and no one else) is responsible for seeing this PR through. This is a critical component of a scalable Open Data effort - do not abandon your PRs hoping someone will finish them / deal with them. The [LinkML developer team](https://github.com/orgs/linkml/teams/developers) will do its best to find reviewers for your work, but a nudge from time to time helps with prioritisation. If you want you be assigned to your own PR but are not in the system, we will add you to the respective GitHub team. If you want someone else to be assigned to your PR, please clearly say so in the PR description. If a PR author withdraws themselves from a PR (by unassigning themselves), the PR is considered _orphaned_. _orphaned_ PRs are reverted to _draft_ state and stay open for up to 3 months for possible adoption before being closed automatically.
+
+Optional:
 * Make a DRAFT PR for your branch even if you've just started working on something.  This gives other developers
 insight into your work and allows them to provide feedback early on.
-* In general, each PR should be associated with a ticket.
 
 ### Ticket/Issue Creation
 
