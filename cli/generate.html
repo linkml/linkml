@@ -464,7 +464,7 @@ or run <code class="docutils literal notranslate"><span class="pre">linkml</span
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">golang</span></span></dt>
-<dd><p>Generate Golang types</p>
+<dd><p>Generate Golang structs from a LinkML schema.</p>
 </dd></dl>
 
 <dl class="object">
@@ -1476,9 +1476,12 @@ present, then all entities are included.</p>
 </section>
 <section id="linkml-generate-full-golang">
 <h4>golang<a class="headerlink" href="#linkml-generate-full-golang" title="Link to this heading">¶</a></h4>
-<p>Generate Golang types</p>
-<p>This very simple generator produces a Golang package named after the given
-schema with structs that implement the classes in that schema.</p>
+<p>Generate Golang structs from a LinkML schema.</p>
+<p>This generator produces idiomatic Go code with:
+- Structs for classes
+- Const blocks for enums
+- JSON tags for serialization
+- Struct embedding for inheritance</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>golang<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
@@ -1490,15 +1493,72 @@ schema with structs that implement the classes in that schema.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-golang-template-dir">
+<span class="sig-name descname"><span class="pre">--template-dir</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_dir&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-golang-template-dir" title="Link to this definition">¶</a></dt>
+<dd><p>Optional jinja2 template directory to use for Go code generation.</p>
+<p>Pass a directory containing templates with the same name as any of the default
+GolangTemplateModel templates to override them. The given directory will be
+searched for matching templates, and use the default templates as a fallback
+if an override is not found.</p>
+<p>Available templates to override:</p>
+<div class="line-block">
+<div class="line">- module.go.jinja</div>
+<div class="line">- struct.go.jinja</div>
+<div class="line">- field.go.jinja</div>
+<div class="line">- enum.go.jinja</div>
+<div class="line">- imports.go.jinja</div>
+</div>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-golang-named-slot-types">
+<span id="cmdoption-linkml-generate-full-golang-no-named-slot-types"></span><span class="sig-name descname"><span class="pre">--named-slot-types</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-named-slot-types</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-golang-named-slot-types" title="Link to this definition">¶</a></dt>
+<dd><p>Generate named Go types for parent slots with is_a children for type safety.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-golang-nullable-primitives">
+<span id="cmdoption-linkml-generate-full-golang-no-nullable-primitives"></span><span class="sig-name descname"><span class="pre">--nullable-primitives</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-nullable-primitives</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-golang-nullable-primitives" title="Link to this definition">¶</a></dt>
+<dd><p>Use pointer types for optional primitives so omitempty only triggers on nil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-golang-alphabetical-sort">
+<span id="cmdoption-linkml-generate-full-golang-no-alphabetical-sort"></span><span class="sig-name descname"><span class="pre">--alphabetical-sort</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-alphabetical-sort</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-golang-alphabetical-sort" title="Link to this definition">¶</a></dt>
+<dd><p>Sort structs and enums alphabetically for deterministic output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-golang-package-name">
+<span class="sig-name descname"><span class="pre">--package-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;package_name&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-golang-package-name" title="Link to this definition">¶</a></dt>
+<dd><p>Override the Go package name (default: derived from schema name)</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-golang-f">
 <span id="cmdoption-linkml-generate-full-golang-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-golang-f" title="Link to this definition">¶</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'text'</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'go'</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>text</p>
+<dd class="field-even"><p>go | golang</p>
 </dd>
 </dl>
 </dd></dl>
