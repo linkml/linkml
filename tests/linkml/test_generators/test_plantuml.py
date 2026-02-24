@@ -9,9 +9,15 @@ from testcontainers.core.container import DockerContainer
 from testcontainers.core.waiting_utils import wait_for_logs
 
 from linkml.generators.plantumlgen import PlantumlGenerator
-from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import (
+    ClassDefinition,
+    EnumDefinition,
+    PermissibleValue,
+    SchemaDefinition,
+    SlotDefinition,
+)
 
-pytestmark = [pytest.mark.plantumlgen, pytest.mark.docker]
+pytestmark = pytest.mark.plantumlgen
 
 MARKDOWN_HEADER = """@startuml
 skinparam nodesep 10
@@ -111,6 +117,7 @@ def test_create_request(input_class, expected, kitchen_sink_path):
 )
 @pytest.mark.network
 @pytest.mark.kroki
+@pytest.mark.docker
 def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url):
     """Test serialization of select plantUML class diagrams from schema."""
     generator = PlantumlGenerator(
@@ -135,6 +142,7 @@ def test_serialize_selected(input_class, expected, kitchen_sink_path, kroki_url)
 
 @pytest.mark.network
 @pytest.mark.kroki
+@pytest.mark.docker
 def test_serialize(kitchen_sink_path, kroki_url):
     """Test serialization of complete plantUML class diagram from schema."""
     generator = PlantumlGenerator(
@@ -157,6 +165,7 @@ def test_serialize(kitchen_sink_path, kroki_url):
 
 @pytest.mark.network
 @pytest.mark.kroki
+@pytest.mark.docker
 def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
     """Test the correctness of SVG rendering of plantUML diagram."""
     generator = PlantumlGenerator(
@@ -242,3 +251,105 @@ def test_preserve_names():
         gen = PlantumlGenerator(schema=schema, preserve_names=True, dry_run=False)
         gen.visit_schema(classes={"My_Class"}, directory=temp_dir)
         assert gen.output_file_name.endswith("My_Class.svg")
+
+
+@pytest.fixture()
+def enum_schema() -> SchemaDefinition:
+    """A minimal schema with two classes and two enumerations, one inheriting the other."""
+    schema = SchemaDefinition(
+        id="https://example.com/enum_schema",
+        name="enum_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+    )
+    schema.enums["StatusEnum"] = EnumDefinition(
+        name="StatusEnum",
+        permissible_values={
+            "ACTIVE": PermissibleValue(text="ACTIVE"),
+            "INACTIVE": PermissibleValue(text="INACTIVE"),
+        },
+    )
+    schema.enums["ExtendedStatusEnum"] = EnumDefinition(
+        name="ExtendedStatusEnum",
+        inherits=["StatusEnum"],
+        permissible_values={
+            "PENDING": PermissibleValue(text="PENDING"),
+        },
+    )
+    schema.slots["status"] = SlotDefinition(name="status", range="StatusEnum", domain_of=["Thing"])
+    schema.classes["Thing"] = ClassDefinition(
+        name="Thing",
+        slots=["status"],
+    )
+    schema.classes["Thing"].slots = ["status"]
+    return schema
+
+
+def test_include_enums_disabled_by_default(enum_schema: SchemaDefinition) -> None:
+    """Enum blocks must not appear unless include_enums=True."""
+    gen = PlantumlGenerator(schema=enum_schema, include_enums=False)
+    output = gen.visit_schema()
+    assert 'enum "StatusEnum"' not in output
+    assert 'enum "ExtendedStatusEnum"' not in output
+
+
+def test_include_enums_generates_enum_blocks(enum_schema: SchemaDefinition) -> None:
+    """Enum blocks are emitted for all enumerations referenced by the schema's classes."""
+    gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
+    output = gen.visit_schema()
+    assert 'enum "StatusEnum"' in output
+    assert "ACTIVE" in output
+    assert "INACTIVE" in output
+
+
+def test_include_enums_unreferenced_enum_excluded(enum_schema: SchemaDefinition) -> None:
+    """Enumerations not referenced by any slot are not rendered."""
+    gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
+    output = gen.visit_schema()
+    # ExtendedStatusEnum is not used by any slot, so it must be absent
+    assert 'enum "ExtendedStatusEnum"' not in output
+
+
+def test_include_enums_generates_association_arrow(enum_schema: SchemaDefinition) -> None:
+    """An association arrow is emitted from each class to its enum-typed slots."""
+    gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
+    output = gen.visit_schema()
+    assert '"Thing" --> "StatusEnum" : "status"' in output
+
+
+@pytest.mark.parametrize(
+    "include_enums,expect_enum_block,expect_arrow",
+    [
+        (True, True, True),
+        (False, False, False),
+    ],
+)
+def test_include_enums_parametrized(
+    enum_schema: SchemaDefinition,
+    include_enums: bool,
+    expect_enum_block: bool,
+    expect_arrow: bool,
+) -> None:
+    """Parametrized check: enum blocks and arrows appear iff include_enums=True."""
+    gen = PlantumlGenerator(schema=enum_schema, include_enums=include_enums)
+    output = gen.visit_schema()
+    if expect_enum_block:
+        assert 'enum "StatusEnum"' in output
+    else:
+        assert 'enum "StatusEnum"' not in output
+    if expect_arrow:
+        assert '"Thing" --> "StatusEnum"' in output
+    else:
+        assert '"Thing" --> "StatusEnum"' not in output
+
+
+def test_include_enums_inheritance_arrow(enum_schema: SchemaDefinition) -> None:
+    """Enum inheritance arrows are emitted when both parent and child enums are rendered."""
+    # Add a slot referencing the child enum so both get included
+    enum_schema.slots["ext_status"] = SlotDefinition(name="ext_status", range="ExtendedStatusEnum", domain_of=["Thing"])
+    enum_schema.classes["Thing"].slots.append("ext_status")
+    gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
+    output = gen.visit_schema()
+    assert 'enum "StatusEnum"' in output
+    assert 'enum "ExtendedStatusEnum"' in output
+    assert '"StatusEnum" <|-- "ExtendedStatusEnum"' in output

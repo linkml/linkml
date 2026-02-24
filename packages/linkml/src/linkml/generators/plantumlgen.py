@@ -53,6 +53,72 @@ class PlantumlGenerator(Generator):
     kroki_server: str | None = "https://kroki.io"
     tooltips_flag: bool = False
     dry_run: bool = False
+    include_enums: bool = False
+    """If True, render enumeration definitions as PlantUML ``enum`` blocks and add
+    association arrows from classes to their enum-typed slots."""
+
+    def _referenced_enum_names(self) -> set[str]:
+        """Return the names of all enumerations referenced by slots in the generated classes."""
+        all_enum_names = set(self.schema.enums.keys())
+        referenced: set[str] = set()
+        for cn in self.generated or set():
+            if cn in self.schema.classes:
+                for slot in self.all_slots(self.schema.classes[cn], cls_slots_first=True):
+                    if slot.range in all_enum_names:
+                        referenced.add(slot.range)
+        return referenced
+
+    def _generate_enum_defs(self, enum_names: set[str]) -> list[str]:
+        """Return PlantUML ``enum`` block definitions for each name in *enum_names*.
+
+        Each permissible value is listed as a member.  When the value has a
+        ``meaning`` URI it is appended in brackets, e.g. ``FIRE [bizcodes:002]``.
+        """
+        defs: list[str] = []
+        for enum_name in sorted(enum_names):
+            enum_def = self.schema.enums[enum_name]
+            members: list[str] = []
+            for pv_name, pv in (enum_def.permissible_values or {}).items():
+                label = pv_name
+                if pv.meaning:
+                    label += f" [{pv.meaning}]"
+                members.append(f"    {label}")
+            block = f'enum "{enum_name}" {{\n' + "\n".join(members) + "\n}"
+            defs.append(block)
+        return defs
+
+    def _generate_enum_inherits(self, enum_names: set[str]) -> list[str]:
+        """Return PlantUML generalisation arrows for enum ``inherits`` relationships.
+
+        Only arrows where both parent and child are in *enum_names* are emitted.
+        """
+        arrows: list[str] = []
+        for enum_name in sorted(enum_names):
+            enum_def = self.schema.enums[enum_name]
+            for parent in enum_def.inherits or []:
+                if parent in enum_names:
+                    arrows.append(f'"{parent}" <|-- "{enum_name}"')
+        return arrows
+
+    def _generate_enum_assocs(self, enum_names: set[str]) -> list[str]:
+        """Return PlantUML association arrows from classes to their enum-typed slots.
+
+        Only slots that are directly defined on the class (via ``domain_of``) are
+        included to avoid duplicating inherited associations.
+        """
+        assocs: list[str] = []
+        for cn in sorted(self.generated or set()):
+            if cn not in self.schema.classes:
+                continue
+            cls = self.schema.classes[cn]
+            for slot in self.all_slots(cls, cls_slots_first=True):
+                if slot.range not in enum_names:
+                    continue
+                if cn not in slot.domain_of:
+                    continue
+                slot_name = self.aliased_slot_name(slot)
+                assocs.append(f'"{cn}" --> "{slot.range}" : "{slot_name}"')
+        return assocs
 
     def visit_schema(
         self,
@@ -89,6 +155,12 @@ class PlantumlGenerator(Generator):
                 if ClassDefinitionName(cn) not in self.class_generated:
                     plantumlclassdef.append(self.add_class(ClassDefinitionName(cn)))
                     self.add_class(ClassDefinitionName(cn))
+
+        if self.include_enums:
+            enum_names = self._referenced_enum_names()
+            plantumlclassdef.extend(self._generate_enum_defs(enum_names))
+            plantumlclassdef.extend(self._generate_enum_inherits(enum_names))
+            plantumlclassdef.extend(self._generate_enum_assocs(enum_names))
 
         dedup_plantumlclassdef = []
         [dedup_plantumlclassdef.append(x) for x in plantumlclassdef if x not in dedup_plantumlclassdef]
@@ -365,6 +437,15 @@ class PlantumlGenerator(Generator):
     default=False,
     show_default=True,
     help="Preserve original LinkML names in PlantUML diagram output (e.g., for class names, slot names, file names).",
+)
+@click.option(
+    "--include-enums/--no-include-enums",
+    default=False,
+    show_default=True,
+    help=(
+        "If true, render enumerations referenced by the selected classes as PlantUML enum blocks "
+        "and add association arrows from classes to their enum-typed slots."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
