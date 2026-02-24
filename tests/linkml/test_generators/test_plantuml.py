@@ -389,3 +389,53 @@ def test_include_all_does_not_need_include_enums(enum_schema: SchemaDefinition) 
     output = gen.visit_schema()
     assert 'enum "StatusEnum"' in output
     assert 'enum "ExtendedStatusEnum"' in output
+
+
+# ---------------------------------------------------------------------------
+# --format behaviour
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("fmt", ["puml", "plantuml"])
+def test_format_text_returns_plantuml(fmt: str, kitchen_sink_path) -> None:
+    """Text formats (puml/plantuml) always return @startuml source without hitting Kroki."""
+    gen = PlantumlGenerator(kitchen_sink_path, format=fmt)
+    output = gen.serialize()
+    assert output.startswith("@startuml")
+    assert "@enduml" in output
+
+
+@pytest.mark.parametrize(
+    "fmt,expected_kroki_segment",
+    [
+        ("svg", "/plantuml/svg/"),
+        ("png", "/plantuml/png/"),
+        ("json", "/plantuml/json/"),
+        ("puml", "/plantuml/svg/"),  # text format → svg for Kroki
+        ("plantuml", "/plantuml/svg/"),  # text format → svg for Kroki
+    ],
+)
+def test_format_dry_run_url_uses_format(fmt: str, expected_kroki_segment: str, kitchen_sink_path) -> None:
+    """dry_run=True returns the Kroki URL with the correct format segment."""
+    gen = PlantumlGenerator(kitchen_sink_path, format=fmt, dry_run=True)
+    url = gen.serialize()
+    assert expected_kroki_segment in url
+
+
+@pytest.mark.parametrize("fmt", ["png", "pdf", "jpg"])
+def test_format_binary_stdout_raises(fmt: str, kitchen_sink_path) -> None:
+    """Binary formats raise ValueError when no --directory is given."""
+    gen = PlantumlGenerator(kitchen_sink_path, format=fmt)
+    with pytest.raises(ValueError, match="--directory"):
+        gen.serialize()
+
+
+@pytest.mark.network
+@pytest.mark.kroki
+@pytest.mark.docker
+def test_format_svg_stdout(kitchen_sink_path, kroki_url) -> None:
+    """format='svg' without --directory returns SVG text from Kroki."""
+    gen = PlantumlGenerator(kitchen_sink_path, format="svg", kroki_server=kroki_url)
+    output = gen.serialize(classes=["Person"])
+    assert output is not None
+    assert "<svg" in output

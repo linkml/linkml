@@ -31,6 +31,11 @@ plantuml_inline = "*--"
 plantuml_inline_rev = "--*"
 plantuml_ref = "--"
 
+_TEXT_FORMATS: frozenset[str] = frozenset({"puml", "plantuml"})
+"""Formats that produce PlantUML source text rather than a rendered image."""
+_BINARY_FORMATS: frozenset[str] = frozenset({"png", "pdf", "jpg"})
+"""Rendered formats whose output is binary and cannot be written to stdout."""
+
 
 @dataclass
 class PlantumlGenerator(Generator):
@@ -179,11 +184,12 @@ class PlantumlGenerator(Generator):
         plantuml_code = "\n".join(dedup_plantumlclassdef)
         b64_diagram = base64.urlsafe_b64encode(zlib.compress(plantuml_code.encode(), 9))
 
-        plantuml_url = self.kroki_server + "/plantuml/svg/" + b64_diagram.decode()
+        kroki_format = "svg" if self.format in _TEXT_FORMATS else self.format
+        plantuml_url = self.kroki_server + f"/plantuml/{kroki_format}/" + b64_diagram.decode()
         if self.dry_run:
             return plantuml_url
         if directory:
-            file_suffix = ".svg" if self.format == "puml" or self.format == "puml" else "." + self.format
+            file_suffix = ".svg" if self.format in _TEXT_FORMATS else "." + self.format
             schema_name = sorted(classes)[0] if classes else self.schema.name
             filename = schema_name if self.preserve_names else camelcase(schema_name)
             self.output_file_name = os.path.join(directory, filename + file_suffix)
@@ -195,13 +201,20 @@ class PlantumlGenerator(Generator):
             else:
                 self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
-            out = (
-                "@startuml\n"
-                "skinparam nodesep 10\n"
-                "hide circle\n"
-                "hide empty members\n" + "\n".join(dedup_plantumlclassdef) + "\n@enduml\n"
-            )
-            return out
+            if self.format in _TEXT_FORMATS:
+                return (
+                    "@startuml\n"
+                    "skinparam nodesep 10\n"
+                    "hide circle\n"
+                    "hide empty members\n" + "\n".join(dedup_plantumlclassdef) + "\n@enduml\n"
+                )
+            if self.format in _BINARY_FORMATS:
+                raise ValueError(f"Binary format {self.format!r} cannot be written to stdout; use --directory instead.")
+            resp = requests.get(plantuml_url, timeout=REQUESTS_TIMEOUT)
+            if resp.ok:
+                return resp.text
+            self.logger.error(f"{resp.reason} accessing {plantuml_url}")
+            return None
 
     def add_class(self, cn: ClassDefinitionName) -> str:
         """Define the class only if
