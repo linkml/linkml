@@ -56,6 +56,11 @@ class PlantumlGenerator(Generator):
     include_enums: bool = False
     """If True, render enumeration definitions as PlantUML ``enum`` blocks and add
     association arrows from classes to their enum-typed slots."""
+    include_all: bool = False
+    """If True, include all classes and enumerations from the schema, regardless of
+    which classes are selected. Implies ``include_enums`` for the enum selection
+    strategy: all enumerations are rendered rather than only those referenced by
+    selected classes."""
 
     def _referenced_enum_names(self) -> set[str]:
         """Return the names of all enumerations referenced by slots in the generated classes."""
@@ -67,6 +72,10 @@ class PlantumlGenerator(Generator):
                     if slot.range in all_enum_names:
                         referenced.add(slot.range)
         return referenced
+
+    def _all_enum_names(self) -> set[str]:
+        """Return the names of all enumerations defined in the schema."""
+        return set(self.schema.enums.keys())
 
     def _generate_enum_defs(self, enum_names: set[str]) -> list[str]:
         """Return PlantUML ``enum`` block definitions for each name in *enum_names*.
@@ -126,6 +135,8 @@ class PlantumlGenerator(Generator):
         directory: str | None = None,
         **_,
     ) -> str | None:
+        if self.include_all:
+            classes = set(self.schema.classes.keys())
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:
@@ -156,8 +167,8 @@ class PlantumlGenerator(Generator):
                     plantumlclassdef.append(self.add_class(ClassDefinitionName(cn)))
                     self.add_class(ClassDefinitionName(cn))
 
-        if self.include_enums:
-            enum_names = self._referenced_enum_names()
+        if self.include_enums or self.include_all:
+            enum_names = self._all_enum_names() if self.include_all else self._referenced_enum_names()
             plantumlclassdef.extend(self._generate_enum_defs(enum_names))
             plantumlclassdef.extend(self._generate_enum_inherits(enum_names))
             plantumlclassdef.extend(self._generate_enum_assocs(enum_names))
@@ -445,6 +456,18 @@ class PlantumlGenerator(Generator):
     help=(
         "If true, render enumerations referenced by the selected classes as PlantUML enum blocks "
         "and add association arrows from classes to their enum-typed slots."
+    ),
+)
+@click.option(
+    "--all",
+    "-a",
+    "include_all",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help=(
+        "Include all classes and enumerations from the schema. "
+        "Overrides --classes and implies all enumerations are rendered."
     ),
 )
 @click.version_option(__version__, "-V", "--version")

@@ -353,3 +353,39 @@ def test_include_enums_inheritance_arrow(enum_schema: SchemaDefinition) -> None:
     assert 'enum "StatusEnum"' in output
     assert 'enum "ExtendedStatusEnum"' in output
     assert '"StatusEnum" <|-- "ExtendedStatusEnum"' in output
+
+
+def test_include_all_generates_all_classes(enum_schema: SchemaDefinition) -> None:
+    """include_all=True includes every class in the schema."""
+    enum_schema.classes["Other"] = ClassDefinition(name="Other")
+    gen = PlantumlGenerator(schema=enum_schema, include_all=True)
+    output = gen.visit_schema()
+    assert 'class "Thing"' in output or '"Thing"' in output
+    assert '"Other"' in output
+
+
+def test_include_all_generates_all_enums(enum_schema: SchemaDefinition) -> None:
+    """include_all=True renders every enumeration, including unreferenced ones."""
+    gen = PlantumlGenerator(schema=enum_schema, include_all=True)
+    output = gen.visit_schema()
+    # StatusEnum is referenced, ExtendedStatusEnum is not — both must appear
+    assert 'enum "StatusEnum"' in output
+    assert 'enum "ExtendedStatusEnum"' in output
+    assert '"StatusEnum" <|-- "ExtendedStatusEnum"' in output
+
+
+def test_include_all_overrides_explicit_classes(enum_schema: SchemaDefinition) -> None:
+    """include_all=True overrides an explicit classes selection."""
+    enum_schema.classes["Other"] = ClassDefinition(name="Other")
+    gen = PlantumlGenerator(schema=enum_schema, include_all=True)
+    # Even when passing a restricted class set, include_all should expand it
+    output = gen.visit_schema(classes={"Thing"})
+    assert '"Other"' in output
+
+
+def test_include_all_does_not_need_include_enums(enum_schema: SchemaDefinition) -> None:
+    """include_all=True renders enums even when include_enums=False."""
+    gen = PlantumlGenerator(schema=enum_schema, include_all=True, include_enums=False)
+    output = gen.visit_schema()
+    assert 'enum "StatusEnum"' in output
+    assert 'enum "ExtendedStatusEnum"' in output
