@@ -16,8 +16,9 @@ type_map = {
     "str": "string",
     "int": "int",
     "Bool": "bool",
+    "Decimal": "float64",
     "float": "float64",
-    "XSDDate": "time.Date",
+    "XSDDate": "time.Time",
 }
 
 default_template = """
@@ -28,23 +29,22 @@ default_template = """
 {%- endif -%}
 package {{package_name}}
 
-{% for c in view.all_classes().values() -%}
+{%- set ns = namespace(usesTime=false) -%}
+{%- for c in view.all_classes().values() -%}
     {%- for sn in view.class_slots(c.name, direct=False) %}
         {%- set s = view.induced_slot(sn, c.name) -%}
         {%- if "time." in gen.range(s) -%}
-            {%- set usesTime = True %}
-        {%- else -%}
-            {%- set usesTime = False %}
+            {%- set ns.usesTime = true -%}
         {%- endif -%}
     {%- endfor -%}
 {%- endfor -%}
-{%- if usesTime -%}
+{% if ns.usesTime %}
 import (
-    "time" // for time.Date
+    "time" // for time.Time
 )
-{%- endif -%}
+{% endif %}
 
-{% for c in view.all_classes().values() -%}
+{% for c in view.all_classes().values()|sort(attribute='name') -%}
 {%- if c.description -%}
 /*
  * {{c.description}}
@@ -60,16 +60,20 @@ type {{gen.name(c)}} struct {
 	{{p}}
     {%- endfor %}
     {%- endif -%}
-    {%- for sn in view.class_slots(c.name, direct=False) %}
+    {%- for sn in view.class_slots(c.name, direct=True) %}
     {%- set s = view.induced_slot(sn, c.name) -%}
     {%- if s.description %}
 	/*
 	 * {{s.description}}
 	 */
     {%- endif %}
-	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}"`
+	{{gen.name(s)}} {{gen.range(s)}} `json:"{{gen.json_name(s)}}{{gen.json_opts(s) | join(',')}}"`
     {%- endfor %}
 }
+{% set cref = gen.classref(c) %}
+{% if cref -%}
+type {{cref}} string
+{%- endif %}
 
 {% endfor %}
 """  # noqa: E101, W191
@@ -122,6 +126,18 @@ class GolangGenerator(Generator):
             alias = element.alias
         return underscore(alias)
 
+    def json_opts(self, slot: SlotDefinition) -> list[str]:
+        """
+        Returns the JSON serialization options of the element.
+
+        :param element:
+        :return:
+        """
+        opts = [""]
+        if not slot.required:
+            opts.append("omitempty")
+        return opts
+
     def classref(self, cls: ClassDefinition) -> str | None:
         """
         Returns the class name for the class that holds a reference (foreign key) to members of this class
@@ -164,20 +180,27 @@ class GolangGenerator(Generator):
                     else:
                         return f"[]{rc_name}"
                 else:
-                    return f"{rc_ref}[]"
+                    return f"[]{rc_ref}"
             else:
                 if not id_slot or slot.inlined:
-                    return rc_name
+                    return rc_name if slot.required else f"*{rc_name}"
                 else:
-                    return f"{rc_ref}"
+                    return f"{rc_ref}" if slot.required else f"*{rc_ref}"
         else:
             if r in sv.all_types():
                 t = sv.get_type(r)
                 if t.base and t.base in type_map:
-                    return type_map[t.base]
+                    typ = type_map[t.base]
+                    if slot.multivalued:
+                        return f"[]{typ}"
+                    else:
+                        return typ if slot.required else f"*{typ}"
                 else:
-                    logger.warning(f"Unknown type.base: {t.name}")
-            return "string"
+                    logger.warning(f"Unknown type.base: {t.base}")
+            if slot.multivalued:
+                return "[]string"
+            else:
+                return "string" if slot.required else "*string"
 
     @staticmethod
     def parents(cls: ClassDefinition) -> list[ClassDefinitionName]:
