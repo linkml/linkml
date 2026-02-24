@@ -53,7 +53,7 @@ DATASET2PERSON = """
 "Dataset" *--> "0..*" "Person" : "persons"
 """
 
-PERSON_URL = "https://kroki.io/plantuml/svg/eNp9VE1rwzAMvfdXiBzLMrZrD4Nu69hhHWM7lhK0RG0EsR0st1BK__ucj2ZJWycnR3p6T3oyTgsUgeiLrBgdwWp1nENZ_9xBwXvWWzAWMsLstF7DcQL-O26YiuwEnMEMxNkKBIOMRkWhHG4pYZ0cCK14DGtHW7IXICkpZZJkjEicUZjmSWp22gWZWJJ2jhl88IZ-HLqdLPROXfZVMApJT231cH8_XU9Ok7Qx6Zmtyxd70q426tNoakz5h8yzzJJIML-kjFMsxkneULFvpvimAh0bLTmXQfBClYU5KM83TvpiVIn6EMy_ovPjh-uXaC373Y2rvKPMGx-vId0lm8bxE0Te3MdoaOoMohwFfqsQUB27UTWNej77EmzOXjIAHpreiqgmCDn7e2QPodrbu2g5Nm0SbC8bbONqUy0LdfFeM7d1a7rKtbOAp6i1KQNnfFm35b7FPXBKFarb9aC_Hqx5AapJLtYeoFUV6tzDOR7Hw_vggTt_-AOKp2gk"
+PERSON_URL = "https://kroki.io/plantuml/svg/eNp9VMtqw0AMvOcrhI-hMe01h0LapvTQlNIeQ2pUW4kF3l2z2gRMyL93_YjrPDY-2dJoRhoJpwWKQPRJVoyOYLncz6BsPu6g4B3rDRgLGWF2WK1gPwL_7NdMRXYAzmAK4mwNgpOMRkWhHG4oYZ1UhFY8hrWjDdkzkJSUMklyi0icUZjmSWq22gWZWJJujim885q-HbqtzPVWnfdVMArJQG15H8fj1egwSluTnti6fL4j7RqjPoym1pR_yCzLLIkE8wvKOMXiNskrKvbNFF9UoGOjJecyCJ6rsjCV8ny3SZ-NKlFXwfwLOj9-uH6B1rLf3W2VN5RZ6-MlpD-y8WTyCJE39yE6NXUKUY4Cv3UIqIldqRpHA599CbbvXjIAPjW9E1FtEHL2d2SrUO31XXQc6y4JdpANtnGxqY6F-vigmeu6DV3t2lHAUzTalIEzvqzf8tDiATilGtXv-qS_Aaz9A9STnK09QKtq1LGH4Q38xHEP_AO-dmYq"
 
 DATASET2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kLEKwjAQhvc-xZGxWNHVQRB1VcFRHM7klEhzKUksFvHdjSlWFOuWn_s-7vLLEr0HgTLoWodGwG53Q6icrYklFSdichg0n-CF3Pd7uGXZPZOtuiHnLSdxBlUKAygjGh3rQBGqb2WBAT2F5Kws0_d8bhVtGx_I_EFMhdz0zmfcrA9nku2S5RVNVRLYI1xYWvbBoWZSkOjOfR-WF8UUxGg4zMXnORMQMkbwKXvR57wLnXRBUz_f_ScteL7_0a_OI9w2_hsdi48iIm0ooIqceAA8u58V"
 
@@ -459,6 +459,16 @@ def mixin_schema() -> SchemaDefinition:
     schema.classes["Person"] = ClassDefinition(name="Person", mixins=["HasName"])
     schema.slots["name"] = SlotDefinition(name="name", range="string")
     return schema
+
+
+def test_mixin_arrow_is_dashed_realization(mixin_schema: SchemaDefinition) -> None:
+    """Mixin usage is rendered as a dashed realization arrow with mixin (parent) on the left."""
+    gen = PlantumlGenerator(schema=mixin_schema)
+    output = gen.visit_schema()
+    # old "-- : uses" style must be gone
+    assert ": uses" not in output
+    # dashed realization arrow: mixin is the generalisation target (left side)
+    assert '"HasName" ^.. "Person"' in output
 
 
 def test_mark_mixins_disabled_by_default(mixin_schema: SchemaDefinition) -> None:

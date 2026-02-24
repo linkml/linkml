@@ -25,7 +25,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 plantuml_is_a = "^--"
-plantuml_uses = ("--", " : uses")
+plantuml_mixin = "^.."  # dashed realization — visually distinct from solid is-a inheritance
 plantuml_injected = ("--", " : inject")
 plantuml_inline = "*--"
 plantuml_inline_rev = "--*"
@@ -327,24 +327,22 @@ class PlantumlGenerator(Generator):
                             + self.prop_modifier(dom, slot)
                         )
 
-            # Mixins used in the class
+            # Mixins used in the class — mixin (parent) on left, user class (child) on right
             for mixin in cls.mixins:
                 if cn not in self.class_generated:
                     classes.append(self.add_class(cn))
                 if mixin not in self.class_generated:
                     classes.append(self.add_class(mixin))
-                assocs.append('"' + cn + '" ' + plantuml_uses[0] + ' "' + mixin + '" ' + plantuml_uses[1])
+                assocs.append('"' + mixin + '" ' + plantuml_mixin + " " + '"' + cn + '"')
 
-            # Classes that use the class as a mixin
+            # Classes that use the class as a mixin — cn (parent) on left, user class (child) on right
             if cls.name in self.synopsis.mixinrefs:
                 for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs, reverse=True):
                     if ClassDefinitionName(mixin) not in self.class_generated:
                         classes.append(self.add_class(ClassDefinitionName(mixin)))
                     if cn not in self.class_generated:
                         classes.append(self.add_class(cn))
-                    assocs.append(
-                        '"' + ClassDefinitionName(mixin) + '" ' + plantuml_uses[0] + ' "' + cn + '" ' + plantuml_uses[1]
-                    )
+                    assocs.append('"' + cn + '" ' + plantuml_mixin + " " + '"' + ClassDefinitionName(mixin) + '"')
 
             # Classes that inject information
             if cn in self.synopsis.applytos.classrefs:
