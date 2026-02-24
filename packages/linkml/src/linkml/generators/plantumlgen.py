@@ -66,6 +66,9 @@ class PlantumlGenerator(Generator):
     which classes are selected. Implies ``include_enums`` for the enum selection
     strategy: all enumerations are rendered rather than only those referenced by
     selected classes."""
+    mark_mixins: bool = False
+    """If True, mixin classes are annotated with a ``<<(M,orchid) mixin>>`` PlantUML
+    spot stereotype so they are visually distinguishable from regular classes."""
 
     def _referenced_enum_names(self) -> set[str]:
         """Return the names of all enumerations referenced by slots in the generated classes."""
@@ -255,7 +258,8 @@ class PlantumlGenerator(Generator):
             class_type = "abstract"
         else:
             class_type = "class"
-        return class_type + ' "' + cn + '"' + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
+        stereotype = " <<(M,orchid) mixin>>" if self.mark_mixins and cls.mixin else ""
+        return class_type + ' "' + cn + '"' + stereotype + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
 
     def class_associations(self, cn: ClassDefinitionName, must_render: bool = False) -> str:
         """Emit all associations for a focus class.  If none are specified, all classes are generated
@@ -469,6 +473,15 @@ class PlantumlGenerator(Generator):
     help=(
         "If true, render enumerations referenced by the selected classes as PlantUML enum blocks "
         "and add association arrows from classes to their enum-typed slots."
+    ),
+)
+@click.option(
+    "--mark-mixins/--no-mark-mixins",
+    default=False,
+    show_default=True,
+    help=(
+        "If true, annotate mixin classes with a <<(M,orchid) mixin>> PlantUML spot stereotype "
+        "so they are visually distinguishable from regular classes."
     ),
 )
 @click.option(

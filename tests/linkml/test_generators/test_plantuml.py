@@ -439,3 +439,63 @@ def test_format_svg_stdout(kitchen_sink_path, kroki_url) -> None:
     output = gen.serialize(classes=["Person"])
     assert output is not None
     assert "<svg" in output
+
+
+# ---------------------------------------------------------------------------
+# --mark-mixins behaviour
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture()
+def mixin_schema() -> SchemaDefinition:
+    """A minimal schema with one mixin class and one regular class that uses it."""
+    schema = SchemaDefinition(
+        id="https://example.com/mixin_schema",
+        name="mixin_schema",
+        imports=["linkml:types"],
+        prefixes={"linkml": "https://w3id.org/linkml/"},
+    )
+    schema.classes["HasName"] = ClassDefinition(name="HasName", mixin=True, slots=["name"])
+    schema.classes["Person"] = ClassDefinition(name="Person", mixins=["HasName"])
+    schema.slots["name"] = SlotDefinition(name="name", range="string")
+    return schema
+
+
+def test_mark_mixins_disabled_by_default(mixin_schema: SchemaDefinition) -> None:
+    """Mixin stereotype must not appear unless mark_mixins=True."""
+    gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=False)
+    output = gen.visit_schema()
+    assert "<<(M,orchid) mixin>>" not in output
+
+
+def test_mark_mixins_adds_stereotype(mixin_schema: SchemaDefinition) -> None:
+    """mark_mixins=True adds the spot stereotype to mixin class definitions."""
+    gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=True)
+    output = gen.visit_schema()
+    assert "<<(M,orchid) mixin>>" in output
+
+
+def test_mark_mixins_only_on_mixin_classes(mixin_schema: SchemaDefinition) -> None:
+    """Regular (non-mixin) classes must not receive the mixin stereotype."""
+    gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=True)
+    output = gen.visit_schema()
+    # Person is not a mixin — count occurrences: should appear exactly once (for HasName)
+    assert output.count("<<(M,orchid) mixin>>") == 1
+
+
+@pytest.mark.parametrize(
+    "mark_mixins,expect_stereotype",
+    [(True, True), (False, False)],
+)
+def test_mark_mixins_parametrized(
+    mixin_schema: SchemaDefinition,
+    mark_mixins: bool,
+    expect_stereotype: bool,
+) -> None:
+    """Parametrized check: stereotype appears iff mark_mixins=True."""
+    gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=mark_mixins)
+    output = gen.visit_schema()
+    if expect_stereotype:
+        assert "<<(M,orchid) mixin>>" in output
+    else:
+        assert "<<(M,orchid) mixin>>" not in output
