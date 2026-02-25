@@ -100,7 +100,7 @@ linkml-convert -s schema.yaml -C Container -S items -t json \
   input.tsv
 ```
 
-CLI options override schema annotations if both are set.
+CLI options extend schema annotations if both are set.
 
 ### Dumping Booleans
 

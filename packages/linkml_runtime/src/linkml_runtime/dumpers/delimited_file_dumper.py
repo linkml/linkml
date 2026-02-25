@@ -27,7 +27,7 @@ BOOLEAN_OUTPUT_FORMATS = {
 }
 
 
-def _get_boolean_output_format(schemaview: SchemaView, boolean_output: str = None) -> tuple[str, str]:
+def _get_boolean_output_format(schemaview: SchemaView | None, boolean_output: str = None) -> tuple[str, str]:
     """
     Get the boolean output format from annotation or parameter.
 

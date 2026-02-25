@@ -51,15 +51,16 @@ def _get_boolean_slots(schemaview: SchemaView, index_slot: SlotDefinitionName) -
 
 
 def _get_boolean_sentinels(
-    schemaview: SchemaView,
+    schemaview: SchemaView | None,
     truthy_override: frozenset[str] | None = None,
     falsy_override: frozenset[str] | None = None,
 ) -> tuple[frozenset[str], frozenset[str]]:
     """
     Determine the truthy and falsy sentinel sets for boolean coercion.
 
-    Priority: CLI overrides > schema annotations > defaults.
-    All values are stored and compared case-insensitively.
+    Cumulative: defaults are extended by schema annotations, which are
+    further extended by CLI options. All values are stored and compared
+    case-insensitively.
 
     Schema annotations ``boolean_truthy`` and ``boolean_falsy`` are comma-separated
     strings, e.g. ``boolean_truthy: "yes,on,1"``.
