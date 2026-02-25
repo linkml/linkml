@@ -141,16 +141,7 @@ if __name__ == "__main__":
     unittest.main()
 
 
-# =============================================================================
-# pytest-style tests for boolean handling in CSV/TSV (issue #2580)
-#
-# Tests verify that:
-# - Default sentinels (T/TRUE/F/FALSE, case-insensitive) are accepted on load
-# - Additional sentinels can be added via schema annotations or CLI
-# - Boolean output format is configurable via annotation or CLI
-# - Coercion is schema-aware (only for boolean slots)
-# - Empty strings are coerced to null
-# =============================================================================
+# Boolean handling tests for CSV/TSV (issue #2580)
 
 BOOLEAN_TEST_SCHEMA = """
 id: https://example.org/boolean_test
@@ -183,125 +174,6 @@ slots:
   name:
     range: string
 """
-
-
-class TestBooleanLoading:
-    """Test loading boolean values from CSV/TSV.
-
-    Default sentinels follow pandas/R conventions (case-insensitive):
-    - Truthy: T, TRUE
-    - Falsy: F, FALSE
-    Additional sentinels (yes/no, on/off, 0/1) are available via override.
-    """
-
-    @pytest.fixture
-    def schemaview(self, tmp_path):
-        schema_file = tmp_path / "schema.yaml"
-        schema_file.write_text(BOOLEAN_TEST_SCHEMA)
-        return SchemaView(str(schema_file))
-
-    @pytest.mark.parametrize(
-        "truthy_value",
-        ["true", "True", "TRUE", "t", "T"],
-    )
-    def test_load_default_truthy_values(self, schemaview, tmp_path, truthy_value):
-        """Default truthy sentinels (T, TRUE, case-insensitive) should load as True."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text(f"id\tis_active\tname\n1\t{truthy_value}\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        assert result["items"][0]["is_active"] is True
-
-    @pytest.mark.parametrize(
-        "falsy_value",
-        ["false", "False", "FALSE", "f", "F"],
-    )
-    def test_load_default_falsy_values(self, schemaview, tmp_path, falsy_value):
-        """Default falsy sentinels (F, FALSE, case-insensitive) should load as False."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text(f"id\tis_active\tname\n1\t{falsy_value}\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        assert result["items"][0]["is_active"] is False
-
-    @pytest.mark.parametrize(
-        "non_default_value",
-        ["yes", "Yes", "YES", "no", "No", "NO", "on", "off"],
-    )
-    def test_non_default_sentinels_not_coerced(self, schemaview, tmp_path, non_default_value):
-        """Values like yes/no/on/off should NOT be coerced without explicit override."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text(f"id\tis_active\tname\n1\t{non_default_value}\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        # Should remain as string, not coerced to bool
-        assert isinstance(result["items"][0]["is_active"], str)
-
-    @pytest.mark.parametrize("numeric_value", ["1", "0"])
-    def test_numeric_values_not_coerced(self, schemaview, tmp_path, numeric_value):
-        """Numeric 1/0 should NOT be coerced to bool without explicit override.
-
-        Note: CSV parsers may return these as int rather than str, but they
-        should not become True/False without the override.
-        """
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text(f"id\tis_active\tname\n1\t{numeric_value}\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        # Should not be a bool — may be int or str depending on CSV parser
-        assert not isinstance(result["items"][0]["is_active"], bool)
-
-    def test_multivalued_boolean_coercion(self):
-        """Boolean coercion handles list values in boolean slots."""
-        from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
-
-        obj = {"is_active": ["true", "false", "T", "F"], "name": "test"}
-        result = _coerce_boolean_values(obj, {"is_active"})
-        assert result["is_active"] == [True, False, True, False]
-        assert result["name"] == "test"
-
-    def test_multivalued_boolean_coercion_with_custom_sentinels(self):
-        """Boolean coercion respects custom sentinel sets."""
-        from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
-
-        truthy = frozenset({"true", "t", "yes", "on"})
-        falsy = frozenset({"false", "f", "no", "off"})
-        obj = {"is_active": ["yes", "no", "ON", "off"], "name": "test"}
-        result = _coerce_boolean_values(obj, {"is_active"}, truthy, falsy)
-        assert result["is_active"] == [True, False, True, False]
-        assert result["name"] == "test"
-
-    def test_string_yes_not_coerced_in_string_slot(self, schemaview, tmp_path):
-        """String 'yes' in a string slot should NOT be coerced to boolean."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text("id\tis_active\tname\n1\ttrue\tyes\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        # is_active (boolean slot) should be True
-        assert result["items"][0]["is_active"] is True
-        # name (string slot) should remain "yes" not be coerced
-        assert result["items"][0]["name"] == "yes"
-
 
 BOOLEAN_OVERRIDE_SCHEMA = """
 id: https://example.org/boolean_override_test
@@ -338,98 +210,6 @@ slots:
     range: string
 """
 
-
-class TestBooleanAnnotationOverride:
-    """Test that schema annotations can extend the default boolean sentinels."""
-
-    @pytest.fixture
-    def schemaview(self, tmp_path):
-        schema_file = tmp_path / "schema.yaml"
-        schema_file.write_text(BOOLEAN_OVERRIDE_SCHEMA)
-        return SchemaView(str(schema_file))
-
-    @pytest.mark.parametrize(
-        "truthy_value",
-        ["true", "T", "yes", "Yes", "YES", "on", "On", "ON", "1"],
-    )
-    def test_annotation_truthy_values(self, schemaview, tmp_path, truthy_value):
-        """Schema annotation boolean_truthy extends defaults with yes/on/1."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text(f"id\tis_active\tname\n1\t{truthy_value}\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        assert result["items"][0]["is_active"] is True
-
-    @pytest.mark.parametrize(
-        "falsy_value",
-        ["false", "F", "no", "No", "NO", "off", "Off", "OFF", "0"],
-    )
-    def test_annotation_falsy_values(self, schemaview, tmp_path, falsy_value):
-        """Schema annotation boolean_falsy extends defaults with no/off/0."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text(f"id\tis_active\tname\n1\t{falsy_value}\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        assert result["items"][0]["is_active"] is False
-
-
-class TestEmptyStringToNull:
-    """Test that empty strings are coerced to null (per Discussion #1996).
-
-    Note: json-flattener already drops empty CSV cells entirely (key is absent),
-    so the _coerce_empty_to_none function serves as a safety net for edge cases
-    where empty strings survive the unflatten step.
-    """
-
-    @pytest.fixture
-    def schemaview(self, tmp_path):
-        schema_file = tmp_path / "schema.yaml"
-        schema_file.write_text(BOOLEAN_TEST_SCHEMA)
-        return SchemaView(str(schema_file))
-
-    def test_empty_csv_cell_is_absent(self, schemaview, tmp_path):
-        """Empty CSV cell is dropped by json-flattener (key absent from dict)."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text("id\tis_active\tname\n1\ttrue\t\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        # json-flattener drops empty cells — key is absent
-        assert "name" not in result["items"][0]
-
-    def test_empty_boolean_cell_is_absent(self, schemaview, tmp_path):
-        """Empty boolean CSV cell is dropped by json-flattener, not coerced to bool."""
-        tsv_file = tmp_path / "data.tsv"
-        tsv_file.write_text("id\tis_active\tname\n1\t\ttest\n")
-
-        result = tsv_loader.load_as_dict(
-            str(tsv_file),
-            index_slot="items",
-            schemaview=schemaview,
-        )
-        # json-flattener drops empty cells
-        assert "is_active" not in result["items"][0]
-
-    def test_coerce_empty_to_none_function(self):
-        """Direct test of _coerce_empty_to_none as a safety net."""
-        from linkml_runtime.loaders.delimited_file_loader import _coerce_empty_to_none
-
-        obj = {"name": "", "id": "1", "tags": ["a", "", "c"]}
-        result = _coerce_empty_to_none(obj)
-        assert result == {"name": None, "id": "1", "tags": ["a", None, "c"]}
-
-
 BOOLEAN_OUTPUT_SCHEMA = """
 id: https://example.org/boolean_output_test
 name: boolean_output_test
@@ -462,68 +242,166 @@ slots:
 """
 
 
-class TestBooleanDumping:
-    """Test dumping boolean values to CSV/TSV with configurable output format."""
+@pytest.fixture
+def boolean_schemaview(tmp_path):
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(BOOLEAN_TEST_SCHEMA)
+    return SchemaView(str(schema_file))
 
-    @pytest.fixture
-    def schemaview_default(self, tmp_path):
-        """Schema with default boolean output (true/false)."""
-        schema_file = tmp_path / "schema.yaml"
-        schema_file.write_text(BOOLEAN_TEST_SCHEMA)
-        return SchemaView(str(schema_file))
 
-    @pytest.fixture
-    def schemaview_yes_no(self, tmp_path):
-        """Schema with boolean_output: yes annotation."""
-        schema_file = tmp_path / "schema.yaml"
-        schema_file.write_text(BOOLEAN_OUTPUT_SCHEMA)
-        return SchemaView(str(schema_file))
+@pytest.fixture
+def boolean_override_schemaview(tmp_path):
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(BOOLEAN_OVERRIDE_SCHEMA)
+    return SchemaView(str(schema_file))
 
-    def test_dump_boolean_default_format(self, schemaview_default, tmp_path):
-        """Default boolean output should be 'true'/'false'."""
-        data = {"items": [{"id": "1", "is_active": True, "name": "test"}]}
-        output_file = tmp_path / "output.tsv"
 
-        tsv_dumper.dump(
-            data,
-            to_file=str(output_file),
-            index_slot="items",
-            schemaview=schemaview_default,
-        )
+@pytest.fixture
+def boolean_output_schemaview(tmp_path):
+    schema_file = tmp_path / "schema.yaml"
+    schema_file.write_text(BOOLEAN_OUTPUT_SCHEMA)
+    return SchemaView(str(schema_file))
 
-        content = output_file.read_text()
-        assert "true" in content.lower()
 
-    def test_dump_boolean_yes_no_format(self, schemaview_yes_no, tmp_path):
-        """With boolean_output: yes, output should be 'yes'/'no'."""
-        data = {"items": [{"id": "1", "is_active": True}]}
-        output_file = tmp_path / "output.tsv"
+# --- Loading: default sentinels ---
 
-        tsv_dumper.dump(
-            data,
-            to_file=str(output_file),
-            index_slot="items",
-            schemaview=schemaview_yes_no,
-        )
 
-        content = output_file.read_text()
-        # Should contain 'yes' not 'true'
-        assert "yes" in content.lower()
-        assert "true" not in content.lower()
+@pytest.mark.parametrize("truthy_value", ["true", "True", "TRUE", "t", "T"])
+def test_load_default_truthy_values(boolean_schemaview, tmp_path, truthy_value):
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text(f"id\tis_active\tname\n1\t{truthy_value}\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert result["items"][0]["is_active"] is True
 
-    def test_dump_boolean_cli_override(self, schemaview_default, tmp_path):
-        """CLI option should override schema annotation."""
-        data = {"items": [{"id": "1", "is_active": True}]}
-        output_file = tmp_path / "output.tsv"
 
-        tsv_dumper.dump(
-            data,
-            to_file=str(output_file),
-            index_slot="items",
-            schemaview=schemaview_default,
-            boolean_output="1",  # CLI override
-        )
+@pytest.mark.parametrize("falsy_value", ["false", "False", "FALSE", "f", "F"])
+def test_load_default_falsy_values(boolean_schemaview, tmp_path, falsy_value):
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text(f"id\tis_active\tname\n1\t{falsy_value}\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert result["items"][0]["is_active"] is False
 
-        content = output_file.read_text()
-        # Should contain '1' not 'true'
-        assert "\t1\n" in content or "\t1\t" in content
+
+@pytest.mark.parametrize("non_default_value", ["yes", "Yes", "YES", "no", "No", "NO", "on", "off"])
+def test_non_default_sentinels_not_coerced(boolean_schemaview, tmp_path, non_default_value):
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text(f"id\tis_active\tname\n1\t{non_default_value}\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert isinstance(result["items"][0]["is_active"], str)
+
+
+@pytest.mark.parametrize("numeric_value", ["1", "0"])
+def test_numeric_values_not_coerced(boolean_schemaview, tmp_path, numeric_value):
+    """Numeric 1/0 should not become True/False without explicit override."""
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text(f"id\tis_active\tname\n1\t{numeric_value}\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert not isinstance(result["items"][0]["is_active"], bool)
+
+
+def test_string_yes_not_coerced_in_string_slot(boolean_schemaview, tmp_path):
+    """Coercion is schema-aware: 'yes' in a string slot stays as string."""
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text("id\tis_active\tname\n1\ttrue\tyes\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert result["items"][0]["is_active"] is True
+    assert result["items"][0]["name"] == "yes"
+
+
+# --- Loading: multivalued boolean slots ---
+
+
+def test_multivalued_boolean_coercion():
+    from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
+
+    obj = {"is_active": ["true", "false", "T", "F"], "name": "test"}
+    result = _coerce_boolean_values(obj, {"is_active"})
+    assert result["is_active"] == [True, False, True, False]
+    assert result["name"] == "test"
+
+
+def test_multivalued_boolean_coercion_with_custom_sentinels():
+    from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
+
+    truthy = frozenset({"true", "t", "yes", "on"})
+    falsy = frozenset({"false", "f", "no", "off"})
+    obj = {"is_active": ["yes", "no", "ON", "off"], "name": "test"}
+    result = _coerce_boolean_values(obj, {"is_active"}, truthy, falsy)
+    assert result["is_active"] == [True, False, True, False]
+    assert result["name"] == "test"
+
+
+# --- Loading: schema annotation extends defaults ---
+
+
+@pytest.mark.parametrize("truthy_value", ["true", "T", "yes", "Yes", "YES", "on", "On", "ON", "1"])
+def test_annotation_truthy_values(boolean_override_schemaview, tmp_path, truthy_value):
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text(f"id\tis_active\tname\n1\t{truthy_value}\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_override_schemaview)
+    assert result["items"][0]["is_active"] is True
+
+
+@pytest.mark.parametrize("falsy_value", ["false", "F", "no", "No", "NO", "off", "Off", "OFF", "0"])
+def test_annotation_falsy_values(boolean_override_schemaview, tmp_path, falsy_value):
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text(f"id\tis_active\tname\n1\t{falsy_value}\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_override_schemaview)
+    assert result["items"][0]["is_active"] is False
+
+
+# --- Loading: empty string to null ---
+
+
+def test_empty_csv_cell_is_absent(boolean_schemaview, tmp_path):
+    """json-flattener drops empty CSV cells entirely."""
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text("id\tis_active\tname\n1\ttrue\t\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert "name" not in result["items"][0]
+
+
+def test_empty_boolean_cell_is_absent(boolean_schemaview, tmp_path):
+    """Empty boolean CSV cell is dropped, not coerced to bool."""
+    tsv_file = tmp_path / "data.tsv"
+    tsv_file.write_text("id\tis_active\tname\n1\t\ttest\n")
+    result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
+    assert "is_active" not in result["items"][0]
+
+
+def test_coerce_empty_to_none_function():
+    from linkml_runtime.loaders.delimited_file_loader import _coerce_empty_to_none
+
+    obj = {"name": "", "id": "1", "tags": ["a", "", "c"]}
+    result = _coerce_empty_to_none(obj)
+    assert result == {"name": None, "id": "1", "tags": ["a", None, "c"]}
+
+
+# --- Dumping: configurable boolean output format ---
+
+
+def test_dump_boolean_default_format(boolean_schemaview, tmp_path):
+    data = {"items": [{"id": "1", "is_active": True, "name": "test"}]}
+    output_file = tmp_path / "output.tsv"
+    tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=boolean_schemaview)
+    content = output_file.read_text()
+    assert "true" in content.lower()
+
+
+def test_dump_boolean_yes_no_format(boolean_output_schemaview, tmp_path):
+    data = {"items": [{"id": "1", "is_active": True}]}
+    output_file = tmp_path / "output.tsv"
+    tsv_dumper.dump(data, to_file=str(output_file), index_slot="items", schemaview=boolean_output_schemaview)
+    content = output_file.read_text()
+    assert "yes" in content.lower()
+    assert "true" not in content.lower()
+
+
+def test_dump_boolean_cli_override(boolean_schemaview, tmp_path):
+    data = {"items": [{"id": "1", "is_active": True}]}
+    output_file = tmp_path / "output.tsv"
+    tsv_dumper.dump(
+        data, to_file=str(output_file), index_slot="items", schemaview=boolean_schemaview, boolean_output="1"
+    )
+    content = output_file.read_text()
+    assert "\t1\n" in content or "\t1\t" in content
