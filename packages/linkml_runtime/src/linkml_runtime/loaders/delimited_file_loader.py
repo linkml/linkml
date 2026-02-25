@@ -108,12 +108,12 @@ def _coerce_empty_to_none(obj: dict | list) -> dict | list:
     """
     if isinstance(obj, dict):
         return {
-            k: _coerce_empty_to_none(v) if isinstance(v, (dict, list)) else (None if v == "" else v)
+            k: _coerce_empty_to_none(v) if isinstance(v, dict | list) else (None if v == "" else v)
             for k, v in obj.items()
         }
     elif isinstance(obj, list):
         return [
-            _coerce_empty_to_none(item) if isinstance(item, (dict, list)) else (None if item == "" else item)
+            _coerce_empty_to_none(item) if isinstance(item, dict | list) else (None if item == "" else item)
             for item in obj
         ]
     return obj
@@ -152,7 +152,7 @@ def _coerce_boolean_values(
                     result[k] = [_coerce_single_boolean(item, truthy, falsy) for item in v]
                 else:
                     result[k] = _coerce_single_boolean(v, truthy, falsy)
-            elif isinstance(v, (dict, list)):
+            elif isinstance(v, dict | list):
                 result[k] = _coerce_boolean_values(v, boolean_slots, truthy, falsy)
             else:
                 result[k] = v
