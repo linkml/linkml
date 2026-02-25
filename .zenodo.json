@@ -1,4 +1,8 @@
 {
+  "access_right": "open",
+  "communities": [
+    {"identifier": "linkml"}
+  ],
   "creators": [
     {
       "name": "Moxon, Sierra A.T.",
@@ -69,7 +73,8 @@
       "name": "Kroll, Carlo"
     },
     {
-      "name": "Linke, David"
+      "name": "Linke, David",
+      "orcid": "0000-0002-5898-1820"
     },
     {
       "name": "Ly, Ryan"
@@ -139,5 +144,6 @@
       "relation": "isSupplementTo",
       "scheme": "url"
     }
-  ]
+  ],
+  "upload_type": "software"
 }
