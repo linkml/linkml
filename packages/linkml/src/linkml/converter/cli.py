@@ -74,11 +74,11 @@ logger = logging.getLogger(__name__)
 )
 @click.option("--context", "-c", multiple=True, help="path to JSON-LD context file")
 @click.option(
-    "--list-syntax",
-    type=click.Choice(["python", "plaintext"]),
+    "--list-wrapper",
+    type=click.Choice(["square", "curly", "paren", "none"]),
     default=None,
-    help="List formatting style for CSV/TSV: 'python' wraps lists in brackets, 'plaintext' has no brackets. "
-    "Overrides schema annotation if set.",
+    help="Wrapper style for multivalued fields in CSV/TSV: 'square' [a|b], 'curly' {a|b}, "
+    "'paren' (a|b), 'none' a|b. Overrides schema annotation if set.",
 )
 @click.option(
     "--list-delimiter",
@@ -114,7 +114,7 @@ def cli(
     validate=None,
     infer=None,
     index_slot=None,
-    list_syntax=None,
+    list_wrapper=None,
     list_delimiter=None,
     list_strip_whitespace=None,
     refuse_delimiter_in_data=None,
@@ -192,8 +192,8 @@ def cli(
         inargs["index_slot"] = index_slot
         inargs["schema"] = schema
         # Pass list formatting options (override schema annotations if set)
-        if list_syntax is not None:
-            inargs["list_syntax"] = list_syntax
+        if list_wrapper is not None:
+            inargs["list_wrapper"] = list_wrapper
         if list_delimiter is not None:
             inargs["list_delimiter"] = list_delimiter
         if list_strip_whitespace is not None:
@@ -232,8 +232,8 @@ def cli(
         outargs["index_slot"] = index_slot
         outargs["schema"] = schema
         # Pass list formatting options (override schema annotations if set)
-        if list_syntax is not None:
-            outargs["list_syntax"] = list_syntax
+        if list_wrapper is not None:
+            outargs["list_wrapper"] = list_wrapper
         if list_delimiter is not None:
             outargs["list_delimiter"] = list_delimiter
         if list_strip_whitespace is not None:

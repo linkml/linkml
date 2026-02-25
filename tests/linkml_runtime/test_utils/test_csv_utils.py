@@ -23,7 +23,7 @@ prefixes:
 imports:
   - linkml:types
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: "|"
 
 classes:
@@ -54,16 +54,16 @@ slots:
 
 @pytest.fixture
 def schemaview_with_annotations():
-    """Schema with list_syntax and list_delimiter annotations."""
+    """Schema with list_wrapper and list_delimiter annotations."""
     return SchemaView(SCHEMA_WITH_LIST_ANNOTATIONS)
 
 
-def test_schema_has_list_syntax_annotation(schemaview_with_annotations):
-    """Schema-level list_syntax annotation should be readable via SchemaView."""
+def test_schema_has_list_wrapper_annotation(schemaview_with_annotations):
+    """Schema-level list_wrapper annotation should be readable via SchemaView."""
     schema = schemaview_with_annotations.schema
     assert schema.annotations is not None
-    assert "list_syntax" in schema.annotations
-    assert schema.annotations["list_syntax"].value == "plaintext"
+    assert "list_wrapper" in schema.annotations
+    assert schema.annotations["list_wrapper"].value == "none"
 
 
 def test_schema_has_list_delimiter_annotation(schemaview_with_annotations):

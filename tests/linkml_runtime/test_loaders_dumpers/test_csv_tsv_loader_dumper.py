@@ -7,7 +7,7 @@ from jsonasobj2 import as_json_obj
 
 from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dumper
 from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
-from linkml_runtime.loaders.delimited_file_loader import (
+from linkml_runtime.utils.list_utils import (
     check_data_for_delimiter,
     get_list_config_from_annotations,
     enhance_configmap_for_multivalued_primitives,
@@ -144,16 +144,16 @@ def test_tsvgen_unroundtrippable():
     assert roundtrip == data
 
 
-SCHEMA_WITH_PLAINTEXT_ANNOTATIONS = """
+SCHEMA_WITH_UNWRAPPED_ANNOTATIONS = """
 id: https://example.org/test
-name: test_plaintext_annotations
+name: test_unwrapped_annotations
 prefixes:
   linkml: https://w3id.org/linkml/
 imports:
   - linkml:types
 
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: "|"
 
 classes:
@@ -207,7 +207,7 @@ imports:
   - linkml:types
 
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: "|"
 
 classes:
@@ -241,7 +241,7 @@ imports:
   - linkml:types
 
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: "|"
   list_strip_whitespace: "false"
 
@@ -280,7 +280,7 @@ imports:
   - linkml:types
 
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: "{delimiter}"
 
 classes:
@@ -307,14 +307,14 @@ slots:
 
 
 @pytest.fixture
-def plaintext_schemaview():
-    """Schema with list_syntax=plaintext annotation."""
-    return SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+def unwrapped_schemaview():
+    """Schema with list_wrapper=none annotation."""
+    return SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
 
 
 @pytest.fixture
 def whitespace_schemaview():
-    """Schema with plaintext list syntax (strip enabled by default)."""
+    """Schema with unwrapped list wrapper (strip enabled by default)."""
     return SchemaView(SCHEMA_WHITESPACE_STRIP)
 
 
@@ -329,7 +329,7 @@ def whitespace_preserve_schemaview():
 
 def test_get_list_config_with_none_schemaview():
     """When schemaview is None, should return defaults."""
-    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(None, None)
+    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(None)
     assert list_markers == ("[", "]")
     assert inner_delimiter == "|"
     assert strip_whitespace is True
@@ -339,7 +339,7 @@ def test_get_list_config_with_none_schemaview():
 def test_get_list_config_without_annotations():
     """Schema without annotations should return defaults."""
     sv = SchemaView(SCHEMA_WITHOUT_ANNOTATIONS)
-    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(sv, "id")
+    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(sv)
     assert list_markers == ("[", "]")
     assert inner_delimiter == "|"
     assert strip_whitespace is True
@@ -349,35 +349,35 @@ def test_get_list_config_without_annotations():
 def test_enhance_configmap_with_none_schemaview():
     """When schemaview is None, should return original configmap."""
     original = {"some": "config"}
-    result = enhance_configmap_for_multivalued_primitives(None, "slot", original, plaintext_mode=True)
+    result = enhance_configmap_for_multivalued_primitives(None, "slot", original, unwrapped_mode=True)
     assert result is original
 
 
-def test_enhance_configmap_not_plaintext_mode():
-    """When plaintext_mode is False, should return original configmap."""
+def test_enhance_configmap_not_unwrapped_mode():
+    """When unwrapped_mode is False, should return original configmap."""
     original = {"some": "config"}
-    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
-    result = enhance_configmap_for_multivalued_primitives(sv, "persons", original, plaintext_mode=False)
+    sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
+    result = enhance_configmap_for_multivalued_primitives(sv, "persons", original, unwrapped_mode=False)
     assert result is original
 
 
 # Annotation-based delimiters
 
 
-def test_plaintext_annotation_produces_no_brackets(plaintext_schemaview, tmp_path):
-    """With list_syntax=plaintext, output should have no brackets."""
+def test_unwrapped_annotation_produces_no_brackets(unwrapped_schemaview, tmp_path):
+    """With list_wrapper=none, output should have no brackets."""
     data = {
         "persons": [
             {"id": "1", "name": "Test Person", "aliases": ["Alias One", "Alias Two"]},
         ]
     }
-    output_file = tmp_path / "plaintext_test.tsv"
+    output_file = tmp_path / "unwrapped_test.tsv"
 
     tsv_dumper.dump(
         data,
         to_file=str(output_file),
         index_slot="persons",
-        schemaview=plaintext_schemaview,
+        schemaview=unwrapped_schemaview,
     )
     content = output_file.read_text()
 
@@ -385,19 +385,19 @@ def test_plaintext_annotation_produces_no_brackets(plaintext_schemaview, tmp_pat
     assert "[Alias One|Alias Two]" not in content
 
 
-def test_plaintext_roundtrip(plaintext_schemaview, tmp_path):
-    """Round-trip with plaintext annotations should preserve data."""
+def test_unwrapped_roundtrip(unwrapped_schemaview, tmp_path):
+    """Round-trip with unwrapped annotations should preserve data."""
     original_aliases = ["First Alias", "Second Alias", "Third Alias"]
     data = {"persons": [{"id": "1", "name": "Test", "aliases": original_aliases}]}
-    output_file = tmp_path / "plaintext_roundtrip.tsv"
+    output_file = tmp_path / "unwrapped_roundtrip.tsv"
 
     tsv_dumper.dump(
         data,
         to_file=str(output_file),
         index_slot="persons",
-        schemaview=plaintext_schemaview,
+        schemaview=unwrapped_schemaview,
     )
-    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
+    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=unwrapped_schemaview)
 
     assert roundtrip["persons"][0]["aliases"] == original_aliases
 
@@ -429,12 +429,12 @@ def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
 
 
 @pytest.mark.skip(reason="Empty list handling has json_clean bug - needs separate fix")
-def test_empty_aliases_list(plaintext_schemaview, tmp_path):
+def test_empty_aliases_list(unwrapped_schemaview, tmp_path):
     """Empty aliases list should round-trip correctly."""
     pass
 
 
-def test_single_alias(plaintext_schemaview, tmp_path):
+def test_single_alias(unwrapped_schemaview, tmp_path):
     """Single alias (no delimiter needed) should round-trip correctly."""
     data = {"persons": [{"id": "1", "name": "Test Person", "aliases": ["Only One Alias"]}]}
 
@@ -443,15 +443,15 @@ def test_single_alias(plaintext_schemaview, tmp_path):
         data,
         to_file=str(output_file),
         index_slot="persons",
-        schemaview=plaintext_schemaview,
+        schemaview=unwrapped_schemaview,
     )
-    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=plaintext_schemaview)
+    roundtrip = tsv_loader.load_as_dict(str(output_file), index_slot="persons", schemaview=unwrapped_schemaview)
 
     assert roundtrip["persons"][0]["aliases"] == ["Only One Alias"]
 
 
 @pytest.mark.skip(reason="Delimiter-in-value escaping not yet implemented")
-def test_alias_containing_delimiter(plaintext_schemaview, tmp_path):
+def test_alias_containing_delimiter(unwrapped_schemaview, tmp_path):
     """Alias containing the delimiter character needs escaping."""
     pass
 
@@ -489,7 +489,7 @@ annotations:
   list_strip_whitespace: "{true_value}"
 """
     sv = SchemaView(schema_yaml)
-    _, _, strip, _ = get_list_config_from_annotations(sv, None)
+    _, _, strip, _ = get_list_config_from_annotations(sv)
     assert strip is True, f"Expected True for '{true_value}'"
 
 
@@ -503,7 +503,7 @@ annotations:
   list_strip_whitespace: "{false_value}"
 """
     sv = SchemaView(schema_yaml)
-    _, _, strip, _ = get_list_config_from_annotations(sv, None)
+    _, _, strip, _ = get_list_config_from_annotations(sv)
     assert strip is False, f"Expected False for '{false_value}'"
 
 
@@ -518,7 +518,7 @@ annotations:
 """
     sv = SchemaView(schema_yaml)
     with caplog.at_level(logging.WARNING):
-        _, _, strip, _ = get_list_config_from_annotations(sv, None)
+        _, _, strip, _ = get_list_config_from_annotations(sv)
     assert strip is True, f"Expected True (default) for invalid value '{invalid_value}'"
     assert "Invalid list_strip_whitespace value" in caplog.text
 
@@ -558,7 +558,7 @@ imports:
   - linkml:types
 
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: "|"
   refuse_delimiter_in_data: "true"
 
@@ -593,7 +593,7 @@ imports:
   - linkml:types
 
 annotations:
-  list_syntax: python
+  list_wrapper: square
   list_delimiter: "|"
   refuse_delimiter_in_data: "true"
 
@@ -628,7 +628,7 @@ imports:
   - linkml:types
 
 annotations:
-  list_syntax: plaintext
+  list_wrapper: none
   list_delimiter: ";"
   refuse_delimiter_in_data: "true"
 
@@ -656,7 +656,7 @@ slots:
 
 
 def test_refuse_delimiter_in_data_raises_on_conflict(tmp_path):
-    """Plaintext mode: value containing pipe should raise ValueError when refuse_delimiter_in_data is true."""
+    """Unwrapped mode: value containing pipe should raise ValueError when refuse_delimiter_in_data is true."""
     sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
     data = {"items": [{"id": "1", "tags": ["safe", "has|pipe"]}]}
 
@@ -675,7 +675,7 @@ def test_refuse_delimiter_in_data_raises_bracket_mode(tmp_path):
 
 def test_refuse_delimiter_in_data_false_allows_conflict():
     """Default (false): value containing pipe should NOT raise an error."""
-    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+    sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
     data = {"persons": [{"id": "1", "name": "Test", "aliases": ["has|pipe"]}]}
 
     # Should not raise - refuse_delimiter_in_data defaults to false
@@ -694,7 +694,7 @@ def test_refuse_delimiter_in_data_custom_delimiter():
 
 def test_refuse_delimiter_in_data_cli_override(tmp_path):
     """CLI override: refuse_delimiter_in_data=True passed to dumps should raise even without annotation."""
-    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
+    sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
     data = {"persons": [{"id": "1", "name": "Test", "aliases": ["has|pipe"]}]}
 
     with pytest.raises(ValueError, match="list delimiter"):
@@ -714,14 +714,14 @@ def test_refuse_delimiter_in_data_cli_override_false():
 def test_get_list_config_refuse_delimiter_annotation():
     """get_list_config_from_annotations should read refuse_delimiter_in_data."""
     sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
-    _, _, _, refuse = get_list_config_from_annotations(sv, "items")
+    _, _, _, refuse = get_list_config_from_annotations(sv)
     assert refuse is True
 
 
 def test_get_list_config_refuse_delimiter_default():
     """Default refuse_delimiter_in_data should be False."""
-    sv = SchemaView(SCHEMA_WITH_PLAINTEXT_ANNOTATIONS)
-    _, _, _, refuse = get_list_config_from_annotations(sv, "persons")
+    sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
+    _, _, _, refuse = get_list_config_from_annotations(sv)
     assert refuse is False
 
 
@@ -741,3 +741,43 @@ def test_check_data_for_delimiter_no_conflict():
 
     # Should not raise
     check_data_for_delimiter(objs, "|", sv, "items")
+
+
+# list_wrapper style tests
+
+
+@pytest.mark.parametrize(
+    "wrapper,expected_open,expected_close",
+    [
+        ("square", "[", "]"),
+        ("curly", "{", "}"),
+        ("paren", "(", ")"),
+        ("none", "", ""),
+    ],
+)
+def test_list_wrapper_styles(wrapper, expected_open, expected_close):
+    """Each list_wrapper value should produce the correct markers."""
+    schema_yaml = f"""
+id: https://example.org/test
+name: test
+annotations:
+  list_wrapper: "{wrapper}"
+"""
+    sv = SchemaView(schema_yaml)
+    markers, _, _, _ = get_list_config_from_annotations(sv)
+    assert markers == (expected_open, expected_close)
+
+
+def test_invalid_list_wrapper_defaults_to_square(caplog):
+    """Invalid list_wrapper value should warn and default to square brackets."""
+    schema_yaml = """
+id: https://example.org/test
+name: test
+annotations:
+  list_wrapper: "foobar"
+"""
+    sv = SchemaView(schema_yaml)
+    with caplog.at_level(logging.WARNING):
+        markers, _, _, _ = get_list_config_from_annotations(sv)
+    assert markers == ("[", "]")
+    assert "Invalid list_wrapper value" in caplog.text

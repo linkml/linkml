@@ -381,8 +381,8 @@ items:
 """
 
 
-def test_list_syntax_plaintext(cli_runner, tmp_path):
-    """Test --list-syntax plaintext produces output without brackets."""
+def test_list_wrapper_none(cli_runner, tmp_path):
+    """Test --list-wrapper none produces output without brackets."""
     schema_file = tmp_path / "schema.yaml"
     data_file = tmp_path / "data.yaml"
     output_file = tmp_path / "output.tsv"
@@ -399,8 +399,8 @@ def test_list_syntax_plaintext(cli_runner, tmp_path):
             "Container",
             "-S",
             "items",
-            "--list-syntax",
-            "plaintext",
+            "--list-wrapper",
+            "none",
             "-t",
             "tsv",
             "-o",
@@ -416,8 +416,8 @@ def test_list_syntax_plaintext(cli_runner, tmp_path):
     assert "[alpha|beta|gamma]" not in content
 
 
-def test_list_syntax_python(cli_runner, tmp_path):
-    """Test --list-syntax python produces output with brackets."""
+def test_list_wrapper_square(cli_runner, tmp_path):
+    """Test --list-wrapper square produces output with brackets."""
     schema_file = tmp_path / "schema.yaml"
     data_file = tmp_path / "data.yaml"
     output_file = tmp_path / "output.tsv"
@@ -434,8 +434,8 @@ def test_list_syntax_python(cli_runner, tmp_path):
             "Container",
             "-S",
             "items",
-            "--list-syntax",
-            "python",
+            "--list-wrapper",
+            "square",
             "-t",
             "tsv",
             "-o",
@@ -468,8 +468,8 @@ def test_list_delimiter(cli_runner, tmp_path):
             "Container",
             "-S",
             "items",
-            "--list-syntax",
-            "plaintext",
+            "--list-wrapper",
+            "none",
             "--list-delimiter",
             ";",
             "-t",
@@ -506,8 +506,8 @@ def test_list_strip_whitespace_on_load(cli_runner, tmp_path):
             "Container",
             "-S",
             "items",
-            "--list-syntax",
-            "plaintext",
+            "--list-wrapper",
+            "none",
             "--list-strip-whitespace",
             "-t",
             "yaml",
@@ -582,8 +582,8 @@ def test_refuse_delimiter_in_data_cli(cli_runner, tmp_path):
             "Container",
             "-S",
             "items",
-            "--list-syntax",
-            "plaintext",
+            "--list-wrapper",
+            "none",
             "--refuse-delimiter-in-data",
             "-t",
             "tsv",
@@ -614,8 +614,8 @@ def test_no_refuse_delimiter_in_data_cli(cli_runner, tmp_path):
             "Container",
             "-S",
             "items",
-            "--list-syntax",
-            "plaintext",
+            "--list-wrapper",
+            "none",
             "--no-refuse-delimiter-in-data",
             "-t",
             "tsv",
