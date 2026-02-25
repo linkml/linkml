@@ -174,6 +174,9 @@ class OwlSchemaGenerator(Generator):
     enum_iri_separator: str = "#"
     """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
 
+    enum_inherits_as_subclass_of: bool = False
+    """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -890,6 +893,9 @@ class OwlSchemaGenerator(Generator):
             else:
                 has_parent = True
             self.graph.add((enum_uri, RDFS.subClassOf, parent))
+        if self.enum_inherits_as_subclass_of:
+            for parent_name in e.inherits:
+                self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
         if self.metaclasses:
@@ -1366,6 +1372,12 @@ class OwlSchemaGenerator(Generator):
     is_flag=False,
     show_default=True,
     help="IRI separator for enums.",
+)
+@click.option(
+    "--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of",
+    default=False,
+    show_default=True,
+    help="If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
