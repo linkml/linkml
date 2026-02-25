@@ -61,7 +61,10 @@ The [json-flattener/](https://github.com/cmungall/json-flattener/) library is us
 
 ## Boolean Values
 
-Boolean values in CSV/TSV files can be represented in various ways depending on the source (spreadsheets, databases, etc.). LinkML provides flexible handling for both loading and dumping boolean values.
+Boolean values in CSV/TSV files can be represented in various ways depending on the source (spreadsheets, databases, etc.). LinkML follows [Postel's law](https://en.wikipedia.org/wiki/Robustness_principle): **be liberal in what you accept, conservative in what you produce**.
+
+- **Loading** (liberal): accepts multiple truthy/falsy representations, extensible per-schema
+- **Dumping** (conservative): produces one canonical format, defaulting to `true`/`false`
 
 ### Loading Booleans
 
@@ -104,7 +107,7 @@ CLI options extend schema annotations if both are set.
 
 ### Dumping Booleans
 
-By default, boolean values are output as lowercase `true`/`false`. You can customize the output format using schema annotations or CLI options.
+By default, boolean values are written as lowercase `true`/`false`. This can be changed for interoperability with systems that expect a different format.
 
 #### Schema Annotation
 
@@ -114,7 +117,7 @@ Add the `boolean_output` annotation at the schema level:
 id: https://example.org/myschema
 name: myschema
 annotations:
-  boolean_output: "yes"  # Output booleans as yes/no
+  boolean_output: "yes"  # Write booleans as yes/no
 ```
 
 Supported values: `true`, `True`, `TRUE`, `yes`, `Yes`, `YES`, `on`, `On`, `ON`, `1`
@@ -141,7 +144,7 @@ items:
     is_active: false
 ```
 
-Default output:
+Default output (`true`/`false`):
 ```
 id	is_active
 1	true

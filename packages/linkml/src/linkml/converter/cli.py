@@ -77,19 +77,20 @@ logger = logging.getLogger(__name__)
     "--boolean-output",
     type=click.Choice(["true", "True", "TRUE", "yes", "Yes", "YES", "on", "On", "ON", "1"]),
     default=None,
-    help="Boolean output format for CSV/TSV: controls how True/False are written. Overrides schema annotation if set.",
+    help="How to write booleans in CSV/TSV output (default: true/false). "
+    "Overrides the boolean_output schema annotation.",
 )
 @click.option(
     "--boolean-truthy",
     default=None,
-    help="Comma-separated additional truthy values for boolean loading from CSV/TSV "
-    "(e.g. 'yes,on,1'). Added to the defaults (T, TRUE). Extends schema annotation if set.",
+    help="Additional truthy values to accept when loading booleans from CSV/TSV "
+    "(comma-separated, e.g. 'yes,on,1'). Added to the defaults (T, TRUE).",
 )
 @click.option(
     "--boolean-falsy",
     default=None,
-    help="Comma-separated additional falsy values for boolean loading from CSV/TSV "
-    "(e.g. 'no,off,0'). Added to the defaults (F, FALSE). Extends schema annotation if set.",
+    help="Additional falsy values to accept when loading booleans from CSV/TSV "
+    "(comma-separated, e.g. 'no,off,0'). Added to the defaults (F, FALSE).",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
