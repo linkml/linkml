@@ -22,6 +22,19 @@ WRAPPER_STYLES: dict[str, tuple[str, str]] = {
 }
 
 
+def resolve_list_wrapper(wrapper: str) -> tuple[str, str]:
+    """Resolve wrapper style to markers, warning and defaulting when invalid."""
+    if wrapper in WRAPPER_STYLES:
+        return WRAPPER_STYLES[wrapper]
+
+    logger.warning(
+        f"Invalid list_wrapper value '{wrapper}'. "
+        f"Expected one of {list(WRAPPER_STYLES)}. "
+        "Defaulting to 'square' (bracketed lists)."
+    )
+    return WRAPPER_STYLES["square"]
+
+
 def get_list_config_from_annotations(
     schemaview: SchemaView,
 ) -> tuple[tuple[str, str], str, bool, bool]:
@@ -59,14 +72,7 @@ def get_list_config_from_annotations(
         annotations = schemaview.schema.annotations
         if "list_wrapper" in annotations:
             wrapper = annotations["list_wrapper"].value
-            if wrapper in WRAPPER_STYLES:
-                list_markers = WRAPPER_STYLES[wrapper]
-            else:
-                logger.warning(
-                    f"Invalid list_wrapper value '{wrapper}'. "
-                    f"Expected one of {list(WRAPPER_STYLES)}. "
-                    "Defaulting to 'square' (bracketed lists)."
-                )
+            list_markers = resolve_list_wrapper(wrapper)
         if "list_delimiter" in annotations:
             inner_delimiter = annotations["list_delimiter"].value
         if "list_strip_whitespace" in annotations:

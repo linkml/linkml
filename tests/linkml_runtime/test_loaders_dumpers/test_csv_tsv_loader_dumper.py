@@ -781,3 +781,28 @@ annotations:
         markers, _, _, _ = get_list_config_from_annotations(sv)
     assert markers == ("[", "]")
     assert "Invalid list_wrapper value" in caplog.text
+
+
+def test_invalid_cli_list_wrapper_defaults_to_square_for_dumper(caplog):
+    """Invalid programmatic list_wrapper should warn and default to square brackets."""
+    sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
+    data = {"persons": [{"id": "P:1", "name": "n1", "aliases": ["a", "b"]}]}
+
+    with caplog.at_level(logging.WARNING):
+        result = tsv_dumper.dumps(data, index_slot="persons", schemaview=sv, list_wrapper="foobar")
+
+    assert "[a|b]" in result
+    assert "Invalid list_wrapper value" in caplog.text
+
+
+def test_invalid_cli_list_wrapper_defaults_to_square_for_loader(caplog, tmp_path):
+    """Invalid programmatic list_wrapper in loader should warn and default to square brackets."""
+    sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
+    source_path = tmp_path / "invalid_list_wrapper.tsv"
+    source_path.write_text("id\tname\taliases\nP:1\tn1\t[a|b]\n")
+
+    with caplog.at_level(logging.WARNING):
+        loaded = tsv_loader.load_as_dict(str(source_path), index_slot="persons", schemaview=sv, list_wrapper="foobar")
+
+    assert loaded["persons"][0]["aliases"] == ["a", "b"]
+    assert "Invalid list_wrapper value" in caplog.text

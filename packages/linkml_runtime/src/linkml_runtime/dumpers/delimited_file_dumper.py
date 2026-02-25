@@ -10,10 +10,10 @@ from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
 from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.list_utils import (
-    WRAPPER_STYLES,
     check_data_for_delimiter,
     enhance_configmap_for_multivalued_primitives,
     get_list_config_from_annotations,
+    resolve_list_wrapper,
     strip_whitespace_from_lists,
 )
 from linkml_runtime.utils.schemaview import SchemaView
@@ -50,7 +50,7 @@ class DelimitedFileDumper(Dumper, ABC):
 
         # CLI options override schema annotations
         if list_wrapper is not None:
-            list_markers = WRAPPER_STYLES.get(list_wrapper, ("[", "]"))
+            list_markers = resolve_list_wrapper(list_wrapper)
         if list_delimiter is not None:
             inner_delimiter = list_delimiter
         if list_strip_whitespace is not None:
