@@ -1709,7 +1709,9 @@ class SchemaView:
             mangled_name = f"{camelcase(class_name)}__{underscore(slot_name)}"
             induced_slot.name = mangled_name
         if not induced_slot.alias:
-            induced_slot.alias = underscore(slot_name)
+            underscored = underscore(slot_name)
+            if underscored != induced_slot.name:
+                induced_slot.alias = underscored
         for c in self.all_classes().values():
             if (
                 induced_slot.name in c.slots or induced_slot.name in c.attributes
