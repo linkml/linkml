@@ -1,9 +1,10 @@
 import re
 import textwrap
+from collections.abc import Callable
 from copy import copy
 from json import JSONDecoder
 from pprint import pformat
-from typing import Any, Callable, Optional, Union
+from typing import Any, Union
 
 import yaml
 from deprecated.classic import deprecated
@@ -69,7 +70,7 @@ class YAMLRoot(JsonObj):
                     not is_classvar
                     and not k.startswith("_")
                     and v is not None
-                    and (not isinstance(v, (dict, list, bool)) or v)
+                    and (not isinstance(v, dict | list | bool) or v)
                 ):
                     from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 
@@ -78,7 +79,7 @@ class YAMLRoot(JsonObj):
                         for vk, vv in v.items():
                             # if isinstance(vv, ClassDefinition):
                             #     vv['@id'] = camelcase(vk)
-                            # elif isinstance(vv, (SlotDefinition, TypeDefinition)):
+                            # elif isinstance(vv, SlotDefinition | TypeDefinition):
                             #     if k != 'slot_usage':
                             #         vv['@id'] = underscore(vk)
                             itemslist.append(vv)
@@ -119,10 +120,10 @@ class YAMLRoot(JsonObj):
         @param keyed: True means each identifier must be unique
         @param is_list: True means inlined as list
         """
-        raw_slot: Union[list, dict, JsonObj] = self[slot_name]
+        raw_slot: list | dict | JsonObj = self[slot_name]
         if raw_slot is None:
             raw_slot = []
-        elif not isinstance(raw_slot, (dict, list, JsonObj)):
+        elif not isinstance(raw_slot, dict | list | JsonObj):
             raw_slot = [raw_slot]
         cooked_slot = list() if is_list else dict()
         cooked_keys = set()
@@ -134,9 +135,10 @@ class YAMLRoot(JsonObj):
                     f"Slot: {loc(slot_name)} - attribute {loc(key_name)} "
                     f"value ({loc(cooked_entry[key_name])}) does not match key ({loc(key)})"
                 )
-            if keyed and key in cooked_keys:
-                raise ValueError(f"{loc(key)}: duplicate key")
-            cooked_keys.add(key)
+            if keyed:
+                if key in cooked_keys:
+                    raise ValueError(f"{loc(key)}: duplicate key")
+                cooked_keys.add(key)
             if is_list:
                 cooked_slot.append(cooked_entry)
             else:
@@ -148,7 +150,7 @@ class YAMLRoot(JsonObj):
                 loc_str = ""
             return loc_str + str(s)
 
-        def form_1(entries: dict[Any, Optional[Union[dict, JsonObj]]]) -> None:
+        def form_1(entries: dict[Any, dict | JsonObj | None]) -> None:
             """A dictionary of key:dict entries where key is the identifier and dict is an instance of slot_type"""
             for key, raw_obj in items(entries):
                 if raw_obj is None:
@@ -170,16 +172,16 @@ class YAMLRoot(JsonObj):
             for list_entry in raw_slot:
                 if isinstance(list_entry, slot_type):
                     order_up(list_entry[key_name], list_entry)
-                elif isinstance(list_entry, (dict, JsonObj)):
+                elif isinstance(list_entry, dict | JsonObj):
                     # list_entry is either a key:dict, key_name:value or **kwargs
                     if len(list_entry) == 1:
                         # key:dict or key_name:key
                         for lek, lev in items(list_entry):
-                            if lek == key_name and not isinstance(lev, (list, dict, JsonObj)):
+                            if lek == key_name and not isinstance(lev, list | dict | JsonObj):
                                 # key_name:value
                                 order_up(list_entry[lek], slot_type(list_entry))
                                 break  # Not strictly necessary, but
-                            elif not isinstance(lev, (list, dict, JsonObj)):
+                            elif not isinstance(lev, list | dict | JsonObj):
                                 # key: value --> slot_type(key, value)
                                 order_up(lek, slot_type(lek, lev))
                             else:
@@ -200,7 +202,7 @@ class YAMLRoot(JsonObj):
             if (
                 key_name in raw_slot
                 and raw_slot[key_name] is not None
-                and not isinstance(raw_slot[key_name], (list, dict, JsonObj))
+                and not isinstance(raw_slot[key_name], list | dict | JsonObj)
             ):
                 # Vanilla dictionary - {key: v11, s12: v12, ...}
                 order_up(raw_slot[key_name], slot_type(**as_dict(raw_slot)))
@@ -211,7 +213,7 @@ class YAMLRoot(JsonObj):
                         v = dict()
                     if isinstance(v, slot_type):
                         order_up(k, v)
-                    elif isinstance(v, (dict, JsonObj)):
+                    elif isinstance(v, dict | JsonObj):
                         form_1({k: v})
                     else:
                         # SimpleDict form: value may be scalar or list (multivalued)
@@ -219,7 +221,7 @@ class YAMLRoot(JsonObj):
         self[slot_name] = cooked_slot
 
     def _normalize_inlined_slot(
-        self, slot_name: str, slot_type: type, key_name: Optional[str], inlined_as_list: Optional[bool], keyed: bool
+        self, slot_name: str, slot_type: type, key_name: str | None, inlined_as_list: bool | None, keyed: bool
     ) -> None:
         """
         A deprecated entry point to slot normalization. Used for models generated prior to the linkml-runtime split.
@@ -233,7 +235,7 @@ class YAMLRoot(JsonObj):
         or
             if self.<slot> is None:
                 self.<slot> = []
-            if not isinstance(self.<slot>, (list, dict)):
+            if not isinstance(self.<slot>, list | dict):
                 self.local_names = [self.<slot>]
             self._normalize_inlined_slot(slot_name="<slot>", slot_type=<type>, key_name="<key>", inlined_as_list=None, keyed=...)
 
@@ -249,12 +251,12 @@ class YAMLRoot(JsonObj):
         else:
             dict_slot = self[slot_name]
             if isinstance(dict_slot, list):
-                if len(dict_slot) == 1 and not isinstance(dict_slot[0], (list, dict)):
+                if len(dict_slot) == 1 and not isinstance(dict_slot[0], list | dict):
                     self[slot_name] = dict_slot[0]
             self._normalize_inlined_as_dict(slot_name, slot_type, key_name, keyed)
 
     @classmethod
-    def _class_for(cls, attribute: str, uri_or_curie: Union[str, URIRef]) -> Optional[type["YAMLRoot"]]:
+    def _class_for(cls, attribute: str, uri_or_curie: str | URIRef) -> type["YAMLRoot"] | None:
         """Locate self or descendant class that has attribute == uri_or_curie"""
         if getattr(cls, attribute, None) == uri_or_curie:
             return cls
@@ -265,14 +267,14 @@ class YAMLRoot(JsonObj):
         return None
 
     @classmethod
-    def _class_for_uri(cls: type["YAMLRoot"], uri: str, use_model_uri: bool = False) -> Optional[type["YAMLRoot"]]:
+    def _class_for_uri(cls: type["YAMLRoot"], uri: str, use_model_uri: bool = False) -> type["YAMLRoot"] | None:
         """
         Return the self or descendant of self having with a matching class uri
         """
         return cls._class_for("class_model_uri" if use_model_uri else "class_class_uri", URIRef(uri))
 
     @classmethod
-    def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> Optional[type["YAMLRoot"]]:
+    def _class_for_curie(cls: type["YAMLRoot"], curie: str) -> type["YAMLRoot"] | None:
         return cls._class_for("class_class_curie", curie)
 
     # ==================
@@ -340,7 +342,7 @@ def root_representer(dumper: yaml.Dumper, data: YAMLRoot):
         data = data.code
     rval = dict()
     for k, v in data.__dict__.items():
-        if not k.startswith("_") and v is not None and (not isinstance(v, (dict, list)) or v):
+        if not k.startswith("_") and v is not None and (not isinstance(v, dict | list) or v):
             rval[k] = v
     return dumper.represent_data(rval)
 
@@ -402,7 +404,7 @@ class TypedNode:
         return f'File "{self._s.name}", line {self._s.line + 1}, col {self._s.column + 1}' if self._s else ""
 
     @staticmethod
-    def yaml_loc(loc_str: Optional[Union["TypedNode", str]] = None, suffix: Optional[str] = ": ") -> str:
+    def yaml_loc(loc_str: Union["TypedNode", str] | None = None, suffix: str | None = ": ") -> str:
         """Return the yaml file and location of loc_str if it exists"""
         return (
             ""

@@ -3,7 +3,7 @@ import sys
 from collections import Counter
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 import yaml
@@ -17,10 +17,10 @@ from linkml.validator.report import Severity
 
 
 class Config(BaseModel):
-    schema_path: Union[str, Path] = Field(alias="schema")
-    target_class: Optional[str] = None
-    data_sources: Iterable[Union[str, dict[str, dict[str, str]]]] = []
-    plugins: Optional[dict[str, Optional[dict[str, Any]]]] = {"JsonschemaValidationPlugin": {"closed": True}}
+    schema_path: str | Path = Field(alias="schema")
+    target_class: str | None = None
+    data_sources: Iterable[str | dict[str, dict[str, str]]] = []
+    plugins: dict[str, dict[str, Any] | None] | None = {"JsonschemaValidationPlugin": {"closed": True}}
 
 
 def _resolve_class(full_class_name: str, default_package: str, **kwargs):
@@ -45,7 +45,7 @@ def _resolve_plugins(plugin_config: dict[str, dict[str, Any]]) -> list[Validatio
     return plugins
 
 
-def _resolve_loaders(loader_config: Iterable[Union[str, dict[str, dict[str, str]]]]) -> list[Loader]:
+def _resolve_loaders(loader_config: Iterable[str | dict[str, dict[str, str]]]) -> list[Loader]:
     loaders = []
     for entry in loader_config:
         if isinstance(entry, str):
@@ -94,9 +94,9 @@ def _resolve_loaders(loader_config: Iterable[Union[str, dict[str, dict[str, str]
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 def cli(
-    schema: Optional[Path],
-    target_class: Optional[str],
-    config: Optional[str],
+    schema: Path | None,
+    target_class: str | None,
+    config: str | None,
     data_sources: tuple[str],
     exit_on_first_failure: bool,
     include_context: bool,

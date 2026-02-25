@@ -1,3 +1,6 @@
+ syntax="proto3";
+ package
+// metamodel_version: 1.7.0
 // an attributed description
 message AltDescription
  {
@@ -137,6 +140,7 @@ message AnonymousSlotExpression
  repeated  anonymousSlotExpression exactlyOneOf = 103
  repeated  anonymousSlotExpression anyOf = 101
  repeated  anonymousSlotExpression allOf = 107
+  arrayExpression array = 0
  }
 // A type expression that is not a top-level named type definition. Used for nesting.
 message AnonymousTypeExpression
@@ -263,6 +267,8 @@ message ClassDefinition
   boolean representsRelationship = 0
  repeated  classDefinition disjointWith = 0
   boolean childrenAreMutuallyDisjoint = 0
+  extraSlotsExpression extraSlots = 0
+  string alias = 6
   classDefinition isA = 11
  repeated  classDefinition mixins = 13
  repeated  classDefinition applyTo = 0
@@ -497,6 +503,15 @@ message Extension
   uriorcurie tag = 0
   anyValue value = 0
  repeated  extension extensions = 0
+ }
+// An expression that defines how to handle additional data in an instance of class
+// beyond the slots/attributes defined for that class.
+// See `extra_slots` for usage examples.
+//
+message ExtraSlotsExpression
+ {
+  boolean allowed = 0
+  anonymousClassExpression rangeExpression = 0
  }
 // an expression describing an import
 message ImportExpression
@@ -831,7 +846,6 @@ message SlotDefinition
   string singularName = 0
   classDefinition domain = 0
   uriorcurie slotUri = 2
-  arrayExpression array = 0
   boolean inherited = 0
   string readonly = 0
   string ifabsent = 0
@@ -898,6 +912,7 @@ message SlotDefinition
  repeated  anonymousSlotExpression exactlyOneOf = 103
  repeated  anonymousSlotExpression anyOf = 101
  repeated  anonymousSlotExpression allOf = 107
+  arrayExpression array = 0
  }
 // object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)
 message StructuredAlias

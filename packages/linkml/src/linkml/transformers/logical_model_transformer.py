@@ -57,10 +57,10 @@ See logictools.py for the symbolic reasoning engine.
 """
 
 import logging
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 from linkml.transformers.model_transformer import ModelTransformer
 from linkml.utils import logictools
@@ -340,7 +340,7 @@ class LogicalModelTransformer(ModelTransformer):
     a lack of range assignment.
     """
 
-    reason_over_metamodel_slots: Optional[list[str]] = None
+    reason_over_metamodel_slots: list[str] | None = None
     """
     If set, only reason over the specified metamodel slots.
     """
@@ -428,8 +428,8 @@ class LogicalModelTransformer(ModelTransformer):
 
     def _merge_slot_ancestors(
         self,
-        target: Union[AnonymousSlotExpression, SlotDefinition],
-        source: Union[SlotDefinition, AnonymousSlotExpression],
+        target: AnonymousSlotExpression | SlotDefinition,
+        source: SlotDefinition | AnonymousSlotExpression,
     ):
         """
         Generate all_ofs for slot based on ancestors.
@@ -495,7 +495,7 @@ class LogicalModelTransformer(ModelTransformer):
                 att.range = self.schemaview.schema.default_range
 
     def _collection_slot_expressions(
-        self, att: Union[SlotDefinition, AnonymousSlotExpression], filter_function: Callable
+        self, att: SlotDefinition | AnonymousSlotExpression, filter_function: Callable
     ) -> Iterator[AnonymousSlotExpression]:
         """
         Traverse nested slot expressions yielding those that match the filter function.
@@ -613,7 +613,7 @@ class LogicalModelTransformer(ModelTransformer):
         return logictools.Variable("type")
 
     def _as_logical_expression(
-        self, slot_expression: Union[SlotDefinition, AnonymousSlotExpression]
+        self, slot_expression: SlotDefinition | AnonymousSlotExpression
     ) -> logictools.Expression:
         sv = self.schemaview
         exprs = []
@@ -752,7 +752,7 @@ class LogicalModelTransformer(ModelTransformer):
 
     def _att_as_python_expression(
         self,
-        attribute: Union[SlotDefinition, AnonymousSlotExpression],
+        attribute: SlotDefinition | AnonymousSlotExpression,
         root_slot: SlotDefinition = None,
         stack: list = None,
     ) -> str:

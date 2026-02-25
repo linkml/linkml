@@ -18,7 +18,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 from io import StringIO
-from typing import TextIO, Union, cast
+from typing import TextIO, cast
 
 import pytest
 
@@ -51,9 +51,9 @@ class GeneratorTest(Generator):
 
     def __xxxinit__(
         self,
-        schema: Union[str, TextIO, SchemaDefinition],
+        schema: str | TextIO | SchemaDefinition,
         fmt: str = "txt",
-        emit_metadata: bool = False,
+        metadata: bool = False,
     ) -> None:
         self.visited = []
         self.visit_class_return = True
@@ -68,7 +68,7 @@ class GeneratorTest(Generator):
             logger.removeHandler(handler)
         logger.addHandler(logging.StreamHandler(self.logstream))
         logger.setLevel(logging.INFO)
-        super().__init__(schema, fmt, emit_metadata, logger=logger)
+        super().__init__(schema, fmt, metadata, logger=logger)
 
     def __post_init__(self) -> None:
         self.logstream = StringIO()

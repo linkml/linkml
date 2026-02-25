@@ -1,7 +1,6 @@
 import os
 import sys
 from dataclasses import dataclass
-from typing import Optional
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -25,7 +24,7 @@ class MismatchLog:
             def __str__(self):
                 return f'File "{self.filename}", line {self.line} in {self.method} '
 
-        def __init__(self, file_or_directory: str, msg: Optional[str]) -> None:
+        def __init__(self, file_or_directory: str, msg: str | None) -> None:
             self.file_or_directory = file_or_directory
             self.msg = msg
             self.call_stack = list()
@@ -50,5 +49,5 @@ class MismatchLog:
     def __init__(self) -> None:
         self.entries: list[MismatchLog.MismatchLogEntry] = list()
 
-    def log(self, file_or_directory: str, message: Optional[str] = None) -> None:
+    def log(self, file_or_directory: str, message: str | None = None) -> None:
         self.entries.append(MismatchLog.MismatchLogEntry(file_or_directory, message))

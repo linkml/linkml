@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 
 import pytest
 from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
@@ -255,7 +254,7 @@ class PermissibleValueURIMixture(Enum):
 @pytest.mark.parametrize("permissible_value_uri_mixture", [x for x in PermissibleValueURIMixture])
 def test_permissible_values(
     default_permissible_value_type: str,
-    pv_implements: Union[str, None, tuple[str, str]],
+    pv_implements: str | None | tuple[str, str],
     permissible_value_uri_mixture: PermissibleValueURIMixture,
 ):
     """
@@ -385,3 +384,31 @@ def test_permissible_values(
             assert isinstance(pv, URIRef) or isinstance(pv, Literal)
         else:
             raise AssertionError("all combinations must be accounted for")
+
+
+@pytest.mark.parametrize("enum_inherits_as_subclass_of", [True, False])
+def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> None:
+    """Test that enum inherits relationships are translated to rdfs:subClassOf when the flag is set.
+
+    With the flag enabled, a child enum that lists a parent in its inherits field should
+    be asserted as a subclass of that parent in the generated OWL. With the flag disabled
+    (the default), no such axiom should be emitted.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("ParentEnum", permissible_values=["A", "B"])
+    sb.add_enum("ChildEnum", permissible_values=["A"], inherits=["ParentEnum"])
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        enum_inherits_as_subclass_of=enum_inherits_as_subclass_of,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    subclass_axiom = (EX.ChildEnum, RDFS.subClassOf, EX.ParentEnum)
+    if enum_inherits_as_subclass_of:
+        assert subclass_axiom in g
+    else:
+        assert subclass_axiom not in g

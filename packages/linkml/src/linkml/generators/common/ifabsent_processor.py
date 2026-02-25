@@ -1,13 +1,7 @@
 import abc
 import re
-import sys
 from abc import ABC
-from typing import Any, Optional, Union
-
-if sys.version_info < (3, 10):
-    from typing_extensions import TypeAlias
-else:
-    from typing import TypeAlias
+from typing import Any, TypeAlias
 
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import (
@@ -38,27 +32,27 @@ from linkml_runtime.linkml_model.types import (
     Uriorcurie,
 )
 
-TYPES_TYPE: TypeAlias = Union[
-    type[Boolean],
-    type[Curie],
-    type[Date],
-    type[DateOrDatetime],
-    type[Datetime],
-    type[Decimal],
-    type[Double],
-    type[Float],
-    type[Integer],
-    type[Jsonpath],
-    type[Jsonpointer],
-    type[Ncname],
-    type[Nodeidentifier],
-    type[Objectidentifier],
-    type[Sparqlpath],
-    type[String],
-    type[Time],
-    type[Uri],
-    type[Uriorcurie],
-]
+TYPES_TYPE: TypeAlias = (
+    type[Boolean]
+    | type[Curie]
+    | type[Date]
+    | type[DateOrDatetime]
+    | type[Datetime]
+    | type[Decimal]
+    | type[Double]
+    | type[Float]
+    | type[Integer]
+    | type[Jsonpath]
+    | type[Jsonpointer]
+    | type[Ncname]
+    | type[Nodeidentifier]
+    | type[Objectidentifier]
+    | type[Sparqlpath]
+    | type[String]
+    | type[Time]
+    | type[Uri]
+    | type[Uriorcurie]
+)
 
 TYPES = [
     t
@@ -79,7 +73,7 @@ class IfAbsentProcessor(ABC):
     def __init__(self, schema_view: SchemaView):
         self.schema_view = schema_view
 
-    def process_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> Optional[str]:
+    def process_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> str | None:
         if slot.ifabsent:
             ifabsent_match = self.ifabsent_regex.search(slot.ifabsent)
             ifabsent_default_value = ifabsent_match.group("default_value")
@@ -90,7 +84,7 @@ class IfAbsentProcessor(ABC):
 
     def _map_to_default_value(
         self, slot: SlotDefinition, ifabsent_default_value: Any, cls: ClassDefinition
-    ) -> Optional[str]:
+    ) -> str | None:
         # Used to manage specific cases that aren't generic
         mapped, custom_default_value = self.map_custom_default_values(ifabsent_default_value, slot, cls)
         if mapped:
@@ -210,7 +204,7 @@ class IfAbsentProcessor(ABC):
 
         raise ValueError(f"The ifabsent value `{slot.ifabsent}` of the `{slot.name}` slot could not be processed")
 
-    def _base_type(self, range_: str) -> Optional[TYPES_TYPE]:
+    def _base_type(self, range_: str) -> TYPES_TYPE | None:
         """
         Find the linkml base type that corresponds to either a matching type_name or custom type
 

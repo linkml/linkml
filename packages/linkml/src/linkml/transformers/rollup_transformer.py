@@ -8,7 +8,6 @@ This is useful for implementing single table inheritance or simplifying inherita
 
 import copy
 from dataclasses import dataclass
-from typing import Optional
 
 from linkml.transformers.model_transformer import ModelTransformer
 from linkml_runtime.linkml_model.meta import (
@@ -33,7 +32,7 @@ class FlattenTransformerConfiguration:
     """
 
     preserve_class_designator: bool = True
-    class_designator_slot: Optional[str] = "category"
+    class_designator_slot: str | None = "category"
     include_all_classes: bool = False
     include_mixins: bool = True
 
@@ -50,7 +49,7 @@ class RollupTransformer(ModelTransformer):
     def __init__(
         self,
         target_class: str,
-        config: Optional[FlattenTransformerConfiguration] = None,
+        config: FlattenTransformerConfiguration | None = None,
     ):
         super().__init__()
         self.target_class = target_class

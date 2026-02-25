@@ -7,8 +7,6 @@ of a specified parent slot. These utilities provide shared logic for:
 - Collecting and deduplicating slot hierarchy values
 """
 
-from typing import Optional
-
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -18,7 +16,7 @@ CURIE_TYPES: frozenset[str] = frozenset({"uriorcurie", "curie"})
 URI_TYPES: frozenset[str] = frozenset({"uri"})
 
 
-def is_uri_range(sv: SchemaView, range_type: Optional[str]) -> bool:
+def is_uri_range(sv: SchemaView, range_type: str | None) -> bool:
     """
     Check if range type is URI-like (uri, uriorcurie, curie, or descendant).
 
@@ -40,7 +38,7 @@ def is_uri_range(sv: SchemaView, range_type: Optional[str]) -> bool:
     return False
 
 
-def is_curie_range(sv: SchemaView, range_type: Optional[str]) -> bool:
+def is_curie_range(sv: SchemaView, range_type: str | None) -> bool:
     """
     Check if range type is specifically CURIE-like (not full URI).
 
@@ -65,7 +63,7 @@ def is_curie_range(sv: SchemaView, range_type: Optional[str]) -> bool:
     return False
 
 
-def format_slot_value_for_range(sv: SchemaView, slot_name: str, range_type: Optional[str]) -> str:
+def format_slot_value_for_range(sv: SchemaView, slot_name: str, range_type: str | None) -> str:
     """
     Format slot value according to the declared range type.
 
@@ -108,7 +106,7 @@ def format_slot_value_for_range(sv: SchemaView, slot_name: str, range_type: Opti
 def get_subproperty_values(
     sv: SchemaView,
     slot: SlotDefinition,
-    expand_uri: Optional[bool] = None,
+    expand_uri: bool | None = None,
 ) -> list[str]:
     """
     Get all valid string values from slot hierarchy for subproperty_of constraint.

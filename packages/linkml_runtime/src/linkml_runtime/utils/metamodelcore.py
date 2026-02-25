@@ -4,7 +4,7 @@ import re
 import sys
 from dataclasses import field
 from decimal import Decimal
-from typing import Optional, Union
+from typing import Union
 from urllib.parse import urlparse
 
 from rdflib import BNode, Literal, URIRef
@@ -63,7 +63,7 @@ class NCName(str):
     def __init__(self, v: str) -> None:
         if is_strict() and not self.is_valid(v):
             raise ValueError(f"{TypedNode.yaml_loc(v)}{v}: Not a valid NCName")
-        self.nsm: Optional[Namespaces] = None
+        self.nsm: Namespaces | None = None
         super().__init__()
 
     @classmethod
@@ -90,7 +90,7 @@ class Identifier(str, TypedNode):
         else:
             return URIorCURIE.is_valid(v)
 
-    def as_identifier(self, nsm: Optional[Namespaces]) -> Optional[rdflib_Identifier]:
+    def as_identifier(self, nsm: Namespaces | None) -> rdflib_Identifier | None:
         if self.startswith("_:"):
             return BNode(self)
         elif URIorCURIE.is_absolute(self):
@@ -110,7 +110,7 @@ class URIorCURIE(Identifier):
 
     @classmethod
     def is_valid(cls, v: Union[str, URIRef, "Curie", "URIorCURIE"]) -> bool:
-        if not isinstance(v, (str, URIRef, Curie, URIorCURIE)):
+        if not isinstance(v, str | URIRef | Curie | URIorCURIE):
             return False
         v = str(v)
         if validate_uri(v):
@@ -125,7 +125,7 @@ class URIorCURIE(Identifier):
         return bool(urlparse(v).netloc)
 
     @staticmethod
-    def is_curie(v: str, nsm: Optional[Namespaces] = None) -> bool:
+    def is_curie(v: str, nsm: Namespaces | None = None) -> bool:
         if not validate_curie(v):
             return False
         if ":" in v and "://" not in v:
@@ -135,7 +135,7 @@ class URIorCURIE(Identifier):
             )
         return False
 
-    def as_uri(self, nsm: Namespaces) -> Optional[URIRef]:
+    def as_uri(self, nsm: Namespaces) -> URIRef | None:
         if self.is_absolute(self):
             return URIRef(self)
         return Curie(self).as_uri(nsm)
@@ -171,7 +171,7 @@ class Curie(URIorCURIE):
     term_name = re.compile("^[A-Za-z]([A-Za-z0-9._-]|/)*$")
 
     @classmethod
-    def ns_ln(cls, v: str) -> Optional[tuple[str, str]]:
+    def ns_ln(cls, v: str) -> tuple[str, str] | None:
         # See if this is indeed a valid CURIE, ie, it can be split by a colon
         curie_split = v.split(":", 1)
         if len(curie_split) == 1:
@@ -193,7 +193,7 @@ class Curie(URIorCURIE):
         return pnln is not None
 
     # This code was extracted from the termorcurie package of the rdfa
-    def as_uri(self, nsm: Namespaces) -> Optional[URIRef]:
+    def as_uri(self, nsm: Namespaces) -> URIRef | None:
         """Return the URI for the CURIE if a mapping is available, otherwise return None"""
         try:
             return nsm.uri_for(self)
@@ -228,7 +228,7 @@ class Bool:
 class XSDTime(str, TypedNode):
     """Wrapper for time datatype"""
 
-    def __new__(cls, value: Union[str, datetime.time, datetime.datetime, Literal]) -> str:
+    def __new__(cls, value: str | datetime.time | datetime.datetime | Literal) -> str:
         if is_strict() and not cls.is_valid(value):
             raise ValueError(f"{value} is not a valid time")
         if isinstance(value, Literal):
@@ -243,10 +243,10 @@ class XSDTime(str, TypedNode):
         return str(value)
 
     @classmethod
-    def is_valid(cls, value: Union[str, datetime.time, datetime.datetime, Literal]) -> bool:
+    def is_valid(cls, value: str | datetime.time | datetime.datetime | Literal) -> bool:
         if isinstance(value, Literal):
             value = value.value
-        if isinstance(value, (datetime.time, datetime.datetime)):
+        if isinstance(value, datetime.time | datetime.datetime):
             value = value.isoformat()
         try:
             datetime.time.fromisoformat(str(value))
@@ -258,7 +258,7 @@ class XSDTime(str, TypedNode):
 class XSDDate(str, TypedNode):
     """Wrapper for date datatype"""
 
-    def __new__(cls, value: Union[str, datetime.date, Literal]) -> str:
+    def __new__(cls, value: str | datetime.date | Literal) -> str:
         if is_strict() and not cls.is_valid(value):
             raise ValueError(f"{value} is not a valid date")
         if isinstance(value, Literal):
@@ -276,7 +276,7 @@ class XSDDate(str, TypedNode):
         return str(value)
 
     @classmethod
-    def is_valid(cls, value: Union[str, datetime.date, Literal]) -> bool:
+    def is_valid(cls, value: str | datetime.date | Literal) -> bool:
         if isinstance(value, Literal):
             value = value.value
         if isinstance(value, datetime.date):
@@ -296,7 +296,7 @@ class XSDDate(str, TypedNode):
 class XSDDateTime(str, TypedNode):
     """Wrapper for date time dataclass"""
 
-    def __new__(cls, value: Union[str, datetime.datetime, Literal]) -> str:
+    def __new__(cls, value: str | datetime.datetime | Literal) -> str:
         if is_strict() and not cls.is_valid(value):
             raise ValueError(f"{value} is not a valid datetime")
         if isinstance(value, Literal):
@@ -320,7 +320,7 @@ class XSDDateTime(str, TypedNode):
         return str(value)
 
     @classmethod
-    def is_valid(cls, value: Union[str, datetime.datetime, Literal]) -> bool:
+    def is_valid(cls, value: str | datetime.datetime | Literal) -> bool:
         if isinstance(value, Literal):
             value = value.value
         if isinstance(value, datetime.datetime):

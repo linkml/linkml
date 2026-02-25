@@ -7,7 +7,7 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from dataclasses import dataclass
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 
 from parse import parse
 from rdflib import URIRef
@@ -39,9 +39,9 @@ class C(YAMLRoot):
     class_name: ClassVar[str] = "c"
     class_model_uri: ClassVar[URIRef] = URIRef("http://example.org/C")
 
-    s: Optional[str] = None
-    t: Optional[str] = None
-    as_str: Optional[str]
+    s: str | None = None
+    t: str | None = None
+    as_str: str | None
 
     def __post_init__(self, **kwargs: dict[str, Any]):
         if self.s is not None and not isinstance(self.s, str):
@@ -57,7 +57,7 @@ class C(YAMLRoot):
         return f"s:{self.s} t:{self.t}"
 
     @as_str.setter
-    def as_str(self, val: Optional[str]) -> None:
+    def as_str(self, val: str | None) -> None:
         if not isinstance(val, property):
             v = parse("s:{s} t:{t}", val)
             if not v:
@@ -86,7 +86,7 @@ slots.s = Slot(
     curie=DEFAULT_.curie("s"),
     model_uri=DEFAULT_.s,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.t = Slot(
@@ -95,7 +95,7 @@ slots.t = Slot(
     curie=DEFAULT_.curie("t"),
     model_uri=DEFAULT_.t,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.as_str = Slot(
@@ -104,7 +104,7 @@ slots.as_str = Slot(
     curie=DEFAULT_.curie("as_str"),
     model_uri=DEFAULT_.as_str,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )
 
 slots.as_str2 = Slot(
@@ -113,5 +113,5 @@ slots.as_str2 = Slot(
     curie=DEFAULT_.curie("as_str2"),
     model_uri=DEFAULT_.as_str2,
     domain=None,
-    range=Optional[str],
+    range=str | None,
 )

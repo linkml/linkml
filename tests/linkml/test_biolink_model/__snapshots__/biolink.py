@@ -1429,9 +1429,7 @@ class MappingCollection(YAMLRoot):
     predicate_mappings: Optional[Union[Union[dict, "PredicateMapping"], list[Union[dict, "PredicateMapping"]]]] = empty_list()
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if not isinstance(self.predicate_mappings, list):
-            self.predicate_mappings = [self.predicate_mappings] if self.predicate_mappings is not None else []
-        self.predicate_mappings = [v if isinstance(v, PredicateMapping) else PredicateMapping(**as_dict(v)) for v in self.predicate_mappings]
+        self._normalize_inlined_as_list(slot_name="predicate_mappings", slot_type=PredicateMapping, key_name="predicate", keyed=False)
 
         super().__post_init__(**kwargs)
 

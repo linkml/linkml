@@ -1,4 +1,4 @@
-from typing import IO, Any, Optional
+from typing import IO, Any
 
 import click
 
@@ -6,7 +6,7 @@ from ..linter import LinterProblem
 
 
 class Formatter:
-    def __init__(self, file: Optional[IO[Any]] = None) -> None:
+    def __init__(self, file: IO[Any] | None = None) -> None:
         self.file = file
 
     def write(self, message: str):
