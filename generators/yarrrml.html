@@ -462,6 +462,14 @@
 </pre></div>
 </div>
 </li>
+<li><p>Multivalued object slots are emitted as lists of IRIs:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:friends</span>
+<span class="w">  </span><span class="nt">o</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(friends[*])</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iri</span>
+</pre></div>
+</div>
+</li>
 <li><p>TSV works via the same formulation (<code class="docutils literal notranslate"><span class="pre">~csv</span></code>). Most engines auto-detect the tab separator for <code class="docutils literal notranslate"><span class="pre">.tsv</span></code> files. If an engine requires explicit delimiter/CSVW options, that is currently out of scope and can be handled manually in post-editing.</p></li>
 </ul>
 </section>
@@ -666,7 +674,13 @@ gen-yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--
 <li><p>JSON-first by default</p></li>
 <li><p>One source per mapping</p></li>
 <li><p>Classes without an identifier are <strong>assigned a fallback subject</strong>: <code class="docutils literal notranslate"><span class="pre">ex:&lt;Class&gt;/$(subject_id)</span></code></p></li>
-<li><p>Object slots: <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → IRI; <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → included as separate mapping</p></li>
+<li><p>Object slots:
+- <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → emitted as IRIs
+- <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → emitted using YARRRML <code class="docutils literal notranslate"><span class="pre">mapping</span></code> + <code class="docutils literal notranslate"><span class="pre">condition</span></code> (join) pattern</p></li>
+<li><p>Inline classes require an identifier (or key) to support join-based linking</p></li>
+<li><p>An inline class can only be used in a single owning class.
+Multiple inline usages of the same class are not supported,
+as each mapping can define only one source/iterator.</p></li>
 <li><p>Iterators not derived from JSON Schema</p></li>
 <li><p>No per-slot JSONPath/CSV expressions or functions</p></li>
 <li><p>CSV/TSV supported via <code class="docutils literal notranslate"><span class="pre">--source</span></code>; delimiter/custom CSVW options are not yet exposed</p></li>
