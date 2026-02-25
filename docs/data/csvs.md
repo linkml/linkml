@@ -65,16 +65,42 @@ Boolean values in CSV/TSV files can be represented in various ways depending on 
 
 ### Loading Booleans
 
-When loading CSV/TSV data, LinkML accepts **YAML 1.1 boolean values plus numeric 0/1** for slots with `range: boolean`:
+When loading CSV/TSV data, LinkML coerces string values to booleans for slots with `range: boolean`. The default sentinels follow pandas/R conventions (case-insensitive):
 
 | Truthy Values | Falsy Values |
 |---------------|--------------|
-| `true`, `True`, `TRUE` | `false`, `False`, `FALSE` |
-| `yes`, `Yes`, `YES` | `no`, `No`, `NO` |
-| `on`, `On`, `ON` | `off`, `Off`, `OFF` |
-| `1` | `0` |
+| `T`, `TRUE` (case-insensitive) | `F`, `FALSE` (case-insensitive) |
 
-This coercion is **schema-aware** - only values in slots declared as `range: boolean` are converted. String values like "yes" in a text field remain as strings.
+This coercion is **schema-aware** — only values in slots declared as `range: boolean` are converted. String values like "yes" in a text field remain as strings.
+
+#### Empty strings
+
+Empty strings (`""`) in CSV/TSV are coerced to null regardless of the slot type.
+
+#### Extending the default sentinels
+
+Many datasets (e.g. NCBI BioSamples, MIxS) use `yes`/`no`, `1`/`0`, or `on`/`off` for boolean values. You can add these via schema annotations or CLI options — they are **added to** the defaults, not replacing them.
+
+**Schema annotations:**
+
+```yaml
+id: https://example.org/myschema
+name: myschema
+annotations:
+  boolean_truthy: "yes,on,1"   # comma-separated, case-insensitive
+  boolean_falsy: "no,off,0"
+```
+
+**CLI options:**
+
+```bash
+linkml-convert -s schema.yaml -C Container -S items -t json \
+  --boolean-truthy "yes,on,1" \
+  --boolean-falsy "no,off,0" \
+  input.tsv
+```
+
+CLI options override schema annotations if both are set.
 
 ### Dumping Booleans
 

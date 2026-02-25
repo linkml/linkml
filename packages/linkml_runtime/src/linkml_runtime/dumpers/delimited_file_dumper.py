@@ -53,7 +53,7 @@ def _get_boolean_output_format(schemaview: SchemaView, boolean_output: str = Non
     return BOOLEAN_OUTPUT_FORMATS.get(format_key, ("true", "false"))
 
 
-def _convert_booleans_for_output(obj: Union[dict, list], true_str: str, false_str: str) -> Union[dict, list]:
+def _convert_booleans_for_output(obj: dict | list, true_str: str, false_str: str) -> dict | list:
     """
     Recursively convert boolean values to the specified string format.
 

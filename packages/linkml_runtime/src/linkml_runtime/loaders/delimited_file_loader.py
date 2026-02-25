@@ -11,9 +11,12 @@ from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-# YAML 1.1 boolean values plus numeric 0/1 (case-insensitive for strings)
-TRUTHY_VALUES = frozenset({"true", "yes", "on", "1"})
-FALSY_VALUES = frozenset({"false", "no", "off", "0"})
+# Default boolean sentinels following pandas/R conventions (case-insensitive).
+# Only {T, TRUE} / {F, FALSE} per Chris Mungall's guidance in Discussion #1996.
+# Additional sentinels like yes/no or 0/1 can be added via boolean_truthy/boolean_falsy
+# schema annotations or CLI options.
+DEFAULT_TRUTHY_VALUES = frozenset({"true", "t"})
+DEFAULT_FALSY_VALUES = frozenset({"false", "f"})
 
 
 def _get_boolean_slots(schemaview: SchemaView, index_slot: SlotDefinitionName) -> set[str]:
@@ -47,17 +50,96 @@ def _get_boolean_slots(schemaview: SchemaView, index_slot: SlotDefinitionName) -
     return boolean_slots
 
 
-def _coerce_boolean_values(obj: Union[dict, list], boolean_slots: set[str]) -> Union[dict, list]:
+def _get_boolean_sentinels(
+    schemaview: SchemaView,
+    truthy_override: frozenset[str] | None = None,
+    falsy_override: frozenset[str] | None = None,
+) -> tuple[frozenset[str], frozenset[str]]:
+    """
+    Determine the truthy and falsy sentinel sets for boolean coercion.
+
+    Priority: CLI overrides > schema annotations > defaults.
+    All values are stored and compared case-insensitively.
+
+    Schema annotations ``boolean_truthy`` and ``boolean_falsy`` are comma-separated
+    strings, e.g. ``boolean_truthy: "yes,on,1"``.
+
+    Args:
+        schemaview: The schema view (may be None)
+        truthy_override: CLI-provided truthy values (already lowercased)
+        falsy_override: CLI-provided falsy values (already lowercased)
+
+    Returns:
+        Tuple of (truthy_set, falsy_set) with all values lowercased
+    """
+    truthy = DEFAULT_TRUTHY_VALUES
+    falsy = DEFAULT_FALSY_VALUES
+
+    # Schema annotations extend the defaults
+    if schemaview and schemaview.schema and schemaview.schema.annotations:
+        ann = schemaview.schema.annotations
+        if "boolean_truthy" in ann:
+            extra = frozenset(v.strip().lower() for v in ann["boolean_truthy"].value.split(",") if v.strip())
+            truthy = truthy | extra
+        if "boolean_falsy" in ann:
+            extra = frozenset(v.strip().lower() for v in ann["boolean_falsy"].value.split(",") if v.strip())
+            falsy = falsy | extra
+
+    # CLI overrides extend further
+    if truthy_override is not None:
+        truthy = truthy | truthy_override
+    if falsy_override is not None:
+        falsy = falsy | falsy_override
+
+    return truthy, falsy
+
+
+def _coerce_empty_to_none(obj: dict | list) -> dict | list:
+    """
+    Recursively coerce empty string values to None.
+
+    Per Chris Mungall's guidance in Discussion #1996: ``""`` should be coerced to null.
+
+    Args:
+        obj: A dict or list from json-flattener unflatten
+
+    Returns:
+        The same structure with empty strings replaced by None
+    """
+    if isinstance(obj, dict):
+        return {
+            k: _coerce_empty_to_none(v) if isinstance(v, (dict, list)) else (None if v == "" else v)
+            for k, v in obj.items()
+        }
+    elif isinstance(obj, list):
+        return [
+            _coerce_empty_to_none(item) if isinstance(item, (dict, list)) else (None if item == "" else item)
+            for item in obj
+        ]
+    return obj
+
+
+def _coerce_boolean_values(
+    obj: dict | list,
+    boolean_slots: set[str],
+    truthy: frozenset[str] = DEFAULT_TRUTHY_VALUES,
+    falsy: frozenset[str] = DEFAULT_FALSY_VALUES,
+) -> dict | list:
     """
     Recursively coerce string values in boolean slots to actual booleans.
 
-    Accepts YAML 1.1 boolean values plus numeric 0/1:
-    - Truthy: true, yes, on (case-insensitive), 1
-    - Falsy: false, no, off (case-insensitive), 0
+    Default sentinels follow pandas/R conventions (case-insensitive):
+    - Truthy: T, TRUE
+    - Falsy: F, FALSE
+
+    Additional sentinels can be provided via the truthy/falsy parameters,
+    which are populated from schema annotations or CLI options.
 
     Args:
         obj: A dict or list from json-flattener unflatten
         boolean_slots: Set of slot names that should be coerced to boolean
+        truthy: Set of lowercase strings to treat as True
+        falsy: Set of lowercase strings to treat as False
 
     Returns:
         The same structure with boolean slots coerced to actual booleans
@@ -67,35 +149,44 @@ def _coerce_boolean_values(obj: Union[dict, list], boolean_slots: set[str]) -> U
         for k, v in obj.items():
             if k in boolean_slots:
                 if isinstance(v, list):
-                    result[k] = [_coerce_single_boolean(item) for item in v]
+                    result[k] = [_coerce_single_boolean(item, truthy, falsy) for item in v]
                 else:
-                    result[k] = _coerce_single_boolean(v)
+                    result[k] = _coerce_single_boolean(v, truthy, falsy)
             elif isinstance(v, (dict, list)):
-                result[k] = _coerce_boolean_values(v, boolean_slots)
+                result[k] = _coerce_boolean_values(v, boolean_slots, truthy, falsy)
             else:
                 result[k] = v
         return result
     elif isinstance(obj, list):
-        return [_coerce_boolean_values(item, boolean_slots) for item in obj]
+        return [_coerce_boolean_values(item, boolean_slots, truthy, falsy) for item in obj]
     else:
         return obj
 
 
-def _coerce_single_boolean(value):
-    """Coerce a single value to boolean if it matches truthy/falsy patterns."""
+def _coerce_single_boolean(
+    value,
+    truthy: frozenset[str] = DEFAULT_TRUTHY_VALUES,
+    falsy: frozenset[str] = DEFAULT_FALSY_VALUES,
+):
+    """Coerce a single value to boolean if it matches truthy/falsy patterns.
+
+    Handles both str and int values — CSV parsers may deliver numeric values
+    like ``1``/``0`` as int rather than str.
+    """
     if isinstance(value, bool):
         return value
     if isinstance(value, int):
-        if value == 1:
+        str_value = str(value)
+        if str_value in truthy:
             return True
-        if value == 0:
+        if str_value in falsy:
             return False
         return value
     if isinstance(value, str):
         lower = value.lower()
-        if lower in TRUTHY_VALUES:
+        if lower in truthy:
             return True
-        if lower in FALSY_VALUES:
+        if lower in falsy:
             return False
     return value
 
@@ -150,6 +241,8 @@ class DelimitedFileLoader(Loader, ABC):
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
         schemaview: SchemaView = None,
+        boolean_truthy: frozenset[str] | None = None,
+        boolean_falsy: frozenset[str] | None = None,
         **kwargs,
     ):
         if schemaview is None:
@@ -158,9 +251,13 @@ class DelimitedFileLoader(Loader, ABC):
         config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
         objs = unflatten_from_csv(input, config=config, **kwargs)
 
+        # Coerce empty strings to null (per Discussion #1996)
+        objs = [_coerce_empty_to_none(obj) for obj in objs]
+
         # Schema-aware boolean coercion: only coerce for slots with range: boolean
         boolean_slots = _get_boolean_slots(schemaview, index_slot)
         if boolean_slots:
-            objs = [_coerce_boolean_values(obj, boolean_slots) for obj in objs]
+            truthy, falsy = _get_boolean_sentinels(schemaview, boolean_truthy, boolean_falsy)
+            objs = [_coerce_boolean_values(obj, boolean_slots, truthy, falsy) for obj in objs]
 
         return json.dumps({index_slot: objs})

@@ -79,6 +79,18 @@ logger = logging.getLogger(__name__)
     default=None,
     help="Boolean output format for CSV/TSV: controls how True/False are written. Overrides schema annotation if set.",
 )
+@click.option(
+    "--boolean-truthy",
+    default=None,
+    help="Comma-separated additional truthy values for boolean loading from CSV/TSV "
+    "(e.g. 'yes,on,1'). Added to the defaults (T, TRUE). Overrides schema annotation if set.",
+)
+@click.option(
+    "--boolean-falsy",
+    default=None,
+    help="Comma-separated additional falsy values for boolean loading from CSV/TSV "
+    "(e.g. 'no,off,0'). Added to the defaults (F, FALSE). Overrides schema annotation if set.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
 def cli(
@@ -97,6 +109,8 @@ def cli(
     infer=None,
     index_slot=None,
     boolean_output=None,
+    boolean_truthy=None,
+    boolean_falsy=None,
 ) -> None:
     """
     Converts instance data to and from different LinkML Runtime serialization formats.
@@ -170,6 +184,11 @@ def cli(
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot
         inargs["schema"] = schema
+        # Pass boolean sentinel overrides for loading
+        if boolean_truthy is not None:
+            inargs["boolean_truthy"] = frozenset(v.strip().lower() for v in boolean_truthy.split(",") if v.strip())
+        if boolean_falsy is not None:
+            inargs["boolean_falsy"] = frozenset(v.strip().lower() for v in boolean_falsy.split(",") if v.strip())
     obj = loader.load(source=input, target_class=py_target_class, **inargs)
     if infer:
         infer_config = inference_utils.Config(use_expressions=True, use_string_serialization=True)
