@@ -152,14 +152,13 @@ The one with the shortest reference is chosen as the canonical.
 The function **Resolve** takes as input a **InstanceOfReference** and returns an **InstanceOfClass**
 that is the referenced object.
 
-| *i*                    | **Resolve**(*i*)                            |
-|------------------------|---------------------------------------------|
-| `SlotDefinition&<V>`   | `m.slots[<V>]`                              |
-| `ClassDefinition&<V>`  | `m.classes[<V>]`                            |
-| `EnumDefinition&<V>`   | `m.enums[<V>]`                              |
-| `TypeDefinition&<V>`   | `m.types[<V>]`                              |
-| `SchemaDefinition&<V>` | see below                                   |
-| [*i1*, *i2*, ...]      | [**Resolve**(*i1*), **Resolve**(*i2*), ...] |
+| *i*                    | **Resolve**(*i*) |
+|------------------------|------------------|
+| `SlotDefinition&<V>`   | `m.slots[<V>]`   |
+| `ClassDefinition&<V>`  | `m.classes[<V>]` |
+| `EnumDefinition&<V>`   | `m.enums[<V>]`   |
+| `TypeDefinition&<V>`   | `m.types[<V>]`   |
+| `SchemaDefinition&<V>` | see below        |
 
 The rules for schema resolution are as follows:
 
@@ -212,13 +211,13 @@ The ancestors function **A** returns the **Closure** of the **Parents** function
 
 The function **ReflexiveAncestors** **A*** uses the **ReflexiveClosure**.
 
-> **A**`*`(*e*) = **C**`*`(*e*, **P**)
+> **A***(*e*) = **C***(*e*, **P**)
 
 ### Function: Imports Closure
 
 The imports closure function **I** returns the reflexive **ReferenceClosure** of the direct imports.
 
-> **I**(*s*) = **C**`*`(*s*, **s.imports**)
+> **I**(*s*) = **C***(*s*, **s.imports**)
 
 ### Function: Element CURIEs and URIs
 
