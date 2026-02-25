@@ -46,9 +46,7 @@ class DelimitedFileDumper(Dumper, ABC):
             schemaview = SchemaView(schema)
 
         # Read list configuration from schema annotations
-        list_markers, inner_delimiter, strip_whitespace, refuse_delim = get_list_config_from_annotations(
-            schemaview
-        )
+        list_markers, inner_delimiter, strip_whitespace, refuse_delim = get_list_config_from_annotations(schemaview)
 
         # CLI options override schema annotations
         if list_wrapper is not None:

@@ -73,8 +73,7 @@ def get_list_config_from_annotations(
             value = str(annotations["list_strip_whitespace"].value).lower()
             if value not in ("true", "false"):
                 logger.warning(
-                    f"Invalid list_strip_whitespace value '{value}'. "
-                    "Expected 'true' or 'false'. Defaulting to true."
+                    f"Invalid list_strip_whitespace value '{value}'. Expected 'true' or 'false'. Defaulting to true."
                 )
             else:
                 strip_whitespace = value == "true"
