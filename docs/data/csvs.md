@@ -65,7 +65,7 @@ Boolean values in CSV/TSV files can be represented in various ways depending on 
 
 ### Loading Booleans
 
-When loading CSV/TSV data, LinkML coerces string values to booleans for slots with `range: boolean`. The default sentinels follow pandas/R conventions (case-insensitive):
+When loading CSV/TSV data, LinkML coerces string values to booleans for slots with `range: boolean`. The defaults follow pandas/R conventions (case-insensitive):
 
 | Truthy Values | Falsy Values |
 |---------------|--------------|
@@ -77,7 +77,7 @@ This coercion is **schema-aware** — only values in slots declared as `range: b
 
 Empty strings (`""`) in CSV/TSV are coerced to null regardless of the slot type.
 
-#### Extending the default sentinels
+#### Extending the defaults
 
 Many datasets (e.g. NCBI BioSamples, MIxS) use `yes`/`no`, `1`/`0`, or `on`/`off` for boolean values. You can add these via schema annotations or CLI options — they are **added to** the defaults, not replacing them.
 

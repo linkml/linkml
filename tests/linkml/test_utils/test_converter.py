@@ -517,7 +517,7 @@ slots:
 
 
 def test_boolean_truthy_cli_override(cli_runner, tmp_path):
-    """Test --boolean-truthy adds 'yes' as a truthy sentinel for loading."""
+    """Test --boolean-truthy adds 'yes' as a truthy value for loading."""
     schema_file = tmp_path / "schema.yaml"
     tsv_file = tmp_path / "data.tsv"
     output_file = tmp_path / "output.json"

@@ -11,9 +11,8 @@ from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
-# Default boolean sentinels following pandas/R conventions (case-insensitive).
-# Only {T, TRUE} / {F, FALSE} per Chris Mungall's guidance in Discussion #1996.
-# Additional sentinels like yes/no or 0/1 can be added via boolean_truthy/boolean_falsy
+# Default truthy/falsy values following pandas/R conventions (case-insensitive).
+# Additional values like yes/no or 0/1 can be added via boolean_truthy/boolean_falsy
 # schema annotations or CLI options.
 DEFAULT_TRUTHY_VALUES = frozenset({"true", "t"})
 DEFAULT_FALSY_VALUES = frozenset({"false", "f"})
@@ -50,20 +49,17 @@ def _get_boolean_slots(schemaview: SchemaView, index_slot: SlotDefinitionName) -
     return boolean_slots
 
 
-def _get_boolean_sentinels(
+def _get_truthy_falsy_values(
     schemaview: SchemaView | None,
     truthy_override: frozenset[str] | None = None,
     falsy_override: frozenset[str] | None = None,
 ) -> tuple[frozenset[str], frozenset[str]]:
     """
-    Determine the truthy and falsy sentinel sets for boolean coercion.
+    Determine the truthy and falsy value sets for boolean coercion.
 
     Cumulative: defaults are extended by schema annotations, which are
     further extended by CLI options. All values are stored and compared
     case-insensitively.
-
-    Schema annotations ``boolean_truthy`` and ``boolean_falsy`` are comma-separated
-    strings, e.g. ``boolean_truthy: "yes,on,1"``.
 
     Args:
         schemaview: The schema view (may be None)
@@ -129,12 +125,8 @@ def _coerce_boolean_values(
     """
     Recursively coerce string values in boolean slots to actual booleans.
 
-    Default sentinels follow pandas/R conventions (case-insensitive):
-    - Truthy: T, TRUE
-    - Falsy: F, FALSE
-
-    Additional sentinels can be provided via the truthy/falsy parameters,
-    which are populated from schema annotations or CLI options.
+    Defaults follow pandas/R conventions (case-insensitive): T, TRUE / F, FALSE.
+    Additional values can be provided via the truthy/falsy parameters.
 
     Args:
         obj: A dict or list from json-flattener unflatten
@@ -258,7 +250,7 @@ class DelimitedFileLoader(Loader, ABC):
         # Schema-aware boolean coercion: only coerce for slots with range: boolean
         boolean_slots = _get_boolean_slots(schemaview, index_slot)
         if boolean_slots:
-            truthy, falsy = _get_boolean_sentinels(schemaview, boolean_truthy, boolean_falsy)
+            truthy, falsy = _get_truthy_falsy_values(schemaview, boolean_truthy, boolean_falsy)
             objs = [_coerce_boolean_values(obj, boolean_slots, truthy, falsy) for obj in objs]
 
         return json.dumps({index_slot: objs})

@@ -263,7 +263,7 @@ def boolean_output_schemaview(tmp_path):
     return SchemaView(str(schema_file))
 
 
-# --- Loading: default sentinels ---
+# --- Loading: default truthy/falsy values ---
 
 
 @pytest.mark.parametrize("truthy_value", ["true", "True", "TRUE", "t", "T"])
@@ -283,7 +283,7 @@ def test_load_default_falsy_values(boolean_schemaview, tmp_path, falsy_value):
 
 
 @pytest.mark.parametrize("non_default_value", ["yes", "Yes", "YES", "no", "No", "NO", "on", "off"])
-def test_non_default_sentinels_not_coerced(boolean_schemaview, tmp_path, non_default_value):
+def test_non_default_values_not_coerced(boolean_schemaview, tmp_path, non_default_value):
     tsv_file = tmp_path / "data.tsv"
     tsv_file.write_text(f"id\tis_active\tname\n1\t{non_default_value}\ttest\n")
     result = tsv_loader.load_as_dict(str(tsv_file), index_slot="items", schemaview=boolean_schemaview)
@@ -320,7 +320,7 @@ def test_multivalued_boolean_coercion():
     assert result["name"] == "test"
 
 
-def test_multivalued_boolean_coercion_with_custom_sentinels():
+def test_multivalued_boolean_coercion_with_custom_values():
     from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
 
     truthy = frozenset({"true", "t", "yes", "on"})

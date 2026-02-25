@@ -184,7 +184,7 @@ def cli(
                 raise Exception("--index-slot is required for CSV input")
         inargs["index_slot"] = index_slot
         inargs["schema"] = schema
-        # Pass boolean sentinel overrides for loading
+        # Pass additional truthy/falsy values for loading
         if boolean_truthy is not None:
             inargs["boolean_truthy"] = frozenset(v.strip().lower() for v in boolean_truthy.split(",") if v.strip())
         if boolean_falsy is not None:
