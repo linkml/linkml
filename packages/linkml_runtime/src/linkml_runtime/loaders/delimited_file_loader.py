@@ -10,8 +10,7 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.list_utils import (
     enhance_configmap_for_multivalued_primitives,
-    get_list_config_from_annotations,
-    resolve_list_wrapper,
+    get_list_config,
     strip_whitespace_from_lists,
 )
 from linkml_runtime.utils.schemaview import SchemaView
@@ -76,36 +75,27 @@ class DelimitedFileLoader(Loader, ABC):
         if schemaview is None:
             schemaview = SchemaView(schema)
 
-        # Read list configuration from schema annotations
-        list_markers, inner_delimiter, strip_whitespace, _refuse = get_list_config_from_annotations(schemaview)
+        lc = get_list_config(
+            schemaview,
+            list_wrapper=list_wrapper,
+            list_delimiter=list_delimiter,
+            list_strip_whitespace=list_strip_whitespace,
+        )
 
-        # CLI options override schema annotations
-        if list_wrapper is not None:
-            list_markers = resolve_list_wrapper(list_wrapper)
-        if list_delimiter is not None:
-            inner_delimiter = list_delimiter
-        if list_strip_whitespace is not None:
-            strip_whitespace = list_strip_whitespace
-
-        # Unwrapped mode means no brackets around lists (e.g., a|b|c instead of [a|b|c])
-        unwrapped_mode = list_markers == ("", "")
-
-        # Get base configmap and enhance with multivalued primitive slots
         configmap = get_configmap(schemaview, index_slot)
         configmap = enhance_configmap_for_multivalued_primitives(
-            schemaview, index_slot, configmap, unwrapped_mode=unwrapped_mode
+            schemaview, index_slot, configmap, unwrapped_mode=lc.unwrapped
         )
 
         config = GlobalConfig(
             key_configs=configmap,
             csv_delimiter=self.delimiter,
-            csv_list_markers=list_markers,
-            csv_inner_delimiter=inner_delimiter,
+            csv_list_markers=lc.list_markers,
+            csv_inner_delimiter=lc.inner_delimiter,
         )
         objs = unflatten_from_csv(input, config=config, **kwargs)
 
-        # Strip whitespace from list items if enabled (default)
-        if strip_whitespace:
+        if lc.strip_whitespace:
             objs = [strip_whitespace_from_lists(obj) for obj in objs]
 
         return json.dumps({index_slot: objs})

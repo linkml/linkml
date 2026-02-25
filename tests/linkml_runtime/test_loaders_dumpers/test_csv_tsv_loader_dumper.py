@@ -9,7 +9,7 @@ from linkml_runtime.dumpers import csv_dumper, json_dumper, tsv_dumper, yaml_dum
 from linkml_runtime.loaders import csv_loader, tsv_loader, yaml_loader
 from linkml_runtime.utils.list_utils import (
     check_data_for_delimiter,
-    get_list_config_from_annotations,
+    get_list_config,
     enhance_configmap_for_multivalued_primitives,
 )
 from linkml_runtime.utils.formatutils import remove_empty_items
@@ -329,21 +329,21 @@ def whitespace_preserve_schemaview():
 
 def test_get_list_config_with_none_schemaview():
     """When schemaview is None, should return defaults."""
-    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(None)
-    assert list_markers == ("[", "]")
-    assert inner_delimiter == "|"
-    assert strip_whitespace is True
-    assert refuse is False
+    lc = get_list_config(None)
+    assert lc.list_markers == ("[", "]")
+    assert lc.inner_delimiter == "|"
+    assert lc.strip_whitespace is True
+    assert lc.refuse_delimiter_in_data is False
 
 
 def test_get_list_config_without_annotations():
     """Schema without annotations should return defaults."""
     sv = SchemaView(SCHEMA_WITHOUT_ANNOTATIONS)
-    list_markers, inner_delimiter, strip_whitespace, refuse = get_list_config_from_annotations(sv)
-    assert list_markers == ("[", "]")
-    assert inner_delimiter == "|"
-    assert strip_whitespace is True
-    assert refuse is False
+    lc = get_list_config(sv)
+    assert lc.list_markers == ("[", "]")
+    assert lc.inner_delimiter == "|"
+    assert lc.strip_whitespace is True
+    assert lc.refuse_delimiter_in_data is False
 
 
 def test_enhance_configmap_with_none_schemaview():
@@ -489,8 +489,8 @@ annotations:
   list_strip_whitespace: "{true_value}"
 """
     sv = SchemaView(schema_yaml)
-    _, _, strip, _ = get_list_config_from_annotations(sv)
-    assert strip is True, f"Expected True for '{true_value}'"
+    lc = get_list_config(sv)
+    assert lc.strip_whitespace is True, f"Expected True for '{true_value}'"
 
 
 @pytest.mark.parametrize("false_value", ["false", "False", "FALSE"])
@@ -503,8 +503,8 @@ annotations:
   list_strip_whitespace: "{false_value}"
 """
     sv = SchemaView(schema_yaml)
-    _, _, strip, _ = get_list_config_from_annotations(sv)
-    assert strip is False, f"Expected False for '{false_value}'"
+    lc = get_list_config(sv)
+    assert lc.strip_whitespace is False, f"Expected False for '{false_value}'"
 
 
 @pytest.mark.parametrize("invalid_value", ["yes", "no", "1", "0", "on", "off"])
@@ -518,8 +518,8 @@ annotations:
 """
     sv = SchemaView(schema_yaml)
     with caplog.at_level(logging.WARNING):
-        _, _, strip, _ = get_list_config_from_annotations(sv)
-    assert strip is True, f"Expected True (default) for invalid value '{invalid_value}'"
+        lc = get_list_config(sv)
+    assert lc.strip_whitespace is True, f"Expected True (default) for invalid value '{invalid_value}'"
     assert "Invalid list_strip_whitespace value" in caplog.text
 
 
@@ -712,17 +712,17 @@ def test_refuse_delimiter_in_data_cli_override_false():
 
 
 def test_get_list_config_refuse_delimiter_annotation():
-    """get_list_config_from_annotations should read refuse_delimiter_in_data."""
+    """get_list_config should read refuse_delimiter_in_data from annotations."""
     sv = SchemaView(SCHEMA_REFUSE_DELIMITER)
-    _, _, _, refuse = get_list_config_from_annotations(sv)
-    assert refuse is True
+    lc = get_list_config(sv)
+    assert lc.refuse_delimiter_in_data is True
 
 
 def test_get_list_config_refuse_delimiter_default():
     """Default refuse_delimiter_in_data should be False."""
     sv = SchemaView(SCHEMA_WITH_UNWRAPPED_ANNOTATIONS)
-    _, _, _, refuse = get_list_config_from_annotations(sv)
-    assert refuse is False
+    lc = get_list_config(sv)
+    assert lc.refuse_delimiter_in_data is False
 
 
 def test_check_data_for_delimiter_raises():
@@ -764,8 +764,8 @@ annotations:
   list_wrapper: "{wrapper}"
 """
     sv = SchemaView(schema_yaml)
-    markers, _, _, _ = get_list_config_from_annotations(sv)
-    assert markers == (expected_open, expected_close)
+    lc = get_list_config(sv)
+    assert lc.list_markers == (expected_open, expected_close)
 
 
 def test_invalid_list_wrapper_defaults_to_square(caplog):
@@ -778,8 +778,8 @@ annotations:
 """
     sv = SchemaView(schema_yaml)
     with caplog.at_level(logging.WARNING):
-        markers, _, _, _ = get_list_config_from_annotations(sv)
-    assert markers == ("[", "]")
+        lc = get_list_config(sv)
+    assert lc.list_markers == ("[", "]")
     assert "Invalid list_wrapper value" in caplog.text
 
 

@@ -5,6 +5,7 @@ list formatting configuration from schema annotations and apply it consistently.
 """
 
 import logging
+from dataclasses import dataclass
 
 from json_flattener import KeyConfig
 
@@ -22,7 +23,21 @@ WRAPPER_STYLES: dict[str, tuple[str, str]] = {
 }
 
 
-def resolve_list_wrapper(wrapper: str) -> tuple[str, str]:
+@dataclass
+class ListConfig:
+    """Settled configuration for multivalued field formatting in CSV/TSV."""
+
+    list_markers: tuple[str, str] = ("[", "]")
+    inner_delimiter: str = "|"
+    strip_whitespace: bool = True
+    refuse_delimiter_in_data: bool = False
+
+    @property
+    def unwrapped(self) -> bool:
+        return self.list_markers == ("", "")
+
+
+def _resolve_list_wrapper(wrapper: str) -> tuple[str, str]:
     """Resolve wrapper style to markers, warning and defaulting when invalid."""
     if wrapper in WRAPPER_STYLES:
         return WRAPPER_STYLES[wrapper]
@@ -35,46 +50,45 @@ def resolve_list_wrapper(wrapper: str) -> tuple[str, str]:
     return WRAPPER_STYLES["square"]
 
 
-def get_list_config_from_annotations(
-    schemaview: SchemaView,
-) -> tuple[tuple[str, str], str, bool, bool]:
-    """Read list formatting configuration from schema-level annotations.
+def get_list_config(
+    schemaview: SchemaView | None = None,
+    *,
+    list_wrapper: str | None = None,
+    list_delimiter: str | None = None,
+    list_strip_whitespace: bool | None = None,
+    refuse_delimiter_in_data: bool | None = None,
+) -> ListConfig:
+    """Build a settled ListConfig from schema annotations and CLI overrides.
 
-    These annotations control how multivalued fields are serialized in CSV/TSV:
+    Resolution order: defaults -> schema annotations -> CLI keyword arguments.
+    CLI arguments override schema annotations which override defaults.
 
-    - ``list_wrapper``: wrapper style around list items (default ``square``).
-      Permissible values: ``square`` ``[a|b]``, ``curly`` ``{a|b}``,
-      ``paren`` ``(a|b)``, ``none`` ``a|b``.
+    Schema-level annotations:
+
+    - ``list_wrapper``: wrapper style (``square``, ``curly``, ``paren``, ``none``).
     - ``list_delimiter``: character between list items (default ``|``).
     - ``list_strip_whitespace``: strip whitespace around delimiter (default ``true``).
-    - ``refuse_delimiter_in_data``: raise ValueError if a multivalued value
-      contains the delimiter (default ``false``).
-
-    Note: These are schema-level only because json-flattener's GlobalConfig
-    applies the same markers/delimiter to ALL columns in the CSV/TSV.
+    - ``refuse_delimiter_in_data``: raise on delimiter-in-data conflicts (default ``false``).
 
     Args:
         schemaview: A SchemaView for reading annotations.
+        list_wrapper: CLI override for wrapper style.
+        list_delimiter: CLI override for delimiter.
+        list_strip_whitespace: CLI override for whitespace stripping.
+        refuse_delimiter_in_data: CLI override for delimiter-in-data check.
 
     Returns:
-        Tuple of (csv_list_markers, csv_inner_delimiter, strip_whitespace,
-        refuse_delimiter_in_data).
+        A settled ListConfig.
     """
-    list_markers = ("[", "]")
-    inner_delimiter = "|"
-    strip_whitespace = True
-    refuse_delimiter_in_data = False
+    config = ListConfig()
 
-    if not schemaview or not schemaview.schema:
-        return list_markers, inner_delimiter, strip_whitespace, refuse_delimiter_in_data
-
-    if schemaview.schema.annotations:
+    # Schema annotations override defaults
+    if schemaview and schemaview.schema and schemaview.schema.annotations:
         annotations = schemaview.schema.annotations
         if "list_wrapper" in annotations:
-            wrapper = annotations["list_wrapper"].value
-            list_markers = resolve_list_wrapper(wrapper)
+            config.list_markers = _resolve_list_wrapper(annotations["list_wrapper"].value)
         if "list_delimiter" in annotations:
-            inner_delimiter = annotations["list_delimiter"].value
+            config.inner_delimiter = annotations["list_delimiter"].value
         if "list_strip_whitespace" in annotations:
             value = str(annotations["list_strip_whitespace"].value).lower()
             if value not in ("true", "false"):
@@ -82,7 +96,7 @@ def get_list_config_from_annotations(
                     f"Invalid list_strip_whitespace value '{value}'. Expected 'true' or 'false'. Defaulting to true."
                 )
             else:
-                strip_whitespace = value == "true"
+                config.strip_whitespace = value == "true"
         if "refuse_delimiter_in_data" in annotations:
             value = str(annotations["refuse_delimiter_in_data"].value).lower()
             if value not in ("true", "false"):
@@ -91,9 +105,19 @@ def get_list_config_from_annotations(
                     "Expected 'true' or 'false'. Defaulting to false."
                 )
             else:
-                refuse_delimiter_in_data = value == "true"
+                config.refuse_delimiter_in_data = value == "true"
 
-    return list_markers, inner_delimiter, strip_whitespace, refuse_delimiter_in_data
+    # CLI arguments override schema annotations
+    if list_wrapper is not None:
+        config.list_markers = _resolve_list_wrapper(list_wrapper)
+    if list_delimiter is not None:
+        config.inner_delimiter = list_delimiter
+    if list_strip_whitespace is not None:
+        config.strip_whitespace = list_strip_whitespace
+    if refuse_delimiter_in_data is not None:
+        config.refuse_delimiter_in_data = refuse_delimiter_in_data
+
+    return config
 
 
 def strip_whitespace_from_lists(obj: dict | list) -> dict | list:
