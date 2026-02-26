@@ -1,7 +1,7 @@
 from enum import Enum
 
 import pytest
-from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
+from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
@@ -384,3 +384,99 @@ def test_permissible_values(
             assert isinstance(pv, URIRef) or isinstance(pv, Literal)
         else:
             raise AssertionError("all combinations must be accounted for")
+
+
+# ---------------------------------------------------------------------------
+# Helpers for abstract covering-axiom tests
+# ---------------------------------------------------------------------------
+
+
+def _build_abstract_schema() -> SchemaBuilder:
+    """Return a SchemaBuilder with Animal (abstract) -> Dog, Cat subclasses."""
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+    return sb
+
+
+def _union_members(g: Graph, cls_uri: URIRef) -> set[URIRef] | None:
+    """Return the set of URIRefs in the owl:unionOf covering axiom for *cls_uri*.
+
+    Returns ``None`` when no such axiom exists.
+    """
+    for obj in g.objects(cls_uri, RDFS.subClassOf):
+        if not isinstance(obj, BNode):
+            continue
+        for union_list in g.objects(obj, OWL.unionOf):
+            return set(Collection(g, union_list))
+    return None
+
+
+def _owl_graph(sb: SchemaBuilder, **gen_kwargs) -> Graph:
+    gen = OwlSchemaGenerator(sb.schema, mergeimports=False, metaclasses=False, type_objects=False, **gen_kwargs)
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    return g
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+
+def test_abstract_class_gets_union_of_subclasses_by_default():
+    """Abstract classes emit rdfs:subClassOf owl:unionOf(subclasses) by default."""
+    g = _owl_graph(_build_abstract_schema())
+    members = _union_members(g, EX.Animal)
+    assert members is not None, "No union-of covering axiom found for Animal"
+    assert members == {EX.Dog, EX.Cat}
+
+
+def test_skip_flag_suppresses_union_of_axiom():
+    """Setting skip_abstract_class_as_unionof_subclasses=True omits the covering axiom."""
+    g = _owl_graph(_build_abstract_schema(), skip_abstract_class_as_unionof_subclasses=True)
+    assert _union_members(g, EX.Animal) is None
+
+
+def test_non_abstract_class_does_not_get_union_of_axiom():
+    """Concrete (non-abstract) classes never receive a union-of covering axiom."""
+    sb = SchemaBuilder()
+    sb.add_class("Vehicle")
+    sb.add_class("Car", is_a="Vehicle")
+    sb.add_class("Bike", is_a="Vehicle")
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert _union_members(g, EX.Vehicle) is None
+
+
+def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
+    """An abstract class with no direct subclasses emits no union-of axiom."""
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert _union_members(g, EX.Orphan) is None
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_union_of_axiom_only_covers_direct_children(skip: bool):
+    """Union-of axiom lists only direct is_a children, not grandchildren.
+
+    Schema: Animal (abstract) <- Dog <- Poodle
+            Animal (abstract) <- Cat
+    Expected union: {Dog, Cat} — Poodle is NOT included.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Poodle", is_a="Dog")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+    g = _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=skip)
+    if skip:
+        assert _union_members(g, EX.Animal) is None
+    else:
+        members = _union_members(g, EX.Animal)
+        assert members == {EX.Dog, EX.Cat}, f"Expected {{Dog, Cat}}, got {members}"
