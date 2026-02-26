@@ -90,7 +90,10 @@ def test_generate_enum_objects(kitchen_sink_path):
         assert name in enum_objects
 
     # Check that one enum is complete
-    expected_enum = OOEnum(name="FamilialRelationshipType")
+    expected_enum = OOEnum(
+        name="FamilialRelationshipType",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType",
+    )
     expected_enum.values = [
         OOEnumValue(label="SIBLING_OF", text="SIBLING_OF"),
         OOEnumValue(label="PARENT_OF", text="PARENT_OF"),
@@ -99,7 +102,10 @@ def test_generate_enum_objects(kitchen_sink_path):
     assert expected_enum == enum_objects["FamilialRelationshipType"]
 
     # Same, but with an enum with names that must be transformed
-    expected_enum = OOEnum(name="OtherCodes")
+    expected_enum = OOEnum(
+        name="OtherCodes",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/other codes",
+    )
     expected_enum.values = [OOEnumValue(label="a_b", text="a b")]
     assert expected_enum == enum_objects["other codes"]
 
@@ -128,3 +134,12 @@ def test_do_not_generate_linkmlany_class(kitchen_sink_path, tmp_path):
     assert not [doc for doc in docs if doc.name == "AnyObject"]
     gen.serialize(directory=str(tmp_path))
     assert_file_contains(tmp_path / "Event.java", "private Object metadata;", after="package org.sink.kitchen")
+
+
+def test_oo_objects_have_uris(kitchen_sink_path):
+    """Check that OOClass and OOField objects contain URIs."""
+    gen = JavaGenerator(kitchen_sink_path)
+    docs = gen.create_documents()
+    witness = [doc for doc in docs if doc.name == "Company"][0]
+    assert witness.classes[0].class_uri == "https://w3id.org/linkml/tests/kitchen_sink/Company"
+    assert witness.classes[0].fields[0].slot_uri == "http://schema.org/ceo"
