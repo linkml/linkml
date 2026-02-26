@@ -21,6 +21,7 @@ def gen_context_file(tmp_path_factory):
     return str(path)
 
 
+@pytest.mark.slow
 @pytest.mark.xfail
 @pytest.mark.parametrize(
     "arguments,snapshot_file", [([], "meta.ttl"), (["--metauris"], "metan.ttl"), (["-f", "n3"], "meta.n3")]
