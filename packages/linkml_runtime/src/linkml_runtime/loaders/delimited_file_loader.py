@@ -68,5 +68,9 @@ class DelimitedFileLoader(Loader, ABC):
             schemaview = SchemaView(schema)
         configmap = get_configmap(schemaview, index_slot)
         config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
-        objs = unflatten_from_csv(input, config=config, **kwargs)
+        if isinstance(input, str):
+            with open(input) as f:
+                objs = unflatten_from_csv(f, config=config, **kwargs)
+        else:
+            objs = unflatten_from_csv(input, config=config, **kwargs)
         return json.dumps({index_slot: objs})
