@@ -119,3 +119,12 @@ def test_create_documents_includes_enums(kitchen_sink_path):
 
     # A document contains either a class or an enum, but not both
     assert not [doc for doc in docs if doc.classes and doc.enums]
+
+
+def test_do_not_generate_linkmlany_class(kitchen_sink_path, tmp_path):
+    """Check that linkml:Any is rendered as Object."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    docs = gen.create_documents()
+    assert not [doc for doc in docs if doc.name == "AnyObject"]
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(tmp_path / "Event.java", "private Object metadata;", after="package org.sink.kitchen")
