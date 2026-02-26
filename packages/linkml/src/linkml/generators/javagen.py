@@ -22,7 +22,7 @@ TYPEMAP = {
     "xsd:boolean": "Boolean",
     "xsd:dateTime": "ZonedDateTime",
     "xsd:date": "LocalDate",
-    "xsd:time": "Instant",
+    "xsd:time": "LocalTime",
     "xsd:anyURI": "String",
     "xsd:decimal": "BigDecimal",
 }
