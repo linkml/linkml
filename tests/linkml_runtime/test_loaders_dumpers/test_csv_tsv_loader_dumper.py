@@ -312,21 +312,21 @@ def test_string_yes_not_coerced_in_string_slot(boolean_schemaview, tmp_path):
 
 
 def test_multivalued_boolean_coercion():
-    from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
+    from linkml_runtime.utils.boolean_utils import coerce_boolean_values
 
     obj = {"is_active": ["true", "false", "T", "F"], "name": "test"}
-    result = _coerce_boolean_values(obj, {"is_active"})
+    result = coerce_boolean_values(obj, {"is_active"})
     assert result["is_active"] == [True, False, True, False]
     assert result["name"] == "test"
 
 
 def test_multivalued_boolean_coercion_with_custom_values():
-    from linkml_runtime.loaders.delimited_file_loader import _coerce_boolean_values
+    from linkml_runtime.utils.boolean_utils import coerce_boolean_values
 
     truthy = frozenset({"true", "t", "yes", "on"})
     falsy = frozenset({"false", "f", "no", "off"})
     obj = {"is_active": ["yes", "no", "ON", "off"], "name": "test"}
-    result = _coerce_boolean_values(obj, {"is_active"}, truthy, falsy)
+    result = coerce_boolean_values(obj, {"is_active"}, truthy, falsy)
     assert result["is_active"] == [True, False, True, False]
     assert result["name"] == "test"
 

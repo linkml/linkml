@@ -8,71 +8,10 @@ from pydantic import BaseModel
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.dumpers.json_dumper import JSONDumper
 from linkml_runtime.linkml_model.meta import SchemaDefinition, SlotDefinitionName
+from linkml_runtime.utils.boolean_utils import convert_booleans_for_output, get_boolean_config
 from linkml_runtime.utils.csvutils import get_configmap
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
-
-# Mapping from boolean_output annotation values to (true_str, false_str)
-BOOLEAN_OUTPUT_FORMATS = {
-    "true": ("true", "false"),
-    "True": ("True", "False"),
-    "TRUE": ("TRUE", "FALSE"),
-    "yes": ("yes", "no"),
-    "Yes": ("Yes", "No"),
-    "YES": ("YES", "NO"),
-    "on": ("on", "off"),
-    "On": ("On", "Off"),
-    "ON": ("ON", "OFF"),
-    "1": ("1", "0"),
-}
-
-
-def _get_boolean_output_format(schemaview: SchemaView | None, boolean_output: str = None) -> tuple[str, str]:
-    """
-    Get the boolean output format from annotation or parameter.
-
-    Args:
-        schemaview: The schema view
-        boolean_output: CLI override for boolean output format
-
-    Returns:
-        Tuple of (true_string, false_string)
-    """
-    # Default to lowercase true/false
-    format_key = "true"
-
-    # Check schema annotation
-    if schemaview and schemaview.schema and schemaview.schema.annotations:
-        if "boolean_output" in schemaview.schema.annotations:
-            format_key = schemaview.schema.annotations["boolean_output"].value
-
-    # CLI option overrides schema annotation
-    if boolean_output is not None:
-        format_key = boolean_output
-
-    return BOOLEAN_OUTPUT_FORMATS.get(format_key, ("true", "false"))
-
-
-def _convert_booleans_for_output(obj: dict | list, true_str: str, false_str: str) -> dict | list:
-    """
-    Recursively convert boolean values to the specified string format.
-
-    Args:
-        obj: A dict or list to process
-        true_str: String to use for True values
-        false_str: String to use for False values
-
-    Returns:
-        The same structure with booleans converted to strings
-    """
-    if isinstance(obj, dict):
-        return {k: _convert_booleans_for_output(v, true_str, false_str) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [_convert_booleans_for_output(item, true_str, false_str) for item in obj]
-    elif isinstance(obj, bool):
-        return true_str if obj else false_str
-    else:
-        return obj
 
 
 class DelimitedFileDumper(Dumper, ABC):
@@ -109,9 +48,8 @@ class DelimitedFileDumper(Dumper, ABC):
         if schemaview is None:
             schemaview = SchemaView(schema)
 
-        # Convert booleans to the specified output format
-        true_str, false_str = _get_boolean_output_format(schemaview, boolean_output)
-        objs = [_convert_booleans_for_output(obj, true_str, false_str) for obj in objs]
+        bc = get_boolean_config(schemaview, boolean_output=boolean_output)
+        objs = [convert_booleans_for_output(obj, bc.output_true, bc.output_false) for obj in objs]
 
         configmap = get_configmap(schemaview, index_slot)
         config = GlobalConfig(key_configs=configmap, csv_delimiter=self.delimiter)
