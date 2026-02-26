@@ -22,6 +22,13 @@ meta:slotonemany a owl:ObjectProperty,
     rdfs:range meta:C2 ;
     skos:inScheme <http://example.org/owl1> .
 
+meta:slotreq a owl:ObjectProperty,
+        linkml:SlotDefinition ;
+    rdfs:label "slotreq" ;
+    rdfs:domain meta:C1 ;
+    rdfs:range meta:C2 ;
+    skos:inScheme <http://example.org/owl1> .
+
 meta:slotzeromany a owl:ObjectProperty,
         linkml:SlotDefinition ;
     rdfs:label "slotzeromany" ;
@@ -36,46 +43,36 @@ meta:slotopt a owl:ObjectProperty,
     rdfs:range meta:C2 ;
     skos:inScheme <http://example.org/owl1> .
 
-meta:slotreq a owl:ObjectProperty,
-        linkml:SlotDefinition ;
-    rdfs:label "slotreq" ;
-    rdfs:domain meta:C1 ;
-    rdfs:range meta:C2 ;
-    skos:inScheme <http://example.org/owl1> .
-
 meta:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty meta:slotonemany ],
-        [ a owl:Restriction ;
-            owl:minCardinality 1 ;
-            owl:onProperty meta:slotreq ],
-        [ a owl:Restriction ;
             owl:allValuesFrom meta:C2 ;
             owl:onProperty meta:slotopt ],
         [ a owl:Restriction ;
             owl:allValuesFrom meta:C2 ;
             owl:onProperty meta:slotreq ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:slotzeromany ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
+            owl:cardinality 1 ;
             owl:onProperty meta:slotreq ],
         [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:slotopt ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty meta:slotzeromany ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty meta:slotopt ],
         [ a owl:Restriction ;
+            owl:minCardinality 1 ;
+            owl:onProperty meta:slotonemany ],
+        [ a owl:Restriction ;
             owl:allValuesFrom meta:C2 ;
             owl:onProperty meta:slotonemany ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:slotopt ] ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:slotzeromany ] ;
     skos:inScheme <http://example.org/owl1> .
 
 <http://example.org/owl1> a owl:Ontology ;
