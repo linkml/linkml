@@ -1,7 +1,6 @@
 import os.path
 import re
 
-import pytest
 from click.testing import CliRunner
 
 from linkml.generators.docgen import cli
@@ -14,7 +13,6 @@ def test_help():
     assert re.search("Generate documentation folder from a LinkML YAML schema", result.output)
 
 
-@pytest.mark.slow
 def test_metamodel(tmp_path):
     runner = CliRunner()
     result = runner.invoke(cli, ["-d", tmp_path, KITCHEN_SINK_PATH])
