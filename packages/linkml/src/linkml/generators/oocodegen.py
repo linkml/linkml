@@ -46,6 +46,7 @@ class OOField:
     default_value: str = None
     annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     source_slot: SlotDefinition = field(default_factory=lambda: [])
+    slot_uri: str | None = None
 
 
 @dataclass
@@ -66,6 +67,7 @@ class OOClass:
     annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
+    class_uri: str | None = None
 
 
 @dataclass
@@ -77,6 +79,7 @@ class OOEnumValue:
     label: str
     text: str
     description: str | None = None
+    meaning: str | None = None
 
 
 @dataclass
@@ -88,6 +91,7 @@ class OOEnum:
     name: SAFE_NAME
     values: list[OOEnumValue] = field(default_factory=lambda: [])
     description: str | None = None
+    enum_uri: str | None = None
 
 
 @dataclass
@@ -190,7 +194,10 @@ class OOCodeGenerator(Generator):
 
         enums = {}
         for enum_name, enum_original in all_enums.items():
-            enum = OOEnum(name=camelcase(enum_name))
+            enum = OOEnum(
+                name=camelcase(enum_name),
+                enum_uri=self.schemaview.get_uri(enum_name, expand=True),
+            )
             if hasattr(enum_original, "description"):
                 enum.description = enum_original.description
             for pv in enum_original.permissible_values.values():
@@ -201,6 +208,8 @@ class OOCodeGenerator(Generator):
                 val = OOEnumValue(label=label, text=pv.text.replace('"', '\\"'))
                 if hasattr(pv, "description"):
                     val.description = pv.description
+                if pv.meaning:
+                    val.meaning = self.schemaview.expand_curie(pv.meaning)
                 enum.values.append(val)
 
             enums[enum_name] = enum
@@ -256,6 +265,7 @@ class OOCodeGenerator(Generator):
                 package=self.package,
                 fields=[],
                 source_class=c,
+                class_uri=sv.get_uri(cn, expand=True),
             )
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]
@@ -320,6 +330,7 @@ class OOCodeGenerator(Generator):
                     source_slot=slot,
                     range=range,
                     default_value=default_value,
+                    slot_uri=sv.get_uri(slot.name, expand=True),
                 )
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
