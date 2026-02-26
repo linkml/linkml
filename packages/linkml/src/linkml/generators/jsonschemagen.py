@@ -697,7 +697,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             type_value = get_type_designator_value(self.schemaview, slot, cls)
             prop["enum"] = [type_value]
 
-    def get_additional_properties(self, cls: ClassDefinition) -> Union[bool, JsonSchema]:
+    def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
         """
         Implements the `extra_slots` metamodel slot.
 

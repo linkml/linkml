@@ -4,7 +4,6 @@ BEFORE MERGING THIS PR, ONCE AN UPDATED METAMODEL HAS BEEN ISSUED
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from jsonasobj2 import as_dict
 
@@ -13,8 +12,8 @@ from linkml_runtime.linkml_model import meta
 
 @dataclass
 class ExtraSlotsExpression(meta.Expression):
-    allowed: Optional[bool] = None
-    range_expression: Optional[meta.AnonymousSlotExpression] = None
+    allowed: bool | None = None
+    range_expression: meta.AnonymousSlotExpression | None = None
 
     def __post_init__(self, **kwargs):
         if self.range_expression and not isinstance(self.range_expression, meta.AnonymousSlotExpression):
@@ -27,7 +26,7 @@ class ExtraSlotsExpression(meta.Expression):
 
 @dataclass
 class ClassDefinition(meta.ClassDefinition):
-    extra_slots: Optional[ExtraSlotsExpression] = field(default=None)
+    extra_slots: ExtraSlotsExpression | None = field(default=None)
 
     def __post_init__(self, **kwargs):
         if self.extra_slots and not isinstance(self.extra_slots, ExtraSlotsExpression):
