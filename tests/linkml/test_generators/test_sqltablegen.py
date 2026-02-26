@@ -340,6 +340,7 @@ def test_get_id_or_key() -> None:
         gen.get_id_or_key("ClassWithNowt", sv)
 
 
+@pytest.mark.slow
 def test_sqlddl_on_metamodel():
     sv = package_schemaview("linkml_runtime.linkml_model.meta")
     gen = SQLTableGenerator(sv.schema)
