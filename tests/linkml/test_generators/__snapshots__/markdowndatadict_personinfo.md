@@ -286,7 +286,12 @@ Event:
 
 #### Local class diagram
 
-![class_event_local](figs/class_event_local.svg)
+```mermaid
+classDiagram
+Event <|-- EmploymentEvent
+Event <|-- MedicalEvent
+Event <|-- NewsEvent
+```
 
 #### Attributes
 

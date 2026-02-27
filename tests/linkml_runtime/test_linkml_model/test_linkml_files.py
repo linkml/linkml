@@ -124,3 +124,30 @@ def test_fixed_meta_url():
     """
     assert URL_FOR(Source.META, Format.YAML) == "https://w3id.org/linkml/meta.yaml"
     assert URL_FOR(Source.META, Format.JSONLD) == "https://w3id.org/linkml/meta.context.jsonld"
+
+
+VENDORED_RUNTIME_FILES = [(source, fmt) for source in Source for fmt in (Format.YAML, Format.JSONLD)]
+"""Source files resolved locally at runtime by generators (YAML for schema imports,
+JSONLD for context resolution). Drift here means generators silently use stale definitions."""
+
+
+@pytest.mark.network
+@pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
+def test_vendored_files_match_upstream(source, fmt):
+    """Detect drift between vendored files and their upstream w3id.org versions.
+
+    Generators resolve these files locally instead of fetching from the network.
+    If upstream changes without updating the vendored copies, generated output
+    will silently diverge from what users expect.
+    """
+    local_path = Path(LOCAL_PATH_FOR(source, fmt))
+    url = URL_FOR(source, fmt)
+
+    local_content = local_path.read_text()
+    response = requests.get(url, timeout=10)
+    assert response.ok, f"Failed to fetch {url}: {response.status_code}"
+
+    assert local_content == response.text, (
+        f"Vendored {local_path.name} differs from upstream {url}. "
+        "Update vendored files to match the current upstream release."
+    )
