@@ -451,6 +451,237 @@ arguments:</p>
 <li><p>nested slots are flattened to paths, e.g if Container has a slot persons, and Person has a slot name, then the path with be <code class="docutils literal notranslate"><span class="pre">persons_name</span></code></p></li>
 </ul>
 </section>
+<section id="customizing-multivalued-field-formatting">
+<h3>Customizing multivalued field formatting<a class="headerlink" href="#customizing-multivalued-field-formatting" title="Link to this heading">¶</a></h3>
+<p>By default, multivalued fields are serialized with square brackets and pipe delimiters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">value1</span><span class="o">|</span><span class="n">value2</span><span class="o">|</span><span class="n">value3</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>However, when working with spreadsheets, users often prefer typing values without brackets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">value1</span><span class="o">|</span><span class="n">value2</span><span class="o">|</span><span class="n">value3</span>
+</pre></div>
+</div>
+<p>You can customize the formatting using schema-level annotations:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/myschema</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">myschema</span>
+<span class="nt">annotations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">list_wrapper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span><span class="w">        </span><span class="c1"># removes brackets from all multivalued fields</span>
+<span class="w">  </span><span class="nt">list_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;|&quot;</span><span class="w">       </span><span class="c1"># delimiter between values (default)</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tags</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">categories</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Note: These annotations apply to ALL multivalued fields in the CSV/TSV output.
+This is because the underlying json-flattener library uses a single global
+configuration for list formatting.</p>
+<section id="available-annotations">
+<h4>Available annotations<a class="headerlink" href="#available-annotations" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Annotation</p></th>
+<th class="head"><p>Values</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">list_wrapper</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">curly</span></code>, <code class="docutils literal notranslate"><span class="pre">paren</span></code>, <code class="docutils literal notranslate"><span class="pre">none</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">square</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">square</span></code> uses <code class="docutils literal notranslate"><span class="pre">[a|b]</span></code>, <code class="docutils literal notranslate"><span class="pre">curly</span></code> uses <code class="docutils literal notranslate"><span class="pre">{a|b}</span></code>, <code class="docutils literal notranslate"><span class="pre">paren</span></code> uses <code class="docutils literal notranslate"><span class="pre">(a|b)</span></code>, <code class="docutils literal notranslate"><span class="pre">none</span></code> has no wrapper <code class="docutils literal notranslate"><span class="pre">a|b</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">list_delimiter</span></code></p></td>
+<td><p>any string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">|</span></code></p></td>
+<td><p>Character(s) used to separate list items</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">list_strip_whitespace</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>Strip whitespace around delimiters when loading and dumping (e.g., <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">|</span> <span class="pre">b</span></code> → <code class="docutils literal notranslate"><span class="pre">['a',</span> <span class="pre">'b']</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">refuse_delimiter_in_data</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>Raise an error before serializing if any multivalued field value contains the delimiter character. Prevents silent data corruption during round-tripping.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="cli-options">
+<h4>CLI options<a class="headerlink" href="#cli-options" title="Link to this heading">¶</a></h4>
+<p>You can override schema annotations using CLI options on <code class="docutils literal notranslate"><span class="pre">linkml-convert</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert<span class="w"> </span>-s<span class="w"> </span>schema.yaml<span class="w"> </span>-C<span class="w"> </span>Container<span class="w"> </span>-S<span class="w"> </span>items<span class="w"> </span>-t<span class="w"> </span>tsv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--list-wrapper<span class="w"> </span>none<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--list-delimiter<span class="w"> </span><span class="s2">&quot;|&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--list-strip-whitespace<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>input.yaml
+</pre></div>
+</div>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>CLI Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--list-wrapper</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">square</span></code>, <code class="docutils literal notranslate"><span class="pre">curly</span></code>, <code class="docutils literal notranslate"><span class="pre">paren</span></code>, or <code class="docutils literal notranslate"><span class="pre">none</span></code> - overrides schema annotation</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--list-delimiter</span></code></p></td>
+<td><p>Delimiter string - overrides schema annotation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--list-strip-whitespace</span></code> / <code class="docutils literal notranslate"><span class="pre">--no-list-strip-whitespace</span></code></p></td>
+<td><p>Strip whitespace from list values (default: strip)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--refuse-delimiter-in-data</span></code> / <code class="docutils literal notranslate"><span class="pre">--no-refuse-delimiter-in-data</span></code></p></td>
+<td><p>Raise an error if any multivalued value contains the delimiter (default: allow)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All options apply to both input (loading) and output (dumping):</p>
+<ul class="simple">
+<li><p><strong>On input</strong>: <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">|</span> <span class="pre">b</span> <span class="pre">|</span> <span class="pre">c</span></code> is parsed as <code class="docutils literal notranslate"><span class="pre">['a',</span> <span class="pre">'b',</span> <span class="pre">'c']</span></code> (stripped) or <code class="docutils literal notranslate"><span class="pre">['a</span> <span class="pre">',</span> <span class="pre">'</span> <span class="pre">b</span> <span class="pre">',</span> <span class="pre">'</span> <span class="pre">c']</span></code> (preserved)</p></li>
+<li><p><strong>On output</strong>: <code class="docutils literal notranslate"><span class="pre">['dog</span>&#160;&#160; <span class="pre">',</span> <span class="pre">'cat']</span></code> is written as <code class="docutils literal notranslate"><span class="pre">dog|cat</span></code> (stripped) or <code class="docutils literal notranslate"><span class="pre">dog</span>&#160;&#160; <span class="pre">|cat</span></code> (preserved)</p></li>
+</ul>
+</section>
+<section id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h4>
+<p><strong>Default behavior (square brackets):</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/default</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default_example</span>
+<span class="c1"># No annotations - uses default square wrapper</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">aliases</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>TSV output: <code class="docutils literal notranslate"><span class="pre">[Alice|Bob|Charlie]</span></code></p>
+<p><strong>No wrapper with pipe delimiter:</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/unwrapped</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unwrapped_example</span>
+<span class="nt">annotations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">list_wrapper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">  </span><span class="nt">list_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;|&quot;</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">aliases</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>TSV output: <code class="docutils literal notranslate"><span class="pre">Alice|Bob|Charlie</span></code></p>
+<p><strong>No wrapper with semicolon delimiter:</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://example.org/semicolon</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">semicolon_example</span>
+<span class="nt">annotations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">list_wrapper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">  </span><span class="nt">list_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;;&quot;</span>
+
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">categories</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>TSV output: <code class="docutils literal notranslate"><span class="pre">category1;category2;category3</span></code></p>
+</section>
+<section id="working-example">
+<h4>Working example<a class="headerlink" href="#working-example" title="Link to this heading">¶</a></h4>
+<p>To try this with existing test files in the repository, first compare the default output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert<span class="w"> </span>-s<span class="w"> </span>tests/linkml_runtime/test_loaders_dumpers/models/books_normalized.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-C<span class="w"> </span>Shop<span class="w"> </span>-S<span class="w"> </span>all_book_series<span class="w"> </span>-t<span class="w"> </span>tsv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/linkml_runtime/test_loaders_dumpers/input/books_normalized_01.yaml
+</pre></div>
+</div>
+<p>This produces default (square-bracketed) output like <code class="docutils literal notranslate"><span class="pre">[scifi|fantasy]</span></code>.</p>
+<p>To get unwrapped output, copy the schema and add the annotations block after <code class="docutils literal notranslate"><span class="pre">imports:</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/example</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
+
+<span class="nt">annotations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">list_wrapper</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">  </span><span class="nt">list_delimiter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;|&quot;</span>
+
+<span class="nt">imports</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+<span class="c1"># ... rest of schema</span>
+</pre></div>
+</div>
+<p>Then run with your modified schema:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert<span class="w"> </span>-s<span class="w"> </span>my_modified_schema.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-C<span class="w"> </span>Shop<span class="w"> </span>-S<span class="w"> </span>all_book_series<span class="w"> </span>-t<span class="w"> </span>tsv<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tests/linkml_runtime/test_loaders_dumpers/input/books_normalized_01.yaml
+</pre></div>
+</div>
+<p>This produces unwrapped output like <code class="docutils literal notranslate"><span class="pre">scifi|fantasy</span></code> (no brackets).</p>
+</section>
+<section id="loading-unwrapped-tsv-back-to-yaml">
+<h4>Loading unwrapped TSV back to YAML<a class="headerlink" href="#loading-unwrapped-tsv-back-to-yaml" title="Link to this heading">¶</a></h4>
+<p>The annotations also control how TSV data is parsed back into structured YAML.
+Given a TSV file with unwrapped pipe-delimited values:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>id</p></th>
+<th class="head"><p>name</p></th>
+<th class="head"><p>genres</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>S001</p></td>
+<td><p>Lord of the Rings</p></td>
+<td><p>fantasy</p></td>
+</tr>
+<tr class="row-odd"><td><p>S002</p></td>
+<td><p>The Culture Series</p></td>
+<td><p>scifi</p></td>
+</tr>
+<tr class="row-even"><td><p>S003</p></td>
+<td><p>Book of the New Sun</p></td>
+<td><p>scifi|fantasy</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Using a schema with unwrapped annotations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml-convert<span class="w"> </span>-s<span class="w"> </span>my_modified_schema.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-C<span class="w"> </span>Shop<span class="w"> </span>-S<span class="w"> </span>all_book_series<span class="w"> </span>-t<span class="w"> </span>yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>my_data.tsv
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">scifi|fantasy</span></code> value is correctly parsed as a list:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">all_book_series</span><span class="p">:</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">S001</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lord of the Rings</span>
+<span class="w">  </span><span class="nt">genres</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fantasy</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">S002</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The Culture Series</span>
+<span class="w">  </span><span class="nt">genres</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scifi</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">S003</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Book of the New Sun</span>
+<span class="w">  </span><span class="nt">genres</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scifi</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fantasy</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 <section id="inference-of-schemas-from-tabular-data">
 <h2>Inference of schemas from tabular data<a class="headerlink" href="#inference-of-schemas-from-tabular-data" title="Link to this heading">¶</a></h2>
@@ -518,6 +749,14 @@ arguments:</p>
 <li><a class="reference internal" href="#conventions-for-working-with-tabular-data">Conventions for working with tabular data</a></li>
 <li><a class="reference internal" href="#container-objects">Container objects</a></li>
 <li><a class="reference internal" href="#on-the-fly-denormalization">On the fly denormalization</a></li>
+<li><a class="reference internal" href="#customizing-multivalued-field-formatting">Customizing multivalued field formatting</a><ul>
+<li><a class="reference internal" href="#available-annotations">Available annotations</a></li>
+<li><a class="reference internal" href="#cli-options">CLI options</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#working-example">Working example</a></li>
+<li><a class="reference internal" href="#loading-unwrapped-tsv-back-to-yaml">Loading unwrapped TSV back to YAML</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#inference-of-schemas-from-tabular-data">Inference of schemas from tabular data</a></li>
