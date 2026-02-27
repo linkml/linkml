@@ -163,7 +163,7 @@
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
       "notes": [
-        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -3054,7 +3054,7 @@
     {
       "name": "extra_slots",
       "definition_uri": "https://w3id.org/linkml/extra_slots",
-      "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - \n  forbid all additional data (default) \n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n",
+      "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n",
       "examples": [
         {
           "value": "JsonObj(allowed=True)",
@@ -3088,12 +3088,12 @@
         },
         {
           "value": "JsonObj(range_expression=JsonObj(range='integer', required=True))",
-          "description": "Allow additional data if they are integers. \n`required` is meaningless in this context and ignored, since by definition all \"extra\" slots are optional.\n",
+          "description": "Allow additional data if they are integers.\n`required` is meaningless in this context and ignored, since by definition all \"extra\" slots are optional.\n",
           "@type": "Example"
         },
         {
           "value": "JsonObj(allowed=False, range_expression=JsonObj(range='string'))",
-          "description": "A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the \n`anonymous_slot_expression` will be ignored.\n",
+          "description": "A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the\n`anonymous_slot_expression` will be ignored.\n",
           "@type": "Example"
         }
       ],
@@ -6643,6 +6643,33 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "extra_slots_expression_range_expression",
+      "definition_uri": "https://w3id.org/linkml/range_expression",
+      "description": "A range that is described as a boolean expression combining existing ranges",
+      "comments": [
+        "one use for this is being able to describe a range using any_of expressions, for example to combine two enums"
+      ],
+      "in_subset": [
+        "SpecificationSubset"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "status": "testing",
+      "is_a": "range_expression",
+      "domain": "ExtraSlotsExpression",
+      "slot_uri": "https://w3id.org/linkml/range_expression",
+      "alias": "range_expression",
+      "owner": "ExtraSlotsExpression",
+      "domain_of": [
+        "ExtraSlotsExpression"
+      ],
+      "is_usage_slot": true,
+      "usage_slot_name": "range_expression",
+      "range": "AnonymousSlotExpression",
+      "inlined": true,
+      "inlined_as_list": true,
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "UnitOfMeasure_exact_mappings",
       "definition_uri": "https://w3id.org/linkml/exact_mappings",
       "description": "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT",
@@ -7379,7 +7406,7 @@
     {
       "name": "MatchQuery",
       "definition_uri": "https://w3id.org/linkml/MatchQuery",
-      "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.",
+      "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -7395,7 +7422,7 @@
     {
       "name": "ReachabilityQuery",
       "definition_uri": "https://w3id.org/linkml/ReachabilityQuery",
-      "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.",
+      "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.",
       "in_subset": [
         "SpecificationSubset"
       ],
@@ -8620,14 +8647,14 @@
     {
       "name": "ExtraSlotsExpression",
       "definition_uri": "https://w3id.org/linkml/ExtraSlotsExpression",
-      "description": "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class. \nSee `extra_slots` for usage examples.\n",
+      "description": "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class.\nSee `extra_slots` for usage examples.\n",
       "from_schema": "https://w3id.org/linkml/meta",
       "mixins": [
         "Expression"
       ],
       "slots": [
         "allowed",
-        "range_expression"
+        "extra_slots_expression_range_expression"
       ],
       "slot_usage": {},
       "class_uri": "https://w3id.org/linkml/ExtraSlotsExpression",

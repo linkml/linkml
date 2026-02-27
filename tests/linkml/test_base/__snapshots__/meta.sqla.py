@@ -524,7 +524,7 @@ class EnumBinding(Base):
 
 class MatchQuery(Base):
     """
-    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.
     """
     __tablename__ = 'match_query'
 
@@ -543,7 +543,7 @@ class MatchQuery(Base):
 
 class ReachabilityQuery(Base):
     """
-    A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+    A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.
     """
     __tablename__ = 'reachability_query'
 
@@ -2158,7 +2158,7 @@ class TypeMapping(Base):
 class ExtraSlotsExpression(Base):
     """
     An expression that defines how to handle additional data in an instance of class
-beyond the slots/attributes defined for that class. 
+beyond the slots/attributes defined for that class.
 See `extra_slots` for usage examples.
 
     """
@@ -2166,8 +2166,8 @@ See `extra_slots` for usage examples.
 
     id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     allowed = Column(Boolean())
-    range_expression_id = Column(Integer(), ForeignKey('anonymous_class_expression.id'))
-    range_expression = relationship("AnonymousClassExpression", uselist=False, foreign_keys=[range_expression_id])
+    range_expression_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
+    range_expression = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[range_expression_id])
     
 
     def __repr__(self):
