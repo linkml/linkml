@@ -607,6 +607,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_type</span><span class="p">(</span><span class="n">typ</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">enm</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_enum</span><span class="p">(</span><span class="n">enm</span><span class="p">)</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_disjoint_children</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mergeimports</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
@@ -1375,6 +1377,27 @@
                 <span class="c1"># without reasoning</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
                     <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">sub_pred</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_disjoint_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an ``owl:AllDisjointClasses`` axiom for the immediate subclasses of *cls*</span>
+<span class="sd">        when ``children_are_mutually_disjoint`` is set on the class.</span>
+
+<span class="sd">        The axiom is suppressed when fewer than two qualifying children exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">children_are_mutually_disjoint</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">AllDisjointClasses</span><span class="p">))</span>
+        <span class="n">listnode</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="n">Collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">listnode</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">children</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">members</span><span class="p">,</span> <span class="n">listnode</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="n">URIRef</span> <span class="o">|</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">ClassRule</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_swrl</span><span class="p">:</span>
