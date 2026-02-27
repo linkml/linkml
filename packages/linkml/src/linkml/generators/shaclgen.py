@@ -266,10 +266,12 @@ class ShaclGenerator(Generator):
         func(SH["in"], pv_node)
 
     def _add_type(self, func: Callable, r: ElementName) -> None:
-        func(SH.nodeKind, SH.Literal)
         sv = self.schemaview
         rt = sv.get_type(r)
-        if rt.uri:
+        if rt.uri and rt.uri == "xsd:anyURI":
+            func(SH.nodeKind, SH.IRI)
+        elif rt.uri:
+            func(SH.nodeKind, SH.Literal)
             func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
             if rt.pattern:
                 func(SH.pattern, Literal(rt.pattern))

@@ -210,6 +210,8 @@ class OwlSchemaGenerator(Generator):
             self.add_type(typ)
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
+        for cls in sv.all_classes(imports=mergeimports).values():
+            self._add_disjoint_children(cls)
 
         if not mergeimports:
             for imp in schema.imports:
@@ -975,6 +977,27 @@ class OwlSchemaGenerator(Generator):
                 # without reasoning
                 if not isinstance(pv_node, Literal):
                     g.add((pv_node, sub_pred, enum_uri))
+
+    def _add_disjoint_children(self, cls: ClassDefinition) -> None:
+        """Emit an ``owl:AllDisjointClasses`` axiom for the immediate subclasses of *cls*
+        when ``children_are_mutually_disjoint`` is set on the class.
+
+        The axiom is suppressed when fewer than two qualifying children exist.
+        """
+        if not cls.children_are_mutually_disjoint:
+            return
+        sv = self.schemaview
+        children = sorted(
+            [c for c in sv.all_classes(imports=self.mergeimports).values() if c.is_a == cls.name],
+            key=lambda c: c.name,
+        )
+        if len(children) < 2:
+            return
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.AllDisjointClasses))
+        listnode = BNode()
+        Collection(self.graph, listnode, [self._class_uri(c.name) for c in children])
+        self.graph.add((node, OWL.members, listnode))
 
     def _add_rule(self, subject: URIRef | BNode, rule: ClassRule, cls: ClassDefinition):
         if not self.use_swrl:
