@@ -99,7 +99,7 @@ class RDFLibDumper(Dumper):
             t = schemaview.get_type(target_type)
             dt_uri = t.uri
             if dt_uri:
-                if dt_uri == "rdfs:Resource":
+                if dt_uri in ("rdfs:Resource", "xsd:anyURI"):
                     return URIRef(schemaview.expand_curie(element))
                 elif dt_uri == "xsd:string":
                     return Literal(element)
