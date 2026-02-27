@@ -23,42 +23,42 @@
 linkml:meta a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     dcterms:title "LinkML Schema Metamodel" ;
-    sh:declare [ sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ;
-            sh:prefix "qudt" ],
-        [ sh:namespace "http://www.w3.org/ns/shacl#"^^xsd:anyURI ;
-            sh:prefix "sh" ],
-        [ sh:namespace "http://www.geneontology.org/formats/oboInOwl#"^^xsd:anyURI ;
-            sh:prefix "OIO" ],
-        [ sh:namespace "http://www.w3.org/2003/11/swrl#"^^xsd:anyURI ;
-            sh:prefix "swrl" ],
-        [ sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
-            sh:prefix "skos" ],
-        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
-            sh:prefix "linkml" ],
-        [ sh:namespace "http://www.w3.org/2008/05/skos-xl#"^^xsd:anyURI ;
-            sh:prefix "skosxl" ],
-        [ sh:namespace "http://schema.org/"^^xsd:anyURI ;
-            sh:prefix "schema" ],
-        [ sh:namespace "http://purl.org/ontology/bibo/"^^xsd:anyURI ;
+    sh:declare [ sh:namespace "http://purl.org/ontology/bibo/"^^xsd:anyURI ;
             sh:prefix "bibo" ],
-        [ sh:namespace "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#"^^xsd:anyURI ;
-            sh:prefix "NCIT" ],
-        [ sh:namespace "http://purl.org/linked-data/cube#"^^xsd:anyURI ;
-            sh:prefix "qb" ],
         [ sh:namespace "http://semanticscience.org/resource/SIO_"^^xsd:anyURI ;
             sh:prefix "SIO" ],
-        [ sh:namespace "https://vocab.org/vann/"^^xsd:anyURI ;
-            sh:prefix "vann" ],
         [ sh:namespace "http://rdf.cdisc.org/mms#"^^xsd:anyURI ;
             sh:prefix "cdisc" ],
-        [ sh:namespace "http://purl.org/pav/"^^xsd:anyURI ;
-            sh:prefix "pav" ],
+        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+            sh:prefix "linkml" ],
         [ sh:namespace "http://www.w3.org/ns/prov#"^^xsd:anyURI ;
             sh:prefix "prov" ],
+        [ sh:namespace "http://www.w3.org/ns/shacl#"^^xsd:anyURI ;
+            sh:prefix "sh" ],
+        [ sh:namespace "http://purl.org/pav/"^^xsd:anyURI ;
+            sh:prefix "pav" ],
+        [ sh:namespace "http://www.w3.org/2003/11/swrl#"^^xsd:anyURI ;
+            sh:prefix "swrl" ],
+        [ sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ;
+            sh:prefix "qudt" ],
+        [ sh:namespace "http://schema.org/"^^xsd:anyURI ;
+            sh:prefix "schema" ],
+        [ sh:namespace "http://www.w3.org/2008/05/skos-xl#"^^xsd:anyURI ;
+            sh:prefix "skosxl" ],
+        [ sh:namespace "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#"^^xsd:anyURI ;
+            sh:prefix "NCIT" ],
         [ sh:namespace "http://open-services.net/ns/core#"^^xsd:anyURI ;
             sh:prefix "oslc" ],
         [ sh:namespace "http://www.w3.org/2002/07/owl#"^^xsd:anyURI ;
-            sh:prefix "owl" ] ;
+            sh:prefix "owl" ],
+        [ sh:namespace "http://purl.org/linked-data/cube#"^^xsd:anyURI ;
+            sh:prefix "qb" ],
+        [ sh:namespace "https://vocab.org/vann/"^^xsd:anyURI ;
+            sh:prefix "vann" ],
+        [ sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
+            sh:prefix "skos" ],
+        [ sh:namespace "http://www.geneontology.org/formats/oboInOwl#"^^xsd:anyURI ;
+            sh:prefix "OIO" ] ;
     linkml:classes linkml:AltDescription,
         linkml:Annotatable,
         linkml:Annotation,
@@ -244,6 +244,7 @@ refer to the official URI for each construct, e.g.
         linkml:extension_value,
         linkml:extensions,
         linkml:extra_slots,
+        linkml:extra_slots_expression_range_expression,
         linkml:followed_by,
         linkml:framework_key,
         linkml:from_schema,
@@ -1277,47 +1278,66 @@ Note that this does *not* define the constraints that are placed on additional s
 
 Possible values:
 - `allowed: true` - allow all additional data
-- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - 
-  forbid all additional data (default) 
+- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -
+  forbid all additional data (default)
 - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
 """ ;
     linkml:domain linkml:ClassDefinition ;
     linkml:domain_of linkml:ClassDefinition ;
     linkml:examples [ a linkml:Example ;
-            skos:example "JsonObj(allowed=True)" ;
-            linkml:description "Allow all additional data" ],
-        [ a linkml:Example ;
-            skos:example "JsonObj(allowed=False)" ;
-            linkml:description "Forbid any additional data" ],
-        [ a linkml:Example ;
-            skos:example "JsonObj(allowed=False, range_expression=JsonObj(range='string'))" ;
-            linkml:description """A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the 
-`anonymous_slot_expression` will be ignored.
-""" ],
-        [ a linkml:Example ;
             skos:example "JsonObj(range_expression=JsonObj(range='string'))" ;
             linkml:description "Allow additional data that are strings" ],
         [ a linkml:Example ;
-            skos:example "JsonObj(range_expression=JsonObj(range='integer', required=True))" ;
-            linkml:description """Allow additional data if they are integers. 
-`required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
-""" ],
-        [ a linkml:Example ;
-            skos:example "JsonObj(range_expression=JsonObj(range='AClassDefinition'))" ;
-            linkml:description "Allow additional data if they are instances of the class definition \"AClassDefinition\"" ],
+            skos:example "JsonObj(range_expression=JsonObj(any_of=[{'range': 'string'}, {'range': 'integer'}]))" ;
+            linkml:description "allow additional data if they are either strings or integers" ],
         [ a linkml:Example ;
             skos:example "JsonObj(range_expression=JsonObj(range='integer', multivalued=True, maximum_cardinality=5))" ;
             linkml:description """Allow additional data if they are lists of integers of at most length 5.
 Note that this does *not* mean that a maximum of 5 extra slots are allowed.
 """ ],
         [ a linkml:Example ;
-            skos:example "JsonObj(range_expression=JsonObj(any_of=[{'range': 'string'}, {'range': 'integer'}]))" ;
-            linkml:description "allow additional data if they are either strings or integers" ] ;
+            skos:example "JsonObj(range_expression=JsonObj(range='integer', required=True))" ;
+            linkml:description """Allow additional data if they are integers.
+`required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
+""" ],
+        [ a linkml:Example ;
+            skos:example "JsonObj(allowed=False, range_expression=JsonObj(range='string'))" ;
+            linkml:description """A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the
+`anonymous_slot_expression` will be ignored.
+""" ],
+        [ a linkml:Example ;
+            skos:example "JsonObj(allowed=True)" ;
+            linkml:description "Allow all additional data" ],
+        [ a linkml:Example ;
+            skos:example "JsonObj(allowed=False)" ;
+            linkml:description "Forbid any additional data" ],
+        [ a linkml:Example ;
+            skos:example "JsonObj(range_expression=JsonObj(range='AClassDefinition'))" ;
+            linkml:description "Allow additional data if they are instances of the class definition \"AClassDefinition\"" ] ;
     linkml:inlined true ;
     linkml:inlined_as_list true ;
     linkml:owner linkml:ClassDefinition ;
     linkml:range linkml:ExtraSlotsExpression ;
     linkml:slot_uri "https://w3id.org/linkml/extra_slots"^^xsd:anyURI .
+
+linkml:extra_slots_expression_range_expression a linkml:SlotDefinition ;
+    bibo:status "testing"^^xsd:anyURI ;
+    OIO:inSubset linkml:SpecificationSubset ;
+    skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+    skos:note "one use for this is being able to describe a range using any_of expressions, for example to combine two enums" ;
+    skos:prefLabel "range_expression" ;
+    linkml:definition_uri "https://w3id.org/linkml/range_expression"^^xsd:anyURI ;
+    linkml:description "A range that is described as a boolean expression combining existing ranges" ;
+    linkml:domain linkml:ExtraSlotsExpression ;
+    linkml:domain_of linkml:ExtraSlotsExpression ;
+    linkml:inlined true ;
+    linkml:inlined_as_list true ;
+    linkml:is_a linkml:range_expression ;
+    linkml:is_usage_slot true ;
+    linkml:owner linkml:ExtraSlotsExpression ;
+    linkml:range linkml:AnonymousSlotExpression ;
+    linkml:slot_uri "https://w3id.org/linkml/range_expression"^^xsd:anyURI ;
+    linkml:usage_slot_name "range_expression" .
 
 linkml:followed_by a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
@@ -1739,9 +1759,9 @@ linkml:maximum_number_dimensions a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
     skos:note "maximum_number_dimensions cannot be less than minimum_number_dimensions" ;
     linkml:any_of [ a linkml:AnonymousSlotExpression ;
-            linkml:range linkml:integer ],
+            linkml:range linkml:boolean ],
         [ a linkml:AnonymousSlotExpression ;
-            linkml:range linkml:boolean ] ;
+            linkml:range linkml:integer ] ;
     linkml:definition_uri "https://w3id.org/linkml/maximum_number_dimensions"^^xsd:anyURI ;
     linkml:description "maximum number of dimensions in the array, or False if explicitly no maximum. If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this value is set to False" ;
     linkml:domain linkml:ArrayExpression ;
@@ -4029,25 +4049,12 @@ linkml:values_from a linkml:SlotDefinition ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri "https://w3id.org/linkml/values_from"^^xsd:anyURI .
 
-linkml:ExtraSlotsExpression a linkml:ClassDefinition ;
-    skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/ExtraSlotsExpression"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/ExtraSlotsExpression"^^xsd:anyURI ;
-    linkml:description """An expression that defines how to handle additional data in an instance of class
-beyond the slots/attributes defined for that class. 
-See `extra_slots` for usage examples.
-""" ;
-    linkml:mixins linkml:Expression ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:allowed,
-        linkml:range_expression .
-
 linkml:MatchQuery a linkml:ClassDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
     skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
     linkml:class_uri "https://w3id.org/linkml/MatchQuery"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/MatchQuery"^^xsd:anyURI ;
-    linkml:description "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts." ;
+    linkml:description "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts." ;
     linkml:slot_usage [ ] ;
     linkml:slots linkml:identifier_pattern,
         linkml:source_ontology .
@@ -4498,78 +4505,18 @@ linkml:unit a linkml:SlotDefinition ;
     linkml:range linkml:UnitOfMeasure ;
     linkml:slot_uri "http://qudt.org/schema/qudt/unit"^^xsd:anyURI .
 
-linkml:AnonymousSlotExpression a linkml:ClassDefinition ;
+linkml:ExtraSlotsExpression a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/AnonymousSlotExpression"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/AnonymousSlotExpression"^^xsd:anyURI ;
-    linkml:is_a linkml:AnonymousExpression ;
-    linkml:mixins linkml:SlotExpression ;
+    linkml:class_uri "https://w3id.org/linkml/ExtraSlotsExpression"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/ExtraSlotsExpression"^^xsd:anyURI ;
+    linkml:description """An expression that defines how to handle additional data in an instance of class
+beyond the slots/attributes defined for that class.
+See `extra_slots` for usage examples.
+""" ;
+    linkml:mixins linkml:Expression ;
     linkml:slot_usage [ ] ;
-    linkml:slots linkml:aliases,
-        linkml:all_members,
-        linkml:alt_descriptions,
-        linkml:annotations,
-        linkml:array,
-        linkml:bindings,
-        linkml:broad_mappings,
-        linkml:categories,
-        linkml:close_mappings,
-        linkml:comments,
-        linkml:contributors,
-        linkml:created_by,
-        linkml:created_on,
-        linkml:deprecated,
-        linkml:deprecated_element_has_exact_replacement,
-        linkml:deprecated_element_has_possible_replacement,
-        linkml:description,
-        linkml:enum_range,
-        linkml:equals_expression,
-        linkml:equals_number,
-        linkml:equals_string,
-        linkml:equals_string_in,
-        linkml:exact_cardinality,
-        linkml:exact_mappings,
-        linkml:examples,
-        linkml:extensions,
-        linkml:from_schema,
-        linkml:has_member,
-        linkml:implicit_prefix,
-        linkml:imported_from,
-        linkml:in_language,
-        linkml:in_subset,
-        linkml:inlined,
-        linkml:inlined_as_list,
-        linkml:keywords,
-        linkml:last_updated_on,
-        linkml:mappings,
-        linkml:maximum_cardinality,
-        linkml:maximum_value,
-        linkml:minimum_cardinality,
-        linkml:minimum_value,
-        linkml:modified_by,
-        linkml:multivalued,
-        linkml:narrow_mappings,
-        linkml:notes,
-        linkml:pattern,
-        linkml:range,
-        linkml:range_expression,
-        linkml:rank,
-        linkml:recommended,
-        linkml:related_mappings,
-        linkml:required,
-        linkml:see_also,
-        linkml:slot_expression_all_of,
-        linkml:slot_expression_any_of,
-        linkml:slot_expression_exactly_one_of,
-        linkml:slot_expression_none_of,
-        linkml:source,
-        linkml:status,
-        linkml:structured_aliases,
-        linkml:structured_pattern,
-        linkml:title,
-        linkml:todos,
-        linkml:unit,
-        linkml:value_presence .
+    linkml:slots linkml:allowed,
+        linkml:extra_slots_expression_range_expression .
 
 linkml:Setting a linkml:ClassDefinition ;
     OIO:inSubset linkml:SpecificationSubset ;
@@ -4725,6 +4672,79 @@ linkml:name a linkml:SlotDefinition ;
     linkml:range linkml:string ;
     linkml:required true ;
     linkml:slot_uri "http://www.w3.org/2000/01/rdf-schema#label"^^xsd:anyURI .
+
+linkml:AnonymousSlotExpression a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/AnonymousSlotExpression"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/AnonymousSlotExpression"^^xsd:anyURI ;
+    linkml:is_a linkml:AnonymousExpression ;
+    linkml:mixins linkml:SlotExpression ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:aliases,
+        linkml:all_members,
+        linkml:alt_descriptions,
+        linkml:annotations,
+        linkml:array,
+        linkml:bindings,
+        linkml:broad_mappings,
+        linkml:categories,
+        linkml:close_mappings,
+        linkml:comments,
+        linkml:contributors,
+        linkml:created_by,
+        linkml:created_on,
+        linkml:deprecated,
+        linkml:deprecated_element_has_exact_replacement,
+        linkml:deprecated_element_has_possible_replacement,
+        linkml:description,
+        linkml:enum_range,
+        linkml:equals_expression,
+        linkml:equals_number,
+        linkml:equals_string,
+        linkml:equals_string_in,
+        linkml:exact_cardinality,
+        linkml:exact_mappings,
+        linkml:examples,
+        linkml:extensions,
+        linkml:from_schema,
+        linkml:has_member,
+        linkml:implicit_prefix,
+        linkml:imported_from,
+        linkml:in_language,
+        linkml:in_subset,
+        linkml:inlined,
+        linkml:inlined_as_list,
+        linkml:keywords,
+        linkml:last_updated_on,
+        linkml:mappings,
+        linkml:maximum_cardinality,
+        linkml:maximum_value,
+        linkml:minimum_cardinality,
+        linkml:minimum_value,
+        linkml:modified_by,
+        linkml:multivalued,
+        linkml:narrow_mappings,
+        linkml:notes,
+        linkml:pattern,
+        linkml:range,
+        linkml:range_expression,
+        linkml:rank,
+        linkml:recommended,
+        linkml:related_mappings,
+        linkml:required,
+        linkml:see_also,
+        linkml:slot_expression_all_of,
+        linkml:slot_expression_any_of,
+        linkml:slot_expression_exactly_one_of,
+        linkml:slot_expression_none_of,
+        linkml:source,
+        linkml:status,
+        linkml:structured_aliases,
+        linkml:structured_pattern,
+        linkml:title,
+        linkml:todos,
+        linkml:unit,
+        linkml:value_presence .
 
 linkml:DimensionExpression a linkml:ClassDefinition ;
     bibo:status "testing"^^xsd:anyURI ;
@@ -5290,7 +5310,7 @@ linkml:ReachabilityQuery a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/meta"^^xsd:anyURI ;
     linkml:class_uri "https://w3id.org/linkml/ReachabilityQuery"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/ReachabilityQuery"^^xsd:anyURI ;
-    linkml:description "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types." ;
+    linkml:description "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types." ;
     linkml:slot_usage [ ] ;
     linkml:slots linkml:include_self,
         linkml:is_direct,
@@ -5314,13 +5334,13 @@ linkml:UnitOfMeasure a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
     skos:mappingRelation qudt:Unit ;
     linkml:any_of [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:exact_mappings ],
-        [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:ucum_code ],
-        [ a linkml:AnonymousClassExpression ;
             linkml:slot_conditions linkml:iec61360code ],
         [ a linkml:AnonymousClassExpression ;
-            linkml:slot_conditions linkml:symbol ] ;
+            linkml:slot_conditions linkml:symbol ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:exact_mappings ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:ucum_code ] ;
     linkml:class_uri "http://qudt.org/schema/qudt/Unit"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/UnitOfMeasure"^^xsd:anyURI ;
     linkml:description "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension)." ;
@@ -6300,7 +6320,7 @@ linkml:CommonMetadata a linkml:ClassDefinition ;
         linkml:todos .
 
 linkml:string a linkml:TypeDefinition ;
-    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
     skos:exactMatch schema1:Text ;
     skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
     linkml:base "str" ;
