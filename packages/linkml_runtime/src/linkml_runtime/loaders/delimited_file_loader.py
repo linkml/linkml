@@ -93,7 +93,11 @@ class DelimitedFileLoader(Loader, ABC):
             csv_list_markers=lc.list_markers,
             csv_inner_delimiter=lc.inner_delimiter,
         )
-        objs = unflatten_from_csv(input, config=config, **kwargs)
+        if isinstance(input, str):
+            with open(input) as f:
+                objs = unflatten_from_csv(f, config=config, **kwargs)
+        else:
+            objs = unflatten_from_csv(input, config=config, **kwargs)
 
         if lc.strip_whitespace:
             objs = [strip_whitespace_from_lists(obj) for obj in objs]

@@ -111,7 +111,9 @@ def test_default_pattern_materialization_true(input_path, tmp_path):
         "Command failed when `--materialize` is True but user also used "
         "`--no-materialize-attributes` and `--no-materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
+
     assert "pattern" not in yobj["slots"]["height"]
     assert "pattern" not in yobj["slots"]["weight"]
 
@@ -133,7 +135,9 @@ def test_default_pattern_materialization_true(input_path, tmp_path):
         "Command failed when `--materialize` is True and user also used "
         "`--materialize-attributes` and `--materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
+
     assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
     assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
 
@@ -169,7 +173,8 @@ def test_default_pattern_materialization_false(input_path, tmp_path):
         "Command failed when `--no-materialize` is True but user also used "
         "`--materialize-attributes` and `--materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
     assert yobj["slots"]["height"]["pattern"] == "\\d+[\\.\\d+] (centimeter|meter|inch)"
     assert yobj["slots"]["weight"]["pattern"] == "\\d+[\\.\\d+] (kg|g|lbs|stone)"
 
@@ -191,6 +196,7 @@ def test_default_pattern_materialization_false(input_path, tmp_path):
         "Command failed when `--no-materialize` is True and user also used "
         "`--no-materialize-attributes` and `--no-materialize-patterns`."
     )
-    yobj = yaml.safe_load(open(yaml_output_path))
+    with open(yaml_output_path) as f:
+        yobj = yaml.safe_load(f)
     assert "pattern" not in yobj["slots"]["height"]
     assert "pattern" not in yobj["slots"]["weight"]
