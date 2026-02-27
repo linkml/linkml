@@ -50,7 +50,6 @@ JSONLD = """
 }"""
 
 
-@pytest.mark.network
 def test_annotation_extensions():
     """Test that annotation extensions are properly serialized"""
     s = RDFGenerator(schema, mergeimports=False).serialize()
