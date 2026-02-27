@@ -282,10 +282,10 @@ linkml:mappings a linkml:SchemaDefinition,
             sh:prefix "skos" ],
         [ sh:namespace "http://purl.obolibrary.org/obo/IAO_"^^xsd:anyURI ;
             sh:prefix "IAO" ],
-        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
-            sh:prefix "linkml" ],
         [ sh:namespace "http://www.geneontology.org/formats/oboInOwl#"^^xsd:anyURI ;
-            sh:prefix "OIO" ] ;
+            sh:prefix "OIO" ],
+        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+            sh:prefix "linkml" ] ;
     linkml:default_curi_maps "semweb_context" ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;
