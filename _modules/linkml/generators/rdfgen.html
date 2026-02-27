@@ -410,7 +410,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span> <span class="k">as</span> <span class="n">rdflib_Parser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">plugins</span> <span class="k">as</span> <span class="n">rdflib_plugins</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">METAMODEL_CONTEXT_URI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">LOCAL_METAMODEL_LDCONTEXT_FILE</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.jsonldgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">JSONLDGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
@@ -451,6 +451,7 @@
             <span class="nb">format</span><span class="o">=</span><span class="n">JSONLDGenerator</span><span class="o">.</span><span class="n">valid_formats</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_metadata</span><span class="p">,</span>
             <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
+            <span class="n">metamodel_context</span><span class="o">=</span><span class="n">LOCAL_METAMODEL_LDCONTEXT_FILE</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># Iterate over permissible text strings making them URI compatible</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">gen</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -489,10 +490,10 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--output&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Output file name&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--context&quot;</span><span class="p">,</span>
-    <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">METAMODEL_CONTEXT_URI</span><span class="p">],</span>
+    <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="n">LOCAL_METAMODEL_LDCONTEXT_FILE</span><span class="p">],</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;JSONLD context file (default: </span><span class="si">{</span><span class="n">METAMODEL_CONTEXT_URI</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;JSONLD context file (default: vendored meta.context.jsonld)&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
