@@ -7,14 +7,14 @@
 linkml:types a linkml:SchemaDefinition ;
     dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
     dcterms:title "Core LinkML metamodel types" ;
-    sh:declare [ sh:namespace "http://www.w3.org/ns/shex#"^^xsd:anyURI ;
-            sh:prefix "shex" ],
-        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+    sh:declare [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
             sh:prefix "linkml" ],
-        [ sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
-            sh:prefix "xsd" ],
+        [ sh:namespace "http://www.w3.org/ns/shex#"^^xsd:anyURI ;
+            sh:prefix "shex" ],
         [ sh:namespace "http://schema.org/"^^xsd:anyURI ;
-            sh:prefix "schema" ] ;
+            sh:prefix "schema" ],
+        [ sh:namespace "http://www.w3.org/2001/XMLSchema#"^^xsd:anyURI ;
+            sh:prefix "xsd" ] ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;
     linkml:description "Shared type definitions for the core LinkML mode and metamodel" ;
