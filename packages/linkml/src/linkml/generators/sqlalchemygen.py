@@ -13,9 +13,10 @@ from sqlalchemy import Enum
 from linkml._version import __version__
 from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
+from linkml.generators.sqlalchemy.sqlalchemy_declarative_2x_template import sqlalchemy_declarative_2x_template_str
 from linkml.generators.sqlalchemy.sqlalchemy_declarative_template import sqlalchemy_declarative_template_str
 from linkml.generators.sqlalchemy.sqlalchemy_imperative_template import sqlalchemy_imperative_template_str
-from linkml.generators.sqltablegen import SQLTableGenerator
+from linkml.generators.sqltablegen import SQL_TYPE_TO_PYTHON_TYPE, SQLTableGenerator
 from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model import Annotation, ClassDefinition, ClassDefinitionName, SchemaDefinition
@@ -29,6 +30,7 @@ logger = logging.getLogger(__name__)
 class TemplateEnum(Enum):
     DECLARATIVE = "declarative"
     IMPERATIVE = "imperative"
+    DECLARATIVE_2X = "declarative_2x"
 
 
 @dataclass
@@ -80,6 +82,8 @@ class SQLAlchemyGenerator(Generator):
             template_str = sqlalchemy_imperative_template_str
         elif template == TemplateEnum.DECLARATIVE:
             template_str = sqlalchemy_declarative_template_str
+        elif template == TemplateEnum.DECLARATIVE_2X:
+            template_str = sqlalchemy_declarative_2x_template_str
         else:
             raise Exception(f"Unknown template type: {template}")
         template_obj = Template(template_str)
@@ -109,6 +113,7 @@ class SQLAlchemyGenerator(Generator):
             no_model_import=no_model_import,
             is_join_table=lambda c: any(tag for tag in c.annotations.keys() if tag == "linkml:derived_from"),
             classes=rel_schema_classes_ordered,
+            python_type=lambda sql_repr: SQL_TYPE_TO_PYTHON_TYPE.get(sql_repr, "str"),
         )
         logger.debug(f"# Generated code:\n{code}")
         return code
@@ -127,7 +132,7 @@ class SQLAlchemyGenerator(Generator):
         """
         Generates and compiles SQL Alchemy bindings
 
-        - If template is DECLARATIVE, then a single python module with classes is generated
+        - If template is DECLARATIVE or DECLARATIVE_2X, then a single python module with classes is generated
         - If template is IMPERATIVE, only mappings are generated
              - if compile_python_dataclasses is True then a standard datamodel is generated
 
@@ -142,7 +147,7 @@ class SQLAlchemyGenerator(Generator):
         if model_path is None:
             model_path = self.schema.name
 
-        if template == TemplateEnum.DECLARATIVE:
+        if template in (TemplateEnum.DECLARATIVE, TemplateEnum.DECLARATIVE_2X):
             sqla_code = self.generate_sqla(model_path=None, no_model_import=True, template=template, **kwargs)
             return compile_python(sqla_code, package_path=model_path)
         elif compile_python_dataclasses:
@@ -211,16 +216,27 @@ class SQLAlchemyGenerator(Generator):
     show_default=True,
     help="Emit FK declarations",
 )
+@click.option(
+    "--sqla-style",
+    type=click.Choice(["1", "2"]),
+    default=None,
+    help="SQLAlchemy style to generate (1 or 2). Defaults to 1. Only applies in declarative mode.",
+)
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="sqla")
-def cli(yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, **args):
+def cli(yamlfile, declarative, generate_classes, pydantic, use_foreign_keys=True, sqla_style=None, **args):
     """Generate SQL DDL representation"""
+    if sqla_style and not declarative:
+        raise click.UsageError("--sqla-style only applies in declarative mode (remove --no-declarative)")
     if pydantic:
         pygen = PydanticGenerator(yamlfile)
         print(pygen.serialize())
     gen = SQLAlchemyGenerator(yamlfile, **args)
     if declarative:
-        t = TemplateEnum.DECLARATIVE
+        if sqla_style == "2":
+            t = TemplateEnum.DECLARATIVE_2X
+        else:
+            t = TemplateEnum.DECLARATIVE
     else:
         t = TemplateEnum.IMPERATIVE
     if use_foreign_keys:
