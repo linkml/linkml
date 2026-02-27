@@ -164,7 +164,7 @@ def test_allow_null_for_optional_enums_without_flag(cli_runner, json_data_file):
     """
     data = [
         {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
-        {"id": "P:002", "name": "Bob",   "gender": ""},   # empty — ERROR without flag
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty — ERROR without flag
     ]
     data_path = json_data_file(data)
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
@@ -181,8 +181,8 @@ def test_allow_null_for_optional_enums_with_flag(cli_runner, json_data_file):
     """
     data = [
         {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
-        {"id": "P:002", "name": "Bob",   "gender": ""},   # empty — WARN with flag
-        {"id": "P:003", "name": "Carol", "gender": ""},   # empty — WARN with flag
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty — WARN with flag
+        {"id": "P:003", "name": "Carol", "gender": ""},  # empty — WARN with flag
     ]
     data_path = json_data_file(data)
     result = cli_runner.invoke(
@@ -203,7 +203,7 @@ def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_d
     """
     data = [
         {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
-        {"id": "P:002", "name": "Bob",   "gender": "cisgender man"},
+        {"id": "P:002", "name": "Bob", "gender": "cisgender man"},
     ]
     data_path = json_data_file(data)
     result = cli_runner.invoke(
