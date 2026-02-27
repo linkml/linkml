@@ -335,3 +335,293 @@ def test_multiple_prefix_options(input_path, cli_runner, tmp_path):
     # The prefix may or may not appear in the output depending on usage,
     # but the command should succeed
     assert rdf_out.exists()
+
+
+# -----------------------------------------------------------------------------
+# CLI tests for list formatting options (issue #3041)
+# -----------------------------------------------------------------------------
+
+LIST_FORMAT_SCHEMA = """
+id: https://example.org/test
+name: list_format_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+LIST_FORMAT_DATA = """
+items:
+  - id: "1"
+    tags:
+      - alpha
+      - beta
+      - gamma
+"""
+
+
+def test_list_wrapper_none(cli_runner, tmp_path):
+    """Test --list-wrapper none produces output without brackets."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    data_file.write_text(LIST_FORMAT_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-wrapper",
+            "none",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should have pipe-separated values without brackets
+    assert "alpha|beta|gamma" in content
+    assert "[alpha|beta|gamma]" not in content
+
+
+def test_list_wrapper_square(cli_runner, tmp_path):
+    """Test --list-wrapper square produces output with brackets."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    data_file.write_text(LIST_FORMAT_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-wrapper",
+            "square",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should have bracketed values
+    assert "[alpha|beta|gamma]" in content
+
+
+def test_list_delimiter(cli_runner, tmp_path):
+    """Test --list-delimiter uses the specified delimiter."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    data_file.write_text(LIST_FORMAT_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-wrapper",
+            "none",
+            "--list-delimiter",
+            ";",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Should use semicolon delimiter
+    assert "alpha;beta;gamma" in content
+    assert "alpha|beta|gamma" not in content
+
+
+def test_list_strip_whitespace_on_load(cli_runner, tmp_path):
+    """Test --list-strip-whitespace strips whitespace when loading TSV."""
+    schema_file = tmp_path / "schema.yaml"
+    tsv_file = tmp_path / "data.tsv"
+    output_file = tmp_path / "output.yaml"
+
+    schema_file.write_text(LIST_FORMAT_SCHEMA)
+    # TSV with whitespace around delimiters
+    tsv_file.write_text("id\ttags\n1\talpha | beta | gamma\n")
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-wrapper",
+            "none",
+            "--list-strip-whitespace",
+            "-t",
+            "yaml",
+            "-o",
+            str(output_file),
+            str(tsv_file),
+        ],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+
+    content = output_file.read_text()
+    # Whitespace should be stripped
+    assert "- alpha" in content
+    assert "- beta" in content
+    assert "- gamma" in content
+
+
+REFUSE_DELIMITER_SCHEMA = """
+id: https://example.org/test
+name: refuse_delimiter_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    tree_root: true
+    slots:
+      - items
+  Item:
+    slots:
+      - id
+      - tags
+
+slots:
+  items:
+    range: Item
+    multivalued: true
+    inlined_as_list: true
+  id:
+    identifier: true
+  tags:
+    range: string
+    multivalued: true
+"""
+
+REFUSE_DELIMITER_DATA = """
+items:
+  - id: "1"
+    tags:
+      - "safe"
+      - "has|pipe"
+"""
+
+
+def test_refuse_delimiter_in_data_cli(cli_runner, tmp_path):
+    """Test --refuse-delimiter-in-data flag raises error when data contains delimiter."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(REFUSE_DELIMITER_SCHEMA)
+    data_file.write_text(REFUSE_DELIMITER_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-wrapper",
+            "none",
+            "--refuse-delimiter-in-data",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code != 0
+    assert "list delimiter" in str(result.exception)
+
+
+def test_no_refuse_delimiter_in_data_cli(cli_runner, tmp_path):
+    """Test --no-refuse-delimiter-in-data flag allows data containing delimiter."""
+    schema_file = tmp_path / "schema.yaml"
+    data_file = tmp_path / "data.yaml"
+    output_file = tmp_path / "output.tsv"
+
+    schema_file.write_text(REFUSE_DELIMITER_SCHEMA)
+    data_file.write_text(REFUSE_DELIMITER_DATA)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "-s",
+            str(schema_file),
+            "-C",
+            "Container",
+            "-S",
+            "items",
+            "--list-wrapper",
+            "none",
+            "--no-refuse-delimiter-in-data",
+            "-t",
+            "tsv",
+            "-o",
+            str(output_file),
+            str(data_file),
+        ],
+    )
+    assert result.exit_code == 0
