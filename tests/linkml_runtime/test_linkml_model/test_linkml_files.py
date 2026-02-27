@@ -126,11 +126,7 @@ def test_fixed_meta_url():
     assert URL_FOR(Source.META, Format.JSONLD) == "https://w3id.org/linkml/meta.context.jsonld"
 
 
-VENDORED_RUNTIME_FILES = [
-    (source, fmt)
-    for source in Source
-    for fmt in (Format.YAML, Format.JSONLD)
-]
+VENDORED_RUNTIME_FILES = [(source, fmt) for source in Source for fmt in (Format.YAML, Format.JSONLD)]
 """Source files resolved locally at runtime by generators (YAML for schema imports,
 JSONLD for context resolution). Drift here means generators silently use stale definitions."""
 
