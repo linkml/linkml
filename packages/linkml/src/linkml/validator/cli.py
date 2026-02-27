@@ -137,9 +137,9 @@ def _is_null_enum_error(result, sv, target_class: str | None) -> bool:
     is_flag=True,
     default=False,
     help="Downgrade enum validation errors to warnings when the value is "
-         "null/empty and the slot is not required. Prevents 'None is not "
-         "one of [...]' and \"'' is not one of [...]\" errors for optional "
-         "enum slots.",
+    "null/empty and the slot is not required. Prevents 'None is not "
+    "one of [...]' and \"'' is not one of [...]\" errors for optional "
+    "enum slots.",
 )
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
@@ -180,6 +180,7 @@ def cli(
     # Only load SchemaView if the flag is set — avoids overhead otherwise
     if allow_null_for_optional_enums:
         from linkml_runtime import SchemaView
+
         sv = SchemaView(str(config.schema_path))
     else:
         sv = None
