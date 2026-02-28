@@ -17,6 +17,7 @@ from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
+from linkml.generators.sqlvalidationgen import SQLValidationGenerator
 
 __all__ = [
     "csvgen",
@@ -54,6 +55,7 @@ __all__ = [
     "ShExGenerator",
     "SQLAlchemyGenerator",
     "SQLTableGenerator",
+    "SQLValidationGenerator",
     "RDFGenerator",
 ]
 
