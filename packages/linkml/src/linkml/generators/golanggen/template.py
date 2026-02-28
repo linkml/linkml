@@ -133,12 +133,12 @@ class Import(Import_, GolangTemplateModel):
 
     Examples:
         Simple import:
-            >>> Import(module='fmt').render()
-            import "fmt"
+            >>> print(Import(module='fmt').render(), end='')
+            "fmt"
 
         Aliased import:
-            >>> Import(module='github.com/example/pkg', alias='mypkg').render()
-            import mypkg "github.com/example/pkg"
+            >>> print(Import(module='github.com/example/pkg', alias='mypkg').render(), end='')
+            mypkg "github.com/example/pkg"
     """
 
     template: ClassVar[str] = "imports.go.jinja"
