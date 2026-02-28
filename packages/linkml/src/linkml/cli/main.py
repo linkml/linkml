@@ -17,6 +17,7 @@ from linkml.generators.excelgen import cli as gen_excel
 from linkml.generators.golanggen import cli as gen_golang
 from linkml.generators.golrgen import cli as gen_golr_views
 from linkml.generators.graphqlgen import cli as gen_graphql
+from linkml.generators.solrgen import cli as gen_solr
 from linkml.generators.javagen import cli as gen_java
 from linkml.generators.jsonldcontextgen import cli as gen_jsonld_context
 from linkml.generators.jsonldgen import cli as gen_jsonld
@@ -100,6 +101,7 @@ generate.add_command(gen_graphviz, name="graphviz")
 generate.add_command(gen_golang, name="golang")
 generate.add_command(gen_golr_views, name="golr-views")
 generate.add_command(gen_graphql, name="graphql")
+generate.add_command(gen_solr, name="solr")
 generate.add_command(gen_java, name="java")
 generate.add_command(gen_jsonld, name="jsonld")
 generate.add_command(gen_json_schema, name="json-schema")
