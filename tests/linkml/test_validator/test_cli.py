@@ -148,3 +148,69 @@ data_sources:
     assert result.exception is None
     assert result.output == "No issues found\n"
     assert result.exit_code == 0
+
+
+# --- tests for --allow-null-for-optional-enums (dm-bip#233) ---
+# Uses the existing personinfo.yaml schema which has:
+#   - gender slot: range=GenderType enum, required=false (optional) ← perfect for our test
+#   - FamilialRelationshipType: required=true on FamilialRelationship ← for required slot test
+
+
+def test_allow_null_for_optional_enums_without_flag(cli_runner, json_data_file):
+    """
+    Without the flag, empty string in an optional enum slot should be ERROR.
+    Uses personinfo.yaml: gender slot is optional with GenderType enum range.
+    Verifies backward compatibility — default behavior is unchanged.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty — ERROR without flag
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+
+    assert "[ERROR]" in result.output
+    assert "'' is not one of" in result.output
+    assert result.exit_code == 1
+
+
+def test_allow_null_for_optional_enums_with_flag(cli_runner, json_data_file):
+    """
+    With the flag, empty string in an optional enum slot is downgraded to WARN.
+    Uses personinfo.yaml: gender slot is optional with GenderType enum range.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty — WARN with flag
+        {"id": "P:003", "name": "Carol", "gender": ""},  # empty — WARN with flag
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
+    )
+
+    assert result.exception is None
+    assert "[WARN]" in result.output
+    assert "[ERROR]" not in result.output
+    assert result.exit_code == 0
+
+
+def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_data_file):
+    """
+    With the flag, valid enum values should still pass with no issues.
+    Ensures the flag does not suppress legitimate validation.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": "cisgender man"},
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
+    )
+
+    assert result.exception is None
+    assert result.output == "No issues found\n"
+    assert result.exit_code == 0
