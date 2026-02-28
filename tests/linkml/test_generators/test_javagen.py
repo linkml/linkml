@@ -16,6 +16,24 @@ def test_javagen_records(kitchen_sink_path, tmp_path):
     )
 
 
+def test_javagen_primitive_types(input_path, tmp_path):
+    """Test that primitive types are boxed unless they are required."""
+    gen = JavaGenerator(input_path("primitive_types.yaml"))
+    gen.serialize(directory=str(tmp_path))
+    expected = [
+        "int requiredInteger",
+        "Integer optionalInteger",
+        "float requiredFloat",
+        "Float optionalFloat",
+        "double requiredDouble",
+        "Double optionalDouble",
+        "boolean requiredBoolean",
+        "Boolean optionalBoolean",
+    ]
+    for decl in expected:
+        assert_file_contains(tmp_path / "SimpleClass.java", decl)
+
+
 def test_javagen_with_custom_template(kitchen_sink_path, tmp_path):
     """Generate java records with a custom template.
 
