@@ -63,6 +63,17 @@ RANGEMAP = {
     "XSDDate": Date(),
 }
 
+SQL_TYPE_TO_PYTHON_TYPE: dict[str, str] = {
+    "Text()": "str",
+    "Integer()": "int",
+    "Float()": "float",
+    "Numeric()": "Decimal",
+    "Boolean()": "bool",
+    "Time()": "time",
+    "DateTime()": "datetime",
+    "Date()": "date",
+}
+
 
 VARCHAR_REGEX = re.compile(r"VARCHAR2?(\((\d+)\))?")
 ORACLE_MAX_VARCHAR_LENGTH = 4096
