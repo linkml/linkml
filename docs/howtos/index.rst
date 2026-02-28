@@ -15,6 +15,7 @@ Some of these guides are works in progress
    yq-for-schemas
    using-jsonld
    model-measurements
+   model-dictionaries
    port-linkml
    multidimensional-arrays
    model-property-graphs
