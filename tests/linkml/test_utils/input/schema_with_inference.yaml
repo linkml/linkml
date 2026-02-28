@@ -118,6 +118,8 @@ classes:
         range: Person
         inlined: true
       type:
+        range: RelationshipTypeEnum
+        ifabsent: RelationshipTypeEnum(acquaintance)
       description:
         string_serialization: |-
           "{person1.last_name}, {person1.first_name}" IS {type} "{person2.last_name}, {person2.first_name}"
@@ -140,6 +142,10 @@ classes:
         range: Person
         inlined: true
         multivalued: true
+      relationships:
+        range: Relationship
+        inlined: true
+        multivalued: true
 
 enums:
   AgeEnum:
@@ -147,3 +153,10 @@ enums:
       infant:
       juvenile:
       adult:
+
+  RelationshipTypeEnum:
+    permissible_values:
+      acquaintance:
+      family:
+      friendship:
+      business:
