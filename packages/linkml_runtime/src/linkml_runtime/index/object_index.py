@@ -36,8 +36,8 @@ class ObjectIndex:
         ix = ObjectIndex(container, schemaview=schemaview)
         container = ix.bless(container)
         for p in container.persons:
-           for r in p.has_familial_relationships():
-               print(f"{p.name} {p.type} {r.related_to.name}")
+            for r in p.has_familial_relationships():
+                print(f"{p.name} {p.type} {r.related_to.name}")
 
     Note this will work even if related_to is *not* inlined.
 
