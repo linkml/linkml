@@ -10,7 +10,7 @@ from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import shared_arguments
-from linkml_runtime.linkml_model.meta import TypeDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, TypeDefinition
 
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
 
@@ -19,10 +19,10 @@ TYPEMAP = {
     "xsd:integer": "Integer",
     "xsd:float": "Float",
     "xsd:double": "Double",
-    "xsd:boolean": "boolean",
+    "xsd:boolean": "Boolean",
     "xsd:dateTime": "ZonedDateTime",
     "xsd:date": "LocalDate",
-    "xsd:time": "Instant",
+    "xsd:time": "LocalTime",
     "xsd:anyURI": "String",
     "xsd:decimal": "BigDecimal",
 }
@@ -140,11 +140,23 @@ class JavaGenerator(OOCodeGenerator):
     def default_value_for_type(self, typ: str) -> str:
         return TYPE_DEFAULTS.get(typ, "null")
 
+    def map_class(self, c: ClassDefinition) -> str:
+        # A slot intended to accept anything is represented in Java as
+        # an Object-typed slot
+        if c.class_uri == "linkml:Any":
+            return "Object"
+        else:
+            return super().map_class(c)
+
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         if t.uri:
-            # only return a Integer, Double Float when required == false
+            # We use "boxed" types (Boolean, Integer, Double, Float) by
+            # default because we need to represent the case where a
+            # value has not explicitly been set. But that requirement no
+            # longer holds when required == true, so in that case we can
+            # use primitive types (boolean, int, double, float) instead.
             typ = TYPEMAP.get(t.uri)
-            if required and (typ == "Double" or typ == "Float"):
+            if required and (typ == "Boolean" or typ == "Double" or typ == "Float"):
                 typ = typ.lower()
             elif required and typ == "Integer":
                 typ = "int"

@@ -46,6 +46,7 @@ class OOField:
     default_value: str = None
     annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     source_slot: SlotDefinition = field(default_factory=lambda: [])
+    slot_uri: str | None = None
 
 
 @dataclass
@@ -66,6 +67,7 @@ class OOClass:
     annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
+    class_uri: str | None = None
 
 
 @dataclass
@@ -77,6 +79,7 @@ class OOEnumValue:
     label: str
     text: str
     description: str | None = None
+    meaning: str | None = None
 
 
 @dataclass
@@ -88,6 +91,7 @@ class OOEnum:
     name: SAFE_NAME
     values: list[OOEnumValue] = field(default_factory=lambda: [])
     description: str | None = None
+    enum_uri: str | None = None
 
 
 @dataclass
@@ -130,6 +134,21 @@ class OOCodeGenerator(Generator):
         else:
             safe_sn = underscore(sn)
         return safe_sn
+
+    def map_class(self, c: ClassDefinition) -> str | None:
+        """Maps a LinkML class to a class name in the target language.
+
+        This method is intended to allow derived generators to implement
+        any custom logic as needed to maybe map a LinkML class to a
+        (presumably pre-existing, or generated elsewhere) class in the
+        target language.
+
+        If this method returns a non-None value, then (1) no code will
+        be generated for the LinkML class, and (2) any reference to the
+        original LinkML class will be replaced by a reference to the
+        returned class name.
+        """
+        return None
 
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         return t.base
@@ -175,7 +194,10 @@ class OOCodeGenerator(Generator):
 
         enums = {}
         for enum_name, enum_original in all_enums.items():
-            enum = OOEnum(name=camelcase(enum_name))
+            enum = OOEnum(
+                name=camelcase(enum_name),
+                enum_uri=self.schemaview.get_uri(enum_name, expand=True),
+            )
             if hasattr(enum_original, "description"):
                 enum.description = enum_original.description
             for pv in enum_original.permissible_values.values():
@@ -186,6 +208,8 @@ class OOCodeGenerator(Generator):
                 val = OOEnumValue(label=label, text=pv.text.replace('"', '\\"'))
                 if hasattr(pv, "description"):
                     val.description = pv.description
+                if pv.meaning:
+                    val.meaning = self.schemaview.expand_curie(pv.meaning)
                 enum.values.append(val)
 
             enums[enum_name] = enum
@@ -229,6 +253,9 @@ class OOCodeGenerator(Generator):
         docs = []
         for cn in sv.all_classes(imports=False):
             c = sv.get_class(cn)
+            if self.map_class(c) is not None:
+                continue
+
             safe_cn = camelcase(cn)
             oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
             docs.append(oodoc)
@@ -238,6 +265,7 @@ class OOCodeGenerator(Generator):
                 package=self.package,
                 fields=[],
                 source_class=c,
+                class_uri=sv.get_uri(cn, expand=True),
             )
             # currently hardcoded for java style, one class per doc
             oodoc.classes = [ooclass]
@@ -266,7 +294,9 @@ class OOCodeGenerator(Generator):
                     range = "string"
 
                 if range in sv.all_classes():
-                    range = self.get_class_name(range)
+                    c = sv.get_class(range)
+                    mapped = self.map_class(c)
+                    range = mapped if mapped is not None else self.get_class_name(c.name)
                     default_value = "null"
                 elif range in sv.all_types():
                     t = sv.get_type(range)
@@ -300,6 +330,7 @@ class OOCodeGenerator(Generator):
                     source_slot=slot,
                     range=range,
                     default_value=default_value,
+                    slot_uri=sv.get_uri(slot.name, expand=True),
                 )
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
