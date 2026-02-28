@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-09-30T13:24:19
+# Generation date: 2026-01-29T17:24:44
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -92,6 +92,7 @@ class Rules(YAMLRoot):
     root_type_checks: Optional[Union[dict, "RuleConfig"]] = None
     standard_naming: Optional[Union[dict, "StandardNamingConfig"]] = None
     tree_root_class: Optional[Union[dict, "TreeRootClassRuleConfig"]] = None
+    range_anyof_incompatible: Optional[Union[dict, "RuleConfig"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.canonical_prefixes is not None and not isinstance(self.canonical_prefixes, CanonicalPrefixesConfig):
@@ -136,6 +137,9 @@ class Rules(YAMLRoot):
 
         if self.tree_root_class is not None and not isinstance(self.tree_root_class, TreeRootClassRuleConfig):
             self.tree_root_class = TreeRootClassRuleConfig(**as_dict(self.tree_root_class))
+
+        if self.range_anyof_incompatible is not None and not isinstance(self.range_anyof_incompatible, RuleConfig):
+            self.range_anyof_incompatible = RuleConfig(**as_dict(self.range_anyof_incompatible))
 
         super().__post_init__(**kwargs)
 
@@ -536,6 +540,15 @@ slots.rules__tree_root_class = Slot(
     model_uri=LINTCFG.rules__tree_root_class,
     domain=None,
     range=Optional[Union[dict, TreeRootClassRuleConfig]],
+)
+
+slots.rules__range_anyof_incompatible = Slot(
+    uri=LINTCFG.range_anyof_incompatible,
+    name="rules__range_anyof_incompatible",
+    curie=LINTCFG.curie("range_anyof_incompatible"),
+    model_uri=LINTCFG.rules__range_anyof_incompatible,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
 )
 
 slots.ruleConfig__level = Slot(
