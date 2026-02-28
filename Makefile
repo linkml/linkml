@@ -85,6 +85,7 @@ test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
 test-tutorial-%: docs/intro/tutorial%.md
 	$(RUN) python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
 
+.PHONY: docs
 docs:
 	cd docs && $(RUN) make html
 
