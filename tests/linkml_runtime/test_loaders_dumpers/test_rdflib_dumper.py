@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 from curies import Converter
+from pydantic import BaseModel
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDF, SKOS, XSD
 
@@ -430,3 +431,43 @@ def test_output_prefixes():
     prefixes = ["prefix ORCID:", "prefix personinfo:", "prefix sdo:", "sdo:Person", "personinfo:age", "ORCID:1234"]
     for prefix in prefixes:
         assert prefix in file_string
+
+
+def test_pydantic_model_dump():
+    """Test RDFLib dumper with Pydantic models (issue #3203)."""
+
+    class Person(BaseModel):
+        name: str
+        age: int
+
+    schema_str = """
+id: http://example.org/test
+name: test
+prefixes:
+  x: http://example.org/
+default_prefix: x
+default_range: string
+imports:
+  - https://w3id.org/linkml/types
+classes:
+  Person:
+    attributes:
+      name:
+      age:
+        range: integer
+"""
+    sv = SchemaView(schema_str)
+    person = Person(name="Alice", age=30)
+
+    assert not hasattr(type(person), "class_name")
+
+    ttl = rdflib_dumper.dumps(person, schemaview=sv)
+    g = Graph()
+    g.parse(data=ttl, format="ttl")
+
+    EX = Namespace("http://example.org/")
+    subjects = list(g.subjects(RDF.type, EX.Person))
+    assert len(subjects) == 1
+    person_uri = subjects[0]
+    assert (person_uri, EX.name, Literal("Alice")) in g
+    assert (person_uri, EX.age, Literal(30)) in g
