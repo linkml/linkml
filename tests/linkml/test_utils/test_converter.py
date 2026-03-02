@@ -9,7 +9,7 @@ from linkml.converter.cli import cli
 
 @pytest.fixture
 def cli_runner() -> CliRunner:
-    return CliRunner(mix_stderr=False)
+    return CliRunner()
 
 
 def test_help(cli_runner):

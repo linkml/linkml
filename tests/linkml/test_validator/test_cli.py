@@ -47,7 +47,7 @@ def test_valid_csv_file(cli_runner, csv_data_file):
 
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.output == "No issues found\n"
+    assert result.stdout == "No issues found\n"
     assert result.exception is None
     assert result.exit_code == 0
 
@@ -58,7 +58,7 @@ def test_valid_json_file_object(tmp_path, cli_runner, json_data_file):
     data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert result.stdout == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -69,7 +69,7 @@ def test_valid_json_file_list(cli_runner, json_data_file):
 
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert result.stdout == "No issues found\n"
     assert result.exit_code == 0
 
 
@@ -77,7 +77,7 @@ def test_no_schema_provided(cli_runner):
     """Verify a useful message is emitted when a schema is not specified via options or config"""
 
     result = cli_runner.invoke(cli, [])
-    assert "No schema specified" in result.output
+    assert "No schema specified" in result.stderr
     assert result.exit_code == 1
 
 
@@ -88,9 +88,9 @@ def test_invalid_json(cli_runner, json_data_file):
     data_path = json_data_file({"persons": [invalid_data]})
 
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
-    assert "[ERROR]" in result.output
-    assert "'asdf' does not match" in result.output
-    assert "/persons/0/telephone" in result.output
+    assert "[ERROR]" in result.stdout
+    assert "'asdf' does not match" in result.stdout
+    assert "/persons/0/telephone" in result.stdout
     assert result.exit_code == 1
 
 
@@ -115,9 +115,9 @@ plugins:
     data_path = csv_data_file([VALID_PERSON_1, person2])
     result = cli_runner.invoke(cli, ["--config", str(config_path), data_path])
     assert result.exception is None
-    assert "[WARN]" in result.output
-    assert "'telephone' is recommended" in result.output
-    assert "[ERROR]" not in result.output
+    assert "[WARN]" in result.stdout
+    assert "'telephone' is recommended" in result.stdout
+    assert "[ERROR]" not in result.stdout
     assert result.exit_code == 0
 
 
@@ -146,5 +146,5 @@ data_sources:
     result = cli_runner.invoke(cli, ["--config", str(config_path)])
     print(str(result.exception))
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert result.stdout == "No issues found\n"
     assert result.exit_code == 0

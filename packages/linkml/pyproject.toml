@@ -38,7 +38,7 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "antlr4-python3-runtime >= 4.9.0, < 4.10",
-    "click >= 8.0, < 8.2",
+    "click >= 8.0",
     "graphviz >= 0.10.1",
     "hbreader",
     "isodate >= 0.6.0",
