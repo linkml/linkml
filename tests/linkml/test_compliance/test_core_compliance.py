@@ -558,14 +558,9 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    # When min==max (required + non-multivalued), the generator emits a single
-    # owl:cardinality restriction instead of separate min + max.
-    if not multivalued and required:
-        owl_card = "[ a owl:Restriction ; owl:cardinality 1 ; owl:onProperty ex:s1 ],"
-    else:
-        min_val = 1 if required else 0
-        owl_max = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
-        owl_card = f"[ a owl:Restriction ; owl:minCardinality {min_val} ; owl:onProperty ex:s1 ],{owl_max}"
+    min_val = 1 if required else 0
+    owl_max = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl_card = f"[ a owl:Restriction ; owl:minCardinality {min_val} ; owl:onProperty ex:s1 ],{owl_max}"
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."

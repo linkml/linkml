@@ -19,6 +19,7 @@ from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -174,15 +175,23 @@ class OwlSchemaGenerator(Generator):
     enum_iri_separator: str = "#"
     """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
 
-    skip_min_zero_cardinality_axioms: bool = False
+    skip_vacuous_min_zero_cardinality_axioms: bool | None = None
     """If True, suppress owl:minCardinality 0 restrictions. Such axioms are vacuously
-    satisfied by every individual and never carry information."""
+    satisfied by every individual and never carry information.
+    Defaults to False; will change to True in a future release."""
 
-    skip_vacuous_local_range_axioms: bool = False
+    skip_vacuous_local_range_axioms: bool | None = None
     """If True, suppress owl:allValuesFrom restrictions whose filler is either owl:Thing
     or the same URI as the property's globally declared rdfs:range (entailed, hence
     vacuous in context). Attribute slots, which have no global rdfs:range, are
-    unaffected."""
+    unaffected.
+    Defaults to False; will change to True in a future release."""
+
+    consolidate_cardinality_axioms: bool | None = None
+    """If True, emit a single owl:cardinality restriction when minimum_cardinality equals
+    maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality.
+    Defaults to False; will change to True in a future release."""
+
     enum_inherits_as_subclass_of: bool = False
     """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
 
@@ -192,6 +201,16 @@ class OwlSchemaGenerator(Generator):
 
         :return:
         """
+        if self.skip_vacuous_min_zero_cardinality_axioms is None:
+            deprecation_warning("owlgen-skip-vacuous-min-zero-cardinality-default")
+            self.skip_vacuous_min_zero_cardinality_axioms = False
+        if self.skip_vacuous_local_range_axioms is None:
+            deprecation_warning("owlgen-skip-vacuous-local-range-default")
+            self.skip_vacuous_local_range_axioms = False
+        if self.consolidate_cardinality_axioms is None:
+            deprecation_warning("owlgen-consolidate-cardinality-axioms-default")
+            self.consolidate_cardinality_axioms = False
+
         sv = self.schemaview
         schema = sv.schema
         owl_id = schema.id
@@ -593,10 +612,10 @@ class OwlSchemaGenerator(Generator):
                     f"but multivalued is not set; assuming multivalued=True."
                 )
             # generate axioms
-            if min_card is not None and min_card == max_card:
+            if self.consolidate_cardinality_axioms and min_card is not None and min_card == max_card:
                 owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.cardinality, min_card))
             else:
-                if not (self.skip_min_zero_cardinality_axioms and min_card == 0):
+                if not (self.skip_vacuous_min_zero_cardinality_axioms and min_card == 0):
                     owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.minCardinality, min_card))
                 if max_card is not None:
                     owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
@@ -1465,21 +1484,33 @@ class OwlSchemaGenerator(Generator):
 )
 @click.option(
     "--skip-vacuous-local-range-axioms/--no-skip-vacuous-local-range-axioms",
-    default=False,
+    default=None,
     show_default=True,
     help=(
         "If true, suppress owl:allValuesFrom restrictions whose filler is owl:Thing "
         "or the same URI as the property's globally declared rdfs:range, as these are "
-        "entailed and carry no additional information."
+        "entailed and carry no additional information. "
+        "Default will change to true in a future release."
     ),
 )
 @click.option(
-    "--skip-min-zero-cardinality-axioms/--no-skip-min-zero-cardinality-axioms",
-    default=False,
+    "--skip-vacuous-min-zero-cardinality-axioms/--no-skip-vacuous-min-zero-cardinality-axioms",
+    default=None,
     show_default=True,
     help=(
         "If true, suppress owl:minCardinality 0 restrictions. "
-        "Such axioms are vacuously satisfied by every individual and never carry information."
+        "Such axioms are vacuously satisfied by every individual and never carry information. "
+        "Default will change to true in a future release."
+    ),
+)
+@click.option(
+    "--consolidate-cardinality-axioms/--no-consolidate-cardinality-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, emit a single owl:cardinality restriction when minimum_cardinality equals "
+        "maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality. "
+        "Default will change to true in a future release."
     ),
 )
 @click.option(

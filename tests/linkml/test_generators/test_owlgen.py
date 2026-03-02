@@ -395,8 +395,8 @@ def _restriction_values(g: Graph, predicate: URIRef) -> list:
     return results
 
 
-@pytest.mark.parametrize("skip_min_zero_cardinality_axioms", [True, False])
-def test_skip_min_zero_cardinality_axioms(skip_min_zero_cardinality_axioms: bool) -> None:
+@pytest.mark.parametrize("skip_vacuous_min_zero_cardinality_axioms", [True, False])
+def test_skip_vacuous_min_zero_cardinality_axioms(skip_vacuous_min_zero_cardinality_axioms: bool) -> None:
     """Test that owl:minCardinality 0 axioms are suppressed when the flag is set.
 
     Non-required slots produce a minCardinality 0 restriction by default (vacuous).
@@ -416,18 +416,17 @@ def test_skip_min_zero_cardinality_axioms(skip_min_zero_cardinality_axioms: bool
         mergeimports=False,
         metaclasses=False,
         type_objects=False,
-        skip_min_zero_cardinality_axioms=skip_min_zero_cardinality_axioms,
+        skip_vacuous_min_zero_cardinality_axioms=skip_vacuous_min_zero_cardinality_axioms,
     )
     g = Graph()
     g.parse(data=gen.serialize(), format="turtle")
     min_card_values = _restriction_values(g, OWL.minCardinality)
-    if skip_min_zero_cardinality_axioms:
+    if skip_vacuous_min_zero_cardinality_axioms:
         assert Literal(0) not in min_card_values, "minCardinality 0 should be suppressed"
     else:
         assert Literal(0) in min_card_values, "minCardinality 0 should be present"
-    # required + non-multivalued → min=1, max=1 → collapsed to owl:cardinality 1 (never suppressed)
-    exact_card_values = _restriction_values(g, OWL.cardinality)
-    assert Literal(1) in exact_card_values, "owl:cardinality 1 for required slot must not be suppressed"
+    # required + non-multivalued → min=1, max=1 (consolidation is off by default)
+    assert Literal(1) in min_card_values, "minCardinality 1 for required slot must not be suppressed"
 
 
 @pytest.mark.parametrize("skip_vacuous_local_range_axioms", [True, False])
@@ -497,17 +496,27 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
 
 
 @pytest.mark.parametrize(
-    "slot_kwargs,expected_exact,expected_min,expected_max",
+    "slot_kwargs,consolidate,expected_exact,expected_min,expected_max",
     [
         pytest.param(
             {"required": True},
+            True,
             1,
             None,
             None,
             id="required-non-multivalued-collapses-to-cardinality-1",
         ),
         pytest.param(
+            {"required": True},
+            False,
+            None,
+            1,
+            1,
+            id="required-non-multivalued-no-consolidation",
+        ),
+        pytest.param(
             {"required": True, "multivalued": True},
+            False,
             None,
             1,
             None,
@@ -515,6 +524,7 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         ),
         pytest.param(
             {},
+            False,
             None,
             0,
             1,
@@ -522,6 +532,7 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         ),
         pytest.param(
             {"multivalued": True},
+            False,
             None,
             0,
             None,
@@ -529,6 +540,7 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         ),
         pytest.param(
             {"minimum_cardinality": 2, "multivalued": True},
+            False,
             None,
             2,
             None,
@@ -536,6 +548,7 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         ),
         pytest.param(
             {"maximum_cardinality": 5, "multivalued": True},
+            False,
             None,
             0,
             5,
@@ -543,6 +556,7 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         ),
         pytest.param(
             {"minimum_cardinality": 2, "maximum_cardinality": 5, "multivalued": True},
+            False,
             None,
             2,
             5,
@@ -550,15 +564,25 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         ),
         pytest.param(
             {"minimum_cardinality": 3, "maximum_cardinality": 3, "multivalued": True},
+            True,
             3,
             None,
             None,
             id="explicit-min-equals-max-collapses-to-cardinality",
         ),
+        pytest.param(
+            {"minimum_cardinality": 3, "maximum_cardinality": 3, "multivalued": True},
+            False,
+            None,
+            3,
+            3,
+            id="explicit-min-equals-max-no-consolidation",
+        ),
     ],
 )
 def test_slot_cardinality_axioms(
     slot_kwargs: dict,
+    consolidate: bool,
     expected_exact: int | None,
     expected_min: int | None,
     expected_max: int | None,
@@ -580,6 +604,7 @@ def test_slot_cardinality_axioms(
         mergeimports=False,
         metaclasses=False,
         type_objects=False,
+        consolidate_cardinality_axioms=consolidate,
     )
     g = Graph()
     g.parse(data=gen.serialize(), format="turtle")
