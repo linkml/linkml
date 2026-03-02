@@ -468,6 +468,42 @@ classes:
     assert "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)" in code
 
 
+def test_ifabsent_bnode():
+    """Test that ifabsent: bnode generates a default_factory with a unique blank node ID."""
+    schema_str = """
+id: id
+name: test_bnode
+description: test bnode ifabsent
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+classes:
+  MyClass:
+    attributes:
+      id:
+        range: string
+        ifabsent: bnode
+        """
+
+    gen = PydanticGenerator(schema_str)
+    code = gen.serialize()
+    assert 'default_factory=lambda: "_:" + uuid.uuid4().hex' in code
+    assert "import uuid" in code
+
+    # Verify the generated code is valid and produces unique bnodes
+    module = compile(code, "<test>", "exec")
+    ns = {}
+    exec(module, ns)
+    obj1 = ns["MyClass"]()
+    obj2 = ns["MyClass"]()
+    assert obj1.id.startswith("_:")
+    assert obj1.id != obj2.id
+
+
 def test_equals_string():
     equals_string = "THIS_IS_THE_ONLY_VALUE"
     another_string = "ANY OTHER STRING"

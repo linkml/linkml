@@ -72,6 +72,7 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
+    + Import(module="uuid")
     + Import(module="sys")
     + Import(
         module="typing",
@@ -584,6 +585,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
             slot_args["predefined"] = str(predef)
+        elif slot.ifabsent == "bnode":
+            slot_args["default_factory"] = 'lambda: "_:" + uuid.uuid4().hex'
 
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)
@@ -671,8 +674,12 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                             slot.name
                         ]
                     elif slot.ifabsent is not None:
-                        value = ifabsent_processor.process_slot(slot, class_def)
-                        slot_values[camelcase(class_def.name)][slot.name] = value
+                        if slot.ifabsent == "bnode":
+                            # bnode default_factory is handled in generate_slot
+                            pass
+                        else:
+                            value = ifabsent_processor.process_slot(slot, class_def)
+                            slot_values[camelcase(class_def.name)][slot.name] = value
 
                 self._predefined_slot_values = slot_values
 

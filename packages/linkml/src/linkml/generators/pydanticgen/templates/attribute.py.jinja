@@ -1,4 +1,4 @@
-{{name}}: {{ range }} = Field(default={{ field }}
+{{name}}: {{ range }} = Field({% if default_factory %}default_factory={{ default_factory }}{% else %}default={{ field }}{% endif %}
 {%- if alias %}, alias="{{alias}}"{% endif -%}
 {%- if title != None %}, title="{{title}}"{% endif -%}
 {%- if description %}, description="""{{description}}"""{% endif -%}
