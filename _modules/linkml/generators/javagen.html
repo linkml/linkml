@@ -414,7 +414,7 @@
     <span class="s2">&quot;xsd:integer&quot;</span><span class="p">:</span> <span class="s2">&quot;Integer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:float&quot;</span><span class="p">:</span> <span class="s2">&quot;Float&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:double&quot;</span><span class="p">:</span> <span class="s2">&quot;Double&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;Boolean&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:dateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;ZonedDateTime&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:date&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalDate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:time&quot;</span><span class="p">:</span> <span class="s2">&quot;Instant&quot;</span><span class="p">,</span>
@@ -539,9 +539,13 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
-            <span class="c1"># only return a Integer, Double Float when required == false</span>
+            <span class="c1"># We use &quot;boxed&quot; types (Boolean, Integer, Double, Float) by</span>
+            <span class="c1"># default because we need to represent the case where a</span>
+            <span class="c1"># value has not explicitly been set. But that requirement no</span>
+            <span class="c1"># longer holds when required == true, so in that case we can</span>
+            <span class="c1"># use primitive types (boolean, int, double, float) instead.</span>
             <span class="n">typ</span> <span class="o">=</span> <span class="n">TYPEMAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">required</span> <span class="ow">and</span> <span class="p">(</span><span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Double&quot;</span> <span class="ow">or</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Float&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">required</span> <span class="ow">and</span> <span class="p">(</span><span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Boolean&quot;</span> <span class="ow">or</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Double&quot;</span> <span class="ow">or</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Float&quot;</span><span class="p">):</span>
                 <span class="n">typ</span> <span class="o">=</span> <span class="n">typ</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">elif</span> <span class="n">required</span> <span class="ow">and</span> <span class="n">typ</span> <span class="o">==</span> <span class="s2">&quot;Integer&quot;</span><span class="p">:</span>
                 <span class="n">typ</span> <span class="o">=</span> <span class="s2">&quot;int&quot;</span>
