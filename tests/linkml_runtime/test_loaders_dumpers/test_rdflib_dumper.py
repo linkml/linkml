@@ -436,7 +436,7 @@ def test_output_prefixes():
 def test_pydantic_model_dump():
     """Test RDFLib dumper with Pydantic models (issue #3203)."""
 
-    class Person(BaseModel):
+    class MyPerson(BaseModel):
         name: str
         age: int
 
@@ -450,14 +450,14 @@ default_range: string
 imports:
   - https://w3id.org/linkml/types
 classes:
-  Person:
+  my_person:
     attributes:
       name:
       age:
         range: integer
 """
     sv = SchemaView(schema_str)
-    person = Person(name="Alice", age=30)
+    person = MyPerson(name="Alice", age=30)
 
     assert not hasattr(type(person), "class_name")
 
@@ -466,7 +466,7 @@ classes:
     g.parse(data=ttl, format="ttl")
 
     EX = Namespace("http://example.org/")
-    subjects = list(g.subjects(RDF.type, EX.Person))
+    subjects = list(g.subjects(RDF.type, EX.MyPerson))
     assert len(subjects) == 1
     person_uri = subjects[0]
     assert (person_uri, EX.name, Literal("Alice")) in g
