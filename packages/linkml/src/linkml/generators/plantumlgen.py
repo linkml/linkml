@@ -25,11 +25,16 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.formatutils import camelcase, underscore
 
 plantuml_is_a = "^--"
-plantuml_uses = ("--", " : uses")
+plantuml_mixin = "^.."  # dashed realization — visually distinct from solid is-a inheritance
 plantuml_injected = ("--", " : inject")
 plantuml_inline = "*--"
 plantuml_inline_rev = "--*"
 plantuml_ref = "--"
+
+_TEXT_FORMATS: frozenset[str] = frozenset({"puml", "plantuml"})
+"""Formats that produce PlantUML source text rather than a rendered image."""
+_BINARY_FORMATS: frozenset[str] = frozenset({"png", "pdf", "jpg"})
+"""Rendered formats whose output is binary and cannot be written to stdout."""
 
 
 @dataclass
@@ -53,6 +58,84 @@ class PlantumlGenerator(Generator):
     kroki_server: str | None = "https://kroki.io"
     tooltips_flag: bool = False
     dry_run: bool = False
+    include_enums: bool = False
+    """If True, render enumeration definitions as PlantUML ``enum`` blocks and add
+    association arrows from classes to their enum-typed slots."""
+    include_all: bool = False
+    """If True, include all classes and enumerations from the schema, regardless of
+    which classes are selected. Implies ``include_enums`` for the enum selection
+    strategy: all enumerations are rendered rather than only those referenced by
+    selected classes."""
+    mark_mixins: bool = False
+    """If True, mixin classes are annotated with a ``<<(M,orchid) mixin>>`` PlantUML
+    spot stereotype so they are visually distinguishable from regular classes."""
+
+    def _referenced_enum_names(self) -> set[str]:
+        """Return the names of all enumerations referenced by slots in the generated classes."""
+        all_enum_names = set(self.schema.enums.keys())
+        referenced: set[str] = set()
+        for cn in self.generated or set():
+            if cn in self.schema.classes:
+                for slot in self.all_slots(self.schema.classes[cn], cls_slots_first=True):
+                    if slot.range in all_enum_names:
+                        referenced.add(slot.range)
+        return referenced
+
+    def _all_enum_names(self) -> set[str]:
+        """Return the names of all enumerations defined in the schema."""
+        return set(self.schema.enums.keys())
+
+    def _generate_enum_defs(self, enum_names: set[str]) -> list[str]:
+        """Return PlantUML ``enum`` block definitions for each name in *enum_names*.
+
+        Each permissible value is listed as a member.  When the value has a
+        ``meaning`` URI it is appended in brackets, e.g. ``FIRE [bizcodes:002]``.
+        """
+        defs: list[str] = []
+        for enum_name in sorted(enum_names):
+            enum_def = self.schema.enums[enum_name]
+            members: list[str] = []
+            for pv_name, pv in (enum_def.permissible_values or {}).items():
+                label = pv_name
+                if pv.meaning:
+                    label += f" [{pv.meaning}]"
+                members.append(f"    {label}")
+            block = f'enum "{enum_name}" {{\n' + "\n".join(members) + "\n}"
+            defs.append(block)
+        return defs
+
+    def _generate_enum_inherits(self, enum_names: set[str]) -> list[str]:
+        """Return PlantUML generalisation arrows for enum ``inherits`` relationships.
+
+        Only arrows where both parent and child are in *enum_names* are emitted.
+        """
+        arrows: list[str] = []
+        for enum_name in sorted(enum_names):
+            enum_def = self.schema.enums[enum_name]
+            for parent in enum_def.inherits or []:
+                if parent in enum_names:
+                    arrows.append(f'"{parent}" <|-- "{enum_name}"')
+        return arrows
+
+    def _generate_enum_assocs(self, enum_names: set[str]) -> list[str]:
+        """Return PlantUML association arrows from classes to their enum-typed slots.
+
+        Only slots that are directly defined on the class (via ``domain_of``) are
+        included to avoid duplicating inherited associations.
+        """
+        assocs: list[str] = []
+        for cn in sorted(self.generated or set()):
+            if cn not in self.schema.classes:
+                continue
+            cls = self.schema.classes[cn]
+            for slot in self.all_slots(cls, cls_slots_first=True):
+                if slot.range not in enum_names:
+                    continue
+                if cn not in slot.domain_of:
+                    continue
+                slot_name = self.aliased_slot_name(slot)
+                assocs.append(f'"{cn}" --> "{slot.range}" : "{slot_name}"')
+        return assocs
 
     def visit_schema(
         self,
@@ -60,6 +143,8 @@ class PlantumlGenerator(Generator):
         directory: str | None = None,
         **_,
     ) -> str | None:
+        if self.include_all:
+            classes = set(self.schema.classes.keys())
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:
@@ -90,17 +175,24 @@ class PlantumlGenerator(Generator):
                     plantumlclassdef.append(self.add_class(ClassDefinitionName(cn)))
                     self.add_class(ClassDefinitionName(cn))
 
+        if self.include_enums or self.include_all:
+            enum_names = self._all_enum_names() if self.include_all else self._referenced_enum_names()
+            plantumlclassdef.extend(self._generate_enum_defs(enum_names))
+            plantumlclassdef.extend(self._generate_enum_inherits(enum_names))
+            plantumlclassdef.extend(self._generate_enum_assocs(enum_names))
+
         dedup_plantumlclassdef = []
         [dedup_plantumlclassdef.append(x) for x in plantumlclassdef if x not in dedup_plantumlclassdef]
 
         plantuml_code = "\n".join(dedup_plantumlclassdef)
         b64_diagram = base64.urlsafe_b64encode(zlib.compress(plantuml_code.encode(), 9))
 
-        plantuml_url = self.kroki_server + "/plantuml/svg/" + b64_diagram.decode()
+        kroki_format = "svg" if self.format in _TEXT_FORMATS else self.format
+        plantuml_url = self.kroki_server + f"/plantuml/{kroki_format}/" + b64_diagram.decode()
         if self.dry_run:
             return plantuml_url
         if directory:
-            file_suffix = ".svg" if self.format == "puml" or self.format == "puml" else "." + self.format
+            file_suffix = ".svg" if self.format in _TEXT_FORMATS else "." + self.format
             schema_name = sorted(classes)[0] if classes else self.schema.name
             filename = schema_name if self.preserve_names else camelcase(schema_name)
             self.output_file_name = os.path.join(directory, filename + file_suffix)
@@ -112,13 +204,20 @@ class PlantumlGenerator(Generator):
             else:
                 self.logger.error(f"{resp.reason} accessing {plantuml_url}")
         else:
-            out = (
-                "@startuml\n"
-                "skinparam nodesep 10\n"
-                "hide circle\n"
-                "hide empty members\n" + "\n".join(dedup_plantumlclassdef) + "\n@enduml\n"
-            )
-            return out
+            if self.format in _TEXT_FORMATS:
+                return (
+                    "@startuml\n"
+                    "skinparam nodesep 10\n"
+                    "hide circle\n"
+                    "hide empty members\n" + "\n".join(dedup_plantumlclassdef) + "\n@enduml\n"
+                )
+            if self.format in _BINARY_FORMATS:
+                raise ValueError(f"Binary format {self.format!r} cannot be written to stdout; use --directory instead.")
+            resp = requests.get(plantuml_url, timeout=REQUESTS_TIMEOUT)
+            if resp.ok:
+                return resp.text
+            self.logger.error(f"{resp.reason} accessing {plantuml_url}")
+            return None
 
     def add_class(self, cn: ClassDefinitionName) -> str:
         """Define the class only if
@@ -159,7 +258,8 @@ class PlantumlGenerator(Generator):
             class_type = "abstract"
         else:
             class_type = "class"
-        return class_type + ' "' + cn + '"' + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
+        stereotype = " <<(M,orchid) mixin>>" if self.mark_mixins and cls.mixin else ""
+        return class_type + ' "' + cn + '"' + stereotype + tooltip + ("{\n" + "\n".join(slot_defs) + "\n}")
 
     def class_associations(self, cn: ClassDefinitionName, must_render: bool = False) -> str:
         """Emit all associations for a focus class.  If none are specified, all classes are generated
@@ -227,24 +327,22 @@ class PlantumlGenerator(Generator):
                             + self.prop_modifier(dom, slot)
                         )
 
-            # Mixins used in the class
+            # Mixins used in the class — mixin (parent) on left, user class (child) on right
             for mixin in cls.mixins:
                 if cn not in self.class_generated:
                     classes.append(self.add_class(cn))
                 if mixin not in self.class_generated:
                     classes.append(self.add_class(mixin))
-                assocs.append('"' + cn + '" ' + plantuml_uses[0] + ' "' + mixin + '" ' + plantuml_uses[1])
+                assocs.append('"' + mixin + '" ' + plantuml_mixin + " " + '"' + cn + '"')
 
-            # Classes that use the class as a mixin
+            # Classes that use the class as a mixin — cn (parent) on left, user class (child) on right
             if cls.name in self.synopsis.mixinrefs:
                 for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs, reverse=True):
                     if ClassDefinitionName(mixin) not in self.class_generated:
                         classes.append(self.add_class(ClassDefinitionName(mixin)))
                     if cn not in self.class_generated:
                         classes.append(self.add_class(cn))
-                    assocs.append(
-                        '"' + ClassDefinitionName(mixin) + '" ' + plantuml_uses[0] + ' "' + cn + '" ' + plantuml_uses[1]
-                    )
+                    assocs.append('"' + cn + '" ' + plantuml_mixin + " " + '"' + ClassDefinitionName(mixin) + '"')
 
             # Classes that inject information
             if cn in self.synopsis.applytos.classrefs:
@@ -365,6 +463,36 @@ class PlantumlGenerator(Generator):
     default=False,
     show_default=True,
     help="Preserve original LinkML names in PlantUML diagram output (e.g., for class names, slot names, file names).",
+)
+@click.option(
+    "--include-enums/--no-include-enums",
+    default=False,
+    show_default=True,
+    help=(
+        "If true, render enumerations referenced by the selected classes as PlantUML enum blocks "
+        "and add association arrows from classes to their enum-typed slots."
+    ),
+)
+@click.option(
+    "--mark-mixins/--no-mark-mixins",
+    default=False,
+    show_default=True,
+    help=(
+        "If true, annotate mixin classes with a <<(M,orchid) mixin>> PlantUML spot stereotype "
+        "so they are visually distinguishable from regular classes."
+    ),
+)
+@click.option(
+    "--all",
+    "-a",
+    "include_all",
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help=(
+        "Include all classes and enumerations from the schema. "
+        "Overrides --classes and implies all enumerations are rendered."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

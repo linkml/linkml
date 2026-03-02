@@ -9,10 +9,10 @@ ex:C1 a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "c1" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom linkml:String ;
+            owl:minCardinality 0 ;
             owl:onProperty ex:s1 ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom linkml:String ;
             owl:onProperty ex:s1 ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
