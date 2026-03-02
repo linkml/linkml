@@ -1,5 +1,6 @@
 import pytest
 
+from linkml.generators.pydanticgen.pydantic_ifabsent_processor import PydanticIfAbsentProcessor
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinitionName, SlotDefinitionName
@@ -449,7 +450,15 @@ enums:
     )
 
 
-def test_bnode_default_value():
+@pytest.mark.parametrize(
+    "processor_cls,expected",
+    [
+        (PythonIfAbsentProcessor, "bnode()"),
+        (PydanticIfAbsentProcessor, 'lambda: "_:" + uuid.uuid4().hex'),
+    ],
+    ids=["python", "pydantic"],
+)
+def test_bnode_default_value(processor_cls, expected):
     schema = (
         base_schema
         + """
@@ -460,14 +469,14 @@ def test_bnode_default_value():
     )
     schema_view = SchemaView(schema)
 
-    processor = PythonIfAbsentProcessor(schema_view)
+    processor = processor_cls(schema_view)
 
     assert (
         processor.process_slot(
             schema_view.all_slots()[SlotDefinitionName("bnode")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
-        == "bnode()"
+        == expected
     )
 
 

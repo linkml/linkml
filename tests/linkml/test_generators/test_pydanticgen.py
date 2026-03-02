@@ -421,8 +421,25 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     )
 
 
-def test_ifabsent():
-    schema_str = """
+@pytest.mark.parametrize(
+    "slot_name,range_,ifabsent,expected_fragment",
+    [
+        ("attr1", "integer", "int(10)", "attr1: Optional[int] = Field(default=10"),
+        ("attr2", "string", "string(hello world)", 'attr2: Optional[str] = Field(default="hello world"'),
+        ("attr3", "boolean", "True", "attr3: Optional[bool] = Field(default=True"),
+        ("attr4", "float", "float(1.0)", "attr4: Optional[float] = Field(default=1.0"),
+        ("attr5", "date", "date(2020-01-01)", "attr5: Optional[date] = Field(default=date(2020, 1, 1)"),
+        (
+            "attr6",
+            "datetime",
+            "datetime(2020-01-01T00:00:00Z)",
+            "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)",
+        ),
+        ("attr7", "string", "bnode", 'attr7: Optional[str] = Field(default_factory=lambda: "_:" + uuid.uuid4().hex'),
+    ],
+)
+def test_ifabsent(slot_name, range_, ifabsent, expected_fragment):
+    schema_str = f"""
 id: id
 name: test_info
 description: just testing
@@ -438,38 +455,18 @@ classes:
   Test_Class:
     description: just a test
     attributes:
-      attr1:
-        range: integer
-        ifabsent: int(10)
-      attr2:
-        range: string
-        ifabsent: string(hello world)
-      attr3:
-        range: boolean
-        ifabsent: True
-      attr4:
-        range: float
-        ifabsent: float(1.0)
-      attr5:
-        range: date
-        ifabsent: date(2020-01-01)
-      attr6:
-        range: datetime
-        ifabsent: datetime(2020-01-01T00:00:00Z)
+      {slot_name}:
+        range: {range_}
+        ifabsent: {ifabsent}
         """
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    assert "attr1: Optional[int] = Field(default=10" in code
-    assert 'attr2: Optional[str] = Field(default="hello world"' in code
-    assert "attr3: Optional[bool] = Field(default=True" in code
-    assert "attr4: Optional[float] = Field(default=1.0" in code
-    assert "attr5: Optional[date] = Field(default=date(2020, 1, 1)" in code
-    assert "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)" in code
+    assert expected_fragment in code
 
 
-def test_ifabsent_bnode():
-    """Test that ifabsent: bnode generates a default_factory with a unique blank node ID."""
+def test_ifabsent_bnode_unique():
+    """Verify generated bnode default_factory produces unique values per instance."""
     schema_str = """
 id: id
 name: test_bnode
@@ -491,10 +488,6 @@ classes:
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    assert 'default_factory=lambda: "_:" + uuid.uuid4().hex' in code
-    assert "import uuid" in code
-
-    # Verify the generated code is valid and produces unique bnodes
     module = compile(code, "<test>", "exec")
     ns = {}
     exec(module, ns)
