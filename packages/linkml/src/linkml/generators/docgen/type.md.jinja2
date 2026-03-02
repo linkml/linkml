@@ -1,0 +1,134 @@
+{%- if element.title and element.title != element.name %}
+    {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
+{%- else %}
+    {%- set title = gen.name(element) -%}
+{%- endif -%}
+
+# Type: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
+
+{% if element.description %}
+{% set element_description_lines = element.description.split('\n') %}
+{% for element_description_line in element_description_lines %}
+_{{ element_description_line }}_
+{% endfor %}
+{% endif %}
+
+URI: {{ gen.uri_link(element) }}
+
+## Type Properties
+
+| Property | Value |
+| --- | --- |
+{%- if element.typeof %}
+| Type Of | {{ gen.link(element.typeof) }} |
+{%- endif %}
+{%- if element.base %}
+| Base | `{{ element.base }}` |
+{%- endif %}
+{%- if element.uri %}
+| Type URI | {{ gen.uri_link(element.uri) }} |
+{%- endif %}
+{%- if element.repr %}
+| Representation | `{{ element.repr }}` |
+{%- endif %}
+{%- if element.union_of %}
+| Union Of | {{ gen.links(element.union_of) | join(', ') }} |
+{%- endif %}
+
+{%- set has_basic_constraints = element.minimum_value is not none or element.maximum_value is not none or element.pattern %}
+
+{%- if has_basic_constraints %}
+## Value Constraints
+
+| Property | Value |
+| --- | --- |
+{%- if element.minimum_value is not none or element.maximum_value is not none %}
+| Numeric Range | {{ gen.number_value_range(element) }} |
+{%- endif %}
+{%- if element.pattern %}
+| Regex Pattern | `{{ element.pattern }}` |
+{%- endif %}
+
+{% endif %}
+{%- set has_advanced_constraints = element.structured_pattern or element.equals_string
+    or element.equals_string_in or element.equals_number or element.unit or element.implicit_prefix %}
+
+{%- if has_advanced_constraints %}
+<details>
+<summary>Additional Constraints</summary>
+
+{%- if element.structured_pattern %}
+**Structured Pattern:**
+
+- **Syntax:** `{{ element.structured_pattern.syntax }}`
+- **Interpolated:** {{ element.structured_pattern.interpolated }}
+{%- if element.structured_pattern.partial_match %}
+- **Partial Match:** Yes
+{%- endif %}
+{%- endif %}
+
+{%- if element.equals_string %}
+**Must Equal:** `{{ element.equals_string }}`
+{%- endif %}
+
+{%- if element.equals_string_in %}
+**Must Be One Of:** {{ element.equals_string_in | join(', ') }}
+{%- endif %}
+
+{%- if element.equals_number %}
+**Must Equal:** {{ element.equals_number }}
+{%- endif %}
+
+{%- if element.unit %}
+**Unit:** {{ gen.uri_link(element.unit) }}
+{%- endif %}
+
+{%- if element.implicit_prefix %}
+**Implicit Prefix:** {{ element.implicit_prefix }}
+{%- endif %}
+
+</details>
+{% endif %}
+
+{%- set has_expressions = element.any_of or element.all_of or element.exactly_one_of or element.none_of %}
+
+{%- if has_expressions %}
+<details>
+<summary>Type Expressions</summary>
+
+{%- if element.any_of %}
+**Any Of:** Value must satisfy at least one of these expressions
+
+{%- for expr in element.any_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.all_of %}
+**All Of:** Value must satisfy all of these expressions
+
+{%- for expr in element.all_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.exactly_one_of %}
+**Exactly One Of:** Value must satisfy exactly one of these expressions
+
+{%- for expr in element.exactly_one_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+{%- if element.none_of %}
+**None Of:** Value must not satisfy any of these expressions
+
+{%- for expr in element.none_of %}
+- {{ expr }}
+{%- endfor %}
+{%- endif %}
+
+</details>
+{% endif %}
+
+{% include "common_metadata.md.jinja2" %}

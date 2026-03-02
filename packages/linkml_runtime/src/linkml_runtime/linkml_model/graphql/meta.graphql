@@ -1,0 +1,1463 @@
+# metamodel_version: 1.7.0
+enum AliasPredicateEnum
+  {
+    EXACT_SYNONYM
+    RELATED_SYNONYM
+    BROAD_SYNONYM
+    NARROW_SYNONYM
+  }
+
+enum ObligationLevelEnum
+  {
+    REQUIRED
+    RECOMMENDED
+    OPTIONAL
+    EXAMPLE
+    DISCOURAGED
+  }
+
+enum PresenceEnum
+  {
+    UNCOMMITTED
+    PRESENT
+    ABSENT
+  }
+
+enum PvFormulaOptions
+  {
+    CODE
+    CURIE
+    URI
+    FHIR_CODING
+    LABEL
+  }
+
+enum RelationalRoleEnum
+  {
+    SUBJECT
+    OBJECT
+    PREDICATE
+    NODE
+    OTHER_ROLE
+  }
+
+type AltDescription
+  {
+    source: String!
+    description: String!
+  }
+
+interface Annotatable
+  {
+    annotations: [Annotation]
+  }
+
+type Annotation implements Annotatable
+  {
+    tag: String!
+    value: AnyValue!
+    extensions: [Extension]
+    annotations: [Annotation]
+  }
+
+type AnonymousClassExpression implements ClassExpression
+  {
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    isA: Definition
+    anyOf: [AnonymousClassExpression]
+    exactlyOneOf: [AnonymousClassExpression]
+    noneOf: [AnonymousClassExpression]
+    allOf: [AnonymousClassExpression]
+    slotConditions: [SlotDefinition]
+  }
+
+type AnonymousEnumExpression implements EnumExpression
+  {
+    codeSet: String
+    codeSetTag: String
+    codeSetVersion: String
+    pvFormula: PvFormulaOptions
+    permissibleValues: [PermissibleValue]
+    include: [AnonymousEnumExpression]
+    minus: [AnonymousEnumExpression]
+    inherits: [EnumDefinition]
+    reachableFrom: ReachabilityQuery
+    matches: MatchQuery
+    concepts: [String]
+  }
+
+type AnonymousExpression implements Expression, Extensible, Annotatable, CommonMetadata
+  {
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type AnonymousSlotExpression implements SlotExpression
+  {
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    range: Element
+    rangeExpression: AnonymousClassExpression
+    enumRange: EnumExpression
+    bindings: [EnumBinding]
+    required: Boolean
+    recommended: Boolean
+    multivalued: Boolean
+    inlined: Boolean
+    inlinedAsList: Boolean
+    minimumValue: Anything
+    maximumValue: Anything
+    pattern: String
+    structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
+    valuePresence: PresenceEnum
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Int
+    equalsExpression: String
+    exactCardinality: Int
+    minimumCardinality: Int
+    maximumCardinality: Int
+    hasMember: AnonymousSlotExpression
+    allMembers: AnonymousSlotExpression
+    noneOf: [AnonymousSlotExpression]
+    exactlyOneOf: [AnonymousSlotExpression]
+    anyOf: [AnonymousSlotExpression]
+    allOf: [AnonymousSlotExpression]
+    array: ArrayExpression
+  }
+
+type AnonymousTypeExpression implements TypeExpression
+  {
+    pattern: String
+    structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Int
+    minimumValue: Anything
+    maximumValue: Anything
+    noneOf: [AnonymousTypeExpression]
+    exactlyOneOf: [AnonymousTypeExpression]
+    anyOf: [AnonymousTypeExpression]
+    allOf: [AnonymousTypeExpression]
+  }
+
+scalar Anything
+
+scalar AnyValue
+
+type ArrayExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    exactNumberDimensions: Int
+    minimumNumberDimensions: Int
+    maximumNumberDimensions: Anything
+    dimensions: [DimensionExpression]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type ClassDefinition implements ClassExpression
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    abstract: Boolean
+    mixin: Boolean
+    valuesFrom: [String]
+    stringSerialization: String
+    slots: [SlotDefinition]
+    slotUsage: [SlotDefinition]
+    attributes: [SlotDefinition]
+    classUri: String
+    subclassOf: String
+    unionOf: [ClassDefinition]
+    definingSlots: [SlotDefinition]
+    treeRoot: Boolean
+    uniqueKeys: [UniqueKey]
+    rules: [ClassRule]
+    classificationRules: [AnonymousClassExpression]
+    slotNamesUnique: Boolean
+    representsRelationship: Boolean
+    disjointWith: [ClassDefinition]
+    childrenAreMutuallyDisjoint: Boolean
+    extraSlots: ExtraSlotsExpression
+    alias: String
+    isA: ClassDefinition
+    mixins: [ClassDefinition]
+    applyTo: [ClassDefinition]
+    anyOf: [AnonymousClassExpression]
+    exactlyOneOf: [AnonymousClassExpression]
+    noneOf: [AnonymousClassExpression]
+    allOf: [AnonymousClassExpression]
+    slotConditions: [SlotDefinition]
+  }
+
+interface ClassExpression
+  {
+    anyOf: [AnonymousClassExpression]
+    exactlyOneOf: [AnonymousClassExpression]
+    noneOf: [AnonymousClassExpression]
+    allOf: [AnonymousClassExpression]
+    slotConditions: [SlotDefinition]
+  }
+
+interface ClassLevelRule
+  {
+  }
+
+type ClassRule implements Extensible, Annotatable, CommonMetadata
+  {
+    preconditions: AnonymousClassExpression
+    postconditions: AnonymousClassExpression
+    elseconditions: AnonymousClassExpression
+    bidirectional: Boolean
+    openWorld: Boolean
+    rank: Int
+    deactivated: Boolean
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    categories: [String]
+    keywords: [String]
+  }
+
+interface CommonMetadata
+  {
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+interface Definition
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    isA: Definition
+    abstract: Boolean
+    mixin: Boolean
+    mixins: [Definition]
+    applyTo: [Definition]
+    valuesFrom: [String]
+    stringSerialization: String
+  }
+
+type DimensionExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    alias: String
+    maximumCardinality: Int
+    minimumCardinality: Int
+    exactCardinality: Int
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type Element implements Extensible, Annotatable, CommonMetadata
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type EnumBinding implements Extensible, Annotatable, CommonMetadata
+  {
+    range: EnumDefinition
+    obligationLevel: ObligationLevelEnum
+    bindsValueOf: String
+    pvFormula: PvFormulaOptions
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type EnumDefinition implements EnumExpression
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    isA: Definition
+    abstract: Boolean
+    mixin: Boolean
+    mixins: [Definition]
+    applyTo: [Definition]
+    valuesFrom: [String]
+    stringSerialization: String
+    enumUri: String
+    codeSet: String
+    codeSetTag: String
+    codeSetVersion: String
+    pvFormula: PvFormulaOptions
+    permissibleValues: [PermissibleValue]
+    include: [AnonymousEnumExpression]
+    minus: [AnonymousEnumExpression]
+    inherits: [EnumDefinition]
+    reachableFrom: ReachabilityQuery
+    matches: MatchQuery
+    concepts: [String]
+  }
+
+type EnumExpression
+  {
+    codeSet: String
+    codeSetTag: String
+    codeSetVersion: String
+    pvFormula: PvFormulaOptions
+    permissibleValues: [PermissibleValue]
+    include: [AnonymousEnumExpression]
+    minus: [AnonymousEnumExpression]
+    inherits: [EnumDefinition]
+    reachableFrom: ReachabilityQuery
+    matches: MatchQuery
+    concepts: [String]
+  }
+
+type Example
+  {
+    value: String
+    description: String
+    object: Anything
+  }
+
+interface Expression
+  {
+  }
+
+interface Extensible
+  {
+    extensions: [Extension]
+  }
+
+type Extension
+  {
+    tag: String!
+    value: AnyValue!
+    extensions: [Extension]
+  }
+
+type ExtraSlotsExpression implements Expression
+  {
+    allowed: Boolean
+    rangeExpression: AnonymousClassExpression
+  }
+
+type ImportExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    importFrom: String!
+    importAs: String
+    importMap: [Setting]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type LocalName
+  {
+    localNameSource: String!
+    localNameValue: String!
+  }
+
+type MatchQuery
+  {
+    identifierPattern: String
+    sourceOntology: String
+  }
+
+type PathExpression implements Expression, Extensible, Annotatable, CommonMetadata
+  {
+    followedBy: PathExpression
+    noneOf: [PathExpression]
+    anyOf: [PathExpression]
+    allOf: [PathExpression]
+    exactlyOneOf: [PathExpression]
+    reversed: Boolean
+    traverse: SlotDefinition
+    rangeExpression: AnonymousClassExpression
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type PatternExpression implements Extensible, Annotatable, CommonMetadata
+  {
+    syntax: String
+    interpolated: Boolean
+    partialMatch: Boolean
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type PermissibleValue implements Extensible, Annotatable, CommonMetadata
+  {
+    text: String!
+    description: String
+    meaning: String
+    unit: UnitOfMeasure
+    instantiates: [String]
+    implements: [String]
+    isA: PermissibleValue
+    mixins: [PermissibleValue]
+    extensions: [Extension]
+    annotations: [Annotation]
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type Prefix
+  {
+    prefixPrefix: String!
+    prefixReference: String!
+  }
+
+type ReachabilityQuery
+  {
+    sourceOntology: String
+    sourceNodes: [String]
+    relationshipTypes: [String]
+    isDirect: Boolean
+    includeSelf: Boolean
+    traverseUp: Boolean
+  }
+
+type SchemaDefinition
+  {
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    id: String!
+    version: String
+    imports: [String]
+    license: String
+    prefixes: [Prefix]
+    emitPrefixes: [String]
+    defaultCuriMaps: [String]
+    defaultPrefix: String
+    defaultRange: TypeDefinition
+    subsets: [SubsetDefinition]
+    types: [TypeDefinition]
+    enums: [EnumDefinition]
+    slots: [SlotDefinition]
+    classes: [ClassDefinition]
+    metamodelVersion: String
+    sourceFile: String
+    sourceFileDate: String
+    sourceFileSize: Int
+    generationDate: String
+    slotNamesUnique: Boolean
+    settings: [Setting]
+    bindings: [EnumBinding]
+    name: String!
+  }
+
+type Setting
+  {
+    settingKey: String!
+    settingValue: String!
+  }
+
+type SlotDefinition implements SlotExpression
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    abstract: Boolean
+    mixin: Boolean
+    valuesFrom: [String]
+    stringSerialization: String
+    singularName: String
+    domain: ClassDefinition
+    slotUri: String
+    inherited: Boolean
+    readonly: String
+    ifabsent: String
+    listElementsUnique: Boolean
+    listElementsOrdered: Boolean
+    shared: Boolean
+    key: Boolean
+    identifier: Boolean
+    designatesType: Boolean
+    alias: String
+    owner: Definition
+    domainOf: [ClassDefinition]
+    subpropertyOf: SlotDefinition
+    symmetric: Boolean
+    reflexive: Boolean
+    locallyReflexive: Boolean
+    irreflexive: Boolean
+    asymmetric: Boolean
+    transitive: Boolean
+    inverse: SlotDefinition
+    isClassField: Boolean
+    transitiveFormOf: SlotDefinition
+    reflexiveTransitiveFormOf: SlotDefinition
+    role: String
+    isUsageSlot: Boolean
+    usageSlotName: String
+    relationalRole: RelationalRoleEnum
+    slotGroup: SlotDefinition
+    isGroupingSlot: Boolean
+    pathRule: PathExpression
+    disjointWith: [SlotDefinition]
+    childrenAreMutuallyDisjoint: Boolean
+    unionOf: [SlotDefinition]
+    typeMappings: [TypeMapping]
+    isA: SlotDefinition
+    mixins: [SlotDefinition]
+    applyTo: [SlotDefinition]
+    range: Element
+    rangeExpression: AnonymousClassExpression
+    enumRange: EnumExpression
+    bindings: [EnumBinding]
+    required: Boolean
+    recommended: Boolean
+    multivalued: Boolean
+    inlined: Boolean
+    inlinedAsList: Boolean
+    minimumValue: Anything
+    maximumValue: Anything
+    pattern: String
+    structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
+    valuePresence: PresenceEnum
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Int
+    equalsExpression: String
+    exactCardinality: Int
+    minimumCardinality: Int
+    maximumCardinality: Int
+    hasMember: AnonymousSlotExpression
+    allMembers: AnonymousSlotExpression
+    noneOf: [AnonymousSlotExpression]
+    exactlyOneOf: [AnonymousSlotExpression]
+    anyOf: [AnonymousSlotExpression]
+    allOf: [AnonymousSlotExpression]
+    array: ArrayExpression
+  }
+
+interface SlotExpression
+  {
+    range: Element
+    rangeExpression: AnonymousClassExpression
+    enumRange: EnumExpression
+    bindings: [EnumBinding]
+    required: Boolean
+    recommended: Boolean
+    multivalued: Boolean
+    inlined: Boolean
+    inlinedAsList: Boolean
+    minimumValue: Anything
+    maximumValue: Anything
+    pattern: String
+    structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
+    valuePresence: PresenceEnum
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Int
+    equalsExpression: String
+    exactCardinality: Int
+    minimumCardinality: Int
+    maximumCardinality: Int
+    hasMember: AnonymousSlotExpression
+    allMembers: AnonymousSlotExpression
+    noneOf: [AnonymousSlotExpression]
+    exactlyOneOf: [AnonymousSlotExpression]
+    anyOf: [AnonymousSlotExpression]
+    allOf: [AnonymousSlotExpression]
+    array: ArrayExpression
+  }
+
+type StructuredAlias implements Expression, Extensible, Annotatable, CommonMetadata
+  {
+    literalForm: String!
+    predicate: AliasPredicateEnum
+    categories: [String]
+    contexts: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    keywords: [String]
+  }
+
+type SubsetDefinition
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type TypeDefinition implements TypeExpression
+  {
+    name: String!
+    idPrefixes: [String]
+    idPrefixesAreClosed: Boolean
+    definitionUri: String
+    localNames: [LocalName]
+    conformsTo: String
+    implements: [String]
+    instantiates: [String]
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+    typeof: TypeDefinition
+    base: String
+    uri: String
+    repr: String
+    unionOf: [TypeDefinition]
+    pattern: String
+    structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Int
+    minimumValue: Anything
+    maximumValue: Anything
+    noneOf: [AnonymousTypeExpression]
+    exactlyOneOf: [AnonymousTypeExpression]
+    anyOf: [AnonymousTypeExpression]
+    allOf: [AnonymousTypeExpression]
+  }
+
+interface TypeExpression
+  {
+    pattern: String
+    structuredPattern: PatternExpression
+    unit: UnitOfMeasure
+    implicitPrefix: String
+    equalsString: String
+    equalsStringIn: [String]
+    equalsNumber: Int
+    minimumValue: Anything
+    maximumValue: Anything
+    noneOf: [AnonymousTypeExpression]
+    exactlyOneOf: [AnonymousTypeExpression]
+    anyOf: [AnonymousTypeExpression]
+    allOf: [AnonymousTypeExpression]
+  }
+
+type TypeMapping implements Extensible, Annotatable, CommonMetadata
+  {
+    framework: String!
+    type: TypeDefinition
+    stringSerialization: String
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type UniqueKey implements Extensible, Annotatable, CommonMetadata
+  {
+    uniqueKeyName: String!
+    uniqueKeySlots: [SlotDefinition]!
+    considerNullsInequal: Boolean
+    extensions: [Extension]
+    annotations: [Annotation]
+    description: String
+    altDescriptions: [AltDescription]
+    title: String
+    deprecated: String
+    todos: [String]
+    notes: [String]
+    comments: [String]
+    examples: [Example]
+    inSubset: [SubsetDefinition]
+    fromSchema: String
+    importedFrom: String
+    source: String
+    inLanguage: String
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
+    aliases: [String]
+    structuredAliases: [StructuredAlias]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
+    keywords: [String]
+  }
+
+type UnitOfMeasure
+  {
+    symbol: String
+    abbreviation: String
+    descriptiveName: String
+    exactMappings: [String]
+    ucumCode: String
+    derivation: String
+    hasQuantityKind: String
+    iec61360code: String
+  }

@@ -1,0 +1,70 @@
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub enum {{ name }} {
+{% for item in items %}
+    {% if serde %}#[cfg_attr(feature = "serde", serde(rename = "{{ item.text_literal }}"))]
+    {% endif %}
+    {{ item.variant }},
+{% endfor %}
+}
+
+impl core::fmt::Display for {{ name }} {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+        {% for item in items %}
+            {{ name }}::{{ item.variant }} => f.write_str("{{ item.text_literal }}"),
+        {% endfor %}
+        }
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for {{ name }} {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        let s: &str = match self {
+        {% for item in items %}
+            {{ name }}::{{ item.variant }} => "{{ item.text_literal }}",
+        {% endfor %}
+        };
+        Ok(pyo3::types::PyString::new(py, s).into_any())
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for {{ name }} {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        if let Ok(s) = ob.extract::<&str>() {
+            match s {
+            {% for item in items %}
+                {{ item.python_match_pattern }} => Ok({{ name }}::{{ item.variant }}),
+            {% endfor %}
+                _ => Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
+                    format!("invalid value for {{ name }}: {}", s),
+                )),
+            }
+        } else {
+            Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                concat!("expected str for ", stringify!({{ name }})),
+            ))
+        }
+    }
+}
+
+#[cfg(feature = "stubgen")]
+impl ::pyo3_stub_gen::PyStubType for {{ name }} {
+    fn type_output() -> ::pyo3_stub_gen::TypeInfo {
+        {% set literal_values = items | map(attribute='text_literal') | list %}
+        {% set escaped_values = literal_values | map('replace', "'", "\\'" ) | list %}
+        {% if escaped_values %}
+        ::pyo3_stub_gen::TypeInfo::with_module(
+            "typing.Literal['{{ escaped_values | join("', '") }}']",
+            "typing".into(),
+        )
+        {% else %}
+        ::pyo3_stub_gen::TypeInfo::ident("typing.Any")
+        {% endif %}
+    }
+}

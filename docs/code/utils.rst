@@ -1,14 +1,6 @@
 Utils
 =====
 
-linkml.utils.converter module
------------------------------
-
-.. automodule:: linkml.utils.converter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 linkml.utils.datautils module
 -----------------------------
 
@@ -85,14 +77,6 @@ linkml.utils.typereferences module
 ----------------------------------
 
 .. automodule:: linkml.utils.typereferences
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-linkml.utils.validation module
-------------------------------
-
-.. automodule:: linkml.utils.validation
    :members:
    :undoc-members:
    :show-inheritance:

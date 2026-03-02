@@ -1,0 +1,8 @@
+{% if imports is string %}
+{{ imports }}
+{% else %}
+    {% for import in imports %}
+{{ import }}
+    {% endfor %}
+{% endif %}
+use std::collections::BTreeMap;

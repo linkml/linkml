@@ -1,0 +1,3402 @@
+id: https://w3id.org/linkml/meta
+title: LinkML Schema Metamodel
+name: meta
+description: |-
+  The metamodel for schemas defined using the Linked Data Modeling Language framework.
+
+  For more information on LinkML:
+
+  * [linkml.io](https://linkml.io) main website
+  * [specification](https://w3id.org/linkml/docs/specification/)
+
+  LinkML is self-describing. Every LinkML schema consists of elements
+  that instantiate classes in this metamodel.
+
+  Core metaclasses:
+
+  * [SchemaDefinition](https://w3id.org/linkml/SchemaDefinition)
+  * [ClassDefinition](https://w3id.org/linkml/ClassDefinition)
+  * [SlotDefinition](https://w3id.org/linkml/SlotDefinition)
+  * [TypeDefinition](https://w3id.org/linkml/TypeDefinition)
+
+  There are many subsets of *profiles* of the metamodel, for different purposes:
+
+  * [MinimalSubset](https://w3id.org/linkml/MinimalSubset)
+  * [BasicSubset](https://w3id.org/linkml/BasicSubset)
+
+  For canonical reference documentation on any metamodel construct,
+  refer to the official URI for each construct, e.g.
+  [https://w3id.org/linkml/is_a](https://w3id.org/linkml/is_a)
+
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  skos: http://www.w3.org/2004/02/skos/core#
+  skosxl: http://www.w3.org/2008/05/skos-xl#
+  OIO: http://www.geneontology.org/formats/oboInOwl#
+  NCIT: http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#
+  pav: http://purl.org/pav/
+  oslc: http://open-services.net/ns/core#
+  schema: http://schema.org/
+  bibo: http://purl.org/ontology/bibo/
+  swrl: http://www.w3.org/2003/11/swrl#
+  sh: http://www.w3.org/ns/shacl#
+  owl: http://www.w3.org/2002/07/owl#
+  qb: http://purl.org/linked-data/cube#
+  prov: http://www.w3.org/ns/prov#
+  vann: https://vocab.org/vann/
+  qudt: http://qudt.org/schema/qudt/
+  cdisc: http://rdf.cdisc.org/mms#
+  SIO: http://semanticscience.org/resource/SIO_
+
+default_prefix: linkml
+default_range: string
+
+default_curi_maps:
+  - semweb_context
+
+emit_prefixes:
+  - linkml
+  - rdf
+  - rdfs
+  - xsd
+  - skos
+  - dcterms
+  - OIO
+  - owl
+  - pav
+
+imports:
+  - linkml:types
+  - linkml:mappings
+  - linkml:extensions
+  - linkml:annotations
+#  - linkml:validation
+  - linkml:units
+
+subsets:
+  MinimalSubset:
+    rank: 0
+    title: minimal subset
+    description: |-
+      The absolute minimal set of elements necessary for defining any schema.
+
+      schemas conforming to the minimal subset consist of classes, with all slots
+      inlined as attributes. There are no enums.
+  BasicSubset:
+    rank: 1
+    title: basic subset
+    description: |-
+      An extension of MinimalSubset that avoids advanced constructs and can be implemented by a broad variety of tools.
+
+      This subset roughly corresponds to the union of most standard constructs used in relational datamodel modeling,
+      object oriented modeling, and simple JSON-style modeling, while avoiding more advanced constructs from these languages.
+
+      It is often possible to translate from a more expressive schema to a BasicSubset schema, through a schema derivation
+      process
+  SpecificationSubset:
+    rank: 2
+    title: specification subset
+    description: |-
+      A subset that includes all the metamodel elements that form part of the normative LinkML specification.
+
+      The complete LinkML specification can be found at [linkml:specification](https://w3id.org/linkml/specification)
+  RelationalModelProfile:
+    rank: 3
+    title: relational model profile
+    description: |-
+      A profile that includes all the metamodel elements whose semantics can be expressed using the classic Relational Model.
+      The Relational Model excludes collections (multivalued slots) as first class entities. Instead, these must be
+      mapped to backreferences
+
+      The classic Relational Model excludes inheritance and polymorphism -- these must be rolled down to
+      concrete classes or otherwise transformed.
+  ObjectOrientedProfile:
+    rank: 4
+    title: object oriented profile
+    description: |-
+      A profile that includes all the metamodel elements whose semantics can be expressed using a minimal
+      implementation of the object oriented metamodel as employed by languages such as Java and Python, or
+      in modeling frameworks like UML
+  OwlProfile:
+    title: owl profile
+    description: |-
+      A profile that includes all the metamodel elements whose semantics can be expressed in OWL
+
+# ==================================
+# Slots                            #
+# ==================================
+slots:
+
+  # -----------------------------------
+  # Common metadata shared by all elements
+  # -----------------------------------
+  name:
+    rank: 1
+    aliases:
+      - short name
+      - unique name
+    domain: element
+    identifier: true
+    description: >-
+      the unique name of the element within the context of the schema.  Name is combined with the default prefix to
+      form the globally unique subject of the target class.
+    slot_uri: rdfs:label
+    in_subset:
+      - SpecificationSubset
+      - OwlProfile
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+    exact_mappings:
+      - schema:name
+    see_also:
+      - https://en.wikipedia.org/wiki/Data_element_name
+      - https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase
+
+  title:
+    rank: 3
+    aliases:
+      - long name
+    domain: element
+    description: >-
+      A concise human-readable display label for the element. The title should mirror the name,
+      and should use ordinary textual punctuation.
+    slot_uri: dcterms:title
+    in_subset:
+      - BasicSubset
+
+  conforms_to:
+    domain: element
+    description: An established standard to which the element conforms.
+    slot_uri: dcterms:conformsTo
+    in_subset:
+      - BasicSubset
+    see_also:
+      - linkml:implements
+
+  implements:
+    domain: element
+    range: uriorcurie
+    description: >-
+      An element in another schema which this element conforms to. The referenced element is not imported
+      into the schema for the implementing element. However, the referenced schema may be used to check
+      conformance of the implementing element.
+    multivalued: true
+
+  instantiates:
+    domain: element
+    range: uriorcurie
+    description: >-
+      An element in another schema which this element instantiates.
+    multivalued: true
+      
+  categories:
+    range: uriorcurie
+    singular_name: category
+    slot_uri: dcterms:subject
+    multivalued: true
+    description: >-
+      Controlled terms used to categorize an element.
+    comments:
+      - if you wish to use uncontrolled terms or terms that lack identifiers then use the keywords element
+    in_subset:
+      - BasicSubset
+
+  keywords:
+    domain: element
+    singular_name: keyword
+    description: >-
+      Keywords or tags used to describe the element
+    slot_uri: schema:keywords
+    range: string
+    multivalued: true
+    in_subset:
+      - BasicSubset
+
+  definition_uri:
+    domain: element
+    description: >-
+      The native URI of the element. This is always within the namespace of the containing schema.
+      Contrast with the assigned URI, via class_uri or slot_uri
+    comments:
+      - Formed by combining the default_prefix with the normalized element name
+    range: uriorcurie
+    readonly: filled in by the schema loader or schema view
+    see_also:
+      - linkml:class_uri
+      - linkml:slot_uri
+
+  id_prefixes:
+    domain: element
+    multivalued: true
+    range: ncname
+    description: >-
+      An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix
+    comments:
+      - Order of elements may be used to indicate priority order
+      - If identifiers are treated as CURIEs, then the CURIE must start with one of the indicated prefixes followed by `:` (_should_ start if the list is open)
+      - If identifiers are treated as URIs, then the URI string must start with the expanded for of the prefix (_should_ start if the list is open)
+    see_also:
+      - https://github.com/linkml/linkml-model/issues/28
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  id_prefixes_are_closed:
+    domain: element
+    range: boolean
+    description: >-
+      If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.
+    see_also:
+      - https://github.com/linkml/linkml/issues/194
+
+  description:
+    rank: 5
+    aliases:
+      - definition
+    domain: element
+    description: >-
+      a textual description of the element's purpose and use
+    slot_uri: skos:definition
+    exact_mappings:
+      - dcterms:description
+      - schema:description
+    recommended: true
+    in_subset:
+      - BasicSubset
+
+  structured_aliases:
+    slot_uri: skosxl:altLabel
+    range: structured_alias
+    multivalued: true
+    inlined: true
+    description: >-
+      A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
+    see_also:
+      - linkml:aliases
+      
+  aliases:
+    aliases:
+      - synonyms
+      - alternate names
+      - alternative labels
+      - designations
+    domain: element
+    description: >-
+      Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful
+      to support search and alignment.
+    comments:
+      - not be confused with the metaslot alias.
+    range: string
+    multivalued: true
+    slot_uri: skos:altLabel
+    exact_mappings:
+      - schema:alternateName
+    in_subset:
+      - BasicSubset
+
+  deprecated:
+    domain: element
+    range: string
+    description: >-
+      Description of why and when this element will no longer be used
+    comments:
+      - note that linkml does not use a boolean to indicate deprecation status - the presence of a string value in this field is sufficient to indicate deprecation.
+    close_mappings:
+      - owl:deprecated
+    in_subset:
+      - BasicSubset
+
+  todos:
+    domain: element
+    range: string
+    description: Outstanding issues that needs resolution
+    multivalued: true
+    in_subset:
+      - BasicSubset
+
+  notes:
+    domain: element
+    multivalued: true
+    description: editorial notes about an element intended primarily for internal consumption
+    slot_uri: skos:editorialNote
+    in_subset:
+      - BasicSubset
+
+  comments:
+    domain: element
+    multivalued: true
+    description: notes and comments about an element intended primarily for external consumption
+    slot_uri: skos:note
+    exact_mappings:
+      - rdfs:comment
+    in_subset:
+      - BasicSubset
+
+  in_subset:
+    domain: element
+    multivalued: true
+    range: subset_definition
+    description: >-
+      used to indicate membership of a term in a defined subset of terms used for a particular domain
+      or application.
+    comments:
+      - an example of use in the translator_minimal subset in the biolink model, holding the minimal set of predicates used in a translator knowledge graph
+    slot_uri: OIO:inSubset
+    in_subset:
+      - BasicSubset
+
+  from_schema:
+    domain: element
+    range: uri
+    readonly: supplied by the schema loader or schema view
+    description: id of the schema that defined the element
+    notes:
+      - A stronger model would be range schema_definition, but this doesn't address the import model
+    slot_uri: skos:inScheme
+    in_subset:
+      - SpecificationSubset
+
+  imported_from:
+    domain: element
+    range: string
+    readonly: supplied by the schema loader or schema view
+    description: >-
+      the imports entry that this element was derived from.  Empty means primary source
+
+  see_also:
+    domain: element
+    multivalued: true
+    range: uriorcurie
+    description: A list of related entities or URLs that may be of relevance
+    slot_uri: rdfs:seeAlso
+    in_subset:
+      - BasicSubset
+
+  owned_by:
+    aliases:
+      - steward
+      - owner
+    domain: element
+    range: uriorcurie
+    description: agent that owns or is the steward of the element
+    close_mappings:
+      - rdfs:isDefinedBy
+    in_subset:
+      - BasicSubset
+
+  created_by:
+    domain: element
+    range: uriorcurie
+    description: agent that created the element
+    slot_uri: pav:createdBy
+    in_subset:
+      - BasicSubset
+
+  contributors:
+    domain: element
+    range: uriorcurie
+    description: agent that contributed to the element
+    slot_uri: dcterms:contributor
+    multivalued: true
+    in_subset:
+      - BasicSubset
+
+  created_on:
+    domain: element
+    range: datetime
+    description: time at which the element was created
+    slot_uri: pav:createdOn
+    in_subset:
+      - BasicSubset
+
+  last_updated_on:
+    domain: element
+    range: datetime
+    description: time at which the element was last updated
+    slot_uri: pav:lastUpdatedOn
+    in_subset:
+      - BasicSubset
+
+  modified_by:
+    domain: element
+    range: uriorcurie
+    description: agent that modified the element
+    slot_uri: oslc:modifiedBy
+    in_subset:
+      - BasicSubset
+
+  status:
+    aliases:
+      - workflow status
+    domain: element
+    range: uriorcurie
+    description: status of the element
+    slot_uri: bibo:status
+    examples:
+      - value: "bibo:draft"
+    see_also:
+      - https://www.hl7.org/fhir/valueset-publication-status.html  ## Draft, Active, Retired, Unknown
+      - https://www.hl7.org/fhir/versions.html#std-process  ## Draft, Trial Use, Normative, Informative, Deprecated
+    in_subset:
+      - BasicSubset
+
+  literal_form:
+    aliases:
+      - alias_name
+      - string_value
+    domain: structured_alias
+    range: string
+    required: true
+    slot_uri: skosxl:literalForm
+    description: >-
+      The literal lexical form of a structured alias; i.e the actual alias value.
+
+  alias_predicate:
+    alias: predicate
+    recommended: true
+    slot_uri: rdf:predicate
+    domain: structured_alias
+    range: alias_predicate_enum
+    description: >-
+      The relationship between an element and its alias.
+
+  alias_contexts:
+    alias: contexts
+    domain: structured_alias
+    range: uri
+    multivalued: true
+    description: >-
+      The context in which an alias should be applied
+
+  in_language:
+    slot_uri: schema:inLanguage
+    range: string
+    description: >-
+      the primary language used in the sources
+    comments:
+      - Recommended to use a string from IETF BCP 47
+    conforms_to: https://www.rfc-editor.org/rfc/bcp/bcp47.txt
+
+  source:
+    aliases:
+      - origin
+      - derived from
+    domain: element
+    range: uriorcurie
+    description: A related resource from which the element is derived.
+    slot_uri: dcterms:source
+    close_mappings:
+      - prov:wasDerivedFrom
+      - schema:isBasedOn
+    comments:
+      - The described resource may be derived from the related resource in whole or in part
+    in_subset:
+      - BasicSubset
+
+  publisher:
+    domain: element
+    range: uriorcurie
+    description: An entity responsible for making the resource available
+    slot_uri: dcterms:publisher
+    in_subset:
+      - BasicSubset
+
+  # --------------------------------------------------------------
+  # Slots that are common to slot definition and class definition
+  # --------------------------------------------------------------
+  is_a:
+    rank: 11
+    range: definition
+    abstract: true
+    description: >-
+      A primary parent class or slot from which inheritable metaslots are propagated from.
+      While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing.
+      The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI
+      framework (e.g. java classes, python classes) then is a is used.
+      When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins
+      are recursively unfolded
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  abstract:
+    domain: definition
+    range: boolean
+    description: >-
+      Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - ObjectOrientedProfile
+
+  mixin:
+    aliases:
+      - trait
+    domain: definition
+    range: boolean
+    description: >-
+      Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.
+    see_also:
+      - https://en.wikipedia.org/wiki/Mixin
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - ObjectOrientedProfile
+
+  mixins:
+    rank: 13
+    aliases:
+      - traits
+    multivalued: true
+    range: definition
+    description: >-
+      A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.
+    comments:
+      - mixins act in the same way as parents (is_a). They allow a model to have a primary strict hierarchy, while keeping the benefits of multiple inheritance
+    see_also:
+      - https://en.wikipedia.org/wiki/Mixin
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  apply_to:
+    domain: definition
+    multivalued: true
+    range: definition
+    description: >-
+      Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for
+      identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot
+      systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class,
+      and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.
+    status: testing
+
+  values_from:
+    domain: definition
+    multivalued: true
+    range: uriorcurie
+    description: >-
+      The identifier of a "value set" -- a set of identifiers that form the possible values for the range of a slot.
+      Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term
+      while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration
+      in that in an enumeration, the values of the enumeration are listed directly in the model itself.
+      Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an
+      enumerated list of possible values in every serialization of the model.
+    status: testing
+
+  # -----------------------------------
+  # Enum definition slots
+  # -----------------------------------
+  code_set:
+    domain: enum_expression
+    range: uriorcurie
+    description: >-
+      the identifier of an enumeration code set.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  code_set_version:
+    domain: enum_expression
+    range: string
+    description: >-
+      the version identifier of the enumeration code set
+    comments:
+      - we assume that version identifiers lexically sort in temporal order. Recommend semver when possible
+    in_subset:
+      - BasicSubset
+
+  code_set_tag:
+    domain: enum_expression
+    range: string
+    description: >-
+      the version tag of the enumeration code set
+    comments:
+      - enum_expression cannot have both a code_set_tag and a code_set_version
+    in_subset:
+      - BasicSubset
+
+  pv_formula:
+    range: pv_formula_options
+    description: >-
+      Defines the specific formula to be used to generate the permissible values.
+    comments:
+      - you cannot have BOTH the permissible_values and permissible_value_formula tag
+      - code_set must be supplied for this to be valid
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  permissible_values:
+    aliases:
+      - coded values
+    domain: enum_expression
+    range: permissible_value
+    multivalued: true
+    inlined: true
+    description: >-
+      A list of possible values for a slot range
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    exact_mappings:
+      - cdisc:PermissibleValue
+
+  enum_uri:
+    aliases:
+      - public ID
+    domain: enum_definition
+    range: uriorcurie
+    description: URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
+    ifabsent: class_curie
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  include:
+    description: An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set
+    domain: enum_expression
+    range: anonymous_enum_expression
+    multivalued: true
+    in_subset:
+      - SpecificationSubset
+
+  minus:
+    description: An enum expression that yields a list of permissible values that are to be subtracted from the enum
+    domain: enum_expression
+    range: anonymous_enum_expression
+    multivalued: true
+    in_subset:
+      - SpecificationSubset
+
+  inherits:
+    description: An enum definition that is used as the basis to create a new enum
+    comments:
+      - All permissible values for all inherited enums are copied to form the initial seed set
+    domain: enum_expression
+    range: enum_definition
+    multivalued: true
+    in_subset:
+      - SpecificationSubset
+
+  matches:
+    description: Specifies a match query that is used to calculate the list of permissible values
+    domain: enum_expression
+    range: match_query
+    in_subset:
+      - SpecificationSubset
+
+  identifier_pattern:
+    description: A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values
+    domain: match_query
+    range: string
+    in_subset:
+      - SpecificationSubset
+
+  concepts:
+    description: A list of identifiers that are used to construct a set of permissible values
+    domain: enum_expression
+    range: uriorcurie
+    multivalued: true
+    in_subset:
+      - SpecificationSubset
+
+  reachable_from:
+    description: Specifies a query for obtaining a list of permissible values based on graph reachability
+    domain: enum_expression
+    range: reachability_query
+    in_subset:
+      - SpecificationSubset
+
+  source_ontology:
+    aliases:
+      - terminology
+      - vocabulary
+    description: An ontology or vocabulary or terminology that is used in a query to obtain a set of permissible values
+    comments:
+      - examples include schema.org, wikidata, or an OBO ontology
+      - for obo ontologies we recommend CURIEs of the form obo:cl, obo:envo, etc
+    range: uriorcurie
+    in_subset:
+      - SpecificationSubset
+
+  is_direct:
+    aliases:
+      - non-transitive
+    description: True if the reachability query should only include directly related nodes, if False then include also transitively connected
+    domain: reachability_query
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+
+  traverse_up:
+    aliases:
+      - ancestors
+    description: True if the direction of the reachability query is reversed and ancestors are retrieved
+    domain: reachability_query
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+
+  include_self:
+    aliases:
+      - reflexive
+    description: True if the query is reflexive
+    domain: reachability_query
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+
+  relationship_types:
+    description: A list of relationship types (properties) that are used in a reachability query
+    aliases:
+      - predicates
+      - properties
+    domain: reachability_query
+    range: uriorcurie
+    multivalued: true
+    in_subset:
+      - SpecificationSubset
+
+  source_nodes:
+    description: A list of nodes that are used in the reachability query
+    domain: reachability_query
+    range: uriorcurie
+    multivalued: true
+    in_subset:
+      - SpecificationSubset
+
+  # -----------------------------------
+  # Slots for permissible_value
+  # -----------------------------------
+  text:
+    rank: 21
+    aliases:
+      - value
+    domain: permissible_value
+    range: string
+    description: >-
+      The actual permissible value itself
+    comments:
+      - there are no constraints on the text of the permissible value, but for many applications you may want to consider following idiomatic forms and using computer-friendly forms
+    identifier: true
+    close_mappings:
+      - skos:notation
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  meaning:
+    rank: 23
+    aliases:
+      - PV meaning
+    domain: permissible_value
+    range: uriorcurie
+    description: >-
+      the value meaning of a permissible value
+    notes:
+      - we may want to change the range of this (and other) elements in the model to an entitydescription type construct
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    see_also:
+      - https://en.wikipedia.org/wiki/ISO/IEC_11179
+
+  # -----------------------------------
+  # Schema definition slots
+  # -----------------------------------
+  id:
+    rank: 0
+    domain: schema_definition
+    range: uri
+    description: The official schema URI
+    required: true
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - OwlProfile
+
+  emit_prefixes:
+    domain: schema_definition
+    multivalued: true
+    range: ncname
+    description: >-
+        a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in
+        this list are added to the prefix sections of the target models.
+
+  version:
+    domain: schema_definition
+    description: particular version of schema
+    slot_uri: pav:version
+    exact_mappings:
+      - schema:schemaVersion
+    in_subset:
+      - BasicSubset
+
+  imports:
+    rank: 21
+    domain: schema_definition
+    range: uriorcurie
+    multivalued: true
+    description: A list of schemas that are to be included in this schema
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - OwlProfile
+
+  structured_imports:
+    domain: schema_definition
+    range: import_expression
+    multivalued: true
+    description: >-
+      A list of specifications for how to import elements from external schemas
+    status: testing
+
+  license:
+    rank: 31
+    domain: schema_definition
+    description: license for the schema
+    slot_uri: dcterms:license
+    in_subset:
+      - BasicSubset
+
+  default_curi_maps:
+    domain: schema_definition
+    multivalued: true
+    description: ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables
+    in_subset:
+      - BasicSubset
+
+  default_prefix:
+    rank: 11
+    domain: schema_definition
+    range: string
+    ifabsent: default_ns
+    description: >-
+      The prefix that is used for all elements within a schema
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+
+  default_range:
+    rank: 13
+    domain: schema_definition
+    range: type_definition
+    description: default slot range to be used if range element is omitted from a slot definition
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+
+  subsets:
+    rank: 8
+    domain: schema_definition
+    multivalued: true
+    range: subset_definition
+    inlined: true
+    description: An index to the collection of all subset definitions in the schema
+    exact_mappings:
+      - OIO:hasSubset
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  types:
+    rank: 6
+    domain: schema_definition
+    range: type_definition
+    multivalued: true
+    inlined: true
+    description: An index to the collection of all type definitions in the schema
+    in_subset:
+      - BasicSubset
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  enums:
+    rank: 5
+    domain: schema_definition
+    range: enum_definition
+    multivalued: true
+    inlined: true
+    description: An index to the collection of all enum definitions in the schema
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  slot_definitions:
+    rank: 4
+    domain: schema_definition
+    multivalued: true
+    range: slot_definition
+    inlined: true
+    alias: slots
+    description: An index to the collection of all slot definitions in the schema
+    comments:
+      - note the formal name of this element is slot_definitions, but it has alias slots, which is the canonical form used in yaml/json serializes of schemas.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - OwlProfile
+
+  classes:
+    rank: 3
+    domain: schema_definition
+    range: class_definition
+    multivalued: true
+    inlined: true
+    description: An index to the collection of all class definitions in the schema
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  metamodel_version:
+    domain: schema_definition
+    readonly: supplied by the schema loader or schema view
+    description: Version of the metamodel used to load the schema
+    in_subset:
+      - BasicSubset
+
+  source_file:
+    domain: schema_definition
+    readonly: supplied by the schema loader
+    description: name, uri or description of the source of the schema
+    in_subset:
+      - BasicSubset
+
+  source_file_date:
+    domain: schema_definition
+    range: datetime
+    readonly: supplied by the loader
+    description: modification date of the source of the schema
+    in_subset:
+      - BasicSubset
+
+  source_file_size:
+    domain: schema_definition
+    range: integer
+    readonly: supplied by the schema loader or schema view
+    description: size in bytes of the source of the schema
+    in_subset:
+      - BasicSubset
+
+  generation_date:
+    domain: schema_definition
+    range: datetime
+    readonly: supplied by the schema loader or schema view
+    description: date and time that the schema was loaded/generated
+    in_subset:
+      - BasicSubset
+
+
+  # -----------------------------------
+  # Class definition slots
+  # -----------------------------------
+  slots:
+    rank: 19
+    domain: class_definition
+    multivalued: true
+    range: slot_definition
+    description: collection of slot names that are applicable to a class
+    comments:
+      - the list of applicable slots is inherited from parent classes
+      - >-
+        This defines the set of slots that are allowed to be used for a given class.
+        The final list of slots for a class is the
+        combination of the parent (is a) slots, mixins slots, apply to slots minus the slot usage entries.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  slot_usage:
+    rank: 23
+    domain: class_definition
+    multivalued: true
+    range: slot_definition
+    inlined: true
+    description: the refinement of a slot in the context of the containing class definition.
+    comments:
+      - >-
+        Many slots may be reused across different classes, but the meaning of the slot may be refined by context.
+        For example, a generic association model may use slots subject/predicate/object with generic semantics and
+        minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may
+        specify both local naming (e.g. subject=disease) and local constraints
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  enum_range:
+    range: enum_expression
+    description: An inlined enumeration
+    in_subset:
+      - SpecificationSubset
+    status: testing
+
+  range_expression:
+    domain: slot_expression
+    range: anonymous_class_expression
+    description: A range that is described as a boolean expression combining existing ranges
+    comments:
+      - one use for this is being able to describe a range using any_of expressions, for example to combine two enums
+    in_subset:
+      - SpecificationSubset
+    status: testing
+
+  boolean_slot:
+    abstract: true
+    multivalued: true
+    range: expression
+    description: A grouping of slots that expression a boolean operator over a list of operands
+
+  any_of:
+    rank: 101
+    description: holds if at least one of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:or
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  exactly_one_of:
+    rank: 103
+    description: holds if only one of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:xone
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  none_of:
+    rank: 105
+    description: holds if none of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:not
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  all_of:
+    rank: 107
+    description: holds if all of the expressions hold
+    is_a: boolean_slot
+    range: expression
+    exact_mappings:
+      - sh:and
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  preconditions:
+    rank: 111
+    aliases:
+      - if
+      - body
+      - antecedents
+    slot_uri: sh:condition
+    description: an expression that must hold in order for the rule to be applicable to an instance
+    range: anonymous_class_expression
+    inlined: true
+    close_mappings:
+      - swrl:body
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  postconditions:
+    rank: 113
+    aliases:
+      - then
+      - head
+      - consequents
+    description: an expression that must hold for an instance of the class, if the preconditions hold
+    range: anonymous_class_expression
+    inlined: true
+    close_mappings:
+      - swrl:body
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  elseconditions:
+    rank: 115
+    aliases:
+      - else
+    description: an expression that must hold for an instance of the class, if the preconditions no not hold
+    range: anonymous_class_expression
+    inlined: true
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/05validation/#rules"
+
+  bidirectional:
+    aliases:
+      - iff
+      - if and only if
+    description: in addition to preconditions entailing postconditions, the postconditions entail the preconditions
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+
+  open_world:
+    description: if true, the the postconditions may be omitted in instance data, but it is valid for an inference engine to add these
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+
+  rank:
+    rank: 51
+    aliases:
+      - order
+      - precedence
+      - display order
+    description: the relative order in which the element occurs, lower values are given precedence
+    comments:
+      - the rank of an element does not affect the semantics
+    slot_uri: sh:order
+    range: integer
+    exact_mappings:
+      - qudt:order
+      - qb:order
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  deactivated:
+    description: a deactivated rule is not executed by the rules engine
+    slot_uri: sh:deactivated
+    range: boolean
+
+  rules:
+    slot_uri: sh:rule
+    domain: class_definition
+    multivalued: true
+    range: class_rule
+    inlined: true
+    description: the collection of rules that apply to all members of this class
+    in_subset:
+      - SpecificationSubset
+
+  classification_rules:
+    domain: class_definition
+    multivalued: true
+    range: anonymous_class_expression
+    inlined: true
+    description: >-
+      The collection of classification rules that apply to all members of this class.
+      Classification rules allow for automatically assigning the instantiated type of an instance.
+    in_subset:
+      - SpecificationSubset
+
+  slot_conditions:
+    domain: class_expression
+    multivalued: true
+    range: slot_definition
+    inlined: true
+    description: expresses constraints on a group of slots for a class expression
+    in_subset:
+      - SpecificationSubset
+
+  attributes:
+    rank: 29
+    domain: class_definition
+    multivalued: true
+    range: slot_definition
+    inlined: true
+    description: Inline definition of slots
+    comments:
+      - >-
+        attributes are an alternative way of defining new slots.  An attribute adds a slot to the global space in the
+        form <class_name>__<slot_name> (lower case, double underscores).  Attributes can be specialized via slot_usage.
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  class_uri:
+    rank: 2
+    aliases:
+      - public ID
+    domain: class_definition
+    range: uriorcurie
+    description: >-
+      URI of the class that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas
+    comments:
+      - Assigning class_uris can provide additional hooks for interoperation, indicating a common conceptual model
+    ifabsent: class_curie
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    see_also:
+      - linkml:definition_uri
+      - https://linkml.io/linkml/schemas/uris-and-mappings.html
+
+  subclass_of:
+    domain: class_definition
+    range: uriorcurie
+    description: DEPRECATED -- rdfs:subClassOf to be emitted in OWL generation
+    close_mappings:
+      - rdfs:subClassOf
+    deprecated: Use is_a instead
+
+  defining_slots:
+    domain: class_definition
+    range: slot_definition
+    multivalued: true
+    inherited: true
+    description: >-
+      The combination of is a plus defining slots form a genus-differentia definition, or the set of
+      necessary and sufficient conditions that can be transformed into an OWL equivalence axiom
+
+  union_of:
+    domain: element
+    range: element
+    multivalued: true
+    description: indicates that the domain element consists exactly of the members of the element in the range.
+    notes:
+      - this only applies in the OWL generation
+    in_subset:
+      - SpecificationSubset
+      - OwlProfile
+
+  tree_root:
+    rank: 31
+    domain: class_definition
+    range: boolean
+    description: >-
+      Indicates that this is the Container class which forms the root of the serialized document structure in tree serializations
+    notes:
+      - each schema should have at most one tree root
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    see_also:
+      - https://linkml.io/linkml/intro/tutorial02.html
+
+  unique_keys:
+    domain: class_definition
+    range: unique_key
+    multivalued: true
+    inlined: true
+    description: A collection of named unique keys for this class. Unique keys may be singular or compound.
+    exact_mappings:
+      - owl:hasKey
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - RelationalModelProfile
+    see_also:
+      - https://linkml.io/linkml/schemas/constraints.html#unique-key
+
+  unique_key_name:
+    domain: unique_key
+    key: true
+    required: true
+    description: name of the unique key
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - RelationalModelProfile
+
+  consider_nulls_inequal:
+    domain: unique_key
+    range: boolean
+    description: >-
+      By default, None values are considered equal for the purposes of comparisons in determining uniqueness. Set this to true to treat
+      missing values as per ANSI-SQL NULLs, i.e NULL=NULL is always False.
+
+  unique_key_slots:
+    domain: unique_key
+    multivalued: true
+    required: true
+    range: slot_definition
+    description: list of slot names that form a key. The tuple formed from the values of all these slots should be unique.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - RelationalModelProfile
+
+  slot_names_unique:
+    domain: definition
+    range: boolean
+    description: if true then induced/mangled slot names are not created for class_usage and attributes
+    status: testing
+
+  extra_slots:
+    description: |
+      How a class instance handles extra data not specified in the class definition.
+      Note that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.
+      
+      Possible values:
+      - `allowed: true` - allow all additional data
+      - `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - 
+        forbid all additional data (default) 
+      - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
+    domain: class_definition
+    range: extra_slots_expression
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    examples:
+      - value:
+          allowed: true
+        description: Allow all additional data
+      - value:
+          allowed: false
+        description: Forbid any additional data
+      - value:
+          range_expression:
+            range: string
+        description: Allow additional data that are strings
+      - value:
+          range_expression:
+            range: AClassDefinition
+        description: Allow additional data if they are instances of the class definition "AClassDefinition"
+      - value:
+          range_expression:
+            any_of:
+              - range: string
+              - range: integer
+        description: allow additional data if they are either strings or integers
+      - value:
+          range_expression:
+            range: integer
+            multivalued: true
+            maximum_cardinality: 5
+        description: |
+          Allow additional data if they are lists of integers of at most length 5.
+          Note that this does *not* mean that a maximum of 5 extra slots are allowed.
+      - value:
+          range_expression:
+            range: integer
+            required: true
+        description: |
+          Allow additional data if they are integers. 
+          `required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
+      - value:
+          allowed: false
+          range_expression:
+            range: string
+        description: |
+          A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the 
+          `anonymous_slot_expression` will be ignored.
+
+  allowed:
+    description: Whether or not something is allowed. Usage defined by context.
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  # -----------------------------------
+  # Slot definition slots
+  # -----------------------------------
+  domain:
+    domain: slot_definition
+    range: class_definition
+    inherited: true
+    description: |
+      defines the type of the subject of the slot.  Given the following slot definition
+        S1:
+          domain: C1
+          range:  C2
+      the declaration
+        X:
+          S1: Y
+
+      implicitly asserts that X is an instance of C1
+    in_subset:
+      - SpecificationSubset
+
+  range:
+    aliases:
+      - value domain
+    domain: slot_definition
+    range: element
+    ifabsent: default_range
+    inherited: true
+    comments:
+      - range is underspecified, as not all elements can appear as the range of a slot.
+      - to use a URI or CURIE as the range, create a class with the URI or curie as the class_uri
+    description: |
+      defines the type of the object of the slot.  Given the following slot definition
+        S1:
+          domain: C1
+          range:  C2
+      the declaration
+        X:
+          S1: Y
+
+      implicitly asserts Y is an instance of C2
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+
+  slot_uri:
+    rank: 2
+    aliases:
+      - public ID
+    domain: slot_definition
+    range: uriorcurie
+    ifabsent: slot_curie
+    description: >-
+      URI of the class that provides a semantic interpretation of the slot in a linked data context. The URI may come from any namespace and may be shared between schemas.
+    comments:
+      - Assigning slot_uris can provide additional hooks for interoperation, indicating a common conceptual model
+      - To use a URI or CURIE as a range, create a class with the URI or CURIE as the class_uri
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    see_also:
+      - linkml:definition_uri
+      - https://linkml.io/linkml/schemas/uris-and-mappings.html
+
+  multivalued:
+    rank: 7
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that slot can have more than one value and should be represented using a list or collection structure.
+    # ifabsent: False
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - ObjectOrientedProfile
+
+  array:
+    domain: slot_definition
+    range: array_expression
+    inherited: true
+    description: coerces the value of the slot into an array and defines the dimensions of that array
+    status: testing
+
+  dimensions:
+    aliases:
+      - axes
+    description: definitions of each axis in the array
+    domain: array_expression
+    range: dimension_expression
+    multivalued: true
+    list_elements_ordered: true
+    status: testing
+
+  minimum_number_dimensions:
+    description: minimum number of dimensions in the array
+    domain: array_expression
+    range: integer
+    status: testing
+    # minimum_value: 1
+    comments:
+      - minimum_cardinality cannot be greater than maximum_cardinality
+
+  maximum_number_dimensions:
+    description: maximum number of dimensions in the array, or False if explicitly no maximum.
+      If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted
+      as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this
+      value is set to False
+    domain: array_expression
+    range: Anything
+    any_of:
+      - range: integer
+        # minimum_value: 1
+      - range: boolean
+    status: testing
+    comments:
+      - maximum_number_dimensions cannot be less than minimum_number_dimensions
+
+  exact_number_dimensions:
+    description: exact number of dimensions in the array
+    domain: array_expression
+    range: integer
+    status: testing
+    # minimum_value: 1
+    comments:
+      - if exact_number_dimensions is set, then minimum_number_dimensions and maximum_number_dimensions must be unset or have the same value
+
+  inherited:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that the *value* of a slot is inherited by subclasses
+    comments:
+      - the slot is to be used for defining *metamodels* only
+      - Inherited applies to slot values.  Parent *slots* are always inherited by subclasses
+    in_subset:
+      - SpecificationSubset
+
+  readonly:
+    domain: slot_definition
+    range: string
+    inherited: true
+    description: If present, slot is read only.  Text explains why
+    comments:
+      - the slot is to be used for defining *metamodels* only
+
+  ifabsent:
+    domain: slot_definition
+    range: string
+    inherited: true
+    description: >-
+      function that provides a default value for the slot.
+        * [Tt]rue -- boolean True
+        * [Ff]alse -- boolean False
+        * bnode -- blank node identifier
+        * class_curie -- CURIE for the containing class
+        * class_uri -- URI for the containing class
+        * default_ns -- schema default namespace
+        * default_range -- schema default range
+        * int(value) -- integer value
+        * slot_uri -- URI for the slot
+        * slot_curie -- CURIE for the slot
+        * string(value) -- string value
+        * EnumName(PermissibleValue) -- enum value
+    close_mappings:
+      - sh:defaultValue
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - linkml:equals_expression
+
+  implicit_prefix:
+    domain: slot_expression
+    range: string
+    description: >-
+      Causes the slot value to be interpreted as a uriorcurie after prefixing with this string
+    in_subset:
+      - SpecificationSubset
+    status: testing
+
+  value_specification_constant:
+    abstract: true
+    description: Grouping for metamodel slots that constrain the a slot value to equal a specified constant
+    status: testing
+
+  list_value_specification_constant:
+    abstract: true
+    description: Grouping for metamodel slots that constrain members of a multivalued slot value to equal a specified constant
+    status: testing
+
+  value_presence:
+    is_a: list_value_specification_constant
+    domain: slot_definition
+    range: presence_enum
+    inherited: true
+    description: if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)
+    comments:
+      - if set to true this has the same effect as required=true. In contrast, required=false allows a value to be present
+    status: unstable
+
+  equals_string:
+    is_a: list_value_specification_constant
+    range: string
+    inherited: true
+    description: the slot must have range string and the value of the slot must equal the specified value
+    in_subset:
+      - SpecificationSubset
+
+  equals_number:
+    is_a: list_value_specification_constant
+    range: integer  ## todo, make the range a union
+    inherited: true
+    description: the slot must have range of a number and the value of the slot must equal the specified value
+    status: unstable
+
+  equals_expression:
+    is_a: list_value_specification_constant
+    range: string
+    inherited: true
+    description: the value of the slot must equal the value of the evaluated expression
+    comments:
+      - for example, a 'length' slot may have an equals_expression with value '(end-start)+1'
+    see_also:
+      - https://linkml.io/linkml/developers/inference.html
+      - https://linkml.io/linkml/schemas/advanced.html#equals-expression
+    in_subset:
+      - SpecificationSubset
+
+  exact_cardinality:
+    is_a: list_value_specification_constant
+    range: integer
+    inherited: true
+    description: the exact number of entries for a multivalued slot
+    in_subset:
+      - SpecificationSubset
+    comments:
+      - if exact_cardinality is set, then minimum_cardinalty and maximum_cardinality must be unset or have the same value
+
+  minimum_cardinality:
+    is_a: list_value_specification_constant
+    range: integer
+    inherited: true
+    description: the minimum number of entries for a multivalued slot
+    in_subset:
+      - SpecificationSubset
+    # minimum_value: 0
+    comments:
+      - minimum_cardinality cannot be greater than maximum_cardinality
+
+  maximum_cardinality:
+    is_a: list_value_specification_constant
+    range: integer
+    inherited: true
+    description: the maximum number of entries for a multivalued slot
+    in_subset:
+      - SpecificationSubset
+    comments:
+      - maximum_cardinality cannot be less than minimum_cardinality
+    # minimum_value: 0
+
+  equals_string_in:
+    is_a: list_value_specification_constant
+    range: string
+    multivalued: true
+    inherited: true
+    description: the slot must have range string and the value of the slot must equal one of the specified values
+    status: testing
+    in_subset:
+      - SpecificationSubset
+
+  equals_number_in:
+    is_a: list_value_specification_constant
+    range: integer
+    multivalued: true
+    inherited: true
+    description: the slot must have range number and the value of the slot must equal one of the specified values
+    status: testing
+    in_subset:
+      - SpecificationSubset
+
+  has_member:
+    is_a: list_value_specification_constant
+    range: anonymous_slot_expression
+    description: the value of the slot is multivalued with at least one member satisfying the condition
+    status: testing
+    in_subset:
+      - SpecificationSubset
+
+  all_members:
+    is_a: list_value_specification_constant
+    range: anonymous_slot_expression
+    description: the value of the slot is multivalued with all members satisfying the condition
+    status: testing
+    in_subset:
+      - SpecificationSubset
+
+  singular_name:
+    domain: slot_definition
+    description: a name that is used in the singular form
+    comments:
+      - this may be used in some schema translations where use of a singular form is idiomatic, for example RDF
+    close_mappings:
+      - skos:altLabel
+    in_subset:
+      - BasicSubset
+
+  required:
+    rank: 8
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that the slot must be present in instances of the class definition
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+
+  recommended:
+    rank: 9
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that the slot should be present in instances of the class definition, but this is not required
+    comments:
+      - This is to be used where not all data is expected to conform to having a required field
+      - If a slot is recommended, and it is not populated, applications must not treat this as an error. Applications may use this to inform the user of missing data
+    see_also:
+      - https://github.com/linkml/linkml/issues/177
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  inapplicable:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: true means that values for this slot must not be present
+    comments:
+      - By default all slots are applicable. The main use case for this slot is as an override in a subclass
+    in_subset:
+      - SpecificationSubset
+
+  inlined:
+    rank: 25
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that keyed or identified slot appears in an outer structure by value.  False means that only the key
+      or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.
+    comments:
+      - classes without keys or identifiers are necessarily inlined as lists
+      - only applicable in tree-like serializations, e.g json, yaml
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
+
+  inlined_as_list:
+    rank: 27
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot
+      is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.
+    comments:
+      - |-
+        The default loader will accept either list or dictionary form as input.  This parameter controls internal
+        representation and output.
+      - |-
+        A keyed or identified class with one additional slot can be input in a third form, a dictionary whose key
+        is the key or identifier and whose value is the one additional element.  This form is still stored according
+        to the inlined_as_list setting.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+      - https://linkml.io/linkml/schemas/inlining.html
+
+  inlined_as_simple_dict:
+    rank: 28
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that an inlined slot is represented as a simple dict whose values are all atoms
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - "https://w3id.org/linkml/docs/specification/06mapping/#collection-forms"
+    status: testing
+
+  list_elements_ordered:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      If True, then the order of elements of a multivalued slot is guaranteed to be preserved. If False, the
+      order may still be preserved but this is not guaranteed
+    comments:
+      - should only be used with multivalued slots
+    in_subset:
+      - SpecificationSubset
+    status: testing
+
+  list_elements_unique:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      If True, then there must be no duplicates in the elements of a multivalued slot
+    comments:
+      - should only be used with multivalued slots
+    in_subset:
+      - SpecificationSubset
+
+  shared:
+    aliases:
+      - inverse functional
+      - many to one or many
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      If True, then the relationship between the slot domain and range is many to one or many to many
+    in_subset:
+      - SpecificationSubset
+
+  key:
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that the key slot(s) uniquely identify the elements within a single container
+    comments:
+      - key is inherited
+      - a given domain can have at most one key slot (restriction to be removed in the future)
+      - identifiers and keys are mutually exclusive.  A given domain cannot have both
+      - a key slot is automatically required.  Keys cannot be optional
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - RelationalModelProfile
+    see_also:
+      - linkml:unique_keys
+
+  identifier:
+    rank: 5
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that the key slot(s) uniquely identifies the elements. There can be at most one identifier or key per
+      container
+    aliases:
+      - primary key
+      - ID
+      - UID
+      - code
+    see_also:
+      - https://en.wikipedia.org/wiki/Identifier
+      - linkml:unique_keys
+    comments:
+      - identifier is inherited
+      - a key slot is automatically required.  Identifiers cannot be optional
+      - a given domain can have at most one identifier
+      - identifiers and keys are mutually exclusive.  A given domain cannot have both
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+
+  designates_type:
+    aliases:
+      - type designator
+    domain: slot_definition
+    range: boolean
+    inherited: true
+    description: >-
+      True means that the key slot(s) is used to determine the instantiation (types) relation between objects and a ClassDefinition
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - https://linkml.io/linkml/schemas/type-designators.html
+
+  alias:
+    rank: 6
+    domain: slot_definition
+    range: string
+    slot_uri: skos:prefLabel
+    description: >-
+      the name used for a slot in the context of its owning class.  If present, this is used instead of the actual
+      slot name.
+    comments:
+      - an example of alias is used within this metamodel, slot_definitions is aliases as slots
+      - not to be confused with aliases, which indicates a set of terms to be used for search purposes.
+    in_subset:
+      - SpecificationSubset
+
+  owner:
+    domain: slot_definition
+    range: definition
+    description: >-
+      the "owner" of the slot. It is the class if it appears in the slots list, otherwise the declaring slot
+    readonly: filled in by loader -- either class domain or slot domain
+    deprecated: Will be replaced by domain_of and eventually removed
+
+  domain_of:
+    domain: slot_definition
+    range: class_definition
+    description: the class(es) that reference the slot in a "slots" or "slot_usage" context
+    readonly: filled in by the loader
+    multivalued: true
+    exact_mappings:
+      - schema:domainIncludes
+      - SIO:000011
+
+  is_usage_slot:
+    domain: slot_definition
+    deprecated: Replaced by usage_slot_name
+    range: boolean
+    description: True means that this slot was defined in a slot_usage situation
+    readonly: filled in by the loader
+
+  usage_slot_name:
+    domain: slot_definition
+    range: string
+    description: The name of the slot referenced in the slot_usage
+    readonly: filled in by the loader
+
+  subproperty_of:
+    domain: slot_definition
+    range: slot_definition
+    description: >-
+      Ontology property which this slot is a subproperty of.  Note: setting this property on a slot
+      does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values
+      in every serialization of the model.
+    examples:
+      - value: RO:HOM0000001
+        description: >-
+          this is the RO term for "in homology relationship with", and used as a value of subproperty of this means
+          that any ontological child (related to RO:HOM0000001 via an is_a relationship), is a valid value for the slot
+          that declares this with the subproperty_of tag.  This differs from the 'values_from' meta model component
+          in that 'values_from' requires the id of a value set (said another way, if an entire ontology had a curie/identifier
+          that was the identifier for the entire ontology, then that identifier would be used in 'values_from.')
+    slot_uri: rdfs:subPropertyOf
+
+  disjoint_with:
+    domain: definition
+    range: definition
+    multivalued: true
+    description: Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances
+    in_subset:
+      - SpecificationSubset
+
+  children_are_mutually_disjoint:
+    domain: definition
+    range: boolean
+    description: If true then all direct is_a children are mutually disjoint and share no instances in common
+
+  relational_logical_characteristic:
+    abstract: true
+    domain: slot_definition
+    range: boolean
+    description: An abstract grouping for metaslots that describe logical properties of a slot
+
+  symmetric:
+    is_a: relational_logical_characteristic
+    description: If s is symmetric, and i.s=v, then v.s=i
+    close_mappings:
+      - owl:SymmetricProperty
+    in_subset:
+      - SpecificationSubset
+
+  asymmetric:
+    is_a: relational_logical_characteristic
+    description: If s is antisymmetric, and i.s=v where i is different from v, v.s cannot have value i
+    comments:
+      - asymmetry is the combination of antisymmetry and irreflexivity
+    close_mappings:
+      - owl:AsymmetricProperty
+    in_subset:
+      - SpecificationSubset
+
+  reflexive:
+    is_a: relational_logical_characteristic
+    description: If s is reflexive, then i.s=i for all instances i
+    comments:
+      - it is rare for a property to be reflexive, this characteristic is added for completeness, consider instead locally_reflexive
+    close_mappings:
+      - owl:ReflexiveProperty
+    in_subset:
+      - SpecificationSubset
+
+  irreflexive:
+    is_a: relational_logical_characteristic
+    description: If s is irreflexive, then there exists no i such i.s=i
+    close_mappings:
+      - owl:IrreflexiveProperty
+    in_subset:
+      - SpecificationSubset
+
+  locally_reflexive:
+    is_a: relational_logical_characteristic
+    description: If s is locally_reflexive, then i.s=i for all instances i where s is a class slot for the type of i
+    in_subset:
+      - SpecificationSubset
+
+  transitive:
+    is_a: relational_logical_characteristic
+    description: If s is transitive, and i.s=z, and s.s=j, then i.s=j
+    close_mappings:
+      - owl:TransitiveProperty
+    in_subset:
+      - SpecificationSubset
+
+  transitive_form_of:
+    range: slot_definition
+    description: If s transitive_form_of d, then (1) s holds whenever d holds (2) s is transitive (3) d holds whenever s holds and there are no intermediates, and s is not reflexive
+    comments:
+      - "Example: ancestor_of is the transitive_form_of parent_of"
+    in_subset:
+      - SpecificationSubset
+
+  reflexive_transitive_form_of:
+    is_a: transitive_form_of
+    description: transitive_form_of including the reflexive case
+    in_subset:
+      - SpecificationSubset
+
+  inverse:
+    domain: slot_definition
+    range: slot_definition
+    description: indicates that any instance of d s r implies that there is also an instance of r s' d
+    slot_uri: owl:inverseOf
+    in_subset:
+      - SpecificationSubset
+
+  is_class_field:
+    domain: slot_definition
+    range: boolean
+    description: indicates that for any instance, i, the domain of this slot will include an assertion of i s range
+
+  role:
+    domain: slot_definition
+    range: string
+    description: a textual descriptor that indicates the role played by the slot range
+    comments:
+      - the primary use case for this slot is to provide a textual descriptor of a generic slot name when used in the context of a more specific class
+    inherited: true
+
+  minimum_value:
+    aliases:
+      - low value
+    domain: slot_definition
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or higher than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
+    inherited: true
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  maximum_value:
+    aliases:
+      - high value
+    domain: slot_definition
+    range: Anything
+    description: For ordinal ranges, the value must be equal to or lower than this
+    notes:
+      - Range to be refined to an "Ordinal" metaclass - see https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142
+    inherited: true
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  interpolated:
+    domain: pattern_expression
+    range: boolean
+    description: if true then the pattern is first string interpolated
+    in_subset:
+      - SpecificationSubset
+
+  partial_match:
+    domain: pattern_expression
+    range: boolean
+    description: if not true then the pattern must match the whole string, as if enclosed in ^...$
+    in_subset:
+      - SpecificationSubset
+
+  pattern:
+    rank: 35
+    domain: definition
+    range: string
+    description: the string value of the slot must conform to this regular expression expressed in the string
+    inherited: true
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  syntax:
+    domain: pattern_expression
+    range: string
+    description: the string value of the slot must conform to this regular expression expressed in the string. May be interpolated.
+    inherited: true
+    in_subset:
+      - SpecificationSubset
+
+  structured_pattern:
+    domain: definition
+    range: pattern_expression
+    description: the string value of the slot must conform to the regular expression in the pattern expression
+    inherited: true
+    in_subset:
+      - SpecificationSubset
+    see_also:
+      - https://linkml.io/linkml/schemas/constraints.html#structured-patterns
+
+  string_serialization:
+    domain: definition
+    range: string
+    description: >-
+      Used on a slot that stores the string serialization of the containing object. The syntax follows python
+      formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
+
+      We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both
+      s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the
+      expansion.
+
+      Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations
+      by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of
+      complex objects
+
+      For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot
+      may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of
+      string_value shouldd be 2cm
+    inherited: false
+    see_also:
+      - https://github.com/linkml/issues/128
+    in_subset:
+      - SpecificationSubset
+
+  bindings:
+    domain: element
+    range: enum_binding
+    multivalued: true
+    inlined: true
+    status: testing
+    description: >-
+      A collection of enum bindings that specify how a slot can be bound to a permissible value
+      from an enumeration.
+
+      LinkML provides enums to allow string values to be restricted to one of a set of permissible
+      values (specified statically or dynamically).
+
+      Enum bindings allow enums to be bound to any object, including complex nested objects. For
+      example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the
+      values the id takes on in a given context. For example, a HumanSample class may have a slot for
+      representing sample site, with a range of concept, but the values of that slot may be restricted to
+      concepts from a particular branch of an anatomy ontology.
+    in_subset:
+      - SpecificationSubset
+
+  binds_value_of:
+    domain: enum_binding
+    range: string
+    description: >-
+      A path to a slot that is being bound to a permissible value from an enumeration.
+    in_subset:
+      - SpecificationSubset
+
+  obligation_level:
+    range: obligation_level_enum
+    description: >-
+      The level of obligation or recommendation strength for a metadata element
+    in_subset:
+      - SpecificationSubset
+
+  type_mappings:
+    range: type_mapping
+    description: >-
+      A collection of type mappings that specify how a slot's range should be mapped or
+      serialized in different frameworks
+    multivalued: true
+      
+  framework_key:
+    range: string
+    alias: framework
+    key: true
+    description: >-
+      The name of a format that can be used to serialize LinkML data.
+      The string value should be a code from the LinkML frameworks vocabulary,
+      but this is not strictly enforced
+    
+  mapped_type:
+    range: type_definition
+    alias: type
+    description: >-
+      type to coerce to
+
+  # -----------------------------------
+  # Slots for type definition
+  # -----------------------------------
+  typeof:
+    rank: 7
+    domain: type_definition
+    range: type_definition
+    description: >-
+      A parent type from which type properties are inherited
+    comments:
+      - the target type definition of the typeof slot is referred to as the "parent type"
+      - the type definition containing the typeof slot is referred to as the "child type"
+      - type definitions without a typeof slot are referred to as a "root type"
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  base:
+    rank: 8
+    domain: type_definition
+    description: python base type in the LinkML runtime that implements this type definition
+    inherited: true
+    comments:
+      - every root type must have a base
+      - the base is inherited by child types but may be overridden.  Base compatibility is not checked.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  type_uri:
+    rank: 2
+    domain: type_definition
+    range: uriorcurie
+    alias: uri
+    inherited: true
+    description: The uri that defines the possible values for the type definition
+    comments:
+      - uri is typically drawn from the set of URI's defined in OWL (https://www.w3.org/TR/2012/REC-owl2-syntax-20121211/#Datatype_Maps)
+      - every root type must have a type uri
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  repr:
+    rank: 10
+    domain: type_definition
+    range: string
+    description: the name of the python object that implements this type definition
+    inherited: true
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  # -----------------------------------
+  # Slots for alt description
+  # -----------------------------------
+  alt_description_text:
+    domain: alt_description
+    range: string
+    required: true
+    description: text of an attributed description
+    alias: description
+    in_subset:
+      - BasicSubset
+
+  alt_description_source:
+    domain: alt_description
+    range: string
+    key: true
+    alias: source
+    description: the source of an attributed description
+    in_subset:
+      - BasicSubset
+
+  alt_descriptions:
+    aliases:
+      - alternate definitions
+    domain: element
+    description: A sourced alternative description for an element
+    range: alt_description
+    multivalued: true
+    inlined: true
+    in_subset:
+      - BasicSubset
+
+  # -----------------------------------
+  # Slots for example
+  # -----------------------------------
+  value:
+    domain: example
+    description: example value
+    slot_uri: skos:example
+    in_subset:
+      - BasicSubset
+
+  value_description:
+    domain: example
+    alias: description
+    description: description of what the value is doing
+    in_subset:
+      - BasicSubset
+
+  value_object:
+    domain: example
+    alias: object
+    description: direct object representation of the example
+    range: Anything
+    in_subset:
+      - BasicSubset
+
+  examples:
+    singular_name: example
+    domain: element
+    multivalued: true
+    range: example
+    inlined: true
+    description: example usages of an element
+    close_mappings:
+      - vann:example
+    in_subset:
+      - BasicSubset
+
+  # -----------------------------------
+  # Slots for prefix
+  # -----------------------------------
+  prefix_prefix:
+    slot_uri: sh:prefix
+    rank: 1
+    domain: prefix
+    range: ncname
+    key: true
+    description: >-
+      The prefix components of a prefix expansions. This is the part that appears before the colon in a CURIE.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  prefix_reference:
+    slot_uri: sh:namespace
+    rank: 2
+    domain: prefix
+    range: uri
+    required: true
+    description: >-
+      The namespace to which a prefix expands to.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  prefixes:
+    slot_uri: sh:declare
+    rank: 10
+    domain: schema_definition
+    range: prefix
+    multivalued: true
+    inlined: true
+    description: >-
+      A collection of prefix expansions that specify how CURIEs can be expanded to URIs
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  # -----------------------------------
+  # Slots for settings
+  # -----------------------------------
+  setting_key:
+    domain: setting
+    range: ncname
+    key: true
+    description: the variable name for a setting
+    in_subset:
+      - SpecificationSubset
+
+  setting_value:
+    domain: setting
+    range: string
+    required: true
+    description: The value assigned for a setting
+    in_subset:
+      - SpecificationSubset
+
+  settings:
+    aliases:
+      - constants
+    rank: 20
+    domain: schema_definition
+    range: setting
+    multivalued: true
+    inlined: true
+    description: A collection of global variable settings
+    comments:
+      - global variables are used in string interpolation in structured patterns
+    in_subset:
+      - SpecificationSubset
+
+  # -----------------------------------
+  # Slots for import expressions
+  # -----------------------------------
+
+  import_from:
+    domain: import_expression
+    required: true
+    range: uriorcurie
+    status: testing
+
+  import_as:
+    domain: import_expression
+    range: ncname
+    status: testing
+
+  import_map:
+    domain: import_expression
+    multivalued: true
+    inlined: true
+    range: setting
+    status: testing
+
+  # -----------------------------------
+  # Slots for local_name
+  # -----------------------------------
+  local_name_source:
+    domain: local_name
+    range: ncname
+    key: true
+    description: the ncname of the source of the name
+
+  local_name_value:
+    domain: local_name
+    range: string
+    required: true
+    description: a name assigned to an element in a given ontology
+    slot_uri: skos:altLabel
+
+  local_names:
+    domain: element
+    range: local_name
+    multivalued: true
+    inlined: true
+
+  slot_group:
+    domain: slot_definition
+    range: slot_definition
+    description: allows for grouping of related slots into a grouping slot that serves the role of a group
+    comments:
+      - slot groups do not change the semantics of a model but are a useful way of visually grouping related slots
+    slot_uri: sh:group
+    range_expression:
+      slot_conditions:
+        is_grouping_slot:
+          equals_expression: "True"
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  is_grouping_slot:
+    domain: slot_definition
+    range: boolean
+    description: true if this slot is a grouping slot
+    close_mappings:
+      - sh:PropertyGroup
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  # paths
+
+  followed_by:
+    description: in a sequential list, this indicates the next member
+    range: expression
+  reversed:
+    description: true if the slot is to be inversed
+    range: boolean
+  traverse:
+    description: the slot to traverse
+    range: slot_definition
+  path_rule:
+    description: a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments
+    domain: slot_definition
+    range: path_expression
+
+  # -----------------------------------
+  # Relational Roles
+  # -----------------------------------
+  represents_relationship:
+    aliases:
+      - is_reified
+    description: true if this class represents a relationship rather than an entity
+    domain: class_definition
+    range: boolean
+    inherited: true
+    status: testing
+    see_also:
+      - rdf:Statement
+      - https://patterns.dataincubator.org/book/qualified-relation.html
+    comments:
+      - in the context of Entity-Relationship (ER) modeling, this is used to state that a class models a relationship between entities, and should be drawn with a diamond
+      - in the context of RDF, this should be used when instances of the class are `rdf:Statement`s
+      - in the context of property graphs, this should be used when a class is used to represent an edge that connects nodes
+
+  relational_role:
+    aliases:
+      - reification_role
+    description: the role a slot on a relationship class plays, for example, the subject, object or predicate roles
+    domain: slot_definition
+    range: relational_role_enum
+    inherited: true
+    status: testing
+    comments:
+      - this should only be used on slots that are applicable to class that represent relationships
+      - in the context of RDF, this should be used for slots that can be modeled using the RDF reification vocabulary
+      - in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes
+
+
+# ==================================
+# Classes                          #
+# ==================================
+classes:
+
+  Anything:
+    class_uri: linkml:Any
+  
+  common_metadata:
+    description: Generic metadata shared across definitions
+    mixin: true
+    slots:
+      - description
+      - alt_descriptions
+      - title
+      - deprecated
+      - todos
+      - notes
+      - comments
+      - examples
+      - in_subset
+      - from_schema
+      - imported_from
+      - source
+      - in_language
+      - see_also
+      - deprecated element has exact replacement
+      - deprecated element has possible replacement
+      - aliases
+      - structured_aliases
+      - mappings
+      - exact mappings
+      - close mappings
+      - related mappings
+      - narrow mappings
+      - broad mappings
+      - created_by
+      - contributors
+      - created_on
+      - last_updated_on
+      - modified_by
+      - status
+      - rank
+      - categories
+      - keywords
+    in_subset:
+      - BasicSubset
+
+  element:
+    aliases:
+      - data element
+      - object
+    description: >-
+      A named element in the model
+    abstract: true
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - name
+      - id_prefixes
+      - id_prefixes_are_closed
+      - definition_uri
+      - local_names
+      - conforms_to
+      - implements
+      - instantiates
+    see_also:
+      - https://en.wikipedia.org/wiki/Data_element
+    in_subset:
+      - BasicSubset
+
+  schema_definition:
+    rank: 1
+    description: >-
+      A collection of definitions that make up a schema or a data model.
+    tree_root: true
+    aliases:
+      - data dictionary
+      - data model
+      - information model
+      - logical model
+      - schema
+      - model
+    is_a: element
+    slots:
+      - id
+      - version
+      - imports
+      - license
+      - prefixes
+      - emit_prefixes
+      - default_curi_maps
+      - default_prefix
+      - default_range
+      - subsets
+      - types
+      - enums
+      - slot_definitions
+      - classes
+      - metamodel_version
+      - source_file
+      - source_file_date
+      - source_file_size
+      - generation_date
+      - slot_names_unique
+      - settings
+      - bindings
+    see_also:
+      - https://en.wikipedia.org/wiki/Data_dictionary
+    close_mappings:
+      - qb:ComponentSet
+      - owl:Ontology
+    slot_usage:
+      name:
+        range: ncname
+        description: a unique name for the schema that is both human-readable and consists of only characters from the NCName set
+#    slot_usage:
+#      description:
+#        slot_uri: dcterms:description
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  type_expression:
+    description: >-
+      An abstract class grouping named types and anonymous type expressions
+    is_a: expression
+    mixin: true
+    slots:
+      - pattern
+      - structured_pattern
+      - unit
+      - implicit_prefix
+      - equals_string
+      - equals_string_in
+      - equals_number
+      - minimum_value
+      - maximum_value
+      - none_of
+      - exactly_one_of
+      - any_of
+      - all_of
+    slot_usage:
+      any_of:
+        range: anonymous_type_expression
+      all_of:
+        range: anonymous_type_expression
+      exactly_one_of:
+        range: anonymous_type_expression
+      none_of:
+        range: anonymous_type_expression
+
+  anonymous_type_expression:
+    mixins:
+      - type_expression
+    description: >-
+      A type expression that is not a top-level named type definition. Used for nesting.
+
+  type_definition:
+    rank: 4
+    mixins:
+      - type_expression
+    description: an element that whose instances are atomic scalar values that can be mapped to primitive types
+    is_a: element
+    slots:
+      - typeof
+      - base
+      - type_uri
+      - repr
+      - union_of
+    slot_usage:
+      union_of:
+        range: type_definition
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - OwlProfile
+
+  subset_definition:
+    rank: 6
+    description: an element that can be used to group other metamodel elements
+    is_a: element
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  definition:
+    description: abstract base class for core metaclasses
+    abstract: true
+    is_a: element
+    slots:
+      - is_a
+      - abstract
+      - mixin
+      - mixins
+      - apply_to
+      - values_from
+      - string_serialization
+    see_also:
+      - https://en.wikipedia.org/wiki/Data_element_definition
+    in_subset:
+      - BasicSubset
+
+  enum_expression:
+    description: An expression that constrains the range of a slot
+    is_a: expression
+    slots:
+      - code_set
+      - code_set_tag
+      - code_set_version
+      - pv_formula
+      - permissible_values
+      - include
+      - minus
+      - inherits
+      - reachable_from
+      - matches
+      - concepts
+
+  anonymous_enum_expression:
+    description: An enum_expression that is not named
+    mixins:
+      - enum_expression
+
+  enum_definition:
+    rank: 5
+    aliases:
+      - enum
+      - enumeration
+      - semantic enumeration
+      - value set
+      - term set
+      - concept set
+      - code set
+      - Terminology Value Set
+      - answer list
+      - value domain
+    description: an element whose instances must be drawn from a specified set of permissible values
+    is_a: definition
+    mixins:
+      - enum_expression
+    exact_mappings:
+      - qb:HierarchicalCodeList
+      - NCIT:C113497
+      - cdisc:ValueDomain
+    close_mappings:
+      - skos:ConceptScheme
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+      - OwlProfile
+    slots:
+      - enum_uri
+
+  enum_binding:
+    description: >-
+      A binding of a slot or a class to a permissible value from an enumeration.
+    slots:
+      - range
+      - obligation_level
+      - binds_value_of
+      - pv_formula
+    slot_usage:
+      range:
+        range: enum_definition
+    in_subset:
+      - SpecificationSubset
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+
+  match_query:
+    description: >-
+      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      matches on properties of the external concepts.
+    slots:
+      - identifier_pattern
+      - source_ontology
+    in_subset:
+      - SpecificationSubset
+
+  reachability_query:
+    description: >-
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      set of source nodes to a set of descendants or ancestors over a set of relationship types.
+    slots:
+      - source_ontology
+      - source_nodes
+      - relationship_types
+      - is_direct
+      - include_self
+      - traverse_up
+    in_subset:
+      - SpecificationSubset
+
+  structured_alias:
+    description: >-
+      object that contains meta data about a synonym or alias including where it came from (source)
+      and its scope (narrow, broad, etc.)
+    class_uri: skosxl:Label
+    mixins:
+      - expression
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - literal_form
+      - alias_predicate
+      - categories
+      - alias_contexts
+    slot_usage:
+      categories:
+        description: >-
+          The category or categories of an alias. This can be drawn from any relevant vocabulary
+        examples:
+          - value: "https://w3id.org/mod#acronym"
+            description: An acronym
+
+  expression:
+    mixin: true
+    abstract: true
+    description: general mixin for any class that can represent some form of expression
+
+  anonymous_expression:
+    abstract: true
+    mixins:
+      - expression
+      - extensible
+      - annotatable
+      - common_metadata
+    description: >-
+      An abstract parent class for any nested expression
+    comments:
+      - anonymous expressions are useful for when it is necessary to build a complex expression without introducing a named element for each sub-expression
+
+  path_expression:
+    description: An expression that describes an abstract path from an object to another through a sequence of slot lookups
+    mixins:
+      - expression
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - followed_by
+      - none_of
+      - any_of
+      - all_of
+      - exactly_one_of
+      - reversed
+      - traverse
+      - range_expression
+    slot_usage:
+      followed_by:
+        range: path_expression
+      any_of:
+        range: path_expression
+      exactly_one_of:
+        range: path_expression
+      none_of:
+        range: path_expression
+      all_of:
+        range: path_expression
+
+  slot_expression:
+    description: an expression that constrains the range of values a slot can take
+    mixin: true
+    is_a: expression
+    slots:
+      - range
+      - range_expression
+      - enum_range
+      - bindings
+      - required
+      - recommended
+      - multivalued
+      - inlined
+      - inlined_as_list
+      - minimum_value
+      - maximum_value
+      - pattern
+      - structured_pattern
+      - unit
+      - implicit_prefix
+      - value_presence
+      - equals_string
+      - equals_string_in
+      - equals_number
+      - equals_expression
+      - exact_cardinality
+      - minimum_cardinality
+      - maximum_cardinality
+      - has_member
+      - all_members
+      - none_of
+      - exactly_one_of
+      - any_of
+      - all_of
+      - array
+    slot_usage:
+      any_of:
+        range: anonymous_slot_expression
+      all_of:
+        range: anonymous_slot_expression
+      exactly_one_of:
+        range: anonymous_slot_expression
+      none_of:
+        range: anonymous_slot_expression
+
+  anonymous_slot_expression:
+    is_a: anonymous_expression
+    mixins:
+      - slot_expression
+
+  slot_definition:
+    rank: 3
+    description: an element that describes how instances are related to other instances
+    aliases:
+      - slot
+      - field
+      - property
+      - attribute
+      - column
+      - variable
+    is_a: definition
+    close_mappings:
+      - rdf:Property
+      - qb:ComponentProperty
+    mixins:
+      - slot_expression
+    slots:
+      - singular_name
+      - domain
+      - slot_uri
+      - inherited
+      - readonly
+      - ifabsent
+      - list_elements_unique
+      - list_elements_ordered
+      - shared
+      - key
+      - identifier
+      - designates_type
+      - alias
+      - owner
+      - domain_of
+      - subproperty_of
+      - symmetric
+      - reflexive
+      - locally_reflexive
+      - irreflexive
+      - asymmetric
+      - transitive
+      - inverse
+      - is_class_field
+      - transitive_form_of
+      - reflexive_transitive_form_of
+      - role
+      - is_usage_slot
+      - usage_slot_name
+      - relational_role
+      - slot_group
+      - is_grouping_slot
+      - path_rule
+      - disjoint_with
+      - children_are_mutually_disjoint
+      - union_of
+      - type_mappings
+    slot_usage:
+      is_a:
+        range: slot_definition
+        description: A primary parent slot from which inheritable metaslots are propagated
+      mixins:
+        range: slot_definition
+        description: A collection of secondary parent mixin slots from which inheritable metaslots are propagated
+      apply_to:
+        range: slot_definition
+      disjoint_with:
+        range: slot_definition
+      union_of:
+        range: slot_definition
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - OwlProfile
+
+  class_expression:
+    mixin: true
+    description: A boolean expression that can be used to dynamically determine membership of a class
+    slots:
+      - any_of
+      - exactly_one_of
+      - none_of
+      - all_of
+      - slot_conditions
+    slot_usage:
+      any_of:
+        range: anonymous_class_expression
+      all_of:
+        range: anonymous_class_expression
+      exactly_one_of:
+        range: anonymous_class_expression
+      none_of:
+        range: anonymous_class_expression
+
+  anonymous_class_expression:
+    is_a: anonymous_expression
+    mixins:
+      - class_expression
+    slots:
+      - is_a
+
+  class_definition:
+    rank: 2
+    mixins:
+      - class_expression
+    description: an element whose instances are complex objects that may have slot-value assignments
+    aliases:
+      - table
+      - record
+      - template
+      - message
+      - observation
+    is_a: definition
+    slots:
+      - slots
+      - slot_usage
+      - attributes
+      - class_uri
+      - subclass_of
+      - union_of
+      - defining_slots
+      - tree_root
+      - unique_keys
+      - rules
+      - classification_rules
+      - slot_names_unique
+      - represents_relationship
+      - disjoint_with
+      - children_are_mutually_disjoint
+      - extra_slots
+      - alias
+    slot_usage:
+      is_a:
+        range: class_definition
+        description: A primary parent class from which inheritable metaslots are propagated
+      mixins:
+        range: class_definition
+        description: A collection of secondary parent mixin classes from which inheritable metaslots are propagated
+      apply_to:
+        range: class_definition
+      rules:
+        range: class_rule
+      disjoint_with:
+        range: class_definition
+      union_of:
+        range: class_definition
+    close_mappings:
+      - owl:Class
+    in_subset:
+      - SpecificationSubset
+      - MinimalSubset
+      - BasicSubset
+      - RelationalModelProfile
+      - ObjectOrientedProfile
+      - OwlProfile
+
+  class_level_rule:
+    abstract: true
+    description: A rule that is applied to classes
+
+  class_rule:
+    is_a: class_level_rule
+    aliases:
+      - if rule
+    description: A rule that applies to instances of a class
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - preconditions
+      - postconditions
+      - elseconditions
+      - bidirectional
+      - open_world
+      - rank
+      - deactivated
+    close_mappings:
+      - sh:TripleRule
+      - swrl:Imp
+    in_subset:
+      - SpecificationSubset
+
+  array_expression:
+    description: defines the dimensions of an array
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - exact_number_dimensions
+      - minimum_number_dimensions
+      - maximum_number_dimensions
+      - dimensions
+    status: testing
+
+  dimension_expression:
+    description: defines one of the dimensions of an array
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - alias
+      - maximum_cardinality
+      - minimum_cardinality
+      - exact_cardinality
+    status: testing
+
+  pattern_expression:
+    description: a regular expression pattern used to evaluate conformance of a string
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - syntax
+      - interpolated
+      - partial_match
+
+  import_expression:
+    description: an expression describing an import
+    status: testing
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - import_from
+      - import_as
+      - import_map
+
+  setting:
+    description: assignment of a key to a value
+    slots:
+      - setting_key
+      - setting_value
+    in_subset:
+      - SpecificationSubset
+
+  prefix:
+    rank: 12
+    description: prefix URI tuple
+    slots:
+      - prefix_prefix
+      - prefix_reference
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  local_name:
+    description: an attributed label
+    slots:
+      - local_name_source
+      - local_name_value
+
+  example:
+    description: usage example and description
+    slots:
+      - value
+      - value_description
+      - value_object
+    in_subset:
+      - BasicSubset
+
+  alt_description:
+    aliases:
+      - structured description
+    description: an attributed description
+    slots:
+      - alt_description_source
+      - alt_description_text
+    in_subset:
+      - BasicSubset
+
+  permissible_value:
+    rank: 16
+    aliases:
+      - PV
+    description: a permissible value, accompanied by intended text and an optional mapping to a concept URI
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slot_usage:
+      is_a:
+        range: permissible_value
+      mixins:
+        range: permissible_value
+    close_mappings:
+      - skos:Concept
+    slots:
+      - text
+      - description
+      - meaning
+      - unit
+      - instantiates
+      - implements
+      - is_a
+      - mixins
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  unique_key:
+    rank: 20
+    description: a collection of slots whose values uniquely identify an instance of a class
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - unique_key_name
+      - unique_key_slots
+      - consider_nulls_inequal
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+      - RelationalModelProfile
+
+  type_mapping:
+    rank: 21
+    description: Represents how a slot or type can be serialized to a format.
+    mixins:
+      - extensible
+      - annotatable
+      - common_metadata
+    slots:
+      - framework_key
+      - mapped_type
+      - string_serialization
+    in_subset:
+      - SpecificationSubset
+
+  extra_slots_expression:
+    description: |
+      An expression that defines how to handle additional data in an instance of class
+      beyond the slots/attributes defined for that class. 
+      See `extra_slots` for usage examples.
+    mixins:
+      - expression
+    slots:
+      - allowed
+      - range_expression
+
+
+# ==================================
+# Enumerations                     #
+# ==================================
+enums:
+  pv_formula_options:
+    rank: 1
+    description: >-
+      The formula used to generate the set of permissible values from the code_set values
+    permissible_values:
+      CODE:
+        description: The permissible values are the set of possible codes in the code set
+      CURIE:
+        description: The permissible values are the set of CURIES in the code set
+      URI:
+        description: The permissible values are the set of code URIs in the code set
+      FHIR_CODING:
+        description: The permissible values are the set of FHIR coding elements derived from the code set
+      LABEL:
+        description: The permissible values are the set of human readable labels in the code set
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
+  presence_enum:
+    rank: 11
+    description: enumeration of conditions by which a slot value should be set
+    permissible_values:
+      UNCOMMITTED:
+      PRESENT:
+      ABSENT:
+    status: testing
+
+  relational_role_enum:
+    rank: 3
+    description: enumeration of roles a slot on a relationship class can play
+    permissible_values:
+      SUBJECT:
+        meaning: rdf:subject
+        description: a slot with this role connects a relationship to its subject/source node
+        exact_mappings:
+          - owl:annotatedSource
+      OBJECT:
+        meaning: rdf:object
+        description: a slot with this role connects a relationship to its object/target node
+        exact_mappings:
+          - owl:annotatedTarget
+      PREDICATE:
+        meaning: rdf:predicate
+        description: a slot with this role connects a relationship to its predicate/property
+        exact_mappings:
+          - owl:annotatedProperty
+      NODE:
+        description: a slot with this role connects a symmetric relationship to a node that represents either subject or object node
+      OTHER_ROLE:
+        description: a slot with this role connects a relationship to a node that is not subject/object/predicate
+
+  alias_predicate_enum:
+    rank: 5
+    description: permissible values for the relationship between an element and an alias
+    permissible_values:
+      EXACT_SYNONYM:
+        meaning: skos:exactMatch
+      RELATED_SYNONYM:
+        meaning: skos:relatedMatch
+      BROAD_SYNONYM:
+        meaning: skos:broaderMatch
+      NARROW_SYNONYM:
+        meaning: skos:narrowerMatch
+
+  obligation_level_enum:
+    rank: 10
+    description: >-
+      The level of obligation or recommendation strength for a metadata element
+    permissible_values:
+      REQUIRED:
+        description: >-
+          The metadata element is required to be present in the model
+      RECOMMENDED:
+        aliases:
+          - ENCOURAGED
+        description: >-
+          The metadata element is recommended to be present in the model
+      OPTIONAL:
+        description: >-
+          The metadata element is optional to be present in the model
+      EXAMPLE:
+        description: >-
+          The metadata element is an example of how to use the model
+      DISCOURAGED:
+        description: >-
+          The metadata element is allowed but discouraged to be present in the model
+    in_subset:
+      - SpecificationSubset

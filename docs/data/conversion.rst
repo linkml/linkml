@@ -22,7 +22,7 @@ for example toy data files
 
 Specification:
 
-- `Part 6 <https://linkml.io/linkml-model/docs/specification/06mapping/>`_ of the LinkML specification provides a more formal treatment
+- `LinkML metamodel source <https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema>`_ (see mapping rules)
 
 LinkML-Convert
 --------------
@@ -121,8 +121,8 @@ python classes
 Command Line
 ------------
 
-.. currentmodule:: linkml.utils.converter
+.. currentmodule:: linkml.converter.cli
 
-.. click:: linkml.utils.converter:cli
+.. click:: linkml.converter.cli:cli
     :prog: linkml-convert
     :nested: full

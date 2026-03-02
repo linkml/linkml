@@ -1,0 +1,134 @@
+{% set lifetime_needed = range.containerType %}
+{% set lifetime_needed = needs_lifetime %}
+    fn {{ name}}{% if lifetime_needed %}<'a>{% endif %}(&{% if lifetime_needed %}'a {% endif %}self) -> {{ type_getter }} {
+{% if definition_range.child_ranges %}
+{% set u = union_type %}
+{% if ct == 'list' %}
+        {% if range.optional %}
+        self.{{ name }}.as_ref().map(|xs| {% if range.child_ranges and current_union_type == union_type %}xs.clone(){% else %}xs.iter().map(|v| {% if range.child_ranges %}v.clone(){% else %}{{ u }}::{{ range_variant }}(v.clone()){%- endif -%}).collect(){% endif %})
+        {% else %}
+        {% if range.child_ranges and current_union_type == union_type %}
+        self.{{ name }}.clone()
+        {% else %}
+        self.{{ name }}.iter().map(|v| {% if range.child_ranges %}v.clone(){% else %}{{ u }}::{{ range_variant }}(v.clone()){%- endif -%}).collect()
+        {% endif %}
+        {% endif %}
+{% elif ct == "mapping" %}
+        {% if range.optional %}
+        self.{{ name}}
+                .as_ref()
+                .map(|m| {% if range.child_ranges and current_union_type == union_type %}m.clone(){% else %}m.iter().map(|(k,v)| (k.clone(), {% if range.child_ranges %}v.clone(){% else %}{{ u }}::{{ range_variant }}(v.clone()){%- endif -%})).collect(){% endif %})
+        {% else %}
+        {% if range.child_ranges and current_union_type == union_type %}
+        self.{{ name }}.clone()
+        {% else %}
+        self.{{ name }}.iter().map(|(k,v)| (k.clone(), {% if range.child_ranges %}v.clone(){% else %}{{ u }}::{{ range_variant }}(v.clone()){%- endif -%})).collect()
+        {% endif %}
+        {% endif %}
+{% else %}
+        {% if definition_range.optional %}
+            {% if range.optional %}
+                {% if range.child_ranges %}
+                {% if current_union_type == union_type %}
+                self.{{ name }}.as_ref().cloned()
+                {% else %}
+                self.{{ name }}.as_ref().map(|v| match v {
+                {% for arm in union_conversion_arms %}
+                    {{ arm }}
+                {% endfor %}
+                })
+                {% endif %}
+                {% else %}
+                self.{{ name }}.as_ref().map(|v| {{ u }}::{{ range_variant }}(v.clone()))
+                {% endif %}
+            {% else %}
+                {% if range.child_ranges %}
+                {% if current_union_type == union_type %}
+                Some(self.{{ name }}.clone())
+                {% else %}
+                Some(match &self.{{ name }} {
+                {% for arm in union_conversion_arms %}
+                    {{ arm }}
+                {% endfor %}
+                })
+                {% endif %}
+                {% else %}
+                Some({{ u }}::{{ range_variant }}(self.{{ name }}.clone()))
+                {% endif %}
+            {% endif %}
+        {% else %}
+            {% if range.child_ranges %}
+            {% if current_union_type == union_type %}
+            self.{{ name }}.clone()
+            {% else %}
+            match &self.{{ name }} {
+            {% for arm in union_conversion_arms %}
+                {{ arm }}
+            {% endfor %}
+            }
+            {% endif %}
+            {% else %}
+            {{ u }}::{{ range_variant }}(self.{{ name }}.clone())
+            {% endif %}
+        {% endif %}
+{% endif %}
+{% else %}
+{%  if range.box_needed %}
+{% if ct == 'list' %}
+        {% if range.optional %}
+        return self.{{ name }}.as_ref().map(|x| poly_containers::ListView::new(x));
+        {% else %}
+        return poly_containers::ListView::new(&self.{{ name }});
+        {% endif %}
+{% elif ct == "mapping" %}
+        {% if range.optional %}
+        return self.{{ name}}
+                .as_ref()
+                .map(poly_containers::MapView::new);
+        {% else %}
+        return poly_containers::MapView::new(&self.{{ name }});
+        {% endif %}
+{% else %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% else %}
+        return self.{{ name }}.as_deref();
+        {% endif %}
+{% endif %}
+{% else %}
+{% if range.optional %}
+        {% if type_getter == 'Option<&str>' or type_getter == "Option<&'a str>" %}
+        return self.{{ name }}.as_deref();
+        {% elif type_getter == 'Option<String>' %}
+        return self.{{ name }}.as_ref().map(|x| x.to_string());
+        {% elif ct != 'list' and ct != 'mapping' %}
+        {% if is_copy %}
+        return self.{{ name }};
+        {% else %}
+        return self.{{ name }}.as_ref();
+        {% endif %}
+        {% else %}
+        return self.{{ name }}.as_ref();
+        {% endif %}
+{% else %}
+{% if need_option_wrap %}
+        {% if type_getter == 'Option<String>' %}
+        return Some(self.{{ name }}.to_string());
+        {% else %}
+        return Some(&self.{{ name }});
+        {% endif %}
+{% else %}
+        {% if ct == 'list' or ct == 'mapping' %}
+        return &self.{{ name }};
+        {% elif is_copy %}
+        return self.{{ name }};
+        {% elif type_getter == "&'a str" or type_getter == "&str" %}
+        return &self.{{ name }}[..];
+        {% else %}
+        return &self.{{ name }};
+        {% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+    }

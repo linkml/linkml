@@ -1,0 +1,6 @@
+id: main
+name: main
+title: main
+imports:
+  - linkml:types
+  - ./L2_2_0/child

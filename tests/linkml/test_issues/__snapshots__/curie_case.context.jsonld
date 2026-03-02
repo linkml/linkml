@@ -1,0 +1,20 @@
+{
+   "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "ABC": "http://example.org/abc#",
+      "aBC": "http://example.org/abc#",
+      "aBc": "http://example.org/abc#",
+      "abc": "http://example.org/abc#",
+      "curiecase": "http://example.org/tests/curiecase/",
+      "@vocab": "http://example.org/tests/curiecase/",
+      "C1": {
+         "@id": "aBC:c1"
+      },
+      "C2": {
+         "@id": "aBC:t2"
+      },
+      "C3": {
+         "@id": "aBC:t3"
+      }
+   }
+}

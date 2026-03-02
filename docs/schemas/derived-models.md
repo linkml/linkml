@@ -28,4 +28,4 @@ This can be useful for feeding to basic tools that do not need to implement logi
 
 ## Specification
 
-- [Part 4](https://linkml.io/linkml-model/docs/specification/04derived-schemas/) of LinkML specification
+- [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema) (see derived schema rules)

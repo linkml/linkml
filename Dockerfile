@@ -17,7 +17,7 @@ WORKDIR /code
 
 # Build project. The .git directory is needed for uv-dynamic-versioning
 COPY . .
-RUN uv build
+RUN uv build --all-packages
 
 #######################################
 FROM python:3.12-slim-bookworm AS runner

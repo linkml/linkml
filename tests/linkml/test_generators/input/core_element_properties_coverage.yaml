@@ -1,0 +1,213 @@
+id: https://example.org/test/core_element_properties_coverage
+name: core_element_properties_coverage_schema
+title: Core Element Properties Coverage Test Schema
+description: Schema to test that core element-specific properties are rendered in documentation (Phase 2)
+
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+default_prefix: test
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  # Test class with comprehensive class properties
+  TestClassWithCoreProps:
+    description: A test class with core class properties
+    class_uri: schema:Thing
+    tree_root: true
+    slot_names_unique: true
+    slots:
+      - identifier_slot
+      - name_slot
+      - tags
+    unique_keys:
+      name_key:
+        unique_key_name: name_key
+        unique_key_slots:
+          - name_slot
+      compound_key:
+        unique_key_name: compound_key
+        unique_key_slots:
+          - identifier_slot
+          - name_slot
+        consider_nulls_inequal: true
+    defining_slots:
+      - identifier_slot
+
+  # Test mixin class
+  IdentifiableMixin:
+    description: A mixin providing identification capabilities
+    mixin: true
+    slots:
+      - identifier_slot
+
+  # Test class using mixin
+  ConcreteClass:
+    description: A concrete class using the mixin
+    mixins:
+      - IdentifiableMixin
+    slots:
+      - name_slot
+
+  # Test relationship class
+  RelationshipClass:
+    description: A class representing a relationship
+    represents_relationship: true
+    slots:
+      - subject
+      - object
+
+  # Test union class
+  UnionClass:
+    description: A class that is a union of other classes
+    union_of:
+      - ConcreteClass
+      - RelationshipClass
+
+  # Test class with disjoint constraint
+  DisjointClass:
+    description: A class with disjoint constraints
+    disjoint_with:
+      - UnionClass
+    children_are_mutually_disjoint: true
+
+slots:
+  # Test slot with comprehensive cardinality properties
+  identifier_slot:
+    description: A unique identifier slot
+    range: string
+    identifier: true
+    required: true
+    minimum_cardinality: 1
+    maximum_cardinality: 1
+    slot_uri: schema:identifier
+    readonly: true
+    key: true
+
+  name_slot:
+    description: A name slot with singular form
+    range: string
+    singular_name: name
+    required: true
+    minimum_value: 1
+    maximum_value: 100
+    pattern: "^[A-Za-z0-9_]+$"
+
+  # Test multivalued slot with list properties
+  tags:
+    description: Multiple tags for categorization
+    range: string
+    multivalued: true
+    minimum_cardinality: 0
+    maximum_cardinality: 10
+    list_elements_unique: true
+    list_elements_ordered: false
+
+  # Test slot with domain
+  subject:
+    description: Subject of a relationship
+    range: ConcreteClass
+    domain: RelationshipClass
+    required: true
+
+  object:
+    description: Object of a relationship
+    range: ConcreteClass
+    domain: RelationshipClass
+    required: true
+
+  # Test slot with various characteristics
+  complex_slot:
+    description: A slot with many characteristics
+    range: string
+    slot_group: metadata_group
+    recommended: true
+    ifabsent: string(default_value)
+    owner: TestClassWithCoreProps
+    shared: true
+
+  # Test slot with exact cardinality
+  exact_cardinality_slot:
+    description: A slot with exact cardinality
+    range: integer
+    exact_cardinality: 3
+
+  # Test grouping slot
+  metadata_group:
+    description: A grouping slot for metadata
+    is_grouping_slot: true
+
+  # Test usage slot
+  specialized_identifier:
+    description: A specialized version of identifier
+    is_a: identifier_slot
+    is_usage_slot: true
+    usage_slot_name: specialized_id
+
+  # Test class field slot
+  class_level_property:
+    description: A class-level property
+    is_class_field: true
+    range: string
+
+  # Test inherited slot
+  base_property:
+    description: A base property to be inherited
+    range: string
+    inherited: true
+
+  # Test designates_type slot
+  type_designator:
+    description: A slot that designates the type
+    range: string
+    designates_type: true
+
+enums:
+  # Test enum with enum_uri
+  StatusEnum:
+    description: Status enumeration with enum URI
+    enum_uri: schema:status
+    permissible_values:
+      ACTIVE:
+        description: Active status
+      INACTIVE:
+        description: Inactive status
+      PENDING:
+        description: Pending status
+
+  # Minimal enum for comparison
+  SimpleEnum:
+    description: Simple enum without enum URI
+    permissible_values:
+      YES:
+        description: Yes value
+      NO:
+        description: No value
+
+types:
+  # Test type with type_uri and constraints
+  PositiveInteger:
+    typeof: integer
+    description: A positive integer type
+    uri: schema:PositiveInteger
+    minimum_value: 1
+    pattern: "^[1-9][0-9]*$"
+
+  # Test type with union
+  StringOrInteger:
+    description: A type that can be string or integer
+    union_of:
+      - string
+      - integer
+
+  # Test type with repr
+  FormattedString:
+    typeof: string
+    description: A string with specific representation
+    base: str
+    repr: str
+    pattern: "^[A-Z]{3}-[0-9]{4}$"
