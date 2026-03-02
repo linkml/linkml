@@ -584,9 +584,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
-            slot_args["predefined"] = str(predef)
-        elif slot.ifabsent == "bnode":
-            slot_args["default_factory"] = 'lambda: "_:" + uuid.uuid4().hex'
+            if slot.ifabsent in PydanticIfAbsentProcessor.FACTORY_IFABSENT_VALUES:
+                slot_args["default_factory"] = str(predef)
+            else:
+                slot_args["predefined"] = str(predef)
 
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)
@@ -674,11 +675,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                             slot.name
                         ]
                     elif slot.ifabsent is not None:
-                        if slot.ifabsent == "bnode":
-                            # bnode default_factory is handled in generate_slot
-                            pass
-                        else:
-                            value = ifabsent_processor.process_slot(slot, class_def)
+                        value = ifabsent_processor.process_slot(slot, class_def)
+                        if value is not None:
                             slot_values[camelcase(class_def.name)][slot.name] = value
 
                 self._predefined_slot_values = slot_values
