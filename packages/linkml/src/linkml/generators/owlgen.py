@@ -174,6 +174,9 @@ class OwlSchemaGenerator(Generator):
     enum_iri_separator: str = "#"
     """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
 
+    enum_inherits_as_subclass_of: bool = False
+    """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -207,6 +210,8 @@ class OwlSchemaGenerator(Generator):
             self.add_type(typ)
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
+        for cls in sv.all_classes(imports=mergeimports).values():
+            self._add_disjoint_children(cls)
 
         if not mergeimports:
             for imp in schema.imports:
@@ -890,6 +895,9 @@ class OwlSchemaGenerator(Generator):
             else:
                 has_parent = True
             self.graph.add((enum_uri, RDFS.subClassOf, parent))
+        if self.enum_inherits_as_subclass_of:
+            for parent_name in e.inherits:
+                self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
         if self.metaclasses:
@@ -969,6 +977,27 @@ class OwlSchemaGenerator(Generator):
                 # without reasoning
                 if not isinstance(pv_node, Literal):
                     g.add((pv_node, sub_pred, enum_uri))
+
+    def _add_disjoint_children(self, cls: ClassDefinition) -> None:
+        """Emit an ``owl:AllDisjointClasses`` axiom for the immediate subclasses of *cls*
+        when ``children_are_mutually_disjoint`` is set on the class.
+
+        The axiom is suppressed when fewer than two qualifying children exist.
+        """
+        if not cls.children_are_mutually_disjoint:
+            return
+        sv = self.schemaview
+        children = sorted(
+            [c for c in sv.all_classes(imports=self.mergeimports).values() if c.is_a == cls.name],
+            key=lambda c: c.name,
+        )
+        if len(children) < 2:
+            return
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.AllDisjointClasses))
+        listnode = BNode()
+        Collection(self.graph, listnode, [self._class_uri(c.name) for c in children])
+        self.graph.add((node, OWL.members, listnode))
 
     def _add_rule(self, subject: URIRef | BNode, rule: ClassRule, cls: ClassDefinition):
         if not self.use_swrl:
@@ -1366,6 +1395,12 @@ class OwlSchemaGenerator(Generator):
     is_flag=False,
     show_default=True,
     help="IRI separator for enums.",
+)
+@click.option(
+    "--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of",
+    default=False,
+    show_default=True,
+    help="If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):

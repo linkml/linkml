@@ -1,6 +1,6 @@
 
 Classes: 46
-	Referenced by: 29 classes, 235 slots, 0 types, 0 enums 
+	Referenced by: 29 classes, 236 slots, 0 types, 0 enums 
 	Root: 32
 	Leaf: 40
 	Standalone: 45
@@ -9,8 +9,8 @@ Classes: 46
 		enum_expression
 	Abstract: 5
 
-Slots: 271
-	Referenced by: 42 classes, 63 slots, 0 types, 0 enums 
+Slots: 272
+	Referenced by: 42 classes, 64 slots, 0 types, 0 enums 
 	Root: 208
 	Leaf: 243
 	Standalone: 275
@@ -53,7 +53,7 @@ Slots: 271
 			annotation: 1
 			anonymous_class_expression: 9
 			anonymous_enum_expression: 2
-			anonymous_slot_expression: 6
+			anonymous_slot_expression: 7
 			anonymous_type_expression: 4
 			array_expression: 1
 			class_definition: 8

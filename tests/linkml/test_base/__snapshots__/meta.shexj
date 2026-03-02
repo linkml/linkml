@@ -4111,7 +4111,7 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/range_expression",
-                        "valueExpr": "https://w3id.org/linkml/AnonymousClassExpression",
+                        "valueExpr": "https://w3id.org/linkml/AnonymousSlotExpression",
                         "min": 0,
                         "max": 1
                      }

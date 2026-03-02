@@ -384,3 +384,66 @@ def test_permissible_values(
             assert isinstance(pv, URIRef) or isinstance(pv, Literal)
         else:
             raise AssertionError("all combinations must be accounted for")
+
+
+@pytest.mark.parametrize("enum_inherits_as_subclass_of", [True, False])
+def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> None:
+    """Test that enum inherits relationships are translated to rdfs:subClassOf when the flag is set.
+
+    With the flag enabled, a child enum that lists a parent in its inherits field should
+    be asserted as a subclass of that parent in the generated OWL. With the flag disabled
+    (the default), no such axiom should be emitted.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("ParentEnum", permissible_values=["A", "B"])
+    sb.add_enum("ChildEnum", permissible_values=["A"], inherits=["ParentEnum"])
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        enum_inherits_as_subclass_of=enum_inherits_as_subclass_of,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    subclass_axiom = (EX.ChildEnum, RDFS.subClassOf, EX.ParentEnum)
+    if enum_inherits_as_subclass_of:
+        assert subclass_axiom in g
+    else:
+        assert subclass_axiom not in g
+
+
+@pytest.mark.parametrize(
+    "num_children,children_are_mutually_disjoint,expect_axiom",
+    [
+        (3, True, True),  # flag set, multiple children → axiom emitted
+        (1, True, False),  # flag set, single child → axiom suppressed
+        (3, False, False),  # flag not set → no axiom
+    ],
+)
+def test_children_are_mutually_disjoint(
+    num_children: int, children_are_mutually_disjoint: bool, expect_axiom: bool
+) -> None:
+    """Test that children_are_mutually_disjoint emits owl:AllDisjointClasses for direct subclasses.
+
+    The axiom should be emitted only when the flag is True and at least two children exist.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Animal", children_are_mutually_disjoint=children_are_mutually_disjoint)
+    child_names = [f"Child{i}" for i in range(num_children)]
+    for name in child_names:
+        sb.add_class(name, is_a="Animal")
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(sb.schema, mergeimports=False, metaclasses=False, type_objects=False)
+    owl = gen.serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+    disjoint_nodes = list(g.subjects(RDF.type, OWL.AllDisjointClasses))
+    if not expect_axiom:
+        assert disjoint_nodes == []
+    else:
+        assert len(disjoint_nodes) == 1
+        members_node = list(g.objects(disjoint_nodes[0], OWL.members))[0]
+        members = set(Collection(g, members_node))
+        assert members == {EX[name] for name in child_names}

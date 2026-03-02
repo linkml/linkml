@@ -371,3 +371,70 @@ def test_subproperty_of_multivalued(framework):
         expected_behavior=ValidationBehavior.IMPLEMENTS,
         description="one_invalid",
     )
+
+
+@pytest.mark.parametrize("framework", [PYDANTIC])
+def test_subproperty_of_class_range(framework):
+    """
+    Tests that subproperty_of does not override class range with Literal type.
+
+    When a slot has subproperty_of AND range pointing to a class,
+    the class range should take priority. The subproperty_of Literal
+    expansion only applies to string-like ranges (string, uri, uriorcurie).
+
+    Regression test for https://github.com/linkml/linkml/issues/3184
+    """
+    slots = {
+        "mayHaveAbility": {"range": "Ability", "multivalued": True},
+        "mayHaveHiddenAbility": {
+            "is_a": "mayHaveAbility",
+            "range": "Ability",
+            "multivalued": True,
+            "subproperty_of": "mayHaveAbility",
+        },
+    }
+    classes = {
+        "Ability": {
+            "attributes": {
+                "name": {"range": "string", "identifier": True},
+            },
+        },
+        "Species": {
+            "tree_root": True,
+            "slots": ["mayHaveAbility", "mayHaveHiddenAbility"],
+        },
+    }
+    schema = validated_schema(
+        test_subproperty_of_class_range,
+        "class_range",
+        framework,
+        slots=slots,
+        classes=classes,
+        core_elements=["subproperty_of"],
+    )
+
+    # Ability has an identifier slot, so Pydantic represents references as strings.
+    # With the fix, mayHaveHiddenAbility accepts any valid Ability identifier string.
+    # Without the fix, it would only accept Literal["mayHaveAbility"].
+    check_data(
+        schema,
+        "valid_ability_ref",
+        framework,
+        {"mayHaveAbility": ["Overgrow"], "mayHaveHiddenAbility": ["Chlorophyll"]},
+        True,
+        target_class="Species",
+        expected_behavior=ValidationBehavior.IMPLEMENTS,
+        description="valid_ability_ref",
+    )
+
+    # Verify mayHaveAbility itself also works (parent slot, no subproperty_of issue)
+    check_data(
+        schema,
+        "valid_parent_slot",
+        framework,
+        {"mayHaveAbility": ["Overgrow", "Blaze"]},
+        True,
+        target_class="Species",
+        expected_behavior=ValidationBehavior.IMPLEMENTS,
+        description="valid_parent_slot",
+    )
