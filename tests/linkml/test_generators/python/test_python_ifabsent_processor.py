@@ -1,6 +1,6 @@
 import pytest
 
-from linkml.generators.pydanticgen.pydantic_ifabsent_processor import PydanticIfAbsentProcessor
+from linkml.generators.pydanticgen.pydantic_ifabsent_processor import FactoryDefault, PydanticIfAbsentProcessor
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinitionName, SlotDefinitionName
@@ -454,7 +454,7 @@ enums:
     "processor_cls,expected",
     [
         (PythonIfAbsentProcessor, "bnode()"),
-        (PydanticIfAbsentProcessor, 'lambda: "_:" + uuid.uuid4().hex'),
+        (PydanticIfAbsentProcessor, FactoryDefault('lambda: "_:" + uuid.uuid4().hex')),
     ],
     ids=["python", "pydantic"],
 )
