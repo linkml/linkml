@@ -4446,14 +4446,14 @@ class ExtraSlotsExpression(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.ExtraSlotsExpression
 
     allowed: Optional[Union[bool, Bool]] = None
-    range_expression: Optional[Union[dict, AnonymousClassExpression]] = None
+    range_expression: Optional[Union[dict, AnonymousSlotExpression]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.allowed is not None and not isinstance(self.allowed, Bool):
             self.allowed = Bool(self.allowed)
 
-        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
-            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousSlotExpression):
+            self.range_expression = AnonymousSlotExpression(**as_dict(self.range_expression))
 
         super().__post_init__(**kwargs)
 
@@ -5325,3 +5325,6 @@ slots.permissible_value_is_a = Slot(uri=LINKML.is_a, name="permissible_value_is_
 
 slots.permissible_value_mixins = Slot(uri=LINKML.mixins, name="permissible_value_mixins", curie=LINKML.curie('mixins'),
                    model_uri=LINKML.permissible_value_mixins, domain=PermissibleValue, range=Optional[Union[Union[str, PermissibleValueText], list[Union[str, PermissibleValueText]]]])
+
+slots.extra_slots_expression_range_expression = Slot(uri=LINKML.range_expression, name="extra_slots_expression_range_expression", curie=LINKML.curie('range_expression'),
+                   model_uri=LINKML.extra_slots_expression_range_expression, domain=ExtraSlotsExpression, range=Optional[Union[dict, AnonymousSlotExpression]])

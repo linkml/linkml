@@ -103,8 +103,8 @@ def test_rdflib_dumper(prefix_map):
     assert (P["001"], SDO.email, Literal("fred.bloggs@example.com")) in g
     assert (P["001"], INFO.age_in_years, Literal(33)) in g
     assert (P["001"], SDO.gender, GSSO["000371"]) in g
-    assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.anyURI)) in g
-    assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.string)) not in g
+    assert (P["001"], INFO.depicted_by, URIRef("https://example.org/pictures/fred.jpg")) in g
+    assert (P["001"], INFO.depicted_by, Literal("https://example.org/pictures/fred.jpg", datatype=XSD.anyURI)) not in g
     assert (CODE["D0001"], RDF.type, INFO.DiagnosisConcept) in g
     assert (CODE["D0001"], RDF.type, INFO.DiagnosisConcept) in g
     assert (CODE["D0001"], SKOS.exactMatch, HP["0002315"]) in g

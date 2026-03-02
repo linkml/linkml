@@ -38,7 +38,7 @@ def graph(inst: Dataset, view: SchemaView) -> rdflib.Graph:
         (
             None,
             rdflib.term.URIRef("https://w3id.org/linkml/personinfo/source"),
-            rdflib.term.Literal("ex:source", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#anyURI")),
+            rdflib.term.URIRef("https://example.org/source"),
         ),
         (
             None,
