@@ -414,6 +414,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml</span><span class="w"> </span><span class="kn">import</span> <span class="n">METAMODEL_NAMESPACE_NAME</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -571,6 +572,23 @@
     <span class="n">enum_iri_separator</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #&quot;&quot;&quot;</span>
 
+    <span class="n">skip_vacuous_min_zero_cardinality_axioms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, suppress owl:minCardinality 0 restrictions. Such axioms are vacuously</span>
+<span class="sd">    satisfied by every individual and never carry information.</span>
+<span class="sd">    Defaults to False; will change to True in a future release.&quot;&quot;&quot;</span>
+
+    <span class="n">skip_vacuous_local_range_axioms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, suppress owl:allValuesFrom restrictions whose filler is either owl:Thing</span>
+<span class="sd">    or the same URI as the property&#39;s globally declared rdfs:range (entailed, hence</span>
+<span class="sd">    vacuous in context). Attribute slots, which have no global rdfs:range, are</span>
+<span class="sd">    unaffected.</span>
+<span class="sd">    Defaults to False; will change to True in a future release.&quot;&quot;&quot;</span>
+
+    <span class="n">consolidate_cardinality_axioms</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, emit a single owl:cardinality restriction when minimum_cardinality equals</span>
+<span class="sd">    maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality.</span>
+<span class="sd">    Defaults to False; will change to True in a future release.&quot;&quot;&quot;</span>
+
     <span class="n">enum_inherits_as_subclass_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms.&quot;&quot;&quot;</span>
 
@@ -580,6 +598,16 @@
 
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_vacuous_min_zero_cardinality_axioms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;owlgen-skip-vacuous-min-zero-cardinality-default&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skip_vacuous_min_zero_cardinality_axioms</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_vacuous_local_range_axioms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;owlgen-skip-vacuous-local-range-default&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">skip_vacuous_local_range_axioms</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">consolidate_cardinality_axioms</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">deprecation_warning</span><span class="p">(</span><span class="s2">&quot;owlgen-consolidate-cardinality-axioms-default&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consolidate_cardinality_axioms</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span>
         <span class="n">owl_id</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">id</span>
@@ -937,26 +965,63 @@
                 <span class="n">top_slot</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">top_slot</span> <span class="o">=</span> <span class="n">slot</span>
-            <span class="n">avf</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">quantifier_predicate</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
-            <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avf</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                <span class="n">quantifier_predicate</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">allValuesFrom</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_vacuous_local_range_axioms</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_vacuous_avf_filler</span><span class="p">(</span><span class="n">top_slot</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">avf</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">quantifier_predicate</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">avf</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
+                <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">avf</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">AnonymousClassExpression</span><span class="p">):</span>
                 <span class="c1"># cardinality constraints only belong at the top level</span>
                 <span class="k">continue</span>
-            <span class="n">min_card_expr</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
-            <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">min_card_expr</span><span class="p">)</span>
-            <span class="n">min_card</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">required</span> <span class="k">else</span> <span class="mi">0</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">min_card_expr</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">min_card_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">minCardinality</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">min_card</span><span class="p">)))</span>
-            <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">min_card_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
-                <span class="n">max_card_expr</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
-                <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_card_expr</span><span class="p">)</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">max_card_expr</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">max_card_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">maxCardinality</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">max_card_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">))</span>
+
+            <span class="c1">### Cardinality axioms</span>
+            <span class="c1"># determine min_card</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">min_card</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span>
+            <span class="k">elif</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">min_card</span> <span class="o">=</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">minimum_cardinality</span>
+            <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="n">min_card</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">min_card</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># determine max_card</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">max_card</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span>
+            <span class="k">elif</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">max_card</span> <span class="o">=</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">maximum_cardinality</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
+                <span class="n">max_card</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">max_card</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># unbounded</span>
+            <span class="c1"># warn if explicit cardinality bounds are set without multivalued</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">maximum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="p">)</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span>
+                <span class="ow">and</span> <span class="ow">not</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">multivalued</span>
+            <span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Slot &#39;</span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has minimum_cardinality or maximum_cardinality set &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;but multivalued is not set; assuming multivalued=True.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># generate axioms</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">consolidate_cardinality_axioms</span> <span class="ow">and</span> <span class="n">min_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">min_card</span> <span class="o">==</span> <span class="n">max_card</span><span class="p">:</span>
+                <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_cardinality_restriction</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">cardinality</span><span class="p">,</span> <span class="n">min_card</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skip_vacuous_min_zero_cardinality_axioms</span> <span class="ow">and</span> <span class="n">min_card</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_cardinality_restriction</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">minCardinality</span><span class="p">,</span> <span class="n">min_card</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">max_card</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_cardinality_restriction</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">maxCardinality</span><span class="p">,</span> <span class="n">max_card</span><span class="p">))</span>
+
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">has_member</span><span class="p">:</span>
                 <span class="n">has_member_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_class_slot_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">has_member</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">has_member_expr</span><span class="p">:</span>
@@ -1378,6 +1443,43 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
                     <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">sub_pred</span><span class="p">,</span> <span class="n">enum_uri</span><span class="p">))</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_vacuous_avf_filler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">URIRef</span> <span class="o">|</span> <span class="n">BNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True when an ``owl:allValuesFrom x`` restriction is vacuous.</span>
+
+<span class="sd">        Two cases are considered vacuous:</span>
+
+<span class="sd">        1. ``x`` is ``owl:Thing`` — trivially satisfied by every individual.</span>
+<span class="sd">        2. ``x`` is a plain URI equal to the globally declared ``rdfs:range`` of the</span>
+<span class="sd">           property.  Top-level (non-attribute) slots have their range emitted as a</span>
+<span class="sd">           global ``rdfs:range`` axiom by ``add_slot``; a local ``allValuesFrom``</span>
+<span class="sd">           with the same filler is then fully entailed and adds nothing new.</span>
+<span class="sd">           Attribute slots do *not* get a global ``rdfs:range``, so for those the</span>
+<span class="sd">           ``allValuesFrom`` is the only range declaration and must be kept.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Thing</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">):</span>
+            <span class="c1"># BNode means additional constraints beyond a plain range — never vacuous.</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
+        <span class="c1"># Attributes have no globally declared rdfs:range, so their allValuesFrom</span>
+        <span class="c1"># carries information and must not be dropped.</span>
+        <span class="c1"># Use attributes=False so that class-level attribute slots are excluded;</span>
+        <span class="c1"># sv.all_slots(attributes=True) would include them and give a false positive.</span>
+        <span class="k">if</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">top_slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">range_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">range</span> <span class="k">if</span> <span class="n">ts</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">range_name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_types</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_uri</span><span class="p">(</span><span class="n">range_name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enum_uri</span><span class="p">(</span><span class="n">EnumDefinitionName</span><span class="p">(</span><span class="n">range_name</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">range_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_add_disjoint_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an ``owl:AllDisjointClasses`` axiom for the immediate subclasses of *cls*</span>
 <span class="sd">        when ``children_are_mutually_disjoint`` is set on the class.</span>
@@ -1481,6 +1583,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">property</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">hasValue</span><span class="p">,</span> <span class="n">filler</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">node</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_cardinality_restriction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">property</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">cardinality_property</span><span class="p">:</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">cardinality</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BNode</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">Restriction</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">cardinality_property</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">cardinality</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">onProperty</span><span class="p">,</span> <span class="nb">property</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">node</span>
 
     <span class="nd">@staticmethod</span>
@@ -1796,6 +1905,37 @@
     <span class="n">is_flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;IRI separator for enums.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--skip-vacuous-local-range-axioms/--no-skip-vacuous-local-range-axioms&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;If true, suppress owl:allValuesFrom restrictions whose filler is owl:Thing &quot;</span>
+        <span class="s2">&quot;or the same URI as the property&#39;s globally declared rdfs:range, as these are &quot;</span>
+        <span class="s2">&quot;entailed and carry no additional information. &quot;</span>
+        <span class="s2">&quot;Default will change to true in a future release.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--skip-vacuous-min-zero-cardinality-axioms/--no-skip-vacuous-min-zero-cardinality-axioms&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;If true, suppress owl:minCardinality 0 restrictions. &quot;</span>
+        <span class="s2">&quot;Such axioms are vacuously satisfied by every individual and never carry information. &quot;</span>
+        <span class="s2">&quot;Default will change to true in a future release.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--consolidate-cardinality-axioms/--no-consolidate-cardinality-axioms&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;If true, emit a single owl:cardinality restriction when minimum_cardinality equals &quot;</span>
+        <span class="s2">&quot;maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality. &quot;</span>
+        <span class="s2">&quot;Default will change to true in a future release.&quot;</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of&quot;</span><span class="p">,</span>

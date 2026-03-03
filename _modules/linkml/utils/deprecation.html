@@ -646,6 +646,39 @@
         <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Use flag `metadata` instead&quot;</span><span class="p">,</span>
         <span class="n">issue</span><span class="o">=</span><span class="mi">1799</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;owlgen-skip-vacuous-min-zero-cardinality-default&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.10.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The default for `skip_vacuous_min_zero_cardinality_axioms` in `OwlSchemaGenerator` &quot;</span>
+            <span class="s2">&quot;will change from `False` to `True` in a future release.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Set `skip_vacuous_min_zero_cardinality_axioms=True` to suppress vacuous axioms, &quot;</span>
+        <span class="s2">&quot;or set it explicitly to `False` to preserve current behaviour and silence this warning.&quot;</span><span class="p">,</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">3190</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;owlgen-skip-vacuous-local-range-default&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.10.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The default for `skip_vacuous_local_range_axioms` in `OwlSchemaGenerator` &quot;</span>
+            <span class="s2">&quot;will change from `False` to `True` in a future release.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Set `skip_vacuous_local_range_axioms=True` to suppress vacuous axioms, &quot;</span>
+        <span class="s2">&quot;or set it explicitly to `False` to preserve current behaviour and silence this warning.&quot;</span><span class="p">,</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">3190</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;owlgen-consolidate-cardinality-axioms-default&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.10.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The default for `consolidate_cardinality_axioms` in `OwlSchemaGenerator` &quot;</span>
+            <span class="s2">&quot;will change from `False` to `True` in a future release.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Set `consolidate_cardinality_axioms=True` to emit consolidated axioms, &quot;</span>
+        <span class="s2">&quot;or set it explicitly to `False` to preserve current behaviour and silence this warning.&quot;</span><span class="p">,</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">3191</span><span class="p">,</span>
+    <span class="p">),</span>
 <span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 
 <span class="n">EMITTED</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[str]</span>
