@@ -435,7 +435,7 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
             "datetime(2020-01-01T00:00:00Z)",
             "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)",
         ),
-        ("attr7", "string", "bnode", 'attr7: Optional[str] = Field(default_factory=lambda: "_:" + uuid.uuid4().hex'),
+        ("attr7", "string", "bnode", "attr7: Optional[str] = Field(default=None"),
     ],
 )
 def test_ifabsent(slot_name, range_, ifabsent, expected_fragment):
@@ -463,38 +463,6 @@ classes:
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
     assert expected_fragment in code
-
-
-def test_ifabsent_bnode_unique():
-    """Verify generated bnode default_factory produces unique values per instance."""
-    schema_str = """
-id: id
-name: test_bnode
-description: test bnode ifabsent
-
-prefixes:
-  linkml: https://w3id.org/linkml/
-
-imports:
-  - linkml:types
-
-classes:
-  MyClass:
-    attributes:
-      id:
-        range: string
-        ifabsent: bnode
-        """
-
-    gen = PydanticGenerator(schema_str)
-    code = gen.serialize()
-    module = compile(code, "<test>", "exec")
-    ns = {}
-    exec(module, ns)
-    obj1 = ns["MyClass"]()
-    obj2 = ns["MyClass"]()
-    assert obj1.id.startswith("_:")
-    assert obj1.id != obj2.id
 
 
 def test_equals_string():

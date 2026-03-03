@@ -22,7 +22,7 @@ from linkml.generators.oocodegen import OOCodeGenerator
 from linkml.generators.pydanticgen import includes
 from linkml.generators.pydanticgen.array import ArrayRangeGenerator, ArrayRepresentation
 from linkml.generators.pydanticgen.build import ClassResult, SlotResult, SplitResult
-from linkml.generators.pydanticgen.pydantic_ifabsent_processor import FactoryDefault, PydanticIfAbsentProcessor
+from linkml.generators.pydanticgen.pydantic_ifabsent_processor import PydanticIfAbsentProcessor
 from linkml.generators.pydanticgen.template import (
     Import,
     Imports,
@@ -72,7 +72,6 @@ DEFAULT_IMPORTS = (
     + Import(module="decimal", objects=[ObjectImport(name="Decimal")])
     + Import(module="enum", objects=[ObjectImport(name="Enum")])
     + Import(module="re")
-    + Import(module="uuid")
     + Import(module="sys")
     + Import(
         module="typing",
@@ -584,10 +583,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
         predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
         if predef is not None:
-            if isinstance(predef, FactoryDefault):
-                slot_args["default_factory"] = str(predef)
-            else:
-                slot_args["predefined"] = str(predef)
+            slot_args["predefined"] = str(predef)
 
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)

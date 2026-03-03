@@ -197,8 +197,6 @@ class PydanticAttribute(PydanticTemplateModel):
     key: bool = False
     predefined: str | None = None
     """Fixed string to use in body of field"""
-    default_factory: str | None = None
-    """Factory callable string to use as default_factory in Field"""
     range: str | None = None
     """Type annotation used for model field"""
     title: str | None = None

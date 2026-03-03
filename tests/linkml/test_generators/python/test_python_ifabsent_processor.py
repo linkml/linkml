@@ -1,6 +1,5 @@
 import pytest
 
-from linkml.generators.pydanticgen.pydantic_ifabsent_processor import FactoryDefault, PydanticIfAbsentProcessor
 from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import ClassDefinitionName, SlotDefinitionName
@@ -447,36 +446,6 @@ enums:
 
     assert str(e.value) == (
         "The ifabsent value `PresenceEnum(invalid)` of the `invalidPresence` slot could not be processed"
-    )
-
-
-@pytest.mark.parametrize(
-    "processor_cls,expected",
-    [
-        (PythonIfAbsentProcessor, "bnode()"),
-        (PydanticIfAbsentProcessor, FactoryDefault('lambda: "_:" + uuid.uuid4().hex')),
-    ],
-    ids=["python", "pydantic"],
-)
-def test_bnode_default_value(processor_cls, expected):
-    schema = (
-        base_schema
-        + """
-      - name: bnode
-        range: Student
-        ifabsent: bnode
-    """
-    )
-    schema_view = SchemaView(schema)
-
-    processor = processor_cls(schema_view)
-
-    assert (
-        processor.process_slot(
-            schema_view.all_slots()[SlotDefinitionName("bnode")],
-            schema_view.all_classes()[ClassDefinitionName("Student")],
-        )
-        == expected
     )
 
 
