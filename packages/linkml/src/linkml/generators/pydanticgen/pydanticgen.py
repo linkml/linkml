@@ -672,8 +672,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                         ]
                     elif slot.ifabsent is not None:
                         value = ifabsent_processor.process_slot(slot, class_def)
-                        if value is not None:
-                            slot_values[camelcase(class_def.name)][slot.name] = value
+                        slot_values[camelcase(class_def.name)][slot.name] = value
 
                 self._predefined_slot_values = slot_values
 
