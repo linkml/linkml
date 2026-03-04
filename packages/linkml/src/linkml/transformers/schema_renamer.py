@@ -1,6 +1,7 @@
+from collections.abc import Callable
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 import click
 from jsonasobj2 import as_dict

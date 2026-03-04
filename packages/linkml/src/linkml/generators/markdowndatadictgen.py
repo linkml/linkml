@@ -13,9 +13,10 @@ import os
 import re
 import urllib.request
 import zlib
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Optional, Union
+from typing import Any
 from xml.dom import minidom
 
 import click
@@ -90,10 +91,10 @@ def _sanitize_class_name_for_mermaid(name: str) -> str:
 class SvgCache:
     """Cache for SVG diagrams using git-like 2-level directory hierarchy."""
 
-    def __init__(self, cache_dir: Optional[str] = None):
+    def __init__(self, cache_dir: str | None = None):
         self.cache_dir = cache_dir
 
-    def get_cache_path(self, content_hash: str) -> Optional[tuple[str, str]]:
+    def get_cache_path(self, content_hash: str) -> tuple[str, str] | None:
         """Get cache file path for content hash using git-like 2-level hierarchy."""
         if not self.cache_dir:
             return None
@@ -119,7 +120,7 @@ class SvgCache:
         relative_to_cache = f".kroki-cache/{level1}/{level2}/{rest}.svg"
         return (str(cache_path), relative_to_cache)
 
-    def get(self, diagram_source: str) -> Optional[str]:
+    def get(self, diagram_source: str) -> str | None:
         """Return cached SVG content if found, None otherwise."""
         content_hash = hashlib.sha256(diagram_source.encode("utf-8")).hexdigest()
 
@@ -168,8 +169,8 @@ class DiagramRenderer:
 
     def __init__(
         self,
-        kroki_server: Optional[str] = None,
-        diagram_dir: Optional[str] = None,
+        kroki_server: str | None = None,
+        diagram_dir: str | None = None,
         pretty_format: bool = False,
     ):
         self.kroki_server = kroki_server
@@ -204,7 +205,7 @@ class DiagramRenderer:
             logging.debug(f"Failed to pretty-format SVG: {e}")
             return svg_content
 
-    def render(self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: Optional[str] = None) -> str:
+    def render(self, diagram_source: str, diagram_type: str = "mermaid", diagram_name: str | None = None) -> str:
         """Render diagram via Kroki server with caching, or return mermaid code block if no server."""
         clean_source = diagram_source.strip()
         if clean_source.startswith(f"```{diagram_type}"):
@@ -334,8 +335,8 @@ class MarkdownDataDictGen(Generator):
 
     # ObjectVars
     anchor_style: str = "mkdocs"
-    output: Optional[str] = None
-    image_directory: Optional[str] = None
+    output: str | None = None
+    image_directory: str | None = None
     classes: set[ClassDefinitionName] = None
     image_dir: bool = False
     index_file: str = "index.md"
@@ -343,13 +344,13 @@ class MarkdownDataDictGen(Generator):
     noyuml: bool = False
     no_types_dir: bool = False
     warn_on_exist: bool = False
-    gen_classes: Optional[set[ClassDefinitionName]] = None
-    gen_classes_neighborhood: Optional[References] = None
+    gen_classes: set[ClassDefinitionName] | None = None
+    gen_classes_neighborhood: References | None = None
     separate_erd_components: bool = True
     omit_standalone_classes: bool = False
     debug: bool = False
-    kroki_server: Optional[str] = None
-    diagram_dir: Optional[str] = None
+    kroki_server: str | None = None
+    diagram_dir: str | None = None
     pretty_format_svg: bool = False
     _diagram_counter: int = 0
 
@@ -357,8 +358,8 @@ class MarkdownDataDictGen(Generator):
 
     def visit_schema(
         self,
-        output: Optional[str] = None,
-        classes: Optional[set[ClassDefinitionName]] = None,
+        output: str | None = None,
+        classes: set[ClassDefinitionName] | None = None,
         image_dir: bool = False,
         index_file: str = "index.md",
         noimages: bool = False,
@@ -405,9 +406,9 @@ class MarkdownDataDictGen(Generator):
             self.para(be(self.schema.description)),
         ]
 
-    def _generate_diagrams(self) -> list[Optional[str]]:
+    def _generate_diagrams(self) -> list[str | None]:
         """Generate class and ERD diagrams."""
-        items: list[Optional[str]] = []
+        items: list[str | None] = []
 
         # Class Diagram
         items.append(self.header(2, "Class Diagram"))
@@ -424,9 +425,9 @@ class MarkdownDataDictGen(Generator):
 
         return items
 
-    def _generate_component_erd_diagrams(self) -> list[Optional[str]]:
+    def _generate_component_erd_diagrams(self) -> list[str | None]:
         """Generate separate ERD diagrams for each connected component."""
-        items: list[Optional[str]] = []
+        items: list[str | None] = []
 
         connected_components, base_classes, truly_standalone_classes = self._detect_erd_connected_components()
 
@@ -1086,7 +1087,7 @@ class MarkdownDataDictGen(Generator):
 
         return items
 
-    def slots_table(self, cls: ClassDefinition) -> Optional[str]:
+    def slots_table(self, cls: ClassDefinition) -> str | None:
         """Generate a markdown table of class attributes/slots including inherited ones."""
         all_slots = self._collect_all_class_slots(cls)
         if not all_slots:
@@ -1318,7 +1319,7 @@ class MarkdownDataDictGen(Generator):
                         )
                     )
 
-    def visit_subset(self, subset: SubsetDefinition) -> Optional[str]:
+    def visit_subset(self, subset: SubsetDefinition) -> str | None:
         # TODO: Implement subset documentation generation
         return None
 
@@ -1405,7 +1406,7 @@ class MarkdownDataDictGen(Generator):
 
     def _link(
         self,
-        obj: Optional[Element],
+        obj: Element | None,
         *,
         after_link: str = None,
         use_desc: bool = False,
@@ -1448,7 +1449,7 @@ class MarkdownDataDictGen(Generator):
 
     def type_link(
         self,
-        ref: Optional[Union[str, TypeDefinition]],
+        ref: str | TypeDefinition | None,
         *,
         after_link: str = None,
         use_desc: bool = False,
@@ -1458,7 +1459,7 @@ class MarkdownDataDictGen(Generator):
 
     def slot_link(
         self,
-        ref: Optional[Union[str, SlotDefinition]],
+        ref: str | SlotDefinition | None,
         *,
         after_link: str = None,
         use_desc: bool = False,
@@ -1473,7 +1474,7 @@ class MarkdownDataDictGen(Generator):
 
     def class_link(
         self,
-        ref: Optional[Union[str, ClassDefinition]],
+        ref: str | ClassDefinition | None,
         *,
         after_link: str = None,
         use_desc: bool = False,
@@ -1488,7 +1489,7 @@ class MarkdownDataDictGen(Generator):
 
     def class_type_link(
         self,
-        ref: Optional[Union[str, ClassDefinition, TypeDefinition, EnumDefinition]],
+        ref: str | ClassDefinition | TypeDefinition | EnumDefinition | None,
         *,
         after_link: str = None,
         use_desc: bool = False,
@@ -1509,7 +1510,7 @@ class MarkdownDataDictGen(Generator):
 
     def enum_link(
         self,
-        ref: Optional[Union[str, EnumDefinition]],
+        ref: str | EnumDefinition | None,
         *,
         after_link: str = None,
         use_desc: bool = False,
@@ -1524,7 +1525,7 @@ class MarkdownDataDictGen(Generator):
 
     def subset_link(
         self,
-        ref: Optional[Union[str, SubsetDefinition]],
+        ref: str | SubsetDefinition | None,
         *,
         after_link: str = None,
         use_desc: bool = False,

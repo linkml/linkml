@@ -55,7 +55,7 @@ quiet-level = 3
 
 [tool.black]
 line-length = 120
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+target-version = ["py310", "py311", "py312", "py313"]
 force-exclude = '''
 /(
   # default exclude
@@ -120,8 +120,7 @@ extend-exclude = [
 ]
 force-exclude = true
 line-length = 120
-# Assume Python 3.9
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 extend-ignore = ["E203"]
@@ -139,7 +138,13 @@ known-first-party = ["linkml", "linkml_runtime"]
 # These templates can have long lines
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
+"packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP007", "UP035", "UP045"]
+
+# Auto-generated model files use Optional/Union with string forward references
+"packages/linkml_runtime/src/linkml_runtime/linkml_model/*.py" = ["UP007", "UP045"]
+"packages/linkml_runtime/src/linkml_runtime/processing/validation_datamodel.py" = ["UP007", "UP045"]
+"packages/linkml/src/linkml/workspaces/datamodel/workspaces.py" = ["UP007", "UP045"]
+"packages/linkml/src/linkml/reporting/model.py" = ["UP007", "UP045"]
 
 # Notebooks can have unsorted imports
 "tests/linkml/test_notebooks/input/*" = ["E402"]
@@ -149,7 +154,7 @@ known-first-party = ["linkml", "linkml_runtime"]
 
 [tool.tox]
 requires = ["tox>=4", "tox-uv"]
-env_list = ["lint", "py{39,310,311,312,313}"]
+env_list = ["lint", "py{310,311,312,313}"]
 
 [tool.tox.env_run_base]
 runner = "uv-venv-lock-runner"

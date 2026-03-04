@@ -2,7 +2,6 @@ import csv
 import re
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
-from typing import Optional
 
 from linkml.validator.loaders.loader import Loader
 
@@ -28,7 +27,7 @@ class _DelimitedFileLoader(Loader, ABC):
     def delimiter(self):
         pass
 
-    def __init__(self, source, *, skip_empty_rows: bool = False, index_slot_name: Optional[str] = None) -> None:
+    def __init__(self, source, *, skip_empty_rows: bool = False, index_slot_name: str | None = None) -> None:
         super().__init__(source)
         self.skip_empty_rows = skip_empty_rows
         self.index_slot_name = index_slot_name

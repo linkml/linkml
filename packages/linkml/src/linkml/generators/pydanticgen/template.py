@@ -1,7 +1,7 @@
 import sys
 from importlib.util import find_spec
 from keyword import iskeyword
-from typing import Any, ClassVar, Literal, Optional, Union, get_args
+from typing import Any, ClassVar, Literal, get_args
 
 try:
     from typing import Self
@@ -83,7 +83,7 @@ class PydanticTemplateModel(TemplateModel):
 
     meta_exclude: ClassVar[list[str]] = None
 
-    def render(self, environment: Optional[Environment] = None, black: bool = False) -> str:
+    def render(self, environment: Environment | None = None, black: bool = False) -> str:
         """
         Recursively render a template model to a string.
 
@@ -119,9 +119,9 @@ class EnumValue(BaseModel):
     """
 
     label: str
-    alias: Optional[str] = None
+    alias: str | None = None
     value: str
-    description: Optional[str] = None
+    description: str | None = None
 
     @model_validator(mode="after")
     def alias_python_keywords(self) -> Self:
@@ -141,7 +141,7 @@ class PydanticEnum(PydanticTemplateModel):
     template: ClassVar[str] = "enum.py.jinja"
 
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     values: dict[str, EnumValue] = Field(default_factory=dict)
 
 
@@ -158,7 +158,7 @@ class PydanticBaseModel(PydanticTemplateModel):
     """
     Sets the ``extra`` model for pydantic models
     """
-    fields: Optional[list[str]] = None
+    fields: list[str] | None = None
     """
     Extra fields that are typically injected into the base model via
     :attr:`~linkml.generators.pydanticgen.PydanticGenerator.injected_fields`
@@ -191,26 +191,26 @@ class PydanticAttribute(PydanticTemplateModel):
     meta_exclude: ClassVar[list[str]] = ["from_schema", "owner", "range", "inlined", "inlined_as_list"]
 
     name: str
-    alias: Optional[str] = None
+    alias: str | None = None
     required: bool = False
     identifier: bool = False
     key: bool = False
-    predefined: Optional[str] = None
+    predefined: str | None = None
     """Fixed string to use in body of field"""
-    range: Optional[str] = None
+    range: str | None = None
     """Type annotation used for model field"""
-    title: Optional[str] = None
-    description: Optional[str] = None
-    equals_number: Optional[Union[int, float]] = None
-    minimum_value: Optional[Union[int, float]] = None
-    maximum_value: Optional[Union[int, float]] = None
-    exact_cardinality: Optional[int] = None
-    minimum_cardinality: Optional[int] = None
-    maximum_cardinality: Optional[int] = None
-    multivalued: Optional[bool] = None
-    pattern: Optional[str] = None
+    title: str | None = None
+    description: str | None = None
+    equals_number: int | float | None = None
+    minimum_value: int | float | None = None
+    maximum_value: int | float | None = None
+    exact_cardinality: int | None = None
+    minimum_cardinality: int | None = None
+    maximum_cardinality: int | None = None
+    multivalued: bool | None = None
+    pattern: str | None = None
     empty_list_for_multivalued_slots: bool = False
-    meta: Optional[dict[str, Any]] = None
+    meta: dict[str, Any] | None = None
     """
     Metadata for the slot to be included in a Field annotation
     """
@@ -260,10 +260,10 @@ class PydanticClass(PydanticTemplateModel):
     meta_exclude: ClassVar[list[str]] = ["slots", "is_a"]
 
     name: str
-    bases: Union[list[str], str] = PydanticBaseModel.default_name
-    description: Optional[str] = None
-    attributes: Optional[dict[str, PydanticAttribute]] = None
-    meta: Optional[dict[str, Any]] = None
+    bases: list[str] | str = PydanticBaseModel.default_name
+    description: str | None = None
+    attributes: dict[str, PydanticAttribute] | None = None
+    meta: dict[str, Any] | None = None
     """
     Metadata for the class to be included in a linkml_meta class attribute
     """
@@ -271,23 +271,23 @@ class PydanticClass(PydanticTemplateModel):
     """
     If True, generate a type alias instead of a class
     """
-    type_alias_value: Optional[str] = None
+    type_alias_value: str | None = None
     """
     The value for the type alias (e.g., "Union[Type1, Type2]")
     """
 
-    def _validators(self) -> Optional[dict[str, PydanticValidator]]:
+    def _validators(self) -> dict[str, PydanticValidator] | None:
         if self.attributes is None:
             return None
 
         return {k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None}
 
     @computed_field
-    def validators(self) -> Optional[dict[str, PydanticValidator]]:
+    def validators(self) -> dict[str, PydanticValidator] | None:
         return self._validators()
 
     @computed_field
-    def slots(self) -> Optional[dict[str, PydanticAttribute]]:
+    def slots(self) -> dict[str, PydanticAttribute] | None:
         """alias of attributes"""
         return self.attributes
 
@@ -337,9 +337,7 @@ class Import(Import_, PydanticTemplateModel):
         """
         if self.module == "__future__":
             return "future"
-        elif sys.version_info.minor >= 10 and self.module in sys.stdlib_module_names:
-            return "stdlib"
-        elif sys.version_info.minor < 10 and self.module in _some_stdlib_module_names:
+        elif self.module in sys.stdlib_module_names:
             return "stdlib"
         elif self.module.startswith("."):
             return "local"
@@ -428,7 +426,7 @@ class Imports(Imports_, PydanticTemplateModel):
 
     template: ClassVar[str] = "imports.py.jinja"
 
-    imports: list[Union[Import, ConditionalImport]] = Field(default_factory=list)
+    imports: list[Import | ConditionalImport] = Field(default_factory=list)
     group_order: tuple[str, ...] = get_args(IMPORT_GROUPS)
     """Order in which to sort imports by their :attr:`.Import.group`"""
 
@@ -466,21 +464,21 @@ class PydanticModule(PydanticTemplateModel):
     template: ClassVar[str] = "module.py.jinja"
     meta_exclude: ClassVar[str] = ["slots"]
 
-    metamodel_version: Optional[str] = None
-    version: Optional[str] = None
+    metamodel_version: str | None = None
+    version: str | None = None
     base_model: PydanticBaseModel = PydanticBaseModel()
-    injected_classes: Optional[list[str]] = None
-    python_imports: Union[Imports, list[Union[Import, ConditionalImport]]] = Imports()
+    injected_classes: list[str] | None = None
+    python_imports: Imports | list[Import | ConditionalImport] = Imports()
     enums: dict[str, PydanticEnum] = Field(default_factory=dict)
     classes: dict[str, PydanticClass] = Field(default_factory=dict)
-    meta: Optional[dict[str, Any]] = None
+    meta: dict[str, Any] | None = None
     """
     Metadata for the schema to be included in a linkml_meta module-level instance of LinkMLMeta
     """
 
     @field_validator("python_imports", mode="after")
     @classmethod
-    def cast_imports(cls, imports: Union[Imports, list[Union[Import, ConditionalImport]]]) -> Imports:
+    def cast_imports(cls, imports: Imports | list[Import | ConditionalImport]) -> Imports:
         if isinstance(imports, list):
             imports = Imports(imports=imports)
         return imports
@@ -488,22 +486,3 @@ class PydanticModule(PydanticTemplateModel):
     @computed_field
     def class_names(self) -> list[str]:
         return [c.name for c in self.classes.values() if not getattr(c, "is_type_alias", False)]
-
-
-_some_stdlib_module_names = {
-    "copy",
-    "datetime",
-    "decimal",
-    "enum",
-    "inspect",
-    "os",
-    "re",
-    "sys",
-    "typing",
-    "dataclasses",
-}
-"""
-sys.stdlib_module_names is only present in 3.10 and later
-so we make a cheap copy of the stdlib modules that we commonly use here,
-but this should be removed whenever support for 3.9 is dropped.
-"""

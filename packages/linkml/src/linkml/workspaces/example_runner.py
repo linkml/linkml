@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 import click
 import yaml
@@ -56,31 +56,31 @@ class ExampleRunner:
     Background: https://github.com/linkml/linkml/issues/501
     """
 
-    input_directory: Optional[Path] = None
+    input_directory: Path | None = None
     """Directory in which positive instance examples are found."""
 
-    input_formats: Optional[list[str]] = field(default_factory=lambda: ["yaml"])
+    input_formats: list[str] | None = field(default_factory=lambda: ["yaml"])
 
-    counter_example_input_directory: Optional[Path] = None
+    counter_example_input_directory: Path | None = None
     """Directory in which negative instance examples are found. These are expected to fail."""
 
-    output_directory: Optional[Path] = None
+    output_directory: Path | None = None
     """Directory where processed examples are written to."""
 
-    output_formats: Optional[list[str]] = field(default_factory=lambda: ["yaml", "json", "ttl"])
+    output_formats: list[str] | None = field(default_factory=lambda: ["yaml", "json", "ttl"])
 
-    schemaview: Optional[SchemaView] = None
+    schemaview: SchemaView | None = None
     """View over schema which all examples adhere to."""
 
     summary: SummaryDocument = field(default_factory=lambda: SummaryDocument())
 
-    _python_module: Optional[ModuleType] = None
+    _python_module: ModuleType | None = None
     """Module containing classes that all examples instantiate."""
 
-    prefix_map: Optional[Mapping[str, str]] = None
+    prefix_map: Mapping[str, str] | None = None
     """Custom prefix map, for emitting RDF/turtle."""
 
-    _validator: Optional[Validator] = None
+    _validator: Validator | None = None
 
     expand_dicts: bool = None
     """If true, then expand all dicts prior to validation."""
@@ -210,7 +210,7 @@ class ExampleRunner:
                         raise NotImplementedError(f"Cannot output in format: {fmt}")
                     summary.outputs.append(f"{stem}.{fmt}")
 
-    def _load_from_dict(self, dict_obj: Any, target_class: Union[str, ElementName] = None) -> Any:
+    def _load_from_dict(self, dict_obj: Any, target_class: str | ElementName = None) -> Any:
         """
         Load an object from a dict, using the target class to determine the type of object to create.
 

@@ -22,5 +22,5 @@ ID_TYPES = {
 {% if metamodel_version %}# metamodel_version: {{metamodel_version}}{% endif %}
 {% if model_version %}# version: {{model_version}}{% endif %}
 {%- for cls in doc.classes -%}
-    {{- class_macros.render_class(cls) -}}
+    {{- class_macros.render_class(cls, generator) -}}
 {%- endfor %}

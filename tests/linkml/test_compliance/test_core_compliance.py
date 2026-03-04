@@ -1,6 +1,5 @@
 """Compliance tests for core constructs."""
 
-import sys
 import unicodedata
 from _decimal import Decimal
 
@@ -180,7 +179,7 @@ def test_type_range(framework, linkml_type, example_value):
     schema = validated_schema(test_type_range, linkml_type, framework, classes=classes, core_elements=["range"])
     expected_behavior = None
     v = example_value
-    is_valid = isinstance(v, (type_py_cls, type(None)))
+    is_valid = isinstance(v, type_py_cls | type(None))
     bool2int = isinstance(v, bool) and linkml_type == "integer"
     if bool2int:
         is_valid = False
@@ -192,11 +191,7 @@ def test_type_range(framework, linkml_type, example_value):
             pass
     # Pydantic coerces by default; see https://docs.pydantic.dev/latest/usage/types/strict_types/
     if coerced:
-        if sys.version_info < (3, 10) and framework == PYDANTIC and linkml_type == "boolean" and isinstance(v, float):
-            # On Python 3.9 and earlier, Pydantic will coerce floats to bools. This goes against
-            # what their docs say should happen or why it only affects older Python version.
-            expected_behavior = ValidationBehavior.COERCES
-        elif linkml_type == "boolean" and not isinstance(v, int) and v != "1":
+        if linkml_type == "boolean" and not isinstance(v, int) and v != "1":
             pass
         else:
             if framework in [PYDANTIC, PYTHON_DATACLASSES]:
@@ -563,7 +558,9 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    min_val = 1 if required else 0
+    owl_max = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl_card = f"[ a owl:Restriction ; owl:minCardinality {min_val} ; owl:onProperty ex:s1 ],{owl_max}"
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -573,10 +570,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
         "ex:C a owl:Class ;"
         'rdfs:label "C" ;'
-        "rdfs:subClassOf [ a owl:Restriction ;"
-        f"    owl:minCardinality {1 if required else 0} ;"
-        "    owl:onProperty ex:s1 ],"
-        f"{owl_mv}"
+        f"rdfs:subClassOf {owl_card}"
         "    [ a owl:Restriction ;"
         "    owl:allValuesFrom xsd:string ;"
         "   owl:onProperty ex:s1 ] ."

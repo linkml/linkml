@@ -46,7 +46,13 @@ def test_pandera_basic_class_based(synthetic_pandera_schema):
         if match:
             classes.append(match.group(1))
 
-    expected_classes = ["AnyType", "ColumnType", "SimpleDictType", "PanderaSyntheticTable"]
+    expected_classes = [
+        "AnyType",
+        "ColumnType",
+        "SimpleDictType",
+        "PanderaSyntheticTableEfficient",
+        "PanderaSyntheticTable",
+    ]
 
     assert sorted(expected_classes) == sorted(classes)
 
@@ -150,29 +156,35 @@ def test_synthetic_dataframe_boolean_error(
     assert f"column '{drop_column}' not in dataframe" in str(e.value)
 
 
-@pytest.mark.skipif(True, reason="will re-enable when polars support is enabled")
 def test_inlined_object_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_column_type_instances
+    N, compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_column_type_instances
 ):
     """Change the object column values from Int64 to Float64"""
     df_with_nested_object_type_error = big_synthetic_dataframe.with_columns(
-        invalid_column_type_instances[0].alias("inlined_as_object_column")
+        pl.Series(
+            [
+                invalid_column_type_instances[0],
+            ]
+            * N
+        ).alias("inlined_as_object_column")
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_object_type_error, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_object_type_error, lazy=True
+        )
 
     error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
     logger.info(f"Details for expected error: {error_details}")
 
     assert error_details["column"] == "inlined_as_object_column"
     assert error_details["check"] == "check_nested_struct_inlined_as_object_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
-@pytest.mark.xfail(reason="floats are getting coerced to ints")
 def test_inlined_simple_dict_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_simple_dict_column_expression
 ):
     """Change the simple dict column values from Int64 to Float64"""
     df_with_nested_simple_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -180,7 +192,7 @@ def test_inlined_simple_dict_nested_range_type_error(
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
             df_with_nested_simple_dict_type_error, lazy=True
         )
 
@@ -189,12 +201,12 @@ def test_inlined_simple_dict_nested_range_type_error(
 
     assert error_details["column"] == "inlined_simple_dict_column"
     assert error_details["check"] == "check_nested_struct_inlined_simple_dict_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
-@pytest.mark.skipif(True, reason="New PolaRS schema generator doesn't support loading collection dicts.")
 def test_inlined_dict_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_inlined_dict_column_expression
 ):
     """Change the inlined dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -202,19 +214,21 @@ def test_inlined_dict_nested_range_type_error(
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_dict_type_error, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_dict_type_error, lazy=True
+        )
 
     error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
     logger.info(f"Details for expected error: {error_details}")
 
     assert error_details["column"] == "inlined_class_column"
     assert error_details["check"] == "check_nested_struct_inlined_class_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
-@pytest.mark.skipif(True, reason="will re-enable when polars support is added")
 def test_inlined_list_nested_range_type_error(
-    compiled_synthetic_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
+    compiled_synthetic_pandera_schema_module, big_synthetic_dataframe, invalid_inlined_as_list_column_expression
 ):
     """Change the simple dict column values from Int64 to Float64"""
     df_with_nested_dict_type_error = big_synthetic_dataframe.with_columns(
@@ -222,14 +236,17 @@ def test_inlined_list_nested_range_type_error(
     )
 
     with pytest.raises(pandera.errors.SchemaErrors) as e:
-        compiled_synthetic_schema_module.PanderaSyntheticTable.validate(df_with_nested_dict_type_error, lazy=True)
+        compiled_synthetic_pandera_schema_module.PanderaSyntheticTable.validate(
+            df_with_nested_dict_type_error, lazy=True
+        )
 
     error_details = e.value.message["DATA"]["CHECK_ERROR"][0]
     logger.info(f"Details for expected error: {error_details}")
 
     assert error_details["column"] == "inlined_as_list_column"
     assert error_details["check"] == "check_nested_struct_inlined_as_list_column"
-    assert error_details["error"] == "SchemaError(\"expected column 'x' to have type Int64, got Float64\")"
+    assert "'x'" in error_details["error"]
+    assert "Float64" in error_details["error"]
 
 
 @pytest.mark.parametrize("target_class,schema", [("Organization", "organization")])

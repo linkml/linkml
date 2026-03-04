@@ -13,7 +13,7 @@ for data validation on dataframe-like objects.
 `PolaRS <https://docs.pola.rs/>`__ is a fast dataframe library.
 
 The Pandera Generator produces Pandera models using the class-based API
-using the PolaRS integration.
+using the PolaRS integration. It can also produce PolaRS schemas for use in loading data.
 
 The implementation of the generator is incomplete. Because Pandera is a dataframe library,
 the first priority is implementing models of literal and nested data types and checks for single tables as shown below.
@@ -25,14 +25,13 @@ Currently supported LinkML features are:
 - enums
 - constraints: required, pattern, minimum_value, maximum_value, multivalued
 - inlining: nested single-valued objects, lists of literals, lists of objects
-- **note:** nested dictionary collections (including 'simple' dicts) inlining is inefficient and incomplete, use inlined-as-list instead.
 
 Future priorities that are currently not supported include:
 
 - foreign key association to other tables
 - model and slot inheritance
 - aliases
-- different target dataframe libraries
+- additional target dataframe libraries
 
 Example
 ^^^^^^^
@@ -195,7 +194,6 @@ The generate python looks like this:
             "inlined_simple_dict_column": {'id': 'id', 'other': 'x'},
         }
 
-
 Command Line
 ------------
 
@@ -204,6 +202,55 @@ Command Line
 .. click:: linkml.generators.panderagen:cli
     :prog: gen-pandera
     :nested: short
+
+The Python code is written to a package directory if the `--package` command line option is provided.
+Otherwise the code is written to the console if only generation of a single module is specified.
+
+
+Usage Example
+-------------
+
+Generate the package from tutorial 01 using the `gen-pandera` command
+Command-line options are under active development and are likely to change.
+
+.. code-block:: bash
+
+    # recommended is to generate a package with all schema forms
+    gen-pandera --package personinfo examples/tutorial/tutorial01/personinfo.yaml
+
+    # alternatively you can generate the schemas individually using the --template-path and --template-file arguments
+    # instead of --package
+    gen-pandera --template-path panderagen_polars_schema --template-file polars_schema.jinja2 examples/tutorial/tutorial01/personinfo.yaml > personinfo_panderagen_polars_schema.py
+
+    # the panderagen schema is the default, but note that it depends on the polars schema
+    gen-pandera examples/tutorial/tutorial01/personinfo.yaml > personinfo_panderagen_class_based.py
+
+Run an example program to create a one row dataframe and validate it.
+No exceptions are raised because the data matches the model.
+
+.. code-block:: python
+
+    import personinfo.panderagen_polars_schema as personinfo_pl
+    import personinfo.panderagen_class_based as personinfo_pa
+    import polars as pl
+
+    # generated schema is more reliable than PolaRS inferred schema
+    dataframe = pl.DataFrame(
+      [
+          {
+          "id": "ORCID:1234",
+          "full_name": "Clark Kent",
+          "age": "32",
+          "phone": "555-555-5555"
+          }
+      ],
+      schema = personinfo_pl.Person
+    )
+
+    # Pandera validation supports more LinkML features than PolaRS.
+    # Would throw an exception if validation failed.
+    personinfo_pa.Person.validate(dataframe)
+
 
 Generator
 ---------
@@ -217,80 +264,134 @@ Templates
 ---------
 
 The panderagen module uses a templating system that allows generating different target APIs.
-The only template currently provided is the default `panderagen_class_based` template.
+The currently provided templates are the default `panderagen_class_based` template and `panderagen_polars_schema`.
 
-The :class:`.PanderaDataframeGenerator` then serves as a translation layer between
-the source models from :mod:`linkml_runtime` and the target models under
+Subclasses of :class:`.DataframeGenerator` serve as a translation layer between
+the source models and schema view from :mod:`linkml_runtime` and the target models under
 :mod:`.panderagen` , making clear what is needed to generate
 schema code as well as what parts of the linkml metamodel are supported.
 
 
-Additional Notes
-----------------
+Pandera Custom Checks
+---------------------
 
 When possible the Pandera Generator implements LinkML constraints directly as Pandera checks.
 Support for nested columns uses Pandera custom checks to first isolate the nested column
-and then recursvely call Pandera validation.
+and then recursively call Pandera validation.
 
-The Python code is currently output to the console.
-The generated class depends on helper methods in the LinkML library at runtime to perform nested checks.
+The generated Pandera class depends on helper methods in the LinkML library at runtime to perform nested checks.
 
 
-Usage Example
--------------
+Validation and Lazyframes
+-------------------------
 
-Generate the class from tutorial 01 using the `gen-pandera` command
+Pandera validation can operate on lazyframes or dataframes. However when a lazyframe is validated,
+checks that require collection are not run. In general this means only schema-level checks are performed on lazyframes.
+The :class:`.LinkmlPanderaValidator` checks whether it is validating a dataframe or lazyframe and maintains
+the same form when making nested validation calls.
 
-.. code-block:: bash
 
-    gen-pandera examples/tutorial/tutorial01/personinfo.yaml > personinfo_pandera.py
+Inlined Dictionary Handling
+---------------------------
 
-Run an example program to create a one row dataframe and validate it.
-No exceptions are raised because the data matches the model.
+Many dataframe libraries do not handle dictionaries efficiently. Inlining objects as lists is an efficient alternative.
+The pandera generator supports transforming dictionaries to lists either at load time (preferred) or at validation time.
+
+The implementation of the load-time transform makes use of several generated schemas:
+- PolaRS serialized form
+- PolaRS loaded form
+- Pandera serialized form
+- Pandera loaded form
+
+The PolaRS serialized form represents any inlined dictionary as an opaque pl.Object.
+This schema is compatible with loading dataframes using `polars.read_json` or `pl.DataFrame()`.
+The PolaRS loaded form uses lists rather than dictionaries for inlining.
+To transform between the forms, the pandera generator can also generate a load transform module.
+The transform currently only implements the load direction.
+The generator also generates serialized and loaded forms of the Pandera schema.
+
+Not all of these schemas are needed for every application. The example below shows
+how to use all of them to load a python object into a dataframe. Note the specific model
+does not actually contain dictionary forms that require a transform.
 
 .. code-block:: python
 
-    from personinfo_pandera import Person
+    import personinfo.panderagen_class_based as pcb
+    import personinfo.panderagen_polars_schema_loaded as ppsl
+    import personinfo.panderagen_polars_schema_transform as ppst
+    import personinfo.panderagen_polars_schema as pps
+    import personinfo.panderagen_schema_loaded as psl
     import polars as pl
 
-    dataframe = pl.DataFrame(
-      [
+    # some of the schema forms have informative string representations
+    print(f"Panderagen (serialized): {pcb.Person}")
+    print(f"Panderagen (loaded): {psl.Person}")
+    print(f"PolaRS load transform: {ppst.Person}")
+    print(f"PolaRS schema (serialized): {pps.Person}")
+    print(f"PolaRS schema (loaded): {ppsl.Person}")
+
+    p = pl.DataFrame([
           {
-          "id": "ORCID:1234",
-          "full_name": "Clark Kent",
-          "age": "32",
-          "phone": "555-555-5555"
+            "full_name": "Old Joe Clark",
+            "age": 23
           }
-      ]
+        ],
+        schema=pps.Person
     )
-    Person.validate(dataframe)
+    pcb.Person.validate(p)
+
+    print(p)
+
+    p_loaded = ppst.Person().load(p)
+    psl.Person.validate(p_loaded)
 
 Development Notes
 -----------------
 
-This generator primarily supports Pandera, which is a validator. The underlying dataframe libraries are only partially supported.
-As a consequence, loading data from many of the unit tests (into a dataframe format) can be challenging when the library
-does not support some of the LinkML conventions. These include 'simple' dict inlining and polymorphism from row to row.
+This generator supports Pandera, which is a validator. To assist with loading or constructing dataframes that conform to the model,
+the underlying PolaRS dataframe schema is also generated. Transforming the forms found in the unit tests and existing models are also
+prioritized in future development.
 
 Following nested objects (and eventually foreign-key associations) relies on using PolaRS expressions API for efficiency.
 These may make greater use of the Narwhals API for more general support of additional dataframe libraries in the future.
+
+Testing
+-------
+
+The panderagen package is tested against the subset of the LinkML compliance tests
+that it currently implements. There is also a specific test for the generator that
+emphasizes the dataframe nature of the validation.
+
+To test panderagen compliance use the `-m panderagen` pytest mark. Use `-m dataframe_polars_schema` for the PolaRS compliance.
+
+.. code-block:: sh
+
+    pytest -m panderagen tests/linkml/test_compliance
+    pytest -m dataframe_polars_schema tests/linkml/test_compliance
+
+
+In the tests, the optional LinkML dependencies such as NumPy, PolaRS, and Pandera
+are wrapped in test fixtures and imported using pytest.importorskip.
+This prevents test collection errors and skips the tests when the optional packages
+are not installed.
+
 
 Future Roadmap
 --------------
 
 The following major features need to be prioritized
 
+- ability to generate a schema from examples/PersonSchema/personinfo.yaml
 - Foreign key associations
+- Expand the transformer model to support literal types (datetime cases) and boolean constraints.
 - Model and slot inheritance, including abstract models
-- Make transformer module more general rather than performing operations only at validation time.
 - Generalize support for additional dataframe libraries
-  - PolaRS independent of Pandera to help loading tables prior to validation
   - Parquet/PyArrow storage formats
   - PySpark (also supported by Pandera)
   - Narwhals (general dataframe API wrapper)
+  - Ibis (portable dataframe library)
 - Improve modularity
   - leverage and align with existing linkml-runtime modules and tables
-- Conversion mechanism (loaders) for models using inlined-as-dictionary and inlined-as-simple-dict forms to inlined-as-list.
 - Top-level validator cli tool under linkml/validators
 - Ability to use the generated Pandera without a runtime LinkML dependency.
 - Cardinality checks over entire dataframe columns

@@ -1,5 +1,5 @@
 # Auto generated from datasets.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:13
+# Generation date: 2026-02-18T21:04:48
 # Schema: datasets
 #
 # id: https://w3id.org/linkml/datasets
@@ -60,7 +60,7 @@ class DataResourceId(InformationId):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Information(YAMLRoot):
     """
     Grouping for datasets and data files
@@ -93,7 +93,7 @@ class Information(YAMLRoot):
     page: Optional[str] = None
     test_roles: Optional[Union[Union[str, "TestRole"], list[Union[str, "TestRole"]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, InformationId):
@@ -158,7 +158,7 @@ class Information(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DataPackage(Information):
     """
     A collection of data resources
@@ -174,7 +174,7 @@ class DataPackage(Information):
     id: Union[str, DataPackageId] = None
     resources: Optional[Union[Union[str, DataResourceId], list[Union[str, DataResourceId]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, DataPackageId):
@@ -187,7 +187,7 @@ class DataPackage(Information):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class DataResource(Information):
     """
     An individual file or table
@@ -213,7 +213,7 @@ class DataResource(Information):
     sha256: Optional[str] = None
     dialect: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
             self.MissingRequiredField("id")
         if not isinstance(self.id, DataResourceId):
@@ -255,7 +255,7 @@ class DataResource(Information):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class FormatDialect(YAMLRoot):
     """
     Additional format information for a file
@@ -274,7 +274,7 @@ class FormatDialect(YAMLRoot):
     header: Optional[str] = None
     quote_char: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.comment_prefix is not None and not isinstance(self.comment_prefix, str):
             self.comment_prefix = str(self.comment_prefix)
 

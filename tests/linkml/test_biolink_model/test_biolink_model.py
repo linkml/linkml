@@ -26,7 +26,6 @@ pytestmark = pytest.mark.biolink
 @pytest.mark.parametrize(
     "generator,extension,gen_kwargs,serialize_kwargs",
     [
-        # (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
         pytest.param(OwlSchemaGenerator, ".owl.ttl", {"useuris": False}, {}, marks=[pytest.mark.owlgen]),
         pytest.param(
             RDFGenerator,
@@ -49,7 +48,7 @@ pytestmark = pytest.mark.biolink
         (GraphqlGenerator, ".graphql", {}, {}),
         pytest.param(JsonSchemaGenerator, ".schema.json", {}, {}, marks=pytest.mark.jsonschemagen),
         (ProtoGenerator, ".proto", {}, {}),
-        (NamespaceGenerator, ".namespace.py", {"emit_metadata": True}, {}),
+        (NamespaceGenerator, ".namespace.py", {"metadata": True}, {}),
         pytest.param(ShExGenerator, ".shex", {}, {}, marks=pytest.mark.shexgen),
         pytest.param(ShExGenerator, ".shexj", {"format": "json"}, {}, marks=pytest.mark.shexgen),
         pytest.param(ShExGenerator, ".native.shex", {"useuris": False}, {}, marks=pytest.mark.shexgen),

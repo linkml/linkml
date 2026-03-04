@@ -1,5 +1,5 @@
 # Auto generated from validation.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:35
+# Generation date: 2026-02-18T21:04:57
 # Schema: reporting
 #
 # id: https://w3id.org/linkml/reporting
@@ -40,7 +40,7 @@ DEFAULT_ = REPORTING
 # Class references
 
 
-@dataclass
+@dataclass(repr=False)
 class ValidationReport(YAMLRoot):
     """
     A report object
@@ -55,7 +55,7 @@ class ValidationReport(YAMLRoot):
 
     results: Optional[Union[Union[dict, "ValidationResult"], list[Union[dict, "ValidationResult"]]]] = empty_list()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if not isinstance(self.results, list):
             self.results = [self.results] if self.results is not None else []
         self.results = [v if isinstance(v, ValidationResult) else ValidationResult(**as_dict(v)) for v in self.results]
@@ -63,7 +63,7 @@ class ValidationReport(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class ValidationResult(YAMLRoot):
     """
     An individual result arising from validation of a data instance using a particular rule
@@ -86,7 +86,7 @@ class ValidationResult(YAMLRoot):
     node_source: Optional[Union[str, NodeIdentifier]] = None
     info: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.type is not None and not isinstance(self.type, NodeIdentifier):
             self.type = NodeIdentifier(self.type)
 
