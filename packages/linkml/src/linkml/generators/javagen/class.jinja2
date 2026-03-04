@@ -26,5 +26,12 @@ public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.i
 {%   for f in cls.fields %}
   private {{f.range}} {{ f.name }};
 {%-  endfor %}
+{% for visitor in visitors %}
+{%-   if cls.source_class.name == visitor or gen.has_ancestor(cls.source_class, visitor) %}
+  public void accept(I{{ gen.get_class_name(visitor) }}Visitor visitor) {
+    visitor.visit(this);
+  }
+{%-   endif %}
+{%- endfor %}
 
 }
