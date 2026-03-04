@@ -267,6 +267,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlalchemy.html">SQL Alchemy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/sqlvalidation.html">SQL Validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sssom.html">SSSOM</a></li>
@@ -484,6 +485,51 @@
 </li>
         </ul></li>
         <li>
+    --check-enums
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-enums">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-enums">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --check-patterns
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-patterns">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-patterns">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --check-ranges
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-ranges">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-ranges">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --check-required
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-required">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-required">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --check-unique-keys
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-unique-keys">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-unique-keys">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
     --classes
 
         <ul>
@@ -634,9 +680,13 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-dialect">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-dialect">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-doc-dialect">linkml-generate-(full)-doc command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-dialect">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-dialect">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
         </ul></li>
         <li>
@@ -901,6 +951,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-f">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-f">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-f">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-f">gen-terminusdb command line option</a>
@@ -964,6 +1016,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-f">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-f">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-f">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-f">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -1134,6 +1188,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-im">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-im">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-im">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-im">gen-terminusdb command line option</a>
@@ -1198,6 +1254,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-im">linkml-generate-(full)-sqltables command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-im">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-im">linkml-generate-(full)-sssom command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-summary-im">linkml-generate-(full)-summary command line option</a>
@@ -1233,6 +1291,15 @@
           <li><a href="generators/shacl.html#cmdoption-gen-shacl-include-annotations">gen-shacl command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-shacl-include-annotations">linkml-generate-(full)-shacl command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --include-comments
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-include-comments">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-include-comments">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
         </ul></li>
         <li>
@@ -1438,6 +1505,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-log_level">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-log_level">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-log_level">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-log_level">gen-terminusdb command line option</a>
@@ -1503,6 +1572,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-log_level">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-log_level">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-log_level">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-log_level">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -1619,6 +1690,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-mergeimports">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-mergeimports">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-mergeimports">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-mergeimports">gen-terminusdb command line option</a>
@@ -1684,6 +1757,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-mergeimports">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-mergeimports">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-mergeimports">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-mergeimports">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -1762,6 +1837,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-metadata">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-metadata">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-metadata">gen-terminusdb command line option</a>
@@ -1825,6 +1902,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-metadata">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-metadata">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-metadata">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-metadata">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -1894,6 +1973,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-useuris">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-useuris">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-useuris">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-useuris">gen-terminusdb command line option</a>
@@ -1957,6 +2038,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-useuris">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-useuris">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-useuris">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-useuris">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -2042,6 +2125,51 @@
           <li><a href="generators/owl.html#cmdoption-gen-owl-assert-equivalent-classes">gen-owl command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-owl-assert-equivalent-classes">linkml-generate-(full)-owl command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-check-enums
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-enums">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-enums">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-check-patterns
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-patterns">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-patterns">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-check-ranges
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-ranges">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-ranges">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-check-required
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-required">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-required">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-check-unique-keys
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-unique-keys">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-unique-keys">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
         </ul></li>
         <li>
@@ -2230,6 +2358,15 @@
 </li>
         </ul></li>
         <li>
+    --no-include-comments
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-include-comments">gen-sqlvalidation command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-include-comments">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
+        </ul></li>
+        <li>
     --no-include-context
 
         <ul>
@@ -2354,6 +2491,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-mergeimports">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-mergeimports">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-mergeimports">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-mergeimports">gen-terminusdb command line option</a>
@@ -2419,6 +2558,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-mergeimports">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-mergeimports">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-mergeimports">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-mergeimports">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -2488,6 +2629,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-metadata">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-metadata">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-metadata">gen-terminusdb command line option</a>
@@ -2552,6 +2695,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-metadata">linkml-generate-(full)-sqltables command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-metadata">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-metadata">linkml-generate-(full)-sssom command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-summary-metadata">linkml-generate-(full)-summary command line option</a>
@@ -2604,6 +2749,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-prefixes">linkml-generate-(full)-jsonld-context command line option</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-pydantic
 
@@ -2663,8 +2810,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-owl-skip-vacuous-min-zero-cardinality-axioms">linkml-generate-(full)-owl command line option</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-slots
 
@@ -2721,6 +2866,8 @@
           <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-stacktrace">gen-sqla command line option</a>
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">gen-sqltables command line option</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-stacktrace">gen-sqlvalidation command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-stacktrace">gen-sssom command line option</a>
 </li>
@@ -2785,6 +2932,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-stacktrace">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-stacktrace">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-stacktrace">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-stacktrace">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -3276,6 +3425,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-stacktrace">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-stacktrace">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-stacktrace">gen-terminusdb command line option</a>
@@ -3339,6 +3490,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-stacktrace">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-stacktrace">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-stacktrace">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-stacktrace">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -3609,6 +3762,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-useuris">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-useuris">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-useuris">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-useuris">gen-terminusdb command line option</a>
@@ -3672,6 +3827,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-useuris">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-useuris">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-useuris">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-useuris">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -3759,6 +3916,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-v">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-v">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-v">gen-terminusdb command line option</a>
@@ -3822,6 +3981,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-v">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-v">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-v">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-v">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -3889,6 +4050,8 @@
           <li><a href="generators/sqlalchemy.html#cmdoption-gen-sqla-V">gen-sqla command line option</a>
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-V">gen-sqltables command line option</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-V">gen-sqlvalidation command line option</a>
 </li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-V">gen-sssom command line option</a>
 </li>
@@ -3965,6 +4128,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-V">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-V">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-V">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-V">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -4113,6 +4278,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-f">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-f">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-f">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-f">gen-terminusdb command line option</a>
@@ -4178,6 +4345,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-f">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-f">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-f">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-f">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -4265,6 +4434,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-im">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-im">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-im">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-im">gen-terminusdb command line option</a>
@@ -4328,6 +4499,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-im">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-im">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-im">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-im">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -4550,6 +4723,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-V">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-V">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-V">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-V">gen-terminusdb command line option</a>
@@ -4626,6 +4801,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-V">linkml-generate-(full)-sqltables command line option</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-V">linkml-generate-(full)-sqlvalidation command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-V">linkml-generate-(full)-sssom command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-summary-V">linkml-generate-(full)-summary command line option</a>
@@ -4691,6 +4868,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-v">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-v">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-v">gen-terminusdb command line option</a>
@@ -4754,6 +4933,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-v">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-v">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-v">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-v">linkml-generate-(full)-sssom command line option</a>
 </li>
@@ -6440,8 +6621,6 @@
           <li><a href="generators/protobuf.html#cmdoption-gen-proto-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-pydantic command line option
 
@@ -6495,6 +6674,8 @@
           <li><a href="generators/pydantic.html#cmdoption-gen-pydantic-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-python command line option
 
@@ -6943,6 +7124,73 @@
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-v">-v</a>
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
+        <li>
+    gen-sqlvalidation command line option
+
+        <ul>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-enums">--check-enums</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-patterns">--check-patterns</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-ranges">--check-ranges</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-required">--check-required</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-unique-keys">--check-unique-keys</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-dialect">--dialect</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-f">--format</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-im">--importmap</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-include-comments">--include-comments</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-log_level">--log_level</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-metadata">--metadata</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-useuris">--metauris</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-enums">--no-check-enums</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-patterns">--no-check-patterns</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-ranges">--no-check-ranges</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-required">--no-check-required</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-check-unique-keys">--no-check-unique-keys</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-include-comments">--no-include-comments</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-useuris">--useuris</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-v">--verbose</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-V">--version</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-f">-f</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-im">-im</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-V">-V</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-v">-v</a>
+</li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
         <li>
@@ -8658,8 +8906,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-plantuml-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     linkml-generate-(full)-prefix-map command line option
 
@@ -8707,6 +8953,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-prefix-map-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     linkml-generate-(full)-project command line option
 
@@ -9286,6 +9534,73 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-v">-v</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
+        <li>
+    linkml-generate-(full)-sqlvalidation command line option
+
+        <ul>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-enums">--check-enums</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-patterns">--check-patterns</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-ranges">--check-ranges</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-required">--check-required</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-unique-keys">--check-unique-keys</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-dialect">--dialect</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-f">--format</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-im">--importmap</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-include-comments">--include-comments</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-log_level">--log_level</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-metadata">--metadata</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-useuris">--metauris</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-enums">--no-check-enums</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-patterns">--no-check-patterns</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-ranges">--no-check-ranges</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-required">--no-check-required</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-check-unique-keys">--no-check-unique-keys</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-include-comments">--no-include-comments</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-metadata">--no-metadata</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-useuris">--useuris</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-v">--verbose</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-V">--version</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-f">-f</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-im">-im</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-V">-V</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-v">-v</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
         <li>
@@ -10517,6 +10832,8 @@
 </li>
           <li><a href="generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator.serialize">(linkml.generators.sqltablegen.SQLTableGenerator method)</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#linkml.generators.sqlvalidationgen.SQLValidationGenerator.serialize">(linkml.generators.sqlvalidationgen.SQLValidationGenerator method)</a>
+</li>
           <li><a href="generators/terminusdb.html#linkml.generators.terminusdbgen.TerminusdbGenerator.serialize">(linkml.generators.terminusdbgen.TerminusdbGenerator method)</a>
 </li>
           <li><a href="generators/typescript.html#linkml.generators.typescriptgen.TypescriptGenerator.serialize">(linkml.generators.typescriptgen.TypescriptGenerator method)</a>
@@ -10663,6 +10980,8 @@
         <li><a href="developers/sqlstore.html#linkml.utils.sqlutils.SQLStore">SQLStore (class in linkml.utils.sqlutils)</a>
 </li>
         <li><a href="generators/sqltable.html#linkml.generators.sqltablegen.SQLTableGenerator">SQLTableGenerator (class in linkml.generators.sqltablegen)</a>
+</li>
+        <li><a href="generators/sqlvalidation.html#linkml.generators.sqlvalidationgen.SQLValidationGenerator">SQLValidationGenerator (class in linkml.generators.sqlvalidationgen)</a>
 </li>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.stacktrace">stacktrace (linkml.utils.generator.Generator attribute)</a>
 </li>
@@ -11052,6 +11371,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-arg-YAMLFILE">gen-sqltables command line option</a>
 </li>
+          <li><a href="generators/sqlvalidation.html#cmdoption-gen-sqlvalidation-arg-YAMLFILE">gen-sqlvalidation command line option</a>
+</li>
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-arg-YAMLFILE">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-arg-YAMLFILE">gen-terminusdb command line option</a>
@@ -11119,6 +11440,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-arg-YAMLFILE">linkml-generate-(full)-sqla command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-arg-YAMLFILE">linkml-generate-(full)-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqlvalidation-arg-YAMLFILE">linkml-generate-(full)-sqlvalidation command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sssom-arg-YAMLFILE">linkml-generate-(full)-sssom command line option</a>
 </li>

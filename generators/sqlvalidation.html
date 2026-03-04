@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="ER Diagrams" href="erdiagram.html"><link rel="prev" title="YARRRML" href="yarrrml.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="LinkML Generators" href="linkml.html"><link rel="prev" title="SQL Alchemy" href="sqlalchemy.html">
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>Documentation - linkml documentation</title>
+        <title>SQL Validation - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -258,7 +258,7 @@
 <li class="toctree-l2"><a class="reference internal" href="shacl.html">SHACL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="owl.html">OWL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yarrrml.html">YARRRML</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="docgen.html">Documentation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="erdiagram.html">ER Diagrams</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plantumlgen.html">PlantUML Diagram Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-generator.html">Project Generator</a></li>
@@ -269,7 +269,7 @@
 <li class="toctree-l2"><a class="reference internal" href="rust.html">Rust</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sqlalchemy.html">SQL Alchemy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sqlvalidation.html">SQL Validation</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">SQL Validation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sssom.html">SSSOM</a></li>
@@ -382,7 +382,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/generators/docgen.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/generators/sqlvalidation.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -400,75 +400,76 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="documentation">
-<h1>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h1>
+          <section id="sql-validation">
+<h1>SQL Validation<a class="headerlink" href="#sql-validation" title="Link to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p>Being able to automatically generate technical documentation pages for your LinkML schema is an
-important feature of the LinkML framework. The linkml library is bundled with a generator (invoked
-using the <code class="docutils literal notranslate"><span class="pre">gen-doc</span></code> command) which can be used to automatically create individual Markdown
-pages for each of the elements (classes, slots, enumerations, etc.) in your schema.</p>
-<p>The documentation pages are an important resource for consumers of the schema because it provides a
-user-friendly way for users to explore and understand your schema.</p>
-<p>If you use the official <a class="reference external" href="https://github.com/linkml/linkml-project-copier">LinkML Project Copier</a>
-template to create your schema, it will add a static site generator framework to your environment. There
-are many static site generator frameworks available, but the one recommended by LinkML is <a class="reference external" href="https://www.mkdocs.org/">MkDocs</a>.
-MkDocs can be used to convert Markdown files/pages into HTML pages. The reason we recommend converting to
-HTML is so that the pages can be deployed to a static site hosting service like <a class="reference external" href="https://pages.github.com/">GitHub Pages</a>. Again,
-if you have used the project template to create your schema, you will find a <code class="docutils literal notranslate"><span class="pre">justfile</span></code> in your project folder
-with commands to help you build and deploy your documentation easily.</p>
-<p>Another important detail about the information contained in the technical documentation pages is the fact
-that it also has automatically generated <a class="reference external" href="https://mermaid.js.org/syntax/classDiagram.html">Mermaid class diagrams</a>
-embedded on the class documentation pages. These diagrams summarize the relationships between various classes
-and slots in your schema.</p>
-<p>Optionally linkml also allows you to exercise more granular control on the layout and content rendered on your documentation pages.
-This customization is facilitated by the modification of the <a class="reference external" href="https://github.com/linkml/linkml/tree/main/packages/linkml/src/linkml/generators/docgen">base jinja2 templates</a>
-that are used to control the layout and content of the documentation pages. There are jinja2 templates for each of the elements
-in your schema, and you can modify whichever you need to based on your requirements.</p>
-<img alt="../_images/documentation_generation_schematic.png" src="../_images/documentation_generation_schematic.png" />
-<p><em>Figure.: schematic diagram explaining the working mechanism of the ``gen-doc`` module</em></p>
+<p>The SQL Validation generator creates SQL queries that identify data entries violating LinkML schema constraints.
+When executed against a database, the query returns a table listing all constraint violations with standardized columns:</p>
+<ul class="simple">
+<li><p><strong>table_name</strong>: The class/table name where the violation occurred</p></li>
+<li><p><strong>column_name</strong>: The slot/column name that violated the constraint</p></li>
+<li><p><strong>constraint_type</strong>: Type of constraint violated (required, range, pattern, enum, identifier, key, unique_key)</p></li>
+<li><p><strong>record_id</strong>: ID of the violating record</p></li>
+<li><p><strong>invalid_value</strong>: The value that violates the constraint</p></li>
+</ul>
+<p>For example, if a Person record has an age of 200 that exceeds the maximum allowed value, running the generated
+validation query would return:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>table_name</p></th>
+<th class="head"><p>column_name</p></th>
+<th class="head"><p>constraint_type</p></th>
+<th class="head"><p>record_id</p></th>
+<th class="head"><p>invalid_value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Person</p></td>
+<td><p>age</p></td>
+<td><p>range</p></td>
+<td><p>P001</p></td>
+<td><p>200</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="example-output">
+<h2>Example Output<a class="headerlink" href="#example-output" title="Link to this heading">¶</a></h2>
+<p>A generated sql query for the <cite>personinfo.yml</cite> schema with <cite>sqlite</cite> syntax.</p>
+<p><a class="reference external" href="https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/sqlvalidation/personinfo.sql">personinfo.sql</a></p>
+</section>
+<section id="id1">
+<h2>Overview<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+</section>
+<section id="docs">
+<h2>Docs<a class="headerlink" href="#docs" title="Link to this heading">¶</a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
-<section id="gen-doc">
-<h4>gen-doc<a class="headerlink" href="#gen-doc" title="Link to this heading">¶</a></h4>
-<p>Generate documentation folder from a LinkML YAML schema</p>
-<p>Currently a default set of templates for markdown is provided (see the
-folder linkml/generators/docgen/)</p>
-<p>If you specify another format (e.g. html) then you need to provide a
-template_directory argument, with a template for each type of entity inside.</p>
-<p>Examples can optionally be integrated into the documentation; to enable
-this, pass in the –example-directory argument.  The example directory
-should contain one file per example, following the naming convention
-&lt;ClassName&gt;-&lt;ExampleName&gt;.&lt;extension&gt;.</p>
-<p>For example, to include examples on the page for Person, include examples</p>
-<p>Person-001.yaml, Person-002.yaml, etc.</p>
-<p>Currently examples must be in yaml</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-doc<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+<section id="gen-sqlvalidation">
+<h4>gen-sqlvalidation<a class="headerlink" href="#gen-sqlvalidation" title="Link to this heading">¶</a></h4>
+<p>Generate SQL validation queries from LinkML schema.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-sqlvalidation<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-V">
-<span id="cmdoption-gen-doc-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-V" title="Link to this definition">¶</a></dt>
-<dd><p>Show the version and exit.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-preserve-names">
-<span id="cmdoption-gen-doc-normalize-names"></span><span class="sig-name descname"><span class="pre">--preserve-names</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--normalize-names</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-preserve-names" title="Link to this definition">¶</a></dt>
-<dd><p>Preserve original LinkML names in documentation output (e.g., for page titles, links, and file names).</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-dialect">
+<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-dialect" title="Link to this definition">¶</a></dt>
+<dd><p>SQL dialect (sqlite, postgresql)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'sqlite'</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-truncate-descriptions">
-<span class="sig-name descname"><span class="pre">--truncate-descriptions</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;truncate_descriptions&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-truncate-descriptions" title="Link to this definition">¶</a></dt>
-<dd><p>Whether to truncate long (potentially spanning multiple lines) descriptions of classes, slots, etc., in the docs.
-Set to true for truncated descriptions, and false to display full descriptions.</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-check-required">
+<span id="cmdoption-gen-sqlvalidation-no-check-required"></span><span class="sig-name descname"><span class="pre">--check-required</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-check-required</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-check-required" title="Link to this definition">¶</a></dt>
+<dd><p>Generate queries for required field violations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
@@ -477,143 +478,83 @@ Set to true for truncated descriptions, and false to display full descriptions.<
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-subfolder-type-separation">
-<span id="cmdoption-gen-doc-no-subfolder-type-separation"></span><span class="sig-name descname"><span class="pre">--subfolder-type-separation</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-subfolder-type-separation</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-subfolder-type-separation" title="Link to this definition">¶</a></dt>
-<dd><p>Separate type (class, slot, etc.) outputs in different subfolders for navigation purposes</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-include">
-<span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-include" title="Link to this definition">¶</a></dt>
-<dd><p>Include LinkML Schema outside of imports mechanism.  Helpful in including deprecated classes and slots in a separate
-YAML, and including it when necessary but not by default (e.g. in documentation or for backwards compatibility)</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-example-directory">
-<span class="sig-name descname"><span class="pre">--example-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;example_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-example-directory" title="Link to this definition">¶</a></dt>
-<dd><p>Folder in which example files are found. These are used to make inline examples</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-render-imports">
-<span id="cmdoption-gen-doc-no-render-imports"></span><span class="sig-name descname"><span class="pre">--render-imports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-render-imports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-render-imports" title="Link to this definition">¶</a></dt>
-<dd><p>Render also the documentation of elements from imported schemas</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-check-ranges">
+<span id="cmdoption-gen-sqlvalidation-no-check-ranges"></span><span class="sig-name descname"><span class="pre">--check-ranges</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-check-ranges</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-check-ranges" title="Link to this definition">¶</a></dt>
+<dd><p>Generate queries for min/max value violations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-hierarchical-class-view">
-<span id="cmdoption-gen-doc-no-hierarchical-class-view"></span><span class="sig-name descname"><span class="pre">--hierarchical-class-view</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-hierarchical-class-view</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-hierarchical-class-view" title="Link to this definition">¶</a></dt>
-<dd><p>Render class table on index page in a hierarchically indented view</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-use-class-uris">
-<span id="cmdoption-gen-doc-no-use-class-uris"></span><span class="sig-name descname"><span class="pre">--use-class-uris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-class-uris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-use-class-uris" title="Link to this definition">¶</a></dt>
-<dd><p>Use IDs from class_uri instead of names</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-use-slot-uris">
-<span id="cmdoption-gen-doc-no-use-slot-uris"></span><span class="sig-name descname"><span class="pre">--use-slot-uris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-use-slot-uris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-use-slot-uris" title="Link to this definition">¶</a></dt>
-<dd><p>Use IDs from slot_uri instead of names</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-template-directory">
-<span class="sig-name descname"><span class="pre">--template-directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template_directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-template-directory" title="Link to this definition">¶</a></dt>
-<dd><p>Path to the directory with custom jinja2 templates</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-genmeta">
-<span id="cmdoption-gen-doc-no-genmeta"></span><span class="sig-name descname"><span class="pre">--genmeta</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-genmeta</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-genmeta" title="Link to this definition">¶</a></dt>
-<dd><p>Generating metamodel. Only use this for generating meta.py</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-check-patterns">
+<span id="cmdoption-gen-sqlvalidation-no-check-patterns"></span><span class="sig-name descname"><span class="pre">--check-patterns</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-check-patterns</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-check-patterns" title="Link to this definition">¶</a></dt>
+<dd><p>Generate queries for pattern violations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-sort-by">
-<span class="sig-name descname"><span class="pre">--sort-by</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;sort_by&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-sort-by" title="Link to this definition">¶</a></dt>
-<dd><p>Metaslot to use to sort elements by e.g. rank, name, title</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-check-enums">
+<span id="cmdoption-gen-sqlvalidation-no-check-enums"></span><span class="sig-name descname"><span class="pre">--check-enums</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-check-enums</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-check-enums" title="Link to this definition">¶</a></dt>
+<dd><p>Generate queries for enum violations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'name'</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-include-top-level-diagram">
-<span id="cmdoption-gen-doc-no-include-top-level-diagram"></span><span class="sig-name descname"><span class="pre">--include-top-level-diagram</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-include-top-level-diagram</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-include-top-level-diagram" title="Link to this definition">¶</a></dt>
-<dd><p>Include ER diagram of the entire schema on index page.</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-check-unique-keys">
+<span id="cmdoption-gen-sqlvalidation-no-check-unique-keys"></span><span class="sig-name descname"><span class="pre">--check-unique-keys</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-check-unique-keys</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-check-unique-keys" title="Link to this definition">¶</a></dt>
+<dd><p>Generate queries for unique key violations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-diagram-type">
-<span class="sig-name descname"><span class="pre">--diagram-type</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;diagram_type&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-diagram-type" title="Link to this definition">¶</a></dt>
-<dd><p>Type of UML diagram to be rendered on class documentation pages.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Options<span class="colon">:</span></dt>
-<dd class="field-odd"><p>mermaid_class_diagram | plantuml_class_diagram | er_diagram</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-dialect">
-<span class="sig-name descname"><span class="pre">--dialect</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;dialect&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-dialect" title="Link to this definition">¶</a></dt>
-<dd><p>Dialect or ‘flavor’ of Markdown used.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-index-name">
-<span class="sig-name descname"><span class="pre">--index-name</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;index_name&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-index-name" title="Link to this definition">¶</a></dt>
-<dd><p>Name of the index document.</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-include-comments">
+<span id="cmdoption-gen-sqlvalidation-no-include-comments"></span><span class="sig-name descname"><span class="pre">--include-comments</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-include-comments</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-include-comments" title="Link to this definition">¶</a></dt>
+<dd><p>Include description of tests in generated query</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'index'</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-d">
-<span id="cmdoption-gen-doc-directory"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;directory&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-d" title="Link to this definition">¶</a></dt>
-<dd><p><strong>Required</strong> Path to the directory where you want the Markdown files to be written to</p>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-V">
+<span id="cmdoption-gen-sqlvalidation-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-V" title="Link to this definition">¶</a></dt>
+<dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-f">
-<span id="cmdoption-gen-doc-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-f" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-f">
+<span id="cmdoption-gen-sqlvalidation-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-f" title="Link to this definition">¶</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'markdown'</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'sql'</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>markdown | rst | html | latex</p>
+<dd class="field-even"><p>sql</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-metadata">
-<span id="cmdoption-gen-doc-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-metadata" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-metadata">
+<span id="cmdoption-gen-sqlvalidation-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -623,8 +564,8 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-useuris">
-<span id="cmdoption-gen-doc-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-useuris" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-useuris">
+<span id="cmdoption-gen-sqlvalidation-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-useuris" title="Link to this definition">¶</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -634,14 +575,14 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-im">
-<span id="cmdoption-gen-doc-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-im" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-im">
+<span id="cmdoption-gen-sqlvalidation-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-im" title="Link to this definition">¶</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-doc-log_level" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-log_level" title="Link to this definition">¶</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -654,20 +595,20 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-v">
-<span id="cmdoption-gen-doc-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-v" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-v">
+<span id="cmdoption-gen-sqlvalidation-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-v" title="Link to this definition">¶</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-mergeimports">
-<span id="cmdoption-gen-doc-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-mergeimports" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-mergeimports">
+<span id="cmdoption-gen-sqlvalidation-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-mergeimports" title="Link to this definition">¶</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-stacktrace">
-<span id="cmdoption-gen-doc-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-stacktrace" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-stacktrace">
+<span id="cmdoption-gen-sqlvalidation-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-stacktrace" title="Link to this definition">¶</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -678,8 +619,8 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-doc-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-doc-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-sqlvalidation-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-sqlvalidation-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -688,48 +629,47 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.docgen.</span></span><span class="sig-name descname"><span class="pre">DocGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">~linkml.generators.docgen.MarkdownDialect</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'name'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_mappings:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_directory:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_type:</span> <span class="pre">~linkml.generators.docgen.DiagramType</span> <span class="pre">|</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_top_level_diagram:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subfolder_type_separation:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncate_descriptions:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_directory:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_runner:</span> <span class="pre">~linkml.workspaces.example_runner.ExampleRunner</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genmeta:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_classvars:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gen_slots:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_types_dir:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_slot_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_class_uris:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hierarchical_class_view:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_imports:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve_names:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator" title="Link to this definition">¶</a></dt>
-<dd><p>Generates documentation from a schema</p>
-<p>Note: this is a replacement for MarkdownGenerator</p>
-<p>Documents can be generated using either provided Jinja2 templates, or by
-providing your own</p>
-<p>Currently the provided templates are for markdown but this framework allows
-direct generation to rst, html, etc</p>
-<p>This works via jinja2 templates (found in docgen/ folder). By default, only
-markdown templates are provided. You can either override these, or you can
-create entirely different templates e.g. for html, latex, etc</p>
-<p>The template folder is expected to have files:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>class.FMT.jinja2</p></li>
-<li><p>enum.FMT.jinja2</p></li>
-<li><p>type.FMT.jinja2</p></li>
-<li><p>slot.FMT.jinja2</p></li>
-<li><p>schema.FMT.jinja2</p></li>
-<li><p>subset.FMT.jinja2</p></li>
-<li><p>index.FMT.jinja2</p></li>
-</ul>
-</div></blockquote>
-<p>Most of these accept a jinja2 variable <cite>element</cite>, except index, schema,
-which accept <cite>schema</cite>. See docgen for examples This will generate a single
-document for every</p>
-<ul class="simple">
-<li><p>class, enum, type, slot</p></li>
-<li><p>subset</p></li>
-<li><p>imported schema</p></li>
-</ul>
-<p>It will also create an index file</p>
+<dt class="sig sig-object py" id="linkml.generators.sqlvalidationgen.SQLValidationGenerator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.sqlvalidationgen.</span></span><span class="sig-name descname"><span class="pre">SQLValidationGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dialect:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'sqlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_comments:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_required:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_ranges:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_patterns:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_enums:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_unique_keys:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/sqlvalidationgen.html#SQLValidationGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlvalidationgen.SQLValidationGenerator" title="Link to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="../code/utils.html#linkml.utils.generator.Generator" title="linkml.utils.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> for creating SQL validation queries.</p>
+<p>This generator creates a unified SELECT statement (combining multiple validation
+checks with UNION ALL) that identifies data entries violating LinkML schema
+constraints. The query can be executed against a database to find constraint
+violations.</p>
+<p>Supported constraint types:
+- required: Find NULL values in required fields
+- minimum_value/maximum_value: Find numeric range violations
+- pattern: Find regex pattern violations
+- identifier/key: Find uniqueness violations
+- unique_keys: Find multi-column uniqueness violations
+- enum: Find values not in the permissible values list</p>
+<div class="admonition-example admonition">
+<p class="admonition-title">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen</span> <span class="o">=</span> <span class="n">SQLValidationGenerator</span><span class="p">(</span><span class="s2">&quot;schema.yaml&quot;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;postgresql&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">queries</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">generate_validation_queries</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">queries</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The generated query returns standardized columns:
+- table_name: The class/table name
+- column_name: The slot/column name (or constraint name for unique_keys)
+- constraint_type: Type of constraint violated
+- record_id: ID of the violating record
+- invalid_value: The value that violates the constraint</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.docgen.DocGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/docgen.html#DocGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.docgen.DocGenerator.serialize" title="Link to this definition">¶</a></dt>
-<dd><p>Serialize a schema as a collection of documents</p>
+<dt class="sig sig-object py" id="linkml.generators.sqlvalidationgen.SQLValidationGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/sqlvalidationgen.html#SQLValidationGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.sqlvalidationgen.SQLValidationGenerator.serialize" title="Link to this definition">¶</a></dt>
+<dd><p>Main entry point for generating validation queries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>directory</strong> – relative or absolute path to directory in which documents are to be written</p>
+<dd class="field-odd"><p><strong>kwargs</strong> – Additional arguments passed to generate_validation_queries</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>SQL validation queries as a string</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -745,23 +685,23 @@ document for every</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="erdiagram.html">
+          <a class="next-page" href="linkml.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">ER Diagrams</div>
+                <div class="title">LinkML Generators</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="yarrrml.html">
+          <a class="prev-page" href="sqlalchemy.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">YARRRML</div>
+                <div class="title">SQL Alchemy</div>
                 
               </div>
             </a>
@@ -795,15 +735,18 @@ document for every</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Documentation</a><ul>
-<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#">SQL Validation</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#example-output">Example Output</a></li>
+<li><a class="reference internal" href="#id1">Overview</a></li>
+<li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-doc">gen-doc</a></li>
+<li><a class="reference internal" href="#gen-sqlvalidation">gen-sqlvalidation</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#code">Code</a><ul>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator"><code class="docutils literal notranslate"><span class="pre">DocGenerator</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.docgen.DocGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">DocGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.sqlvalidationgen.SQLValidationGenerator"><code class="docutils literal notranslate"><span class="pre">SQLValidationGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.sqlvalidationgen.SQLValidationGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">SQLValidationGenerator.serialize()</span></code></a></li>
 </ul>
 </li>
 </ul>
