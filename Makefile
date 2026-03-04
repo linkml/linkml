@@ -13,6 +13,8 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 #RUN=pipenv run
 RUN=uv run
 
+.PHONY: docs
+
 lint-fix:
 	$(RUN) tox -e format
 
