@@ -151,3 +151,12 @@ def test_visitor_generation(kitchen_sink_path, tmp_path):
     gen.serialize(directory=str(tmp_path), visitors=["Concept"])
     assert_file_contains(tmp_path / "IConceptVisitor.java", "public void visit(DiagnosisConcept visited);")
     assert_file_contains(tmp_path / "ProcedureConcept.java", "public void accept(IConceptVisitor visitor)")
+
+
+def test_generation_for_org_incenp_linkml_runtime(kitchen_sink_path, tmp_path):
+    """Check that we can generate code suitable for incenp.org's LinkML-Java runtime."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/kitchen_sink/Concept")')
+    assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/core/id")')
+    assert_file_contains(tmp_path / "Concept.java", '@SlotName("in code system")')
