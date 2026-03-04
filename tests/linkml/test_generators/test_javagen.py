@@ -143,3 +143,11 @@ def test_oo_objects_have_uris(kitchen_sink_path):
     witness = [doc for doc in docs if doc.name == "Company"][0]
     assert witness.classes[0].class_uri == "https://w3id.org/linkml/tests/kitchen_sink/Company"
     assert witness.classes[0].fields[0].slot_uri == "http://schema.org/ceo"
+
+
+def test_visitor_generation(kitchen_sink_path, tmp_path):
+    """Check that we can generator a visitor interface."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), visitors=["Concept"])
+    assert_file_contains(tmp_path / "IConceptVisitor.java", "public void visit(DiagnosisConcept visited);")
+    assert_file_contains(tmp_path / "ProcedureConcept.java", "public void accept(IConceptVisitor visitor)")
