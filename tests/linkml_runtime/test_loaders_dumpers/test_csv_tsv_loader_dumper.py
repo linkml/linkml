@@ -428,10 +428,19 @@ def test_custom_delimiter_roundtrip(delimiter, test_values, tmp_path):
 # Edge cases
 
 
-@pytest.mark.skip(reason="Empty list handling has json_clean bug - needs separate fix")
 def test_empty_aliases_list(unwrapped_schemaview, tmp_path):
-    """Empty aliases list should round-trip correctly."""
-    pass
+    """Empty multivalued cell should not crash the loader (fixes #3250)."""
+    # Write a TSV where the aliases column is empty for one row
+    source_path = tmp_path / "empty_aliases.tsv"
+    source_path.write_text("id\tname\taliases\nP:1\tAlice\ta1|a2\nP:2\tBob\t\n")
+
+    loaded = tsv_loader.load_as_dict(
+        str(source_path), index_slot="persons", schemaview=unwrapped_schemaview, list_wrapper="none"
+    )
+
+    assert loaded["persons"][0]["aliases"] == ["a1", "a2"]
+    # Bob's empty aliases cell should not crash and should result in no aliases
+    assert "aliases" not in loaded["persons"][1] or loaded["persons"][1].get("aliases") in (None, [])
 
 
 def test_single_alias(unwrapped_schemaview, tmp_path):
@@ -806,3 +815,25 @@ def test_invalid_cli_list_wrapper_defaults_to_square_for_loader(caplog, tmp_path
 
     assert loaded["persons"][0]["aliases"] == ["a", "b"]
     assert "Invalid list_wrapper value" in caplog.text
+
+
+# --- json_clean fix for #3250 ---
+
+
+def test_json_clean_removes_none_from_lists():
+    """json_clean should remove None values from lists without crashing (fixes #3250)."""
+    from linkml_runtime.loaders.loader_root import Loader
+
+    inp = {"items": [{"name": "a", "tags": [None]}, {"name": "b", "tags": ["x", None, "y"]}]}
+    result = Loader.json_clean(inp)
+    assert result["items"][0]["tags"] == []
+    assert result["items"][1]["tags"] == ["x", "y"]
+
+
+def test_json_clean_removes_empty_lists_and_dicts():
+    """json_clean should still remove empty lists and dicts from lists."""
+    from linkml_runtime.loaders.loader_root import Loader
+
+    inp = {"items": [None, [], {}, "keep"]}
+    result = Loader.json_clean(inp)
+    assert result["items"] == ["keep"]
