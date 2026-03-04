@@ -1,0 +1,192 @@
+{#
+   Jinja2 template for a Java class intended to be used with the
+   LinkML-Java runtime.
+-#}
+package {{ doc.package }};
+
+{# The types that may be required by the slots. -#}
+import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+{# The annotations required by the LinkML-Java runtime -#}
+import org.incenp.linkml.core.annotations.Converter;
+import org.incenp.linkml.core.annotations.ExtensionHolder;
+import org.incenp.linkml.core.annotations.Identifier;
+import org.incenp.linkml.core.annotations.Inlined;
+import org.incenp.linkml.core.annotations.LinkURI;
+import org.incenp.linkml.core.annotations.Required;
+import org.incenp.linkml.core.annotations.SlotName;
+import org.incenp.linkml.core.annotations.TypeDesignator;
+import org.incenp.linkml.core.CurieConverter;
+
+@LinkURI("{{ cls.class_uri }}")
+public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_a %} extends {{ cls.is_a }}{% endif %} {
+{# The fields representing the slots. -#}
+{%- for f in cls.fields %}
+{%-   if f.source_slot.identifier %}
+{#- Marks the slot that holds the unique identifier for objects of this class. #}
+    @Identifier
+{%-   elif f.source_slot.key %}
+{#- Marks the slot that holds the local identifier for objects of this class. #}
+    @Identifier(isGlobal = false)
+{%-   endif %}
+{%-   if f.source_slot.designates_type %}
+{#- Marks the slot that holds the runtime type of this object. #}
+    @TypeDesignator
+{%-   endif %}
+{%-   if f.source_slot.name != f.name %}
+{#- The Java field name differs from the name defined in the schema, so
+    the runtime must have a way to get the original name. #}
+    @SlotName("{{ f.source_slot.name }}")
+{%-   endif %}
+{#- The runtime must know how the slot is expected to be serialised. #}
+{%-   if f.source_slot.inlined_as_list %}
+    @Inlined(asList = true)
+{%-   elif f.source_slot.inlined %}
+    @Inlined
+{%-   endif %}
+{#- The runtime must also know whether the slot is required. #}
+{%-   if f.source_slot.required %}
+    @Required
+{%- elif f.source_slot.recommended %}
+    @Required(isRecommended = true)
+{%- endif %}
+{%-   if f.source_slot.range == "uriorcurie" %}
+{#- We need a custom converter for these slots. #}
+    @Converter(CurieConverter.class)
+{%-   endif %}
+{#- We will need the slot URI for RDF import/export later. #}
+    @LinkURI("{{ f.slot_uri }}")
+    private {{ f.range }} {{ f.name }};
+{% endfor %}
+
+{#- If the class is configured to allow extra slots, we need an extra
+    field to store them. #}
+{%- if cls.source_class.extra_slots.allowed %}
+    @ExtensionHolder
+    private Map<String, Object> extraSlots;
+{% endif -%}
+
+{#- The public accessors. #}
+{%- for f in cls.fields %}
+    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ f.range }} {{ f.name }}) {
+        this.{{ f.name }} = {{ f.name }};
+    }
+
+    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}() {
+        return this.{{ f.name }};
+    }
+
+{%-   if f.source_slot.multivalued %}
+{#- Convenience accessor that initializes the list if needed. #}
+
+    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}(boolean set) {
+        if ( this.{{ f.name }} == null && set ) {
+            this.{{ f.name }} = new ArrayList<>();
+        }
+        return this.{{ f.name }};
+    }
+{%-   endif %}
+{% endfor %}
+
+{%- if cls.source_class.extra_slots.allowed %}
+    public void setExtraSlots(Map<String,Object> extraSlots) {
+        this.extraSlots = extraSlots;
+    }
+
+    public Map<String,Object> getExtraSlots() {
+        return this.extraSlots;
+    }
+
+    public Map<String,Object> getExtraSlots(boolean set) {
+        if ( this.extraSlots == null && set ) {
+            this.extraSlots = new HashMap<>();
+        }
+        return this.extraSlots;
+    }
+{% endif -%}
+
+{#- Visitors? #}
+{%- for visitor in visitors %}
+{%-   if cls.source_class.name == visitor or gen.has_ancestor(cls.source_class, visitor) %}
+    public void accept(I{{ gen.get_class_name(visitor) }}Visitor v) {
+        v.visit(this);
+    }
+{%-   endif %}
+{% endfor %}
+
+{#- The overridden methods from Object. #}
+    @Override
+    public String toString() {
+{%- set identifier_slot = gen.schemaview.get_identifier_slot(cls.source_class.name, use_key=True) %}
+{%- if identifier_slot %}
+        return "{{ cls.name }}({{ identifier_slot.name }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
+{%- else %}
+        StringBuilder sb = new StringBuilder();
+        Object o;
+        sb.append("{{ cls.name }}(");
+{%- for slot in gen.schemaview.class_induced_slots(cls.source_class.name) %}
+        if ( (o = this.{{ gen.get_read_accessor_name(slot) }}()) != null ) {
+            sb.append("{{ slot.name }}=");
+            sb.append(o);
+            sb.append(",");
+        }
+{%- endfor %}
+        sb.append(")");
+        return sb.toString();
+{%- endif %}
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if ( o == this ) return true;
+        if ( !(o instanceof {{ cls.name }}) ) return false;
+        final {{ cls.name }} other = ({{ cls.name }}) o;
+        if ( !other.canEqual((Object) this)) return false;
+{#- No need to call the parent's method if we are directly derived from Object. #}
+{%- if cls.is_a %}
+        if ( !super.equals(o) ) return false;
+{% endif %}
+{#- Now compare every slots. #}
+{%- for f in cls.fields %}
+        final Object this${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
+        final Object other${{ f.name }} = other.{{ gen.get_read_accessor_name(f.source_slot) }}();
+{%-   if f.range in ["int", "float", "double", "boolean"] %}
+        if ( this${{ f.name }} != $other{{ f.name }} ) return false;
+{%-   else %}
+        if ( this${{ f.name }} == null ? other${{ f.name }} != null : !this${{ f.name }}.equals(other${{ f.name }})) return false;
+ {%-  endif %}
+{%- endfor %}
+        return true;
+    }
+
+    protected boolean canEqual(final Object other) {
+        return other instanceof {{ cls.name }};
+    }
+
+    @Override
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = {% if cls.is_a %}super.hashCode(){% else %}1{% endif %};
+{%- for f in cls.fields %}
+        final Object ${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
+{%-   if f.range == "int" %}
+        result = result * PRIME + Integer.hashCode(${{ f.name }});
+{%-   elif f.range == "float" %}
+        result = result * PRIME + Float.hashCode(${{ f.name }});
+{%-   elif f.range == "double" %}
+        result = result * PRIME + Double.hashCode(${{ f.name }});
+{%-   elif f.range == "boolean" %}
+        result = result * PRIME + Boolean.hashCode(${{ f.name }});
+{%-   else %}
+        result = result * PRIME + (${{ f.name }} == null ? 43 : ${{ f.name }}.hashCode());
+{%-   endif %}
+{%- endfor %}
+        return result;
+    }
+}

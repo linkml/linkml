@@ -10,7 +10,7 @@ from linkml._version import __version__
 from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinition, TypeDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition, TypeDefinition
 from linkml_runtime.utils.formatutils import camelcase
 
 DEFAULT_TEMPLATE_DIR = Path(__file__).parent.resolve() / "javagen"
@@ -290,6 +290,33 @@ class JavaGenerator(OOCodeGenerator):
     def get_class_name(self, name: str) -> str:
         """Converts a LinkML class name to a Java class name."""
         return camelcase(name)
+
+    def get_write_accessor_name(self, slot: SlotDefinition) -> str:
+        """Gets the name of the write accessor for the given slot.
+
+        This is to allow templates to generate their own write accessors,
+        should they prefer not to use Lombok.
+        """
+        if slot.range == "boolean" and slot.required:
+            # This replicates the logic used by Lombok for boolean-typed fields:
+            # - foo -> setFoo() (general case)
+            # - isFoo -> setFoo() (special case to avoid setIsFoo())
+            if len(slot.name) > 2 and slot.name[:2] == "is" and not slot.name[2].islower():
+                return "set" + camelcase(slot.name[2:])
+        return "set" + camelcase(slot.name)
+
+    def get_read_accessor_name(self, slot: SlotDefinition) -> str:
+        """Gets the name of the read accessor for the given slot."""
+        if slot.range == "boolean" and slot.required:
+            # This replicates the logic used by Lombok for boolean-typed fields
+            # - foo -> isFoo() (general case)
+            # - isFoo -> isFoo() (special case to avoid isIsFoo())
+            if len(slot.name) > 2 and slot.name[:2] == "is" and not slot.name[2].islower():
+                return self.get_slot_name(slot.name)
+            else:
+                return "is" + camelcase(slot.name)
+        else:
+            return "get" + camelcase(slot.name)
 
 
 @shared_arguments(JavaGenerator)
