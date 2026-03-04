@@ -108,13 +108,15 @@ logger = logging.getLogger(__name__)
     "--boolean-truthy",
     default=None,
     help="Additional truthy values to accept when loading booleans from CSV/TSV "
-    "(comma-separated, e.g. 'yes,on,1'). Added to the defaults (T, TRUE).",
+    "(comma-separated, e.g. 'yes,on,1'). Added to the defaults (T, TRUE) "
+    "and any boolean_truthy schema annotation.",
 )
 @click.option(
     "--boolean-falsy",
     default=None,
     help="Additional falsy values to accept when loading booleans from CSV/TSV "
-    "(comma-separated, e.g. 'no,off,0'). Added to the defaults (F, FALSE).",
+    "(comma-separated, e.g. 'no,off,0'). Added to the defaults (F, FALSE) "
+    "and any boolean_falsy schema annotation.",
 )
 @click.version_option(__version__, "-V", "--version")
 @click.argument("input")
