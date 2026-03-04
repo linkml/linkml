@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import Any, ClassVar, Optional, Union
 
 import hbreader
 import pytest
 import yaml
 
 from linkml_runtime.linkml_model import SchemaDefinition
-from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode, YAMLRoot, from_yaml
+from linkml_runtime.utils.metamodelcore import empty_dict, empty_list
+from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, TypedNode, YAMLRoot, extended_str, from_yaml
 from tests.linkml_runtime.test_utils.environment import env
 
 
@@ -142,3 +143,87 @@ slots:
 """
     schema = from_yaml(model_txt, SchemaDefinition)
     assert "name" in schema.slots
+
+
+# ---------------------------------------------------------------------------
+# _normalize_inlined with inherited classes (issue #3244)
+#
+# ChildClass inherits from ParentClass, so its __init__ signature is
+# (title, description, notation) — the identifier ``notation`` is LAST.
+# This exposes bugs where _normalize_inlined used positional args to
+# instantiate the slot type.
+# ---------------------------------------------------------------------------
+
+
+class _ChildClassNotation(extended_str):
+    pass
+
+
+@dataclass
+class _ParentClass(YAMLRoot):
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+        if self.title is not None and not isinstance(self.title, str):
+            self.title = str(self.title)
+        if self.description is not None and not isinstance(self.description, str):
+            self.description = str(self.description)
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class _ChildClass(_ParentClass):
+    notation: Union[str, _ChildClassNotation] = None
+
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+        if self.notation is None:
+            raise ValueError("notation must be supplied")
+        if not isinstance(self.notation, _ChildClassNotation):
+            self.notation = _ChildClassNotation(self.notation)
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class _ContainerList(YAMLRoot):
+    items: Optional[Union[dict, list]] = empty_list()
+
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+        self._normalize_inlined_as_list(slot_name="items", slot_type=_ChildClass, key_name="notation", keyed=True)
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class _ContainerDict(YAMLRoot):
+    items: Optional[Union[dict, list]] = empty_dict()
+
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+        self._normalize_inlined_as_dict(slot_name="items", slot_type=_ChildClass, key_name="notation", keyed=True)
+        super().__post_init__(**kwargs)
+
+
+def test_normalize_inlined_single_key_dict_matching_key_name():
+    """[{key_name: value}] must set the identifier, not the first field."""
+    c = _ContainerList(items=[{"notation": "n1"}])
+    assert c.items == [_ChildClass(notation="n1")]
+
+
+def test_normalize_inlined_simple_dict_in_list():
+    """[{key_val: other_val}] — SimpleDict shorthand in list form."""
+    c = _ContainerList(items=[{"n1": "t1"}])
+    assert c.items == [_ChildClass(notation="n1", title="t1")]
+
+
+def test_normalize_inlined_simple_dict_in_dict():
+    """{key_val: scalar} — SimpleDict shorthand in dict form."""
+    c = _ContainerDict(items={"n1": "t1", "n2": "t2"})
+    assert c.items == {
+        "n1": _ChildClass(notation="n1", title="t1"),
+        "n2": _ChildClass(notation="n2", title="t2"),
+    }
+
+
+def test_normalize_inlined_duplicate_keys_with_inherited_identifier():
+    """Duplicate key detection must still work after the kwargs fix."""
+    with pytest.raises(ValueError, match="duplicate key"):
+        _ContainerList(items=[{"notation": "n1"}, {"notation": "n1"}])

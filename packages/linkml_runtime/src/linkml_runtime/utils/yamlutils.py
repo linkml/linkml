@@ -1,3 +1,4 @@
+import dataclasses
 import re
 import textwrap
 from collections.abc import Callable
@@ -128,6 +129,13 @@ class YAMLRoot(JsonObj):
         cooked_slot = list() if is_list else dict()
         cooked_keys = set()
 
+        # For SimpleDict patterns (key:value shorthand), find the first
+        # non-key field so we can use kwargs instead of positional args.
+        try:
+            _value_field = next((f.name for f in dataclasses.fields(slot_type) if f.name != key_name), None)
+        except TypeError:
+            _value_field = None
+
         def order_up(key: Any, cooked_entry: YAMLRoot) -> None:
             """A cooked entry is ready to be added to the return slot"""
             if cooked_entry[key_name] != key:
@@ -179,11 +187,14 @@ class YAMLRoot(JsonObj):
                         for lek, lev in items(list_entry):
                             if lek == key_name and not isinstance(lev, list | dict | JsonObj):
                                 # key_name:value
-                                order_up(list_entry[lek], slot_type(list_entry))
+                                order_up(lev, slot_type(**{key_name: lev}))
                                 break  # Not strictly necessary, but
                             elif not isinstance(lev, list | dict | JsonObj):
-                                # key: value --> slot_type(key, value)
-                                order_up(lek, slot_type(lek, lev))
+                                # key: value — SimpleDict shorthand
+                                kwargs = {key_name: lek}
+                                if _value_field is not None:
+                                    kwargs[_value_field] = lev
+                                order_up(lek, slot_type(**kwargs))
                             else:
                                 form_1(list_entry)
                     else:
@@ -217,7 +228,10 @@ class YAMLRoot(JsonObj):
                         form_1({k: v})
                     else:
                         # SimpleDict form: value may be scalar or list (multivalued)
-                        order_up(k, slot_type(*[k, v]))
+                        kwargs = {key_name: k}
+                        if _value_field is not None:
+                            kwargs[_value_field] = v
+                        order_up(k, slot_type(**kwargs))
         self[slot_name] = cooked_slot
 
     def _normalize_inlined_slot(
