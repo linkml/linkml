@@ -7,7 +7,7 @@ import click
 from jinja2 import Template
 
 from linkml._version import __version__
-from linkml.generators.oocodegen import OOCodeGenerator
+from linkml.generators.oocodegen import OOCodeGenerator, OODocument
 from linkml.utils.deprecation import deprecated_fields, deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, TypeDefinition
@@ -166,30 +166,48 @@ class JavaGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
-    def serialize(self, directory: str, template_variant: str | None = None, **kwargs) -> None:
+    def serialize(
+        self, directory: str, template_variant: str | None = None, extra_templates: list[str] | None = None, **kwargs
+    ) -> None:
+        """Generate and write the Java code to files.
+
+        :param directory: The directory where to write the code files.
+        :param template_variant: The name of the template variant to use, if any.
+        :param extra_templates: A list of additional templates from which to generate
+            additional code files. For example, if set to `[Foo,Bar]`, this will
+            generate two additional files `Foo.java` and `Bar.java` (assuming the
+            template directory contains the required templates `Foo.jinja2` and
+            `Bar.jinja2`). Users can exploit such additional files to generate any
+            code they might need in addition to the code generated for each class
+            and each enum in the model.
+        """
         oodocs = self.create_documents()
+        # Create additional documents for additional templates
+        if extra_templates:
+            for extra_template in extra_templates:
+                oodocs.append(OODocument(name=extra_template, package=self.package))
         self.directory = directory
         for oodoc in oodocs:
+            cls = None
+            enum = None
             if oodoc.classes:
                 cls = oodoc.classes[0]
-                enum = None
                 type = "class"
-            else:
-                cls = None
+            elif oodoc.enums:
                 enum = oodoc.enums[0]
                 type = "enum"
+            else:
+                # Additional template
+                type = oodoc.name
             template = self.template_cache.get_template(oodoc.name, type, template_variant)
             if template is None:
-                # This should never happen as the default template directory
-                # (which is always queried as a last resort) should always
-                # contain at least a default `class` template and a default
-                # `enum` template.
-                raise Exception("Missing template")
+                raise Exception(f"Missing template for {oodoc.name}")
 
             code = template.render(
                 doc=oodoc,
                 cls=cls,
                 enum=enum,
+                gen=self,
                 metamodel_version=self.schema.metamodel_version,
                 model_version=self.schema.version,
             )
@@ -226,6 +244,7 @@ class JavaGenerator(OOCodeGenerator):
     help="""Optional Java 17 record implementation
             (deprecated, use --template-variant=records instead)""",
 )
+@click.option("--extra-template", multiple=True, help="Name of an additional, arbitrary template to use")
 @click.option("--true-enums/--no-true-enums", default=False, help="Treat enums as distinct types rather than strings")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="java")
@@ -243,6 +262,7 @@ def cli(
     classvars=True,
     slots=True,
     true_enums=False,
+    extra_template=[],
     **args,
 ):
     """Generate java classes to represent a LinkML model"""
@@ -272,7 +292,7 @@ def cli(
         gen_slots=slots,
         true_enums=true_enums,
         **args,
-    ).serialize(output_directory, template_variant=template_variant, **args)
+    ).serialize(output_directory, template_variant=template_variant, extra_templates=extra_template, **args)
 
 
 if __name__ == "__main__":
