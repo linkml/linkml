@@ -179,7 +179,7 @@ class _ChildClass(_ParentClass):
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         if self.notation is None:
             raise ValueError("notation must be supplied")
-        if not isinstance(self.notation, _ChildClassNotation):
+        if not isinstance(self.notation, (_ChildClassNotation | list)):
             self.notation = _ChildClassNotation(self.notation)
         super().__post_init__(**kwargs)
 
@@ -190,6 +190,15 @@ class _ContainerList(YAMLRoot):
 
     def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
         self._normalize_inlined_as_list(slot_name="items", slot_type=_ChildClass, key_name="notation", keyed=True)
+        super().__post_init__(**kwargs)
+
+
+@dataclass
+class _ContainerListNotKeyed(YAMLRoot):
+    items: Optional[Union[dict, list]] = empty_list()
+
+    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+        self._normalize_inlined_as_list(slot_name="items", slot_type=_ChildClass, key_name="notation", keyed=False)
         super().__post_init__(**kwargs)
 
 
@@ -221,6 +230,12 @@ def test_normalize_inlined_simple_dict_in_dict():
         "n1": _ChildClass(notation="n1", title="t1"),
         "n2": _ChildClass(notation="n2", title="t2"),
     }
+
+
+def test_normalize_inlined_key_name_with_list_value():
+    """[{key_name: [values]}] — multivalued field value must pass through."""
+    c = _ContainerListNotKeyed(items=[{"notation": ["n1"]}])
+    assert c.items == [_ChildClass(notation=["n1"])]
 
 
 def test_normalize_inlined_duplicate_keys_with_inherited_identifier():

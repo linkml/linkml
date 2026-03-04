@@ -185,7 +185,7 @@ class YAMLRoot(JsonObj):
                     if len(list_entry) == 1:
                         # key:dict or key_name:key
                         for lek, lev in items(list_entry):
-                            if lek == key_name and not isinstance(lev, list | dict | JsonObj):
+                            if lek == key_name and not isinstance(lev, dict | JsonObj):
                                 # key_name:value
                                 order_up(lev, slot_type(**{key_name: lev}))
                                 break  # Not strictly necessary, but
