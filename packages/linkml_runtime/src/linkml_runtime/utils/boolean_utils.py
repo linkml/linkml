@@ -94,6 +94,12 @@ def get_boolean_config(
             config.falsy_values = config.falsy_values | extra
         if "boolean_output" in ann:
             format_key = ann["boolean_output"].value
+            if format_key not in BOOLEAN_OUTPUT_FORMATS:
+                logger.warning(
+                    f"Invalid boolean_output value '{format_key}'. "
+                    f"Expected one of {list(BOOLEAN_OUTPUT_FORMATS)}. "
+                    "Defaulting to 'true/false'."
+                )
             true_str, false_str = BOOLEAN_OUTPUT_FORMATS.get(format_key, ("true", "false"))
             config.output_true = true_str
             config.output_false = false_str
@@ -104,6 +110,12 @@ def get_boolean_config(
     if boolean_falsy is not None:
         config.falsy_values = config.falsy_values | boolean_falsy
     if boolean_output is not None:
+        if boolean_output not in BOOLEAN_OUTPUT_FORMATS:
+            logger.warning(
+                f"Invalid boolean_output value '{boolean_output}'. "
+                f"Expected one of {list(BOOLEAN_OUTPUT_FORMATS)}. "
+                "Defaulting to 'true/false'."
+            )
         true_str, false_str = BOOLEAN_OUTPUT_FORMATS.get(boolean_output, ("true", "false"))
         config.output_true = true_str
         config.output_false = false_str
