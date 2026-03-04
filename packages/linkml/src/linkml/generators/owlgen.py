@@ -174,7 +174,7 @@ class OwlSchemaGenerator(Generator):
     enum_iri_separator: str = "#"
     """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
 
-    inline_mixins: bool = False
+    mixins_inlined: bool = False
     """If True, mixin classes are not emitted as OWL classes. Instead, each mixin's slot
     restrictions are inlined as ``rdfs:subClassOf`` axioms on every class that uses the
     mixin.  Any slot or property whose range is a mixin class is replaced by a union of
@@ -203,14 +203,14 @@ class OwlSchemaGenerator(Generator):
             self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
         graph.add((base, RDF.type, OWL.Ontology))
 
-        # Build mixin-user map before processing classes (used by inline_mixins mode)
+        # Build mixin-user map before processing classes (used by mixins_inlined mode)
         self._mixin_user_map: dict[str, list[str]] = {}
-        if self.inline_mixins:
+        if self.mixins_inlined:
             self._mixin_user_map = self._build_mixin_user_map()
 
         # Add main schema elements
         for cls in sv.all_classes(imports=mergeimports).values():
-            if self.inline_mixins and cls.mixin:
+            if self.mixins_inlined and cls.mixin:
                 # Do not emit the mixin class itself, but still declare its
                 # attribute properties so they exist as OWL properties.
                 for a in cls.attributes.values():
@@ -351,7 +351,7 @@ class OwlSchemaGenerator(Generator):
             self.graph.add((cls_uri, RDFS.subClassOf, self._class_uri(cls.is_a)))
             has_parent = True
         for mixin in sorted(cls.mixins):
-            if self.inline_mixins:
+            if self.mixins_inlined:
                 # Inline the mixin's own slot restrictions directly onto this class
                 mixin_cls = sv.get_class(mixin)
                 if mixin_cls:
@@ -1009,12 +1009,12 @@ class OwlSchemaGenerator(Generator):
     def _resolve_class_ref(self, cn: str | ClassDefinitionName) -> URIRef | BNode:
         """Resolve a class reference to an OWL node.
 
-        When ``inline_mixins`` is True and *cn* names a mixin class, returns a
+        When ``mixins_inlined`` is True and *cn* names a mixin class, returns a
         ``owl:unionOf`` expression covering all non-mixin classes that directly use
         that mixin (or the single class URI if there is only one user).  Otherwise
         delegates to ``_class_uri``.
         """
-        if self.inline_mixins:
+        if self.mixins_inlined:
             cls = self.schemaview.get_class(cn)
             if cls and cls.mixin:
                 users = self._mixin_user_map.get(str(cn), [])
@@ -1424,14 +1424,15 @@ class OwlSchemaGenerator(Generator):
     help="IRI separator for enums.",
 )
 @click.option(
-    "--inline-mixins/--no-inline-mixins",
+    "--mixins-inlined/--no-mixins-inlined",
     default=False,
     show_default=True,
     help=(
         "If true, mixin classes are not emitted as OWL classes. "
         "Their slot restrictions are inlined into every class that uses the mixin, "
         "and any slot range that refers to a mixin is replaced by a union of the "
-        "concrete classes that use it (or the single class directly if there is only one)."
+        "concrete classes that use it (or the single class directly if there is only one). "
+        "Mutually exclusive with --mixins-as-expressions."
     ),
 )
 @click.version_option(__version__, "-V", "--version")
@@ -1449,6 +1450,8 @@ def cli(yamlfile, metadata_profile: str, **kwargs):
 
     For more info, see: https://linkml.io/linkml/generators/owl
     """
+    if kwargs.get("mixins_inlined") and kwargs.get("mixins_as_expressions"):
+        raise click.UsageError("--mixins-inlined and --mixins-as-expressions are mutually exclusive.")
     if metadata_profile is not None:
         metadata_profiles = [MetadataProfile(metadata_profile)]
     else:
