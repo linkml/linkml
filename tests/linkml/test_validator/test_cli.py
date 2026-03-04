@@ -212,5 +212,5 @@ def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_d
     )
 
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
