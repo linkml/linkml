@@ -191,6 +191,19 @@ on a collection of classes is as follows:
     - There is exactly one additional non-key slot (this forms the "primary" value)
     - If there are multiple candidates for the primary value, if exactly one is `required`, it is used.
 
+The primary value slot may be single-valued or multivalued. When multivalued, the SimpleDict form accepts a list as the value:
+
+```yaml
+# Schema: Tag has identifier 'name' and multivalued slot 'aliases'
+# SimpleDict form:
+tags:
+  important:
+    - critical
+    - urgent
+  optional:
+    - nice-to-have
+```
+
 ## Inlining with non-JSON serializations
 
 The concept of inlining only makes sense with JSON-like tree-oriented data serializations:

@@ -307,8 +307,8 @@ slots:
     gen = PydanticGenerator(schema_str, package=PACKAGE)
     code = gen.serialize()
     assert "inlined_things: Optional[dict[str, Union[A, B]]] = Field(default=None" in code
-    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=[]" in code
-    assert "not_inlined_things: Optional[list[str]] = Field(default=[]" in code
+    assert "inlined_as_list_things: Optional[list[Union[A, B]]] = Field(default=None" in code
+    assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
 @pytest.mark.parametrize(
@@ -388,8 +388,8 @@ slots:
 def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_identifier, expected, notes):
     # Case = namedtuple("multivalued", "inlined", "inlined_as_list", "B_has_identities")
     expected_default_factories = {
-        "Optional[list[str]]": "Field(default=[]",
-        "Optional[list[B]]": "Field(default=[]",
+        "Optional[list[str]]": "Field(default=None",
+        "Optional[list[B]]": "Field(default=None",
         "Optional[dict[str, B]]": "Field(default=None",
         "Optional[dict[str, str]]": "Field(default=None",
         "Optional[dict[str, Union[str, B]]]": "Field(default=None",
@@ -807,7 +807,7 @@ classes:
 
 
 @pytest.mark.parametrize(
-    "value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid",
+    "value, required, minimum_cardinality, maximum_cardinality, exact_cardinality, valid",
     (
         (
             None,
@@ -860,7 +860,7 @@ classes:
         ([1, 2, 3], True, 3, 3, 3, True),
     ),
 )
-def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid):
+def test_pydantic_cardinality(value, required, minimum_cardinality, maximum_cardinality, exact_cardinality, valid):
     """
     Ensure that the cardinality constraints for list length are correctly applied
     to the generated pydantic model, using SchemaBuilder.
@@ -874,7 +874,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
                 range="float",
                 multivalued=True,
                 required=required,
-                minimum_cardinality=minimium_cardinality,
+                minimum_cardinality=minimum_cardinality,
                 maximum_cardinality=maximum_cardinality,
                 exact_cardinality=exact_cardinality,
             )
@@ -890,7 +890,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
     field = cls.model_fields["cardinality_array"]
 
     assert field.is_required() == required
-    assert field.annotation == list[float] if required else Optional[list[float]]
+    assert field.annotation == list[float] if required else list[float] | None
 
     # filter down the metadata to only min_length and max_length entries
     min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
@@ -901,9 +901,9 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
         assert len(max_length) == 1
         assert exact_cardinality == min_length[0]
         assert exact_cardinality == max_length[0]
-    if minimium_cardinality:
+    if minimum_cardinality:
         assert len(min_length) == 1
-        assert minimium_cardinality == min_length[0]
+        assert minimum_cardinality == min_length[0]
     if maximum_cardinality:
         assert len(max_length) == 1
         assert maximum_cardinality == max_length[0]
@@ -1067,7 +1067,7 @@ def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expecte
         (
             'object_id: Optional[str] = Field(default=None, description="Unique UUID for each object")',
             "object_id",
-            Optional[str],
+            str | None,
             None,
             "Unique UUID for each object",
         ),
@@ -1119,15 +1119,46 @@ def test_attribute_field():
 
 def test_append_to_optional_lists(kitchen_sink_path):
     """
-    Optional multivalued fields should be initialised as empty lists
+    Optional multivalued fields can be initialised as empty lists when enabled
     """
-    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE)
+    gen = PydanticGenerator(kitchen_sink_path, package=PACKAGE, empty_list_for_multivalued_slots=True)
     code = gen.serialize()
     mod = compile_python(code, PACKAGE)
     p = mod.Person(id="P:1")
     d = mod.Dataset()
     d.persons.append(p)
     assert d.model_dump(exclude_none=True) == {"persons": [{"id": "P:1"}]}
+
+
+def test_optional_multivalued_defaults_to_none():
+    """
+    Optional multivalued fields default to None (default behavior)
+    """
+    schema_str = """
+id: http://example.org/associated
+name: associated
+imports:
+  - linkml:types
+classes:
+  AssociatedNetElement:
+    attributes:
+      bounds:
+        range: float
+        multivalued: true
+        minimum_cardinality: 1
+        maximum_cardinality: 2
+"""
+    gen = PydanticGenerator(
+        schema_str,
+        package=PACKAGE,
+    )
+    code = gen.serialize()
+    assert "bounds: Optional[list[float]] = Field(default=None" in code
+    mod = compile_python(code, PACKAGE)
+    assoc = mod.AssociatedNetElement()
+    assert assoc.model_dump(exclude_none=True) == {}
+    with pytest.raises(ValidationError):
+        mod.AssociatedNetElement(bounds=[])
 
 
 def test_class_validators():
@@ -1523,7 +1554,7 @@ def test_template_render():
 
     class InnerTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "inner.jinja"
-        value: Union[int, str] = 1
+        value: int | str = 1
 
     class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
@@ -1608,7 +1639,7 @@ def test_arrays_anyshape_union():
     """
 
     class MyModel(BaseModel):
-        array: AnyShapeArray[Union[int, float]]
+        array: AnyShapeArray[int | float]
 
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
@@ -1625,7 +1656,7 @@ def test_arrays_anyshape_union():
     (
         (None, [{}]),
         (int, [{"type": "integer"}]),
-        (Union[int, float], [{"type": "integer"}, {"type": "number"}]),
+        (int | float, [{"type": "integer"}, {"type": "number"}]),
     ),
 )
 def test_arrays_anyshape_json_schema(dtype, expected):
@@ -1638,7 +1669,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
         class MyModel(BaseModel):
             array: AnyShapeArray[dtype]
-            dummy: Optional[AnyShapeArray[str]] = None
+            dummy: AnyShapeArray[str] | None = None
 
     schema = MyModel.model_json_schema()
     array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
@@ -2713,24 +2744,399 @@ def test_lifecycle_slots(kitchen_sink_path):
             assert attr.meta["extra_meta_field"]
 
 
-def test_crappy_stdlib_set_removed():
+def test_union_of():
     """
-    After support for <3.10 is dropped, remove the dang stdlib list stub
-
-    since this is just a tidiness test rather than a correctness test,
-    wrap the whole thing in a try and self-contain its imports
+    Test that classes with union_of generate proper type aliases
     """
-    try:
-        from importlib.metadata import metadata
+    schema_path = Path(__file__).parent.parent / "test_data" / "input" / "union_test.yaml"
+    generator = PydanticGenerator(schema_path, package="test")
+    code = generator.serialize()
 
-        from packaging.specifiers import SpecifierSet
-        from packaging.version import Version
+    # Check that UnionClass is generated as a type alias with forward references
+    # Description should appear as a comment before the type alias
+    assert "# A class that represents a union of other classes" in code
+    assert 'UnionClass = Union["TypeA", "TypeB"]' in code
 
-        linkml_meta = metadata("linkml")
-        req_python = SpecifierSet(linkml_meta.json["requires_python"])
-        assert req_python.contains(Version("3.9")), (
-            "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
-        )
-        "and then REMOVE THIS TEST!"
-    except Exception:
-        pass
+    # Check that Union is imported
+    assert "from typing import" in code and "Union" in code
+
+    # Check that individual classes are still generated normally
+    assert "class TypeA(" in code
+    assert "class TypeB(" in code
+
+    # Check that type aliases are excluded from model_rebuild section
+    assert "UnionClass.model_rebuild()" not in code
+
+    # Compile and test the generated code
+    module = compile_python(code, "test")
+
+    # Verify the type alias exists and is correct
+    assert hasattr(module, "UnionClass")
+    assert hasattr(module, "TypeA")
+    assert hasattr(module, "TypeB")
+
+    # Verify they are instances of the union (type checking would work at runtime)
+
+    union_origin = typing.get_origin(module.UnionClass)
+    union_args = typing.get_args(module.UnionClass)
+    assert union_origin is Union
+    # With forward references, the args are ForwardRef objects
+    from typing import ForwardRef
+
+    expected_refs = {ForwardRef("TypeA"), ForwardRef("TypeB")}
+    actual_refs = set(union_args)
+    assert actual_refs == expected_refs
+
+
+def test_union_of_single_type_error():
+    """
+    Test that union_of with a single type raises ValueError
+    """
+    schema = SchemaDefinition(
+        id="https://example.org/single_union",
+        name="single_union",
+        classes=[
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="SingleUnion", union_of=["TypeA"]),
+        ],
+    )
+    generator = PydanticGenerator(schema, package="test")
+    with pytest.raises(ValueError, match="has union_of with 1 type.*requires at least 2 types"):
+        generator.serialize()
+
+
+def test_union_of_with_inheritance_error():
+    """
+    Test that union_of classes cannot have is_a or mixins
+    """
+    # Test with is_a
+    schema_with_is_a = SchemaDefinition(
+        id="https://example.org/union_inheritance",
+        name="union_inheritance",
+        classes=[
+            ClassDefinition(name="BaseClass"),
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="TypeB"),
+            ClassDefinition(name="UnionWithParent", union_of=["TypeA", "TypeB"], is_a="BaseClass"),
+        ],
+    )
+    generator = PydanticGenerator(schema_with_is_a, package="test")
+    with pytest.raises(ValueError, match="has union_of but also has inheritance.*is_a=BaseClass"):
+        generator.serialize()
+
+    # Test with mixins
+    schema_with_mixins = SchemaDefinition(
+        id="https://example.org/union_mixins",
+        name="union_mixins",
+        classes=[
+            ClassDefinition(name="MixinClass", mixin=True),
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="TypeB"),
+            ClassDefinition(name="UnionWithMixin", union_of=["TypeA", "TypeB"], mixins=["MixinClass"]),
+        ],
+    )
+    generator = PydanticGenerator(schema_with_mixins, package="test")
+    with pytest.raises(ValueError, match="has union_of but also has inheritance.*mixins="):
+        generator.serialize()
+
+
+def test_union_of_with_slots_error():
+    """
+    Test that union_of classes cannot have slots/attributes
+    """
+    schema = SchemaDefinition(
+        id="https://example.org/union_slots",
+        name="union_slots",
+        classes=[
+            ClassDefinition(name="TypeA"),
+            ClassDefinition(name="TypeB"),
+            ClassDefinition(name="UnionWithSlots", union_of=["TypeA", "TypeB"], slots=["some_slot"]),
+        ],
+        slots=[
+            SlotDefinition(name="some_slot", range="string"),
+        ],
+    )
+    generator = PydanticGenerator(schema, package="test")
+    with pytest.raises(ValueError, match="has union_of but also has slots"):
+        generator.serialize()
+
+
+# --------------------------------------------------
+# Tests for subproperty_of constraint
+# --------------------------------------------------
+
+
+def test_subproperty_of_generates_literal():
+    """Test that subproperty_of generates Literal constraint with slot descendants."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should generate Literal with all descendants (sorted alphabetically)
+    assert 'Literal["causes", "related_to", "treats"]' in code
+
+
+def test_subproperty_of_with_deeper_hierarchy():
+    """Test that subproperty_of includes all descendants, not just direct children."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  directly_causes:
+    is_a: causes
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should include grandchild (directly_causes)
+    assert 'Literal["causes", "directly_causes", "related_to", "treats"]' in code
+
+
+def test_subproperty_of_formats_as_curie_for_uriorcurie_range():
+    """Test that subproperty_of values are formatted as CURIEs for uriorcurie range."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should format as CURIEs
+    assert 'Literal["ex:causes", "ex:related_to", "ex:treats"]' in code
+
+
+def test_subproperty_of_formats_as_uri_for_uri_range():
+    """Test that subproperty_of values are formatted as full URIs for uri range."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+
+  predicate:
+    range: uri
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Should format as full URIs
+    assert "https://example.org/causes" in code
+    assert "https://example.org/related_to" in code
+
+
+def test_subproperty_of_can_be_disabled():
+    """Test that expand_subproperty_of=False disables the constraint expansion."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema, expand_subproperty_of=False)
+    code = gen.serialize()
+
+    # Should NOT generate Literal with descendants
+    assert 'Literal["causes", "related_to"]' not in code
+    # Should use the regular range (string -> str)
+    assert "predicate: Optional[str]" in code
+
+
+def test_subproperty_of_validation():
+    """Test that generated Pydantic model validates predicate values."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+"""
+    gen = PydanticGenerator(schema)
+    mod = gen.compile_module()
+
+    # Valid predicates should work
+    a1 = mod.Association(predicate="related_to")
+    assert a1.predicate == "related_to"
+
+    a2 = mod.Association(predicate="causes")
+    assert a2.predicate == "causes"
+
+    a3 = mod.Association(predicate="treats")
+    assert a3.predicate == "treats"
+
+    # Invalid predicate should fail
+    with pytest.raises(ValidationError):
+        mod.Association(predicate="invalid_predicate")
+
+
+def test_subproperty_of_with_slot_usage():
+    """Test subproperty_of in slot_usage narrows the constraint."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  interacts_with:
+    is_a: related_to
+  physically_interacts_with:
+    is_a: interacts_with
+  causes:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+  InteractionAssociation:
+    is_a: Association
+    slot_usage:
+      predicate:
+        subproperty_of: interacts_with
+
+"""
+    gen = PydanticGenerator(schema)
+    code = gen.serialize()
+
+    # Base Association should have all descendants
+    assert 'Literal["causes", "interacts_with", "physically_interacts_with", "related_to"]' in code
+
+    # InteractionAssociation should have narrowed constraint
+    # (interacts_with and its descendants only)
+    assert 'Literal["interacts_with", "physically_interacts_with"]' in code

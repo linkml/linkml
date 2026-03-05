@@ -1,4 +1,4 @@
-from typing import Optional, TextIO, Union
+from typing import TextIO
 
 from hbreader import FileInfo
 from pydantic import BaseModel
@@ -14,19 +14,19 @@ RDF_MIME_TYPES = "application/x-turtle;q=0.9, application/rdf+n3;q=0.8, applicat
 
 
 class RDFLoader(Loader):
-    def load_any(self, *args, **kwargs) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def load_any(self, *args, **kwargs) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         return self.load(*args, **kwargs)
 
     def load(
         self,
-        source: Union[str, TextIO, Graph],
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        source: str | TextIO | Graph,
+        target_class: type[BaseModel | YAMLRoot],
         *,
-        base_dir: Optional[str] = None,
+        base_dir: str | None = None,
         contexts: CONTEXTS_PARAM_TYPE = None,
-        fmt: Optional[str] = "turtle",
-        metadata: Optional[FileInfo] = None,
-    ) -> Union[BaseModel, YAMLRoot]:
+        fmt: str | None = "turtle",
+        metadata: FileInfo | None = None,
+    ) -> BaseModel | YAMLRoot:
         """
         Load the RDF in source into the python target_class structure
         :param source: RDF data source. Can be a URL, a file name, an RDF string, an open handle or an existing graph
@@ -39,7 +39,7 @@ class RDFLoader(Loader):
         :return: Instance of target_class
         """
 
-        def loader(data: Union[str, dict], _: FileInfo) -> Optional[dict]:
+        def loader(data: str | dict, _: FileInfo) -> dict | None:
             """
             Process an RDF graph or a JSON-LD string.  We do this by using pyld_jsonld_from_rdflib_graph to
             emit a JSON-LD string and then process it with jsonld.frame.

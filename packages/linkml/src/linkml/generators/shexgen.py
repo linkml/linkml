@@ -3,7 +3,6 @@
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -14,6 +13,7 @@ from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, Triple
 
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -41,8 +41,10 @@ class ShExGenerator(Generator):
     # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: list = field(default_factory=lambda: [])
-    shape: Optional[Shape] = None  # Current shape being defined
+    shape: Shape | None = None  # Current shape being defined
     list_shapes: list[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
+    expand_subproperty_of: bool = True
+    """If True, expand subproperty_of to NodeConstraint value lists with slot descendants"""
 
     def __post_init__(self):
         super().__post_init__()
@@ -157,10 +159,17 @@ class ShExGenerator(Generator):
                         values=values,
                     )
                     constraint.valueExpr = node_constraint
+            elif self.expand_subproperty_of and slot.subproperty_of:
+                # Handle subproperty_of constraint - restrict to slot descendants
+                values = self._get_subproperty_values(slot)
+                if values:
+                    constraint.valueExpr = NodeConstraint(values=values)
+                else:
+                    constraint.valueExpr = self._class_or_type_uri(slot.range)
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
-    def end_schema(self, output: Optional[str] = None, **_) -> str:
+    def end_schema(self, output: str | None = None, **_) -> str:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
@@ -180,11 +189,11 @@ class ShExGenerator(Generator):
 
     def _class_or_type_uri(
         self,
-        item: Union[TypeDefinition, ClassDefinition, ElementName],
-        suffix: Optional[str] = "",
+        item: TypeDefinition | ClassDefinition | ElementName,
+        suffix: str | None = "",
     ) -> URIorCURIE:
         # TODO: enums - figure this out
-        if isinstance(item, (TypeDefinition, ClassDefinition, EnumDefinition)):
+        if isinstance(item, TypeDefinition | ClassDefinition | EnumDefinition):
             cls_or_type = item
         else:
             cls_or_type = self.class_or_type_for(item)
@@ -195,7 +204,7 @@ class ShExGenerator(Generator):
             )
         )
 
-    def _slot_uri(self, name: str, suffix: Optional[str] = "") -> URIorCURIE:
+    def _slot_uri(self, name: str, suffix: str | None = "") -> URIorCURIE:
         slot = self.schema.slots[name]
         return self.namespaces.uri_for(
             self.namespaces.uri_or_curie_for(self.schema_defaults[slot.from_schema], camelcase(name) + suffix)
@@ -219,10 +228,35 @@ class ShExGenerator(Generator):
             min=0 if opt else 1,
         )
 
+    def _get_subproperty_values(self, slot: SlotDefinition) -> list:
+        """
+        Get all valid values from slot hierarchy for subproperty_of constraint.
+
+        Following metamodel semantics: "any ontological child (related to X via
+        an is_a relationship), is a valid value for the slot"
+
+        Values are formatted as URIs for ShEx compatibility.
+
+        :param slot: SlotDefinition with subproperty_of set
+        :return: List of URI strings for NodeConstraint values
+        """
+        from linkml_runtime.utils.schemaview import SchemaView
+
+        sv = SchemaView(self.schema)
+        # ShEx always uses full URIs
+        return get_subproperty_values(sv, slot, expand_uri=True)
+
 
 @shared_arguments(ShExGenerator)
 @click.command(name="shex")
 @click.option("-o", "--output", help="Output file name")
+@click.option(
+    "--expand-subproperty-of/--no-expand-subproperty-of",
+    default=True,
+    show_default=True,
+    help="If --expand-subproperty-of (default), slots with subproperty_of will generate NodeConstraint "
+    "values containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
     """Generate a ShEx Schema for a  LinkML model"""

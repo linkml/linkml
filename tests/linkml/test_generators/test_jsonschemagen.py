@@ -2,7 +2,6 @@ import json
 import logging
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, Union
 
 import jsonschema
 import pytest
@@ -423,7 +422,7 @@ def test_lifecycle_slots(kitchen_sink_path):
 # **********************************************************
 
 
-def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[dict] = None) -> None:
+def external_file_test(subtests, file: str | Path, generator_args: dict | None = None) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False, "include_null": False}
 
@@ -441,10 +440,10 @@ def external_file_test(subtests, file: Union[str, Path], generator_args: Optiona
 
 def assert_schema_validates(
     subtests,
-    schema: Union[str, SchemaDefinition],
-    expected_json_schema_subset: Optional[dict] = None,
-    data_cases: Optional[list] = None,
-    generator_args: Optional[dict] = None,
+    schema: str | SchemaDefinition,
+    expected_json_schema_subset: dict | None = None,
+    data_cases: list | None = None,
+    generator_args: dict | None = None,
 ):
     if generator_args is None:
         generator_args = {}
@@ -595,3 +594,292 @@ def test_preserve_names():
     json_obj_preserve = gen_preserve.generate()
     json_obj_preserve.add_lax_def(["Test_Name"], "id")
     assert "Test_Name" in json_obj_preserve._lax_forward_refs
+
+
+# --------------------------------------------------
+# Tests for subproperty_of constraint
+# --------------------------------------------------
+
+
+def test_subproperty_of_generates_enum():
+    """Test that subproperty_of generates enum constraint with slot descendants."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    tree_root: true
+    slots:
+      - predicate
+"""
+    gen = JsonSchemaGenerator(schema)
+    json_schema = json.loads(gen.serialize())
+
+    # Should generate enum with all descendants (sorted alphabetically)
+    predicate_schema = json_schema["properties"]["predicate"]
+    assert "enum" in predicate_schema
+    assert predicate_schema["enum"] == ["causes", "related_to", "treats"]
+
+
+def test_subproperty_of_with_deeper_hierarchy():
+    """Test that subproperty_of includes all descendants, not just direct children."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  directly_causes:
+    is_a: causes
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    tree_root: true
+    slots:
+      - predicate
+"""
+    gen = JsonSchemaGenerator(schema)
+    json_schema = json.loads(gen.serialize())
+
+    # Should include grandchild (directly_causes)
+    predicate_schema = json_schema["properties"]["predicate"]
+    assert "enum" in predicate_schema
+    assert predicate_schema["enum"] == ["causes", "directly_causes", "related_to", "treats"]
+
+
+def test_subproperty_of_formats_as_curie_for_uriorcurie_range():
+    """Test that subproperty_of values are formatted as CURIEs for uriorcurie range."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+  treats:
+    is_a: related_to
+    slot_uri: ex:treats
+
+  predicate:
+    range: uriorcurie
+    subproperty_of: related_to
+
+classes:
+  Association:
+    tree_root: true
+    slots:
+      - predicate
+"""
+    gen = JsonSchemaGenerator(schema)
+    json_schema = json.loads(gen.serialize())
+
+    # Should format as CURIEs
+    predicate_schema = json_schema["properties"]["predicate"]
+    assert "enum" in predicate_schema
+    assert predicate_schema["enum"] == ["ex:causes", "ex:related_to", "ex:treats"]
+
+
+def test_subproperty_of_formats_as_uri_for_uri_range():
+    """Test that subproperty_of values are formatted as full URIs for uri range."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    slot_uri: ex:related_to
+  causes:
+    is_a: related_to
+    slot_uri: ex:causes
+
+  predicate:
+    range: uri
+    subproperty_of: related_to
+
+classes:
+  Association:
+    tree_root: true
+    slots:
+      - predicate
+"""
+    gen = JsonSchemaGenerator(schema)
+    json_schema = json.loads(gen.serialize())
+
+    # Should format as full URIs
+    predicate_schema = json_schema["properties"]["predicate"]
+    assert "enum" in predicate_schema
+    assert "https://example.org/causes" in predicate_schema["enum"]
+    assert "https://example.org/related_to" in predicate_schema["enum"]
+
+
+def test_subproperty_of_can_be_disabled():
+    """Test that expand_subproperty_of=False disables the constraint expansion."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    tree_root: true
+    slots:
+      - predicate
+"""
+    gen = JsonSchemaGenerator(schema, expand_subproperty_of=False)
+    json_schema = json.loads(gen.serialize())
+
+    # Should NOT generate enum with descendants
+    predicate_schema = json_schema["properties"]["predicate"]
+    assert "enum" not in predicate_schema
+
+
+def test_subproperty_of_validation():
+    """Test that generated JSON Schema validates predicate values."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  causes:
+    is_a: related_to
+  treats:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    tree_root: true
+    slots:
+      - predicate
+"""
+    gen = JsonSchemaGenerator(schema)
+    json_schema = json.loads(gen.serialize())
+
+    # Valid predicates should work
+    jsonschema.validate({"predicate": "related_to"}, json_schema)
+    jsonschema.validate({"predicate": "causes"}, json_schema)
+    jsonschema.validate({"predicate": "treats"}, json_schema)
+
+    # Invalid predicate should fail
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({"predicate": "invalid_predicate"}, json_schema)
+
+
+def test_subproperty_of_with_slot_usage():
+    """Test subproperty_of in slot_usage narrows the constraint."""
+    schema = """
+id: https://example.org/test
+name: test
+
+prefixes:
+  ex: https://example.org/
+
+default_prefix: ex
+
+slots:
+  related_to:
+    description: Root predicate
+  interacts_with:
+    is_a: related_to
+  physically_interacts_with:
+    is_a: interacts_with
+  causes:
+    is_a: related_to
+
+  predicate:
+    range: string
+    subproperty_of: related_to
+
+classes:
+  Association:
+    slots:
+      - predicate
+  InteractionAssociation:
+    is_a: Association
+    slot_usage:
+      predicate:
+        subproperty_of: interacts_with
+"""
+    gen = JsonSchemaGenerator(schema, top_class="Association")
+    json_schema = json.loads(gen.serialize())
+
+    # Base Association should have all descendants
+    association_predicate = json_schema["$defs"]["Association"]["properties"]["predicate"]
+    assert association_predicate["enum"] == ["causes", "interacts_with", "physically_interacts_with", "related_to"]
+
+    # InteractionAssociation should have narrowed constraint
+    interaction_predicate = json_schema["$defs"]["InteractionAssociation"]["properties"]["predicate"]
+    assert interaction_predicate["enum"] == ["interacts_with", "physically_interacts_with"]

@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Union
 
 from rdflib import URIRef
 
@@ -28,7 +27,7 @@ def empty_references() -> field:
     return field(default_factory=References)
 
 
-ClassOrSlotName = Union[ClassDefinitionName, TypeDefinitionName]
+ClassOrSlotName = ClassDefinitionName | TypeDefinitionName
 
 
 @dataclass
@@ -242,7 +241,7 @@ class SchemaSynopsis:
         return bool(slot.is_a) and (slot.is_a in self.owners or self._ancestor_is_owned(self.schema.slots[slot.is_a]))
 
     def errors(self) -> list[str]:
-        def format_undefineds(refs: set[Union[str, TypedNode]]) -> list[str]:
+        def format_undefineds(refs: set[str | TypedNode]) -> list[str]:
             return [f"{TypedNode.yaml_loc(ref)}: {ref}" for ref in refs]
 
         rval = []

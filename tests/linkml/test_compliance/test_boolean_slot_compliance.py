@@ -1,7 +1,5 @@
 """Constants for boolean slots tests (any_of, all_of, etc)."""
 
-from typing import Optional
-
 import pytest
 
 from tests.linkml.test_compliance.helper import (
@@ -1914,7 +1912,7 @@ def test_any_of_mixed_cardinality(
     [(10, 20, None), (10, 10, None), (20, 10, None), (10, 20, 15), (None, None, 1)],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
-def test_min_max(framework, min_val, max_val, equals_number: Optional[int], value):
+def test_min_max(framework, min_val, max_val, equals_number: int | None, value):
     """
     Tests behavior of minimum and maximum value.
 

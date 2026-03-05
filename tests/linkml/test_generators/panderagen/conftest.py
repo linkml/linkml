@@ -13,6 +13,8 @@ pandera = pytest.importorskip("pandera.polars", reason="Pandera not installed")
 
 # These depend on PolaRS and Numpy so need to be after importerskip
 from linkml.generators.panderagen import PanderaDataframeGenerator  # noqa: E402
+from linkml.generators.panderagen.dataframe_generator import DataframeGenerator  # noqa: E402
+from linkml.generators.panderagen.panderagen import PANDERA_GROUP  # noqa: E402
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +31,7 @@ def cli_runner():
 
 @pytest.fixture(scope="module")
 def N():
-    """Number of rows in the test dataframes, 1M is enough to be real but not strain most machines."""
+    """Number of rows in the test dataframes is enough for testing without long build time."""
     return 1000
 
 
@@ -45,37 +47,83 @@ def synthetic_flat_dataframe_model(synthetic_model_path):
 
 
 @pytest.fixture(scope="module")
+def compiled_modules(synthetic_flat_dataframe_model):
+    try:
+        compiled_modules = DataframeGenerator.compile_package_from_specification(
+            PANDERA_GROUP, "test_package", synthetic_flat_dataframe_model
+        )
+        yield compiled_modules
+    finally:
+        DataframeGenerator.cleanup_package("test_package")
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_schema_module(compiled_modules):
+    return compiled_modules["panderagen_polars_schema"]
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_schema_loaded(compiled_modules):
+    return compiled_modules["panderagen_polars_schema_loaded"]
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_schema_transform(compiled_modules):
+    return compiled_modules["panderagen_polars_schema_transform"]
+
+
+@pytest.fixture(scope="module")
+def synthetic_pandera_schema(synthetic_flat_dataframe_model):
+    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_pandera_schema_module(compiled_modules):
+    """The pandera schema using the loaded backing form"""
+    return compiled_modules["panderagen_schema_loaded"]
+
+
+@pytest.fixture(scope="module")
+def compiled_synthetic_pandera_schema_module_serialized(compiled_modules):
+    return compiled_modules["panderagen_class_based"]
+
+
+@pytest.fixture(scope="module")
 def column_type_instances():
     """valid ColumnType instances that can be used in tests"""
+    # fmt: off
     return [
-        pl.struct(
-            pl.lit("thing_one").alias("id"),
-            pl.lit(1111, dtype=pl.Int64).alias("x"),
-            pl.lit(2222, dtype=pl.Int64).alias("y"),
-        ),
-        pl.struct(
-            pl.lit("thing_two").alias("id"),
-            pl.lit(3333, dtype=pl.Int64).alias("x"),
-            pl.lit(4444, dtype=pl.Int64).alias("y"),
-        ),
+        {
+            "id": "thing_one",
+            "x": 1111,
+            "y": 2222,
+        },
+        {
+            "id": "thing_two",
+            "x": 3333,
+            "y": 4444,
+        },
     ]
+    # fmt: on
 
 
 @pytest.fixture(scope="module")
 def invalid_column_type_instances():
     """invalid (float values) ColumnType instances that can trigger failures."""
+    # fmt: off
     return [
-        pl.struct(
-            pl.lit("thing_one").alias("id"),
-            pl.lit(1111.0).alias("x"),
-            pl.lit(2222.0).alias("y"),
-        ),
-        pl.struct(
-            pl.lit("thing_two").alias("id"),
-            pl.lit(3333.0).alias("x"),
-            pl.lit(4444.0).alias("y"),
-        ),
+        {
+            "id": "thing_one",
+            "x": 1111.1,
+            "y": 2222.2,
+        },
+        {
+            "id": "thing_two",
+            "x": 3333.3,
+            "y": 4444.4,
+        },
     ]
+    # fmt: on
 
 
 @pytest.fixture(scope="module")
@@ -84,24 +132,24 @@ def valid_inlined_dict_column_expression(column_type_instances):
     using polars expression API.
     """
     # fmt: off
-    return pl.struct(
-        column_type_instances[0].alias("thing_one"),
-        column_type_instances[1].alias("thing_two")
-    )
+    return {
+        "thing_one": column_type_instances[0],
+        "thing_two": column_type_instances[1]
+    }
     # fmt: on
 
 
 @pytest.fixture(scope="module")
-def invalid_inlined_dict_column_expression(invalid_column_type_instances):
+def invalid_inlined_dict_column_expression(invalid_column_type_instances, N):
     """synthetic data that conforms to the inlined_class_column schema
     using polars expression API.
     """
-    # fmt: off
-    return pl.struct(
-        invalid_column_type_instances[0].alias("thing_one"),
-        invalid_column_type_instances[1].alias("thing_two")
+    return pl.Series(
+        [
+            invalid_column_type_instances,
+        ]
+        * N
     )
-    # fmt: on
 
 
 @pytest.fixture(scope="module")
@@ -109,27 +157,20 @@ def valid_simple_dict_column_expression():
     """synthetic data that conforms to the inlined_simple_dict_column schema
     using polars expression API.
     """
-    # fmt: off
-    return pl.struct(
-      pl.lit(1).alias("A"),
-      pl.lit(2).alias("B"),
-      pl.lit(3).alias("C")
-    )
-    # fmt: on
+    return {"A": 1, "B": 2, "C": 3}
 
 
 @pytest.fixture(scope="module")
-def invalid_simple_dict_column_expression():
-    """synthetic data with float values that does not conform to the inlined_simple_dict_column schema
-    using polars expression API.
-    """
-    # fmt: off
-    return pl.struct(
-      pl.lit(1.0).alias("A"),
-      pl.lit(2.0).alias("B"),
-      pl.lit(3.0).alias("C")
+def invalid_simple_dict_column_expression(N):
+    """synthetic data with float values that does not conform to the loaded inlined_simple_dict_column schema."""
+    entry = [{"id": "A", "x": 1.1}, {"id": "B", "x": 2.2}, {"id": "C", "x": 3.3}]
+
+    return pl.Series(
+        [
+            entry,
+        ]
+        * N
     )
-    # fmt: on
 
 
 @pytest.fixture(scope="module")
@@ -165,8 +206,12 @@ def invalid_inlined_as_list_column_expression(N):
 
 
 @pytest.fixture(scope="module")
-def big_synthetic_dataframe(
+def big_synthetic_dataframe_serialized(
     N,
+    column_type_instances,
+    valid_simple_dict_column_expression,
+    valid_inlined_dict_column_expression,
+    compiled_synthetic_schema_module,
 ):
     """Construct a reasonably sized dataframe that complies with the PanderaSyntheticTable model"""
     test_enum = pl.Enum(["ANIMAL", "VEGETABLE", "MINERAL"])
@@ -203,7 +248,12 @@ def big_synthetic_dataframe(
                 ),
                 "multivalued_column": [[1, 2, 3],] * N,
                 "any_type_column": pl.Series([1,] * N, dtype=pl.Object),
-            }
+                "inlined_as_object_column": [ column_type_instances[0], ] * N,
+                "inlined_simple_dict_column": [valid_simple_dict_column_expression,] * N,
+                "inlined_as_list_column": [ column_type_instances ] * N,
+                "inlined_class_column": [valid_inlined_dict_column_expression,] * N,
+            },
+            schema=compiled_synthetic_schema_module.PanderaSyntheticTable
         )
     )
     # fmt: on
@@ -212,10 +262,12 @@ def big_synthetic_dataframe(
 
 
 @pytest.fixture(scope="module")
-def synthetic_schema(synthetic_flat_dataframe_model):
-    return PanderaDataframeGenerator(synthetic_flat_dataframe_model)
+def big_synthetic_dataframe(
+    big_synthetic_dataframe_serialized,
+    compiled_synthetic_schema_transform,
+):
+    """Synthetic dataframe with inefficient inline forms converted to lists"""
+    dict_to_list_transform = compiled_synthetic_schema_transform.PanderaSyntheticTable()
+    transformed = dict_to_list_transform.load(big_synthetic_dataframe_serialized)
 
-
-@pytest.fixture(scope="module")
-def compiled_synthetic_schema_module(synthetic_schema):
-    return synthetic_schema.compile_dataframe_model()
+    return transformed

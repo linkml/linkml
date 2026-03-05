@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import IO, Any, Optional
+from typing import IO, Any
 
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.linter import LinterProblem
@@ -8,7 +8,7 @@ from .formatter import Formatter
 
 
 class MarkdownFormatter(Formatter):
-    def __init__(self, file: Optional[IO[Any]] = None) -> None:
+    def __init__(self, file: IO[Any] | None = None) -> None:
         super().__init__(file)
         self.total = 0
         self.total_errors = 0

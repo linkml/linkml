@@ -87,7 +87,7 @@ def test_minimal_model(input_path, snapshot, tmp_path, generator: type[Generator
         output = generator(
             input_path("issue_tccm/minimalmodel.yaml"),
             mergeimports=False,
-            emit_metadata=False,
+            metadata=False,
         ).serialize()
         assert output == snapshot(f"issue_tccm/minimalmodel.{generator.valid_formats[0]}")
     else:
@@ -95,7 +95,7 @@ def test_minimal_model(input_path, snapshot, tmp_path, generator: type[Generator
         generator(
             input_path("issue_tccm/minimalmodel.yaml"),
             mergeimports=False,
-            emit_metadata=False,
+            metadata=False,
         ).serialize(directory=output_dir)
         assert output_dir == snapshot(f"issue_tccm/{generator.__name__}")
 
@@ -107,7 +107,7 @@ def test_dictionary_name(input_path, snapshot):
         YAMLGenerator(
             input_path("issue_tccm/explicit_key_id.yaml"),
             mergeimports=False,
-            emit_metadata=False,
+            metadata=False,
         ).serialize(),
     )
     assert output == snapshot("issue_tccm/explicit_key_id.yaml")

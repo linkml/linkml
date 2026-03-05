@@ -2,7 +2,6 @@ import abc
 import re
 import unicodedata
 from dataclasses import dataclass, field
-from typing import Optional
 
 from linkml.utils.generator import Generator
 from linkml_runtime.linkml_model.meta import (
@@ -32,6 +31,7 @@ class OODocument:
     package: PACKAGE = None
     source_schema: SchemaDefinition = None
     classes: list["OOClass"] = field(default_factory=lambda: [])
+    enums: list["OOEnum"] = field(default_factory=lambda: [])
     imports: list[str] = field(default_factory=lambda: [])
 
 
@@ -56,16 +56,38 @@ class OOClass:
 
     # ObjectVars
     name: SAFE_NAME
-    description: Optional[SAFE_NAME] = None
-    is_a: Optional[SAFE_NAME] = None
-    mixin: Optional[bool] = None
-    abstract: Optional[bool] = None
+    description: SAFE_NAME | None = None
+    is_a: SAFE_NAME | None = None
+    mixin: bool | None = None
+    abstract: bool | None = None
     mixins: list[SAFE_NAME] = field(default_factory=lambda: [])
     fields: list[OOField] = field(default_factory=lambda: [])
     all_fields: list[OOField] = field(default_factory=lambda: [])
     annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     package: PACKAGE = None
     source_class: ClassDefinition = None
+
+
+@dataclass
+class OOEnumValue:
+    """
+    A single value in an enumeration
+    """
+
+    label: str
+    text: str
+    description: str | None = None
+
+
+@dataclass
+class OOEnum:
+    """
+    An enumeration
+    """
+
+    name: SAFE_NAME
+    values: list[OOEnumValue] = field(default_factory=lambda: [])
+    description: str | None = None
 
 
 @dataclass
@@ -79,6 +101,9 @@ class OOCodeGenerator(Generator):
 
     template_file: str = None
     """Path to template"""
+
+    true_enums: bool = False
+    """If true, represent enum-typed slots using their dedicated enum types"""
 
     package: PACKAGE = "example"
 
@@ -134,8 +159,42 @@ class OOCodeGenerator(Generator):
 
             return safe_label
 
+    def generate_enum_objects(
+        self, all_enums: dict[EnumDefinitionName, EnumDefinition]
+    ) -> dict[EnumDefinitionName, OOEnum]:
+        """Gets an object representation of enum definitions.
+
+        This method transforms LinkML enum definitions into simplified
+        OOEnum objects that can be used by a code generator.
+
+        :param all_enums: The enums to transform.
+        :return: A dictionary with the same key as the original
+            all_enums dictionary, but whose values are OOEnum
+            objects.
+        """
+
+        enums = {}
+        for enum_name, enum_original in all_enums.items():
+            enum = OOEnum(name=camelcase(enum_name))
+            if hasattr(enum_original, "description"):
+                enum.description = enum_original.description
+            for pv in enum_original.permissible_values.values():
+                if pv.title:
+                    label = self.generate_enum_label(pv.title)
+                else:
+                    label = self.generate_enum_label(pv.text)
+                val = OOEnumValue(label=label, text=pv.text.replace('"', '\\"'))
+                if hasattr(pv, "description"):
+                    val.description = pv.description
+                enum.values.append(val)
+
+            enums[enum_name] = enum
+
+        return enums
+
     def generate_enums(self, all_enums: dict[EnumDefinitionName, EnumDefinition]) -> dict:
-        # TODO: make an explicit class to represent how an enum is passed to the template
+        # TODO: identify all callers and make them use generate_enum_objects (above),
+        #       which represents enums using an explicit class rather than a dictionary
         enums = {}
         for enum_name, enum_original in all_enums.items():
             enum = {"name": camelcase(enum_name), "values": {}}
@@ -215,7 +274,10 @@ class OOCodeGenerator(Generator):
                     if range is None:  # If mapping fails,
                         range = self.map_type(sv.all_types().get("string"))
                 elif range in sv.all_enums():
-                    range = self.map_type(sv.all_types().get("string"))
+                    if self.true_enums:
+                        range = camelcase(range)
+                    else:
+                        range = self.map_type(sv.all_types().get("string"))
                 else:
                     raise Exception(f"Unknown range {range}")
 
@@ -242,5 +304,11 @@ class OOCodeGenerator(Generator):
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
                 ooclass.all_fields.append(oofield)
+
+        if self.true_enums:
+            for enum in self.generate_enum_objects(sv.all_enums()).values():
+                oodoc = OODocument(name=enum.name, package=self.package, source_schema=sv.schema)
+                oodoc.enums.append(enum)
+                docs.append(oodoc)
 
         return docs

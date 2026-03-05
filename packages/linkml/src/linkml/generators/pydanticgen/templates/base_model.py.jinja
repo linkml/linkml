@@ -15,6 +15,7 @@ class {{ name }}(BaseModel):
     {% endfor %}
 {% endif %}
 
+{% if empty_list_for_multivalued_slots %}
     @model_serializer(mode='wrap', when_used='unless-none')
     def treat_empty_lists_as_none(
             self, handler: SerializerFunctionWrapHandler,
@@ -28,3 +29,4 @@ class {{ name }}(BaseModel):
         else:
             _instance = self
         return handler(_instance, info)
+{% endif %}

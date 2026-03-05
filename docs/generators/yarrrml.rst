@@ -25,6 +25,9 @@ The generator produces YARRRML like:
 
 .. code-block:: yaml
 
+   prefixes:
+     ex: https://example.org/test#
+     rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#
    mappings:
      Person:
        sources:
@@ -68,6 +71,15 @@ Besides JSON, CSV/TSV is supported. The key differences:
          value: $(employer)
          type: iri
 
+- Multivalued object slots are emitted as lists of IRIs:
+
+  .. code-block:: yaml
+
+     - p: ex:friends
+       o:
+         - value: $(friends[*])
+           type: iri
+
 - TSV works via the same formulation (``~csv``). Most engines auto-detect the tab separator for ``.tsv`` files. If an engine requires explicit delimiter/CSVW options, that is currently out of scope and can be handled manually in post-editing.
 
 Source inference
@@ -98,12 +110,22 @@ Overview
 --------
 
 - one mapping per LinkML class
-- prefixes come from the schema
+- prefixes come from the schema (``prefixes`` always emitted)
+- if the schema has **no default prefix**, the generator automatically adds:
+
+  .. code-block:: yaml
+
+     ex: https://example.org/default#
+
+  ensuring that all CURIEs can expand correctly
+- when ``class_uri`` or ``slot_uri`` are defined, they are used **verbatim** for
+  ``rdf:type`` and predicate IRIs (including full IRIs if present)
 - subject from identifier slot (else key; else safe fallback)
 - ``po`` for all class attributes (slot aliases respected)
-- emits ``rdf:type`` as CURIEs (e.g., ``ex:Person``)
+- emits ``rdf:type`` as CURIEs or IRIs (depending on availability)
 - JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
 - CSV/TSV: ``sources: [[path~csv]]`` (no iterator), values via ``$(column)``
+- a top-level ``mappings:`` section is **always** included, even for minimal schemas
 
 Command Line
 ------------
@@ -142,7 +164,13 @@ Limitations
 - JSON-first by default
 - One source per mapping
 - Classes without an identifier are **assigned a fallback subject**: ``ex:<Class>/$(subject_id)``
-- Object slots: ``inlined: false`` → IRI; ``inlined: true`` → included as separate mapping
+- Object slots:
+  - ``inlined: false`` → emitted as IRIs
+  - ``inlined: true`` → emitted using YARRRML ``mapping`` + ``condition`` (join) pattern
+- Inline classes require an identifier (or key) to support join-based linking
+- An inline class can only be used in a single owning class.
+  Multiple inline usages of the same class are not supported,
+  as each mapping can define only one source/iterator.
 - Iterators not derived from JSON Schema
 - No per-slot JSONPath/CSV expressions or functions
 - CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed

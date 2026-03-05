@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 from jinja2 import Environment, FileSystemLoader, Template
@@ -135,7 +135,7 @@ class DocGenerator(Generator):
     requires_metamodel = False
 
     # ObjectVars
-    dialect: Optional[Union[DIALECT, str]] = None
+    dialect: DIALECT | str | None = None
     """markdown dialect (e.g MyST, Python)"""
     sort_by: str = "name"
     visit_all_class_slots = False
@@ -149,7 +149,7 @@ class DocGenerator(Generator):
     template_directory: str = None
     """directory for custom templates"""
 
-    diagram_type: Optional[Union[DiagramType, str]] = None
+    diagram_type: DiagramType | str | None = None
     """style of diagram (ER, UML)"""
 
     include_top_level_diagram: bool = False
@@ -161,7 +161,7 @@ class DocGenerator(Generator):
     truncate_descriptions: bool = True
     """Whether to truncate long (multi-line) descriptions down to a single line."""
 
-    example_directory: Optional[str] = None
+    example_directory: str | None = None
     example_runner: ExampleRunner = field(default_factory=lambda: ExampleRunner())
 
     genmeta: bool = False
@@ -429,7 +429,7 @@ class DocGenerator(Generator):
 
         return self.schemaview.get_uri(element, expand=expand)
 
-    def uri_link(self, element: Union[Element, str]) -> str:
+    def uri_link(self, element: Element | str) -> str:
         """Returns a link string (default: markdown links) for a schema element
 
         :param element: uri string or linkml model element
@@ -443,7 +443,7 @@ class DocGenerator(Generator):
         curie = self.uri(element, expand=False)
         return f"[{curie}]({uri})"
 
-    def link_mermaid(self, e: Union[Definition, DefinitionName]) -> str:
+    def link_mermaid(self, e: Definition | DefinitionName) -> str:
         """
         Return link to insert in mermaid diagrams for a given element
 
@@ -458,7 +458,7 @@ class DocGenerator(Generator):
         link = link.removesuffix(".md")
         return f"../{link}/"
 
-    def link(self, e: Union[Definition, DefinitionName], index_link: bool = False) -> str:
+    def link(self, e: Definition | DefinitionName, index_link: bool = False) -> str:
         """
         Render an element as a hyperlink
 
@@ -649,7 +649,7 @@ class DocGenerator(Generator):
             return ""
 
     @staticmethod
-    def number_value_range(e: Union[SlotDefinition, TypeDefinition]) -> str:
+    def number_value_range(e: SlotDefinition | TypeDefinition) -> str:
         """
         Render the minimum and maximum values for a slot or type as a range, e.g 5-100
 
@@ -743,7 +743,7 @@ class DocGenerator(Generator):
         else:
             return "mermaid"
 
-    def mermaid_diagram(self, class_names: list[Union[str, ClassDefinitionName]] = None) -> str:
+    def mermaid_diagram(self, class_names: list[str | ClassDefinitionName] = None) -> str:
         """
         Render a mermaid diagram for a set of classes
 
@@ -767,7 +767,7 @@ class DocGenerator(Generator):
             raise NotImplementedError(f"Diagram type {self.diagram_type} not implemented")
 
     @staticmethod
-    def latex(text: Optional[str]) -> str:
+    def latex(text: str | None) -> str:
         """
         Makes text safe for latex
 

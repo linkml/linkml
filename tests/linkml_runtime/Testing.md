@@ -390,7 +390,7 @@ of individual fields.
 
 ## generate_directory
 `generate_directory(self, dirname: Union[str, List[str]], generator: Callable[[str], None]) -> None`
-The `generate_directory` test is used to test generators that produce multiple files (e.g. markdowngen)
+The `generate_directory` test is used to test generators that produce multiple files (e.g. docgen)
 ### Parameters
 * `dirname` -- the relative path of the output directory.  The directory will be first be created (and cleared)
   in the `temp` subdirectory. If a `list` is passed, each list element is a path element within the
@@ -407,27 +407,27 @@ output directory will be removed and replaced with the temp directory.
 ```python
 import unittest
 
-from linkml.generators.markdowngen import MarkdownGenerator
+from linkml.generators.docgen import DocGenerator
 from tests.linkml.utils.test_environment import TestEnvironmentTestCase
 from tests.test_issues.environment import env
 
 
-class Issue65TestCase(TestEnvironmentTestCase):
+class DocgenTestCase(TestEnvironmentTestCase):
     env = env
 
-    def test_issue_65(self):
+    def test_docgen(self):
         """ Make sure that types are generated as part of the output """
-        env.generate_directory('issue65',
-                               lambda d: MarkdownGenerator(env.input_path('issue_65.yaml')).serialize(directory=d))
+        env.generate_directory('docgen_output',
+                               lambda d: DocGenerator(env.input_path('my_schema.yaml')).serialize(directory=d))
 
 
 if __name__ == '__main__':
     unittest.main()
 ```
 The above example:
-1) Creates an empty directory named `issue65` in the local `temp` directory
-2) Calls `generator` with the full path to `issue65`
-3) Compares the contents of `temp/issue65` and `output/issue65` acting accordingly
+1) Creates an empty directory named `docgen_output` in the local `temp` directory
+2) Calls `generator` with the full path to `docgen_output`
+3) Compares the contents of `temp/docgen_output` and `output/docgen_output` acting accordingly
 
 ## Testing the `Click` API
 `ClickTestCase` is an extension of the `TestEnvironmentTestCase` that is use for testing the
