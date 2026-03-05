@@ -331,13 +331,14 @@ class OwlSchemaGenerator(Generator):
             if k_uri:
                 self.graph.add((uri, URIRef(k_uri), Literal(v.value)))
 
-        # Handle examples - these are skipped by the main loop because they're linkml: prefixed
+        # Handle examples - these are skipped by the main loop because they're linkml: prefixed.
+        # By this point __post_init__ has normalized e.examples to list[Example].
         if hasattr(e, "examples") and e.examples:
             for example in e.examples:
-                if example.value:
+                if example.value is not None:
                     self.graph.add((uri, SKOS.example, Literal(example.value)))
-                elif example.object:
-                    obj_str = json.dumps(example.object, default=str)
+                elif example.object is not None:
+                    obj_str = json.dumps(example.object, default=str, sort_keys=True)
                     self.graph.add((uri, SKOS.example, Literal(obj_str)))
 
     def add_class(self, cls: ClassDefinition) -> None:
