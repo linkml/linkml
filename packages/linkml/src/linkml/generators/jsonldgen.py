@@ -60,6 +60,9 @@ class JSONLDGenerator(Generator):
     context: str = None
     """Path to a JSONLD context file"""
 
+    metamodel_context: str = None
+    """Override for metamodel context URI/path. When None, uses METAMODEL_CONTEXT_URI."""
+
     def __post_init__(self) -> None:
         self.original_schema = deepcopy(self.schema)
         super().__post_init__()
@@ -177,7 +180,8 @@ class JSONLDGenerator(Generator):
             context_kwargs["metadata"] = False
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
-            context = [METAMODEL_CONTEXT_URI, add_prefixes_json["@context"]]
+            metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
+            context = [metamodel_ctx, add_prefixes_json["@context"]]
         elif isinstance(context, str):  # Some of the older code doesn't do multiple contexts
             context = [context]
         elif isinstance(context, tuple):

@@ -730,6 +730,7 @@ def test_docgen_rank_ordering(kitchen_sink_path, tmp_path):
     )
 
 
+@pytest.mark.slow
 def test_gen_metamodel(tmp_path):
     """Tests generation of docs for metamodel"""
     metamodel_sv = package_schemaview("linkml_runtime.linkml_model.meta")

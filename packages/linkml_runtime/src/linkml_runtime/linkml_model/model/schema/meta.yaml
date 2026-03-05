@@ -192,7 +192,7 @@ slots:
     description: >-
       An element in another schema which this element instantiates.
     multivalued: true
-      
+
   categories:
     range: uriorcurie
     singular_name: category
@@ -277,7 +277,7 @@ slots:
       A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
     see_also:
       - linkml:aliases
-      
+
   aliases:
     aliases:
       - synonyms
@@ -1356,11 +1356,11 @@ slots:
     description: |
       How a class instance handles extra data not specified in the class definition.
       Note that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.
-      
+
       Possible values:
       - `allowed: true` - allow all additional data
-      - `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - 
-        forbid all additional data (default) 
+      - `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -
+        forbid all additional data (default)
       - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
     domain: class_definition
     range: extra_slots_expression
@@ -1401,14 +1401,14 @@ slots:
             range: integer
             required: true
         description: |
-          Allow additional data if they are integers. 
+          Allow additional data if they are integers.
           `required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
       - value:
           allowed: false
           range_expression:
             range: string
         description: |
-          A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the 
+          A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the
           `anonymous_slot_expression` will be ignored.
 
   allowed:
@@ -2212,7 +2212,7 @@ slots:
       A collection of type mappings that specify how a slot's range should be mapped or
       serialized in different frameworks
     multivalued: true
-      
+
   framework_key:
     range: string
     alias: framework
@@ -2221,7 +2221,7 @@ slots:
       The name of a format that can be used to serialize LinkML data.
       The string value should be a code from the LinkML frameworks vocabulary,
       but this is not strictly enforced
-    
+
   mapped_type:
     range: type_definition
     alias: type
@@ -2548,7 +2548,7 @@ classes:
 
   Anything:
     class_uri: linkml:Any
-  
+
   common_metadata:
     description: Generic metadata shared across definitions
     mixin: true
@@ -2823,7 +2823,7 @@ classes:
 
   match_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
       matches on properties of the external concepts.
     slots:
       - identifier_pattern
@@ -2833,7 +2833,7 @@ classes:
 
   reachability_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
       set of source nodes to a set of descendants or ancestors over a set of relationship types.
     slots:
       - source_ontology
@@ -3298,13 +3298,16 @@ classes:
   extra_slots_expression:
     description: |
       An expression that defines how to handle additional data in an instance of class
-      beyond the slots/attributes defined for that class. 
+      beyond the slots/attributes defined for that class.
       See `extra_slots` for usage examples.
     mixins:
       - expression
     slots:
       - allowed
       - range_expression
+    slot_usage:
+      range_expression:
+        range: anonymous_slot_expression
 
 
 # ==================================
