@@ -223,12 +223,7 @@ The LinkML framework can also be used to validate RDF, either in a file, or a tr
 1. generation of SPARQL constraint-style queries (see [sparqlgen](../generators/sparql) )
 2. execution of those queries on an in-memory graph or external triplestore
 
-The user can choose to run only the first step, to obtain a bank of SPARQL queries that can be applied selectively
-
-.. click:: linkml.validators.sparqlvalidator:cli
-    :prog: linkml-sparql-validate
-    :nested: full
-
+The user can choose to run only the first step, to obtain a bank of SPARQL queries that can be applied selectively.
 
 Validation via shape languages
 ------------------------------

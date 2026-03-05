@@ -118,7 +118,7 @@ def is_empty(v: Any) -> bool:
     3) It is an empty list
     4) It is an empty JsonObj
     """
-    return v is None or (isinstance(v, (dict, list)) and not v) or (isinstance(v, JsonObj) and not as_dict(v))
+    return v is None or (isinstance(v, dict | list) and not v) or (isinstance(v, JsonObj) and not as_dict(v))
 
 
 def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool = False) -> Any:

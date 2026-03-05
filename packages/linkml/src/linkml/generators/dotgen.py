@@ -4,7 +4,6 @@ Generate dotfiles
 
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 from deprecated.classic import deprecated
@@ -18,7 +17,7 @@ from linkml_runtime.utils.formatutils import underscore
 valid_formats = sorted(list(FORMATS))
 
 
-@deprecated("Replaced by yuml/mermaid")
+@deprecated("Replaced by mermaid")
 @dataclass
 class DotGenerator(Generator):
     """
@@ -35,21 +34,21 @@ class DotGenerator(Generator):
     uses_schemaloader = True
 
     # ObjectVars
-    classnames: Optional[list[str]] = None
-    filename: Optional[str] = None
-    dirname: Optional[str] = None
-    filedot: Optional[Digraph] = None
-    classdot: Optional[Digraph] = None
-    cls_subj: Optional[SlotDefinition] = None
-    cls_obj: Optional[SlotDefinition] = None
-    classname: Optional[list[str]] = None
-    directory: Optional[str] = None
+    classnames: list[str] | None = None
+    filename: str | None = None
+    dirname: str | None = None
+    filedot: Digraph | None = None
+    classdot: Digraph | None = None
+    cls_subj: SlotDefinition | None = None
+    cls_obj: SlotDefinition | None = None
+    classname: list[str] | None = None
+    directory: str | None = None
 
     def visit_schema(
         self,
-        classname: Optional[list[str]] = None,
-        directory: Optional[str] = None,
-        filename: Optional[str] = None,
+        classname: list[str] | None = None,
+        directory: str | None = None,
+        filename: str | None = None,
         **_,
     ) -> None:
         self.classnames = [] if classname is None else list(classname)

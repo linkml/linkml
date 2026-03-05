@@ -9,14 +9,13 @@ import os
 import urllib.parse as urlparse
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
-from linkml import METAMODEL_CONTEXT_URI
+from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml._version import __version__
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
@@ -47,12 +46,13 @@ class RDFGenerator(Generator):
     def _data(self, g: Graph) -> str:
         return g.serialize(format="turtle" if self.format == "ttl" else self.format)
 
-    def end_schema(self, output: Optional[str] = None, context: str = None, **_) -> str:
+    def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
             metadata=self.emit_metadata,
             importmap=self.importmap,
+            metamodel_context=LOCAL_METAMODEL_LDCONTEXT_FILE,
         )
         # Iterate over permissible text strings making them URI compatible
         for e in gen.schema.enums.values():
@@ -89,10 +89,10 @@ class RDFGenerator(Generator):
 @click.option("-o", "--output", help="Output file name")
 @click.option(
     "--context",
-    default=[METAMODEL_CONTEXT_URI],
+    default=[LOCAL_METAMODEL_LDCONTEXT_FILE],
     show_default=True,
     multiple=True,
-    help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI})",
+    help="JSONLD context file (default: vendored meta.context.jsonld)",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **kwargs):

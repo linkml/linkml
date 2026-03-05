@@ -1,6 +1,6 @@
 import os
 from collections.abc import Iterator
-from typing import Any, Optional
+from typing import Any
 
 import rdflib
 
@@ -29,7 +29,7 @@ class ShaclValidationPlugin(ValidationPlugin):
         self,
         *,
         closed: bool = False,
-        shacl_path: Optional[os.PathLike] = None,
+        shacl_path: os.PathLike | None = None,
         raise_on_conversion_error: bool = False,
     ) -> None:
         self.closed = closed
@@ -37,7 +37,7 @@ class ShaclValidationPlugin(ValidationPlugin):
         self.raise_on_conversion_error = raise_on_conversion_error
         self._loaded_graphs = {}
 
-    def _shacl_graph(self, context: ValidationContext) -> Optional[rdflib.Graph]:
+    def _shacl_graph(self, context: ValidationContext) -> rdflib.Graph | None:
         g = rdflib.Graph()
         if self.shacl_path:
             g.parse(str(self.shacl_path))

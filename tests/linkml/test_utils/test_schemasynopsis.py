@@ -1,13 +1,12 @@
 """Tests for various parts of the schema synopsis file"""
 
 from pathlib import Path
-from typing import Union
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.utils.schemaloader import SchemaLoader
 
 
-def eval_synopsis(source: Union[str, Path], errs_snapshot, synopsis_snapshot) -> str:
+def eval_synopsis(source: str | Path, errs_snapshot, synopsis_snapshot) -> str:
     schema = SchemaLoader(source)
     schema.resolve()
 

@@ -2,7 +2,6 @@ import json
 import logging
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, Union
 
 import jsonschema
 import pytest
@@ -423,7 +422,7 @@ def test_lifecycle_slots(kitchen_sink_path):
 # **********************************************************
 
 
-def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[dict] = None) -> None:
+def external_file_test(subtests, file: str | Path, generator_args: dict | None = None) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False, "include_null": False}
 
@@ -441,10 +440,10 @@ def external_file_test(subtests, file: Union[str, Path], generator_args: Optiona
 
 def assert_schema_validates(
     subtests,
-    schema: Union[str, SchemaDefinition],
-    expected_json_schema_subset: Optional[dict] = None,
-    data_cases: Optional[list] = None,
-    generator_args: Optional[dict] = None,
+    schema: str | SchemaDefinition,
+    expected_json_schema_subset: dict | None = None,
+    data_cases: list | None = None,
+    generator_args: dict | None = None,
 ):
     if generator_args is None:
         generator_args = {}

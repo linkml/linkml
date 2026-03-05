@@ -1,6 +1,6 @@
 import os
 from collections.abc import Iterator
-from typing import Any, Optional
+from typing import Any
 
 from jsonschema.exceptions import best_match
 
@@ -27,7 +27,7 @@ class JsonschemaValidationPlugin(ValidationPlugin):
         *,
         closed: bool = False,
         include_range_class_descendants: bool = True,
-        json_schema_path: Optional[os.PathLike] = None,
+        json_schema_path: os.PathLike | None = None,
     ) -> None:
         self.closed = closed
         self.include_range_class_descendants = include_range_class_descendants
