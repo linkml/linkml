@@ -1574,21 +1574,8 @@ def cli(yamlfile, metadata_profile: str, **kwargs):
 
         gen-owl my_schema.yaml
 
-    Note that in previous versions of this generator, the default was to use type objects and
-    to include metaclasses. To restore this behavior:
-
-        gen-owl --no-skip-linkml-metamodel-annotations --type-objects my_schema.yaml
-
     For more info, see: https://linkml.io/linkml/generators/owl
     """
-    import warnings
-
-    if kwargs.get("metaclasses") is False:
-        warnings.warn(
-            "--no-metaclasses is deprecated; use --skip-linkml-metamodel-annotations instead.",
-            FutureWarning,
-            stacklevel=2,
-        )
     if metadata_profile is not None:
         metadata_profiles = [MetadataProfile(metadata_profile)]
     else:
