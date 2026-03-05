@@ -28,6 +28,59 @@ TYPEMAP = {
     "xsd:decimal": "BigDecimal",
 }
 
+JAVA_KEYWORDS = [
+    "abstract",
+    "assert",
+    "boolean",
+    "break",
+    "byte",
+    "case",
+    "catch",
+    "char",
+    "class",
+    "const",
+    "continue",
+    "default",
+    "do",
+    "double",
+    "else",
+    "enum",
+    "extends",
+    "final",
+    "finally",
+    "float",
+    "for",
+    "goto",
+    "if",
+    "implements",
+    "import",
+    "instanceof",
+    "int",
+    "interface",
+    "long",
+    "native",
+    "new",
+    "package",
+    "private",
+    "protected",
+    "public",
+    "return",
+    "short",
+    "static",
+    "strictfp",
+    "super",
+    "switch",
+    "synchronized",
+    "this",
+    "throw",
+    "throws",
+    "transient",
+    "try",
+    "void",
+    "volatile",
+    "while",
+]
+
 TYPE_DEFAULTS = {"boolean": "false", "int": "0", "float": "0f", "double": "0d", "String": '""'}
 
 
@@ -165,6 +218,11 @@ class JavaGenerator(OOCodeGenerator):
             return "Object"
         else:
             return super().map_class(c)
+
+    def map_name(self, name: str) -> str:
+        if name in JAVA_KEYWORDS:
+            return name + "_"
+        return name
 
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         if t.uri:

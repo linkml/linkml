@@ -150,6 +150,16 @@ class OOCodeGenerator(Generator):
         """
         return None
 
+    def map_name(self, name: str) -> str:
+        """Maps a generic element name to its name in the target language.
+
+        This method is intended to allow derived generators to ensure that
+        the name of element in the generated code does not clash with any
+        reserved keyword in the target language. If the given name would
+        clash, the method should return an alternative name to use instead.
+        """
+        return name
+
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         return t.base
 
@@ -256,7 +266,7 @@ class OOCodeGenerator(Generator):
             if self.map_class(c) is not None:
                 continue
 
-            safe_cn = camelcase(cn)
+            safe_cn = self.map_name(camelcase(cn))
             oodoc = OODocument(name=safe_cn, package=self.package, source_schema=sv.schema)
             docs.append(oodoc)
             ooclass = OOClass(
@@ -281,7 +291,7 @@ class OOCodeGenerator(Generator):
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                safe_sn = self.get_slot_name(sn)
+                safe_sn = self.map_name(self.get_slot_name(sn))
                 slot = sv.induced_slot(sn, cn)
                 range = slot.range
                 default_value = "null"
