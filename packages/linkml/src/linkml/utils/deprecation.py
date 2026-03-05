@@ -269,6 +269,25 @@ DEPRECATIONS = (
         "or set it explicitly to `False` to preserve current behaviour and silence this warning.",
         issue=3191,
     ),
+    Deprecation(
+        name="owlgen-metaclasses-deprecated",
+        deprecated_in=SemVer.from_str("1.10.0"),
+        message="The `metaclasses` flag in `OwlSchemaGenerator` is deprecated.",
+        recommendation="Use `skip_linkml_metamodel_annotations=True` to suppress LinkML metaclasses and "
+        "annotations, or `skip_linkml_metamodel_annotations=False` to include them.",
+        issue=3194,
+    ),
+    Deprecation(
+        name="owlgen-skip-linkml-metamodel-annotations-default",
+        deprecated_in=SemVer.from_str("1.10.0"),
+        message=(
+            "The default for `skip_linkml_metamodel_annotations` in `OwlSchemaGenerator` "
+            "will change from `False` to `True` in a future release."
+        ),
+        recommendation="Set `skip_linkml_metamodel_annotations=True` to suppress LinkML metaclasses and "
+        "annotations, or set it explicitly to `False` to preserve current behaviour and silence this warning.",
+        issue=3194,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
