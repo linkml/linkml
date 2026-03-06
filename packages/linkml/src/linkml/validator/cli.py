@@ -1,5 +1,4 @@
 import importlib
-import re
 import sys
 from collections import Counter
 from collections.abc import Iterable
@@ -60,46 +59,6 @@ def _resolve_loaders(loader_config: Iterable[str | dict[str, dict[str, str]]]) -
             raise click.ClickException("Invalid config. Data sources must be specified as a string or as dictionary.")
         loaders.append(loader)
     return loaders
-
-
-def _is_null_enum_error(result, sv, target_class: str | None) -> bool:
-    """
-    Returns True if the validation error is a null/empty value on an optional
-    enum slot — these should be downgraded to warnings not treated as errors.
-
-    Handles messages like:
-        "'' is not one of ['M', 'F'] in /sex"
-        "None is not one of ['f02'] in /phv00198808"
-
-    This addresses issues where schema-automator generated schemas from TSV/JSON
-    data with null values in enum columns, causing spurious validation errors.
-    """
-    msg = result.message
-
-    # Only handle null/empty value enum violations
-    # Message format from JsonschemaValidationPlugin:
-    #   "'' is not one of [...] in /slot_name"
-    #   "None is not one of [...] in /slot_name"
-    is_null_value = msg.startswith("None is not") or msg.startswith("'' is not")
-    if not is_null_value:
-        return False
-
-    # Extract slot name from end of message e.g. "'' is not one of ['M', 'F'] in /sex" → "sex"
-    match = re.search(r"in /(\w+)$", msg)
-    if not match:
-        return False
-    slot_name = match.group(1)
-
-    try:
-        induced = sv.induced_slot(slot_name, target_class)
-        # Downgrade only if slot is not required AND has an enum range
-        if not induced.required:
-            if induced.range and induced.range in sv.all_enums():
-                return True
-    except Exception:
-        return False
-
-    return False
 
 
 @click.command(name="validate")
@@ -172,25 +131,19 @@ def cli(
         )
     config = Config(**config_args)
 
+    # Pass allow_null_for_optional_enums through to JsonschemaValidationPlugin
+    if allow_null_for_optional_enums and config.plugins and "JsonschemaValidationPlugin" in config.plugins:
+        if config.plugins["JsonschemaValidationPlugin"] is None:
+            config.plugins["JsonschemaValidationPlugin"] = {}
+        config.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
+
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
     loaders = _resolve_loaders(config.data_sources)
     validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
     severity_counter = Counter()
 
-    # Only load SchemaView if the flag is set — avoids overhead otherwise
-    if allow_null_for_optional_enums:
-        from linkml_runtime import SchemaView
-
-        sv = SchemaView(str(config.schema_path))
-    else:
-        sv = None
-
     for loader in loaders:
         for result in validator.iter_results_from_source(loader, config.target_class):
-            # If flag is set, downgrade null/empty enum errors on optional slots to warnings
-            if allow_null_for_optional_enums and result.severity == Severity.ERROR:
-                if _is_null_enum_error(result, sv, config.target_class):
-                    result.severity = Severity.WARN
             severity_counter[result.severity] += 1
             click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
             if include_context:
