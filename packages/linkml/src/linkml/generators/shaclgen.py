@@ -24,6 +24,46 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ShaclGenerator(Generator):
+    """
+    Generate SHACL (Shapes Constraint Language) shapes from a LinkML schema.
+
+    SHACL shapes are used to validate RDF data. Each LinkML class is converted
+    to a sh:NodeShape with property constraints derived from the class's slots.
+
+    Shape Naming Modes
+    ------------------
+    The generator supports two naming modes controlled by `use_class_uri_names`:
+
+    **Default mode (use_class_uri_names=True):**
+        Shapes are named using the class_uri. If multiple LinkML classes share
+        the same class_uri, their properties are merged into a single shape.
+        This is the traditional RDF-centric behavior.
+
+        Example:
+            LinkML classes Entity and EvaluatedEntity both with class_uri prov:Entity
+            → Single shape: <prov:Entity> a sh:NodeShape
+
+    **Native names mode (use_class_uri_names=False):**
+        Shapes are named using the native LinkML class name from the schema.
+        Each LinkML class produces a distinct shape, even if they share a class_uri.
+        The sh:targetClass still correctly points to the class_uri.
+
+        Example:
+            LinkML classes Entity and EvaluatedEntity both with class_uri prov:Entity
+            → Two shapes:
+                <http://example.org#Entity> a sh:NodeShape ; sh:targetClass prov:Entity
+                <http://example.org#EvaluatedEntity> a sh:NodeShape ; sh:targetClass prov:Entity
+
+    Use native names mode when:
+        - Multiple LinkML classes intentionally map to the same external ontology class
+        - You need distinct validation shapes per LinkML class
+        - You want to avoid unintentional shape merging (see issue #3011)
+
+    Use default mode when:
+        - You want one-to-one correspondence between SHACL shapes and RDF classes
+        - You're generating shapes for a standard ontology mapping
+    """
+
     # ClassVars
     closed: bool = True
     """True means add 'sh:closed=true' to all shapes, except of mixin shapes and shapes, that have parents"""
@@ -34,7 +74,15 @@ class ShaclGenerator(Generator):
     exclude_imports: bool = False
     """If True, elements from imported ontologies won't be included in the generator's output"""
     use_class_uri_names: bool = True
-    """If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work."""
+    """
+    Control how SHACL shape URIs are generated.
+
+    If True (default): Shape URIs are derived from class_uri. Classes sharing a class_uri
+    will be merged into a single shape.
+
+    If False: Shape URIs use native LinkML class names. Each class gets a distinct shape
+    even when sharing class_uri. The --suffix option still works in either mode.
+    """
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
     generatorname = os.path.basename(__file__)
