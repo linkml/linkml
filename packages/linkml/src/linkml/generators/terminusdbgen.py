@@ -4,11 +4,10 @@ from dataclasses import dataclass, field
 
 import click
 
-from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
-from linkml_runtime.utils.formatutils import be, camelcase, underscore
-
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
+from linkml_runtime.utils.formatutils import be, camelcase, underscore
 
 # TerminusDB XSD types supported as property ranges.
 # https://terminusdb.com/docs/terminusdb/#/reference/XSD_WHITELIST
