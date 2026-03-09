@@ -2,6 +2,11 @@
 
 This covenant establishes community norms for responsible AI use in the LinkML project. It aims to maintain trust, quality, and accountability while embracing AI as a useful tool.
 
+It applies to the following repos central to the LinkML mission:
+
+- https://github.com/linkml/linkml
+- https://github.com/linkml/linkml-model
+
 ## Core Principle: You Own Your Contributions
 
 **Everything you contribute is yours—regardless of what tools helped create it.**
