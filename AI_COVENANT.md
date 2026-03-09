@@ -6,6 +6,7 @@ It applies to the following repos central to the LinkML mission:
 
 - https://github.com/linkml/linkml
 - https://github.com/linkml/linkml-model
+- https://github.com/orgs/linkml/discussions
 
 ## Core Principle: You Own Your Contributions
 
