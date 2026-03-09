@@ -236,6 +236,39 @@ DEPRECATIONS = (
         recommendation="Use flag `metadata` instead",
         issue=1799,
     ),
+    Deprecation(
+        name="owlgen-skip-vacuous-min-zero-cardinality-default",
+        deprecated_in=SemVer.from_str("1.10.0"),
+        message=(
+            "The default for `skip_vacuous_min_zero_cardinality_axioms` in `OwlSchemaGenerator` "
+            "will change from `False` to `True` in a future release."
+        ),
+        recommendation="Set `skip_vacuous_min_zero_cardinality_axioms=True` to suppress vacuous axioms, "
+        "or set it explicitly to `False` to preserve current behaviour and silence this warning.",
+        issue=3190,
+    ),
+    Deprecation(
+        name="owlgen-skip-vacuous-local-range-default",
+        deprecated_in=SemVer.from_str("1.10.0"),
+        message=(
+            "The default for `skip_vacuous_local_range_axioms` in `OwlSchemaGenerator` "
+            "will change from `False` to `True` in a future release."
+        ),
+        recommendation="Set `skip_vacuous_local_range_axioms=True` to suppress vacuous axioms, "
+        "or set it explicitly to `False` to preserve current behaviour and silence this warning.",
+        issue=3190,
+    ),
+    Deprecation(
+        name="owlgen-consolidate-cardinality-axioms-default",
+        deprecated_in=SemVer.from_str("1.10.0"),
+        message=(
+            "The default for `consolidate_cardinality_axioms` in `OwlSchemaGenerator` "
+            "will change from `False` to `True` in a future release."
+        ),
+        recommendation="Set `consolidate_cardinality_axioms=True` to emit consolidated axioms, "
+        "or set it explicitly to `False` to preserve current behaviour and silence this warning.",
+        issue=3191,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
