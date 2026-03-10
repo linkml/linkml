@@ -31,7 +31,7 @@ class DelimitedFileDumper(Dumper, ABC):
         element: BaseModel | YAMLRoot,
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
-        schemaview: SchemaView = None,
+        schemaview: SchemaView | None = None,
         list_wrapper: str = None,
         list_delimiter: str = None,
         list_strip_whitespace: bool = None,

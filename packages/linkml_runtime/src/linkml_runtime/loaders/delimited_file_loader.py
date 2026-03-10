@@ -54,7 +54,7 @@ class DelimitedFileLoader(Loader, ABC):
         source: str,
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
-        schemaview: SchemaView = None,
+        schemaview: SchemaView | None = None,
         **kwargs,
     ) -> dict | list[dict]:
         json_str = self._get_json_str_to_load(source, index_slot, schema, schemaview, **kwargs)
@@ -69,7 +69,7 @@ class DelimitedFileLoader(Loader, ABC):
         target_class: type[BaseModel | YAMLRoot],
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
-        schemaview: SchemaView = None,
+        schemaview: SchemaView | None = None,
         **kwargs,
     ) -> str:
         json_str = self._get_json_str_to_load(input, index_slot, schema, schemaview, **kwargs)
@@ -81,7 +81,7 @@ class DelimitedFileLoader(Loader, ABC):
         target_class: type[BaseModel | YAMLRoot],
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
-        schemaview: SchemaView = None,
+        schemaview: SchemaView | None = None,
         **kwargs,
     ) -> str:
         json_str = self._get_json_str_to_load(source, index_slot, schema, schemaview, **kwargs)
@@ -92,7 +92,7 @@ class DelimitedFileLoader(Loader, ABC):
         input,
         index_slot: SlotDefinitionName = None,
         schema: SchemaDefinition = None,
-        schemaview: SchemaView = None,
+        schemaview: SchemaView | None = None,
         list_wrapper: str = None,
         list_delimiter: str = None,
         list_strip_whitespace: bool = None,
