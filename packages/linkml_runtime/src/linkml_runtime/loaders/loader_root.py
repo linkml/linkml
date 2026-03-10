@@ -32,8 +32,7 @@ class Loader(ABC):
             return o is None or o == [] or o == {}
 
         if isinstance(inp, list):
-            for e in [inp_e for inp_e in inp if _is_empty(inp_e)]:
-                del inp[e]
+            inp[:] = [e for e in inp if not _is_empty(e)]
             for e in inp:
                 Loader.json_clean(e)
         elif isinstance(inp, dict):
