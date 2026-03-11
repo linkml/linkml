@@ -11,8 +11,30 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SchemaDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 
+
+class FlowList(list):
+    pass
+
+
+def flow_list_representer(dumper, data):
+    # Ensures that specific lists (like sources and condition parameters)
+    # are serialized in flow style, e.g., [data.json~jsonpath, '$[*]']
+    # This prevents unreadable block sequences that break some YAML parsers (like Matey).
+    return dumper.represent_sequence(
+        "tag:yaml.org,2002:seq",
+        data,
+        flow_style=True
+    )
+
+
+class YarrrmlDumper(yaml.SafeDumper):
+    pass
+
+
+YarrrmlDumper.add_representer(FlowList, flow_list_representer)
+
 DEFAULT_SOURCE_JSON = "data.json~jsonpath"
-DEFAULT_ITERATOR = "$.items[*]"
+DEFAULT_ITERATOR = "$[*]"  # Changed from $.items[*] to align with generic JSON schemas
 
 
 class YarrrmlGenerator(Generator):
@@ -43,8 +65,8 @@ class YarrrmlGenerator(Generator):
         return path
 
     def serialize(self, **args) -> str:
-        data = yaml.safe_dump(
-            self.as_dict(), sort_keys=False, allow_unicode=True, default_flow_style=False, indent=2, width=120
+        data = yaml.dump(
+            self.as_dict(), Dumper=YarrrmlDumper, sort_keys=False, allow_unicode=True, indent=2, width=120
         )
         return data
 
@@ -54,47 +76,100 @@ class YarrrmlGenerator(Generator):
 
         inline_owners: dict[str, list[tuple[str, str]]] = {}
 
+        # Discover inline owners
         for owner in sv.all_classes().values():
             for s in sv.class_induced_slots(owner.name):
                 if not s.range:
                     continue
+
                 range_cls = sv.get_class(s.range)
                 if range_cls is None:
                     continue
 
                 decl = sv.get_slot(s.name)
                 inlined = getattr(decl or s, "inlined", None)
+                multivalued = getattr(decl or s, "multivalued", False)
+
+                has_id = False
+                if range_cls:
+                    has_id = (
+                        sv.get_identifier_slot(range_cls.name) is not None
+                        or sv.get_key_slot(range_cls.name) is not None
+                    )
 
                 if inlined is None:
-                    inlined = False
+                    inlined = not has_id
 
                 if inlined:
+                    # Prevent generating mappings for multivalued inlined objects without an identifier,
+                    # as this would result in merging multiple array elements into a single blank node.
+                    if multivalued and not has_id:
+                        raise ValueError(
+                            f"Slot '{s.name}' in class '{owner.name}' is an inlined list (multivalued: true), "
+                            f"but the target class '{range_cls.name}' lacks an identifier. "
+                            f"Please add `identifier: true` to a slot in '{range_cls.name}'."
+                        )
+
                     alias = decl.alias if decl and decl.alias else s.alias
                     var = alias or s.name
                     inline_owners.setdefault(range_cls.name, []).append((owner.name, var))
 
+        # Ensure inline classes without an identifier belong to a single owner
+        for child_class, owners in inline_owners.items():
+            if len(owners) > 1:
+                owner_names = [o[0] for o in owners]
+                raise ValueError(
+                    f"Inline class '{child_class}' without an identifier is used by multiple owners: {owner_names}. "
+                    f"This is not supported. Please assign an identifier to '{child_class}'."
+                )
+
+        # Build mappings
         for cls in sv.all_classes().values():
             mapping_dict: dict[str, Any] = {}
+            has_own_id = sv.get_identifier_slot(cls.name) or sv.get_key_slot(cls.name)
 
             if self._is_json_source():
                 if cls.name in inline_owners:
                     owners = inline_owners[cls.name]
-                    if len(owners) > 1:
-                        raise ValueError(
-                            f"Inline class '{cls.name}' is used in multiple owners: "
-                            f"{[o[0] for o in owners]}. This is not supported."
-                        )
+                    sources = []
+
                     owner_name, slot_var = owners[0]
-                    owner_cls = sv.get_class(owner_name)
-                    owner_iterator = self._iterator_for_class(owner_cls)
-                    mapping_dict["sources"] = [[self.source, f"{owner_iterator}.{slot_var}"]]
+
+                    is_multi = False
+                    for s in sv.class_induced_slots(owner_name):
+                        if (s.alias or s.name) == slot_var:
+                            is_multi = s.multivalued
+                            break
+
+                    # Construct deep scan iterator based on whether the inline slot is a list or an object
+                    if is_multi:
+                        iterator = f"$..{slot_var}[*]"
+                    else:
+                        iterator = f"$..{slot_var}"
+
+                    # If the inline object lacks an identifier, apply a JSONPath Filter Expression
+                    # to prevent generating phantom subjects for non-existent objects
+                    if not has_own_id:
+                        owner_cls = sv.get_class(owner_name)
+                        base_iterator = self._iterator_for_class(owner_cls)
+                        if "[*]" in base_iterator:
+                            iterator = base_iterator.replace("[*]", f"[?(@.{slot_var})]")
+                        else:
+                            iterator = base_iterator
+
+                    sources.append(FlowList([self.source, iterator]))
+                    mapping_dict["sources"] = sources
+
                 else:
-                    mapping_dict["sources"] = [[self.source, self._iterator_for_class(cls)]]
+                    mapping_dict["sources"] = [FlowList([self.source, self._iterator_for_class(cls)])]
             else:
                 mapping_dict["sources"] = [[self.source]]
 
-            mapping_dict["s"] = self._subject_template_for_class(cls)
-            mapping_dict["po"] = self._po_list_for_class(cls)
+            subject = self._subject_template_for_class(cls, inline_owners)
+            if subject is not None:
+                mapping_dict["s"] = subject
+
+            mapping_dict["po"] = self._po_list_for_class(cls, inline_owners)
 
             mappings[str(cls.name)] = mapping_dict
 
@@ -133,18 +208,29 @@ class YarrrmlGenerator(Generator):
     def _iterator_for_class(self, c: ClassDefinition) -> str:
         return self.iterator_template.replace("{Class}", c.name)
 
-    def _subject_template_for_class(self, c: ClassDefinition) -> str:
+    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict) -> str | None:
         sv = self.schemaview
-        default_prefix = sv.schema.default_prefix or "ex"
         id_slot = sv.get_identifier_slot(c.name)
+        prefix = self.schema.default_prefix or "ex"
+
+        # Explicitly support standard subjects (resolves the 'subject_id' issue)
         if id_slot:
-            return f"{default_prefix}:$({id_slot.name})"
+            return f"{prefix}:$({id_slot.name})"
+
         key_slot = sv.get_key_slot(c.name)
         if key_slot:
-            return f"{default_prefix}:$({key_slot.name})"
-        return f"{default_prefix}:{c.name}/$(subject_id)"
+            return f"{prefix}:$({key_slot.name})"
 
-    def _po_list_for_class(self, c: ClassDefinition) -> list[dict[str, Any]]:
+        # If it's an inline object without an ID, fallback to the parent's ID
+        if c.name in inline_owners:
+            owner_name, _ = inline_owners[c.name][0]
+            parent_id = sv.get_identifier_slot(owner_name) or sv.get_key_slot(owner_name)
+            if parent_id:
+                return f"{prefix}:{c.name}_$({parent_id.name})"
+
+        return f"{prefix}:{c.name}/$(id)"
+
+    def _po_list_for_class(self, c: ClassDefinition, inline_owners: dict) -> list[dict[str, Any]]:
         sv = self.schemaview
         po: list[dict[str, Any]] = []
 
@@ -156,6 +242,8 @@ class YarrrmlGenerator(Generator):
 
         for s in sv.class_induced_slots(c.name):
             decl = sv.get_slot(s.name)
+            if decl and decl.identifier:
+                continue
 
             slot_uri = None
             if decl is not None and getattr(decl, "slot_uri", None):
@@ -172,7 +260,14 @@ class YarrrmlGenerator(Generator):
             alias = decl.alias if decl and decl.alias else s.alias
             var = alias or s.name
 
+            has_own_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
+            if c.name in inline_owners and not has_own_id:
+                owner_name, slot_var = inline_owners[c.name][0]
+                var = f"{slot_var}.{var}"
+
             is_obj = sv.get_class(s.range) is not None if s.range else False
+
+            # Handle object mapping (join-based linking and regular links)
             if is_obj:
                 inlined = getattr(decl or s, "inlined", None)
                 multivalued = getattr(decl or s, "multivalued", False)
@@ -189,33 +284,56 @@ class YarrrmlGenerator(Generator):
 
                 range_name = s.range
                 range_id = sv.get_identifier_slot(range_name) or sv.get_key_slot(range_name)
+                parent_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
 
-                if not range_id:
-                    raise ValueError(
-                        f"Inline class '{range_name}' must define an identifier or key to support join-based linking."
-                    )
+                if range_id:
+                    left = f"$({var}.{range_id.name})"
+                    right = f"$({range_id.name})"
+                elif parent_id:
+                    left = f"$({parent_id.name})"
+                    right = f"$({parent_id.name})"
+                else:
+                    left = None
 
-                left = f"$({var}.{range_id.name})"
-                right = f"$({range_id.name})"
-
-                po.append(
-                    {
-                        "p": pred,
-                        "o": {
-                            "mapping": str(range_name),
-                            "condition": {
-                                "function": "equal",
-                                "parameters": [
-                                    ["str1", left, "s"],
-                                    ["str2", right, "o"],
-                                ],
-                            },
+                if left:
+                    po_obj = {
+                        "mapping": str(range_name),
+                        "condition": {
+                            "function": "equal",
+                            "parameters": [
+                                FlowList(["str1", left, "s"]),
+                                FlowList(["str2", right, "o"]),
+                            ],
                         },
                     }
-                )
+                    if multivalued:
+                        po.append({"p": pred, "o": [po_obj]})
+                    else:
+                        po.append({"p": pred, "o": po_obj})
+                else:
+                    if multivalued:
+                        po.append({"p": pred, "o": [{"mapping": str(range_name)}]})
+                    else:
+                        po.append({"p": pred, "o": {"mapping": str(range_name)}})
                 continue
 
-            po.append({"p": pred, "o": f"$({var})"})
+            # Ensure xsd datatypes are preserved in the mapping
+            datatype = None
+            t = sv.get_type(s.range) if s.range else None
+
+            if t:
+                datatype = sv.get_uri(t, expand=False)
+
+            if datatype:
+                po.append({
+                    "p": pred,
+                    "o": {
+                        "value": f"$({var})",
+                        "datatype": str(datatype)
+                    }
+                })
+            else:
+                po.append({"p": pred, "o": f"$({var})"})
 
         return po
 
@@ -228,7 +346,7 @@ class YarrrmlGenerator(Generator):
 )
 @click.option(
     "--iterator-template",
-    help='JSONPath iterator template; supports {Class}, default: "$.items[*]"',
+    help='JSONPath iterator template; supports {Class}, default: "$[*]"',
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, source, iterator_template, **args):
