@@ -1,0 +1,15 @@
+{
+    "@context": {
+        "linkml": "https://w3id.org/linkml/",
+        "dc": "http://purl.org/dc/elements/1.1/",
+        "sct": "http://snomed.info/id/",
+        "sh": "http://www.w3.org/ns/shacl#",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "termci": "https://hotecosystem.org/termci/",
+        "obo": "https://purl.obolibrary.org/obo/",
+        "ncit": {
+            "@id": "http://purl.obolibrary.org/obo/NCI_",
+            "@prefix": true
+        }
+    }
+}

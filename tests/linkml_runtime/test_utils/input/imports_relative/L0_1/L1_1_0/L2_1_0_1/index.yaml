@@ -1,0 +1,12 @@
+id: L1_1_0/L2_1_0_1/index
+name: index
+title: index
+imports:
+  - ./banana
+classes:
+  L2101Index:
+    description: "A class from an index!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "L2101Index"

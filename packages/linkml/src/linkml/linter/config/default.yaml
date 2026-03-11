@@ -1,0 +1,38 @@
+rules:
+  no_empty_title:
+    level: disabled
+    exclude_type: []
+  permissible_values_format:
+    level: disabled
+    format: uppersnake
+  tree_root_class:
+    level: disabled
+    root_class_name: Container
+    validate_existing_class_name: false
+  recommended:
+    level: disabled
+    include: []
+    exclude: []
+    exclude_type: []
+  no_xsd_int_type:
+    level: disabled
+  no_invalid_slot_usage:
+    level: disabled
+  no_undeclared_slots:
+    level: disabled
+  no_undeclared_ranges:
+    level: disabled
+  one_identifier_per_class:
+    level: disabled
+  one_key_per_class:
+    level: disabled
+  root_type_checks:
+    level: disabled
+  standard_naming:
+    level: disabled
+    permissible_values_upper_case: false
+    exclude_type: []
+  canonical_prefixes:
+    level: disabled
+    prefixmaps_contexts:
+      - merged

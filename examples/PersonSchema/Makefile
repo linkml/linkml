@@ -1,14 +1,24 @@
 NAME = personinfo
 SRC = $(NAME).yaml
 ROOT = Container
-RUN = poetry run
+RUN = uv run
 OUTDIR = $(NAME)
 BUILD = build
 INDEX_SLOT = persons
+RUST_OUTDIR = rust
+
 
 all: gen
-gen:
+gen: gen-code gen-datadict gen-rust
+
+gen-rust:
+	$(RUN) gen-rust $(SRC) -n $(NAME) -o $(RUST_OUTDIR) --force
+
+gen-code:
 	$(RUN) gen-project -d $(OUTDIR) $(SRC)
+
+gen-datadict:
+	$(RUN) gen-markdown-datadict $(SRC) > ${OUTDIR}/datadict.md
 
 validate_all: validate-example_personinfo_data
 validate-%: data/%.yaml

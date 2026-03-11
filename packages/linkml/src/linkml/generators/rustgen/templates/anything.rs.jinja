@@ -1,0 +1,149 @@
+#[derive(Clone, PartialEq)]
+pub struct Anything(
+    #[cfg(feature = "serde")] pub serde_value::Value,
+    #[cfg(not(feature = "serde"))] pub (),
+);
+
+
+#[cfg(feature = "stubgen")]
+impl ::pyo3_stub_gen::PyStubType for Anything {
+    fn type_output() -> ::pyo3_stub_gen::TypeInfo {
+        ::pyo3_stub_gen::TypeInfo::any()
+    }
+}
+
+
+#[cfg(feature = "serde")]
+impl Serialize for Anything {
+    fn serialize<S>(&self, to_ser: S) -> Result<S::Ok, S::Error>
+    where S: serde::Serializer {
+        self.0.serialize(to_ser)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Anything {
+    fn deserialize<D>(de: D) -> Result<Self, D::Error>
+    where D: serde::Deserializer<'de> {
+        <serde_value::Value as Deserialize>::deserialize(de).map(Anything)
+    }
+}
+
+#[cfg(all(feature = "pyo3", feature = "serde"))]
+impl<'py> FromPyObject<'py> for Anything {
+    fn extract_bound(obj: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        use pyo3::types::{PyAny, PyDict, PyList, PyTuple};
+        use serde_value::Value;
+
+        fn py_to_value<'py>(o: &pyo3::Bound<'py, PyAny>) -> pyo3::PyResult<Value> {
+            // None -> Unit
+            if o.is_none() {
+                return Ok(Value::Unit);
+            }
+
+            // Try simple primitives first
+            if let Ok(s) = o.extract::<&str>() {
+                return Ok(Value::String(s.to_string()));
+            }
+            if let Ok(b) = o.extract::<bool>() {
+                return Ok(Value::Bool(b));
+            }
+
+            // Sequences (list/tuple)
+            if let Ok(list) = o.downcast::<PyList>() {
+                let mut out = Vec::with_capacity(list.len());
+                for item in list.iter() {
+                    out.push(py_to_value(&item)?);
+                }
+                return Ok(Value::Seq(out));
+            }
+            if let Ok(t) = o.downcast::<PyTuple>() {
+                let mut out = Vec::with_capacity(t.len());
+                for item in t.iter() {
+                    out.push(py_to_value(&item)?);
+                }
+                return Ok(Value::Seq(out));
+            }
+
+            // Mappings (dict with string-like keys)
+            if let Ok(d) = o.downcast::<PyDict>() {
+                let mut map = std::collections::BTreeMap::<Value, Value>::new();
+                for (k, v) in d.iter() {
+                    // Only accept string-like keys for deterministic ordering
+                    if let Ok(ks) = k.extract::<&str>() {
+                        map.insert(Value::String(ks.to_string()), py_to_value(&v)?);
+                    } else {
+                        return Err(pyo3::exceptions::PyTypeError::new_err(
+                            "dict keys for Anything must be str",
+                        ));
+                    }
+                }
+                return Ok(Value::Map(map));
+            }
+
+            // Fallback: stringify unknown types
+            let s = format!("{}", o.str()?);
+            Ok(Value::String(s))
+        }
+
+        Ok(Anything(py_to_value(obj)?))
+    }
+}
+
+/* ---------- getter side ---------- */
+#[cfg(all(feature = "pyo3", feature = "serde"))]
+impl<'py> IntoPyObject<'py> for Anything {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        use pyo3::types::{PyAny, PyDict, PyList, PyString};
+        use serde_value::Value;
+
+        fn value_to_py<'py>(py: Python<'py>, v: &Value) -> pyo3::PyResult<Bound<'py, PyAny>> {
+            match v {
+                Value::Unit => Ok(py.None().into_bound(py)),
+                Value::Bool(b) => Ok(pyo3::types::PyBool::new(py, *b).to_owned().into_any()),
+                Value::String(s) => Ok(PyString::new(py, s).into_any()),
+                Value::Seq(seq) => {
+                    let list = PyList::empty(py);
+                    for item in seq.iter() {
+                        let ob = value_to_py(py, item)?;
+                        list.append(ob)?;
+                    }
+                    Ok(list.into_any())
+                }
+                Value::Map(map) => {
+                    let dict = PyDict::new(py);
+                    for (k, v) in map.iter() {
+                        let pk = value_to_py(py, k)?;
+                        let pv = value_to_py(py, v)?;
+                        dict.set_item(pk, pv)?;
+                    }
+                    Ok(dict.into_any())
+                }
+                // Best-effort for other serde_value variants
+                // (numbers, bytes, chars, etc.)
+                other => {
+                    // Try common cases without bringing extra deps
+                    // Numbers are converted via string if not covered above
+                    let s = format!("{:?}", other);
+                    Ok(PyString::new(py, &s).into_any())
+                }
+            }
+        }
+
+        value_to_py(py, &self.0)
+    }
+}
+
+impl std::fmt::Debug for Anything {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[cfg(feature = "serde")]
+        return write!(f, "Anything({:?})", self.0);
+
+        #[cfg(not(feature = "serde"))]
+        return f.write_str("Anything(<opaque>)");
+    }
+}

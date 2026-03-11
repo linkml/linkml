@@ -1,0 +1,38 @@
+{#-
+  Jinja2 macros for rendering slots in a Pandera class-based model
+
+-#}
+{%- import 'enums.jinja2' as enum_macros -%}
+
+{%- macro constraint_parameters(field) -%}
+    {%- if coerce is true -%}coerce=True, {% endif -%}
+    {%- if field.default_value is not none -%}default={{ field.default_value }}, {% endif -%}
+    {%- if field.minimum_value() is not none -%}ge={{ field.minimum_value() }}, {% endif -%}
+    {%- if field.maximum_value() is not none -%}le={{ field.maximum_value() }}, {% endif -%}
+    {%- if field.pattern() is not none -%}str_matches=r"{{ field.pattern() }}", {% endif -%}
+    {%- if (field.required() is none or field.required() is false) and field.identifier() is not true -%}nullable=True, {% endif -%}
+{%- endmacro -%}
+
+{%- macro id_slot_name_class_variable(cls) %}
+    _id_name : str = {% if cls.identifier_key_slot() %} '{{ cls.identifier_key_slot() }}' {% else %}None{% endif %}
+{%- endmacro -%}
+
+{%- macro render_slot(field) %}
+    {{ field.name }}:{{ ' ' }}
+        {%- if (field.required() is none or field.required() is false) and (field.identifier() is not true) -%}
+            Optional[
+        {%- endif -%}
+       {{field.range}}
+        {%- if (field.required() is none or field.required() is false) and (field.identifier() is not true) -%}
+            {{ ']' }}
+        {%- endif -%}
+        {{ ' =' }} pla.Field(
+            {{- constraint_parameters(field) -}}
+            {{- enum_macros.enum_parameter(field) -}}
+        )
+        {%- if field.description() %}
+    """
+    {{ field.description() }}
+    """
+    {% endif -%}
+{%- endmacro %}

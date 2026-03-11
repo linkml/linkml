@@ -8,15 +8,16 @@ URI: [personinfo:related_to](https://w3id.org/linkml/examples/personinfo/related
 
 ## Domain and Range
 
-None &#8594;  <sub>0..1</sub> [String](types/String.md)
+None &#8594;  <sub>0..1</sub> [Person](Person.md)
 
 ## Parents
 
 
 ## Children
 
- *  [FamilialRelationship➞related_to](FamilialRelationship_related_to.md)
 
 ## Used by
 
+ * [FamilialRelationship](FamilialRelationship.md)
+ * [InterPersonalRelationship](InterPersonalRelationship.md)
  * [Relationship](Relationship.md)

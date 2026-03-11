@@ -1,0 +1,51 @@
+{
+   "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "ex": "https://w3id.org/linkml/examples/personinfo/",
+      "linkml": "https://w3id.org/linkml/",
+      "sdo": "http://schema.org/",
+      "@vocab": "https://w3id.org/linkml/examples/personinfo/",
+      "full_name": {
+         "@id": "full_name"
+      },
+      "unit": {
+         "@id": "unit"
+      },
+      "value": {
+         "@type": "xsd:float",
+         "@id": "value"
+      },
+      "age": {
+         "@type": "xsd:integer",
+         "@id": "age"
+      },
+      "aliases": {
+         "@id": "aliases"
+      },
+      "id": {
+         "@id": "id"
+      },
+      "parent": {
+         "@type": "@id",
+         "@id": "parent"
+      },
+      "phone": {
+         "@id": "phone"
+      },
+      "GeoAge": {
+         "@id": "GeoAge"
+      },
+      "GeoObject": {
+         "@id": "GeoObject"
+      },
+      "Organization": {
+         "@id": "Organization"
+      },
+      "Person": {
+         "@id": "sdo:Person"
+      },
+      "Thing": {
+         "@id": "Thing"
+      }
+   }
+}

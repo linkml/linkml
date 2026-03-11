@@ -46,6 +46,7 @@ OWL, or translated to shape languages such as ShEx and SHACL.
    shex
    shacl
    owl
+   yarrrml
 
 Documentation Generation
 ------------------------
@@ -58,10 +59,8 @@ published on static hosting sites.
    :maxdepth: 1
    :caption: Contents:
 
-   markdown
    docgen
    erdiagram
-   yuml
    plantumlgen
    project-generator
 
@@ -80,6 +79,7 @@ languages such as Python, Javascript, or Java.
    pydantic
    java
    typescript
+   rust
 
 Database
 --------

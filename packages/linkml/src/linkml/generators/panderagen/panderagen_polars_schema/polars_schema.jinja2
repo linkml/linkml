@@ -1,0 +1,15 @@
+{#-
+  Jinja2 Template for the top level of a PolaRS dataframe schema
+  Details at https://docs.pola.rs/api/python/stable/reference/dataframe/api/polars.DataFrame.schema.html
+-#}
+{%- import 'header.jinja2' as header -%}
+{%- import 'class.jinja2' as class_macros -%}
+{%- import 'enums.jinja2' as enum_macros -%}
+{{ header }}
+
+{{ enum_macros.render_enums(schema_view, generator) }}
+
+{% for cls in doc.classes -%}
+{{ class_macros.render_schema(cls, generator) }}
+
+{% endfor %}

@@ -1,0 +1,98 @@
+id: https://w3id.org/linkml/units
+name: units
+description: Units datamodel
+license: https://creativecommons.org/publicdomain/zero/1.0/
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  qudt: http://qudt.org/schema/qudt/
+
+default_prefix: linkml
+default_range: string
+
+emit_prefixes:
+  - linkml
+
+imports:
+  - linkml:types
+  - linkml:extensions
+  - linkml:annotations
+  - linkml:mappings
+
+slots:
+
+  unit:
+    slot_uri: qudt:unit
+    description: an encoding of a unit
+    range: UnitOfMeasure
+
+  ucum_code:
+    recommended: true
+    domain: UnitOfMeasure
+    slot_uri: qudt:ucumCode
+    description: associates a QUDT unit with its UCUM code (case-sensitive).
+    range: string
+
+  derivation:
+    range: string
+    description: Expression for deriving this unit from other units
+    
+  has_quantity_kind:
+    range: uriorcurie
+    slot_uri: qudt:hasQuantityKind
+    description: Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length
+    comments:
+      - Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind
+
+  iec61360code:
+    slot_uri: qudt:iec61360Code
+
+  symbol:
+    slot_uri: qudt:symbol
+    description: name of the unit encoded as a symbol
+
+  abbreviation:
+    slot_uri: qudt:abbreviation
+    description: >-
+      An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in 
+      contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance 
+      readability. When a power of a base unit needs to be expressed, such as squares this can be done using 
+      abbreviations rather than symbols (source: qudt)
+
+  descriptive_name:
+    slot_uri: rdfs:label
+    description: the spelled out name of the unit, for example, meter
+    
+classes:
+  UnitOfMeasure:
+    class_uri: qudt:Unit
+    description: >-
+      A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for 
+      measuring other quantities the same kind (more generally of equivalent dimension).
+    slots:
+      - symbol
+      - abbreviation
+      - descriptive_name
+      - exact mappings
+      - ucum_code
+      - derivation
+      - has_quantity_kind
+      - iec61360code
+    slot_usage:
+      exact mappings:
+        description: Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT
+        comments:
+          - Do not use this to encode mappings to systems for which a dedicated field exists
+    any_of:
+      - slot_conditions:
+          ucum_code:
+            required: true
+      - slot_conditions:
+          iec61360code:
+            required: true
+      - slot_conditions:
+          symbol:
+            required: true
+      - slot_conditions:
+          exact_mappings:
+            required: true

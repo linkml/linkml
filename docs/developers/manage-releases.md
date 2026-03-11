@@ -2,7 +2,7 @@
 
 Making a schema release in LinkML can be streamlined and efficient if done correctly. This guide will walk you through the process, focusing on semantic versioning, using GitHub for release notes, and ensuring your releases are consistent and well-documented.
 
-Note: This guide assumes you use the [LinkML Cookiecutter](/howtos/linkml-project-cookiecutter) to seed your repository. If you did not,
+Note: This guide assumes you use the [LinkML Project Copier](/howtos/linkml-project-copier) template to seed your repository. If you did not,
 then you should still be able to adapt this guide to your workflow.
 
 ## Follow Semantic Versioning (SemVer)
@@ -26,7 +26,7 @@ to your schema. See the [HCA guidelines](https://github.com/HumanCellAtlas/metad
 2. **Creating a GitHub Release:**
    - When ready for a new release, create a GitHub release using the GitHub web interface
    - Ensure the version follows the `vX.X.X` format.
-   - __NOTE__ if you used the cookiecutter, there is no need to manually set the release in your `pyproject.toml`, this should be left as `0.0.0`.
+   - __NOTE__ if you used the project template, the version in `pyproject.toml` is managed dynamically via `uv-dynamic-versioning` and derived from Git tags. There is no need to manually set the version.
 
 3. **Autogenerating Release Notes:**
    - Click the “Generate Release Notes” button to auto-fill from Pull Requests (PRs).

@@ -1,0 +1,42 @@
+[package]
+name = "{{ name }}"
+version = "{{ version }}"
+edition = "{{ edition }}"
+
+[lib]
+name = "{{ name }}"
+{% if pyo3 %}
+crate-type = ["cdylib", "rlib"]
+{% else %}
+crate-type = ["lib"]
+{% endif %}
+
+[dependencies]
+{% for i in imports %}
+    {% if i.version %}
+        {% if i.features %}
+{{ i.module }} = { version = "{{ i.version }}", features = [{% for feature in i.features %}"{{ feature }}"{% if not loop.last %},{% endif %}{% endfor %}] {% if i.feature_flag %} , optional = true {% endif %} }
+        {% else %}
+            {% if i.feature_flag %}
+{{ i.module }} = { version = "{{ i.version }}", optional = true }
+            {% else %}
+{{ i.module }} = "{{ i.version }}"
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endfor %}
+
+
+[features]
+{% if pyo3 and serde %}
+default = ["pyo3", "serde"]
+{% elif pyo3 %}
+default = ["pyo3"]
+{% elif serde %}
+default = ["serde"]
+{% else %}
+default = []
+{% endif %}
+{% for k,v in cratefeatures.items() %}
+{{ k }} = [{% for i in v %}"{{ i }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+{% endfor %}

@@ -1,0 +1,6 @@
+id: grandchild
+name: grandchild
+title: grandchild
+imports:
+  - linkml:types
+  - ./L4_2_0_0_0/greatgrandchild

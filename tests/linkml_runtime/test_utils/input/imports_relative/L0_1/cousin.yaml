@@ -1,0 +1,14 @@
+id: cousin
+name: cousin
+title: cousin
+description: Testing for "index" style imports where the same name is used multiple times in a non-duplicating way
+imports:
+  - linkml:types
+  - ./L1_1_0/index
+classes:
+  Cousin:
+    description: "The cousin of our intrepid main class!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "Cousin"

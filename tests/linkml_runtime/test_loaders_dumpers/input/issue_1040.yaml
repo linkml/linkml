@@ -1,0 +1,20 @@
+id: https://w3id.org/linkml/examples/personinfo
+name: personinfo
+imports:
+  - linkml:types
+  - stuff
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://gridlock.org
+default_range: string
+subsets:
+  a:
+    description: simple subset
+
+# Note: this file should NOT end with newline.  The pycharm IDE seems pretty insistent on fixing this, however, so
+#       we make sure it IS off in the test itself.
+classes:
+  Person:
+    in_subset:
+       - a
+       -
