@@ -162,18 +162,7 @@ class YarrrmlGenerator(Generator):
                     mapping_dict["sources"] = sources
 
                 else:
-                    iterator = self._iterator_for_class(cls)
-
-                    if iterator == "$[*]":
-                        valid_slots = [
-                            s.name for s in sv.class_induced_slots(cls.name)
-                            if not getattr(s, "identifier", False) and s.name != "id"
-                        ]
-                        if valid_slots:
-                            unique_slot = valid_slots[-1]
-                            iterator = f"$[?(@.{unique_slot})]"
-
-                    mapping_dict["sources"] = [FlowList([self.source, iterator])]
+                    mapping_dict["sources"] = [FlowList([self.source, self._iterator_for_class(cls)])]
             else:
                 mapping_dict["sources"] = [[self.source]]
 
