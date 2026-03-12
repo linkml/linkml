@@ -116,7 +116,8 @@ class YarrrmlGenerator(Generator):
 
         # Ensure inline classes without an identifier belong to a single owner
         for child_class, owners in inline_owners.items():
-            if len(owners) > 1:
+            has_id = sv.get_identifier_slot(child_class) is not None or sv.get_key_slot(child_class) is not None
+            if len(owners) > 1 and not has_id:
                 owner_names = [o[0] for o in owners]
                 raise ValueError(
                     f"Inline class '{child_class}' without an identifier is used by multiple owners: {owner_names}. "
@@ -236,7 +237,7 @@ class YarrrmlGenerator(Generator):
 
         class_uri = sv.get_uri(c, expand=False)
         class_term = str(class_uri) if class_uri else f"{sv.schema.default_prefix or 'ex'}:{c.name}"
-        po.append({"p": "rdf:type", "o": class_term})
+        po.append({"p": "a", "o": class_term})
 
         default_prefix = sv.schema.default_prefix or "ex"
 
@@ -277,9 +278,9 @@ class YarrrmlGenerator(Generator):
 
                 if inlined is False:
                     if multivalued:
-                        po.append({"p": pred, "o": [{"value": f"$({var}[*])", "type": "iri"}]})
+                        po.append({"p": pred, "o": [{"value": f"{default_prefix}:$({var}[*])", "type": "iri"}]})
                     else:
-                        po.append({"p": pred, "o": {"value": f"$({var})", "type": "iri"}})
+                        po.append({"p": pred, "o": {"value": f"{default_prefix}:$({var})", "type": "iri"}})
                     continue
 
                 range_name = s.range
@@ -287,7 +288,10 @@ class YarrrmlGenerator(Generator):
                 parent_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
 
                 if range_id:
-                    left = f"$({var}.{range_id.name})"
+                    if multivalued:
+                        left = f"$({var}[*].{range_id.name})"
+                    else:
+                        left = f"$({var}.{range_id.name})"
                     right = f"$({range_id.name})"
                 elif parent_id:
                     left = f"$({parent_id.name})"
