@@ -662,3 +662,47 @@ def test_children_are_mutually_disjoint(
         members_node = list(g.objects(disjoint_nodes[0], OWL.members))[0]
         members = set(Collection(g, members_node))
         assert members == {EX[name] for name in child_names}
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_skip_linkml_metamodel_annotations_suppresses_permissible_values(skip: bool) -> None:
+    """linkml:permissible_values annotation triples are suppressed when skip_linkml_metamodel_annotations=True."""
+    sb = SchemaBuilder()
+    sb.add_enum("Status", ["active", "inactive"])
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        skip_linkml_metamodel_annotations=skip,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    pv_triples = list(g.triples((None, LINKML.permissible_values, None)))
+    if skip:
+        assert pv_triples == [], "linkml:permissible_values triples should be suppressed"
+    else:
+        assert len(pv_triples) == 2, "linkml:permissible_values triples should be present for each permissible value"
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_skip_linkml_metamodel_annotations_suppresses_metaclasses(skip: bool) -> None:
+    """OWL metaclass rdf:type triples are suppressed when skip_linkml_metamodel_annotations=True."""
+    sb = SchemaBuilder()
+    sb.add_class("MyClass")
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=True,
+        type_objects=False,
+        skip_linkml_metamodel_annotations=skip,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    metaclass_triples = list(g.triples((None, RDF.type, LINKML.ClassDefinition)))
+    if skip:
+        assert metaclass_triples == [], "metaclass rdf:type triples should be suppressed"
+    else:
+        assert len(metaclass_triples) >= 1, "metaclass rdf:type triples should be present"
