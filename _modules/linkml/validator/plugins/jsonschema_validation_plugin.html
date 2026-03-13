@@ -394,7 +394,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.validator.plugins.jsonschema_validation_plugin</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
@@ -403,6 +404,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator.plugins.validation_plugin</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationPlugin</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator.report</span><span class="w"> </span><span class="kn">import</span> <span class="n">Severity</span><span class="p">,</span> <span class="n">ValidationResult</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.validator.validation_context</span><span class="w"> </span><span class="kn">import</span> <span class="n">ValidationContext</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="JsonschemaValidationPlugin">
@@ -418,6 +421,10 @@
 <span class="sd">    :param json_schema_path: If provided, JSON Schema will not be generated from the schema,</span>
 <span class="sd">        instead it will be read from this path. In this case the value of the ``closed`` argument</span>
 <span class="sd">        is disregarded and the open- or closed-ness of the existing JSON Schema is taken as-is.</span>
+<span class="sd">    :param allow_null_for_optional_enums: If ``True``, downgrade enum validation errors</span>
+<span class="sd">        to warnings when the value is null/empty and the slot is not required. Prevents</span>
+<span class="sd">        spurious ``None is not one of [...]`` and ``&#39;&#39; is not one of [...]`` errors for</span>
+<span class="sd">        nullable enum columns. Defaults to ``False``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -426,10 +433,46 @@
         <span class="n">closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_range_class_descendants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">json_schema_path</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">allow_null_for_optional_enums</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">closed</span> <span class="o">=</span> <span class="n">closed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">include_range_class_descendants</span> <span class="o">=</span> <span class="n">include_range_class_descendants</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">json_schema_path</span> <span class="o">=</span> <span class="n">json_schema_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_null_for_optional_enums</span> <span class="o">=</span> <span class="n">allow_null_for_optional_enums</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_null_enum_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">ValidationContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the error is a null/empty value on an optional enum slot.</span>
+
+<span class="sd">        Uses the jsonschema error&#39;s absolute_path and instance value directly —</span>
+<span class="sd">        no regex parsing of error message strings needed.</span>
+
+<span class="sd">        :param value: The actual invalid value (e.g. &#39;&#39; or None)</span>
+<span class="sd">        :param path: The absolute_path from the jsonschema error as a list</span>
+<span class="sd">        :param context: The validation context providing schema_view</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Only handle null/empty values</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Need at least one path element to identify the slot</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># The last element of the path is the slot name</span>
+        <span class="n">slot_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sv</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">schema_view</span>
+            <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">context</span><span class="o">.</span><span class="n">target_class</span><span class="p">)</span>
+            <span class="c1"># Downgrade only if slot is not required AND has an enum range</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">induced</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">and</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Could not induce slot </span><span class="si">%s</span><span class="s2"> for null enum check: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">ValidationContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">ValidationResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform JSON Schema validation on the provided instance</span>
@@ -447,12 +490,22 @@
         <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="n">validator</span><span class="o">.</span><span class="n">iter_errors</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
             <span class="n">error_context</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx</span><span class="o">.</span><span class="n">message</span> <span class="k">for</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="n">error</span><span class="o">.</span><span class="n">context</span><span class="p">]</span>
             <span class="n">best_error</span> <span class="o">=</span> <span class="n">best_match</span><span class="p">([</span><span class="n">error</span><span class="p">])</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">best_error</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2"> in /</span><span class="si">{</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">best_error</span><span class="o">.</span><span class="n">absolute_path</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">severity</span> <span class="o">=</span> <span class="n">Severity</span><span class="o">.</span><span class="n">ERROR</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_null_for_optional_enums</span><span class="p">:</span>
+                <span class="c1"># Use absolute_path and instance value directly — no regex needed</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">best_error</span><span class="o">.</span><span class="n">absolute_path</span><span class="p">)</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">best_error</span><span class="o">.</span><span class="n">instance</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_null_enum_error</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+                    <span class="n">severity</span> <span class="o">=</span> <span class="n">Severity</span><span class="o">.</span><span class="n">WARN</span>
+
             <span class="k">yield</span> <span class="n">ValidationResult</span><span class="p">(</span>
                 <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;jsonschema validation&quot;</span><span class="p">,</span>
-                <span class="n">severity</span><span class="o">=</span><span class="n">Severity</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+                <span class="n">severity</span><span class="o">=</span><span class="n">severity</span><span class="p">,</span>
                 <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
                 <span class="n">instantiates</span><span class="o">=</span><span class="n">context</span><span class="o">.</span><span class="n">target_class</span><span class="p">,</span>
-                <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">best_error</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2"> in /</span><span class="si">{</span><span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">best_error</span><span class="o">.</span><span class="n">absolute_path</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">,</span>
                 <span class="n">context</span><span class="o">=</span><span class="n">error_context</span><span class="p">,</span>
                 <span class="n">source</span><span class="o">=</span><span class="n">best_error</span><span class="p">,</span>
             <span class="p">)</span></div>
