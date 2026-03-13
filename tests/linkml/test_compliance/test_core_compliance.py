@@ -558,7 +558,9 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "  )"
         "}"
     )
-    owl_mv = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    min_val = 1 if required else 0
+    owl_max = "" if multivalued else "[ a owl:Restriction ; owl:maxCardinality 1 ; owl:onProperty ex:s1 ],"
+    owl_card = f"[ a owl:Restriction ; owl:minCardinality {min_val} ; owl:onProperty ex:s1 ],{owl_max}"
     owl = (
         "@prefix ex: <http://example.org/> ."
         "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -568,10 +570,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
         "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ."
         "ex:C a owl:Class ;"
         'rdfs:label "C" ;'
-        "rdfs:subClassOf [ a owl:Restriction ;"
-        f"    owl:minCardinality {1 if required else 0} ;"
-        "    owl:onProperty ex:s1 ],"
-        f"{owl_mv}"
+        f"rdfs:subClassOf {owl_card}"
         "    [ a owl:Restriction ;"
         "    owl:allValuesFrom xsd:string ;"
         "   owl:onProperty ex:s1 ] ."

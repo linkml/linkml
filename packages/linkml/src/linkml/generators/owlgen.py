@@ -19,6 +19,7 @@ from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
@@ -174,6 +175,23 @@ class OwlSchemaGenerator(Generator):
     enum_iri_separator: str = "#"
     """Separator for enum IRI. Can be overridden for example if your namespace IRI already contains a #"""
 
+    skip_vacuous_min_zero_cardinality_axioms: bool | None = None
+    """If True, suppress owl:minCardinality 0 restrictions. Such axioms are vacuously
+    satisfied by every individual and never carry information.
+    Defaults to False; will change to True in a future release."""
+
+    skip_vacuous_local_range_axioms: bool | None = None
+    """If True, suppress owl:allValuesFrom restrictions whose filler is either owl:Thing
+    or the same URI as the property's globally declared rdfs:range (entailed, hence
+    vacuous in context). Attribute slots, which have no global rdfs:range, are
+    unaffected.
+    Defaults to False; will change to True in a future release."""
+
+    consolidate_cardinality_axioms: bool | None = None
+    """If True, emit a single owl:cardinality restriction when minimum_cardinality equals
+    maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality.
+    Defaults to False; will change to True in a future release."""
+
     enum_inherits_as_subclass_of: bool = False
     """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
 
@@ -183,6 +201,16 @@ class OwlSchemaGenerator(Generator):
 
         :return:
         """
+        if self.skip_vacuous_min_zero_cardinality_axioms is None:
+            deprecation_warning("owlgen-skip-vacuous-min-zero-cardinality-default")
+            self.skip_vacuous_min_zero_cardinality_axioms = False
+        if self.skip_vacuous_local_range_axioms is None:
+            deprecation_warning("owlgen-skip-vacuous-local-range-default")
+            self.skip_vacuous_local_range_axioms = False
+        if self.consolidate_cardinality_axioms is None:
+            deprecation_warning("owlgen-consolidate-cardinality-axioms-default")
+            self.consolidate_cardinality_axioms = False
+
         sv = self.schemaview
         schema = sv.schema
         owl_id = schema.id
@@ -210,6 +238,8 @@ class OwlSchemaGenerator(Generator):
             self.add_type(typ)
         for enm in sv.all_enums(imports=mergeimports).values():
             self.add_enum(enm)
+        for cls in sv.all_classes(imports=mergeimports).values():
+            self._add_disjoint_children(cls)
 
         if not mergeimports:
             for imp in schema.imports:
@@ -535,26 +565,63 @@ class OwlSchemaGenerator(Generator):
                 top_slot = sv.get_slot(slot.name)
             else:
                 top_slot = slot
-            avf = BNode()
-            graph.add((avf, RDF.type, OWL.Restriction))
-            graph.add((avf, quantifier_predicate, x))
-            graph.add((avf, OWL.onProperty, slot_uri))
-            owl_exprs.append(avf)
+            if not (
+                quantifier_predicate == OWL.allValuesFrom
+                and self.skip_vacuous_local_range_axioms
+                and self._is_vacuous_avf_filler(top_slot, x)
+            ):
+                avf = BNode()
+                graph.add((avf, RDF.type, OWL.Restriction))
+                graph.add((avf, quantifier_predicate, x))
+                graph.add((avf, OWL.onProperty, slot_uri))
+                owl_exprs.append(avf)
             if isinstance(cls, AnonymousClassExpression):
                 # cardinality constraints only belong at the top level
                 continue
-            min_card_expr = BNode()
-            owl_exprs.append(min_card_expr)
-            min_card = 1 if slot.required or top_slot.required else 0
-            graph.add((min_card_expr, RDF.type, OWL.Restriction))
-            graph.add((min_card_expr, OWL.minCardinality, Literal(min_card)))
-            graph.add((min_card_expr, OWL.onProperty, slot_uri))
-            if not slot.multivalued and not top_slot.multivalued:
-                max_card_expr = BNode()
-                owl_exprs.append(max_card_expr)
-                graph.add((max_card_expr, RDF.type, OWL.Restriction))
-                graph.add((max_card_expr, OWL.maxCardinality, Literal(1)))
-                graph.add((max_card_expr, OWL.onProperty, slot_uri))
+
+            ### Cardinality axioms
+            # determine min_card
+            if slot.minimum_cardinality is not None:
+                min_card = slot.minimum_cardinality
+            elif top_slot.minimum_cardinality is not None:
+                min_card = top_slot.minimum_cardinality
+            elif slot.required or top_slot.required:
+                min_card = 1
+            else:
+                min_card = 0
+            # determine max_card
+            if slot.maximum_cardinality is not None:
+                max_card = slot.maximum_cardinality
+            elif top_slot.maximum_cardinality is not None:
+                max_card = top_slot.maximum_cardinality
+            elif not slot.multivalued and not top_slot.multivalued:
+                max_card = 1
+            else:
+                max_card = None  # unbounded
+            # warn if explicit cardinality bounds are set without multivalued
+            if (
+                (
+                    slot.minimum_cardinality is not None
+                    or slot.maximum_cardinality is not None
+                    or top_slot.minimum_cardinality is not None
+                    or top_slot.maximum_cardinality is not None
+                )
+                and not slot.multivalued
+                and not top_slot.multivalued
+            ):
+                logger.warning(
+                    f"Slot '{slot.name}' has minimum_cardinality or maximum_cardinality set "
+                    f"but multivalued is not set; assuming multivalued=True."
+                )
+            # generate axioms
+            if self.consolidate_cardinality_axioms and min_card is not None and min_card == max_card:
+                owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.cardinality, min_card))
+            else:
+                if not (self.skip_vacuous_min_zero_cardinality_axioms and min_card == 0):
+                    owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.minCardinality, min_card))
+                if max_card is not None:
+                    owl_exprs.append(self._add_cardinality_restriction(slot_uri, OWL.maxCardinality, max_card))
+
             if slot.has_member:
                 has_member_expr = self.transform_class_slot_expression(cls, slot.has_member, slot)
                 if has_member_expr:
@@ -976,6 +1043,64 @@ class OwlSchemaGenerator(Generator):
                 if not isinstance(pv_node, Literal):
                     g.add((pv_node, sub_pred, enum_uri))
 
+    def _is_vacuous_avf_filler(self, top_slot: SlotDefinition, x: URIRef | BNode) -> bool:
+        """Return True when an ``owl:allValuesFrom x`` restriction is vacuous.
+
+        Two cases are considered vacuous:
+
+        1. ``x`` is ``owl:Thing`` — trivially satisfied by every individual.
+        2. ``x`` is a plain URI equal to the globally declared ``rdfs:range`` of the
+           property.  Top-level (non-attribute) slots have their range emitted as a
+           global ``rdfs:range`` axiom by ``add_slot``; a local ``allValuesFrom``
+           with the same filler is then fully entailed and adds nothing new.
+           Attribute slots do *not* get a global ``rdfs:range``, so for those the
+           ``allValuesFrom`` is the only range declaration and must be kept.
+        """
+        if x == OWL.Thing:
+            return True
+        if not isinstance(x, URIRef):
+            # BNode means additional constraints beyond a plain range — never vacuous.
+            return False
+        sv = self.schemaview
+        # Attributes have no globally declared rdfs:range, so their allValuesFrom
+        # carries information and must not be dropped.
+        # Use attributes=False so that class-level attribute slots are excluded;
+        # sv.all_slots(attributes=True) would include them and give a false positive.
+        if top_slot.name not in sv.all_slots(imports=True, attributes=False):
+            return False
+        ts = sv.get_slot(top_slot.name)
+        range_name = (ts.range if ts else None) or sv.schema.default_range
+        if not range_name:
+            return False
+        if range_name in sv.all_types(imports=True):
+            return x == self._type_uri(range_name)
+        elif range_name in sv.all_enums(imports=True):
+            return x == self._enum_uri(EnumDefinitionName(range_name))
+        elif range_name in sv.all_classes(imports=True):
+            return x == self._class_uri(range_name)
+        return False
+
+    def _add_disjoint_children(self, cls: ClassDefinition) -> None:
+        """Emit an ``owl:AllDisjointClasses`` axiom for the immediate subclasses of *cls*
+        when ``children_are_mutually_disjoint`` is set on the class.
+
+        The axiom is suppressed when fewer than two qualifying children exist.
+        """
+        if not cls.children_are_mutually_disjoint:
+            return
+        sv = self.schemaview
+        children = sorted(
+            [c for c in sv.all_classes(imports=self.mergeimports).values() if c.is_a == cls.name],
+            key=lambda c: c.name,
+        )
+        if len(children) < 2:
+            return
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.AllDisjointClasses))
+        listnode = BNode()
+        Collection(self.graph, listnode, [self._class_uri(c.name) for c in children])
+        self.graph.add((node, OWL.members, listnode))
+
     def _add_rule(self, subject: URIRef | BNode, rule: ClassRule, cls: ClassDefinition):
         if not self.use_swrl:
             return
@@ -1058,6 +1183,13 @@ class OwlSchemaGenerator(Generator):
         self.graph.add((node, RDF.type, OWL.Restriction))
         self.graph.add((node, OWL.onProperty, property))
         self.graph.add((node, OWL.hasValue, filler))
+        return node
+
+    def _add_cardinality_restriction(self, property: URIRef, cardinality_property: URIRef, cardinality: int) -> BNode:
+        node = BNode()
+        self.graph.add((node, RDF.type, OWL.Restriction))
+        self.graph.add((node, cardinality_property, Literal(cardinality)))
+        self.graph.add((node, OWL.onProperty, property))
         return node
 
     @staticmethod
@@ -1372,6 +1504,37 @@ class OwlSchemaGenerator(Generator):
     is_flag=False,
     show_default=True,
     help="IRI separator for enums.",
+)
+@click.option(
+    "--skip-vacuous-local-range-axioms/--no-skip-vacuous-local-range-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, suppress owl:allValuesFrom restrictions whose filler is owl:Thing "
+        "or the same URI as the property's globally declared rdfs:range, as these are "
+        "entailed and carry no additional information. "
+        "Default will change to true in a future release."
+    ),
+)
+@click.option(
+    "--skip-vacuous-min-zero-cardinality-axioms/--no-skip-vacuous-min-zero-cardinality-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, suppress owl:minCardinality 0 restrictions. "
+        "Such axioms are vacuously satisfied by every individual and never carry information. "
+        "Default will change to true in a future release."
+    ),
+)
+@click.option(
+    "--consolidate-cardinality-axioms/--no-consolidate-cardinality-axioms",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, emit a single owl:cardinality restriction when minimum_cardinality equals "
+        "maximum_cardinality, instead of separate owl:minCardinality and owl:maxCardinality. "
+        "Default will change to true in a future release."
+    ),
 )
 @click.option(
     "--enum-inherits-as-subclass-of/--no-enum-inherits-as-subclass-of",
