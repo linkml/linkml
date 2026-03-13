@@ -278,7 +278,7 @@ class YarrrmlGenerator(Generator):
 
                 if inlined is False:
                     if multivalued:
-                        po.append({"p": pred, "o": [{"value": f"{default_prefix}:$({var}[*])", "type": "iri"}]})
+                        po.append({"p": pred, "o": [{"value": f"{default_prefix}:$({var})", "type": "iri"}]})
                     else:
                         po.append({"p": pred, "o": {"value": f"{default_prefix}:$({var})", "type": "iri"}})
                     continue
@@ -288,10 +288,7 @@ class YarrrmlGenerator(Generator):
                 parent_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
 
                 if range_id:
-                    if multivalued:
-                        left = f"$({var}[*].{range_id.name})"
-                    else:
-                        left = f"$({var}.{range_id.name})"
+                    left = f"$({var}.{range_id.name})"
                     right = f"$({range_id.name})"
                 elif parent_id:
                     left = f"$({parent_id.name})"
