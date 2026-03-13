@@ -366,3 +366,9 @@ def test_normalize_inlined_key_name_with_list_value():
     """[{key_name: [values]}] — multivalued field value must pass through."""
     c = _TaggedEntityContainer(items=[{"tags": ["t1"]}])
     assert c.items == [_TaggedEntity(tags=["t1"])]
+
+
+def test_normalize_inlined_list_of_lists_with_inheritance():
+    """List-of-lists: first element must map to key, not first MRO field."""
+    c = _ContainerList(items=[["n1", "t1"]])
+    assert c.items == [_ChildClass(notation="n1", title="t1")]

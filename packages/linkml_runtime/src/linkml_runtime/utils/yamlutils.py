@@ -202,8 +202,12 @@ class YAMLRoot(JsonObj):
                         cooked_obj = slot_type(**as_dict(list_entry))
                         order_up(cooked_obj[key_name], cooked_obj)
                 elif isinstance(list_entry, list):
-                    # *args
-                    cooked_obj = slot_type(*list_entry)
+                    # First element is the key; remaining map to non-key fields in order
+                    non_key_fields = [f.name for f in dataclasses.fields(slot_type) if f.name != key_name]
+                    kwargs = {key_name: list_entry[0]}
+                    for fname, val in zip(non_key_fields, list_entry[1:]):
+                        kwargs[fname] = val
+                    cooked_obj = slot_type(**kwargs)
                     order_up(cooked_obj[key_name], cooked_obj)
                 else:
                     # lone key [key1: , key2: ... }
