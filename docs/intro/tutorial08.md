@@ -85,18 +85,8 @@ ls personinfo/
 
 Outputs:
 
-```text
-excel
-graphql
-jsonld
-jsonschema
-owl
-personinfo.py
-prefixmap
-protobuf
-shacl
-shex
-sqlschema
+```{literalinclude} ../../examples/tutorial/tutorial08/project-listing.txt
+:language: text
 ```
 
 

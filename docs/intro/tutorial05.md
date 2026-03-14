@@ -97,8 +97,8 @@ python test.py
 
 Outputs:
 
-```text
-Person({'id': 'ORCID:9876', 'full_name': 'Lex Luthor'})
+```{literalinclude} ../../examples/tutorial/tutorial05/test-output.txt
+:language: text
 ```
 
 Hurray! Perhaps this is not very impressive in itself,
@@ -125,15 +125,8 @@ python test_runtime.py
 
 Outputs:
 
-```text
-{
-  "id": "ORCID:9876",
-  "full_name": "Lex Luthor",
-  "aliases": [
-    "Bad Guy"
-  ],
-  "@type": "Person"
-}
+```{literalinclude} ../../examples/tutorial/tutorial05/test-runtime-output.txt
+:language: text
 ```
 
 ## Alternatives

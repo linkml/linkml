@@ -130,7 +130,9 @@ def execute_blocks(directory: str, blocks: list[Block]) -> list[str]:
                 else:
                     logger.info("Success!")
         elif block.is_stdout():
-            if "compare_rdf" in block.annotations:
+            if "no_compare" in block.annotations:
+                logger.info("Skipping comparison (no_compare annotation)")
+            elif "compare_rdf" in block.annotations:
                 logger.warning("SKIPPING RDF COMPARISON. TODO: https://github.com/linkml/linkml/issues/427")
             elif last_block.output:
                 if last_block.output.strip() != block.content.strip():

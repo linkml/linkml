@@ -200,24 +200,8 @@ linkml-convert -s personinfo-mapped.yaml data-fixed.yaml
 
 Outputs:
 
-```json
-{
-  "persons": [
-    {
-      "id": "ORCID:1234",
-      "full_name": "Clark Kent",
-      "phone": "555-555-5555",
-      "age": 33,
-      "status": "ALIVE"
-    },
-    {
-      "id": "ORCID:2222",
-      "full_name": "Count Dracula",
-      "status": "UNKNOWN"
-    }
-  ],
-  "@type": "Container"
-}
+```{literalinclude} ../../examples/tutorial/tutorial06/data-fixed.json
+:language: json
 ```
 
 <!-- TODO: RDF docs -->
@@ -248,9 +232,8 @@ python test.py
 
 Outputs:
 
-```text
-STATUS=DEAD
-MEANING=http://purl.obolibrary.org/obo/PATO_0001422
+```{literalinclude} ../../examples/tutorial/tutorial06/test-output.txt
+:language: text
 ```
 
 Next we will explore more aspects of the modeling language
