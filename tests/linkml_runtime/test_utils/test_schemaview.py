@@ -961,7 +961,25 @@ for value in CREATURE_EXPECTED.values():
 
 
 @pytest.mark.parametrize(
-    "schema", ["creature_view", "creature_view_remote", "creature_view_local", "creature_view_direct_url"]
+    "schema",
+    [
+        "creature_view",
+        pytest.param(
+            "creature_view_remote",
+            marks=pytest.mark.xfail(
+                reason="Remote files on main still have old linkml-runtime IDs. "
+                "Remove xfail after PR #3271 is merged to main."
+            ),
+        ),
+        "creature_view_local",
+        pytest.param(
+            "creature_view_direct_url",
+            marks=pytest.mark.xfail(
+                reason="Remote files on main still have old linkml-runtime IDs. "
+                "Remove xfail after PR #3271 is merged to main."
+            ),
+        ),
+    ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
 def test_creature_schema_entities_with_without_imports(
