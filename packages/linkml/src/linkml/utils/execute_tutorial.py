@@ -87,6 +87,9 @@ def execute_blocks(directory: str, blocks: list[Block]) -> list[str]:
             if "no_execute" in block.annotations:
                 continue
             cmd = block.content.strip().split()
+            # Use the current Python interpreter for python commands
+            if cmd[0] in ("python", "python3"):
+                cmd[0] = sys.executable
             if ">" in cmd:
                 # redirects not support in subprocess.run
                 pos = cmd.index(">")
