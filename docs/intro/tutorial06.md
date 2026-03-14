@@ -10,75 +10,16 @@ LinkML allows you to provide *enumerations*, collections of controlled string va
 
 personinfo.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  schema: http://schema.org/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-imports:
-  - linkml:types
-default_range: string
-
-classes:
-  Person:
-    class_uri: schema:Person
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-        slot_uri: schema:name
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-      status:
-        description: >-
-          vital status of the person
-        range: PersonStatus       ## see "enums" section below
-    id_prefixes:
-      - ORCID
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
-
-enums:
-  PersonStatus:
-    permissible_values:
-      ALIVE:
-      DEAD:
-      UNKNOWN:
+```{literalinclude} ../../examples/tutorial/tutorial06/personinfo.yaml
+:language: yaml
 ```
 
 Now let's collect some data!
 
 data.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 33
-    phone: 555-555-5555
-    status: ALIVE
-  - id: ORCID:2222
-    full_name: Count Dracula
-    status: UNDEAD
+```{literalinclude} ../../examples/tutorial/tutorial06/data.yaml
+:language: yaml
 ```
 
 We can run our data through the linkml validator (which just wraps a jsonschema validator by default)
@@ -100,16 +41,8 @@ Let's go ahead and fix the data, changing Dracula's vital status from UNDEAD to 
 
 data-fixed.yaml:
 
-```yaml
-persons:
-  - id: ORCID:1234
-    full_name: Clark Kent
-    age: 33
-    phone: 555-555-5555
-    status: ALIVE
-  - id: ORCID:2222
-    full_name: Count Dracula
-    status: UNKNOWN
+```{literalinclude} ../../examples/tutorial/tutorial06/data-fixed.yaml
+:language: yaml
 ```
 
 This should now validate successfully:
@@ -130,67 +63,8 @@ Here we use the biomedical ontology PATO to provide codes/terms for statuses lik
 
 personinfo-mapped.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:
-  linkml: https://w3id.org/linkml/
-  schema: http://schema.org/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-  PATO: http://purl.obolibrary.org/obo/PATO_
-imports:
-  - linkml:types
-default_range: string
-
-classes:
-  Person:
-    class_uri: schema:Person
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-        slot_uri: schema:name
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-      status:
-        description: >-
-          vital status of the person
-        range: PersonStatus
-    id_prefixes:
-      - ORCID
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
-
-enums:
-  PersonStatus:
-    permissible_values:
-      ALIVE:
-        description: the person is living
-        meaning: PATO:0001421
-      DEAD:
-        description: the person is deceased
-        meaning: PATO:0001422
-      UNKNOWN:
-        description: the vital status is not known
-        todos:
-          - map this to an ontology
+```{literalinclude} ../../examples/tutorial/tutorial06/personinfo-mapped.yaml
+:language: yaml
 ```
 
 
@@ -218,12 +92,8 @@ then use this code:
 
 test.py:
 
-```python
-from personinfo import Person, PersonStatus
-
-person = Person(id='P1', full_name='Julius Caesar', status="DEAD")
-print(f'STATUS={person.status}')
-print(f'MEANING={person.status.meaning}')
+```{literalinclude} ../../examples/tutorial/tutorial06/test.py
+:language: python
 ```
 
 ```bash

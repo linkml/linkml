@@ -13,48 +13,8 @@ For illustration, we will take the schema we developed in the last section:
 
 personinfo.yaml:
 
-```yaml
-id: https://w3id.org/linkml/examples/personinfo
-name: personinfo
-prefixes:                                  ## Note are adding 3 new ones here
-  linkml: https://w3id.org/linkml/
-  schema: http://schema.org/
-  personinfo: https://w3id.org/linkml/examples/personinfo/
-  ORCID: https://orcid.org/
-imports:
-  - linkml:types
-default_range: string
-
-classes:
-  Person:
-    class_uri: schema:Person              ## reuse schema.org vocabulary
-    attributes:
-      id:
-        identifier: true
-      full_name:
-        required: true
-        description:
-          name of the person
-        slot_uri: schema:name             ## reuse schema.org vocabulary
-      aliases:
-        multivalued: true
-        description:
-          other names for the person
-      phone:
-        pattern: "^[\\d\\(\\)\\-]+$"
-        slot_uri: schema:telephone       ## reuse schema.org vocabulary
-      age:
-        range: integer
-        minimum_value: 0
-        maximum_value: 200
-    id_prefixes:
-      - ORCID
-  Container:
-    attributes:
-      persons:
-        multivalued: true
-        inlined_as_list: true
-        range: Person
+```{literalinclude} ../../examples/tutorial/tutorial05/personinfo.yaml
+:language: yaml
 ```
 
 We can use a script that is distributed with LinkML to generate a python dataclasses model:
@@ -82,11 +42,8 @@ You can now write code like:
 
 test.py:
 
-```python
-from personinfo import Person
-
-p1 = Person(id='ORCID:9876', full_name='Lex Luthor')
-print(p1)
+```{literalinclude} ../../examples/tutorial/tutorial05/test.py
+:language: python
 ```
 
 run this:
@@ -111,12 +68,8 @@ The LinkML runtime is a separate python library that provides methods needed by 
 
 test_runtime.py:
 
-```python
-from linkml_runtime.dumpers import json_dumper
-from personinfo import Person
-
-p1 = Person(id='ORCID:9876', full_name='Lex Luthor', aliases=["Bad Guy"])
-print(json_dumper.dumps(p1))
+```{literalinclude} ../../examples/tutorial/tutorial05/test_runtime.py
+:language: python
 ```
 
 ```bash
