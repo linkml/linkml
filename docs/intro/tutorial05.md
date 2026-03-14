@@ -148,8 +148,6 @@ Outputs:
 
 ## Further reading
 
-* [linkml-runtime](https://github.com/linkml/linkml-runtime)
-    - This repo has the minimal runtime required for a generated dataclasses model to work
 * Generators:
     - [Python Generator](../generators/python)
 * Python [dataclasses](https://docs.python.org/3/library/dataclasses.html)
