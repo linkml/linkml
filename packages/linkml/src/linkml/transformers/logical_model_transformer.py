@@ -159,6 +159,7 @@ class LogicalModelTransformer(ModelTransformer):
     >>> from linkml_runtime.dumpers import yaml_dumper
     >>> print(yaml_dumper.dumps(flat_schema.classes['Person']))
     name: Person
+    from_schema: http://example.org/test-schema
     attributes:
       id:
         name: id
@@ -169,8 +170,7 @@ class LogicalModelTransformer(ModelTransformer):
       age:
         name: age
         range: integer
-
-    ...
+    <BLANKLINE>
 
     Note that the id and name attributes have been rolled down from Thing to Person.
 
@@ -182,6 +182,7 @@ class LogicalModelTransformer(ModelTransformer):
     >>> flat_schema = tr.transform()
     >>> print(yaml_dumper.dumps(flat_schema.classes['Container']))
     name: Container
+    from_schema: http://example.org/test-schema
     attributes:
       entities:
         name: entities
@@ -190,8 +191,7 @@ class LogicalModelTransformer(ModelTransformer):
         - range: Organization
         - range: Person
         - range: Thing
-
-    ...
+    <BLANKLINE>
 
     This has "compiled away" the hierarchy. The type of the values of 'entities' for Container can
     be checked against the any_of expression, without needing to know the full class hierarchy.
@@ -211,8 +211,7 @@ class LogicalModelTransformer(ModelTransformer):
         name: entities
         range: Thing
         multivalued: true
-
-    ...
+    <BLANKLINE>
 
     You can also use any_of directly in the schema:
 
@@ -223,6 +222,7 @@ class LogicalModelTransformer(ModelTransformer):
     >>> flat_schema = tr.transform()
     >>> print(yaml_dumper.dumps(flat_schema.classes['Container2']))
     name: Container2
+    from_schema: http://example.org/test-schema
     attributes:
       entities2:
         name: entities2
@@ -230,8 +230,7 @@ class LogicalModelTransformer(ModelTransformer):
         any_of:
         - range: Organization
         - range: Person
-
-    ...
+    <BLANKLINE>
 
     Note that defaults are always applied after reasoning. So if you set a default_range to
     be string, and use inheritance preservation, the unfolded range expression is still
@@ -250,7 +249,7 @@ class LogicalModelTransformer(ModelTransformer):
         any_of:
         - range: Organization
         - range: Person
-
+    <BLANKLINE>
 
     When compiling to a framework that does not support inheritance, such as JSON Schema, the any_of expression
     can be directly translated to the same construct in JSON-Schema.
@@ -268,6 +267,7 @@ class LogicalModelTransformer(ModelTransformer):
     range: integer
     minimum_value: 40
     maximum_value: 60
+    <BLANKLINE>
 
     Here the slot-level constraints seem to have been "overridden". In fact, LinkML is monotonic, and there
     is no overriding. In fact the constraints have been combined as a conjunction (And), and then the resulting
@@ -282,9 +282,7 @@ class LogicalModelTransformer(ModelTransformer):
     ...   flat_schema = tr.transform()
     ... except UnsatisfiableAttribute as e:
     ...   print(e)
-    <BLANKLINE>
     Attribute YoungAdult.age is unsatisfiable
-    <BLANKLINE>
 
     Let's get rid of the problematic class:
 
@@ -298,9 +296,7 @@ class LogicalModelTransformer(ModelTransformer):
     ...   flat_schema = tr.transform()
     ... except UnsatisfiableAttribute as e:
     ...   print(e)
-    <BLANKLINE>
     Attribute Person2.age is unsatisfiable
-    <BLANKLINE>
 
     """
 

@@ -302,19 +302,19 @@ class Import(Import_, PydanticTemplateModel):
 
         .. code-block:: python
 
-            >>> Import(module='sys').render()
+            >>> print(Import(module='sys').render(), end='')
             import sys
-            >>> Import(module='numpy', alias='np').render()
+            >>> print(Import(module='numpy', alias='np').render(), end='')
             import numpy as np
 
         Class import:
 
         .. code-block:: python
 
-            >>> Import(module='pathlib', objects=[
-            >>>     ObjectImport(name="Path"),
-            >>>     ObjectImport(name="PurePath", alias="RenamedPurePath")
-            >>> ]).render()
+            >>> print(Import(module='pathlib', objects=[
+            ...     ObjectImport(name="Path"),
+            ...     ObjectImport(name="PurePath", alias="RenamedPurePath")
+            ... ]).render(), end='')
             from pathlib import (
                 Path,
                 PurePath as RenamedPurePath
