@@ -19,15 +19,15 @@ TUTORIAL_DIR = Path(__file__).resolve().parents[3] / "docs" / "intro"
 @pytest.mark.parametrize(
     "tutorial_file",
     [
-        pytest.param("tutorial01.md", marks=pytest.mark.xfail(reason="stale JSON Schema output")),
+        pytest.param("tutorial01.md"),
         pytest.param("tutorial02.md"),
-        pytest.param("tutorial03.md", marks=pytest.mark.xfail(reason="stale validation error message format")),
-        pytest.param("tutorial04.md", marks=pytest.mark.xfail(reason="stale RDF/JSON-LD outputs")),
-        pytest.param("tutorial05.md", marks=pytest.mark.xfail(reason="generated Python code imports")),
-        pytest.param("tutorial06.md", marks=pytest.mark.xfail(reason="stale output + Python imports")),
+        pytest.param("tutorial03.md"),
+        pytest.param("tutorial04.md"),
+        pytest.param("tutorial05.md"),
+        pytest.param("tutorial06.md"),
         pytest.param("tutorial07.md"),
-        pytest.param("tutorial08.md", marks=pytest.mark.xfail(reason="stale gen-project output")),
-        pytest.param("tutorial09.md", marks=pytest.mark.xfail(reason="missing schema file setup")),
+        pytest.param("tutorial08.md"),
+        pytest.param("tutorial09.md"),
     ],
     ids=lambda p: p.removesuffix(".md"),
 )

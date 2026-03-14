@@ -19,6 +19,7 @@ the next line should contain the language tag (e.g., `:language: python`).
 
 import logging
 import re
+import shlex
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -86,10 +87,14 @@ def execute_blocks(directory: str, blocks: list[Block]) -> list[str]:
         elif block.is_bash():
             if "no_execute" in block.annotations:
                 continue
-            cmd = block.content.strip().split()
+            cmd = shlex.split(block.content.strip())
             # Use the current Python interpreter for python commands
             if cmd[0] in ("python", "python3"):
                 cmd[0] = sys.executable
+            # Replace ls with a cross-platform Python equivalent
+            elif cmd[0] == "ls":
+                target = cmd[1] if len(cmd) > 1 else "."
+                cmd = [sys.executable, "-c", f"import os; print(chr(10).join(sorted(os.listdir({target!r}))))"]
             if ">" in cmd:
                 # redirects not support in subprocess.run
                 pos = cmd.index(">")
@@ -103,12 +108,12 @@ def execute_blocks(directory: str, blocks: list[Block]) -> list[str]:
                 outpath = None
             logger.info(f"Executing: {cmd}")
             r = subprocess.run(cmd, cwd=directory, capture_output=True)
-            block.output = r.stdout.decode("utf-8")
+            block.output = r.stdout.decode("utf-8").replace("\r\n", "\n")
             if outpath:
                 with open(outpath, "w", encoding="UTF-8") as stream:
                     logger.info(f"WRITING {len(block.output)} CHARS TO = {outpath}")
                     stream.write(block.output)
-            block.error = r.stderr.decode("utf-8")
+            block.error = r.stderr.decode("utf-8").replace("\r\n", "\n")
             logger.info(f"OUT [sample] = {block.output[0:30]}")
             if block.expected_fail:
                 if r.returncode == 0:

@@ -386,8 +386,13 @@ def patch_requests_cache(pytestconfig):
         urls_expire_after={"localhost": requests_cache.DO_NOT_CACHE},
     )
     requests_cache.clear()
-    with requests_cache.enabled():
-        yield
+    yield
+    # Close the SQLite backend before uninstalling so the file handle is released
+    import requests
+
+    session = requests.Session()
+    if hasattr(session, "cache"):
+        session.cache.close()
     requests_cache.uninstall_cache()
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption("--with-output"):

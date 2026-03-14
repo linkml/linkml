@@ -137,7 +137,7 @@ Outputs:
       "schema": "http://schema.org/",
       "@vocab": "https://w3id.org/linkml/examples/personinfo/",
       "persons": {
-         "@type": "schema:Person",
+         "@type": "@id",
          "@id": "persons"
       },
       "age": {

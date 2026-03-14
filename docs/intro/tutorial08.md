@@ -86,10 +86,8 @@ ls personinfo/
 Outputs:
 
 ```text
-docs
 excel
 graphql
-java
 jsonld
 jsonschema
 owl

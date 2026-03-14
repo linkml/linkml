@@ -98,7 +98,7 @@ python test.py
 Outputs:
 
 ```text
-Person(id='ORCID:9876', full_name='Lex Luthor', aliases=[], phone=None, age=None)
+Person({'id': 'ORCID:9876', 'full_name': 'Lex Luthor'})
 ```
 
 Hurray! Perhaps this is not very impressive in itself,
