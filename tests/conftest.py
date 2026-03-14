@@ -282,7 +282,7 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
             if item.get_closest_marker("network"):
                 item.add_marker(skip_network)
 
-    # Group compliance tests on a single xdist worker â€” they share
+    # Group compliance tests on a single xdist worker — they share
     # mutable module-level caches in helper.py that are not safe to split.
     for item in items:
         if "test_compliance" in str(item.path):
