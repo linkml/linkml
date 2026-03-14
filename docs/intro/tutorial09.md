@@ -70,6 +70,7 @@ sqlite3 persons.db "SELECT * FROM Person"
 
 or alternatively using the sqlite3 module from Python (if you don't have sqlite3 installed)
 
+<!-- NO_EXECUTE -->
 ```bash
 python -m sqlite3 persons.db "SELECT * FROM Person"
 ```
