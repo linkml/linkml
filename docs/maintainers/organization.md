@@ -10,16 +10,16 @@ Note that for many LinkML users, there is no need to understand the overall orga
 
 ## Core Packages
 
-The two most important packages are `linkml` and `linkml-runtime`
+The two most important packages are `linkml` and `linkml-runtime`. Both are developed in a single monorepo [linkml](https://github.com/linkml/linkml).
 
-* [linkml](https://github.com/linkml/linkml)
-    - [generators](generators)
-    - utilities for working with data
-    - this documentation
-* [linkml-runtime](https://github.com/linkml/linkml-runtime)
-    - code needed by linkml python object models
-    - utility code such as [schemaview](/developers/manipulating-schemas)
-    - includes metamodel (linkml_runtime.linkml_model)
+* [linkml](https://pypi.org/project/linkml/)
+  - [generators](generators)
+  - utilities for working with data
+  - this documentation
+* [linkml-runtime](https://pypi.org/project/linkml-runtime/)
+  - code needed by linkml python object models
+  - utility code such as [schemaview](/developers/manipulating-schemas)
+  - includes metamodel (linkml_runtime.linkml_model)
 
 If you are using LinkML in a Python environment, then as a general rule
 you should only need `linkml` as a *developer dependency*. This is used for
