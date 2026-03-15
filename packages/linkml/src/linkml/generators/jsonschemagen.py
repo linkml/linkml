@@ -310,9 +310,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
 
-        if cls.mixin or cls.abstract:
-            return
-
         subschema_type = "object"
         additional_properties = False
         if self.is_class_unconstrained(cls):
