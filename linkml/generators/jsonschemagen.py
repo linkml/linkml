@@ -183,8 +183,6 @@ class JsonSchemaGenerator(Generator):
         })
 
     def handle_class(self, cls: ClassDefinition) -> None:
-        if cls.mixin or cls.abstract:
-            return
         
         additional_properties = False
         if self.is_class_unconstrained(cls):
