@@ -480,11 +480,16 @@ However, if you are aiming for a more powerful library, then this has a number o
 </section>
 <section id="overview-of-python-framework">
 <h2>Overview of Python Framework<a class="headerlink" href="#overview-of-python-framework" title="Link to this heading">¶</a></h2>
-<p>Currently there are 3 core repos:</p>
+<p>Currently there are 2 core repos:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a> This holds the Source of Truth for the <em>metamodel</em></p></li>
-<li><p><a class="reference external" href="https://github.com/linkml/linkml-runtime">linkml-runtime</a> A runtime library that is depended on by schema-specific generated python dataclass libraries</p></li>
-<li><p><a class="reference external" href="https://github.com/linkml/linkml">linkml</a> The core tooling, including <a class="reference external" href="https://linkml.io/linkml/generators/index.html">generators</a></p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml-model">linkml-model</a> This holds the Source of Truth for the <em>metamodel</em> and its documentation</p></li>
+<li><p><a class="reference external" href="https://github.com/linkml/linkml">linkml/linkml</a> A monorepo that contains:</p>
+<ul>
+<li><p><a class="reference external" href="https://pypi.org/project/linkml/">linkml</a> - Python package with tooling, including <a class="reference external" href="https://linkml.io/linkml/generators/index.html">generators</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/linkml-runtime/">linkml-runtime</a> Python package providing a runtime library for the schema-specific generated python dataclass libraries.</p></li>
+<li><p><a class="reference external" href="https://linkml.io/linkml/">documentation</a></p></li>
+</ul>
+</li>
 </ul>
 <p>This guide assumes familiarity with all of the above</p>
 <p>Note that there are no runtime dependencies on linkml-model; this
@@ -694,7 +699,7 @@ or validators that work with existing structures.</p>
 <p>By this stage you can load and dump schema objects in a type-safe way. It may be tempting to just go off and implement things with this.</p>
 <p>However, you will also want to implement the core logic of LinkML as defined in the LinkML specification, under “Derived Schemas”. You can do this simply by implementing the spec in your target language,
 but a more pragmatic approach is to port the python class SchemaView</p>
-<p>SchemaView is a class in linkml-runtime here: https://github.com/linkml/linkml-runtime</p>
+<p>SchemaView is a class in linkml-runtime here: <a class="reference external" href="https://github.com/linkml/linkml/blob/main/packages/linkml_runtime/src/linkml_runtime/utils/schemaview.py">https://github.com/linkml/linkml/blob/main/packages/linkml_runtime/src/linkml_runtime/utils/schemaview.py</a></p>
 <p>Note that you may only need to implement this for a simple profile of linkml before moving to the next step. As an example, see the SchemaView.js class in linkml-runtime.js</p>
 <p>This may include:</p>
 <ul class="simple">
