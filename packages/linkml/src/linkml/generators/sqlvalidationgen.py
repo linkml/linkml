@@ -198,7 +198,7 @@ class SQLValidationGenerator(Generator):
 
             # Check rules (precondition/postcondition constraints)
             if self.check_rules and class_def.rules:
-                for _, rule in enumerate(class_def.rules):
+                for rule in class_def.rules:
                     if rule.deactivated:
                         continue
                     query = self._generate_rule_violations(class_name, rule, identifier_slot_name)
