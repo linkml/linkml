@@ -615,11 +615,13 @@ class SQLValidationGenerator(Generator):
                 where_parts.append(pre)
 
         post = self._class_expression_to_sqlalchemy(tbl, rule.postconditions, negate=True)
-        if post is not None:
-            where_parts.append(post)
-
-        if not where_parts:
+        if post is None:
+            logger.warning(
+                "Could not generate rule-based query: postconditions exist but produced "
+                "no SQL conditions (unsupported slot condition types?)."
+            )
             return None
+        where_parts.append(post)
 
         where_clause = and_(*where_parts) if len(where_parts) > 1 else where_parts[0]
 
