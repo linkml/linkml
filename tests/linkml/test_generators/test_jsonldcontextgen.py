@@ -571,3 +571,102 @@ def test_exclude_imports(input_path):
     # Imported class and slot must NOT be present
     assert "BaseClass" not in ctx, "Imported class 'BaseClass' must not appear in exclude-imports context"
     assert "baseProperty" not in ctx, "Imported slot 'baseProperty' must not appear in exclude-imports context"
+
+
+def test_no_mergeimports_excludes_imported_vocabulary_terms(tmp_path):
+    """With --no-mergeimports, slots imported from external vocabularies
+    must not appear in the generated JSON-LD context.
+
+    When a schema imports terms from an external vocabulary (e.g. W3C VC
+    v2), the imported terms already have context definitions in their own
+    JSON-LD context file. Re-defining them in the local context can
+    conflict with @protected term definitions from the external context.
+
+    The fix skips slots and classes whose imported_from attribute is set
+    to a non-linkml value when mergeimports=False.
+    """
+    # Create an "external vocabulary" schema
+    ext_dir = tmp_path / "ext"
+    ext_dir.mkdir()
+    (ext_dir / "external_vocab.yaml").write_text(
+        """
+id: https://example.org/external-vocab
+name: external_vocab
+default_prefix: ext
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ext: https://example.org/external-vocab/
+imports:
+  - linkml:types
+slots:
+  issuer:
+    slot_uri: ext:issuer
+    range: string
+    description: defined by external vocabulary
+  validFrom:
+    slot_uri: ext:validFrom
+    range: date
+    description: defined by external vocabulary
+classes:
+  ExternalCredential:
+    class_uri: ext:ExternalCredential
+    slots:
+      - issuer
+      - validFrom
+""",
+        encoding="utf-8",
+    )
+
+    # Create the main schema that imports the external vocab
+    (tmp_path / "main.yaml").write_text(
+        """
+id: https://example.org/main
+name: main
+default_prefix: main
+prefixes:
+  linkml: https://w3id.org/linkml/
+  main: https://example.org/main/
+  ext: https://example.org/external-vocab/
+imports:
+  - linkml:types
+  - https://example.org/external-vocab
+slots:
+  localName:
+    slot_uri: main:localName
+    range: string
+    description: defined locally
+classes:
+  LocalThing:
+    class_uri: main:LocalThing
+    slots:
+      - localName
+""",
+        encoding="utf-8",
+    )
+
+    importmap = {"https://example.org/external-vocab": str(ext_dir / "external_vocab")}
+
+    # Generate context WITHOUT merging imports
+    context_text = ContextGenerator(
+        str(tmp_path / "main.yaml"),
+        mergeimports=False,
+        importmap=importmap,
+        base_dir=str(tmp_path),
+    ).serialize()
+    context = json.loads(context_text)
+    ctx = context["@context"]
+
+    # Local terms must be present
+    assert "localName" in ctx or "local_name" in ctx, (
+        f"Locally defined slot 'localName' must appear in context, got: {list(ctx.keys())}"
+    )
+    assert "LocalThing" in ctx, f"Locally defined class 'LocalThing' must appear in context, got: {list(ctx.keys())}"
+
+    # Imported terms must NOT be present
+    assert "issuer" not in ctx, "Imported slot 'issuer' must not appear in no-mergeimports context"
+    assert "validFrom" not in ctx and "valid_from" not in ctx, (
+        "Imported slot 'validFrom' must not appear in no-mergeimports context"
+    )
+    assert "ExternalCredential" not in ctx, (
+        "Imported class 'ExternalCredential' must not appear in no-mergeimports context"
+    )

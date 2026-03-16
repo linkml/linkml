@@ -194,6 +194,17 @@ class ContextGenerator(Generator):
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.exclude_imports and cls.name not in self._local_classes:
             return False
+        # When mergeimports is False, skip classes imported from external
+        # vocabularies (URL-based imported_from) to avoid redefining
+        # their JSON-LD context entries. Local file imports are kept.
+        if not self.mergeimports:
+            imported = getattr(cls, "imported_from", None)
+            if imported:
+                imp_str = str(imported)
+                if not imp_str.startswith("linkml") and (
+                    imp_str.startswith("http://") or imp_str.startswith("https://")
+                ):
+                    return False
 
         class_def = {}
         cn = camelcase(cls.name)
@@ -246,6 +257,20 @@ class ContextGenerator(Generator):
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if self.exclude_imports and slot.name not in self._local_slots:
             return
+        # When mergeimports is False, skip slots imported from external
+        # vocabularies (identified by URL-based imported_from values).
+        # Their terms are already defined in the external JSON-LD context
+        # and must not be redefined here — doing so can conflict with
+        # @protected term definitions from the external context.
+        # Local file imports (non-URL imported_from) are kept.
+        if not self.mergeimports:
+            imported = getattr(slot, "imported_from", None)
+            if imported:
+                imp_str = str(imported)
+                if not imp_str.startswith("linkml") and (
+                    imp_str.startswith("http://") or imp_str.startswith("https://")
+                ):
+                    return
 
         if slot.identifier:
             slot_def = "@id"
