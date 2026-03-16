@@ -9,7 +9,12 @@ from click.testing import CliRunner
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlvalidationgen import SQLValidationGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
-from linkml_runtime.linkml_model.meta import SlotDefinition, UniqueKey
+from linkml_runtime.linkml_model.meta import (
+    AnonymousClassExpression,
+    ClassRule,
+    SlotDefinition,
+    UniqueKey,
+)
 
 
 @pytest.fixture
@@ -499,5 +504,279 @@ def test_validation_interop_with_invalid_data(input_path, tmp_path):
     assert any(int(age) < 0 or int(age) > 999 for age in invalid_ages if age is not None), (
         f"Should detect out-of-range ages. Found ages: {invalid_ages}"
     )
+
+    conn.close()
+
+
+def _schema_with_rules(rules, slots=None, class_name="LivingThings"):
+    """Helper to build a schema with rules on a class.
+
+    :param rules: list of ClassRule objects
+    :param slots: list of SlotDefinition objects (defaults to id/type/age)
+    :param class_name: class name to apply rules to
+    :return: schema object
+    """
+    b = SchemaBuilder()
+    if slots is None:
+        slots = [
+            SlotDefinition("id", identifier=True),
+            SlotDefinition("type"),
+            SlotDefinition("age", range="integer"),
+        ]
+    for s in slots:
+        b.add_slot(s)
+    b.add_class(class_name, slots=[s.name for s in slots])
+    b.add_defaults()
+    # Attach rules directly
+    b.schema.classes[class_name].rules = rules
+    return b.schema
+
+
+def test_simple_rule_equals_string_and_maximum_value():
+    """Precondition equals_string + postcondition maximum_value."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=150)},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    # Precondition positive: type = 'Human'
+    assert "type" in sql
+    assert "'Human'" in sql
+    # Postcondition negated: age > 150
+    assert "age > 150" in sql
+    assert "'rule'" in sql
+
+
+def test_rule_equals_string_in():
+    """Precondition with equals_string_in, postcondition with maximum_value."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={
+                        "type": SlotDefinition("type", equals_string_in=["Human", "Elf"]),
+                    },
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=500)},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    assert "IN" in sql
+    assert "'Human'" in sql
+    assert "'Elf'" in sql
+    assert "age > 500" in sql
+
+
+def test_rule_minimum_value_postcondition():
+    """Postcondition with minimum_value should negate to < check."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Adult")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", minimum_value=18)},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    assert "age < 18" in sql
+
+
+def test_rule_postcondition_only():
+    """Rule with no preconditions — only postcondition violation check."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=200)},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    assert "age > 200" in sql
+    # Should NOT have a precondition clause
+    assert "'Human'" not in sql
+
+
+def test_rule_multiple_postcondition_slots():
+    """Multiple slot_conditions in postconditions."""
+    slots = [
+        SlotDefinition("id", identifier=True),
+        SlotDefinition("type"),
+        SlotDefinition("age", range="integer"),
+        SlotDefinition("weight", range="integer"),
+    ]
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={
+                        "age": SlotDefinition("age", maximum_value=150),
+                        "weight": SlotDefinition("weight", maximum_value=500),
+                    },
+                ),
+            )
+        ],
+        slots=slots,
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    assert "age > 150" in sql
+    assert "weight > 500" in sql
+
+
+def test_check_rules_disabled():
+    """check_rules=False should suppress all rule SQL."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=150)},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema, check_rules=False)
+    sql = gen.generate_validation_queries()
+
+    assert "'rule'" not in sql
+
+
+def test_rule_deactivated():
+    """Deactivated rules should be skipped."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=150)},
+                ),
+                deactivated=True,
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    assert "'rule'" not in sql
+
+
+def test_cli_check_rules_option(tmp_path):
+    """CLI --no-check-rules suppresses rule queries."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=150)},
+                ),
+            )
+        ]
+    )
+    schema_path = tmp_path / "rules_schema.yaml"
+    from linkml_runtime.dumpers import yaml_dumper
+
+    with open(schema_path, "w") as f:
+        f.write(yaml_dumper.dumps(schema))
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_path), "--no-check-rules"])
+    assert result.exit_code == 0
+    assert "'rule'" not in result.output
+
+
+def test_rule_equals_number():
+    """Precondition with equals_number."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", equals_number=0)},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Newborn")},
+                ),
+            )
+        ]
+    )
+    gen = SQLValidationGenerator(schema)
+    sql = gen.generate_validation_queries()
+
+    assert "age = 0" in sql or "age = 0.0" in sql
+
+
+@pytest.mark.slow
+def test_rule_interop_sqlite(tmp_path):
+    """End-to-end: create DB, insert violating data, run validation, verify detection."""
+    schema = _schema_with_rules(
+        [
+            ClassRule(
+                preconditions=AnonymousClassExpression(
+                    slot_conditions={"type": SlotDefinition("type", equals_string="Human")},
+                ),
+                postconditions=AnonymousClassExpression(
+                    slot_conditions={"age": SlotDefinition("age", maximum_value=150)},
+                ),
+            )
+        ]
+    )
+    # Generate DDL and validation
+    table_gen = SQLTableGenerator(schema, dialect="sqlite")
+    ddl = table_gen.generate_ddl()
+    val_gen = SQLValidationGenerator(schema, dialect="sqlite", check_patterns=False)
+    validation_sql = val_gen.generate_validation_queries()
+
+    db_path = tmp_path / "rules_test.db"
+    conn = sqlite3.connect(str(db_path))
+    cursor = conn.cursor()
+    cursor.executescript(ddl)
+
+    # Valid: Human with age <= 150
+    cursor.execute('INSERT INTO "LivingThings" (id, type, age) VALUES (?, ?, ?)', ("1", "Human", 30))
+    # Valid: non-Human with age > 150 (precondition not met)
+    cursor.execute('INSERT INTO "LivingThings" (id, type, age) VALUES (?, ?, ?)', ("2", "Elf", 500))
+    # INVALID: Human with age > 150
+    cursor.execute('INSERT INTO "LivingThings" (id, type, age) VALUES (?, ?, ?)', ("3", "Human", 200))
+    conn.commit()
+
+    cursor.execute(validation_sql)
+    violations = cursor.fetchall()
+
+    rule_violations = [v for v in violations if v[2] == "rule"]
+    assert len(rule_violations) >= 1, f"Expected rule violations but got: {violations}"
+    # The violating record should be id=3
+    violating_ids = {v[3] for v in rule_violations}
+    assert "3" in violating_ids, f"Expected record 3 to violate rule. Violations: {rule_violations}"
 
     conn.close()
