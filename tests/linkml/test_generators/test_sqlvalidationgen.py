@@ -219,6 +219,38 @@ def test_check_patterns_disabled(minimal_schema):
     assert "REGEXP" not in queries
 
 
+def test_check_enums_disabled():
+    """Test disabling enum constraint checks."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("status", range="StatusEnum"))
+    b.add_enum("StatusEnum", permissible_values=["active", "inactive", "pending"])
+    b.add_class("Record", slots=["id", "status"])
+    b.add_defaults()
+    gen = SQLValidationGenerator(b.schema, check_enums=False)
+    queries = gen.generate_validation_queries()
+
+    assert "enum" not in queries
+    assert " NOT IN " not in queries
+
+
+def test_check_unique_keys_disabled():
+    """Test disabling unique_keys constraint checks."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("first_name"))
+    b.add_slot(SlotDefinition("last_name"))
+    b.add_class(
+        "Person",
+        slots=["id", "first_name", "last_name"],
+        unique_keys={"name_key": UniqueKey(unique_key_name="name_key", unique_key_slots=["first_name", "last_name"])},
+    )
+    b.add_defaults()
+    gen = SQLValidationGenerator(b.schema, check_unique_keys=True)
+    queries = gen.generate_validation_queries()
+    assert "unique_key" not in queries
+
+
 def test_include_comments_disabled(minimal_schema):
     """Test disabling comments in output."""
     gen = SQLValidationGenerator(minimal_schema, include_comments=False)
