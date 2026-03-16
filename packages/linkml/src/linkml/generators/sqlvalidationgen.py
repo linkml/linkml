@@ -7,11 +7,11 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
-from sqlalchemy import and_, column, func, literal_column, or_, select, table, union_all
+from sqlalchemy import and_, column, func, literal, null, or_, select, table, union_all
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
 from sqlalchemy.sql.selectable import TableClause
-from sqlalchemy.types import Text
+from sqlalchemy.types import Float, Integer, Text
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -20,6 +20,11 @@ from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
+
+
+def _literal_num(val):
+    """Return a typed SQLAlchemy literal for a numeric value."""
+    return literal(val, type_=Integer() if isinstance(val, int) else Float())
 
 
 @dataclass
@@ -260,9 +265,9 @@ class SQLValidationGenerator(Generator):
         """
 
         query = select(
-            literal_column(f"'{class_name}'").label("table_name"),
-            literal_column(f"'{column_name}'").label("column_name"),
-            literal_column(f"'{constraint_type}'").label("constraint_type"),
+            literal(class_name, type_=Text()).label("table_name"),
+            literal(column_name, type_=Text()).label("column_name"),
+            literal(constraint_type, type_=Text()).label("constraint_type"),
             column(identifier_slot_name).label("record_id"),
             invalid_value.label("invalid_value"),
         ).select_from(tbl)
@@ -288,7 +293,7 @@ class SQLValidationGenerator(Generator):
             column_name=slot.name,
             constraint_type="required",
             identifier_slot_name=identifier_slot_name,
-            invalid_value=literal_column("NULL"),
+            invalid_value=null(),
             tbl=tbl,
             where_condition=tbl.c[slot.name].is_(None),
         )
@@ -307,10 +312,10 @@ class SQLValidationGenerator(Generator):
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
         if slot.minimum_value is not None:
-            conditions.append(tbl.c[slot.name] < literal_column(str(slot.minimum_value)))
+            conditions.append(tbl.c[slot.name] < _literal_num(slot.minimum_value))
 
         if slot.maximum_value is not None:
-            conditions.append(tbl.c[slot.name] > literal_column(str(slot.maximum_value)))
+            conditions.append(tbl.c[slot.name] > _literal_num(slot.maximum_value))
 
         if not conditions:
             return None
@@ -329,9 +334,8 @@ class SQLValidationGenerator(Generator):
         """
         Generate query to find pattern (regex) violations.
 
-        Handles dialect-specific regex syntax:
-        - PostgreSQL: ~ operator
-        - SQLite: REGEXP function (requires extension)
+        Uses SQLAlchemy's ``regexp_match`` which compiles to the dialect-specific
+        syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
@@ -340,18 +344,7 @@ class SQLValidationGenerator(Generator):
         """
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
-        pattern = slot.pattern
-
-        # Generate dialect-specific pattern matching using SQLAlchemy
-        # We need to use literal_column for dialect-specific operators
-        if self.dialect == "postgresql":
-            pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
-        elif self.dialect == "sqlite":
-            # SQLite REGEXP requires extension
-            pattern_check = ~literal_column(f"(REGEXP('{pattern}', {slot.name}) = 1)")
-        else:
-            # Default to PostgreSQL syntax
-            pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
+        pattern_check = ~tbl.c[slot.name].regexp_match(literal(slot.pattern, type_=Text()))
 
         return self._build_violation_query(
             class_name=class_name,
@@ -415,7 +408,7 @@ class SQLValidationGenerator(Generator):
         if not enum or not enum.permissible_values:
             return None
 
-        permissible_values = [str(v) for v in enum.permissible_values.keys()]
+        permissible_values = [literal(str(v), type_=Text()) for v in enum.permissible_values.keys()]
 
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
@@ -464,7 +457,7 @@ class SQLValidationGenerator(Generator):
             for i, col in enumerate(columns):
                 concat_parts.append(func.cast(column(col), Text))
                 if i < len(columns) - 1:
-                    concat_parts.append(literal_column("'|'"))
+                    concat_parts.append(literal("|", type_=Text()))
 
             # Chain concatenation operations
             concat_expr = concat_parts[0]
@@ -493,9 +486,9 @@ class SQLValidationGenerator(Generator):
         # Main query to find all records with duplicate combinations
         query = (
             select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{uk.unique_key_name}'").label("column_name"),
-                literal_column("'unique_key'").label("constraint_type"),
+                literal(class_name, type_=Text()).label("table_name"),
+                literal(uk.unique_key_name, type_=Text()).label("column_name"),
+                literal("unique_key", type_=Text()).label("constraint_type"),
                 column(identifier_slot_name).label("record_id"),
                 concat_expr.label("invalid_value"),
             )
@@ -520,38 +513,40 @@ class SQLValidationGenerator(Generator):
 
         if slot_condition.equals_string is not None:
             val = slot_condition.equals_string
+            lit = literal(val, type_=Text())
             if negate:
-                conditions.append(or_(col != val, col.is_(None)))
+                conditions.append(or_(col != lit, col.is_(None)))
             else:
-                conditions.append(col == val)
+                conditions.append(col == lit)
 
         if slot_condition.equals_number is not None:
             val = slot_condition.equals_number
             if negate:
-                conditions.append(or_(col != literal_column(str(val)), col.is_(None)))
+                conditions.append(or_(col != _literal_num(val), col.is_(None)))
             else:
-                conditions.append(col == literal_column(str(val)))
+                conditions.append(col == _literal_num(val))
 
         if slot_condition.equals_string_in:
             vals = list(slot_condition.equals_string_in)
+            lit_vals = [literal(v, type_=Text()) for v in vals]
             if negate:
-                conditions.append(or_(col.notin_(vals), col.is_(None)))
+                conditions.append(or_(col.notin_(lit_vals), col.is_(None)))
             else:
-                conditions.append(col.in_(vals))
+                conditions.append(col.in_(lit_vals))
 
         if slot_condition.minimum_value is not None:
             val = slot_condition.minimum_value
             if negate:
-                conditions.append(col < literal_column(str(val)))
+                conditions.append(col < _literal_num(val))
             else:
-                conditions.append(col >= literal_column(str(val)))
+                conditions.append(col >= _literal_num(val))
 
         if slot_condition.maximum_value is not None:
             val = slot_condition.maximum_value
             if negate:
-                conditions.append(col > literal_column(str(val)))
+                conditions.append(col > _literal_num(val))
             else:
-                conditions.append(col <= literal_column(str(val)))
+                conditions.append(col <= _literal_num(val))
 
         return conditions
 
