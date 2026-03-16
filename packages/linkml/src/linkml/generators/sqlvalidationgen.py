@@ -556,7 +556,8 @@ class SQLValidationGenerator(Generator):
 
         :param tbl: SQLAlchemy table object
         :param expression: AnonymousClassExpression with slot_conditions
-        :param negate: If True, negate the expression (for postcondition violation detection)
+        :param negate: If True, negate the expression (for postcondition violation detection). Note that negated
+        conditions are concatenated with OR -> De Morgan's law.
         :return: SQLAlchemy condition or None
         """
         if not expression or not expression.slot_conditions:
@@ -565,7 +566,7 @@ class SQLValidationGenerator(Generator):
         # Warn about unsupported features
         for attr in ("any_of", "all_of", "none_of", "exactly_one_of"):
             if getattr(expression, attr, None):
-                logger.warning("Rule class expression '%s' is not yet supported in SQL validation", attr)
+                logger.warning(f"Rule class expression '{attr}' is not yet supported in SQL validation")
 
         all_conditions = []
         for slot_name, slot_condition in expression.slot_conditions.items():
@@ -597,6 +598,7 @@ class SQLValidationGenerator(Generator):
         :return: SQLAlchemy select object or None
         """
         if not rule.postconditions or not rule.postconditions.slot_conditions:
+            logger.warning("Could not generate rule-based query: A rule needs to have a 'postcondition'.")
             return None
 
         # Collect all referenced column names
