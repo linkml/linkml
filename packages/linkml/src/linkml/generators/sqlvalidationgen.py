@@ -483,20 +483,15 @@ class SQLValidationGenerator(Generator):
 
             where_clause = tuple_(*[tbl.c[col] for col in columns]).in_(duplicate_subquery)
 
-        # Main query to find all records with duplicate combinations
-        query = (
-            select(
-                literal(class_name, type_=Text()).label("table_name"),
-                literal(uk.unique_key_name, type_=Text()).label("column_name"),
-                literal("unique_key", type_=Text()).label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                concat_expr.label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(where_clause)
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=uk.unique_key_name,
+            constraint_type="unique_key",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=concat_expr,
+            tbl=tbl,
+            where_condition=where_clause,
         )
-
-        return query
 
     def _slot_condition_to_sqlalchemy(self, tbl, slot_name, slot_condition, negate=False):
         """
