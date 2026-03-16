@@ -45,7 +45,11 @@ class ShaclGenerator(Generator):
     uses_schemaloader = True
 
     def __post_init__(self) -> None:
-        self.schemaview = SchemaView(self.schema)
+        self.schemaview = SchemaView(
+            self.schema,
+            importmap=self.importmap,
+            base_dir=self.base_dir,
+        )
         super().__post_init__()
         self.generate_header()
 

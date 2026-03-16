@@ -1005,3 +1005,80 @@ classes:
         URIRef("https://example.org/related_to"),
     ]
     assert sorted(in_values, key=str) == expected_uris
+
+
+def test_shacl_generator_respects_importmap(tmp_path):
+    """ShaclGenerator must pass importmap and base_dir to SchemaView.
+
+    When a schema uses imports resolved via an importmap (e.g. remapping
+    a schema ID to a local file path), the SHACL generator must propagate
+    these parameters to its internal SchemaView. Previously, __post_init__
+    hardcoded SchemaView(self.schema) without forwarding importmap/base_dir,
+    causing FileNotFoundError for cross-directory imports.
+
+    See: https://github.com/linkml/linkml/issues/2913
+    """
+    # Create a "library" schema in a subdirectory
+    lib_dir = tmp_path / "lib"
+    lib_dir.mkdir()
+    (lib_dir / "base_types.yaml").write_text(
+        """
+id: https://example.org/base-types
+name: base_types
+default_prefix: bt
+prefixes:
+  linkml: https://w3id.org/linkml/
+  bt: https://example.org/base-types/
+imports:
+  - linkml:types
+classes:
+  BaseEntity:
+    attributes:
+      id: {identifier: true, range: string}
+      name: {range: string}
+""",
+        encoding="utf-8",
+    )
+
+    # Create a main schema that imports the library schema by ID
+    (tmp_path / "main.yaml").write_text(
+        """
+id: https://example.org/main
+name: main
+default_prefix: main
+prefixes:
+  linkml: https://w3id.org/linkml/
+  main: https://example.org/main/
+  bt: https://example.org/base-types/
+imports:
+  - linkml:types
+  - https://example.org/base-types
+classes:
+  Person:
+    is_a: BaseEntity
+    attributes:
+      age: {range: integer}
+""",
+        encoding="utf-8",
+    )
+
+    # Build an importmap that resolves the library schema ID to its file.
+    # SchemaView.load_import() appends ".yaml" to the mapped value, so
+    # the importmap must point to the path WITHOUT the .yaml suffix.
+    importmap = {"https://example.org/base-types": str(lib_dir / "base_types")}
+
+    # This would raise FileNotFoundError without the fix
+    gen = ShaclGenerator(
+        str(tmp_path / "main.yaml"),
+        importmap=importmap,
+        base_dir=str(tmp_path),
+    )
+    shacl = gen.serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Verify the Person shape exists and has the age property
+    shapes = list(g.subjects(RDF.type, SH.NodeShape))
+    shape_names = [str(s) for s in shapes]
+    assert any("Person" in s for s in shape_names), f"Person shape not found in {shape_names}"
