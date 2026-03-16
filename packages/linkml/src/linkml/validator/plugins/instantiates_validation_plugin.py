@@ -17,11 +17,10 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from linkml_runtime.utils.schemaview import SchemaView
-
 from linkml.validator.plugins.validation_plugin import ValidationPlugin
 from linkml.validator.report import Severity, ValidationResult
 from linkml.validator.validation_context import ValidationContext
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 def _check_must_not_have_id_slot(
