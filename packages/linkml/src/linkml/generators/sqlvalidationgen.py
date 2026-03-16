@@ -386,20 +386,15 @@ class SQLValidationGenerator(Generator):
             .having(func.count() > 1)
         )
 
-        # Main query to find all records with those duplicate values
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{slot.name}'").label("column_name"),
-                literal_column(f"'{constraint_type}'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                column(slot.name).label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(tbl.c[slot.name].in_(duplicate_subquery))
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=slot.name,
+            constraint_type=constraint_type,
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=column(slot.name),
+            where_condition=tbl.c[slot.name].in_(duplicate_subquery),
+            tbl=tbl,
         )
-
-        return query
 
     def _generate_enum_violations(
         self, class_name: str, slot: SlotDefinition, sv: SchemaView, identifier_slot_name: str
@@ -596,6 +591,10 @@ class SQLValidationGenerator(Generator):
         Generate query to find rows violating a rule's postconditions.
 
         A violation occurs when the precondition is met but the postcondition is not.
+
+        Preconditions are concatenated with AND. Postconditions are concatenated with OR.
+        Postcondition is required, precondition is not required. If no precondition is given,
+        the postcondition applies to all entries.
 
         :param class_name: Name of the class/table
         :param rule: ClassRule with preconditions/postconditions
