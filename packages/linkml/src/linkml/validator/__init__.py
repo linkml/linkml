@@ -103,7 +103,7 @@ def validate_file(
     :return: A validation report
     :rtype: ValidationReport
     """
-    schema_path = schema if isinstance(schema, (str, Path)) else None
+    schema_path = schema if isinstance(schema, str | Path) else None
     loader = default_loader_for_file(file, schema_path=schema_path, target_class=target_class)
     validator = _get_default_validator(schema, strict=strict)
     return validator.validate_source(loader, target_class)
