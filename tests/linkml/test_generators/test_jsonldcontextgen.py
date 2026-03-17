@@ -571,3 +571,69 @@ def test_exclude_imports(input_path):
     # Imported class and slot must NOT be present
     assert "BaseClass" not in ctx, "Imported class 'BaseClass' must not appear in exclude-imports context"
     assert "baseProperty" not in ctx, "Imported slot 'baseProperty' must not appear in exclude-imports context"
+
+
+def test_xsd_anyuri_as_iri_flag():
+    """Test that --xsd-anyuri-as-iri maps uri ranges to @type: @id.
+
+    By default, ``range: uri`` (type_uri ``xsd:anyURI``) produces
+    ``@type: xsd:anyURI`` (typed literal). With ``xsd_anyuri_as_iri=True``,
+    it produces ``@type: @id`` (IRI node reference), aligning the JSON-LD
+    context with the SHACL generator which already emits ``sh:nodeKind sh:IRI``
+    for the same type.
+
+    See:
+      - W3C SHACL §4.8.1 sh:nodeKind (https://www.w3.org/TR/shacl/#NodeKindConstraintComponent)
+      - JSON-LD 1.1 §4.2.2 Type Coercion (https://www.w3.org/TR/json-ld11/#type-coercion)
+      - RDF 1.1 §3.3 Literals vs §3.2 IRIs (https://www.w3.org/TR/rdf11-concepts/)
+    """
+    schema_yaml = """
+id: https://example.org/test-uri-context
+name: test_uri_context
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+  node_ref:
+    range: nodeidentifier
+    slot_uri: ex:nodeRef
+  name:
+    range: string
+    slot_uri: ex:name
+
+classes:
+  Thing:
+    slots:
+      - homepage
+      - node_ref
+      - name
+"""
+    # Default behaviour: uri → xsd:anyURI (backward compatible)
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+    # Opt-in: uri → @id (aligned with SHACL sh:nodeKind sh:IRI)
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["homepage"]["@type"] == "@id", (
+        f"Expected @type: @id for uri range with xsd_anyuri_as_iri=True, got {ctx_iri['homepage'].get('@type')}"
+    )
+
+    # nodeidentifier is unaffected by the flag (not xsd:anyURI-typed)
+    # Its default @type depends on URI_RANGES matching shex:nonLiteral;
+    # we only verify the flag doesn't change its behaviour.
+    assert ctx_default["node_ref"]["@type"] == ctx_iri["node_ref"]["@type"]
+
+    # string → no @type regardless of flag
+    assert "@type" not in ctx_default.get("name", {})
+    assert "@type" not in ctx_iri.get("name", {})

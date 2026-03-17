@@ -23,6 +23,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
+# Extended URI_RANGES that also treats xsd:anyURI as an IRI reference (@id)
+# rather than a typed literal. Opt-in via --xsd-anyuri-as-iri flag.
+URI_RANGES_WITH_XSD = (*URI_RANGES, XSD.anyURI)
+
 ENUM_CONTEXT = {
     "text": "skos:notation",
     "description": "skos:prefLabel",
@@ -58,6 +62,7 @@ class ContextGenerator(Generator):
     """If True, elements from imported schemas won't be included in the generated context"""
     _local_classes: set | None = field(default=None, repr=False)
     _local_slots: set | None = field(default=None, repr=False)
+    xsd_anyuri_as_iri: bool | None = False
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
@@ -275,9 +280,10 @@ class ContextGenerator(Generator):
                     self.emit_prefixes.add(skos)
                 else:
                     range_type = self.schema.types[slot.range]
+                    uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
                     if self.namespaces.uri_for(range_type.uri) == XSD.string:
                         pass
-                    elif self.namespaces.uri_for(range_type.uri) in URI_RANGES:
+                    elif self.namespaces.uri_for(range_type.uri) in uri_ranges:
                         slot_def["@type"] = "@id"
                     else:
                         slot_def["@type"] = range_type.uri
@@ -389,6 +395,12 @@ class ContextGenerator(Generator):
     show_default=True,
     help="Use --exclude-imports to exclude imported elements from the generated JSON-LD context. This is useful when "
     "extending an ontology whose terms already have context definitions in their own JSON-LD context file.",
+)
+@click.option(
+    "--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri",
+    default=False,
+    show_default=True,
+    help="Map xsd:anyURI-typed ranges (uri, uriorcurie) to @type: @id instead of @type: xsd:anyURI.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
