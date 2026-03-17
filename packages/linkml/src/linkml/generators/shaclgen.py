@@ -283,12 +283,37 @@ class ShaclGenerator(Generator):
         )
         func(SH["in"], pv_node)
 
+    # Type URIs denoting non-literal (IRI or blank-node) values.
+    # SHACL §4.8.1 <https://www.w3.org/TR/shacl/#NodeKindConstraintComponent>
+    # defines sh:IRI, sh:BlankNode, and sh:BlankNodeOrIRI as valid node kinds.
+    # These URIs map to sh:IRI or sh:BlankNodeOrIRI constraints (never sh:Literal).
+    _NON_LITERAL_TYPE_URIS = frozenset(
+        {
+            "xsd:anyURI",  # uri, uriorcurie → sh:IRI
+            "http://www.w3.org/ns/shex#nonLiteral",  # nodeidentifier → sh:BlankNodeOrIRI
+            "http://www.w3.org/ns/shex#iri",  # future-proofing → sh:IRI
+        }
+    )
+    # IRI-only subset: uri/uriorcurie must be strict IRI references (sh:IRI),
+    # while nodeidentifier (shex:nonLiteral) allows blank nodes too (sh:BlankNodeOrIRI).
+    # See RDF 1.1 §3.2–3.3 <https://www.w3.org/TR/rdf11-concepts/#section-IRIs>.
+    _IRI_ONLY_TYPE_URIS = frozenset(
+        {
+            "xsd:anyURI",
+        }
+    )
+
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
         rt = sv.get_type(r)
-        if rt.uri and rt.uri == "xsd:anyURI":
-            func(SH.nodeKind, SH.IRI)
-        elif rt.uri:
+        type_uri = rt.uri
+        expanded = sv.get_uri(rt, expand=True) if type_uri else None
+        if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):
+            if type_uri in self._IRI_ONLY_TYPE_URIS:
+                func(SH.nodeKind, SH.IRI)
+            else:
+                func(SH.nodeKind, SH.BlankNodeOrIRI)
+        elif type_uri:
             func(SH.nodeKind, SH.Literal)
             func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
             if rt.pattern:
