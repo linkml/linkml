@@ -16,7 +16,6 @@ from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProces
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
-from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
@@ -42,10 +41,9 @@ class ShaclGenerator(Generator):
     valid_formats = ["ttl"]
     file_extension = "shacl.ttl"
     visit_all_class_slots = False
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     def __post_init__(self) -> None:
-        self.schemaview = SchemaView(self.schema)
         super().__post_init__()
         self.generate_header()
 

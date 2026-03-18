@@ -1005,3 +1005,44 @@ classes:
         URIRef("https://example.org/related_to"),
     ]
     assert sorted(in_values, key=str) == expected_uris
+
+
+def test_cross_directory_import_with_importmap(input_path):
+    """Test that ShaclGenerator resolves cross-directory imports via importmap.
+
+    Regression test for https://github.com/linkml/linkml/issues/2913.
+    When a schema imports another schema from a subdirectory, the SHACL
+    generator must honour the ``importmap`` and ``base_dir`` parameters
+    to resolve the import correctly.
+    """
+    from pathlib import Path
+
+    schema_path = input_path("shaclgen/cross_dir_import/main_schema.yaml")
+    base_dir = str(Path(schema_path).parent)
+    importmap = {
+        "imported_types": str(Path(base_dir) / "subdir" / "imported_types"),
+    }
+
+    shacl = ShaclGenerator(
+        schema_path,
+        importmap=importmap,
+        base_dir=base_dir,
+        mergeimports=True,
+    ).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Both the imported and local shapes should be present
+    shapes = {str(s) for s in g.subjects(RDF.type, SH.NodeShape)}
+    assert "https://example.org/imported/BaseEntity" in shapes
+    assert "https://example.org/main/DerivedEntity" in shapes
+
+    # DerivedEntity should inherit BaseEntity's "name" property
+    derived_uri = URIRef("https://example.org/main/DerivedEntity")
+    prop_paths = set()
+    for prop_node in g.objects(derived_uri, SH.property):
+        for path in g.objects(prop_node, SH.path):
+            prop_paths.add(str(path))
+    assert "https://example.org/imported/name" in prop_paths
+    assert "https://example.org/main/value" in prop_paths
