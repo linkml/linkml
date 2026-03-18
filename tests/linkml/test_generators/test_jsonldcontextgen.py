@@ -545,3 +545,29 @@ classes:
     assert "@type" not in context["@context"]["polymorphic"], (
         "any_of with conflicting literal types and a class should omit coercion"
     )
+
+
+def test_exclude_imports(input_path):
+    """With --exclude-imports, slots and classes from imported schemas
+    must not appear in the generated JSON-LD context, while inherited
+    slots on local classes are still included.
+
+    Reuses the ShaclGenerator's exclude_imports test fixtures which define
+    a BaseClass (with baseProperty) in an imported schema and an
+    ExtendedClass (with extendedProperty, is_a: BaseClass) in the main schema.
+    """
+    context_text = ContextGenerator(
+        input_path("shaclgen/exclude_imports.yaml"),
+        mergeimports=True,
+        exclude_imports=True,
+    ).serialize()
+    context = json.loads(context_text)
+    ctx = context["@context"]
+
+    # Local class and slot must be present
+    assert "ExtendedClass" in ctx, f"Local class 'ExtendedClass' must appear in context, got: {list(ctx.keys())}"
+    assert "extendedProperty" in ctx, f"Local slot 'extendedProperty' must appear in context, got: {list(ctx.keys())}"
+
+    # Imported class and slot must NOT be present
+    assert "BaseClass" not in ctx, "Imported class 'BaseClass' must not appear in exclude-imports context"
+    assert "baseProperty" not in ctx, "Imported slot 'baseProperty' must not appear in exclude-imports context"
