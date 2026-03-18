@@ -3127,7 +3127,8 @@ to include metaclasses. To restore this behavior:</p>
 </section>
 <section id="linkml-generate-full-plantuml">
 <h4>plantuml<a class="headerlink" href="#linkml-generate-full-plantuml" title="Link to this heading">¶</a></h4>
-<p>Generate a UML representation of a LinkML model</p>
+<p>Generate a UML representation of a LinkML model.
+PlantUML code print out only if no directory provided.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>plantuml<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
@@ -3141,7 +3142,7 @@ to include metaclasses. To restore this behavior:</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-plantuml-d">
 <span id="cmdoption-linkml-generate-full-plantuml-directory"></span><span class="sig-name descname"><span class="pre">-d</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--directory</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;directory&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-plantuml-d" title="Link to this definition">¶</a></dt>
-<dd><p>Output directory - if supplied, PlantUML rendering will be saved in file</p>
+<dd><p>Output directory - if supplied, PlantUML rendering will be saved in file; otherwise, only PlantUML code will be printed out</p>
 </dd></dl>
 
 <dl class="std option">
