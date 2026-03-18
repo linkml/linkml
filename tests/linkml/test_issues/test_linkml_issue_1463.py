@@ -8,15 +8,19 @@ PERSONINFO = Namespace("https://w3id.org/linkml/examples/personinfo/")
 SCHEMA_HTTP = Namespace("http://schema.org/")
 
 
-@pytest.mark.parametrize("type_objects,metaclasses", [(True, True), (False, False)])
-def test_owlgen_personinfo(input_path, type_objects, metaclasses):
+@pytest.mark.parametrize("type_objects,skip_linkml_metamodel_annotations", [(True, False), (False, True)])
+def test_owlgen_personinfo(input_path, type_objects, skip_linkml_metamodel_annotations):
     """
     Test for https://github.com/linkml/linkml/issues/1463
 
     Ensures that OWL export is valid for personinfo
     """
     SCHEMA = input_path("personinfo.yaml")
-    gen = OwlSchemaGenerator(SCHEMA, type_objects=type_objects, metaclasses=metaclasses)
+    gen = OwlSchemaGenerator(
+        SCHEMA,
+        type_objects=type_objects,
+        skip_linkml_metamodel_annotations=skip_linkml_metamodel_annotations,
+    )
     _ = gen.serialize()
     g = gen.graph
     # container metaslots are intentionally excluded from OWL export
@@ -25,11 +29,6 @@ def test_owlgen_personinfo(input_path, type_objects, metaclasses):
     expected = [
         (PERSONINFO.Address, RDFS.label, Literal("Address")),
         (PERSONINFO.Address, SKOS.exactMatch, SCHEMA_HTTP.PostalAddress),
-        (
-            PERSONINFO.FamilialRelationshipType,
-            LINKML.permissible_values,
-            URIRef("https://example.org/FamilialRelations#03"),
-        ),
         (PERSONINFO.FamilialRelationshipType, RDF.type, OWL.Class),
         (PERSONINFO.employed_at, RDF.type, OWL.ObjectProperty),
         (
@@ -38,6 +37,14 @@ def test_owlgen_personinfo(input_path, type_objects, metaclasses):
             Literal("The address at which a person currently lives"),
         ),
     ]
+    if not skip_linkml_metamodel_annotations:
+        expected.append(
+            (
+                PERSONINFO.FamilialRelationshipType,
+                LINKML.permissible_values,
+                URIRef("https://example.org/FamilialRelations#03"),
+            )
+        )
     # TODO: check expressions
     if type_objects:
         expected.extend(

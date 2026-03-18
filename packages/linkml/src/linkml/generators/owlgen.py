@@ -195,6 +195,10 @@ class OwlSchemaGenerator(Generator):
     enum_inherits_as_subclass_of: bool = False
     """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
 
+    skip_linkml_metamodel_annotations: bool | None = None
+    """If true, suppress all LinkML metaclasses and annotations.
+    Default will change to True in a future release."""
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -210,6 +214,16 @@ class OwlSchemaGenerator(Generator):
         if self.consolidate_cardinality_axioms is None:
             deprecation_warning("owlgen-consolidate-cardinality-axioms-default")
             self.consolidate_cardinality_axioms = False
+        if self.skip_linkml_metamodel_annotations is None:
+            deprecation_warning("owlgen-metaclasses-deprecated")
+            if self.metaclasses is not None:
+                # During the deprecation period, metaclasses acts as an alias:
+                # metaclasses=True  → skip_linkml_metamodel_annotations=False
+                # metaclasses=False → skip_linkml_metamodel_annotations=True
+                self.skip_linkml_metamodel_annotations = not self.metaclasses
+        if self.skip_linkml_metamodel_annotations is None:
+            deprecation_warning("owlgen-skip-linkml-metamodel-annotations-default")
+            self.skip_linkml_metamodel_annotations = False
 
         sv = self.schemaview
         schema = sv.schema
@@ -350,7 +364,7 @@ class OwlSchemaGenerator(Generator):
         self.add_metadata(cls, cls_uri)
         # add declaration
         self.graph.add((cls_uri, RDF.type, OWL.Class))
-        if self.metaclasses:
+        if not self.skip_linkml_metamodel_annotations:
             # instantiate metaclasses -- introduces punning
             self.graph.add(
                 (
@@ -820,7 +834,7 @@ class OwlSchemaGenerator(Generator):
         # Slots may be modeled as Object or Datatype Properties
         # if type_objects is True, then ALL slots are ObjectProperties
         self.graph.add((slot_uri, RDF.type, self.slot_owl_type(slot)))
-        if self.metaclasses:
+        if not self.skip_linkml_metamodel_annotations:
             # add metaclass which this property instantiates -- induces punning
             self.graph.add(
                 (
@@ -874,7 +888,7 @@ class OwlSchemaGenerator(Generator):
         if typ.from_schema == "https://w3id.org/linkml/types":
             return
 
-        if self.metaclasses:
+        if not self.skip_linkml_metamodel_annotations:
             self.graph.add(
                 (
                     type_uri,
@@ -965,7 +979,7 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
-        if self.metaclasses:
+        if not self.skip_linkml_metamodel_annotations:
             g.add(
                 (
                     enum_uri,
@@ -987,20 +1001,21 @@ class OwlSchemaGenerator(Generator):
             else:
                 pv_node = self._permissible_value_uri(pv, enum_uri, e)
             pv_uris.append(pv_node)
-            g.add(
-                (
-                    enum_uri,
-                    self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["permissible_values"],
-                    pv_node,
+            if not self.skip_linkml_metamodel_annotations:
+                g.add(
+                    (
+                        enum_uri,
+                        self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["permissible_values"],
+                        pv_node,
+                    )
                 )
-            )
             if not isinstance(pv_node, Literal):
                 self.add_metadata(pv, pv_node)
                 g.add((pv_node, RDF.type, pv_owl_type))
                 g.add((pv_node, RDFS.label, Literal(pv.text)))
                 # TODO: make this configurable
                 # self._add_element_properties(pv_uri, pv)
-                if self.metaclasses:
+                if not self.skip_linkml_metamodel_annotations:
                     g.add((pv_node, RDF.type, enum_uri))
                 has_parent = False
                 if pv.is_a:
@@ -1452,9 +1467,9 @@ class OwlSchemaGenerator(Generator):
 )
 @click.option(
     "--metaclasses/--no-metaclasses",
-    default=False,
+    default=None,
     show_default=True,
-    help="If true, include linkml metamodel classes as metaclasses. Note this introduces punning in OWL-DL",
+    help="[Deprecated] Use --skip-linkml-metamodel-annotations instead.",
 )
 @click.option(
     "--add-root-classes/--no-add-root-classes",
@@ -1542,6 +1557,15 @@ class OwlSchemaGenerator(Generator):
     show_default=True,
     help="If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.",
 )
+@click.option(
+    "--skip-linkml-metamodel-annotations/--no-skip-linkml-metamodel-annotations",
+    default=None,
+    show_default=True,
+    help=(
+        "If true, suppress all LinkML metaclasses and annotations. "
+        "Supersedes --no-metaclasses. Default will change to true in a future release."
+    ),
+)
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
     """Generate an OWL representation of a LinkML model
@@ -1549,11 +1573,6 @@ def cli(yamlfile, metadata_profile: str, **kwargs):
     Generate OWL using default parameters:
 
         gen-owl my_schema.yaml
-
-    Note that in previous versions of this generator, the default was to use type objects and
-    to include metaclasses. To restore this behavior:
-
-        gen-owl --metaclasses --type-objects my_schema.yaml
 
     For more info, see: https://linkml.io/linkml/generators/owl
     """
