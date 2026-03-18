@@ -104,6 +104,13 @@ classes:
           Require a single class with `tree_root: true` and optionally verify that class's
           name. Autofix will create a new class with `tree_root: true`, a name based on
           the rule configuration, and slots for existing classes.
+      range_anyof_incompatible:
+        range: RuleConfig
+        description: >-
+          Warn when a slot has both `range` and `any_of` specified with incompatible types.
+          When both are specified, the JSON Schema generator applies both constraints
+          (implicit AND), which can result in unsatisfiable or partially-dead constraints.
+          Not auto-fixable.
 
   RuleConfig:
     description: >-

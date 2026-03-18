@@ -19,3 +19,5 @@ rules:
     level: warning
   canonical_prefixes:
     level: warning
+  range_anyof_incompatible:
+    level: warning
