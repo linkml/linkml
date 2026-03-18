@@ -174,7 +174,63 @@ class ContextGenerator(Generator):
             with open(frame_path, "w", encoding="UTF-8") as f:
                 json.dump(frame, f, indent=2, ensure_ascii=False)
 
+        if self.deterministic:
+            return self._deterministic_context_json(json.loads(str(as_json(context))), indent=3) + "\n"
         return str(as_json(context)) + "\n"
+
+    @staticmethod
+    def _deterministic_context_json(data: dict, indent: int = 3) -> str:
+        """Serialize a JSON-LD context with deterministic key ordering.
+
+        Preserves the conventional JSON-LD context structure:
+        1. ``comments`` block first (metadata)
+        2. ``@context`` block second, with:
+           a. ``@``-prefixed directives (``@vocab``, ``@base``) first
+           b. Prefix declarations (string values) second
+           c. Class/property term entries (object values) last
+        3. Each group sorted alphabetically within itself
+
+        Unlike :func:`deterministic_json`, this understands JSON-LD
+        conventions so that the output remains human-readable while
+        still being byte-identical across invocations.
+        """
+        from collections import OrderedDict
+
+        from linkml.utils.generator import deterministic_json
+
+        ordered = OrderedDict()
+
+        # 1. "comments" first (if present)
+        if "comments" in data:
+            ordered["comments"] = data["comments"]
+
+        # 2. "@context" with structured internal ordering
+        if "@context" in data:
+            ctx = data["@context"]
+            ordered_ctx = OrderedDict()
+
+            # 2a. @-prefixed directives (@vocab, @base, etc.)
+            for k in sorted(k for k in ctx if k.startswith("@")):
+                ordered_ctx[k] = ctx[k]
+
+            # 2b. Prefix declarations (string values — short namespace URIs)
+            for k in sorted(k for k in ctx if not k.startswith("@") and isinstance(ctx[k], str)):
+                ordered_ctx[k] = ctx[k]
+
+            # 2c. Term definitions (object values) — deep-sorted for determinism
+            term_entries = {k: v for k, v in ctx.items() if not k.startswith("@") and not isinstance(v, str)}
+            sorted_terms = json.loads(deterministic_json(term_entries))
+            for k in sorted(sorted_terms):
+                ordered_ctx[k] = sorted_terms[k]
+
+            ordered["@context"] = ordered_ctx
+
+        # 3. Any remaining top-level keys
+        for k in sorted(data):
+            if k not in ordered:
+                ordered[k] = data[k]
+
+        return json.dumps(ordered, indent=indent, ensure_ascii=False)
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         class_def = {}
