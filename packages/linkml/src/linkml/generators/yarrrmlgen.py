@@ -34,7 +34,7 @@ class YarrrmlDumper(yaml.SafeDumper):
 YarrrmlDumper.add_representer(FlowList, flow_list_representer)
 
 DEFAULT_SOURCE_JSON = "data.json~jsonpath"
-DEFAULT_ITERATOR = "$[*]"  # Changed from $.items[*] to align with generic JSON schemas
+DEFAULT_ITERATOR = "$[*]"
 
 
 class YarrrmlGenerator(Generator):
@@ -76,7 +76,7 @@ class YarrrmlGenerator(Generator):
 
         inline_owners: dict[str, list[tuple[str, str]]] = {}
 
-        # Discover inline owners
+        # Discover parent-child relationships for inlined objects
         for owner in sv.all_classes().values():
             for s in sv.class_induced_slots(owner.name):
                 if not s.range:
@@ -87,7 +87,7 @@ class YarrrmlGenerator(Generator):
                     continue
 
                 decl = sv.get_slot(s.name)
-                inlined = getattr(decl or s, "inlined", None)
+                inlined = s.inlined
                 multivalued = getattr(decl or s, "multivalued", False)
 
                 has_id = False
@@ -114,7 +114,7 @@ class YarrrmlGenerator(Generator):
                     var = alias or s.name
                     inline_owners.setdefault(range_cls.name, []).append((owner.name, var))
 
-        # Ensure inline classes without an identifier belong to a single owner
+        # Validate that ID-less inline classes are strictly owned by a single parent class
         for child_class, owners in inline_owners.items():
             has_id = sv.get_identifier_slot(child_class) is not None or sv.get_key_slot(child_class) is not None
             if len(owners) > 1 and not has_id:
@@ -124,7 +124,7 @@ class YarrrmlGenerator(Generator):
                     f"This is not supported. Please assign an identifier to '{child_class}'."
                 )
 
-        # Build mappings
+        # Build YARRRML mappings blocks
         for cls in sv.all_classes().values():
             mapping_dict: dict[str, Any] = {}
             has_own_id = sv.get_identifier_slot(cls.name) or sv.get_key_slot(cls.name)
@@ -142,21 +142,13 @@ class YarrrmlGenerator(Generator):
                             is_multi = s.multivalued
                             break
 
-                    # Construct deep scan iterator based on whether the inline slot is a list or an object
-                    if is_multi:
-                        iterator = f"$..{slot_var}[*]"
-                    else:
-                        iterator = f"$..{slot_var}"
-
-                    # If the inline object lacks an identifier, apply a JSONPath Filter Expression
-                    # to prevent generating phantom subjects for non-existent objects
                     if not has_own_id:
+                        # Iterate over the parent's array, we will access child properties via dot notation
                         owner_cls = sv.get_class(owner_name)
-                        base_iterator = self._iterator_for_class(owner_cls)
-                        if "[*]" in base_iterator:
-                            iterator = base_iterator.replace("[*]", f"[?(@.{slot_var})]")
-                        else:
-                            iterator = base_iterator
+                        iterator = self._iterator_for_class(owner_cls)
+                    else:
+                        # Iterate directly over the nested child array
+                        iterator = f"$..{slot_var}[*]" if is_multi else f"$..{slot_var}"
 
                     sources.append(FlowList([self.source, iterator]))
                     mapping_dict["sources"] = sources
@@ -177,7 +169,6 @@ class YarrrmlGenerator(Generator):
         prefixes = self._prefixes_with_defaults()
         return {"prefixes": prefixes, "mappings": mappings}
 
-    # helpers
     def _is_json_source(self) -> bool:
         return "~jsonpath" in (self.source or "")
 
@@ -209,12 +200,11 @@ class YarrrmlGenerator(Generator):
     def _iterator_for_class(self, c: ClassDefinition) -> str:
         return self.iterator_template.replace("{Class}", c.name)
 
-    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict) -> str | None:
+    def _subject_template_for_class(self, c: ClassDefinition, inline_owners: dict) -> Any:
         sv = self.schemaview
         id_slot = sv.get_identifier_slot(c.name)
         prefix = self.schema.default_prefix or "ex"
 
-        # Explicitly support standard subjects (resolves the 'subject_id' issue)
         if id_slot:
             return f"{prefix}:$({id_slot.name})"
 
@@ -222,7 +212,9 @@ class YarrrmlGenerator(Generator):
         if key_slot:
             return f"{prefix}:$({key_slot.name})"
 
-        # If it's an inline object without an ID, fallback to the parent's ID
+        # YARRRML parsers fail to execute RML Joins (`condition: equal`) on generated Blank Nodes.
+        # For inlined objects lacking an ID, we synthesize a deterministic IRI using the parent's ID
+        # to guarantee graph connectivity and avoid broken/orphaned triples during the RDF roundtrip.
         if c.name in inline_owners:
             owner_name, _ = inline_owners[c.name][0]
             parent_id = sv.get_identifier_slot(owner_name) or sv.get_key_slot(owner_name)
@@ -263,14 +255,16 @@ class YarrrmlGenerator(Generator):
 
             has_own_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
             if c.name in inline_owners and not has_own_id:
+                # Adjust JSONPath variable resolution for inlined objects without an ID.
+                # Since the iterator remains at the parent level, we access properties via dot notation (e.g. parent_slot.child_prop)
                 owner_name, slot_var = inline_owners[c.name][0]
                 var = f"{slot_var}.{var}"
 
             is_obj = sv.get_class(s.range) is not None if s.range else False
 
-            # Handle object mapping (join-based linking and regular links)
+            # Interlinking mappings (Joins)
             if is_obj:
-                inlined = getattr(decl or s, "inlined", None)
+                inlined = s.inlined
                 multivalued = getattr(decl or s, "multivalued", False)
 
                 if inlined is None:
@@ -288,7 +282,10 @@ class YarrrmlGenerator(Generator):
                 parent_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
 
                 if range_id:
-                    left = f"$({var}.{range_id.name})"
+                    if multivalued:
+                        left = f"$({var}[*].{range_id.name})"
+                    else:
+                        left = f"$({var}.{range_id.name})"
                     right = f"$({range_id.name})"
                 elif parent_id:
                     left = f"$({parent_id.name})"
@@ -318,7 +315,7 @@ class YarrrmlGenerator(Generator):
                         po.append({"p": pred, "o": {"mapping": str(range_name)}})
                 continue
 
-            # Ensure xsd datatypes are preserved in the mapping
+            # Scalar values and datatype mapping
             datatype = None
             t = sv.get_type(s.range) if s.range else None
 
