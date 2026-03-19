@@ -13,6 +13,7 @@ from tests.linkml.test_compliance.helper import (
     SHEX,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CORE_FRAMEWORKS
@@ -29,6 +30,7 @@ SLOT_PREDICATE = "predicate"
 CLASS_ASSOCIATION = "Association"
 
 
+@feature_category("Inheritance & Refinement", "Subproperty value constraint")
 @pytest.mark.parametrize(
     "description,predicate_value,is_valid",
     [
@@ -112,6 +114,7 @@ def test_subproperty_of_value_constraint(framework, description, predicate_value
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty range formatting")
 @pytest.mark.parametrize(
     "description,range_type,predicate_value,is_valid",
     [
@@ -177,6 +180,7 @@ def test_subproperty_of_range_formatting(framework, description, range_type, pre
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty deep hierarchy")
 @pytest.mark.parametrize("framework", [PYDANTIC, JSON_SCHEMA, SHACL, SHEX])
 def test_subproperty_of_deep_hierarchy(framework):
     """
@@ -242,6 +246,7 @@ def test_subproperty_of_deep_hierarchy(framework):
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty slot_usage narrowing")
 @pytest.mark.parametrize("framework", [PYDANTIC, JSON_SCHEMA])
 def test_subproperty_of_slot_usage_narrowing(framework):
     """
@@ -315,6 +320,7 @@ def test_subproperty_of_slot_usage_narrowing(framework):
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty multivalued")
 @pytest.mark.parametrize("framework", [PYDANTIC, JSON_SCHEMA])
 def test_subproperty_of_multivalued(framework):
     """
@@ -373,6 +379,7 @@ def test_subproperty_of_multivalued(framework):
     )
 
 
+@feature_category("Inheritance & Refinement", "Subproperty class range")
 @pytest.mark.parametrize("framework", [PYDANTIC])
 def test_subproperty_of_class_range(framework):
     """
