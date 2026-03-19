@@ -7,6 +7,7 @@ from tests.linkml.test_compliance.helper import (
     PYTHON_DATACLASSES,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -22,6 +23,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Identity & Keys", "Type designator")
 @pytest.mark.parametrize(
     "description,type_range,object,is_valid,override_uri,abstract_classes",
     [

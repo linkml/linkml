@@ -1005,3 +1005,55 @@ classes:
         URIRef("https://example.org/related_to"),
     ]
     assert sorted(in_values, key=str) == expected_uris
+
+
+def test_shacl_omits_linkml_any_class_constraint():
+    """sh:class linkml:Any must not appear in SHACL output.
+
+    linkml:Any is an internal meta-type representing an unconstrained
+    range. When a class has class_uri=linkml:Any (e.g. AnyObject in the
+    kitchen_sink schema), the SHACL generator must not emit an
+    sh:class constraint pointing to it. Such a constraint would cause
+    every instance to fail validation because no real data instantiates
+    the linkml:Any class.
+    """
+    LINKML_ANY = URIRef("https://w3id.org/linkml/Any")
+
+    schema_yaml = """
+id: https://example.org/test-any
+name: test_any
+default_prefix: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  test: https://example.org/test-any/
+imports:
+  - linkml:types
+classes:
+  AnyThing:
+    class_uri: linkml:Any
+    description: unconstrained class
+  Container:
+    attributes:
+      payload:
+        range: AnyThing
+        description: slot with unconstrained range
+      name:
+        range: string
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Verify linkml:Any never appears as an sh:class value
+    any_class_triples = list(g.triples((None, SH["class"], LINKML_ANY)))
+    assert any_class_triples == [], f"sh:class linkml:Any must not be emitted in SHACL, but found: {any_class_triples}"
+
+    # Also verify linkml:Any never appears as sh:nodeKind target
+    # (no BlankNodeOrIRI should be set for an Any-ranged slot)
+    container_shape = URIRef("https://example.org/test-any/Container")
+    for prop_node in g.objects(container_shape, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and "payload" in str(path[0]):
+            nodekind = list(g.objects(prop_node, SH.nodeKind))
+            assert nodekind == [], f"sh:nodeKind should not be set for linkml:Any-ranged slot, got: {nodekind}"
