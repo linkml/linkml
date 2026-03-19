@@ -211,11 +211,14 @@ class ShaclGenerator(Generator):
                             )
 
                     if r in all_classes:
+                        cls_def = sv.get_class(r)
+                        is_any = cls_def and getattr(cls_def, "class_uri", None) == "linkml:Any"
                         self._add_class(prop_pv, r)
-                        if sv.get_identifier_slot(r) is not None:
-                            prop_pv(SH.nodeKind, SH.IRI)
-                        else:
-                            prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
+                        if not is_any:
+                            if sv.get_identifier_slot(r) is not None:
+                                prop_pv(SH.nodeKind, SH.IRI)
+                            else:
+                                prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
                     elif r in sv.all_types():
                         self._add_type(prop_pv, r)
                     elif r in sv.all_enums():
@@ -243,12 +246,27 @@ class ShaclGenerator(Generator):
 
         return g
 
+    LINKML_ANY_URI = "https://w3id.org/linkml/Any"
+
     def _add_class(self, func: Callable, r: ElementName) -> None:
+        """Add an sh:class constraint for range class *r*.
+
+        Skips the constraint when *r* resolves to ``linkml:Any`` — the
+        LinkML meta-type representing an unconstrained range.  Emitting
+        ``sh:class linkml:Any`` in SHACL output is incorrect because the
+        ``linkml:Any`` class is never instantiated in real data; it would
+        cause every instance to fail validation.
+        """
         sv = self.schemaview
+        cls = sv.get_class(r)
+        if cls and getattr(cls, "class_uri", None) == "linkml:Any":
+            return
         if self.use_class_uri_names:
             range_ref = sv.get_uri(r, expand=True)
         else:
             range_ref = sv.get_uri(r, expand=True, native=True)
+        if range_ref == self.LINKML_ANY_URI:
+            return
         func(SH["class"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
