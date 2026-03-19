@@ -195,6 +195,14 @@ class OwlSchemaGenerator(Generator):
     enum_inherits_as_subclass_of: bool = False
     """If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms."""
 
+    skip_abstract_class_as_unionof_subclasses: bool = False
+    """If True, suppress the generation of ``rdfs:subClassOf owl:unionOf(subclasses)`` covering axioms
+    for abstract classes.  By default such axioms are emitted: for every abstract class that has at least
+    one direct ``is_a`` child, the generator adds
+    ``AbstractClass rdfs:subClassOf (Child1 or Child2 or …)``, expressing the open-world covering
+    constraint that every instance of the abstract class must also be an instance of one of its
+    direct subclasses."""
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -458,6 +466,15 @@ class OwlSchemaGenerator(Generator):
                 self.graph.remove((superclass_expr, OWL.intersectionOf, ixn_listnodes[0]))
             else:
                 self.graph.add((subject_expr, RDFS.subClassOf, superclass_expr))
+        # Abstract covering axiom: abstract class rdfs:subClassOf (child1 or child2 or …)
+        # This expresses the open-world constraint that every instance of the abstract class
+        # must be an instance of at least one of its direct subclasses.
+        if cls.abstract and not self.skip_abstract_class_as_unionof_subclasses:
+            children = sorted(sv.class_children(cls.name, imports=self.mergeimports, mixins=False, is_a=True))
+            if children:
+                child_uris = [self._class_uri(child) for child in children]
+                union_node = self._union_of(child_uris)
+                self.graph.add((cls_uri, RDFS.subClassOf, union_node))
 
     def get_own_slots(self, cls: ClassDefinition | AnonymousClassExpression) -> list[SlotDefinition]:
         """
@@ -1541,6 +1558,15 @@ class OwlSchemaGenerator(Generator):
     default=False,
     show_default=True,
     help="If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.",
+)
+@click.option(
+    "--skip-abstract-class-as-unionof-subclasses/--no-skip-abstract-class-as-unionof-subclasses",
+    default=False,
+    show_default=True,
+    help=(
+        "If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. "
+        "By default such axioms are emitted for every abstract class that has direct is_a children."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, metadata_profile: str, **kwargs):
