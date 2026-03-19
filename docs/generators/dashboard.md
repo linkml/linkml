@@ -22,21 +22,21 @@ Each cell shows the aggregate result across all tests in that category. Scroll d
 
 | Category | Pydantic | Python DC | JSON Schema | Java | SHACL | ShEx | OWL | JSON-LD Ctx | SQLite DDL | Postgres DDL | Pandera | Polars Schema |
 |----------| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| [Arrays](#arrays) | ✅ | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
-| [Boolean Expressions](#boolean-expressions) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Cardinality & Presence](#cardinality-presence) | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Core Structure](#core-structure) | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Defaults & Computed](#defaults-computed) | ✅ | ✅ | ⚠️ | ❌ | ✅ | ❌ | ❌ | ✅ | ⚠️ | ❌ | ✅ | ✅ |
-| [Enumerations](#enumerations) | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Identity & Keys](#identity-keys) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
-| [Inheritance & Refinement](#inheritance-refinement) | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Inlining & References](#inlining-references) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Metadata](#metadata) | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ |
-| [Other](#other) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Rules & Classification](#rules-classification) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| [Schema-Level](#schema-level) | ✅ | ✅ | ✅ | ❌ | ⚠️ | ❌ | ❌ | ✅ | ✅ | ❌ | ⚠️ | ✅ |
-| [Slot Typing & Ranges](#slot-typing-ranges) | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ | ❌ | ⚠️ | ⚠️ |
-| [Value Constraints](#value-constraints) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#arrays">Arrays</a> | ✅ | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#boolean-expressions">Boolean Expressions</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#cardinality-presence">Cardinality & Presence</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#core-structure">Core Structure</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#defaults-computed">Defaults & Computed</a> | ✅ | ✅ | ⚠️ | ❌ | ✅ | ❌ | ❌ | ✅ | ⚠️ | ❌ | ✅ | ✅ |
+| <a href="#enumerations">Enumerations</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#identity-keys">Identity & Keys</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
+| <a href="#inheritance-refinement">Inheritance & Refinement</a> | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#inlining-references">Inlining & References</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#metadata">Metadata</a> | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ |
+| <a href="#other">Other</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#rules-classification">Rules & Classification</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#schema-level">Schema-Level</a> | ✅ | ✅ | ✅ | ❌ | ⚠️ | ❌ | ❌ | ✅ | ✅ | ❌ | ⚠️ | ✅ |
+| <a href="#slot-typing-ranges">Slot Typing & Ranges</a> | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ | ❌ | ⚠️ | ⚠️ |
+| <a href="#value-constraints">Value Constraints</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 
 ## Coverage Scores
 

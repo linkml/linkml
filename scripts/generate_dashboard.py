@@ -144,16 +144,12 @@ def aggregate_status(statuses: list[str]) -> str:
 
 
 def slug(name: str) -> str:
-    """Generate a heading anchor matching docutils/MyST behavior.
-
-    Docutils strips non-alphanumeric characters (like ``&``) rather than
-    replacing them, then collapses runs of hyphens.
-    """
+    """Generate a URL-safe anchor id from a category name."""
     import re
 
     s = name.lower()
-    s = re.sub(r"[^\w\s-]", "", s)  # drop &, etc.
-    s = re.sub(r"[\s]+", "-", s)  # spaces to hyphens
+    s = re.sub(r"[^\w\s-]", "", s)
+    s = re.sub(r"[\s]+", "-", s)
     return s.strip("-")
 
 
@@ -221,7 +217,8 @@ def generate_dashboard(features: list[dict]) -> str:
 
     for cat_name in cat_order:
         cat_feats = categories[cat_name]
-        row = f"| [{cat_name}](#{slug(cat_name)}) |"
+        anchor = slug(cat_name)
+        row = f'| <a href="#{anchor}">{cat_name}</a> |'
         for fw in frameworks:
             statuses = [feat.get("implementations", {}).get(fw, "untested") for feat in cat_feats]
             row += f" {aggregate_status(statuses)} |"
