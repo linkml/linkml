@@ -359,3 +359,189 @@ def test_container_list(input_path, fix_container, attribute, container_type):
     assert ("@container" in context["@context"][attribute].keys()) == fix_container
     if fix_container:
         assert context["@context"][attribute]["@container"] == container_type
+
+
+def test_any_of_mixed_literal_and_class_prefers_literal(tmp_path):
+    """When any_of mixes a literal type and a class, prefer the literal for coercion.
+
+    Regression test for the bug where ``any_of: [{range: decimal}, {range: SomeClass}]``
+    incorrectly collapsed to ``@type: "@id"`` instead of using the literal type.
+
+    See:
+    - https://github.com/linkml/linkml/issues/1483
+    - https://github.com/linkml/linkml/issues/2970
+    """
+    schema = tmp_path / "mixed_any_of.yaml"
+    schema.write_text(
+        """
+id: https://example.org/mixed
+name: mixed_any_of
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/mixed/
+  schema: http://schema.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  QuantitativeValue:
+    class_uri: schema:QuantitativeValue
+    attributes:
+      min_value:
+        range: decimal
+        slot_uri: schema:minValue
+      max_value:
+        range: decimal
+        slot_uri: schema:maxValue
+  Measurement:
+    attributes:
+      id: {identifier: true, range: string}
+      acceleration_value:
+        slot_uri: ex:accelerationValue
+        any_of:
+          - range: decimal
+          - range: QuantitativeValue
+      lane_count_value:
+        slot_uri: ex:laneCountValue
+        any_of:
+          - range: integer
+          - range: QuantitativeValue
+      pure_object_ref:
+        range: QuantitativeValue
+        slot_uri: ex:pureObjectRef
+      pure_literal:
+        range: float
+        slot_uri: ex:pureLiteral
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    # Mixed any_of: literal type should win over @id
+    assert ctx["acceleration_value"]["@type"] == "xsd:decimal", (
+        "any_of with decimal + class should coerce to xsd:decimal, not @id"
+    )
+    assert ctx["lane_count_value"]["@type"] == "xsd:integer", (
+        "any_of with integer + class should coerce to xsd:integer, not @id"
+    )
+
+    # Pure class range should still get @id
+    assert ctx["pure_object_ref"]["@type"] == "@id"
+
+    # Pure literal range should get its type
+    assert ctx["pure_literal"]["@type"] == "xsd:float"
+
+
+def test_any_of_all_classes_still_uses_id(tmp_path):
+    """When all any_of branches are classes, @type should remain @id."""
+    schema = tmp_path / "all_classes_any_of.yaml"
+    schema.write_text(
+        """
+id: https://example.org/allcls
+name: all_classes_any_of
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/allcls/
+classes:
+  A:
+    attributes:
+      id: {identifier: true, range: string}
+  B:
+    attributes:
+      id: {identifier: true, range: string}
+  Container:
+    attributes:
+      id: {identifier: true, range: string}
+      ref:
+        slot_uri: ex:ref
+        any_of:
+          - range: A
+          - range: B
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    assert context["@context"]["ref"]["@type"] == "@id"
+
+
+def test_any_of_string_and_class_drops_coercion(tmp_path):
+    """When any_of mixes string and class, no @type coercion should be emitted.
+
+    xsd:string maps to no coercion in JSON-LD, so the literal branch
+    effectively requests "no @type".
+    """
+    schema = tmp_path / "string_class_any_of.yaml"
+    schema.write_text(
+        """
+id: https://example.org/strcls
+name: string_class_any_of
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/strcls/
+classes:
+  Description:
+    attributes:
+      id: {identifier: true, range: string}
+  Container:
+    attributes:
+      id: {identifier: true, range: string}
+      desc:
+        slot_uri: ex:desc
+        any_of:
+          - range: string
+          - range: Description
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    # String type maps to no coercion — @type should NOT be @id
+    assert "@type" not in context["@context"]["desc"], (
+        "any_of with string + class should not emit @type (string = no coercion)"
+    )
+
+
+def test_any_of_multiple_literal_types_and_class_drops_coercion(tmp_path):
+    """Mixed any_of with conflicting literal types must avoid order dependence."""
+    schema = tmp_path / "multiple_literal_class_any_of.yaml"
+    schema.write_text(
+        """
+id: https://example.org/multi
+name: multiple_literal_class_any_of
+default_prefix: ex
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/multi/
+classes:
+  QuantitativeValue:
+    attributes:
+      id: {identifier: true, range: string}
+  Container:
+    attributes:
+      id: {identifier: true, range: string}
+      polymorphic:
+        slot_uri: ex:polymorphic
+        any_of:
+          - range: integer
+          - range: string
+          - range: QuantitativeValue
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    assert "@type" not in context["@context"]["polymorphic"], (
+        "any_of with conflicting literal types and a class should omit coercion"
+    )
