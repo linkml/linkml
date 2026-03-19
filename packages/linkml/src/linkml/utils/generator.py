@@ -1134,6 +1134,7 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
                 default=False,
                 show_default=True,
                 help="Generate stable, reproducible output with sorted keys and canonical blank-node ordering. "
+                "Supported by OWL, SHACL, JSON-LD, and JSON-LD Context generators. "
                 "Useful when generated artifacts are stored in version control.",
             )
         )

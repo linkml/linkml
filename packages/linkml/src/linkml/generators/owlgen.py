@@ -269,6 +269,7 @@ class OwlSchemaGenerator(Generator):
         self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
         if self.deterministic and fmt == "turtle":
+            # Deferred to avoid circular import (generator.py imports from this package)
             from linkml.utils.generator import deterministic_turtle
 
             data = deterministic_turtle(self.graph)
@@ -1000,7 +1001,10 @@ class OwlSchemaGenerator(Generator):
         owl_types = []
         enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
 
-        for pv in sorted(e.permissible_values.values(), key=lambda x: x.text):
+        pvs = e.permissible_values.values()
+        if self.deterministic:
+            pvs = sorted(pvs, key=lambda x: x.text)
+        for pv in pvs:
             pv_owl_type = self._get_metatype(pv, enum_owl_type)
             owl_types.append(pv_owl_type)
             if pv_owl_type == RDFS.Literal:

@@ -261,13 +261,13 @@ class ShaclGenerator(Generator):
         sv = self.schemaview
         enum = sv.get_enum(r)
         pv_node = BNode()
+        pv_items = enum.permissible_values.items()
+        if self.deterministic:
+            pv_items = sorted(pv_items)
         Collection(
             g,
             pv_node,
-            [
-                URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
-                for pv_name, pv in sorted(enum.permissible_values.items())
-            ],
+            [URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name) for pv_name, pv in pv_items],
         )
         func(SH["in"], pv_node)
 
@@ -396,7 +396,8 @@ class ShaclGenerator(Generator):
 
         list_node = BNode()
         ignored_properties.add(RDF.type)
-        Collection(g, list_node, sorted(ignored_properties, key=str))
+        props = sorted(ignored_properties, key=str) if self.deterministic else list(ignored_properties)
+        Collection(g, list_node, props)
 
         return list_node
 

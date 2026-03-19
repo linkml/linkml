@@ -194,11 +194,9 @@ class ContextGenerator(Generator):
         conventions so that the output remains human-readable while
         still being byte-identical across invocations.
         """
-        from collections import OrderedDict
-
         from linkml.utils.generator import deterministic_json
 
-        ordered = OrderedDict()
+        ordered = {}
 
         # 1. "comments" first (if present)
         if "comments" in data:
@@ -207,7 +205,7 @@ class ContextGenerator(Generator):
         # 2. "@context" with structured internal ordering
         if "@context" in data:
             ctx = data["@context"]
-            ordered_ctx = OrderedDict()
+            ordered_ctx = {}
 
             # 2a. @-prefixed directives (@vocab, @base, etc.)
             for k in sorted(k for k in ctx if k.startswith("@")):
