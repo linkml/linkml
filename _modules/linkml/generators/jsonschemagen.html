@@ -838,9 +838,21 @@
 
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">none_of</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">none_of</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;not&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;anyOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">properties_required</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">any_of</span><span class="p">]</span>
+                <span class="s2">&quot;anyOf&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">properties_required</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">none_of</span><span class="p">]</span>
             <span class="p">}</span>
 
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># `is_a: &lt;C&gt;` is used in the context of an AnonymousClassExpression to include a constraint</span>
+            <span class="c1"># that instances of the expression must be instances of class &lt;C&gt;.</span>
+            <span class="k">if</span> <span class="s2">&quot;allOf&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subschema</span><span class="p">:</span>
+                <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">inst_of_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="n">AnonymousSlotExpression</span><span class="p">(</span><span class="nb">range</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">inst_of_expr</span><span class="p">:</span>
+                <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inst_of_expr</span><span class="p">)</span>
+
+        <span class="c1"># simplify subschemas that are simply conjunctions of a single condition</span>
+        <span class="k">if</span> <span class="s2">&quot;allOf&quot;</span> <span class="ow">in</span> <span class="n">subschema</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">subschema</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">subschema</span> <span class="o">=</span> <span class="n">subschema</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">subschema</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -934,12 +946,21 @@
         <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;const&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_number</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">:</span>
             <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">equals_string_in</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range_expression</span><span class="p">:</span>
+            <span class="n">subschema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_anonymous_class</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range_expression</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">subschema</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;allOf&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+                    <span class="n">constraints</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">constraints</span><span class="p">[</span><span class="s2">&quot;allOf&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subschema</span><span class="p">)</span>
+
         <span class="c1"># Handle subproperty_of constraint - generates enum from slot hierarchy</span>
         <span class="c1"># Only SlotDefinition has subproperty_of, not AnonymousSlotExpression</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_subproperty_of</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">subproperty_of</span><span class="p">:</span>
             <span class="n">subproperty_values</span> <span class="o">=</span> <span class="n">get_subproperty_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">subproperty_values</span><span class="p">:</span>
                 <span class="n">constraints</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;enum&quot;</span><span class="p">,</span> <span class="n">subproperty_values</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">constraints</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_subschema_for_slot</span><span class="p">(</span>

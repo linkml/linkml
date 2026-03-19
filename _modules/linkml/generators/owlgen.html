@@ -1103,6 +1103,10 @@
 
         <span class="n">owl_exprs</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range_expression</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range_expression</span><span class="p">,</span> <span class="n">AnonymousClassExpression</span><span class="p">):</span>
+                <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_class_expression</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range_expression</span><span class="p">))</span>
+
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">all_members</span><span class="p">:</span>
             <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transform_class_slot_expression</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">all_members</span><span class="p">,</span> <span class="n">main_slot</span><span class="p">,</span> <span class="n">owl_types</span><span class="p">))</span>
 
