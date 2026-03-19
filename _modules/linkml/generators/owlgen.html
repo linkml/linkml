@@ -594,6 +594,14 @@
     <span class="n">enum_inherits_as_subclass_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, translate LinkML enum ``inherits`` relationships into OWL ``rdfs:subClassOf`` axioms.&quot;&quot;&quot;</span>
 
+    <span class="n">skip_abstract_class_as_unionof_subclasses</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, suppress the generation of ``rdfs:subClassOf owl:unionOf(subclasses)`` covering axioms</span>
+<span class="sd">    for abstract classes.  By default such axioms are emitted: for every abstract class that has at least</span>
+<span class="sd">    one direct ``is_a`` child, the generator adds</span>
+<span class="sd">    ``AbstractClass rdfs:subClassOf (Child1 or Child2 or …)``, expressing the open-world covering</span>
+<span class="sd">    constraint that every instance of the abstract class must also be an instance of one of its</span>
+<span class="sd">    direct subclasses.&quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">as_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate an rdflib Graph from the LinkML schema.</span>
@@ -860,6 +868,15 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">remove</span><span class="p">((</span><span class="n">superclass_expr</span><span class="p">,</span> <span class="n">OWL</span><span class="o">.</span><span class="n">intersectionOf</span><span class="p">,</span> <span class="n">ixn_listnodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subject_expr</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">superclass_expr</span><span class="p">))</span>
+        <span class="c1"># Abstract covering axiom: abstract class rdfs:subClassOf (child1 or child2 or …)</span>
+        <span class="c1"># This expresses the open-world constraint that every instance of the abstract class</span>
+        <span class="c1"># must be an instance of at least one of its direct subclasses.</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_abstract_class_as_unionof_subclasses</span><span class="p">:</span>
+            <span class="n">children</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">class_children</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">children</span><span class="p">:</span>
+                <span class="n">child_uris</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
+                <span class="n">union_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">child_uris</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">cls_uri</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">subClassOf</span><span class="p">,</span> <span class="n">union_node</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_own_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="n">AnonymousClassExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1944,6 +1961,15 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If true, translate LinkML enum inherits relationships into OWL rdfs:subClassOf axioms.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--skip-abstract-class-as-unionof-subclasses/--no-skip-abstract-class-as-unionof-subclasses&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. &quot;</span>
+        <span class="s2">&quot;By default such axioms are emitted for every abstract class that has direct is_a children.&quot;</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">metadata_profile</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
