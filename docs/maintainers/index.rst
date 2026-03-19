@@ -13,5 +13,6 @@ If you are looking for documentation on how to use LinkML to build schemas, see 
 
    contributing
    organization
+   sop-linkml-model-update
    deprecation
    code-of-conduct
