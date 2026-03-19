@@ -55,10 +55,8 @@ SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1
 SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
-CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc"
-CREATURE_SCHEMA_RAW_URL = (
-    "https://github.com/linkml/linkml-runtime/raw/main/tests/test_utils/input/mcc/creature_schema.yaml"
-)
+CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
+CREATURE_SCHEMA_RAW_URL = "https://github.com/linkml/linkml/raw/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
 
 CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
@@ -538,8 +536,8 @@ def test_imports_direct_remote_imports() -> None:
 def test_imports_remote_url_with_imports() -> None:
     """Test_remote_modular_schema_view."""
     url = (
-        "https://raw.githubusercontent.com/linkml/linkml-runtime/"
-        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
+        "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/"
+        "tests/linkml_runtime/test_utils/input/kitchen_sink.yaml"
     )
     sv = SchemaView(url)
     assert sv.schema.name == "kitchen_sink"
@@ -963,7 +961,17 @@ for value in CREATURE_EXPECTED.values():
 
 
 @pytest.mark.parametrize(
-    "schema", ["creature_view", "creature_view_remote", "creature_view_local", "creature_view_direct_url"]
+    "schema",
+    [
+        "creature_view",
+        pytest.param(
+            "creature_view_remote",
+        ),
+        "creature_view_local",
+        pytest.param(
+            "creature_view_direct_url",
+        ),
+    ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
 def test_creature_schema_entities_with_without_imports(
