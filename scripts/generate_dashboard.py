@@ -86,8 +86,7 @@ def load_summary() -> list[dict]:
     path = SUMMARY_PATH if SUMMARY_PATH.exists() else SUMMARY_PARTIAL_PATH
     if not path.exists():
         print(
-            f"ERROR: No compliance test output found.\n"
-            f"Run: uv run pytest tests/linkml/test_compliance/ --with-output",
+            "ERROR: No compliance test output found.\nRun: uv run pytest tests/linkml/test_compliance/ --with-output",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -145,8 +144,17 @@ def aggregate_status(statuses: list[str]) -> str:
 
 
 def slug(name: str) -> str:
-    """Make a markdown anchor slug from a category name."""
-    return name.lower().replace(" ", "-").replace("&", "and")
+    """Generate a heading anchor matching docutils/MyST behavior.
+
+    Docutils strips non-alphanumeric characters (like ``&``) rather than
+    replacing them, then collapses runs of hyphens.
+    """
+    import re
+
+    s = name.lower()
+    s = re.sub(r"[^\w\s-]", "", s)  # drop &, etc.
+    s = re.sub(r"[\s]+", "-", s)  # spaces to hyphens
+    return s.strip("-")
 
 
 def generate_dashboard(features: list[dict]) -> str:
@@ -199,8 +207,7 @@ def generate_dashboard(features: list[dict]) -> str:
     lines.append("## Summary by Category")
     lines.append("")
     lines.append(
-        "Each cell shows the aggregate result across all tests in that category. "
-        "Scroll down for per-test details."
+        "Each cell shows the aggregate result across all tests in that category. Scroll down for per-test details."
     )
     lines.append("")
 
@@ -216,10 +223,7 @@ def generate_dashboard(features: list[dict]) -> str:
         cat_feats = categories[cat_name]
         row = f"| [{cat_name}](#{slug(cat_name)}) |"
         for fw in frameworks:
-            statuses = [
-                feat.get("implementations", {}).get(fw, "untested")
-                for feat in cat_feats
-            ]
+            statuses = [feat.get("implementations", {}).get(fw, "untested") for feat in cat_feats]
             row += f" {aggregate_status(statuses)} |"
         lines.append(row)
     lines.append("")
@@ -227,10 +231,7 @@ def generate_dashboard(features: list[dict]) -> str:
     # Coverage scores
     lines.append("## Coverage Scores")
     lines.append("")
-    lines.append(
-        "Percentage of tests where the generator fully implements the feature "
-        "(excluding not-applicable)."
-    )
+    lines.append("Percentage of tests where the generator fully implements the feature (excluding not-applicable).")
     lines.append("")
 
     lines.append("| Generator | Implements | Partial | Ignores | N/A | Total | Score |")
@@ -250,9 +251,7 @@ def generate_dashboard(features: list[dict]) -> str:
                 part += 1
         total = impl + part + ign
         pct = (impl / total * 100) if total else 0
-        lines.append(
-            f"| {name} | {impl} | {part} | {ign} | {na} | {total} | {pct:.0f}% |"
-        )
+        lines.append(f"| {name} | {impl} | {part} | {ign} | {na} | {total} | {pct:.0f}% |")
     lines.append("")
 
     # Detail tables per category
@@ -289,7 +288,7 @@ def generate_dashboard(features: list[dict]) -> str:
         "To update: run the compliance tests with `--with-output`, "
         "then run `python scripts/generate_dashboard.py`. "
         "To add features, write a new compliance test and decorate it with "
-        "`@feature_category(\"Category Name\", \"Display Name\")`.*"
+        '`@feature_category("Category Name", "Display Name")`.*'
     )
     lines.append("")
 
