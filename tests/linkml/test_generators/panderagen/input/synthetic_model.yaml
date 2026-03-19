@@ -37,7 +37,7 @@ classes:
         range: integer
         required: true
 
-  PanderaSyntheticTable:
+  PanderaSyntheticTableEfficient:
     description: A flat table with a reasonably complete assortment of datatypes.
     attributes:
       identifier_column:
@@ -96,6 +96,39 @@ classes:
       any_type_column:
         description: needs to have type object
         range: AnyType
+        required: true
+      inlined_as_object_column:
+        description: test column that is a directly nested single object (no dictionary collection)
+        range: ColumnType
+        required: true
+        inlined: true
+        multivalued: false
+      inlined_as_list_column:
+        description: test column with another class inlined as a list
+        range: ColumnType
+        required: true
+        inlined: true
+        inlined_as_list: true
+        multivalued: true
+
+  PanderaSyntheticTable:
+    description: Includes all efficient types and inefficient dict types
+    mixins:
+    - PanderaSyntheticTableEfficient
+    attributes:
+      inlined_class_column:
+        description: test column with another class inlined as a struct
+        range: ColumnType
+        required: true
+        inlined: true
+        inlined_as_list: false
+        multivalued: true
+      inlined_simple_dict_column:
+        description: test column inlined using simple dict form
+        range: SimpleDictType
+        multivalued: true
+        inlined: true
+        inlined_as_list: false
         required: true
 
 enums:

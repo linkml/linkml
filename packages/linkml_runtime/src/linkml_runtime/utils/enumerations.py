@@ -1,5 +1,5 @@
 from dataclasses import fields
-from typing import Optional, Union
+from typing import Optional
 
 from linkml_runtime.utils.metamodelcore import Curie
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -37,7 +37,7 @@ def isinstance_dt(cls: type, inst: str) -> bool:
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     _defn: "EnumDefinition" = None  # Overridden by implementation
 
-    def __init__(self, code: Union[str, Curie]) -> None:
+    def __init__(self, code: str | Curie) -> None:
         if isinstance_dt(code, "PermissibleValue"):
             key = code.text
         elif isinstance(code, Curie):

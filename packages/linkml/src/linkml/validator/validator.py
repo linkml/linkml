@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 from linkml.validator.loaders import Loader
 from linkml.validator.loaders.passthrough_loader import PassthroughLoader
@@ -26,8 +26,8 @@ class Validator:
 
     def __init__(
         self,
-        schema: Union[str, dict, TextIO, Path, SchemaDefinition],
-        validation_plugins: Optional[list[ValidationPlugin]] = None,
+        schema: str | dict | TextIO | Path | SchemaDefinition,
+        validation_plugins: list[ValidationPlugin] | None = None,
         *,
         strict: bool = False,
     ) -> None:
@@ -42,7 +42,7 @@ class Validator:
         self._validation_plugins = validation_plugins
         self.strict = strict
 
-    def validate(self, instance: Any, target_class: Optional[str] = None) -> ValidationReport:
+    def validate(self, instance: Any, target_class: str | None = None) -> ValidationReport:
         """Validate the given instance
 
         :param instance: The instance to validate
@@ -54,7 +54,7 @@ class Validator:
         """
         return ValidationReport(results=list(self.iter_results(instance, target_class)))
 
-    def validate_source(self, loader: Loader, target_class: Optional[str] = None) -> ValidationReport:
+    def validate_source(self, loader: Loader, target_class: str | None = None) -> ValidationReport:
         """Validate instances from a data source
 
         :param loader: An instance of a subclass of :class:`linkml.validator.loaders.Loader`
@@ -67,7 +67,7 @@ class Validator:
         """
         return ValidationReport(results=list(self.iter_results_from_source(loader, target_class)))
 
-    def iter_results(self, instance: Any, target_class: Optional[str] = None) -> Iterator[ValidationResult]:
+    def iter_results(self, instance: Any, target_class: str | None = None) -> Iterator[ValidationResult]:
         """Lazily yield validation results for the given instance
 
         :param instance: The instance to validate
@@ -80,9 +80,7 @@ class Validator:
         loader = PassthroughLoader(iter([instance]))
         yield from self.iter_results_from_source(loader, target_class)
 
-    def iter_results_from_source(
-        self, loader: Loader, target_class: Optional[str] = None
-    ) -> Iterator[ValidationResult]:
+    def iter_results_from_source(self, loader: Loader, target_class: str | None = None) -> Iterator[ValidationResult]:
         """Lazily yield validation results for the instances provided by a loader
 
         :param loader: An instance of a subclass of :class:`linkml.validator.loaders.Loader`
@@ -120,5 +118,5 @@ class Validator:
             plugin.post_process(context)
 
     @lru_cache
-    def _context(self, target_class: Optional[str] = None) -> ValidationContext:
+    def _context(self, target_class: str | None = None) -> ValidationContext:
         return ValidationContext(self._schema, target_class)

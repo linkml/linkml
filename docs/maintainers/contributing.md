@@ -145,38 +145,9 @@ New tests in any directory should be written using pytest.
   Debugging tip: sometimes a snapshot-based test may fail on GitHub actions, but may appear to pass locally. This can happen if the test is marked as a slow test,
   in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).
 
-### Testing linkml PRs with development versions of linkml-runtime
-
-`linkml` is tightly coupled to upstream `linkml-runtime`.
-
-In some circumstances, paired changes need to be made against *both* `linkml` and `linkml-runtime`.
-Then testing with the last release of `linkml-runtime` is insufficient.
-
-In such cases, you can specify that your PR needs to be tested with a specific linkml-runtime branch and repository.
-Specifying this information in the first two lines of your pull request´s opening message like this:
-
-> upstream_repo: user-or-org-name/linkml-runtime<BR>
-> upstream_branch: some-complicated-feature
->
-> Hey everyone ... (PR continues)
-
-The order of the lines with `upstream_repo` and `upstream_branch` tags does not matter,
-but they must be the first two lines of the pull request comment.
-
-Maintainers can also specify upstream branches to test against when dispatching the `test_with_unreleased_runtime` workflow manually via the GUI prompt.
-
-Testing against an unverified upstream branch is not necessarily dangerous.
-The [input is stored as a variable first and not executed as untrusted code](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable).
-But maintainers should take care to verify that the upstream branch and repo are correct and expected given the context of the PR.
-
-### Testing linkml-runtime PRs against any upstream linkml repository/branch
-
-For linkml-runtime a similar action as above is available allowing you to select a linkml repository to test against.
-For more see [linkml-runtime/CONTRIBUTING](https://github.com/linkml/linkml-runtime/blob/main/CONTRIBUTING.md).
-
 ## Code formatting and linting
 
-This repository is configured to use [Black](https://black.readthedocs.io/en/stable/index.html#) and [Ruff](https://beta.ruff.rs/docs/) to ensure good  formatting and code quality standards.
+This repository is configured to use [Ruff](https://beta.ruff.rs/docs/) to ensure good formatting and code quality standards.
 
 Each of these tools can be run on-demand via `tox`. To check the code for issues run:
 
@@ -222,13 +193,16 @@ If the PyPI release failed, make fixes, [delete](https://docs.github.com/en/ente
 
 ### PRs
 
-* PRs should be in a DRAFT state until they are ready for review and tests are passing. Draft PRs minimize notification noise for maintainers—GitHub sends notifications on PR creation and each automated review, which can overwhelm those subscribed to "All Activity."
-* PRs should be reviewed by at least one other person.
+* PRs MUST be in a DRAFT state until they are ready for review and tests are passing. Draft PRs minimize notification noise for maintainers—GitHub sends notifications on PR creation and each automated review, which can overwhelm those subscribed to "All Activity."
+* PRs MUST be reviewed by at least one member of the [LinkML developer team](https://github.com/orgs/linkml/teams/developers).
   * All automated tests should be passing via GitHub actions before a code review is requested.
-  * Reviews can be requested of any contributing member of the LinkML organization.
+  * Reviews can be requested of any member of [the LinkML developer team](https://github.com/orgs/linkml/teams/developers).
+* PRs SHOULD be linked to at least one issue in on the [LinkML issue tracker](https://github.com/linkml/linkml/issues/). This ensures that the community is aware of the work before it has started, understands its motivation and is able to respond before the work is performed. This also helps with process management and progress reporting. CODEOWNERs may choose to ignore this recommendation - the assumption being that this responsibility can add unnecessary busy work if larger tasks are broken into multiple small PRs.
+* All _open_ PRs MUST be assigned to someone to be reviewed / processed by the core team. This assignment means: the author (and no one else) is responsible for seeing this PR through. This is a critical component of a scalable Open Data effort - do not abandon your PRs hoping someone will finish them / deal with them. The [LinkML developer team](https://github.com/orgs/linkml/teams/developers) will do its best to find reviewers for your work, but a nudge from time to time helps with prioritisation. If you want you be assigned to your own PR but are not in the system, we will add you to the respective GitHub team. If you want someone else to be assigned to your PR, please clearly say so in the PR description. If a PR author withdraws themselves from a PR (by unassigning themselves), the PR is considered _orphaned_. _orphaned_ PRs are reverted to _draft_ state and stay open for up to 3 months for possible adoption before being closed automatically.
+
+Optional:
 * Make a DRAFT PR for your branch even if you've just started working on something.  This gives other developers
 insight into your work and allows them to provide feedback early on.
-* In general, each PR should be associated with a ticket.
 
 ### Ticket/Issue Creation
 
@@ -248,5 +222,6 @@ insight into your work and allows them to provide feedback early on.
 
 ## See Also
 
-- [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
-- [Deprecation](deprecation.md) - Handling deprecations
+* [FAQ: Contributing](../faq/contributing.md) - General info about how to contribute to LinkML.
+* [Deprecation](deprecation.md) - Handling deprecations
+* [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) - Community norms for responsible AI use in contributions

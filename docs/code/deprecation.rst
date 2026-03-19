@@ -11,7 +11,7 @@ See `Deprecation Guide <../maintainers/deprecation.md>`_
 
     {% for dep in deprecations %}
     {{ dep.name }}
-    ==============
+    {{ '=' * (dep.name | length) }}
 
     {% if dep.removed %}
     .. admonition:: Removed

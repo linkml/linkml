@@ -1,12 +1,10 @@
 """
-The ``linkml.validator`` package contains a new LinkML validation framework that is more flexible
-than the ``linkml.validators`` package. While that package still exists, it may become deprecated
-in the future.
+The ``linkml.validator`` package contains the LinkML validation framework.
 """
 
 import os
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 from linkml.validator.loaders import default_loader_for_file
 from linkml.validator.plugins import JsonschemaValidationPlugin
@@ -17,7 +15,7 @@ from linkml_runtime.loaders import yaml_loader
 
 
 def _get_default_validator(
-    schema: Union[str, dict, Path, SchemaDefinition],
+    schema: str | dict | Path | SchemaDefinition,
     *,
     strict: bool = False,
 ) -> Validator:
@@ -41,8 +39,8 @@ def _get_default_validator(
 
 def validate(
     instance: Any,
-    schema: Union[str, dict, SchemaDefinition],
-    target_class: Optional[str] = None,
+    schema: str | dict | SchemaDefinition,
+    target_class: str | None = None,
     *,
     strict: bool = False,
 ) -> ValidationReport:
@@ -73,9 +71,9 @@ def validate(
 
 
 def validate_file(
-    file: Union[str, bytes, os.PathLike],
-    schema: Union[str, dict, SchemaDefinition],
-    target_class: Optional[str] = None,
+    file: str | bytes | os.PathLike,
+    schema: str | dict | SchemaDefinition,
+    target_class: str | None = None,
     *,
     strict: bool = False,
 ) -> ValidationReport:

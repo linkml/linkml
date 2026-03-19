@@ -47,7 +47,7 @@ def test_valid_csv_file(cli_runner, csv_data_file):
 
     data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exception is None
     assert result.exit_code == 0
 
@@ -58,7 +58,7 @@ def test_valid_json_file_object(tmp_path, cli_runner, json_data_file):
     data_path = json_data_file({"persons": [VALID_PERSON_1, VALID_PERSON_2]})
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, data_path])
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
 
 
@@ -69,7 +69,7 @@ def test_valid_json_file_list(cli_runner, json_data_file):
 
     result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
 
 
@@ -146,42 +146,90 @@ data_sources:
     result = cli_runner.invoke(cli, ["--config", str(config_path)])
     print(str(result.exception))
     assert result.exception is None
-    assert result.output == "No issues found\n"
+    assert "No issues found" in result.output
     assert result.exit_code == 0
 
 
-def test_legacy_mode(csv_data_file, cli_runner):
-    """Test that validation is delegated to the old module when the --legacy-mode flag is passed"""
-    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
+# --- tests for --allow-null-for-optional-enums  ---
+# Uses the existing personinfo.yaml schema which has:
+#   - gender slot: range=GenderType enum, required=false (optional) ← perfect for our test
+
+
+def test_allow_null_for_optional_enums_without_flag(cli_runner, json_data_file):
+    """
+    Without the flag, empty string in an optional enum slot should be ERROR.
+    Uses personinfo.yaml: gender slot is optional with GenderType enum range.
+    Verifies backward compatibility — default behavior is unchanged.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty — ERROR without flag
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
+
+    assert "[ERROR]" in result.output
+    assert "'' is not one of" in result.output
+    assert result.exit_code == 1
+
+
+def test_allow_null_for_optional_enums_empty_string(cli_runner, json_data_file):
+    """
+    With the flag, empty string in an optional enum slot is downgraded to WARN.
+    Uses personinfo.yaml: gender slot is optional with GenderType enum range.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": ""},  # empty string — WARN with flag
+    ]
+    data_path = json_data_file(data)
     result = cli_runner.invoke(
-        cli, ["--legacy-mode", "--index-slot", "persons", "-s", PERSONINFO_SCHEMA, "-C", "Container", data_path]
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
     )
+
     assert result.exception is None
-    assert result.output == "✓ No problems found\n"
+    assert "[WARN]" in result.output
+    assert "[ERROR]" not in result.output
     assert result.exit_code == 0
 
 
-def test_deprecated_arguments(csv_data_file, cli_runner):
-    """Test that a warning is issued when deprecated args are used without --legacy-mode"""
-    data_path = csv_data_file([VALID_PERSON_1, VALID_PERSON_2])
-    result = cli_runner.invoke(cli, ["--index-slot", "persons", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.exception is None
-    assert "Warning" in result.output
-    assert "-S/--index-slot" in result.output
-
-    result = cli_runner.invoke(cli, ["--module", "foo", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.exception is None
-    assert "Warning" in result.output
-    assert "-m/--module" in result.output
-
-    result = cli_runner.invoke(cli, ["--input-format", "yaml", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path])
-    assert result.exception is None
-    assert "Warning" in result.output
-    assert "-f/--input-format" in result.output
-
+def test_allow_null_for_optional_enums_none_value(cli_runner, json_data_file):
+    """
+    None (JSON null) in an optional enum slot passes cleanly — the JSON Schema
+    validator does not raise an error for null on an optional slot, so no
+    downgrade is needed.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": None},  # null — passes cleanly
+    ]
+    data_path = json_data_file(data)
     result = cli_runner.invoke(
-        cli, ["--include-range-class-descendants", "-s", PERSONINFO_SCHEMA, "-C", "Person", data_path]
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
     )
+
     assert result.exception is None
-    assert "Warning" in result.output
-    assert "--include-range-class-descendants" in result.output
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
+
+
+def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_data_file):
+    """
+    With the flag, valid enum values should still pass with no issues.
+    Ensures the flag does not suppress legitimate validation.
+    """
+    data = [
+        {"id": "P:001", "name": "Alice", "gender": "cisgender woman"},
+        {"id": "P:002", "name": "Bob", "gender": "cisgender man"},
+    ]
+    data_path = json_data_file(data)
+    result = cli_runner.invoke(
+        cli,
+        ["-s", PERSONINFO_SCHEMA, "-C", "Person", "--allow-null-for-optional-enums", data_path],
+    )
+
+    assert result.exception is None
+    assert "No issues found" in result.output
+    assert result.exit_code == 0

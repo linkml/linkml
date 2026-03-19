@@ -3,7 +3,7 @@ import logging
 import os
 from copy import deepcopy
 from pathlib import Path
-from typing import Optional, Union, cast
+from typing import cast
 from urllib.parse import urlparse
 
 from rdflib import URIRef
@@ -28,8 +28,8 @@ logger = logging.getLogger(__name__)
 def merge_schemas(
     target: SchemaDefinition,
     mergee: SchemaDefinition,
-    imported_from: Optional[str] = None,
-    namespaces: Optional[Namespaces] = None,
+    imported_from: str | None = None,
+    namespaces: Namespaces | None = None,
     merge_imports: bool = True,
 ) -> None:
     """Merge mergee into target"""
@@ -152,9 +152,9 @@ def merge_dicts(
 
 
 def merge_slots(
-    target: Union[SlotDefinition, TypeDefinition],
-    source: Union[SlotDefinition, TypeDefinition],
-    skip: list[Union[SlotDefinitionName, TypeDefinitionName]] = None,
+    target: SlotDefinition | TypeDefinition,
+    source: SlotDefinition | TypeDefinition,
+    skip: list[SlotDefinitionName | TypeDefinitionName] = None,
     inheriting: bool = True,
 ) -> None:
     """
@@ -187,11 +187,11 @@ def slot_usage_name(usage_name: SlotDefinitionName, owning_class: ClassDefinitio
     return SlotDefinitionName(extended_str.concat(owning_class.name, "_", usage_name))
 
 
-def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> Optional[SlotDefinitionName]:
-    """Return the ultimate alias of a slot"""
+def alias_root(schema: SchemaDefinition, slotname: SlotDefinitionName) -> SlotDefinitionName | None:
+    """Return the ultimate alias of a slot."""
     alias = schema.slots[slotname].alias if slotname in schema.slots else None
     if alias and alias == slotname:
-        raise ValueError("Error: Slot {slotname} is aliased to itself.")
+        return slotname  # self-alias is semantically "no alias"
     return alias_root(schema, cast(SlotDefinitionName, alias)) if alias else slotname
 
 
@@ -239,7 +239,7 @@ def merge_enums(
 
 
 def resolve_merged_imports(
-    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: Optional[str] = None
+    target: SchemaDefinition, mergee: SchemaDefinition, imported_from: str | None = None
 ) -> None:
     """Merge the imports in source into target
 

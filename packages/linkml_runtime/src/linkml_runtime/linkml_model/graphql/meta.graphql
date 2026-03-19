@@ -1,3 +1,46 @@
+# metamodel_version: 1.7.0
+enum AliasPredicateEnum
+  {
+    EXACT_SYNONYM
+    RELATED_SYNONYM
+    BROAD_SYNONYM
+    NARROW_SYNONYM
+  }
+
+enum ObligationLevelEnum
+  {
+    REQUIRED
+    RECOMMENDED
+    OPTIONAL
+    EXAMPLE
+    DISCOURAGED
+  }
+
+enum PresenceEnum
+  {
+    UNCOMMITTED
+    PRESENT
+    ABSENT
+  }
+
+enum PvFormulaOptions
+  {
+    CODE
+    CURIE
+    URI
+    FHIR_CODING
+    LABEL
+  }
+
+enum RelationalRoleEnum
+  {
+    SUBJECT
+    OBJECT
+    PREDICATE
+    NODE
+    OTHER_ROLE
+  }
+
 type AltDescription
   {
     source: String!
@@ -11,7 +54,7 @@ interface Annotatable
 
 type Annotation implements Annotatable
   {
-    tag: Uriorcurie!
+    tag: String!
     value: AnyValue!
     extensions: [Extension]
     annotations: [Annotation]
@@ -30,29 +73,29 @@ type AnonymousClassExpression implements ClassExpression
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     isA: Definition
     anyOf: [AnonymousClassExpression]
@@ -64,7 +107,7 @@ type AnonymousClassExpression implements ClassExpression
 
 type AnonymousEnumExpression implements EnumExpression
   {
-    codeSet: Uriorcurie
+    codeSet: String
     codeSetTag: String
     codeSetVersion: String
     pvFormula: PvFormulaOptions
@@ -74,7 +117,7 @@ type AnonymousEnumExpression implements EnumExpression
     inherits: [EnumDefinition]
     reachableFrom: ReachabilityQuery
     matches: MatchQuery
-    concepts: [Uriorcurie]
+    concepts: [String]
   }
 
 type AnonymousExpression implements Expression, Extensible, Annotatable, CommonMetadata
@@ -90,29 +133,29 @@ type AnonymousExpression implements Expression, Extensible, Annotatable, CommonM
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
@@ -129,29 +172,29 @@ type AnonymousSlotExpression implements SlotExpression
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     range: Element
     rangeExpression: AnonymousClassExpression
@@ -171,17 +214,18 @@ type AnonymousSlotExpression implements SlotExpression
     valuePresence: PresenceEnum
     equalsString: String
     equalsStringIn: [String]
-    equalsNumber: Integer
+    equalsNumber: Int
     equalsExpression: String
-    exactCardinality: Integer
-    minimumCardinality: Integer
-    maximumCardinality: Integer
+    exactCardinality: Int
+    minimumCardinality: Int
+    maximumCardinality: Int
     hasMember: AnonymousSlotExpression
     allMembers: AnonymousSlotExpression
     noneOf: [AnonymousSlotExpression]
     exactlyOneOf: [AnonymousSlotExpression]
     anyOf: [AnonymousSlotExpression]
     allOf: [AnonymousSlotExpression]
+    array: ArrayExpression
   }
 
 type AnonymousTypeExpression implements TypeExpression
@@ -192,7 +236,7 @@ type AnonymousTypeExpression implements TypeExpression
     implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
-    equalsNumber: Integer
+    equalsNumber: Int
     minimumValue: Anything
     maximumValue: Anything
     noneOf: [AnonymousTypeExpression]
@@ -201,18 +245,14 @@ type AnonymousTypeExpression implements TypeExpression
     allOf: [AnonymousTypeExpression]
   }
 
-type Anything
-  {
-  }
+scalar Anything
 
-type AnyValue
-  {
-  }
+scalar AnyValue
 
 type ArrayExpression implements Extensible, Annotatable, CommonMetadata
   {
-    exactNumberDimensions: Integer
-    minimumNumberDimensions: Integer
+    exactNumberDimensions: Int
+    minimumNumberDimensions: Int
     maximumNumberDimensions: Anything
     dimensions: [DimensionExpression]
     extensions: [Extension]
@@ -226,42 +266,42 @@ type ArrayExpression implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 type ClassDefinition implements ClassExpression
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -273,39 +313,39 @@ type ClassDefinition implements ClassExpression
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     abstract: Boolean
     mixin: Boolean
-    valuesFrom: [Uriorcurie]
+    valuesFrom: [String]
     stringSerialization: String
     slots: [SlotDefinition]
     slotUsage: [SlotDefinition]
     attributes: [SlotDefinition]
-    classUri: Uriorcurie
-    subclassOf: Uriorcurie
+    classUri: String
+    subclassOf: String
     unionOf: [ClassDefinition]
     definingSlots: [SlotDefinition]
     treeRoot: Boolean
@@ -316,6 +356,8 @@ type ClassDefinition implements ClassExpression
     representsRelationship: Boolean
     disjointWith: [ClassDefinition]
     childrenAreMutuallyDisjoint: Boolean
+    extraSlots: ExtraSlotsExpression
+    alias: String
     isA: ClassDefinition
     mixins: [ClassDefinition]
     applyTo: [ClassDefinition]
@@ -346,7 +388,7 @@ type ClassRule implements Extensible, Annotatable, CommonMetadata
     elseconditions: AnonymousClassExpression
     bidirectional: Boolean
     openWorld: Boolean
-    rank: Integer
+    rank: Int
     deactivated: Boolean
     extensions: [Extension]
     annotations: [Annotation]
@@ -359,28 +401,28 @@ type ClassRule implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    categories: [String]
     keywords: [String]
   }
 
@@ -395,42 +437,42 @@ interface CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 interface Definition
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -442,45 +484,45 @@ interface Definition
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     isA: Definition
     abstract: Boolean
     mixin: Boolean
     mixins: [Definition]
     applyTo: [Definition]
-    valuesFrom: [Uriorcurie]
+    valuesFrom: [String]
     stringSerialization: String
   }
 
 type DimensionExpression implements Extensible, Annotatable, CommonMetadata
   {
     alias: String
-    maximumCardinality: Integer
-    minimumCardinality: Integer
-    exactCardinality: Integer
+    maximumCardinality: Int
+    minimumCardinality: Int
+    exactCardinality: Int
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -492,42 +534,42 @@ type DimensionExpression implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 type Element implements Extensible, Annotatable, CommonMetadata
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -539,29 +581,29 @@ type Element implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
@@ -582,42 +624,42 @@ type EnumBinding implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 type EnumDefinition implements EnumExpression
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -629,39 +671,39 @@ type EnumDefinition implements EnumExpression
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     isA: Definition
     abstract: Boolean
     mixin: Boolean
     mixins: [Definition]
     applyTo: [Definition]
-    valuesFrom: [Uriorcurie]
+    valuesFrom: [String]
     stringSerialization: String
-    enumUri: Uriorcurie
-    codeSet: Uriorcurie
+    enumUri: String
+    codeSet: String
     codeSetTag: String
     codeSetVersion: String
     pvFormula: PvFormulaOptions
@@ -671,12 +713,12 @@ type EnumDefinition implements EnumExpression
     inherits: [EnumDefinition]
     reachableFrom: ReachabilityQuery
     matches: MatchQuery
-    concepts: [Uriorcurie]
+    concepts: [String]
   }
 
 type EnumExpression
   {
-    codeSet: Uriorcurie
+    codeSet: String
     codeSetTag: String
     codeSetVersion: String
     pvFormula: PvFormulaOptions
@@ -686,7 +728,7 @@ type EnumExpression
     inherits: [EnumDefinition]
     reachableFrom: ReachabilityQuery
     matches: MatchQuery
-    concepts: [Uriorcurie]
+    concepts: [String]
   }
 
 type Example
@@ -707,15 +749,21 @@ interface Extensible
 
 type Extension
   {
-    tag: Uriorcurie!
+    tag: String!
     value: AnyValue!
     extensions: [Extension]
   }
 
+type ExtraSlotsExpression implements Expression
+  {
+    allowed: Boolean
+    rangeExpression: AnonymousClassExpression
+  }
+
 type ImportExpression implements Extensible, Annotatable, CommonMetadata
   {
-    importFrom: Uriorcurie!
-    importAs: Ncname
+    importFrom: String!
+    importAs: String
     importMap: [Setting]
     extensions: [Extension]
     annotations: [Annotation]
@@ -728,42 +776,42 @@ type ImportExpression implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 type LocalName
   {
-    localNameSource: Ncname!
+    localNameSource: String!
     localNameValue: String!
   }
 
 type MatchQuery
   {
     identifierPattern: String
-    sourceOntology: Uriorcurie
+    sourceOntology: String
   }
 
 type PathExpression implements Expression, Extensible, Annotatable, CommonMetadata
@@ -787,29 +835,29 @@ type PathExpression implements Expression, Extensible, Annotatable, CommonMetada
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
@@ -829,29 +877,29 @@ type PatternExpression implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
@@ -859,10 +907,10 @@ type PermissibleValue implements Extensible, Annotatable, CommonMetadata
   {
     text: String!
     description: String
-    meaning: Uriorcurie
+    meaning: String
     unit: UnitOfMeasure
-    instantiates: [Uriorcurie]
-    implements: [Uriorcurie]
+    instantiates: [String]
+    implements: [String]
     isA: PermissibleValue
     mixins: [PermissibleValue]
     extensions: [Extension]
@@ -875,43 +923,43 @@ type PermissibleValue implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 type Prefix
   {
-    prefixPrefix: Ncname!
-    prefixReference: Uri!
+    prefixPrefix: String!
+    prefixReference: String!
   }
 
 type ReachabilityQuery
   {
-    sourceOntology: Uriorcurie
-    sourceNodes: [Uriorcurie]
-    relationshipTypes: [Uriorcurie]
+    sourceOntology: String
+    sourceNodes: [String]
+    relationshipTypes: [String]
     isDirect: Boolean
     includeSelf: Boolean
     traverseUp: Boolean
@@ -919,13 +967,13 @@ type ReachabilityQuery
 
 type SchemaDefinition
   {
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -937,36 +985,36 @@ type SchemaDefinition
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
-    id: Uri!
+    id: String!
     version: String
-    imports: [Uriorcurie]
+    imports: [String]
     license: String
     prefixes: [Prefix]
-    emitPrefixes: [Ncname]
+    emitPrefixes: [String]
     defaultCuriMaps: [String]
     defaultPrefix: String
     defaultRange: TypeDefinition
@@ -977,31 +1025,31 @@ type SchemaDefinition
     classes: [ClassDefinition]
     metamodelVersion: String
     sourceFile: String
-    sourceFileDate: Datetime
-    sourceFileSize: Integer
-    generationDate: Datetime
+    sourceFileDate: String
+    sourceFileSize: Int
+    generationDate: String
     slotNamesUnique: Boolean
     settings: [Setting]
     bindings: [EnumBinding]
-    name: Ncname!
+    name: String!
   }
 
 type Setting
   {
-    settingKey: Ncname!
+    settingKey: String!
     settingValue: String!
   }
 
 type SlotDefinition implements SlotExpression
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -1013,38 +1061,37 @@ type SlotDefinition implements SlotExpression
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     abstract: Boolean
     mixin: Boolean
-    valuesFrom: [Uriorcurie]
+    valuesFrom: [String]
     stringSerialization: String
     singularName: String
     domain: ClassDefinition
-    slotUri: Uriorcurie
-    array: ArrayExpression
+    slotUri: String
     inherited: Boolean
     readonly: String
     ifabsent: String
@@ -1100,17 +1147,18 @@ type SlotDefinition implements SlotExpression
     valuePresence: PresenceEnum
     equalsString: String
     equalsStringIn: [String]
-    equalsNumber: Integer
+    equalsNumber: Int
     equalsExpression: String
-    exactCardinality: Integer
-    minimumCardinality: Integer
-    maximumCardinality: Integer
+    exactCardinality: Int
+    minimumCardinality: Int
+    maximumCardinality: Int
     hasMember: AnonymousSlotExpression
     allMembers: AnonymousSlotExpression
     noneOf: [AnonymousSlotExpression]
     exactlyOneOf: [AnonymousSlotExpression]
     anyOf: [AnonymousSlotExpression]
     allOf: [AnonymousSlotExpression]
+    array: ArrayExpression
   }
 
 interface SlotExpression
@@ -1133,25 +1181,26 @@ interface SlotExpression
     valuePresence: PresenceEnum
     equalsString: String
     equalsStringIn: [String]
-    equalsNumber: Integer
+    equalsNumber: Int
     equalsExpression: String
-    exactCardinality: Integer
-    minimumCardinality: Integer
-    maximumCardinality: Integer
+    exactCardinality: Int
+    minimumCardinality: Int
+    maximumCardinality: Int
     hasMember: AnonymousSlotExpression
     allMembers: AnonymousSlotExpression
     noneOf: [AnonymousSlotExpression]
     exactlyOneOf: [AnonymousSlotExpression]
     anyOf: [AnonymousSlotExpression]
     allOf: [AnonymousSlotExpression]
+    array: ArrayExpression
   }
 
 type StructuredAlias implements Expression, Extensible, Annotatable, CommonMetadata
   {
     literalForm: String!
     predicate: AliasPredicateEnum
-    categories: [Uriorcurie]
-    contexts: [Uri]
+    categories: [String]
+    contexts: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -1163,41 +1212,41 @@ type StructuredAlias implements Expression, Extensible, Annotatable, CommonMetad
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
     keywords: [String]
   }
 
 type SubsetDefinition
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -1209,42 +1258,42 @@ type SubsetDefinition
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
 type TypeDefinition implements TypeExpression
   {
     name: String!
-    idPrefixes: [Ncname]
+    idPrefixes: [String]
     idPrefixesAreClosed: Boolean
-    definitionUri: Uriorcurie
+    definitionUri: String
     localNames: [LocalName]
     conformsTo: String
-    implements: [Uriorcurie]
-    instantiates: [Uriorcurie]
+    implements: [String]
+    instantiates: [String]
     extensions: [Extension]
     annotations: [Annotation]
     description: String
@@ -1256,33 +1305,33 @@ type TypeDefinition implements TypeExpression
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
     typeof: TypeDefinition
     base: String
-    uri: Uriorcurie
+    uri: String
     repr: String
     unionOf: [TypeDefinition]
     pattern: String
@@ -1291,7 +1340,7 @@ type TypeDefinition implements TypeExpression
     implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
-    equalsNumber: Integer
+    equalsNumber: Int
     minimumValue: Anything
     maximumValue: Anything
     noneOf: [AnonymousTypeExpression]
@@ -1308,7 +1357,7 @@ interface TypeExpression
     implicitPrefix: String
     equalsString: String
     equalsStringIn: [String]
-    equalsNumber: Integer
+    equalsNumber: Int
     minimumValue: Anything
     maximumValue: Anything
     noneOf: [AnonymousTypeExpression]
@@ -1333,29 +1382,29 @@ type TypeMapping implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
@@ -1375,29 +1424,29 @@ type UniqueKey implements Extensible, Annotatable, CommonMetadata
     comments: [String]
     examples: [Example]
     inSubset: [SubsetDefinition]
-    fromSchema: Uri
+    fromSchema: String
     importedFrom: String
-    source: Uriorcurie
+    source: String
     inLanguage: String
-    seeAlso: [Uriorcurie]
-    deprecatedElementHasExactReplacement: Uriorcurie
-    deprecatedElementHasPossibleReplacement: Uriorcurie
+    seeAlso: [String]
+    deprecatedElementHasExactReplacement: String
+    deprecatedElementHasPossibleReplacement: String
     aliases: [String]
     structuredAliases: [StructuredAlias]
-    mappings: [Uriorcurie]
-    exactMappings: [Uriorcurie]
-    closeMappings: [Uriorcurie]
-    relatedMappings: [Uriorcurie]
-    narrowMappings: [Uriorcurie]
-    broadMappings: [Uriorcurie]
-    createdBy: Uriorcurie
-    contributors: [Uriorcurie]
-    createdOn: Datetime
-    lastUpdatedOn: Datetime
-    modifiedBy: Uriorcurie
-    status: Uriorcurie
-    rank: Integer
-    categories: [Uriorcurie]
+    mappings: [String]
+    exactMappings: [String]
+    closeMappings: [String]
+    relatedMappings: [String]
+    narrowMappings: [String]
+    broadMappings: [String]
+    createdBy: String
+    contributors: [String]
+    createdOn: String
+    lastUpdatedOn: String
+    modifiedBy: String
+    status: String
+    rank: Int
+    categories: [String]
     keywords: [String]
   }
 
@@ -1406,9 +1455,9 @@ type UnitOfMeasure
     symbol: String
     abbreviation: String
     descriptiveName: String
-    exactMappings: [Uriorcurie]
+    exactMappings: [String]
     ucumCode: String
     derivation: String
-    hasQuantityKind: Uriorcurie
+    hasQuantityKind: String
     iec61360code: String
   }

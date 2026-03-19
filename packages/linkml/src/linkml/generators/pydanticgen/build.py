@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, TypeVar, Union
+from typing import TypeVar
 
 from linkml.generators.common.build import (
     BuildResult,
@@ -24,8 +24,8 @@ class PydanticBuildResult(BuildResult):
     BuildResult parent class for pydantic generator
     """
 
-    imports: Optional[Union[list[Import], Imports]] = None
-    injected_classes: Optional[list[Union[str, type]]] = None
+    imports: list[Import] | Imports | None = None
+    injected_classes: list[str | type] | None = None
 
     def merge(self, other: T) -> T:
         """
@@ -75,7 +75,7 @@ class RangeResult(PydanticBuildResult, RangeResult_):
 
     range: str
     """The type annotation used in the generated model"""
-    field_extras: Optional[dict] = None
+    field_extras: dict | None = None
     """Additional metadata for this slot to be held in the Field object"""
 
     def merge(self, other: "RangeResult") -> "RangeResult":
@@ -117,4 +117,4 @@ class SplitResult(SchemaResult):
     main: bool = False
     path: Path
     serialized_module: str
-    module_import: Optional[str] = None
+    module_import: str | None = None

@@ -14,7 +14,6 @@ We welcome any and all kinds of contribution, including:
 You are free to make PRs on any LinkML repo, including:
 
  * [linkml](https://github.com/linkml/linkml)
- * [linkml-runtime](https://github.com/linkml/linkml-runtime)
  * [linkml-model](https://github.com/linkml/linkml-model)
 
 Be sure to read the CONTRIBUTING.md for the repo you wish to contribute to.
@@ -23,6 +22,8 @@ For filing new issues, please use the [main linkml repo](https://github.com/link
 
 You may wish to browse the list of [good first issues](https://github.com/linkml/linkml/labels/good%20first%20issue),
 and you can [vote for your favorite issue here](https://github.com/linkml/linkml/issues/974).
+
+We encourage contributors to use AI tools responsibly. Please review our [AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) for community norms around AI-assisted contributions.
 
 ## How do I stay involved?
 
