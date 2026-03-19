@@ -439,7 +439,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         if cls.none_of is not None and len(cls.none_of) > 0:
             subschema["not"] = {
-                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
+                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.none_of]
             }
 
         if cls.is_a is not None:
