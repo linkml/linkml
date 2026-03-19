@@ -15,6 +15,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -41,6 +42,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Boolean Expressions", "Slot any_of")
 @pytest.mark.parametrize("use_default_range", [False, True])
 @pytest.mark.parametrize("use_any_type", [False, True])
 @pytest.mark.parametrize(
@@ -164,6 +166,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     )
 
 
+@feature_category("Boolean Expressions", "Slot exactly_one_of")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -230,6 +233,7 @@ def test_slot_exactly_one_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Slot all_of")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -309,6 +313,7 @@ def test_slot_all_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Slot none_of")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -375,6 +380,7 @@ def test_slot_none_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Cardinality in exactly_one_of")
 @pytest.mark.parametrize(
     "data_name,instance,is_valid",
     [
@@ -442,6 +448,7 @@ def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid)
     )
 
 
+@feature_category("Boolean Expressions", "Class any_of")
 @pytest.mark.parametrize(
     "data_name,s1value,s2value,is_valid",
     [
@@ -519,6 +526,7 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
     )
 
 
+@feature_category("Value Constraints", "Equals string")
 @pytest.mark.parametrize("value", ("EQUALS_STRING", "NOT_EQUALS_STRING"))
 @pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
 @pytest.mark.parametrize("multivalued", (True, False))
@@ -625,6 +633,7 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
     )
 
 
+@feature_category("Value Constraints", "Equals string in")
 @pytest.mark.parametrize("value", ("EQUALS_STRING_A", "NOT_EQUALS_STRING"))
 @pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
 @pytest.mark.parametrize("multivalued", (True, False))
@@ -759,6 +768,7 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
     )
 
 
+@feature_category("Boolean Expressions", "Class boolean with expressions")
 @pytest.mark.parametrize(
     "schema_name,s1_range,s2_range,op,s1_expression,s2_expression,data_name,s1value,s2value,is_valid",
     [
@@ -1390,6 +1400,7 @@ def test_class_boolean_with_expressions(
     )
 
 
+@feature_category("Boolean Expressions", "Slot boolean with expressions")
 @pytest.mark.parametrize(
     "schema_name,range,op,expression1,expression2,data_name,value,is_valid,unsatisfiable",
     [
@@ -1851,6 +1862,7 @@ def test_slot_boolean_with_expressions(
     )
 
 
+@feature_category("Boolean Expressions", "any_of with mixed cardinality")
 @pytest.mark.parametrize(
     "schema_name,slot1_expression,slot2_expression,data_name,value,is_valid",
     [
@@ -1906,6 +1918,7 @@ def test_any_of_mixed_cardinality(
     )
 
 
+@feature_category("Cardinality & Presence", "Min/max cardinality")
 @pytest.mark.parametrize(
     "value",
     [1, 10, 15, 20, 21],
@@ -1993,6 +2006,7 @@ def test_min_max(framework, min_val, max_val, equals_number: int | None, value):
     )
 
 
+@feature_category("Rules & Classification", "Precondition rules")
 @pytest.mark.parametrize(
     "s1,s2,is_valid",
     [
@@ -2095,6 +2109,7 @@ def test_preconditions(framework, s1, s2, is_valid):
     )
 
 
+@feature_category("Rules & Classification", "Precondition combos")
 @pytest.mark.parametrize(
     "schema_name,s1def,s2def,preconditions,postconditions,data_name,object,is_valid",
     [
@@ -2289,6 +2304,7 @@ def test_preconditions_combos(
     )
 
 
+@feature_category("Rules & Classification", "Classification rules")
 @pytest.mark.parametrize(
     "s1,s1a,s1b,is_valid",
     [
@@ -2388,6 +2404,7 @@ def test_classification_rules(framework, s1, s1a, s1b, is_valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Union of types")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -2462,6 +2479,7 @@ def test_union_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Rules & Classification", "Value presence in rules")
 @pytest.mark.parametrize(
     "data_name,instance,is_valid",
     [
@@ -2563,6 +2581,7 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
     )
 
 
+@feature_category("Cardinality & Presence", "Membership constraints")
 @pytest.mark.parametrize(
     "name,quantification,expression,instance,is_valid",
     [
