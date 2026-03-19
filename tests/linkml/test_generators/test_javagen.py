@@ -160,3 +160,10 @@ def test_generation_for_org_incenp_linkml_runtime(kitchen_sink_path, tmp_path):
     assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/kitchen_sink/Concept")')
     assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/core/id")')
     assert_file_contains(tmp_path / "Concept.java", '@SlotName("in code system")')
+
+
+def test_org_incenp_linkml_primitive_equals(input_path, tmp_path):
+    """Primitive fields in org.incenp.linkml template must generate valid equals()."""
+    gen = JavaGenerator(input_path("primitive_types.yaml"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "SimpleClass.java", "this$requiredBoolean != other$requiredBoolean")

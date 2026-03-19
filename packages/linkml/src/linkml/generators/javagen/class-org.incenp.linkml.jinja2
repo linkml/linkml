@@ -158,7 +158,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
         final Object this${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
         final Object other${{ f.name }} = other.{{ gen.get_read_accessor_name(f.source_slot) }}();
 {%-   if f.range in ["int", "float", "double", "boolean"] %}
-        if ( this${{ f.name }} != $other{{ f.name }} ) return false;
+        if ( this${{ f.name }} != other${{ f.name }} ) return false;
 {%-   else %}
         if ( this${{ f.name }} == null ? other${{ f.name }} != null : !this${{ f.name }}.equals(other${{ f.name }})) return false;
  {%-  endif %}
