@@ -701,6 +701,10 @@ class OwlSchemaGenerator(Generator):
 
         owl_exprs = []
 
+        if slot.range_expression:
+            if isinstance(slot.range_expression, AnonymousClassExpression):
+                owl_exprs.append(self.transform_class_expression(slot.range_expression))
+
         if slot.all_members:
             owl_exprs.append(self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types))
 
