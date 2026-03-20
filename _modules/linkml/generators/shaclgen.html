@@ -423,6 +423,36 @@
 <a class="viewcode-back" href="../../../generators/shacl.html#linkml.generators.shaclgen.ShaclGenerator">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShaclGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate SHACL (Shapes Constraint Language) shapes from a LinkML schema.</span>
+
+<span class="sd">    SHACL shapes are used to validate RDF data. Each LinkML class is converted</span>
+<span class="sd">    to a ``sh:NodeShape`` with property constraints derived from the class&#39;s slots.</span>
+
+<span class="sd">    Shape Naming Modes</span>
+<span class="sd">    ------------------</span>
+<span class="sd">    The generator supports two naming modes controlled by ``use_class_uri_names``:</span>
+
+<span class="sd">    **Default mode** (``use_class_uri_names=True``):</span>
+<span class="sd">        Shapes are named using the ``class_uri``. If multiple LinkML classes share</span>
+<span class="sd">        the same ``class_uri``, their properties are merged into a single shape.</span>
+<span class="sd">        This is the traditional RDF-centric behavior.</span>
+
+<span class="sd">        Example: LinkML classes ``Entity`` and ``EvaluatedEntity`` both with</span>
+<span class="sd">        ``class_uri prov:Entity`` produce a single shape ``&lt;prov:Entity&gt;``.</span>
+
+<span class="sd">    **Native names mode** (``use_class_uri_names=False``):</span>
+<span class="sd">        Shapes are named using the native LinkML class name from the schema.</span>
+<span class="sd">        Each LinkML class produces a distinct shape, even if they share a ``class_uri``.</span>
+<span class="sd">        The ``sh:targetClass`` still correctly points to the ``class_uri``.</span>
+
+<span class="sd">        Example: The same two classes produce two shapes, each with</span>
+<span class="sd">        ``sh:targetClass prov:Entity``.</span>
+
+<span class="sd">    Use native names mode when multiple LinkML classes intentionally map to the</span>
+<span class="sd">    same external ontology class and you need distinct validation shapes per class.</span>
+<span class="sd">    See `#3011 &lt;https://github.com/linkml/linkml/issues/3011&gt;`_ for background.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># ClassVars</span>
     <span class="n">closed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;True means add &#39;sh:closed=true&#39; to all shapes, except of mixin shapes and shapes, that have parents&quot;&quot;&quot;</span>
@@ -433,7 +463,15 @@
     <span class="n">exclude_imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, elements from imported ontologies won&#39;t be included in the generator&#39;s output&quot;&quot;&quot;</span>
     <span class="n">use_class_uri_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, shapes use class_uri for names. If False, shapes use native LinkML class names. Suffixes still work.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Control how SHACL shape URIs are generated.</span>
+
+<span class="sd">    If True (default): Shape URIs are derived from class_uri. Classes sharing a class_uri</span>
+<span class="sd">    will be merged into a single shape.</span>
+
+<span class="sd">    If False: Shape URIs use native LinkML class names. Each class gets a distinct shape</span>
+<span class="sd">    even when sharing class_uri. The --suffix option still works in either mode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, expand subproperty_of to sh:in constraints with slot descendants&quot;&quot;&quot;</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
