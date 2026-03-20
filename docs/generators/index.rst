@@ -92,6 +92,7 @@ Generators specific to database frameworks. Currently only SQL databases.
 
    sqltable
    sqlalchemy
+   sqlvalidation
 
 Others
 ------

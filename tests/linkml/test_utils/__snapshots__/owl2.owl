@@ -44,36 +44,36 @@ meta:C1 a owl:Class,
             owl:onProperty meta:dataslot ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
-            owl:onProperty meta:annotslot ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:dataslot ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:dataslot ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
-            owl:onProperty meta:annotslot ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:annotslot2 ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:annotslot2 ],
-        [ a owl:Restriction ;
-            owl:allValuesFrom meta:C2 ;
             owl:onProperty meta:objslot ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty meta:annotslot ],
-        [ a owl:Restriction ;
-            owl:maxCardinality 1 ;
-            owl:onProperty meta:objslot ],
-        [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom meta:C2 ;
             owl:onProperty meta:objslot ],
         [ a owl:Restriction ;
             owl:allValuesFrom meta:string ;
+            owl:onProperty meta:annotslot2 ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:objslot ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom meta:C2 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:dataslot ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty meta:annotslot2 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:dataslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty meta:annotslot ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty meta:annotslot2 ] ;
     skos:inScheme <http://example.org/owl2> .
 
