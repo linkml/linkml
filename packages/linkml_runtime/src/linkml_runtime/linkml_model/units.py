@@ -1,5 +1,5 @@
 # Auto generated from units.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:33
+# Generation date: 2026-02-18T21:04:55
 # Schema: units
 #
 # id: https://w3id.org/linkml/units
@@ -7,7 +7,7 @@
 # license: https://creativecommons.org/publicdomain/zero/1.0/
 
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Optional, Union
 
 from rdflib import URIRef
 
@@ -36,7 +36,7 @@ DEFAULT_ = LINKML
 # Class references
 
 
-@dataclass
+@dataclass(repr=False)
 class UnitOfMeasure(YAMLRoot):
     """
     A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other
@@ -50,16 +50,16 @@ class UnitOfMeasure(YAMLRoot):
     class_name: ClassVar[str] = "UnitOfMeasure"
     class_model_uri: ClassVar[URIRef] = LINKML.UnitOfMeasure
 
-    symbol: str | None = None
-    abbreviation: str | None = None
-    descriptive_name: str | None = None
-    exact_mappings: str | URIorCURIE | list[str | URIorCURIE] | None = empty_list()
-    ucum_code: str | None = None
-    derivation: str | None = None
-    has_quantity_kind: str | URIorCURIE | None = None
-    iec61360code: str | None = None
+    symbol: Optional[str] = None
+    abbreviation: Optional[str] = None
+    descriptive_name: Optional[str] = None
+    exact_mappings: Optional[Union[Union[str, URIorCURIE], list[Union[str, URIorCURIE]]]] = empty_list()
+    ucum_code: Optional[str] = None
+    derivation: Optional[str] = None
+    has_quantity_kind: Optional[Union[str, URIorCURIE]] = None
+    iec61360code: Optional[str] = None
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self.symbol is not None and not isinstance(self.symbol, str):
             self.symbol = str(self.symbol)
 
@@ -102,7 +102,7 @@ slots.unit = Slot(
     curie=QUDT.curie("unit"),
     model_uri=LINKML.unit,
     domain=None,
-    range=dict | UnitOfMeasure | None,
+    range=Optional[Union[dict, UnitOfMeasure]],
 )
 
 slots.ucum_code = Slot(
@@ -111,7 +111,7 @@ slots.ucum_code = Slot(
     curie=QUDT.curie("ucumCode"),
     model_uri=LINKML.ucum_code,
     domain=UnitOfMeasure,
-    range=str | None,
+    range=Optional[str],
 )
 
 slots.derivation = Slot(
@@ -120,7 +120,7 @@ slots.derivation = Slot(
     curie=LINKML.curie("derivation"),
     model_uri=LINKML.derivation,
     domain=None,
-    range=str | None,
+    range=Optional[str],
 )
 
 slots.has_quantity_kind = Slot(
@@ -129,7 +129,7 @@ slots.has_quantity_kind = Slot(
     curie=QUDT.curie("hasQuantityKind"),
     model_uri=LINKML.has_quantity_kind,
     domain=None,
-    range=str | URIorCURIE | None,
+    range=Optional[Union[str, URIorCURIE]],
 )
 
 slots.iec61360code = Slot(
@@ -138,7 +138,7 @@ slots.iec61360code = Slot(
     curie=QUDT.curie("iec61360Code"),
     model_uri=LINKML.iec61360code,
     domain=None,
-    range=str | None,
+    range=Optional[str],
 )
 
 slots.symbol = Slot(
@@ -147,7 +147,7 @@ slots.symbol = Slot(
     curie=QUDT.curie("symbol"),
     model_uri=LINKML.symbol,
     domain=None,
-    range=str | None,
+    range=Optional[str],
 )
 
 slots.abbreviation = Slot(
@@ -156,7 +156,7 @@ slots.abbreviation = Slot(
     curie=QUDT.curie("abbreviation"),
     model_uri=LINKML.abbreviation,
     domain=None,
-    range=str | None,
+    range=Optional[str],
 )
 
 slots.descriptive_name = Slot(
@@ -165,5 +165,5 @@ slots.descriptive_name = Slot(
     curie=RDFS.curie("label"),
     model_uri=LINKML.descriptive_name,
     domain=None,
-    range=str | None,
+    range=Optional[str],
 )

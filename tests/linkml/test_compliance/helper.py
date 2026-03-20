@@ -145,6 +145,8 @@ class Feature(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
     name: str
+    display_name: str = ""
+    category: str = "Uncategorized"
     description: str
     implementations: dict[FRAMEWORK, ValidationBehavior]
     num_tests: int = 0
@@ -173,6 +175,27 @@ class FeatureSet(BaseModel):
     """A collection of features."""
 
     features: list[Feature]
+
+
+def feature_category(category: str, display_name: str = "") -> Callable:
+    """Decorator that tags a compliance test function with dashboard metadata.
+
+    The category and display_name are stored as attributes on the function
+    object and picked up by ``validated_schema`` when building the Feature.
+
+    Args:
+        category: Dashboard category heading (e.g. "Core Structure").
+        display_name: Human-readable short name for this feature.
+            Defaults to the function name with ``test_`` stripped and
+            underscores replaced by spaces.
+    """
+
+    def decorator(fn: Callable) -> Callable:
+        fn._feature_category = category
+        fn._feature_display_name = display_name
+        return fn
+
+    return decorator
 
 
 cached_generator_output: dict[tuple[SCHEMA_NAME, FRAMEWORK], tuple[Generator, str, Path | None]] = {}
@@ -223,12 +246,12 @@ def report():
         # stream.write(fset.description)
     path = OUTPUT_DIR / f"{summary_base_name}.yaml"
     with open(path, "w", encoding="utf-8") as stream:
-        yaml.dump(fset.dict(), stream, sort_keys=False)
+        yaml.dump(fset.model_dump(mode="json"), stream, Dumper=SafeDumper, sort_keys=False)
     for feature in fset.features:
         with open(OUTPUT_DIR / f"{feature.name}.yaml", "w", encoding="utf-8") as stream:
-            yaml.dump(feature.dict(), stream, sort_keys=False)
+            yaml.dump(feature.model_dump(mode="json"), stream, Dumper=SafeDumper, sort_keys=False)
     _as_tsv([{"name": f.name, **f.implementations} for f in fset.features], summary_base_name)
-    _as_tsv([check.dict() for check in all_test_results], f"report{suffix}")
+    _as_tsv([check.model_dump(mode="json") for check in all_test_results], f"report{suffix}")
     pivoted = defaultdict(dict)
     for check in all_test_results:
         key = (check.schema_name, check.data_name)
@@ -615,8 +638,12 @@ def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) 
     if test_name not in feature_dict:
         if not test.__doc__:
             raise AssertionError(f"Test {test_name} has no docstring")
+        category = getattr(test, "_feature_category", "Uncategorized")
+        display_name = getattr(test, "_feature_display_name", "") or test_name.removeprefix("test_").replace("_", " ")
         feature_dict[test_name] = Feature(
             name=test_name,
+            display_name=display_name,
+            category=category,
             description=test.__doc__,
             implementations={},
         )

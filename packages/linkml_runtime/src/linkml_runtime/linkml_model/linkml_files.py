@@ -1,8 +1,7 @@
-from dataclasses import dataclass
+import os
+from collections import namedtuple
 from enum import Enum, auto
-from pathlib import Path
-from typing import NamedTuple
-from urllib.parse import urljoin
+from typing import Optional, Union
 
 import requests
 from rdflib import Namespace
@@ -11,7 +10,7 @@ LINKML_URL_BASE = "https://w3id.org/linkml/"
 LINKML_NAMESPACE = Namespace(LINKML_URL_BASE)
 GITHUB_IO_BASE = "https://linkml.github.io/linkml-model/"
 GITHUB_BASE = "https://raw.githubusercontent.com/linkml/linkml-model/"
-LOCAL_BASE = Path(__file__).parent.resolve()
+LOCAL_BASE = os.path.abspath(os.path.dirname(__file__))
 GITHUB_API_BASE = "https://api.github.com/repos/linkml/linkml-model/"
 GITHUB_RELEASES = GITHUB_BASE + "releases"
 GITHUB_TAGS = GITHUB_BASE + "tags"
@@ -38,7 +37,6 @@ class Format(_AutoName):
 
     EXCEL = auto()
     GRAPHQL = auto()
-    JSON = auto()
     JSONLD = auto()
     JSON_SCHEMA = auto()
     NATIVE_JSONLD = auto()
@@ -58,50 +56,40 @@ class Format(_AutoName):
     YAML = auto()
 
 
-@dataclass
-class FormatPath:
-    path: str
-    extension: str
-
-    def model_path(self, model: str) -> Path:
-        return (Path(self.path) / model).with_suffix(self.extension)
+_PathInfo = namedtuple("_PathInfo", ["path", "extension"])
 
 
 class _Path:
-    """LinkML Relative paths"""
+    """LinkML Relative paths — maps each Format to its directory and file extension."""
 
-    EXCEL = FormatPath("excel", "xlsx")
-    GRAPHQL = FormatPath("graphql", "graphql")
-    JSON = FormatPath("json", "json")
-    JSONLD = FormatPath("jsonld", "context.jsonld")
-    JSON_SCHEMA = FormatPath("jsonschema", "schema.json")
-    NATIVE_JSONLD = FormatPath("jsonld", "context.jsonld")
-    NATIVE_RDF = FormatPath("rdf", "ttl")
-    NATIVE_SHEXC = FormatPath("shex", "shex")
-    NATIVE_SHEXJ = FormatPath("shex", "shexj")
-    OWL = FormatPath("owl", "owl.ttl")
-    PREFIXMAP = FormatPath("prefixmap", "yaml")
-    PROTOBUF = FormatPath("protobuf", "proto")
-    PYTHON = FormatPath("", "py")
-    RDF = FormatPath("rdf", "ttl")
-    SHACL = FormatPath("shacl", "shacl.ttl")
-    SHEXC = FormatPath("shex", "shex")
-    SHEXJ = FormatPath("shex", "shexj")
-    SQLDDL = FormatPath("sqlddl", "sql")
-    SQLSCHEMA = FormatPath("sqlschema", "sql")
-    YAML = FormatPath((Path("model") / "schema").as_posix(), "yaml")
-
-    @classmethod
-    def items(cls) -> dict[str, FormatPath]:
-        return {k: v for k, v in cls.__dict__.items() if not k.startswith("_")}
+    EXCEL = _PathInfo("excel", "xlsx")
+    GRAPHQL = _PathInfo("graphql", "graphql")
+    JSONLD = _PathInfo("jsonld", "context.jsonld")
+    JSON_SCHEMA = _PathInfo("jsonschema", "schema.json")
+    NATIVE_JSONLD = _PathInfo("jsonld", "model.context.jsonld")
+    NATIVE_RDF = _PathInfo("rdf", "model.ttl")
+    NATIVE_SHEXC = _PathInfo("shex", "shex")
+    NATIVE_SHEXJ = _PathInfo("shex", "shexj")
+    OWL = _PathInfo("owl", "owl.ttl")
+    PREFIXMAP = _PathInfo("prefixmap", "yaml")
+    PROTOBUF = _PathInfo("protobuf", "proto")
+    PYTHON = _PathInfo("", "py")
+    RDF = _PathInfo("rdf", "ttl")
+    SHACL = _PathInfo("shacl", "shacl.ttl")
+    SHEXC = _PathInfo("shex", "shex")
+    SHEXJ = _PathInfo("shex", "shexj")
+    SQLDDL = _PathInfo("sqlddl", "sql")
+    SQLSCHEMA = _PathInfo("sqlschema", "sql")
+    YAML = _PathInfo("model/schema", "yaml")
 
     @classmethod
-    def get(cls, item: str | Format) -> FormatPath:
+    def items(cls):
+        return {k: v for k, v in cls.__dict__.items() if isinstance(v, _PathInfo)}
+
+    @classmethod
+    def get(cls, item):
         if isinstance(item, Format):
-            item = item.name.upper()
-        return getattr(cls, item)
-
-    def __class_getitem__(cls, item: str) -> FormatPath:
+            item = item.name
         return getattr(cls, item)
 
 
@@ -126,47 +114,38 @@ class ReleaseTag(_AutoName):
     CURRENT = auto()
 
 
-class PathParts(NamedTuple):
-    format: str
-    file: str
-
-
-def _build_path(source: Source, fmt: Format) -> PathParts:
-    """
-    Create the parts for a relative path for source and fmt.
-    Combined elsewhere into a complete path, since OS paths and URLs differ.
-    """
-    fmt_path: FormatPath = _Path.get(fmt.name)
-    return PathParts(fmt_path.path, f"{source.value}.{fmt_path.extension}")
+def _build_path(source: Source, fmt: Format) -> str:
+    """Create the relative path for source and fmt."""
+    info = _Path.get(fmt.name)
+    filename = f"{source.value}.{info.extension}"
+    if info.path:
+        return f"{info.path}/{filename}"
+    return filename
 
 
 def _build_loc(base: str, source: Source, fmt: Format) -> str:
-    """A github location"""
-    # urls are always forward slash separated, so hardcoding is appropriate here
-    path = "/".join(_build_path(source, fmt))
-    return urljoin(base, path).replace("blob/", "")
+    return f"{base}{_build_path(source, fmt)}".replace("blob/", "")
 
 
 def URL_FOR(source: Source, fmt: Format) -> str:
-    """Return the URL to retrieve source in format"""
-    fmt_path: FormatPath = _Path.get(fmt.name)
-    return f"{LINKML_URL_BASE}{source.value}.{fmt_path.extension}"
+    """Return the URL to retrieve source in format."""
+    info = _Path.get(fmt.name)
+    return f"{LINKML_URL_BASE}{source.value}.{info.extension}"
 
 
 def LOCAL_PATH_FOR(source: Source, fmt: Format) -> str:
-    return str(LOCAL_BASE.joinpath(*_build_path(source, fmt)))
+    return os.path.join(LOCAL_BASE, _build_path(source, fmt))
 
 
-def GITHUB_IO_PATH_FOR(source: Source, fmt: Format, version="latest") -> str:
-    path = "/".join([version, "linkml_model", *_build_path(source, fmt)])
-    return urljoin(GITHUB_IO_BASE, path)
+def GITHUB_IO_PATH_FOR(source: Source, fmt: Format) -> str:
+    return _build_loc(GITHUB_IO_BASE, source, fmt)
 
 
 def GITHUB_PATH_FOR(
     source: Source,
     fmt: Format,
-    release: ReleaseTag | str | None = ReleaseTag.CURRENT,
-    branch: str | None = "main",
+    release: Optional[Union[ReleaseTag, str]] = ReleaseTag.CURRENT,
+    branch: Optional[str] = "main",
 ) -> str:
     def do_request(url) -> object:
         resp = requests.get(url)
@@ -186,8 +165,7 @@ def GITHUB_PATH_FOR(
 
     # Return the absolute latest entry for branch
     if release is ReleaseTag.LATEST or (release is ReleaseTag.CURRENT and branch != "main"):
-        path = "/".join([branch, "linkml_model", *_build_path(source, fmt)])
-        return urljoin(GITHUB_BASE, path)
+        return f"{GITHUB_BASE}{branch}/{_build_path(source, fmt)}"
 
     # Return the latest published version
     elif release is ReleaseTag.CURRENT:
@@ -204,10 +182,10 @@ class ModelFile:
         def __init__(self, model: Source, fmt: Format) -> str:
             self._model = model
             self._format = fmt
-            self._fmt_path = _Path.get(fmt.name)
+            self._path_info = _Path.get(fmt.name)
 
         def __str__(self):
-            return f"{self._model.value}.{self._fmt_path.extension}"
+            return f"{self._model.value}.{self._path_info.extension}"
 
         def __repr__(self):
             return str(self)
@@ -220,7 +198,9 @@ class ModelFile:
         def file(self) -> str:
             return LOCAL_PATH_FOR(self._model, self._format)
 
-        def github_loc(self, tag: str | None = None, branch: str | None = None, release: ReleaseTag = None) -> str:
+        def github_loc(
+            self, tag: Optional[str] = None, branch: Optional[str] = None, release: ReleaseTag = None
+        ) -> str:
             if not tag and not branch and not release:
                 return GITHUB_IO_PATH_FOR(self._model, self._format)
             if tag:
@@ -240,10 +220,6 @@ class ModelFile:
     @property
     def graphql(self) -> ModelLoc:
         return ModelFile.ModelLoc(self._model, Format.GRAPHQL)
-
-    @property
-    def json(self) -> ModelLoc:
-        return ModelFile.ModelLoc(self._model, Format.JSON)
 
     @property
     def jsonld(self) -> ModelLoc:

@@ -19,7 +19,7 @@ TYPEMAP = {
     "xsd:integer": "Integer",
     "xsd:float": "Float",
     "xsd:double": "Double",
-    "xsd:boolean": "boolean",
+    "xsd:boolean": "Boolean",
     "xsd:dateTime": "ZonedDateTime",
     "xsd:date": "LocalDate",
     "xsd:time": "Instant",
@@ -142,9 +142,13 @@ class JavaGenerator(OOCodeGenerator):
 
     def map_type(self, t: TypeDefinition, required: bool = False) -> str:
         if t.uri:
-            # only return a Integer, Double Float when required == false
+            # We use "boxed" types (Boolean, Integer, Double, Float) by
+            # default because we need to represent the case where a
+            # value has not explicitly been set. But that requirement no
+            # longer holds when required == true, so in that case we can
+            # use primitive types (boolean, int, double, float) instead.
             typ = TYPEMAP.get(t.uri)
-            if required and (typ == "Double" or typ == "Float"):
+            if required and (typ == "Boolean" or typ == "Double" or typ == "Float"):
                 typ = typ.lower()
             elif required and typ == "Integer":
                 typ = "int"

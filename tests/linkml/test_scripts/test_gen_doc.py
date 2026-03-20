@@ -33,10 +33,13 @@ def test_mergeimports(tmp_path):
     assert result.exit_code == 0
 
     index_path = os.path.join(tmp_path, "index.md")
+    with open(index_path) as f:
+        index = f.read()
+
     assert (
         re.search(
             r"\s*\|\s*\[Agent\]\(Agent\.md\)\s*\|\s*",
-            open(index_path).read(),
+            index,
         )
         is not None
     )
@@ -56,10 +59,12 @@ def test_no_mergeimports(tmp_path):
     assert result.exit_code == 0
 
     index_path = os.path.join(tmp_path, "index.md")
+    with open(index_path) as f:
+        index = f.read()
     assert (
         re.search(
             r"\s*\|\s*\[Agent\]\(Agent\.md\)\s*\|\s*",
-            open(index_path).read(),
+            index,
         )
         is None
     )
@@ -80,10 +85,13 @@ def test_no_render_imports(tmp_path):
     assert result.exit_code == 0
 
     index_path = os.path.join(tmp_path, "index.md")
+    with open(index_path) as f:
+        index = f.read()
+
     assert (
         re.search(
             r"\s*\|\s*\[Agent\]\(Agent\.md\)\s*\|\s*",
-            open(index_path).read(),
+            index,
         )
         is None
     )
@@ -104,11 +112,13 @@ def test_render_imports(tmp_path):
     assert result.exit_code == 0
 
     index_path = os.path.join(tmp_path, "index.md")
+    with open(index_path) as f:
+        index = f.read()
 
     assert (
         re.search(
             r"\s*\|\s*\[Agent\]\(Agent\.md\)\s*\|\s*",
-            open(index_path).read(),
+            index,
         )
         is not None
     )
