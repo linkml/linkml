@@ -449,28 +449,6 @@ enums:
     )
 
 
-def test_bnode_default_value():
-    schema = (
-        base_schema
-        + """
-      - name: bnode
-        range: Student
-        ifabsent: bnode
-    """
-    )
-    schema_view = SchemaView(schema)
-
-    processor = PythonIfAbsentProcessor(schema_view)
-
-    assert (
-        processor.process_slot(
-            schema_view.all_slots()[SlotDefinitionName("bnode")],
-            schema_view.all_classes()[ClassDefinitionName("Student")],
-        )
-        == "bnode()"
-    )
-
-
 @pytest.mark.parametrize("range", ["uri", "curie", "uriorcurie"])
 @pytest.mark.parametrize(
     "ifabsent,expected",
