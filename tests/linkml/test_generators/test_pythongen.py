@@ -75,7 +75,9 @@ def test_enum_permissiblevalue_ifabsent(input_path):
     # this would fail if generated python code is not compilable
     ksm = make_python(input_path("kitchen_sink_ifabsent.yaml"))
     # ensure that the right permissible value is taken if other value absent
-    assert ksm.IfAbsent().ifabsent_not_literal is ksm.CordialnessEnum.heartfelt
+    ifabsent_obj = ksm.IfAbsent()
+    assert isinstance(ifabsent_obj.ifabsent_not_literal, ksm.CordialnessEnum)
+    assert ifabsent_obj.ifabsent_not_literal.code == ksm.CordialnessEnum.heartfelt
 
 
 def test_head():
