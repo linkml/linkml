@@ -24,44 +24,34 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ShaclGenerator(Generator):
-    """
-    Generate SHACL (Shapes Constraint Language) shapes from a LinkML schema.
+    """Generate SHACL (Shapes Constraint Language) shapes from a LinkML schema.
 
     SHACL shapes are used to validate RDF data. Each LinkML class is converted
-    to a sh:NodeShape with property constraints derived from the class's slots.
+    to a ``sh:NodeShape`` with property constraints derived from the class's slots.
 
     Shape Naming Modes
     ------------------
-    The generator supports two naming modes controlled by `use_class_uri_names`:
+    The generator supports two naming modes controlled by ``use_class_uri_names``:
 
-    **Default mode (use_class_uri_names=True):**
-        Shapes are named using the class_uri. If multiple LinkML classes share
-        the same class_uri, their properties are merged into a single shape.
+    **Default mode** (``use_class_uri_names=True``):
+        Shapes are named using the ``class_uri``. If multiple LinkML classes share
+        the same ``class_uri``, their properties are merged into a single shape.
         This is the traditional RDF-centric behavior.
 
-        Example:
-            LinkML classes Entity and EvaluatedEntity both with class_uri prov:Entity
-            → Single shape: <prov:Entity> a sh:NodeShape
+        Example: LinkML classes ``Entity`` and ``EvaluatedEntity`` both with
+        ``class_uri prov:Entity`` produce a single shape ``<prov:Entity>``.
 
-    **Native names mode (use_class_uri_names=False):**
+    **Native names mode** (``use_class_uri_names=False``):
         Shapes are named using the native LinkML class name from the schema.
-        Each LinkML class produces a distinct shape, even if they share a class_uri.
-        The sh:targetClass still correctly points to the class_uri.
+        Each LinkML class produces a distinct shape, even if they share a ``class_uri``.
+        The ``sh:targetClass`` still correctly points to the ``class_uri``.
 
-        Example:
-            LinkML classes Entity and EvaluatedEntity both with class_uri prov:Entity
-            → Two shapes:
-                <http://example.org#Entity> a sh:NodeShape ; sh:targetClass prov:Entity
-                <http://example.org#EvaluatedEntity> a sh:NodeShape ; sh:targetClass prov:Entity
+        Example: The same two classes produce two shapes, each with
+        ``sh:targetClass prov:Entity``.
 
-    Use native names mode when:
-        - Multiple LinkML classes intentionally map to the same external ontology class
-        - You need distinct validation shapes per LinkML class
-        - You want to avoid unintentional shape merging (see issue #3011)
-
-    Use default mode when:
-        - You want one-to-one correspondence between SHACL shapes and RDF classes
-        - You're generating shapes for a standard ontology mapping
+    Use native names mode when multiple LinkML classes intentionally map to the
+    same external ontology class and you need distinct validation shapes per class.
+    See `#3011 <https://github.com/linkml/linkml/issues/3011>`_ for background.
     """
 
     # ClassVars
