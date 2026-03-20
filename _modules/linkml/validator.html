@@ -505,7 +505,8 @@
 <span class="sd">    :return: A validation report</span>
 <span class="sd">    :rtype: ValidationReport</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">loader</span> <span class="o">=</span> <span class="n">default_loader_for_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">schema_path</span> <span class="o">=</span> <span class="n">schema</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">loader</span> <span class="o">=</span> <span class="n">default_loader_for_file</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">schema_path</span><span class="o">=</span><span class="n">schema_path</span><span class="p">,</span> <span class="n">target_class</span><span class="o">=</span><span class="n">target_class</span><span class="p">)</span>
     <span class="n">validator</span> <span class="o">=</span> <span class="n">_get_default_validator</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">validator</span><span class="o">.</span><span class="n">validate_source</span><span class="p">(</span><span class="n">loader</span><span class="p">,</span> <span class="n">target_class</span><span class="p">)</span></div>
 
