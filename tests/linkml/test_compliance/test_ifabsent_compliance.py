@@ -14,6 +14,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -29,6 +30,7 @@ from tests.linkml.test_compliance.test_compliance import (
 FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 
 
+@feature_category("Defaults & Computed", "If-absent defaults")
 @pytest.mark.parametrize(
     "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid,skip_for",
     [

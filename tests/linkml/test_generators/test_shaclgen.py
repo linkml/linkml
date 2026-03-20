@@ -1046,3 +1046,117 @@ def test_cross_directory_import_with_importmap(input_path):
             prop_paths.add(str(path))
     assert "https://example.org/imported/name" in prop_paths
     assert "https://example.org/main/value" in prop_paths
+
+
+def test_shacl_omits_linkml_any_class_constraint():
+    """sh:class linkml:Any must not appear in SHACL output.
+
+    linkml:Any is an internal meta-type representing an unconstrained
+    range. When a class has class_uri=linkml:Any (e.g. AnyObject in the
+    kitchen_sink schema), the SHACL generator must not emit an
+    sh:class constraint pointing to it. Such a constraint would cause
+    every instance to fail validation because no real data instantiates
+    the linkml:Any class.
+    """
+    LINKML_ANY = URIRef("https://w3id.org/linkml/Any")
+
+    schema_yaml = """
+id: https://example.org/test-any
+name: test_any
+default_prefix: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  test: https://example.org/test-any/
+imports:
+  - linkml:types
+classes:
+  AnyThing:
+    class_uri: linkml:Any
+    description: unconstrained class
+  Container:
+    attributes:
+      payload:
+        range: AnyThing
+        description: slot with unconstrained range
+      name:
+        range: string
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Verify linkml:Any never appears as an sh:class value
+    any_class_triples = list(g.triples((None, SH["class"], LINKML_ANY)))
+    assert any_class_triples == [], f"sh:class linkml:Any must not be emitted in SHACL, but found: {any_class_triples}"
+
+    # Also verify linkml:Any never appears as sh:nodeKind target
+    # (no BlankNodeOrIRI should be set for an Any-ranged slot)
+    container_shape = URIRef("https://example.org/test-any/Container")
+    for prop_node in g.objects(container_shape, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path and "payload" in str(path[0]):
+            nodekind = list(g.objects(prop_node, SH.nodeKind))
+            assert nodekind == [], f"sh:nodeKind should not be set for linkml:Any-ranged slot, got: {nodekind}"
+
+
+def test_nodeidentifier_range_produces_blank_node_or_iri():
+    """Test that range: nodeidentifier produces sh:nodeKind sh:BlankNodeOrIRI, not sh:Literal.
+
+    The ``nodeidentifier`` built-in type (type_uri ``shex:nonLiteral``) represents
+    an IRI or blank-node reference. The SHACL generator must emit
+    ``sh:nodeKind sh:BlankNodeOrIRI`` (not ``sh:Literal`` with ``sh:datatype``).
+    """
+    schema_yaml = """
+id: https://example.org/test-nodeident
+name: test_nodeident
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  node_ref:
+    range: nodeidentifier
+    slot_uri: ex:nodeRef
+  uri_ref:
+    range: uri
+    slot_uri: ex:uriRef
+
+classes:
+  Container:
+    slots:
+      - node_ref
+      - uri_ref
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    container_uri = URIRef("https://example.org/Container")
+
+    # Collect property shapes keyed by sh:path
+    props = {}
+    for prop_node in g.objects(container_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path:
+            props[str(path[0])] = prop_node
+
+    # nodeidentifier → sh:nodeKind sh:BlankNodeOrIRI, no sh:datatype
+    node_ref = props["https://example.org/nodeRef"]
+    node_kinds = list(g.objects(node_ref, SH.nodeKind))
+    assert SH.BlankNodeOrIRI in node_kinds, f"Expected sh:BlankNodeOrIRI for nodeidentifier, got {node_kinds}"
+    assert SH.Literal not in node_kinds
+    assert list(g.objects(node_ref, SH.datatype)) == []
+
+    # uri → sh:nodeKind sh:IRI (unchanged existing behaviour)
+    uri_ref = props["https://example.org/uriRef"]
+    uri_kinds = list(g.objects(uri_ref, SH.nodeKind))
+    assert SH.IRI in uri_kinds, f"Expected sh:IRI for uri, got {uri_kinds}"
