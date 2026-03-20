@@ -1,3 +1,25 @@
+# --- activity_config.yaml ---
+# metamodel_version: 1.7.0id: activity
+schema_generating: true
+description: a provence-generating activity
+display_name: activity
+document_category: activity
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: was_informed_by
+  display_name: was informed by
+- id: was_associated_with
+  display_name: was associated with
+- id: used
+  display_name: used
+- id: description
+  display_name: description
 # --- Address_config.yaml ---
 # metamodel_version: 1.7.0id: Address
 schema_generating: true
@@ -11,6 +33,20 @@ fields:
   display_name: city
 - id: altitude
   display_name: altitude
+# --- agent_config.yaml ---
+# metamodel_version: 1.7.0id: agent
+schema_generating: true
+description: a provence-generating agent
+display_name: agent
+document_category: agent
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: acted_on_behalf_of
+  display_name: acted on behalf of
+- id: was_informed_by
+  display_name: was informed by
 # --- BirthEvent_config.yaml ---
 # metamodel_version: 1.7.0id: BirthEvent
 schema_generating: true
@@ -308,42 +344,6 @@ fields:
   display_name: classWithSpaces__slot_with_space_1
 - id: slot_with_space_2
   display_name: subclassTest__slot_with_space_2
-# --- activity_config.yaml ---
-# metamodel_version: 1.7.0id: activity
-schema_generating: true
-description: a provence-generating activity
-display_name: activity
-document_category: activity
-weight: 20
-fields:
-- id: id
-  display_name: id
-- id: started_at_time
-  display_name: started at time
-- id: ended_at_time
-  display_name: ended at time
-- id: was_informed_by
-  display_name: was informed by
-- id: was_associated_with
-  display_name: was associated with
-- id: used
-  display_name: used
-- id: description
-  display_name: description
-# --- agent_config.yaml ---
-# metamodel_version: 1.7.0id: agent
-schema_generating: true
-description: a provence-generating agent
-display_name: agent
-document_category: agent
-weight: 20
-fields:
-- id: id
-  display_name: id
-- id: acted_on_behalf_of
-  display_name: acted on behalf of
-- id: was_informed_by
-  display_name: was informed by
 # --- subclass_test_config.yaml ---
 # metamodel_version: 1.7.0id: subclass_test
 schema_generating: true

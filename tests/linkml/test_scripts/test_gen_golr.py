@@ -17,7 +17,7 @@ def test_metamodel_valid_call(tmp_path, snapshot):
     result = runner.invoke(golrgen.cli, ["-d", tmp_path, KITCHEN_SINK_PATH])
     assert result.exit_code == 0
     parts = []
-    for yaml_file in sorted(Path(tmp_path).rglob("*.yaml")):
+    for yaml_file in sorted(Path(tmp_path).rglob("*.yaml"), key=lambda p: p.name.casefold()):
         parts.append(f"# --- {yaml_file.name} ---\n")
         parts.append(yaml_file.read_text(encoding="utf-8"))
         if not parts[-1].endswith("\n"):

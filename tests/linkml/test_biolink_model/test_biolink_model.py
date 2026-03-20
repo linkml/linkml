@@ -76,7 +76,7 @@ def test_biolink_golr(temp_dir, snapshot, input_path):
     BIOLINK_YAML = input_path("biolink-model.yaml")
     GolrSchemaGenerator(BIOLINK_YAML, directory=str(temp_dir)).serialize(directory=str(temp_dir))
     parts = []
-    for yaml_file in sorted(temp_dir.rglob("*.yaml")):
+    for yaml_file in sorted(temp_dir.rglob("*.yaml"), key=lambda p: p.name.casefold()):
         parts.append(f"# --- {yaml_file.name} ---\n")
         parts.append(yaml_file.read_text(encoding="utf-8"))
         if not parts[-1].endswith("\n"):
