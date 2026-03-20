@@ -1,0 +1,21 @@
+id: https://example.org/imported
+name: imported_types
+description: Schema imported from a subdirectory.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  imp: https://example.org/imported/
+
+default_prefix: imp
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  BaseEntity:
+    class_uri: imp:BaseEntity
+    attributes:
+      name:
+        range: string
+        required: true
