@@ -591,6 +591,39 @@
         <span class="c1"># We don&#39;t bother to visit class slots - just all slots</span>
         <span class="k">return</span> <span class="kc">True</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_literal_coercion_for_ranges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ranges</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an unambiguous JSON-LD coercion for LinkML type ranges.</span>
+
+<span class="sd">        The returned tuple is ``(resolved, coercion)``:</span>
+
+<span class="sd">        - ``resolved`` is ``True`` only when all LinkML type branches collapse</span>
+<span class="sd">          to the same JSON-LD coercion.</span>
+<span class="sd">        - ``coercion`` is the JSON-LD ``@type`` value, or ``None`` when the</span>
+<span class="sd">          resolved result is &quot;no coercion&quot; (for example ``xsd:string``).</span>
+
+<span class="sd">        This allows callers to distinguish between &quot;resolved to no coercion&quot;</span>
+<span class="sd">        and &quot;could not resolve safely because the branches disagree&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coercions</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">range_name</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">range_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">range_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">range_name</span><span class="p">]</span>
+            <span class="n">range_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">range_uri</span> <span class="o">==</span> <span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">:</span>
+                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">range_uri</span> <span class="ow">in</span> <span class="n">URI_RANGES</span><span class="p">:</span>
+                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;@id&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">coercions</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">range_type</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">coercions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coercions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">coercions</span><span class="p">))</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
             <span class="n">slot_def</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span>
@@ -598,7 +631,17 @@
             <span class="n">slot_def</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">usage_slot_name</span><span class="p">:</span>
                 <span class="n">any_of_ranges</span> <span class="o">=</span> <span class="p">[</span><span class="n">any_of_el</span><span class="o">.</span><span class="n">range</span> <span class="k">for</span> <span class="n">any_of_el</span> <span class="ow">in</span> <span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">rng</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="k">for</span> <span class="n">rng</span> <span class="ow">in</span> <span class="n">any_of_ranges</span><span class="p">):</span>
+                <span class="n">has_class_range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="n">rng</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="k">for</span> <span class="n">rng</span> <span class="ow">in</span> <span class="n">any_of_ranges</span>
+                <span class="p">)</span>
+                <span class="n">has_literal_range</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">rng</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span> <span class="k">for</span> <span class="n">rng</span> <span class="ow">in</span> <span class="n">any_of_ranges</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">has_class_range</span> <span class="ow">and</span> <span class="n">has_literal_range</span><span class="p">:</span>
+                    <span class="c1"># Mixed any_of: prefer literal coercion when unambiguous.</span>
+                    <span class="n">resolved</span><span class="p">,</span> <span class="n">literal_coercion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_literal_coercion_for_ranges</span><span class="p">(</span><span class="n">any_of_ranges</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">resolved</span> <span class="ow">and</span> <span class="n">literal_coercion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">literal_coercion</span>
+                <span class="k">elif</span> <span class="n">has_class_range</span><span class="p">:</span>
                     <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;@id&quot;</span>
                 <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
                     <span class="n">slot_def</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ENUM_CONTEXT</span>
