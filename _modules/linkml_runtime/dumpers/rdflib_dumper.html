@@ -515,7 +515,14 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_uri</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">id_slot</span><span class="p">,</span> <span class="n">schemaview</span><span class="p">)</span>
             <span class="c1"># return URIRef(schemaview.expand_curie(str(element)))</span>
         <span class="n">element_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
-        <span class="n">cn</span> <span class="o">=</span> <span class="n">element_type</span><span class="o">.</span><span class="n">class_name</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">element_type</span><span class="p">,</span> <span class="s2">&quot;class_name&quot;</span><span class="p">):</span>
+            <span class="n">cn</span> <span class="o">=</span> <span class="n">element_type</span><span class="o">.</span><span class="n">class_name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nm</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">class_name_mappings</span><span class="p">()</span>
+            <span class="n">cls_name</span> <span class="o">=</span> <span class="n">element_type</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">if</span> <span class="n">cls_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nm</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="n">cls_name</span><span class="si">}</span><span class="s2"> not found in schema&quot;</span><span class="p">)</span>
+            <span class="n">cn</span> <span class="o">=</span> <span class="n">nm</span><span class="p">[</span><span class="n">cls_name</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
         <span class="n">id_slot</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">cn</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">id_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">element_id</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">id_slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
