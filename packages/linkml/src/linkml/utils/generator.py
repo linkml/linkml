@@ -90,26 +90,68 @@ def deterministic_turtle(graph: "RdfGraph") -> str:
     internal storage, producing non-deterministic output even when the
     graph content is identical.
 
-    This function guarantees reproducible output by:
+    This function guarantees **serialisation determinism** — the same
+    ``rdflib.Graph`` always produces byte-identical Turtle output.  It
+    does **not** attempt full RDF canonicalization (i.e., it does not
+    guarantee that two independently-constructed but isomorphic graphs
+    produce the same output).
 
-    1. Computing structural blank-node signatures via iterative
-       Weisfeiler-Lehman refinement — each BNode is characterized by
-       its sorted predicate-object and subject-predicate neighborhoods.
-    2. Sorting all triples lexicographically using these structural
-       signatures (instead of random BNode UUIDs) as sort keys.
-    3. Assigning sequential blank-node labels (``_:b0``, ``_:b1``, …)
-       based on first appearance in the structurally sorted order.
-    4. Building a fresh ``Graph`` and serializing with the standard
-       ``turtle`` format, preserving familiar ``@prefix`` syntax.
+    Algorithm
+    ---------
+    Blank-node identifiers are stabilised via **1-dimensional
+    Weisfeiler-Lehman (1-WL) colour refinement**, a classical
+    graph-theoretic algorithm:
 
-    **Complexity:** *O(n log n)* where *n* is the number of triples,
-    with a small constant factor for the WL iterations (fixed at 4).
-    This is in contrast to ``rdflib.compare.to_canonical_graph()``
-    which performs full graph isomorphism and exhibits exponential
-    worst-case behavior on graphs with many structurally similar
-    blank nodes.
+    1. Each BNode receives an initial empty signature.
+    2. Over up to 4 iterations, each BNode's signature is refined to
+       the sorted concatenation of its outgoing
+       (``+predicate=object_sig``) and incoming
+       (``-subject_sig=predicate``) edge signatures — an adaptation of
+       1-WL for RDF's directed, labelled multigraph structure.
+    3. If signatures stabilise before 4 iterations, refinement stops
+       (idempotence property of colour refinement).
+    4. All triples are sorted lexicographically using WL signatures as
+       BNode sort keys (URIs and literals use their string form).
+    5. Sequential labels (``_:b0``, ``_:b1``, …) are assigned in
+       first-appearance order from the structurally sorted triples.
+    6. A fresh ``Graph`` is built and serialised with standard
+       ``format="turtle"``, preserving familiar ``@prefix`` syntax.
 
-    **Benchmarks** (measured on real-world LinkML ontologies):
+    Theoretical basis
+    -----------------
+    The 1-WL / colour refinement algorithm is deterministic by
+    definition — it is a pure function with no randomness [1]_.  For
+    **tree-shaped** blank-node structures, 1-WL provably assigns unique
+    signatures to all structurally distinct nodes [2]_.
+
+    LinkML-generated OWL and SHACL output uses BNodes exclusively for
+    tree-shaped constructs: OWL restrictions (``owl:Restriction`` →
+    ``owl:onProperty`` / ``owl:allValuesFrom``), SHACL property shapes
+    (``sh:NodeShape`` → ``sh:property`` → ``sh:path``), and RDF
+    Collections (``rdf:first`` / ``rdf:rest`` chains).  None of these
+    form BNode-to-BNode cycles, so the tree guarantee applies.
+
+    The known failure cases for 1-WL — highly regular, symmetric
+    graphs where every node has identical degree and neighbourhood
+    structure (Cai–Fürer–Immerman construction [3]_) — cannot arise
+    in LinkML output, where BNodes carry diverse typed predicates
+    pointing to distinct named URIs.
+
+    This approach is a **pragmatic stand-in** for a standards-based
+    solution.  If a performant Python implementation of W3C RDFC-1.0
+    [4]_ (which itself has exponential worst-case complexity, §4.9)
+    becomes viable for ``rdflib``-based workflows, this function can be
+    replaced.
+
+    Complexity
+    ----------
+    *O(n log n)* where *n* is the number of triples, with a small
+    constant factor for the WL iterations (fixed at 4).  This is in
+    contrast to ``rdflib.compare.to_canonical_graph()`` which performs
+    full graph isomorphism and exhibits exponential worst-case
+    behaviour on graphs with many structurally similar blank nodes [5]_.
+
+    Benchmarks (measured on real-world LinkML ontologies):
 
     ============  ========  ===========  =====================
     Graph         Triples   BNodes       deterministic_turtle
@@ -118,8 +160,31 @@ def deterministic_turtle(graph: "RdfGraph") -> str:
     Gaia-X OWL    68,230    10,337       2.8 s
     ============  ========  ===========  =====================
 
-    :param graph: An rdflib Graph to serialize.
-    :returns: Deterministic Turtle string in standard Turtle format.
+    Parameters
+    ----------
+    graph : rdflib.Graph
+        An rdflib Graph to serialize.
+
+    Returns
+    -------
+    str
+        Deterministic Turtle string in standard ``@prefix`` format.
+
+    References
+    ----------
+    .. [1] Grohe, M. (2017). "Color Refinement and its Applications."
+       RWTH Aachen University.
+    .. [2] Immerman, N. & Lander, E. (1990).  1-WL solves isomorphism
+       for trees; see also Arvind et al. (2017), "Graph Isomorphism,
+       Color Refinement, and Compactness", Computational Complexity 26.
+    .. [3] Cai, J., Fürer, M. & Immerman, N. (1992). "An optimal lower
+       bound on the number of variables for graph identification",
+       Combinatorica 12(4): 389–410.
+    .. [4] W3C (2024). "RDF Dataset Canonicalization (RDFC-1.0)."
+       W3C Recommendation.  https://www.w3.org/TR/rdf-canon/
+    .. [5] rdflib documentation: "the time to canonicalize bnodes may
+       increase exponentially on degenerate larger graphs."
+       https://github.com/RDFLib/rdflib/issues/385
     """
     from rdflib import BNode
 
