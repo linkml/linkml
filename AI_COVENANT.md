@@ -2,6 +2,12 @@
 
 This covenant establishes community norms for responsible AI use in the LinkML project. It aims to maintain trust, quality, and accountability while embracing AI as a useful tool.
 
+It applies to the following repos central to the LinkML mission:
+
+- https://github.com/linkml/linkml
+- https://github.com/linkml/linkml-model
+- https://github.com/orgs/linkml/discussions
+
 ## Core Principle: You Own Your Contributions
 
 **Everything you contribute is yours—regardless of what tools helped create it.**
@@ -23,6 +29,31 @@ AI review tools (Claude, Copilot, CodeRabbit, etc.) provide **automated quality 
 - PR owners may close AI comments without response
 - Human reviewers may use AI feedback to inform their own review
 - A PR still requires human approval regardless of AI feedback
+
+## AI-Assisted Discussions
+
+AI tools can be helpful **thinking aids** when preparing to participate in
+[LinkML discussions](https://github.com/orgs/linkml/discussions/) and
+[issues](https://github.com/linkml/linkml/issues).
+
+They may be used to:
+- Clarify your own thinking before engaging
+- Explore alternative framings or options
+- Help draft *your* contribution for clarity and structure
+
+However, discussions exist to **surface, negotiate, and consolidate human judgement**.
+They are not a channel for autonomous or proxy AI participation.
+
+**AI systems MUST NOT be used to directly post comments, replies, or messages** in:
+- GitHub issues or discussions
+- Shared Slack channels
+- Project mailing lists or email threads
+
+All discussion contributions must reflect a **human position** that the author is prepared to explain, revise, and defend. Posting AI-generated commentary as an independent “voice” undermines trust, accountability, and the purpose of deliberation.
+
+In short:
+- AI may *support* participation
+- Humans must *own* participation
 
 ## When to Disclose AI Assistance
 
