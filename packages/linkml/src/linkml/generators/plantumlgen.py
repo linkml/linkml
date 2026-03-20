@@ -443,7 +443,8 @@ class PlantumlGenerator(Generator):
 @click.option(
     "--directory",
     "-d",
-    help="Output directory - if supplied, PlantUML rendering will be saved in file",
+    help="Output directory - if supplied, PlantUML rendering will be saved in file; "
+    + "otherwise, only PlantUML code will be printed out",
 )
 @click.option(
     "--kroki-server",
@@ -496,7 +497,8 @@ class PlantumlGenerator(Generator):
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
-    """Generate a UML representation of a LinkML model"""
+    """Generate a UML representation of a LinkML model.
+    PlantUML code print out only if no directory provided."""
     print(PlantumlGenerator(yamlfile, **args).serialize(**args), end="")
 
 
