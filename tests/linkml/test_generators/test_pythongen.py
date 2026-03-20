@@ -80,6 +80,45 @@ def test_enum_permissiblevalue_ifabsent(input_path):
     assert ifabsent_obj.ifabsent_not_literal.code == ksm.CordialnessEnum.heartfelt
 
 
+def test_enum_ifabsent_snake_case_name():
+    """Enum ifabsent with a snake_case enum name should use the camelcased Python class name.
+
+    Regression test for https://github.com/linkml/linkml/pull/3308#discussion_r2106197183
+    When an enum's schema name is snake_case (e.g. 'cordiality_level'), pythongen must
+    use the camelcased class name (e.g. 'CordialityLevel') in the generated __post_init__
+    constructor call, not the raw schema name.
+    """
+    yaml = """
+id: https://example.org/test_snake_case_enum_ifabsent
+name: test_snake_case_enum_ifabsent
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+
+enums:
+  cordiality_level:
+    permissible_values:
+      heartfelt:
+      hateful:
+      indifferent:
+
+classes:
+  Greeting:
+    attributes:
+      mood:
+        range: cordiality_level
+        ifabsent: cordiality_level(heartfelt)
+"""
+    module = make_python(yaml)
+    greeting = module.Greeting()
+    assert isinstance(greeting.mood, module.CordialityLevel)
+    assert greeting.mood.code == module.CordialityLevel.heartfelt
+
+
 def test_head():
     """Validate the head/nohead parameter"""
     yaml = """id: "https://w3id.org/biolink/metamodel"

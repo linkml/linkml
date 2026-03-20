@@ -934,7 +934,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
                 if slot.range in self.schema.enums and slot.ifabsent:
-                    rlines.append(f"\tself.{aliased_slot_name} = {slot.range}(self.{aliased_slot_name})")
+                    rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 elif (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
