@@ -8,7 +8,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 @pytest.mark.parametrize(
     "slot_name,expected_alias",
     [
-        ("slot_a", "slot_a"),
+        ("slot_a", None),
         ("slot-a", "slot_a"),
     ],
 )
