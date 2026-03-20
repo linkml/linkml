@@ -404,10 +404,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.oocodegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">OOCodeGenerator</span><span class="p">,</span> <span class="n">OODocument</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecated_fields</span><span class="p">,</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">TypeDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span>
 
 <span class="n">DEFAULT_TEMPLATE_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;javagen&quot;</span>
 
@@ -419,12 +420,82 @@
     <span class="s2">&quot;xsd:boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;Boolean&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:dateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;ZonedDateTime&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:date&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalDate&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;xsd:time&quot;</span><span class="p">:</span> <span class="s2">&quot;Instant&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;xsd:anyURI&quot;</span><span class="p">:</span> <span class="s2">&quot;String&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:time&quot;</span><span class="p">:</span> <span class="s2">&quot;LocalTime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:anyURI&quot;</span><span class="p">:</span> <span class="s2">&quot;URI&quot;</span><span class="p">,</span>
     <span class="s2">&quot;xsd:decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;BigDecimal&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
+<span class="n">JAVA_KEYWORDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;abstract&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;assert&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;break&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;byte&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;case&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;catch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;char&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;class&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;const&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;continue&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;do&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;double&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;else&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;enum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;extends&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;final&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;finally&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;for&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;goto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;if&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;implements&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;import&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;instanceof&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;interface&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;long&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;native&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;new&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;package&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;private&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;protected&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;public&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;return&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;short&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;static&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;strictfp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;super&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;switch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;synchronized&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;this&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;throw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;throws&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;transient&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;try&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;void&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;volatile&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;while&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
 <span class="n">TYPE_DEFAULTS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boolean&quot;</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;0f&quot;</span><span class="p">,</span> <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;0d&quot;</span><span class="p">,</span> <span class="s2">&quot;String&quot;</span><span class="p">:</span> <span class="s1">&#39;&quot;&quot;&#39;</span><span class="p">}</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OOCustomDocument</span><span class="p">(</span><span class="n">OODocument</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A document that represents something else than a class or an enum.&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OOVisitorDocument</span><span class="p">(</span><span class="n">OOCustomDocument</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A document representing a visitor interface.&quot;&quot;&quot;</span>
+
+    <span class="n">visited_object</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;_visitor&quot;</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TemplateCache</span><span class="p">:</span>
@@ -539,6 +610,19 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">default_value_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typ</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">TYPE_DEFAULTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># A slot intended to accept anything is represented in Java as</span>
+        <span class="c1"># an Object-typed slot</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">==</span> <span class="s2">&quot;linkml:Any&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Object&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">map_class</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">JAVA_KEYWORDS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+        <span class="k">return</span> <span class="n">name</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">map_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">TypeDefinition</span><span class="p">,</span> <span class="n">required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">uri</span><span class="p">:</span>
             <span class="c1"># We use &quot;boxed&quot; types (Boolean, Integer, Double, Float) by</span>
@@ -559,30 +643,66 @@
 
 <div class="viewcode-block" id="JavaGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_variant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">template_variant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">extra_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">visitors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate and write the Java code to files.</span>
+
+<span class="sd">        :param directory: The directory where to write the code files.</span>
+<span class="sd">        :param template_variant: The name of the template variant to use, if any.</span>
+<span class="sd">        :param extra_templates: A list of additional templates from which to generate</span>
+<span class="sd">            additional code files. For example, if set to `[Foo,Bar]`, this will</span>
+<span class="sd">            generate two additional files `Foo.java` and `Bar.java` (assuming the</span>
+<span class="sd">            template directory contains the required templates `Foo.jinja2` and</span>
+<span class="sd">            `Bar.jinja2`). Users can exploit such additional files to generate any</span>
+<span class="sd">            code they might need in addition to the code generated for each class</span>
+<span class="sd">            and each enum in the model.</span>
+<span class="sd">        :param visitors: A list of class names for which to generate a visitor</span>
+<span class="sd">            interface. For example, if set to `[Foo]`, this will generate a</span>
+<span class="sd">            `IFooVisitor` interface, and the generated code for both the `Foo`</span>
+<span class="sd">            class and all its descendants will include a `accept(IFooVisitor)`</span>
+<span class="sd">            method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">oodocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_documents</span><span class="p">()</span>
+        <span class="c1"># Create additional documents for additional templates and visitors</span>
+        <span class="k">if</span> <span class="n">extra_templates</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">extra_template</span> <span class="ow">in</span> <span class="n">extra_templates</span><span class="p">:</span>
+                <span class="n">oodocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OOCustomDocument</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">extra_template</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">extra_template</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">visitors</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">visitor</span> <span class="ow">in</span> <span class="n">visitors</span><span class="p">:</span>
+                <span class="n">visited_name</span> <span class="o">=</span> <span class="n">visitor</span>
+                <span class="n">visitor_name</span> <span class="o">=</span> <span class="s2">&quot;I&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">visited_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;Visitor&quot;</span>
+                <span class="n">oodocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OOVisitorDocument</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">visitor_name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="n">visited_object</span><span class="o">=</span><span class="n">visited_name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">visitors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span>
         <span class="k">for</span> <span class="n">oodoc</span> <span class="ow">in</span> <span class="n">oodocs</span><span class="p">:</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">enum</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
                 <span class="bp">cls</span> <span class="o">=</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">enum</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;class&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">cls</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
                 <span class="n">enum</span> <span class="o">=</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="nb">type</span> <span class="o">=</span> <span class="s2">&quot;enum&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Should be a OOCustomDocument</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="n">oodoc</span><span class="o">.</span><span class="n">type</span>
             <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">template_cache</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="n">oodoc</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">template_variant</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># This should never happen as the default template directory</span>
-                <span class="c1"># (which is always queried as a last resort) should always</span>
-                <span class="c1"># contain at least a default `class` template and a default</span>
-                <span class="c1"># `enum` template.</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Missing template&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing template for </span><span class="si">{</span><span class="n">oodoc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="n">code</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
                 <span class="n">doc</span><span class="o">=</span><span class="n">oodoc</span><span class="p">,</span>
                 <span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span>
                 <span class="n">enum</span><span class="o">=</span><span class="n">enum</span><span class="p">,</span>
+                <span class="n">gen</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">visitors</span><span class="o">=</span><span class="n">visitors</span><span class="p">,</span>
                 <span class="n">metamodel_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="p">,</span>
                 <span class="n">model_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="p">)</span>
@@ -592,7 +712,71 @@
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
                 <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">code</span><span class="p">)</span></div>
-</div>
+
+
+    <span class="c1"># The following methods are intended to be used from within a code</span>
+    <span class="c1"># template.</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_ancestor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks for an ancestor in a class inheritance tree.</span>
+
+<span class="sd">        :param cls: A ClassDefinition object.</span>
+<span class="sd">        :param name: A class name.</span>
+<span class="sd">        :returns: True if cls has any ancestor with the specified name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_ancestor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">),</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_descendants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_descendants</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all the descendants of a class.</span>
+
+<span class="sd">        :param name: A class name.</span>
+<span class="sd">        :param _descendants: The list to which to append the names of the</span>
+<span class="sd">            descendant classes.</span>
+<span class="sd">        :returns: A flat list of the names of all classes that inherit from</span>
+<span class="sd">            the named class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">_descendants</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_descendants</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">class_children</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="n">_descendants</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_descendants</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">_descendants</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_descendants</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_class_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts a LinkML class name to a Java class name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_write_accessor_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the name of the write accessor for the given slot.</span>
+
+<span class="sd">        This is to allow templates to generate their own write accessors,</span>
+<span class="sd">        should they prefer not to use Lombok.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="c1"># This replicates the logic used by Lombok for boolean-typed fields:</span>
+            <span class="c1"># - foo -&gt; setFoo() (general case)</span>
+            <span class="c1"># - isFoo -&gt; setFoo() (special case to avoid setIsFoo())</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;is&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s2">&quot;set&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="s2">&quot;set&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_read_accessor_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the name of the read accessor for the given slot.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="o">==</span> <span class="s2">&quot;boolean&quot;</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="c1"># This replicates the logic used by Lombok for boolean-typed fields</span>
+            <span class="c1"># - foo -&gt; isFoo() (general case)</span>
+            <span class="c1"># - isFoo -&gt; isFoo() (special case to avoid isIsFoo())</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;is&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">islower</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;is&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;get&quot;</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
 
@@ -621,6 +805,8 @@
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;Optional Java 17 record implementation</span>
 <span class="s2">            (deprecated, use --template-variant=records instead)&quot;&quot;&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--extra-template&quot;</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Name of an additional, arbitrary template to use&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--visitor&quot;</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Generate a visitor interface for the specified class&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--true-enums/--no-true-enums&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Treat enums as distinct types rather than strings&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;java&quot;</span><span class="p">)</span>
@@ -638,6 +824,8 @@
     <span class="n">classvars</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">true_enums</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">extra_template</span><span class="o">=</span><span class="p">[],</span>
+    <span class="n">visitor</span><span class="o">=</span><span class="p">[],</span>
     <span class="o">**</span><span class="n">args</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate java classes to represent a LinkML model&quot;&quot;&quot;</span>
@@ -667,7 +855,9 @@
         <span class="n">gen_slots</span><span class="o">=</span><span class="n">slots</span><span class="p">,</span>
         <span class="n">true_enums</span><span class="o">=</span><span class="n">true_enums</span><span class="p">,</span>
         <span class="o">**</span><span class="n">args</span><span class="p">,</span>
-    <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="n">template_variant</span><span class="o">=</span><span class="n">template_variant</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+        <span class="n">output_directory</span><span class="p">,</span> <span class="n">template_variant</span><span class="o">=</span><span class="n">template_variant</span><span class="p">,</span> <span class="n">extra_templates</span><span class="o">=</span><span class="n">extra_template</span><span class="p">,</span> <span class="n">visitors</span><span class="o">=</span><span class="n">visitor</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span>
+    <span class="p">)</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

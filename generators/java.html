@@ -433,6 +433,18 @@ classes with alternate annotations or additional documentation.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-java-visitor">
+<span class="sig-name descname"><span class="pre">--visitor</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;visitor&gt;</span></span><a class="headerlink" href="#cmdoption-gen-java-visitor" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a visitor interface for the specified class</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-java-extra-template">
+<span class="sig-name descname"><span class="pre">--extra-template</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;extra_template&gt;</span></span><a class="headerlink" href="#cmdoption-gen-java-extra-template" title="Link to this definition">¶</a></dt>
+<dd><p>Name of an additional, arbitrary template to use</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-java-generate-records">
 <span id="cmdoption-gen-java-no-generate-records"></span><span class="sig-name descname"><span class="pre">--generate-records</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-generate-records</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-java-generate-records" title="Link to this definition">¶</a></dt>
 <dd><p>Optional Java 17 record implementation
@@ -579,14 +591,26 @@ Lombok annotations (<a class="reference external" href="https://projectlombok.or
 </ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="linkml.generators.javagen.JavaGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_variant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/javagen.html#JavaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.serialize" title="Link to this definition">¶</a></dt>
-<dd><p>Generate output in the required format</p>
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_variant</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_templates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visitors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/javagen.html#JavaGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.javagen.JavaGenerator.serialize" title="Link to this definition">¶</a></dt>
+<dd><p>Generate and write the Java code to files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> – The directory where to write the code files.</p></li>
+<li><p><strong>template_variant</strong> – The name of the template variant to use, if any.</p></li>
+<li><p><strong>extra_templates</strong> – A list of additional templates from which to generate
+additional code files. For example, if set to <cite>[Foo,Bar]</cite>, this will
+generate two additional files <cite>Foo.java</cite> and <cite>Bar.java</cite> (assuming the
+template directory contains the required templates <cite>Foo.jinja2</cite> and
+<cite>Bar.jinja2</cite>). Users can exploit such additional files to generate any
+code they might need in addition to the code generated for each class
+and each enum in the model.</p></li>
+<li><p><strong>visitors</strong> – A list of class names for which to generate a visitor
+interface. For example, if set to <cite>[Foo]</cite>, this will generate a
+<cite>IFooVisitor</cite> interface, and the generated code for both the <cite>Foo</cite>
+class and all its descendants will include a <cite>accept(IFooVisitor)</cite>
+method.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
