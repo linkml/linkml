@@ -86,7 +86,7 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Test linkml package
         run: |
-          uv run coverage run -m pytest tests/linkml/ --with-network -m "not kroki"
+          uv run coverage run -m pytest tests/linkml/ --with-network -m "not kroki" -n auto --dist loadgroup
           uv run coverage xml -o coverage-linkml.xml
           uv run coverage report -m
         shell: bash
