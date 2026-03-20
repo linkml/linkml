@@ -226,6 +226,30 @@ class ContextGenerator(Generator):
 
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
+
+        # proposed support for inlined slot contents
+        if slot.inlined:
+            if "@id" in slot_def:
+                del slot_def["@id"]
+
+            if slot.inlined_as_list:
+                container_value = "@list"
+            else:
+                container_value = "@index"
+
+            slot_def["@container"] = container_value
+
+            if slot.range in self.schema.classes and slot.identifier is not True:
+                range_cls = self.schema.classes[slot.range]
+                prefix_class, suffix_class = self.namespaces.prefix_suffix(range_cls.class_uri)
+
+                if prefix_class:
+                    # Force slot_def["@type"] to be ps:Property
+                    slot_def["@type"] = prefix_class + ":" + suffix_class
+                else:
+                    # If no prefix, use the name alone, resolved by @vocab
+                    slot_def["@type"] = suffix_class
+        
         if slot_def:
             key = underscore(aliased_slot_name)
             self.context_body[key] = slot_def
