@@ -12,6 +12,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -38,6 +39,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Core Structure", "Class inheritance (is_a)")
 @pytest.mark.parametrize("parent_is_abstract", [False, True])
 @pytest.mark.parametrize(
     "description,cls,object,is_valid",
@@ -172,6 +174,7 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
     )
 
 
+@feature_category("Core Structure", "Mixins")
 @pytest.mark.parametrize(
     "description,cls,object,is_valid",
     [
@@ -321,6 +324,7 @@ def test_mixins(framework, description, cls, object, is_valid):
     )
 
 
+@feature_category("Core Structure", "Attribute refinement")
 @pytest.mark.parametrize(
     "description,cls,object,is_valid",
     [
@@ -409,6 +413,7 @@ def test_refine_attributes(framework, description, cls, object, is_valid):
     )
 
 
+@feature_category("Core Structure", "Slot usage")
 @pytest.mark.parametrize(
     "description,cls,object,is_valid",
     [
@@ -559,6 +564,7 @@ def test_slot_usage(framework, description, cls: str, object, is_valid):
     )
 
 
+@feature_category("Core Structure", "Slot inheritance")
 @pytest.mark.parametrize(
     "description,schema_name,default_range,s1def,s2def,cls,object,is_valid",
     [
@@ -680,6 +686,7 @@ def test_basic_slot_inheritance(
     )
 
 
+@feature_category("Core Structure", "Abstract classes")
 @pytest.mark.parametrize(
     "obj,target_class,valid",
     [

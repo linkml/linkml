@@ -11,6 +11,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -20,6 +21,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Arrays", "N-dimensional arrays")
 @pytest.mark.parametrize(
     "description,ndim,object,is_valid",
     [

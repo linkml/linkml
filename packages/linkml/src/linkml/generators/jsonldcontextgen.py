@@ -192,6 +192,39 @@ class ContextGenerator(Generator):
         # We don't bother to visit class slots - just all slots
         return True
 
+    def _literal_coercion_for_ranges(self, ranges: list[str]) -> tuple[bool, str | None]:
+        """Return an unambiguous JSON-LD coercion for LinkML type ranges.
+
+        The returned tuple is ``(resolved, coercion)``:
+
+        - ``resolved`` is ``True`` only when all LinkML type branches collapse
+          to the same JSON-LD coercion.
+        - ``coercion`` is the JSON-LD ``@type`` value, or ``None`` when the
+          resolved result is "no coercion" (for example ``xsd:string``).
+
+        This allows callers to distinguish between "resolved to no coercion"
+        and "could not resolve safely because the branches disagree".
+        """
+        coercions: set[str | None] = set()
+        for range_name in ranges:
+            if range_name not in self.schema.types:
+                continue
+
+            range_type = self.schema.types[range_name]
+            range_uri = self.namespaces.uri_for(range_type.uri)
+            if range_uri == XSD.string:
+                coercions.add(None)
+            elif range_uri in URI_RANGES:
+                coercions.add("@id")
+            else:
+                coercions.add(range_type.uri)
+
+        if not coercions:
+            return False, None
+        if len(coercions) == 1:
+            return True, next(iter(coercions))
+        return False, None
+
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if slot.identifier:
             slot_def = "@id"
@@ -199,7 +232,17 @@ class ContextGenerator(Generator):
             slot_def = {}
             if not slot.usage_slot_name:
                 any_of_ranges = [any_of_el.range for any_of_el in slot.any_of]
-                if slot.range in self.schema.classes or any(rng in self.schema.classes for rng in any_of_ranges):
+                has_class_range = slot.range in self.schema.classes or any(
+                    rng in self.schema.classes for rng in any_of_ranges
+                )
+                has_literal_range = any(rng in self.schema.types for rng in any_of_ranges)
+
+                if has_class_range and has_literal_range:
+                    # Mixed any_of: prefer literal coercion when unambiguous.
+                    resolved, literal_coercion = self._literal_coercion_for_ranges(any_of_ranges)
+                    if resolved and literal_coercion is not None:
+                        slot_def["@type"] = literal_coercion
+                elif has_class_range:
                     slot_def["@type"] = "@id"
                 elif slot.range in self.schema.enums:
                     slot_def["@context"] = ENUM_CONTEXT

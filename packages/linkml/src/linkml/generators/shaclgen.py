@@ -211,11 +211,14 @@ class ShaclGenerator(Generator):
                             )
 
                     if r in all_classes:
+                        cls_def = sv.get_class(r)
+                        is_any = cls_def and getattr(cls_def, "class_uri", None) == "linkml:Any"
                         self._add_class(prop_pv, r)
-                        if sv.get_identifier_slot(r) is not None:
-                            prop_pv(SH.nodeKind, SH.IRI)
-                        else:
-                            prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
+                        if not is_any:
+                            if sv.get_identifier_slot(r) is not None:
+                                prop_pv(SH.nodeKind, SH.IRI)
+                            else:
+                                prop_pv(SH.nodeKind, SH.BlankNodeOrIRI)
                     elif r in sv.all_types():
                         self._add_type(prop_pv, r)
                     elif r in sv.all_enums():
@@ -243,12 +246,27 @@ class ShaclGenerator(Generator):
 
         return g
 
+    LINKML_ANY_URI = "https://w3id.org/linkml/Any"
+
     def _add_class(self, func: Callable, r: ElementName) -> None:
+        """Add an sh:class constraint for range class *r*.
+
+        Skips the constraint when *r* resolves to ``linkml:Any`` — the
+        LinkML meta-type representing an unconstrained range.  Emitting
+        ``sh:class linkml:Any`` in SHACL output is incorrect because the
+        ``linkml:Any`` class is never instantiated in real data; it would
+        cause every instance to fail validation.
+        """
         sv = self.schemaview
+        cls = sv.get_class(r)
+        if cls and getattr(cls, "class_uri", None) == "linkml:Any":
+            return
         if self.use_class_uri_names:
             range_ref = sv.get_uri(r, expand=True)
         else:
             range_ref = sv.get_uri(r, expand=True, native=True)
+        if range_ref == self.LINKML_ANY_URI:
+            return
         func(SH["class"], URIRef(range_ref))
 
     def _add_enum(self, g: Graph, func: Callable, r: ElementName) -> None:
@@ -265,12 +283,37 @@ class ShaclGenerator(Generator):
         )
         func(SH["in"], pv_node)
 
+    # Type URIs denoting non-literal (IRI or blank-node) values.
+    # SHACL §4.8.1 <https://www.w3.org/TR/shacl/#NodeKindConstraintComponent>
+    # defines sh:IRI, sh:BlankNode, and sh:BlankNodeOrIRI as valid node kinds.
+    # These URIs map to sh:IRI or sh:BlankNodeOrIRI constraints (never sh:Literal).
+    _NON_LITERAL_TYPE_URIS = frozenset(
+        {
+            "xsd:anyURI",  # uri, uriorcurie → sh:IRI
+            "http://www.w3.org/ns/shex#nonLiteral",  # nodeidentifier → sh:BlankNodeOrIRI
+            "http://www.w3.org/ns/shex#iri",  # future-proofing → sh:IRI
+        }
+    )
+    # IRI-only subset: uri/uriorcurie must be strict IRI references (sh:IRI),
+    # while nodeidentifier (shex:nonLiteral) allows blank nodes too (sh:BlankNodeOrIRI).
+    # See RDF 1.1 §3.2–3.3 <https://www.w3.org/TR/rdf11-concepts/#section-IRIs>.
+    _IRI_ONLY_TYPE_URIS = frozenset(
+        {
+            "xsd:anyURI",
+        }
+    )
+
     def _add_type(self, func: Callable, r: ElementName) -> None:
         sv = self.schemaview
         rt = sv.get_type(r)
-        if rt.uri and rt.uri == "xsd:anyURI":
-            func(SH.nodeKind, SH.IRI)
-        elif rt.uri:
+        type_uri = rt.uri
+        expanded = sv.get_uri(rt, expand=True) if type_uri else None
+        if type_uri and (type_uri in self._NON_LITERAL_TYPE_URIS or expanded in self._NON_LITERAL_TYPE_URIS):
+            if type_uri in self._IRI_ONLY_TYPE_URIS:
+                func(SH.nodeKind, SH.IRI)
+            else:
+                func(SH.nodeKind, SH.BlankNodeOrIRI)
+        elif type_uri:
             func(SH.nodeKind, SH.Literal)
             func(SH.datatype, URIRef(sv.get_uri(rt, expand=True)))
             if rt.pattern:
