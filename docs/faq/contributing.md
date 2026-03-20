@@ -14,7 +14,6 @@ We welcome any and all kinds of contribution, including:
 You are free to make PRs on any LinkML repo, including:
 
  * [linkml](https://github.com/linkml/linkml)
- * [linkml-runtime](https://github.com/linkml/linkml-runtime)
  * [linkml-model](https://github.com/linkml/linkml-model)
 
 Be sure to read the CONTRIBUTING.md for the repo you wish to contribute to.
