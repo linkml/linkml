@@ -20,22 +20,32 @@ def _parse_numeric(value: str):
         return value
 
 
-def _get_string_slots(schema_path: str | Path, target_class: str) -> set[str]:
-    """Return column names whose schema range is ``string`` or an enum.
+_NUMERIC_TYPE_NAMES = frozenset({"integer", "float", "double", "decimal"})
 
-    These columns should *not* be passed through ``_parse_numeric`` because the
-    schema expects string values even when the cell looks numeric (e.g. a
-    zipcode ``"90210"`` or an enum permissible value ``"4"``).
+
+def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
+    """Return column names whose schema range is a numeric type.
+
+    Only these columns should be passed through ``_parse_numeric``. All others
+    (string, enum, uri, date, custom string-derived types, etc.) are returned
+    as-is to avoid breaking validation.
+
+    Uses ``SchemaView.type_ancestors()`` to walk ``typeof`` chains, so custom
+    types like ``typeof: string`` are handled correctly.
     """
     from linkml_runtime import SchemaView
 
     sv = SchemaView(str(schema_path))
-    string_slots: set[str] = set()
-    all_enums = set(sv.all_enums())
+    numeric_slots: set[str] = set()
+    all_types = sv.all_types()
     for slot in sv.class_induced_slots(target_class):
-        if slot.range == "string" or slot.range in all_enums:
-            string_slots.add(slot.name)
-    return string_slots
+        if slot.range in all_types:
+            ancestors = sv.type_ancestors(slot.range)
+            if any(a in _NUMERIC_TYPE_NAMES for a in ancestors):
+                numeric_slots.add(slot.name)
+                if slot.alias:
+                    numeric_slots.add(slot.alias)
+    return numeric_slots
 
 
 class _DelimitedFileLoader(Loader, ABC):
@@ -58,19 +68,23 @@ class _DelimitedFileLoader(Loader, ABC):
         super().__init__(source)
         self.skip_empty_rows = skip_empty_rows
         self.index_slot_name = index_slot_name
-        self._string_slots: set[str] = (
-            _get_string_slots(schema_path, target_class)
+        # None means "no schema provided" → coerce everything (backward compat)
+        # An empty set means "schema provided but no numeric slots" → coerce nothing
+        self._numeric_slots: set[str] | None = (
+            _get_numeric_slots(schema_path, target_class)
             if schema_path is not None and target_class is not None
-            else set()
+            else None
         )
 
     def _coerce_value(self, key: str, value: str):
         """Return *value* coerced to the appropriate Python type.
 
-        Columns listed in ``_string_slots`` are returned as-is; all others go
-        through ``_parse_numeric``.
+        When schema info is available, only columns with numeric ranges go
+        through ``_parse_numeric``; everything else is returned as-is.
+        Without schema info (``_numeric_slots is None``), all columns are
+        coerced for backward compatibility.
         """
-        if key in self._string_slots:
+        if self._numeric_slots is not None and key not in self._numeric_slots:
             return value
         return _parse_numeric(value)
 
