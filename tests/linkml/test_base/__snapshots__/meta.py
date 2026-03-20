@@ -123,7 +123,35 @@ class ElementName(extended_str):
     pass
 
 
+class AltDescriptionSource(extended_str):
+    pass
+
+
+class PermissibleValueText(extended_str):
+    pass
+
+
+class UniqueKeyUniqueKeyName(extended_str):
+    pass
+
+
+class TypeMappingFramework(extended_str):
+    pass
+
+
 class SchemaDefinitionName(NCName):
+    pass
+
+
+class SettingSettingKey(NCName):
+    pass
+
+
+class PrefixPrefixPrefix(NCName):
+    pass
+
+
+class LocalNameLocalNameSource(NCName):
     pass
 
 
@@ -148,34 +176,6 @@ class SlotDefinitionName(DefinitionName):
 
 
 class ClassDefinitionName(DefinitionName):
-    pass
-
-
-class SettingSettingKey(NCName):
-    pass
-
-
-class PrefixPrefixPrefix(NCName):
-    pass
-
-
-class LocalNameLocalNameSource(NCName):
-    pass
-
-
-class AltDescriptionSource(extended_str):
-    pass
-
-
-class PermissibleValueText(extended_str):
-    pass
-
-
-class UniqueKeyUniqueKeyName(extended_str):
-    pass
-
-
-class TypeMappingFramework(extended_str):
     pass
 
 
