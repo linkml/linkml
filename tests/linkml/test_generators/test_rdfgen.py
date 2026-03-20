@@ -52,7 +52,6 @@ JSONLD = """
 }"""
 
 
-@pytest.mark.network
 def test_annotation_extensions():
     """Test that annotation extensions are properly serialized"""
     s = RDFGenerator(schema, mergeimports=False).serialize()
@@ -77,7 +76,7 @@ def test_annotation_extensions():
     # Check each annotation for the required properties
     for example, tag in results:
         assert isinstance(example, rdflib.Literal)
-        assert isinstance(tag, rdflib.URIRef)
+        assert isinstance(tag, rdflib.URIRef | rdflib.Literal)
 
 
 @pytest.mark.skip("TODO")

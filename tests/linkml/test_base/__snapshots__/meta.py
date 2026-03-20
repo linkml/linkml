@@ -123,7 +123,35 @@ class ElementName(extended_str):
     pass
 
 
+class AltDescriptionSource(extended_str):
+    pass
+
+
+class PermissibleValueText(extended_str):
+    pass
+
+
+class UniqueKeyUniqueKeyName(extended_str):
+    pass
+
+
+class TypeMappingFramework(extended_str):
+    pass
+
+
 class SchemaDefinitionName(NCName):
+    pass
+
+
+class SettingSettingKey(NCName):
+    pass
+
+
+class PrefixPrefixPrefix(NCName):
+    pass
+
+
+class LocalNameLocalNameSource(NCName):
     pass
 
 
@@ -148,34 +176,6 @@ class SlotDefinitionName(DefinitionName):
 
 
 class ClassDefinitionName(DefinitionName):
-    pass
-
-
-class SettingSettingKey(NCName):
-    pass
-
-
-class PrefixPrefixPrefix(NCName):
-    pass
-
-
-class LocalNameLocalNameSource(NCName):
-    pass
-
-
-class AltDescriptionSource(extended_str):
-    pass
-
-
-class PermissibleValueText(extended_str):
-    pass
-
-
-class UniqueKeyUniqueKeyName(extended_str):
-    pass
-
-
-class TypeMappingFramework(extended_str):
     pass
 
 
@@ -971,7 +971,7 @@ class EnumDefinition(Definition):
     class_model_uri: ClassVar[URIRef] = LINKML.EnumDefinition
 
     name: Union[str, EnumDefinitionName] = None
-    enum_uri: Optional[Union[str, URIorCURIE]] = None
+    enum_uri: Optional[Union[str, URIorCURIE]] = "linkml:EnumDefinition"
     code_set: Optional[Union[str, URIorCURIE]] = None
     code_set_tag: Optional[str] = None
     code_set_version: Optional[str] = None
@@ -1044,7 +1044,7 @@ class EnumBinding(YAMLRoot):
     class_name: ClassVar[str] = "enum_binding"
     class_model_uri: ClassVar[URIRef] = LINKML.EnumBinding
 
-    range: Optional[Union[str, EnumDefinitionName]] = None
+    range: Optional[Union[str, EnumDefinitionName]] = "string"
     obligation_level: Optional[Union[str, "ObligationLevelEnum"]] = None
     binds_value_of: Optional[str] = None
     pv_formula: Optional[Union[str, "PvFormulaOptions"]] = None
@@ -2002,7 +2002,7 @@ class SlotExpression(Expression):
     class_name: ClassVar[str] = "slot_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.SlotExpression
 
-    range: Optional[Union[str, ElementName]] = None
+    range: Optional[Union[str, ElementName]] = "string"
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     enum_range: Optional[Union[dict, EnumExpression]] = None
     bindings: Optional[Union[Union[dict, EnumBinding], list[Union[dict, EnumBinding]]]] = empty_list()
@@ -2136,7 +2136,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     class_name: ClassVar[str] = "anonymous_slot_expression"
     class_model_uri: ClassVar[URIRef] = LINKML.AnonymousSlotExpression
 
-    range: Optional[Union[str, ElementName]] = None
+    range: Optional[Union[str, ElementName]] = "string"
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     enum_range: Optional[Union[dict, EnumExpression]] = None
     bindings: Optional[Union[Union[dict, EnumBinding], list[Union[dict, EnumBinding]]]] = empty_list()
@@ -2276,7 +2276,7 @@ class SlotDefinition(Definition):
     name: Union[str, SlotDefinitionName] = None
     singular_name: Optional[str] = None
     domain: Optional[Union[str, ClassDefinitionName]] = None
-    slot_uri: Optional[Union[str, URIorCURIE]] = None
+    slot_uri: Optional[Union[str, URIorCURIE]] = "linkml:slot_uri"
     inherited: Optional[Union[bool, Bool]] = None
     readonly: Optional[str] = None
     ifabsent: Optional[str] = None
@@ -2314,7 +2314,7 @@ class SlotDefinition(Definition):
     is_a: Optional[Union[str, SlotDefinitionName]] = None
     mixins: Optional[Union[Union[str, SlotDefinitionName], list[Union[str, SlotDefinitionName]]]] = empty_list()
     apply_to: Optional[Union[Union[str, SlotDefinitionName], list[Union[str, SlotDefinitionName]]]] = empty_list()
-    range: Optional[Union[str, ElementName]] = None
+    range: Optional[Union[str, ElementName]] = "string"
     range_expression: Optional[Union[dict, "AnonymousClassExpression"]] = None
     enum_range: Optional[Union[dict, EnumExpression]] = None
     bindings: Optional[Union[Union[dict, EnumBinding], list[Union[dict, EnumBinding]]]] = empty_list()
@@ -2667,7 +2667,7 @@ class ClassDefinition(Definition):
     slots: Optional[Union[Union[str, SlotDefinitionName], list[Union[str, SlotDefinitionName]]]] = empty_list()
     slot_usage: Optional[Union[dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], list[Union[dict, SlotDefinition]]]] = empty_dict()
     attributes: Optional[Union[dict[Union[str, SlotDefinitionName], Union[dict, SlotDefinition]], list[Union[dict, SlotDefinition]]]] = empty_dict()
-    class_uri: Optional[Union[str, URIorCURIE]] = None
+    class_uri: Optional[Union[str, URIorCURIE]] = "linkml:ClassDefinition"
     subclass_of: Optional[Union[str, URIorCURIE]] = None
     union_of: Optional[Union[Union[str, ClassDefinitionName], list[Union[str, ClassDefinitionName]]]] = empty_list()
     defining_slots: Optional[Union[Union[str, SlotDefinitionName], list[Union[str, SlotDefinitionName]]]] = empty_list()
@@ -4446,14 +4446,14 @@ class ExtraSlotsExpression(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.ExtraSlotsExpression
 
     allowed: Optional[Union[bool, Bool]] = None
-    range_expression: Optional[Union[dict, AnonymousClassExpression]] = None
+    range_expression: Optional[Union[dict, AnonymousSlotExpression]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.allowed is not None and not isinstance(self.allowed, Bool):
             self.allowed = Bool(self.allowed)
 
-        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
-            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousSlotExpression):
+            self.range_expression = AnonymousSlotExpression(**as_dict(self.range_expression))
 
         super().__post_init__(**kwargs)
 
@@ -5325,3 +5325,6 @@ slots.permissible_value_is_a = Slot(uri=LINKML.is_a, name="permissible_value_is_
 
 slots.permissible_value_mixins = Slot(uri=LINKML.mixins, name="permissible_value_mixins", curie=LINKML.curie('mixins'),
                    model_uri=LINKML.permissible_value_mixins, domain=PermissibleValue, range=Optional[Union[Union[str, PermissibleValueText], list[Union[str, PermissibleValueText]]]])
+
+slots.extra_slots_expression_range_expression = Slot(uri=LINKML.range_expression, name="extra_slots_expression_range_expression", curie=LINKML.curie('range_expression'),
+                   model_uri=LINKML.extra_slots_expression_range_expression, domain=ExtraSlotsExpression, range=Optional[Union[dict, AnonymousSlotExpression]])

@@ -8,11 +8,13 @@ import pytest
 
 from tests.linkml.test_compliance.helper import (
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
 
 
+@feature_category("Schema-Level", "Instantiates")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_instantiates(framework):
     """

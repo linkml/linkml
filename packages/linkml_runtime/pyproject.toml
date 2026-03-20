@@ -14,9 +14,9 @@ authors = [
 ]
 license = "CC0-1.0"
 license-files = ["LICENSE"]
-homepage = "https://github.com/linkml/linkml-runtime"
-repository = "https://github.com/linkml/linkml-runtime"
-documentation = "https://github.com/linkml/linkml-runtime"
+homepage = "https://github.com/linkml/linkml"
+repository = "https://github.com/linkml/linkml"
+documentation = "https://linkml.io/linkml/"
 readme = "README.md"
 keywords = ["linkml", "metamodel", "schema visualization", "rdf", "owl", "yaml"]
 classifiers = [

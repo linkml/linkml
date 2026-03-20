@@ -776,7 +776,12 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = f'Literal["{slot_def.equals_string}"]'
         elif slot_def.equals_string_in:
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
-        elif self.expand_subproperty_of and slot_def.subproperty_of:
+        elif (
+            self.expand_subproperty_of
+            and slot_def.subproperty_of
+            and slot_range not in sv.all_classes()
+            and slot_range not in sv.all_enums()
+        ):
             pyrange = self._generate_subproperty_constraint(slot_def)
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
