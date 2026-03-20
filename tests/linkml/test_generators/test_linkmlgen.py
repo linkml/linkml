@@ -21,8 +21,9 @@ def test_linkmlgen_prefixes():
     lml_gen = LinkmlGenerator(schema=schema, format="yaml")
     yaml_text = lml_gen.serialize()
 
-    with open("output.yaml", "w") as f:
-        f.write(yaml_text)
+    parsed = yaml.safe_load(yaml_text)
+    assert parsed["name"] == "EquipmentSchema"
+    assert "equipment_schema" in parsed["prefixes"]
 
 
 def test_generate(kitchen_sink_path):

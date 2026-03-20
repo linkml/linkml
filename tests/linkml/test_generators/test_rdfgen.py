@@ -4,6 +4,8 @@ from rdflib import Graph
 
 from linkml.generators.rdfgen import RDFGenerator
 
+pytestmark = pytest.mark.xdist_group("rdfgen")
+
 schema = """
 id: http://example.org/interval
 

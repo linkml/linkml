@@ -12,6 +12,8 @@ from linkml.generators.prefixmapgen import PrefixGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from tests.linkml.test_prefixes.environment import env
 
+pytestmark = pytest.mark.xdist_group("prefixes")
+
 
 @pytest.fixture
 def schema():
