@@ -1,5 +1,6 @@
 """Generate JSONld from a LinkML schema."""
 
+import json
 import os
 from collections.abc import Sequence
 from copy import deepcopy
@@ -202,6 +203,10 @@ class JSONLDGenerator(Generator):
                 self.schema["@context"].append({"@base": base_prefix})
         # json_obj["@id"] = self.schema.id
         out = str(as_json(self.schema, indent="  ")) + "\n"
+        if self.deterministic:
+            from linkml.utils.generator import deterministic_json
+
+            out = deterministic_json(json.loads(out), indent=2) + "\n"
         self.schema = self.original_schema
         return out
 
