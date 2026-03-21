@@ -87,7 +87,6 @@ linkml:value_specification_constant a owl:ObjectProperty,
 linkml:ClassLevelRule a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "class_level_rule" ;
-    rdfs:subClassOf linkml:ClassRule ;
     skos:definition "A rule that is applied to classes" ;
     skos:inScheme linkml:meta .
 
