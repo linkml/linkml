@@ -29,6 +29,11 @@ import org.incenp.linkml.core.CurieConverter;
 public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_a %} extends {{ cls.is_a }}{% endif %} {
 {# The fields representing the slots. -#}
 {%- for f in cls.fields %}
+{%-   if f.source_slot.range == "uriorcurie" %}
+{%-     set real_range = "List<String>" if f.source_slot.multivalued else "String" %}
+{%-   else %}
+{%-     set real_range = f.range %}
+{%-   endif %}
 {%-   if f.source_slot.identifier %}
 {#- Marks the slot that holds the unique identifier for objects of this class. #}
     @Identifier
@@ -63,7 +68,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   endif %}
 {#- We will need the slot URI for RDF import/export later. #}
     @LinkURI("{{ f.slot_uri }}")
-    private {{ f.range }} {{ f.name }};
+    private {{ real_range }} {{ f.name }};
 {% endfor %}
 
 {#- If the class is configured to allow extra slots, we need an extra
@@ -75,18 +80,23 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 
 {#- The public accessors. #}
 {%- for f in cls.fields %}
-    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ f.range }} {{ f.name }}) {
+{%-   if f.source_slot.range == "uriorcurie" %}
+{%-     set real_range = "List<String>" if f.source_slot.multivalued else "String" %}
+{%-   else %}
+{%-     set real_range = f.range %}
+{%-   endif %}
+    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ real_range }} {{ f.name }}) {
         this.{{ f.name }} = {{ f.name }};
     }
 
-    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}() {
+    public {{ real_range }} {{ gen.get_read_accessor_name(f.source_slot) }}() {
         return this.{{ f.name }};
     }
 
 {%-   if f.source_slot.multivalued %}
 {#- Convenience accessor that initializes the list if needed. #}
 
-    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}(boolean set) {
+    public {{ real_range }} {{ gen.get_read_accessor_name(f.source_slot) }}(boolean set) {
         if ( this.{{ f.name }} == null && set ) {
             this.{{ f.name }} = new ArrayList<>();
         }

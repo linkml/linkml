@@ -167,3 +167,10 @@ def test_org_incenp_linkml_primitive_equals(input_path, tmp_path):
     gen = JavaGenerator(input_path("primitive_types.yaml"))
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "SimpleClass.java", "this$requiredBoolean != other$requiredBoolean")
+
+
+def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
+    """Uriorcurie-typed slots in org.incenp.linkml templates should be rendered as String fields."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "NamedThing.java", "private String id")
