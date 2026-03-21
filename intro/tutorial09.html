@@ -423,6 +423,70 @@
 <section id="example-schema">
 <h3>Example Schema<a class="headerlink" href="#example-schema" title="Link to this heading">¶</a></h3>
 <p>We will use the example from the previous tutorial (examples/tutorial/tutorial07/personinfo.yaml).</p>
+<p>personinfo.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">personinfo</span>
+<span class="nt">prefixes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">linkml</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/</span>
+<span class="w">  </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://schema.org/</span>
+<span class="w">  </span><span class="nt">personinfo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/examples/personinfo/</span>
+<span class="w">  </span><span class="nt">ORCID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://orcid.org/</span>
+<span class="nt">imports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">linkml:types</span>
+<span class="nt">default_range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">class_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:Person</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span><span class="w">   </span><span class="c1">## specified as a list</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">id</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">full_name</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aliases</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">phone</span>
+<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age</span>
+<span class="w">    </span><span class="nt">id_prefixes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID</span>
+<span class="w">  </span><span class="nt">Container</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">attributes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">persons</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">inlined_as_list</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
+
+<span class="c1"># slots are first-class entities in the metamodel</span>
+<span class="c1"># declaring them here allows them to be reused elsewhere</span>
+<span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">full_name</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">name of the person</span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:name</span>
+<span class="w">  </span><span class="nt">aliases</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">multivalued</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span>
+<span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">other names for the person</span>
+<span class="w">  </span><span class="nt">phone</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">pattern</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;^[\\d\\(\\)\\-]+$&quot;</span>
+<span class="w">    </span><span class="nt">slot_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">schema:telephone</span>
+<span class="w">  </span><span class="nt">age</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">range</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">    </span><span class="nt">minimum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">    </span><span class="nt">maximum_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+</pre></div>
+</div>
+<p>data.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">persons</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:1234</span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Clark Kent</span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span>
+<span class="w">    </span><span class="nt">phone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">555-555-5555</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ORCID:4567</span>
+<span class="w">    </span><span class="nt">full_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Lois Lane</span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">34</span>
+</pre></div>
+</div>
 </section>
 <section id="generating-sql-create-table-statements">
 <h3>Generating SQL CREATE TABLE statements<a class="headerlink" href="#generating-sql-create-table-statements" title="Link to this heading">¶</a></h3>
@@ -431,25 +495,45 @@
 </pre></div>
 </div>
 <p>Outputs:</p>
-<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Container&quot;</span><span class="w"> </span><span class="p">(</span>
-<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<!-- no_compare -->
+<!-- SQL output order (e.g. CREATE INDEX) is non-deterministic across platforms -->
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="c1">-- # Class: Person</span>
+<span class="c1">--     * Slot: id</span>
+<span class="c1">--     * Slot: full_name Description: name of the person</span>
+<span class="c1">--     * Slot: phone</span>
+<span class="c1">--     * Slot: age</span>
+<span class="c1">--     * Slot: Container_id Description: Autocreated FK slot</span>
+<span class="c1">-- # Class: Container</span>
+<span class="c1">--     * Slot: id</span>
+<span class="c1">-- # Class: Person_aliases</span>
+<span class="c1">--     * Slot: Person_id Description: Autocreated FK slot</span>
+<span class="c1">--     * Slot: aliases Description: other names for the person</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Container&quot;</span><span class="w"> </span><span class="p">(</span>
+<span class="w">	</span><span class="n">id</span><span class="w"> </span><span class="nb">INTEGER</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">	</span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="ss">&quot;ix_Container_id&quot;</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="ss">&quot;Container&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+
 <span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span>
-<span class="w">        </span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">        </span><span class="n">full_name</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">        </span><span class="n">phone</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
-<span class="w">        </span><span class="n">age</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
-<span class="w">        </span><span class="ss">&quot;Container_id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
-<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
-<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Container_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Container&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">	</span><span class="n">id</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">	</span><span class="n">full_name</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">	</span><span class="n">phone</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">	</span><span class="n">age</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">	</span><span class="ss">&quot;Container_id&quot;</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">,</span>
+<span class="w">	</span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">),</span>
+<span class="w">	</span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Container_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Container&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="ss">&quot;ix_Person_id&quot;</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+
 <span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="ss">&quot;Person_aliases&quot;</span><span class="w"> </span><span class="p">(</span>
-<span class="w">        </span><span class="ss">&quot;Person_id&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
-<span class="w">        </span><span class="n">aliases</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
-<span class="w">        </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">aliases</span><span class="p">),</span>
-<span class="w">        </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="w">	</span><span class="ss">&quot;Person_id&quot;</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">	</span><span class="n">aliases</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">,</span>
+<span class="w">	</span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">aliases</span><span class="p">),</span>
+<span class="w">	</span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="ss">&quot;Person&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="ss">&quot;ix_Person_aliases_aliases&quot;</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="ss">&quot;Person_aliases&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">aliases</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="ss">&quot;ix_Person_aliases_Person_id&quot;</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="ss">&quot;Person_aliases&quot;</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;Person_id&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
 </section>
@@ -467,16 +551,18 @@
 </div>
 <p>This will export the data from the database back into YAML format.</p>
 <p>Alternatively, data can be queried directly from the database via sqlite3, e. g. the following command</p>
+<!-- NO_EXECUTE -->
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sqlite3<span class="w"> </span>persons.db<span class="w"> </span><span class="s2">&quot;SELECT * FROM Person&quot;</span>
 </pre></div>
 </div>
 <p>or alternatively using the sqlite3 module from Python (if you don’t have sqlite3 installed)</p>
+<!-- NO_EXECUTE -->
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>sqlite3<span class="w"> </span>persons.db<span class="w"> </span><span class="s2">&quot;SELECT * FROM Person&quot;</span>
 </pre></div>
 </div>
 <p>The coummand will result in:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ORCID:1234<span class="p">|</span>Clark<span class="w"> </span>Kent<span class="p">|</span><span class="m">555</span>-555-5555<span class="p">|</span><span class="m">33</span><span class="p">|</span><span class="m">1</span>
-ORCID:4567<span class="p">|</span>Lois<span class="w"> </span>Lane<span class="o">||</span><span class="m">34</span><span class="p">|</span><span class="m">1</span>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ORCID:1234|Clark Kent|555-555-5555|33|1
+ORCID:4567|Lois Lane||34|1
 </pre></div>
 </div>
 <p>Currently the <code class="docutils literal notranslate"><span class="pre">sqldb</span></code> command doesn’t allow complex querying. For that you need to either write SQL as above, or use code as in an ORM layer.</p>

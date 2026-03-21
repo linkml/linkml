@@ -710,7 +710,10 @@ example, having a unique identifier and a name</p>
 <span class="w">      </span><span class="nt">MEMBER_OF</span><span class="p">:</span>
 </pre></div>
 </div>
-<p>You can visualize this schema using <code class="docutils literal notranslate"><span class="pre">gen-erdiagram</span> <span class="pre">slot-usage-example.yaml</span></code>.</p>
+<p>You can visualize this schema using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-erdiagram<span class="w"> </span>slot-usage-example.yaml
+</pre></div>
+</div>
 <p>Here we have a fairly generic class <code class="docutils literal notranslate"><span class="pre">Relationship</span></code> that holds a relationship a person can hold to another entity such as another person or an organization.</p>
 <p>there are two subclasses, or for personal relationships (e.g. siblings) and other for person-to-organization relationships. these use the same generic slots (duration, relationship)type, and related_to). However, the latter two are constrained in a class-specific way.</p>
 <p>data.yaml:</p>

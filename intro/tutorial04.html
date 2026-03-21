@@ -600,7 +600,7 @@ start, but note we are still using classes and properties in our own namespace -
 <span class="w">      </span><span class="nt">&quot;schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://schema.org/&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;@vocab&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://w3id.org/linkml/examples/personinfo/&quot;</span><span class="p">,</span>
 <span class="w">      </span><span class="nt">&quot;persons&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">         </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;schema:Person&quot;</span><span class="p">,</span>
+<span class="w">         </span><span class="nt">&quot;@type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;@id&quot;</span><span class="p">,</span>
 <span class="w">         </span><span class="nt">&quot;@id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
 <span class="w">      </span><span class="p">},</span>
 <span class="w">      </span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
@@ -705,46 +705,8 @@ start, but note we are still using classes and properties in our own namespace -
 <p>Outputs:</p>
 <!-- compare_rdf -->
 <!-- NOTE: the order of properties is non-deterministic so we cannot compare string directly>
-```turtle
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix schema1: <http://schema.org/> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-personinfo:Container a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class schema1:Person ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:persons ] ;
-    sh:targetClass personinfo:Container .
-
-schema1:Person a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:maxCount 1 ;
-            sh:maxInclusive 200 ;
-            sh:minInclusive 0 ;
-            sh:order 4 ;
-            sh:path personinfo:age ],
-        [ sh:description "name of the person" ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:order 1 ;
-            sh:path schema1:name ],
-        [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path personinfo:id ],
-        [ sh:description "other names for the person" ;
-            sh:order 2 ;
-            sh:path personinfo:aliases ],
-        [ sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path schema1:telephone ;
-            sh:pattern "^[\\d\\(\\)\\-]+$" ] ;
-    sh:targetClass schema1:Person .
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo-semantic.shacl.ttl
+:language: turtle
 ```
 
 <!-- TODO: SPARQL -->
