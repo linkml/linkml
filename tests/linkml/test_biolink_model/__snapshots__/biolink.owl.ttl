@@ -1729,7 +1729,6 @@ biolink:xenologous_to a owl:ObjectProperty,
 biolink:Annotation a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "annotation" ;
-    rdfs:subClassOf biolink:QuantityValue ;
     skos:definition "Biolink Model root class for entity annotations." ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> .
 
@@ -7903,8 +7902,7 @@ biolink:ActivityAndBehavior a owl:Class,
 biolink:AdministrativeEntity a owl:Class,
         linkml:ClassDefinition ;
     rdfs:label "administrative entity" ;
-    rdfs:subClassOf biolink:Agent,
-        biolink:NamedThing ;
+    rdfs:subClassOf biolink:NamedThing ;
     skos:inScheme <https://w3id.org/biolink/biolink-model> .
 
 biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation a owl:Class,

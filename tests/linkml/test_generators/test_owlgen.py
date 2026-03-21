@@ -460,6 +460,43 @@ def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
     assert _union_members(g, EX.Orphan) is None
 
 
+def test_abstract_class_with_single_child_gets_no_covering_axiom():
+    """An abstract class with exactly one is_a child must NOT get a covering axiom.
+
+    Regression test: _union_of([single_child]) returns the child URI directly
+    (single-element optimisation in _boolean_expression), which would produce
+    ``Parent rdfs:subClassOf Child`` — reversing the intended hierarchy and
+    creating an unintended equivalence (Parent ≡ Child).
+
+    Per OWL 2 Primer §4.2, bidirectional rdfs:subClassOf is equivalent to
+    owl:equivalentClass.  Combined with the existing ``Child rdfs:subClassOf
+    Parent`` (from is_a), this makes the two classes identical, causing any
+    downstream schema that adds a second child (e.g. harbour's NaturalPerson
+    is_a Participant) to inherit all constraints of the first child
+    (LegalPerson.registrationNumber etc.).
+
+    See: W3C OWL 2 Syntax §9.1.4 (DisjointUnion) for the proper covering
+    construct.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("GrandParent")
+    sb.add_class("Parent", is_a="GrandParent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+    g = _owl_graph(sb)
+
+    # Must NOT have Parent rdfs:subClassOf Child (the buggy triple)
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) not in g, (
+        "Abstract class with single child must not get a covering axiom that "
+        "reverses the hierarchy (Parent rdfs:subClassOf Child)"
+    )
+    # Must still have the correct hierarchy
+    assert (EX.Parent, RDFS.subClassOf, EX.GrandParent) in g
+    assert (EX.Child, RDFS.subClassOf, EX.Parent) in g
+    # No union-of axiom either
+    assert _union_members(g, EX.Parent) is None
+
+
 @pytest.mark.parametrize("skip", [False, True])
 def test_union_of_axiom_only_covers_direct_children(skip: bool):
     """Union-of axiom lists only direct is_a children, not grandchildren.

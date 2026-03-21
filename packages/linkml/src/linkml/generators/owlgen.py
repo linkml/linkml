@@ -469,9 +469,14 @@ class OwlSchemaGenerator(Generator):
         # Abstract covering axiom: abstract class rdfs:subClassOf (child1 or child2 or …)
         # This expresses the open-world constraint that every instance of the abstract class
         # must be an instance of at least one of its direct subclasses.
+        # Guard: require ≥ 2 children.  With exactly one child C, _union_of([C]) returns the
+        # URI directly (single-element optimisation), which would produce the spurious triple
+        # ``AbstractClass rdfs:subClassOf C`` — reversing the intended hierarchy.  Even
+        # wrapping a single child in owl:unionOf would assert equivalence (A ⊑ C ∧ C ⊑ A),
+        # which is too strong for extensible ontologies where more children may be added later.
         if cls.abstract and not self.skip_abstract_class_as_unionof_subclasses:
             children = sorted(sv.class_children(cls.name, imports=self.mergeimports, mixins=False, is_a=True))
-            if children:
+            if len(children) > 1:
                 child_uris = [self._class_uri(child) for child in children]
                 union_node = self._union_of(child_uris)
                 self.graph.add((cls_uri, RDFS.subClassOf, union_node))
