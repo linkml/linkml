@@ -1,3 +1,4 @@
+# --- curie_prefix_matching.yaml ---
 name: curietest
 id: http://example.org/tests/curietest
 prefixes:
@@ -58,3 +59,24 @@ source_file: curie_prefix_matching.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1
 generation_date: '2000-01-01T00:00:00'
+
+# --- curie_prefix_matching.context.jsonld ---
+{
+  "@context": {
+    "@vocab": "http://example.org/tests/curietest/",
+    "C1": {
+      "@id": "p1:/c/c1"
+    },
+    "C2": {
+      "@id": "p2:/c2"
+    },
+    "C3": {
+      "@id": "p2:c3"
+    },
+    "curietest": "http://example.org/tests/curietest/",
+    "p1": "http://example.org/prefixes/a/b/",
+    "p2": "http://example.org/prefixes/a/b/c/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
+

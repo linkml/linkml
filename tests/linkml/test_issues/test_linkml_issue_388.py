@@ -11,7 +11,7 @@ from linkml.generators.yamlgen import YAMLGenerator
 @pytest.mark.owlgen
 @pytest.mark.jsonschemagen
 @pytest.mark.network
-def test_attribute_behavior(input_path, snapshot, snapshot_path):
+def test_attribute_behavior(input_path, snapshot, bundled_snapshot_text):
     """
     Tests: https://github.com/linkml/linkml/issues/388
 
@@ -21,21 +21,24 @@ def test_attribute_behavior(input_path, snapshot, snapshot_path):
 
     name = "linkml_issue_388"
     schema = input_path(f"{name}.yaml")
+    outputs: dict[str, str] = {}
 
     output = YAMLGenerator(schema).serialize()
-    assert output == snapshot(f"{name}.yaml")
+    outputs[f"{name}.yaml"] = output
 
     output = JsonSchemaGenerator(schema).serialize()
-    assert output == snapshot(f"{name}.schema.json")
+    outputs[f"{name}.schema.json"] = output
 
     output = RDFGenerator(schema).serialize(context=[METAMODEL_CONTEXT_URI])
-    assert output == snapshot(f"{name}.ttl")
+    outputs[f"{name}.ttl"] = output
 
     output = OwlSchemaGenerator(schema, metaclasses=False).serialize(context=[METAMODEL_CONTEXT_URI])
-    assert output == snapshot(f"{name}.owl")
+    outputs[f"{name}.owl"] = output
+
+    assert bundled_snapshot_text(outputs) == snapshot(f"{name}.txt")
 
     g = Graph()
-    g.parse(snapshot_path(f"{name}.owl"), format="turtle")
+    g.parse(data=output, format="turtle")
     this_a = URIRef("https://example.org/this/a")
     URIRef("https://example.org/other/a")
     # slot_uri refers to two attributes, ambiguous, so minimal metadata;

@@ -1,0 +1,333 @@
+# --- linkml_issue_388.yaml ---
+name: personinfo
+id: https://w3id.org/linkml/examples/personinfo
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  this:
+    prefix_prefix: this
+    prefix_reference: https://example.org/this/
+  other:
+    prefix_prefix: other
+    prefix_reference: https://example.org/other/
+  xsd:
+    prefix_prefix: xsd
+    prefix_reference: http://www.w3.org/2001/XMLSchema#
+default_prefix: this
+default_range: my_str
+types:
+  my_str:
+    name: my_str
+    definition_uri: https://example.org/this/MyStr
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    base: str
+    uri: xsd:string
+  my_int:
+    name: my_int
+    definition_uri: https://example.org/this/MyInt
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    base: integer
+    uri: xsd:integer
+slots:
+  c1__a:
+    name: c1__a
+    description: this-a in the context of C1
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: this:a
+    alias: a
+    owner: C1
+    domain_of:
+    - C1
+    range: my_str
+  c2__a:
+    name: c2__a
+    description: this-a in the context of C2
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: this:a
+    alias: a
+    owner: C2
+    domain_of:
+    - C2
+    range: my_int
+  c3__a:
+    name: c3__a
+    description: other-a in the context of C3
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    mappings:
+    - other:a
+    slot_uri: other:a
+    alias: a
+    owner: C3
+    domain_of:
+    - C3
+    range: C1
+    inlined: true
+    inlined_as_list: true
+classes:
+  C1:
+    name: C1
+    definition_uri: https://example.org/this/C1
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - c1__a
+    attributes:
+      a:
+        name: a
+        description: this-a in the context of C1
+        range: my_str
+    class_uri: this:C1
+  C2:
+    name: C2
+    definition_uri: https://example.org/this/C2
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - c2__a
+    attributes:
+      a:
+        name: a
+        description: this-a in the context of C2
+        range: my_int
+    class_uri: this:C2
+  C3:
+    name: C3
+    definition_uri: https://example.org/this/C3
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - c3__a
+    attributes:
+      a:
+        name: a
+        description: other-a in the context of C3
+        slot_uri: other:a
+        range: C1
+    class_uri: this:C3
+metamodel_version: 1.7.0
+source_file: linkml_issue_388.yaml
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
+generation_date: '2000-01-01T00:00:00'
+
+# --- linkml_issue_388.schema.json ---
+{
+  "$defs": {
+    "C1": {
+      "additionalProperties": false,
+      "description": "",
+      "properties": {
+        "a": {
+          "description": "this-a in the context of C1",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "title": "C1",
+      "type": "object"
+    },
+    "C2": {
+      "additionalProperties": false,
+      "description": "",
+      "properties": {
+        "a": {
+          "description": "this-a in the context of C2",
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "title": "C2",
+      "type": "object"
+    },
+    "C3": {
+      "additionalProperties": false,
+      "description": "",
+      "properties": {
+        "a": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/C1"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "other-a in the context of C3"
+        }
+      },
+      "title": "C3",
+      "type": "object"
+    }
+  },
+  "$id": "https://w3id.org/linkml/examples/personinfo",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "additionalProperties": true,
+  "metamodel_version": "1.7.0",
+  "title": "personinfo",
+  "type": "object",
+  "version": null
+}
+
+# --- linkml_issue_388.ttl ---
+<https://example.org/this/C1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://example.org/this/C1> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C1> <https://w3id.org/linkml/attributes> <https://example.org/this/a> .
+<https://example.org/this/C1> <https://w3id.org/linkml/class_uri> "https://example.org/this/C1"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C1> <https://w3id.org/linkml/definition_uri> "https://example.org/this/C1"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C1> <https://w3id.org/linkml/slot_usage> _:cb47ec3bc2d603135d1d18bcd8a1b719f4c5022c0a9537e5d53c72d11a044adc5 .
+<https://example.org/this/C1> <https://w3id.org/linkml/slots> <https://example.org/this/c1__a> .
+<https://example.org/this/C2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://example.org/this/C2> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C2> <https://w3id.org/linkml/attributes> <https://example.org/this/a> .
+<https://example.org/this/C2> <https://w3id.org/linkml/class_uri> "https://example.org/this/C2"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C2> <https://w3id.org/linkml/definition_uri> "https://example.org/this/C2"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C2> <https://w3id.org/linkml/slot_usage> _:cb99de9afa84e8387b4ed8f9188edfaff650effa0d54318cbc87d9b767e2373c15 .
+<https://example.org/this/C2> <https://w3id.org/linkml/slots> <https://example.org/this/c2__a> .
+<https://example.org/this/C3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://example.org/this/C3> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C3> <https://w3id.org/linkml/attributes> <https://example.org/this/a> .
+<https://example.org/this/C3> <https://w3id.org/linkml/class_uri> "https://example.org/this/C3"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C3> <https://w3id.org/linkml/definition_uri> "https://example.org/this/C3"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/C3> <https://w3id.org/linkml/slot_usage> _:cb0 .
+<https://example.org/this/C3> <https://w3id.org/linkml/slots> <https://example.org/this/c3__a> .
+<https://example.org/this/a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://example.org/this/a> <https://w3id.org/linkml/description> "other-a in the context of C3" .
+<https://example.org/this/a> <https://w3id.org/linkml/description> "this-a in the context of C1" .
+<https://example.org/this/a> <https://w3id.org/linkml/description> "this-a in the context of C2" .
+<https://example.org/this/a> <https://w3id.org/linkml/range> <https://example.org/this/C1> .
+<https://example.org/this/a> <https://w3id.org/linkml/range> <https://example.org/this/my_int> .
+<https://example.org/this/a> <https://w3id.org/linkml/range> <https://example.org/this/my_str> .
+<https://example.org/this/a> <https://w3id.org/linkml/slot_uri> "other:a"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c1__a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://example.org/this/c1__a> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c1__a> <http://www.w3.org/2004/02/skos/core#prefLabel> "a" .
+<https://example.org/this/c1__a> <https://w3id.org/linkml/description> "this-a in the context of C1" .
+<https://example.org/this/c1__a> <https://w3id.org/linkml/domain_of> <https://example.org/this/C1> .
+<https://example.org/this/c1__a> <https://w3id.org/linkml/owner> <https://example.org/this/C1> .
+<https://example.org/this/c1__a> <https://w3id.org/linkml/range> <https://example.org/this/my_str> .
+<https://example.org/this/c1__a> <https://w3id.org/linkml/slot_uri> "https://example.org/this/a"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c2__a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://example.org/this/c2__a> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c2__a> <http://www.w3.org/2004/02/skos/core#prefLabel> "a" .
+<https://example.org/this/c2__a> <https://w3id.org/linkml/description> "this-a in the context of C2" .
+<https://example.org/this/c2__a> <https://w3id.org/linkml/domain_of> <https://example.org/this/C2> .
+<https://example.org/this/c2__a> <https://w3id.org/linkml/owner> <https://example.org/this/C2> .
+<https://example.org/this/c2__a> <https://w3id.org/linkml/range> <https://example.org/this/my_int> .
+<https://example.org/this/c2__a> <https://w3id.org/linkml/slot_uri> "https://example.org/this/a"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c3__a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://example.org/this/c3__a> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c3__a> <http://www.w3.org/2004/02/skos/core#mappingRelation> "https://example.org/other/a"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/c3__a> <http://www.w3.org/2004/02/skos/core#prefLabel> "a" .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/description> "other-a in the context of C3" .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/domain_of> <https://example.org/this/C3> .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/inlined> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/inlined_as_list> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/owner> <https://example.org/this/C3> .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/range> <https://example.org/this/C1> .
+<https://example.org/this/c3__a> <https://w3id.org/linkml/slot_uri> "https://example.org/other/a"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/my_int> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://example.org/this/my_int> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/my_int> <https://w3id.org/linkml/base> "integer" .
+<https://example.org/this/my_int> <https://w3id.org/linkml/definition_uri> "https://example.org/this/MyInt"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/my_int> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#integer"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/my_str> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://example.org/this/my_str> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/my_str> <https://w3id.org/linkml/base> "str" .
+<https://example.org/this/my_str> <https://w3id.org/linkml/definition_uri> "https://example.org/this/MyStr"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/my_str> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/personinfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SchemaDefinition> .
+<https://example.org/this/personinfo> <http://www.w3.org/ns/shacl#declare> _:cb12ea35aa63cc721cd40fd34b4d5d9273803f97d45aa2daf1ba2eaa4b56057c201 .
+<https://example.org/this/personinfo> <http://www.w3.org/ns/shacl#declare> _:cb1b6db011c8f5ff2c565fa8299db8f66f46e0afacd751d7c0633849d79bc53be64 .
+<https://example.org/this/personinfo> <http://www.w3.org/ns/shacl#declare> _:cb41ed2b7768f7d8a0047167a5d0291e0ff9251be8b33a95d32f7c81a680e0eacd .
+<https://example.org/this/personinfo> <http://www.w3.org/ns/shacl#declare> _:cbb008eaf56a1b97935c32e329a55635016f64b75b11275aef454ec985b7a95861 .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/classes> <https://example.org/this/C1> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/classes> <https://example.org/this/C2> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/classes> <https://example.org/this/C3> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/default_prefix> "this" .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/default_range> <https://example.org/this/my_str> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/generation_date> "2000-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/id> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/metamodel_version> "1.7.0" .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/slots> <https://example.org/this/c1__a> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/slots> <https://example.org/this/c2__a> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/slots> <https://example.org/this/c3__a> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/source_file> "linkml_issue_388.yaml" .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/source_file_date> "2000-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/source_file_size> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/types> <https://example.org/this/my_int> .
+<https://example.org/this/personinfo> <https://w3id.org/linkml/types> <https://example.org/this/my_str> .
+_:cb12ea35aa63cc721cd40fd34b4d5d9273803f97d45aa2daf1ba2eaa4b56057c201 <http://www.w3.org/ns/shacl#namespace> "https://w3id.org/linkml/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cb12ea35aa63cc721cd40fd34b4d5d9273803f97d45aa2daf1ba2eaa4b56057c201 <http://www.w3.org/ns/shacl#prefix> "linkml" .
+_:cb1b6db011c8f5ff2c565fa8299db8f66f46e0afacd751d7c0633849d79bc53be64 <http://www.w3.org/ns/shacl#namespace> "https://example.org/this/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cb1b6db011c8f5ff2c565fa8299db8f66f46e0afacd751d7c0633849d79bc53be64 <http://www.w3.org/ns/shacl#prefix> "this" .
+_:cb41ed2b7768f7d8a0047167a5d0291e0ff9251be8b33a95d32f7c81a680e0eacd <http://www.w3.org/ns/shacl#namespace> "https://example.org/other/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cb41ed2b7768f7d8a0047167a5d0291e0ff9251be8b33a95d32f7c81a680e0eacd <http://www.w3.org/ns/shacl#prefix> "other" .
+_:cbb008eaf56a1b97935c32e329a55635016f64b75b11275aef454ec985b7a95861 <http://www.w3.org/ns/shacl#namespace> "http://www.w3.org/2001/XMLSchema#"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cbb008eaf56a1b97935c32e329a55635016f64b75b11275aef454ec985b7a95861 <http://www.w3.org/ns/shacl#prefix> "xsd" .
+
+# --- linkml_issue_388.owl ---
+<https://example.org/this/C1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://example.org/this/C1> <http://www.w3.org/2000/01/rdf-schema#label> "C1" .
+<https://example.org/this/C1> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1d4775e78d5a087eab1de478022a805fd2a822767dde60af9302d2e7f99018dd1 .
+<https://example.org/this/C1> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb20e7eb606dce9fc47a42fbdb0c3e8f4b3a14e8e235d9e43b5c6740dd8598bbbe5 .
+<https://example.org/this/C1> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb24a1ba0518043b7f46476a2f34a439039515305bb78100c1f046c6aae82aa6bae .
+<https://example.org/this/C1> <http://www.w3.org/2004/02/skos/core#inScheme> <https://w3id.org/linkml/examples/personinfo> .
+<https://example.org/this/C2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://example.org/this/C2> <http://www.w3.org/2000/01/rdf-schema#label> "C2" .
+<https://example.org/this/C2> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1874a80b3431141b961b1d0ab5a3670973bf80587ab4026d41833487207cec512 .
+<https://example.org/this/C2> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1c2e76afde66afd6621f8b5ede0910c1cebfc7d1fc5b1ef3d562ba54830ed74db .
+<https://example.org/this/C2> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1d5d95ab3322a334d5cf49138785ffd2c2212ab5e6e6606a9f33297a23fcfbcf3 .
+<https://example.org/this/C2> <http://www.w3.org/2004/02/skos/core#inScheme> <https://w3id.org/linkml/examples/personinfo> .
+<https://example.org/this/C3> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://example.org/this/C3> <http://www.w3.org/2000/01/rdf-schema#label> "C3" .
+<https://example.org/this/C3> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1cfb658e50b9c034d7ae64f9ac032441365a98cd1ded7b3ea706b0060627d5b84 .
+<https://example.org/this/C3> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb20b53432faef5befa3b2d34dd468cdf9915ae0469f9497c53ae635d368b9c0b4d .
+<https://example.org/this/C3> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb22ae5c498e435713276020d8bfef70764e4685c365f310ed00a4b937636d0acd5 .
+<https://example.org/this/C3> <http://www.w3.org/2004/02/skos/core#inScheme> <https://w3id.org/linkml/examples/personinfo> .
+<https://example.org/this/a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#ObjectProperty> .
+<https://example.org/this/my_int> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://example.org/this/my_int> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1c1dce523fff845bbe81ee44b72f0354c9436a622000f674e94fad86a07205914 .
+<https://example.org/this/my_str> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Class> .
+<https://example.org/this/my_str> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:cb1199f5022689a8dc21802faf10ae111647c9db3dfa5ca7d47cd4aa8f30d67ccd2 .
+<https://w3id.org/linkml/examples/personinfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+<https://w3id.org/linkml/examples/personinfo> <http://www.w3.org/2000/01/rdf-schema#label> "personinfo" .
+<https://w3id.org/linkml/topValue> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<https://w3id.org/linkml/topValue> <http://www.w3.org/2000/01/rdf-schema#label> "value" .
+_:cb1199f5022689a8dc21802faf10ae111647c9db3dfa5ca7d47cd4aa8f30d67ccd2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1199f5022689a8dc21802faf10ae111647c9db3dfa5ca7d47cd4aa8f30d67ccd2 <http://www.w3.org/2002/07/owl#onDataRange> <https://example.org/this/my_str> .
+_:cb1199f5022689a8dc21802faf10ae111647c9db3dfa5ca7d47cd4aa8f30d67ccd2 <http://www.w3.org/2002/07/owl#onProperty> <https://w3id.org/linkml/topValue> .
+_:cb1199f5022689a8dc21802faf10ae111647c9db3dfa5ca7d47cd4aa8f30d67ccd2 <http://www.w3.org/2002/07/owl#qualifiedCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb1874a80b3431141b961b1d0ab5a3670973bf80587ab4026d41833487207cec512 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1874a80b3431141b961b1d0ab5a3670973bf80587ab4026d41833487207cec512 <http://www.w3.org/2002/07/owl#minCardinality> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb1874a80b3431141b961b1d0ab5a3670973bf80587ab4026d41833487207cec512 <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb1c1dce523fff845bbe81ee44b72f0354c9436a622000f674e94fad86a07205914 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1c1dce523fff845bbe81ee44b72f0354c9436a622000f674e94fad86a07205914 <http://www.w3.org/2002/07/owl#onDataRange> <https://example.org/this/my_int> .
+_:cb1c1dce523fff845bbe81ee44b72f0354c9436a622000f674e94fad86a07205914 <http://www.w3.org/2002/07/owl#onProperty> <https://w3id.org/linkml/topValue> .
+_:cb1c1dce523fff845bbe81ee44b72f0354c9436a622000f674e94fad86a07205914 <http://www.w3.org/2002/07/owl#qualifiedCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb1c2e76afde66afd6621f8b5ede0910c1cebfc7d1fc5b1ef3d562ba54830ed74db <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1c2e76afde66afd6621f8b5ede0910c1cebfc7d1fc5b1ef3d562ba54830ed74db <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb1c2e76afde66afd6621f8b5ede0910c1cebfc7d1fc5b1ef3d562ba54830ed74db <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb1cfb658e50b9c034d7ae64f9ac032441365a98cd1ded7b3ea706b0060627d5b84 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1cfb658e50b9c034d7ae64f9ac032441365a98cd1ded7b3ea706b0060627d5b84 <http://www.w3.org/2002/07/owl#minCardinality> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb1cfb658e50b9c034d7ae64f9ac032441365a98cd1ded7b3ea706b0060627d5b84 <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb1d4775e78d5a087eab1de478022a805fd2a822767dde60af9302d2e7f99018dd1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1d4775e78d5a087eab1de478022a805fd2a822767dde60af9302d2e7f99018dd1 <http://www.w3.org/2002/07/owl#allValuesFrom> <https://example.org/this/my_str> .
+_:cb1d4775e78d5a087eab1de478022a805fd2a822767dde60af9302d2e7f99018dd1 <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb1d5d95ab3322a334d5cf49138785ffd2c2212ab5e6e6606a9f33297a23fcfbcf3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb1d5d95ab3322a334d5cf49138785ffd2c2212ab5e6e6606a9f33297a23fcfbcf3 <http://www.w3.org/2002/07/owl#allValuesFrom> <https://example.org/this/my_int> .
+_:cb1d5d95ab3322a334d5cf49138785ffd2c2212ab5e6e6606a9f33297a23fcfbcf3 <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb20b53432faef5befa3b2d34dd468cdf9915ae0469f9497c53ae635d368b9c0b4d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb20b53432faef5befa3b2d34dd468cdf9915ae0469f9497c53ae635d368b9c0b4d <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb20b53432faef5befa3b2d34dd468cdf9915ae0469f9497c53ae635d368b9c0b4d <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb20e7eb606dce9fc47a42fbdb0c3e8f4b3a14e8e235d9e43b5c6740dd8598bbbe5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb20e7eb606dce9fc47a42fbdb0c3e8f4b3a14e8e235d9e43b5c6740dd8598bbbe5 <http://www.w3.org/2002/07/owl#minCardinality> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb20e7eb606dce9fc47a42fbdb0c3e8f4b3a14e8e235d9e43b5c6740dd8598bbbe5 <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb22ae5c498e435713276020d8bfef70764e4685c365f310ed00a4b937636d0acd5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb22ae5c498e435713276020d8bfef70764e4685c365f310ed00a4b937636d0acd5 <http://www.w3.org/2002/07/owl#allValuesFrom> <https://example.org/this/C1> .
+_:cb22ae5c498e435713276020d8bfef70764e4685c365f310ed00a4b937636d0acd5 <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+_:cb24a1ba0518043b7f46476a2f34a439039515305bb78100c1f046c6aae82aa6bae <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Restriction> .
+_:cb24a1ba0518043b7f46476a2f34a439039515305bb78100c1f046c6aae82aa6bae <http://www.w3.org/2002/07/owl#maxCardinality> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:cb24a1ba0518043b7f46476a2f34a439039515305bb78100c1f046c6aae82aa6bae <http://www.w3.org/2002/07/owl#onProperty> <https://example.org/this/a> .
+
