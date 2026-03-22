@@ -1,3 +1,4 @@
+# --- issue_80.py ---
 # Auto generated from issue_80.yaml by pythongen.py version: 0.0.1
 # Generation date: 2000-01-01T00:00:00
 # Schema: Issue_80_test_case
@@ -125,3 +126,39 @@ slots.name = Slot(uri=BIOLINK.name, name="name", curie=BIOLINK.curie('name'),
 
 slots.age = Slot(uri=BIOLINK.age, name="age", curie=BIOLINK.curie('age'),
                    model_uri=BIOLINK.age, domain=None, range=Optional[int])
+
+# --- issue_80.json ---
+{
+  "age": 43,
+  "id": "http://example.org/person/17",
+  "name": "Fred Jones"
+}
+
+# --- issue_80.context.jsonld ---
+{
+  "@context": {
+    "@vocab": "https://w3id.org/biolink/vocab/",
+    "Person": {
+      "@id": "ex:PERSON"
+    },
+    "age": {
+      "@id": "age",
+      "@type": "xsd:integer"
+    },
+    "biolink": "https://w3id.org/biolink/vocab/",
+    "ex": "http://example.org/",
+    "id": "@id",
+    "linkml": "https://w3id.org/linkml/",
+    "model": "https://w3id.org/biolink/",
+    "name": {
+      "@id": "name"
+    },
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
+
+# --- issue_80.ttl ---
+<http://example.org/person/17> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/PERSON> .
+<http://example.org/person/17> <https://w3id.org/biolink/vocab/age> "43"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/person/17> <https://w3id.org/biolink/vocab/name> "Fred Jones" .
+

@@ -6,10 +6,12 @@ from linkml_runtime.utils.compile_python import compile_python
 
 
 @pytest.mark.pythongen
-def test_issue_121(input_path, snapshot):
+def test_issue_121(input_path, snapshot, bundled_snapshot_text):
     """Make sure that types are generated as part of the output"""
+    outputs: dict[str, str] = {}
+
     python = PythonGenerator(input_path("issue_121.yaml")).serialize()
-    assert python == snapshot("issue_121.py")
+    outputs["issue_121.py"] = python
 
     has_includes = False
     for line in python.split("\n"):
@@ -26,7 +28,9 @@ def test_issue_121(input_path, snapshot):
     example2 = module.ImportedClass()
 
     example_json = as_json(example)
-    assert example_json == snapshot("issue_121_1.json")
+    outputs["issue_121_1.json"] = example_json
 
     example_json_2 = as_json(example2)
-    assert example_json_2 == snapshot("issue_121_2.json")
+    outputs["issue_121_2.json"] = example_json_2
+
+    assert bundled_snapshot_text(outputs) == snapshot("issue_121.txt")
