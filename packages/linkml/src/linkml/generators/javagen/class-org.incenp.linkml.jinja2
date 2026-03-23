@@ -185,16 +185,17 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
         final int PRIME = 59;
         int result = {% if cls.is_a %}super.hashCode(){% else %}1{% endif %};
 {%- for f in cls.fields %}
-        final Object ${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
 {%-   if f.range == "int" %}
-        result = result * PRIME + Integer.hashCode(${{ f.name }});
+        result = result * PRIME + this.{{ gen.get_read_accessor_name(f.source_slot) }}();
 {%-   elif f.range == "float" %}
-        result = result * PRIME + Float.hashCode(${{ f.name }});
+        result = result * PRIME + Float.floatToIntBits(this.{{ gen.get_read_accessor_name(f.source_slot) }}());
 {%-   elif f.range == "double" %}
-        result = result * PRIME + Double.hashCode(${{ f.name }});
+        final long ${{ f.name }} = Double.doubleToLongBits(this.{{ gen.get_read_accessor_name(f.source_slot) }}());
+        result = result * PRIME + (int) (${{ f.name }} >>> 32 ^ ${{ f.name }});
 {%-   elif f.range == "boolean" %}
-        result = result * PRIME + Boolean.hashCode(${{ f.name }});
+        result = result * PRIME + (this.{{ gen.get_read_accessor_name(f.source_slot) }}() ? 79 : 97);
 {%-   else %}
+        final Object ${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
         result = result * PRIME + (${{ f.name }} == null ? 43 : ${{ f.name }}.hashCode());
 {%-   endif %}
 {%- endfor %}
