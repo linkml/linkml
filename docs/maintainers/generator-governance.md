@@ -34,7 +34,6 @@ Generates CSV summaries of schema classes and slots.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 44 |
 | Chris Mungall | @cmungall | 24 |
 | Jonny Saunders | @sneakers-the-rat | 19 |
 | Harshad Hegde | @hrshdhgd | 12 |
@@ -84,7 +83,6 @@ Generates Graphviz dot files for schema visualization.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 71 |
 | Harshad Hegde | @hrshdhgd | 50 |
 | Chris Mungall | @cmungall | 19 |
 | Jonny Saunders | @sneakers-the-rat | 5 |
@@ -147,7 +145,6 @@ Generates GOlr (Gene Ontology Lucene/Solr) YAML schema definitions.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 64 |
 | Harshad Hegde | @hrshdhgd | 20 |
 | Chris Mungall | @cmungall | 10 |
 | Deepak Unni | @deepakunni3 | 6 |
@@ -166,7 +163,6 @@ Generates a GraphQL schema from a LinkML schema.
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
 | Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 64 |
-| Harold Solbrig | @hsolbrig | 24 |
 | Jonny Saunders | @sneakers-the-rat | 14 |
 | Harshad Hegde | @hrshdhgd | 6 |
 | Chris Mungall | @cmungall | 5 |
@@ -207,7 +203,6 @@ Generates JSON-LD context files for RDF serialization of schema-conformant data.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 103 |
 | Volodymyr Lapkin | @kapystya | 77 |
 | Harshad Hegde | @hrshdhgd | 42 |
 | Jonny Saunders | @sneakers-the-rat | 40 |
@@ -229,7 +224,6 @@ Generates a JSON-LD representation of the schema itself.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 106 |
 | Jonny Saunders | @sneakers-the-rat | 55 |
 | Harshad Hegde | @hrshdhgd | 34 |
 | Chris Mungall | @cmungall | 26 |
@@ -251,7 +245,6 @@ Generates JSON Schema for validating data that conforms to a LinkML schema.
 | Jonny Saunders | @sneakers-the-rat | 137 |
 | Chris Mungall | @cmungall | 79 |
 | Harshad Hegde | @hrshdhgd | 33 |
-| Harold Solbrig | @hsolbrig | 26 |
 | Chien-Chun Ni | @saibalmars | 24 |
 | Kevin Schaper | @kevinschaper | 22 |
 | Paul Millar | @paulmillar | 19 |
@@ -306,7 +299,6 @@ Deprecated, use `gen-doc`.
 | --- | --- | --- |
 | Jonny Saunders | @sneakers-the-rat | 343 |
 | Harshad Hegde | @hrshdhgd | 192 |
-| Harold Solbrig | @hsolbrig | 181 |
 | Chris Mungall | @cmungall | 35 |
 | Patrick Kalita | @pkalita-lbl | 28 |
 | Sujay Patil | @sujaypatil96 | 25 |
@@ -340,7 +332,6 @@ Generates Python namespace definition modules for use with the LinkML runtime.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 180 |
 | Harshad Hegde | @hrshdhgd | 17 |
 | Chris Mungall | @cmungall | 3 |
 | David Linke | @dalito | 2 |
@@ -358,7 +349,6 @@ Generates an OWL ontology representation of a LinkML schema.
 | --- | --- | --- |
 | Chris Mungall | @cmungall | 1169 |
 | Harshad Hegde | @hrshdhgd | 74 |
-| Harold Solbrig | @hsolbrig | 52 |
 | Jonny Saunders | @sneakers-the-rat | 20 |
 | Patrick Kalita | @pkalita-lbl | 16 |
 | Ben Dichter | @bendichter | 16 |
@@ -405,7 +395,6 @@ Generates a prefix map (CURIE-to-URI mappings) from a schema.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 67 |
 | Jonny Saunders | @sneakers-the-rat | 23 |
 | Chris Mungall | @cmungall | 11 |
 | Harshad Hegde | @hrshdhgd | 7 |
@@ -442,7 +431,6 @@ Generates Protocol Buffer (protobuf) schema definitions from a LinkML schema.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 31 |
 | Jonny Saunders | @sneakers-the-rat | 24 |
 | Harshad Hegde | @hrshdhgd | 8 |
 | Chris Mungall | @cmungall | 5 |
@@ -495,7 +483,6 @@ Includes `python/` subpackage. See also label `generator-dataclasses`.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 494 |
 | Harshad Hegde | @hrshdhgd | 218 |
 | Chris Mungall | @cmungall | 167 |
 | Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 131 |
@@ -521,7 +508,6 @@ Generates an RDF representation of the schema itself.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 41 |
 | Harshad Hegde | @hrshdhgd | 21 |
 | Jonny Saunders | @sneakers-the-rat | 14 |
 | Volodymyr Lapkin | @kapystya | 11 |
@@ -588,7 +574,6 @@ Generates ShEx (Shape Expressions) for RDF data validation.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 115 |
 | Harshad Hegde | @hrshdhgd | 43 |
 | Kevin Schaper | @kevinschaper | 35 |
 | Deepak Unni | @deepakunni3 | 21 |
@@ -688,7 +673,6 @@ Generates summary spreadsheets of schema statistics.
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
 | Harshad Hegde | @hrshdhgd | 44 |
-| Harold Solbrig | @hsolbrig | 28 |
 | Jonny Saunders | @sneakers-the-rat | 9 |
 | Chris Mungall | @cmungall | 5 |
 | Sierra Taylor Moxon | @sierra-moxon | 2 |
@@ -711,7 +695,6 @@ Experimental generator for TerminusDB graph database schemas.
 | David Linke | @dalito | 2 |
 | Sierra Taylor Moxon | @sierra-moxon | 2 |
 | Corey Cox | @amc-corey-cox | 1 |
-| Harold Solbrig | @hsolbrig | 1 |
 | ialarmedalien | @ialarmedalien | 1 |
 
 ### TypeScript Generator (`gen-typescript`)
@@ -739,7 +722,6 @@ Re-serializes a schema as a normalized YAML document.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 20 |
 | Harshad Hegde | @hrshdhgd | 19 |
 | Chris Mungall | @cmungall | 16 |
 | Ben Dichter | @bendichter | 2 |
@@ -768,7 +750,6 @@ Deprecated.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
-| Harold Solbrig | @hsolbrig | 144 |
 | Harshad Hegde | @hrshdhgd | 72 |
 | madanucd | @madanucd | 33 |
 | Jonny Saunders | @sneakers-the-rat | 19 |
