@@ -200,20 +200,9 @@ Generates JSON-LD context files for RDF serialization of schema-conformant data.
 
 **Issues and PRs**: [label:`generator-jsonld`](https://github.com/linkml/linkml/issues?q=label%3Agenerator-jsonld%20state%3Aopen)
 
-| Contributor | GitHub | Lines |
-| --- | --- | --- |
-| Volodymyr Lapkin | @kapystya | 77 |
-| Harshad Hegde | @hrshdhgd | 42 |
-| Jonny Saunders | @sneakers-the-rat | 40 |
-| Vincent Kelleher | @VincentKelworthy | 33 |
-| Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 16 |
-| Chris Mungall | @cmungall | 12 |
-| Corey Cox | @amc-corey-cox | 3 |
-| Ben Dichter | @bendichter | 3 |
-| David Linke | @dalito | 2 |
-| Sierra Taylor Moxon | @sierra-moxon | 2 |
-| Patrick Kalita | @pkalita-lbl | 1 |
-| Dorota Jarecka | @djarecka | 1 |
+See [JSON-LD Generator](#jsonldgen) for candidate reviewers.
+
+<a id="jsonldgen"></a>
 
 ### JSON-LD Generator (`gen-jsonld`)
 
