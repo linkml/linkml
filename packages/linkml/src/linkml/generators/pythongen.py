@@ -1087,6 +1087,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
     def gen_slot(self, slot: SlotDefinition) -> str:
         python_slot_name = underscore(slot.name)
+        # If slot name is a reserved keyword, follow PEP8 conventions to append an underscore.
+        # The transformed slot will be accessible as `slots.class_`, not `slots.class`.
+        if keyword.iskeyword(python_slot_name):
+            python_slot_name = python_slot_name + "_"
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
             self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)
