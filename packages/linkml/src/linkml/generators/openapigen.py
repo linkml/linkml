@@ -1,4 +1,4 @@
-"""Generate OpenAPI 3"""
+"""Generate OpenAPI v3.0.3 Specification YAML files."""
 
 import json
 import os
@@ -17,7 +17,7 @@ from linkml.utils.generator import Generator, shared_arguments
 class OpenApiGenerator(Generator, LifecycleMixin):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
-    valid_formats = ["openapi3"]
+    valid_formats = ["openapi303"]
     file_extension = "yaml"
     uses_schemaloader = False
 
@@ -119,11 +119,11 @@ class OpenApiGenerator(Generator, LifecycleMixin):
 @click.option(
     "--template",
     "-t",
-    help="OpenAPI template - includes the header, the endpoints and the securityschemes",
+    help="OpenAPI v3.0.3 template - includes the header, the endpoints and the securityschemes",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, template, **args):
-    """Generate an OpenAPI 3 spec with resources modelled with LinkML"""
+    """Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML"""
     print(OpenApiGenerator(yamlfile, **args).serialize(template_file=template, **args), end="")
 
 
