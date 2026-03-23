@@ -720,7 +720,6 @@ Re-serializes a schema as a normalized YAML document.
 
 Generates YARRRML mapping rules for RDF transformation pipelines.
 
-No CLI entry point.
 
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
