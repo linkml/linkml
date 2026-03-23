@@ -20,6 +20,9 @@ import requests
 # URL pattern to match in docs
 URL_PATTERN = re.compile(r'https?://[^\s<>")\]`\'\,]+')
 
+# Pattern for URLs pointing to files in this repo (verify locally instead of via HTTP)
+REPO_FILE_PATTERN = re.compile(r"https://github\.com/linkml/linkml/(?:tree|blob)/main/(.*)")
+
 # Status classification
 OK_STATUSES = {"200", "201", "202", "203", "204", "301", "302", "303", "307", "308"}
 WARNING_STATUSES = {"403"}  # Bot protection - probably fine, just can't verify
@@ -33,8 +36,6 @@ SKIP_DOMAINS = {
     "example.net",
     # Example/placeholder domains in docs
     "acme.org",
-    # URL extraction issues - URLs contain special chars that break extraction
-    "yuml.me",
     # Unreliable/slow - frequently timeout or rate limit
     "terminusdb.com",
     "xmlns.com",
@@ -143,6 +144,14 @@ def check_url(url: str, timeout: int = 10) -> tuple[str, str]:
     Returns:
         Tuple of (status_code_or_error, error_message_or_empty)
     """
+    # Self-referencing repo URLs: verify the file exists locally
+    repo_match = REPO_FILE_PATTERN.match(url)
+    if repo_match:
+        path = Path(repo_match.group(1))
+        if path.exists():
+            return "200", ""
+        return "404", f"Local path not found: {path}"
+
     try:
         response = requests.head(
             url,

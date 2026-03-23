@@ -11,6 +11,7 @@ name: ifabsent_tests
 prefixes:
   ex: https://example.org/
 default_prefix: ex
+default_range: float
 
 classes:
   Student:
@@ -448,13 +449,62 @@ enums:
     )
 
 
-def test_bnode_default_value():
+@pytest.mark.parametrize("range", ["uri", "curie", "uriorcurie"])
+@pytest.mark.parametrize(
+    "ifabsent,expected",
+    [
+        ["class_uri", '"https://example.org/Student"'],
+        ["slot_uri", '"https://example.org/default_urilike"'],
+        ["class_curie", '"ex:Student"'],
+        ["slot_curie", '"ex:default_urilike"'],
+    ],
+)
+def test_uriorcurie_default_value(ifabsent, expected, range):
+    schema = (
+        base_schema
+        + f"""
+      - name: default_urilike
+        range: {range}
+        ifabsent: {ifabsent}
+        """
+    )
+    sv = SchemaView(schema)
+    cls = sv.all_classes()["Student"]
+    slot = cls.attributes["default_urilike"]
+    processor = PythonIfAbsentProcessor(sv)
+    result = processor.process_slot(slot, cls)
+    if range != "uriorcurie" and ifabsent.split("_")[1] != range:
+        assert result is None
+    else:
+        assert result == expected
+
+
+def test_default_range_default_value():
     schema = (
         base_schema
         + """
-      - name: bnode
-        range: Student
-        ifabsent: bnode
+      - name: default_range_slot
+        range: string
+        ifabsent: default_range
+        """
+    )
+    sv = SchemaView(schema)
+    cls = sv.all_classes()["Student"]
+    slot = cls.attributes["default_range_slot"]
+    processor = PythonIfAbsentProcessor(sv)
+    result = processor.process_slot(slot, cls)
+    assert result == '"float"'
+
+
+def test_default_ns_returns_none():
+    """default_ns ifabsent value is handled at runtime in __post_init__,
+    so the ifabsent processor should return None (no static default)."""
+    schema = (
+        base_schema
+        + """
+      - name: default_prefix
+        range: string
+        ifabsent: default_ns
     """
     )
     schema_view = SchemaView(schema)
@@ -463,10 +513,10 @@ def test_bnode_default_value():
 
     assert (
         processor.process_slot(
-            schema_view.all_slots()[SlotDefinitionName("bnode")],
+            schema_view.all_slots()[SlotDefinitionName("default_prefix")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
-        == "bnode()"
+        is None
     )
 
 

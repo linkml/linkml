@@ -59,10 +59,8 @@ published on static hosting sites.
    :maxdepth: 1
    :caption: Contents:
 
-   markdown
    docgen
    erdiagram
-   yuml
    plantumlgen
    project-generator
 
@@ -94,6 +92,7 @@ Generators specific to database frameworks. Currently only SQL databases.
 
    sqltable
    sqlalchemy
+   sqlvalidation
 
 Others
 ------

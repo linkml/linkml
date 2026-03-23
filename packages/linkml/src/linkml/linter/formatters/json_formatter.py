@@ -1,5 +1,5 @@
 import json
-from typing import IO, Any, Optional
+from typing import IO, Any
 
 from ..config.datamodel.config import RuleLevel
 from ..linter import LinterProblem
@@ -16,7 +16,7 @@ class Encoder(json.JSONEncoder):
 
 
 class JsonFormatter(Formatter):
-    def __init__(self, file: Optional[IO[Any]] = None) -> None:
+    def __init__(self, file: IO[Any] | None = None) -> None:
         super().__init__(file)
         self.problems = []
 

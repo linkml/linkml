@@ -5,7 +5,7 @@ there is no instance data to test.
 """
 
 from copy import copy
-from typing import Any, Optional, Union
+from typing import Any
 
 import pytest
 import rdflib
@@ -14,6 +14,7 @@ from tests.linkml.test_compliance.helper import (
     OWL,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
@@ -22,6 +23,7 @@ from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORK
 EX = rdflib.Namespace("http://example.org/")
 
 
+@feature_category("Metadata", "Annotations")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "name,slot_annotations,class_annotations",
@@ -43,9 +45,9 @@ EX = rdflib.Namespace("http://example.org/")
 def test_annotation(
     framework: str,
     name: str,
-    slot_annotations: Optional[dict[str, Any]],
-    class_annotations: Optional[dict[str, Any]],
-    expand: Optional[Union[bool, str]],
+    slot_annotations: dict[str, Any] | None,
+    class_annotations: dict[str, Any] | None,
+    expand: bool | str | None,
     is_valid: bool,
 ):
     """
@@ -68,7 +70,7 @@ def test_annotation(
     :return:
     """
 
-    def anns(tvs: Optional[dict]) -> Optional[dict]:
+    def anns(tvs: dict | None) -> dict | None:
         if tvs is None:
             return None
         if expand:

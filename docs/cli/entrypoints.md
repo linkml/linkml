@@ -30,7 +30,6 @@ try running them with `--help` and see what happens!
 - {ref}`gen-java <generators/java:gen-java>`
 - {ref}`gen-jsonld <generators/jsonld:gen-jsonld>`
 - {ref}`gen-json-schema <generators/json-schema:gen-json-schema>`
-- {ref}`gen-markdown <generators/markdown:gen-markdown>`
 - `gen-doc`
 - `gen-namespace`
 - {ref}`gen-owl <generators/owl:gen-owl>`
@@ -46,7 +45,6 @@ try running them with `--help` and see what happens!
 - {ref}`gen-sparql <generators/sparql:gen-sparql>`
 - {ref}`gen-typescript <generators/typescript:gen-typescript>`
 - {ref}`gen-terminusdb <generators/terminusdb:gen-terminusdb>`
-- `gen-yuml`
 - `gen-yaml`
 - {ref}`gen-erdiagram <generators/erdiagram:gen-erdiagram>`
 - {ref}`gen-sqla <generators/sqlalchemy:gen-sqla>`

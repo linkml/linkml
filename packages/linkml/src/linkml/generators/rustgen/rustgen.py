@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Literal, Optional, Union, overload
+from typing import Literal, overload
 
 from jinja2 import Environment
 
@@ -176,7 +176,7 @@ class SlotInlineMode(Enum):
     REFERENCE = "reference"
 
 
-def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
+def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> SlotDefinition | None:
     induced_slots = sv.class_induced_slots(cls.name)
     for slot in induced_slots:
         if slot.identifier or slot.key:
@@ -184,7 +184,7 @@ def get_key_or_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional
     return None
 
 
-def get_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> Optional[SlotDefinition]:
+def get_identifier_slot(cls: ClassDefinition, sv: SchemaView) -> SlotDefinition | None:
     induced_slots = sv.class_induced_slots(cls.name)
     for slot in induced_slots:
         if slot.identifier:
@@ -265,7 +265,7 @@ def can_contain_reference_to_class(s: SlotDefinition, cls: ClassDefinition, sv: 
 
 
 def get_rust_type(
-    t: Union[TypeDefinition, type, str], sv: SchemaView, pyo3: bool = False, crate_ref: Optional[str] = None
+    t: TypeDefinition | type | str, sv: SchemaView, pyo3: bool = False, crate_ref: str | None = None
 ) -> str:
     """
     Get the rust type from a given linkml type
@@ -308,7 +308,7 @@ def get_rust_type(
 
 
 def get_rust_range_info(
-    cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, crate_ref: Optional[str] = None
+    cls: ClassDefinition, s: SlotDefinition, sv: SchemaView, crate_ref: str | None = None
 ) -> RustRange:
     (container_mode, inline_mode) = determine_slot_mode(s, sv)
     all_ranges = sv.slot_range_as_union(s)
@@ -358,12 +358,12 @@ def protect_name(v: str) -> str:
     return v
 
 
-def get_name(e: Union[ClassDefinition, SlotDefinition, EnumDefinition, PermissibleValue, TypeDefinition]) -> str:
-    if isinstance(e, (ClassDefinition, EnumDefinition)):
+def get_name(e: ClassDefinition | SlotDefinition | EnumDefinition | PermissibleValue | TypeDefinition) -> str:
+    if isinstance(e, ClassDefinition | EnumDefinition):
         name = camelcase(e.name)
     elif isinstance(e, PermissibleValue):
         name = camelcase(e.text)
-    elif isinstance(e, (SlotDefinition, TypeDefinition)):
+    elif isinstance(e, SlotDefinition | TypeDefinition):
         name = underscore(e.name)
     else:
         raise ValueError("Can only get the name from a slot or class!")
@@ -382,7 +382,7 @@ class RustGenerator(Generator, LifecycleMixin):
     generatorversion = "0.0.2"
     valid_formats = ["rust"]
     file_extension = "rs"
-    crate_name: Optional[str] = None
+    crate_name: str | None = None
 
     pyo3: bool = True
     """Generate pyO3 bindings for the rust defs"""
@@ -395,7 +395,7 @@ class RustGenerator(Generator, LifecycleMixin):
     """Place generated sources under src/generated and leave src/lib.rs for user code"""
     mode: RUST_MODES = "crate"
     """Generate a cargo.toml file"""
-    output: Optional[Path] = None
+    output: Path | None = None
     """
     * If ``mode == "crate"`` , a directory to contain the generated crate
     * If ``mode == "file"`` , a file with a ``.rs`` extension
@@ -407,7 +407,7 @@ class RustGenerator(Generator, LifecycleMixin):
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to Rust enums with slot descendants"""
 
-    _environment: Optional[Environment] = None
+    _environment: Environment | None = None
     _subproperty_enums: dict = None  # Cache for generated subproperty enums
 
     def __post_init__(self):
@@ -415,7 +415,7 @@ class RustGenerator(Generator, LifecycleMixin):
         self._subproperty_enums = {}  # Cache for generated subproperty enums
         super().__post_init__()
 
-    def _select_root_class(self, class_defs: list[ClassDefinition]) -> Optional[ClassDefinition]:
+    def _select_root_class(self, class_defs: list[ClassDefinition]) -> ClassDefinition | None:
         """Return the schema-local class marked ``tree_root`` if present."""
 
         schema_id = getattr(self.schemaview.schema, "id", None)
@@ -556,7 +556,7 @@ class RustGenerator(Generator, LifecycleMixin):
         res = self.after_generate_class(res, self.schemaview)
         return res
 
-    def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> Optional[RustStructOrSubtypeEnum]:
+    def gen_struct_or_subtype_enum(self, cls: ClassDefinition) -> RustStructOrSubtypeEnum | None:
         descendants = class_real_descendants(self.schemaview, cls.name)
         td = self.schemaview.get_type_designator_slot(cls.name)
         td_mapping = {}
@@ -580,7 +580,7 @@ class RustGenerator(Generator, LifecycleMixin):
             )
         return None
 
-    def generate_class_as_key_value(self, cls: ClassDefinition) -> Optional[AsKeyValue]:
+    def generate_class_as_key_value(self, cls: ClassDefinition) -> AsKeyValue | None:
         induced_attrs = [self.schemaview.induced_slot(sn, cls.name) for sn in self.schemaview.class_slots(cls.name)]
         key_attr = None
         value_attrs = []
@@ -707,7 +707,7 @@ class RustGenerator(Generator, LifecycleMixin):
         version = self.schemaview.schema.version if self.schemaview.schema.version is not None else "0.0.0"
         return RustPyProject(name=self.schemaview.schema.name, version=version)
 
-    def get_imports(self, element: Union[SlotDefinition, TypeDefinition]) -> Imports:
+    def get_imports(self, element: SlotDefinition | TypeDefinition) -> Imports:
         if isinstance(element, SlotDefinition):
             type_ = get_rust_type(element.range, self.schemaview, self.pyo3)
         elif isinstance(element, TypeDefinition):
@@ -720,7 +720,7 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             return Imports()
 
-    def _get_subproperty_enum(self, slot: SlotDefinition) -> Optional[RustEnum]:
+    def _get_subproperty_enum(self, slot: SlotDefinition) -> RustEnum | None:
         """
         Generate a Rust enum for subproperty_of constrained slot.
 
@@ -789,7 +789,7 @@ class RustGenerator(Generator, LifecycleMixin):
         self._subproperty_enums[cache_key] = rust_enum
         return rust_enum
 
-    def _get_subproperty_enum_type(self, slot: SlotDefinition) -> Optional[str]:
+    def _get_subproperty_enum_type(self, slot: SlotDefinition) -> str | None:
         """
         Get the Rust enum type name for a subproperty_of constrained slot.
 
@@ -802,7 +802,7 @@ class RustGenerator(Generator, LifecycleMixin):
         return None
 
     def _get_range_info_with_subproperty(
-        self, cls: ClassDefinition, slot: SlotDefinition, crate_ref: Optional[str] = None
+        self, cls: ClassDefinition, slot: SlotDefinition, crate_ref: str | None = None
     ) -> RustRange:
         """
         Get RustRange info, considering subproperty_of constraint.
@@ -841,7 +841,7 @@ class RustGenerator(Generator, LifecycleMixin):
     @overload
     def render(self, mode: Literal["crate"] = "crate") -> CrateResult: ...
 
-    def render(self, mode: Optional[RUST_MODES] = None) -> Union[FileResult, CrateResult]:
+    def render(self, mode: RUST_MODES | None = None) -> FileResult | CrateResult:
         """
         Render the template model of a rust file before serializing
 
@@ -1010,7 +1010,7 @@ class RustGenerator(Generator, LifecycleMixin):
             subtypes=subtype_impls,
         )
 
-    def serialize(self, output: Optional[Path] = None, mode: Optional[RUST_MODES] = None, force: bool = False) -> str:
+    def serialize(self, output: Path | None = None, mode: RUST_MODES | None = None, force: bool = False) -> str:
         """
         Serialize a schema to a rust crate or file.
 
@@ -1052,7 +1052,7 @@ class RustGenerator(Generator, LifecycleMixin):
         # correctly determine subtype presence against the metamodel (using class names,
         # not rust type identifiers).
         type_names: list[str] = []
-        rust_to_class: dict[str, Optional[str]] = {}
+        rust_to_class: dict[str, str | None] = {}
 
         def add_for_slot(slot_def: SlotDefinition):
             for r in sv.slot_range_as_union(slot_def):
@@ -1209,7 +1209,7 @@ class RustGenerator(Generator, LifecycleMixin):
             )
 
     def write_crate(
-        self, output: Optional[Path] = None, rendered: Union[FileResult, CrateResult] = None, force: bool = False
+        self, output: Path | None = None, rendered: FileResult | CrateResult = None, force: bool = False
     ) -> str:
         output = self._validate_output(output, mode="crate", force=force)
         if rendered is None:
@@ -1267,9 +1267,7 @@ class RustGenerator(Generator, LifecycleMixin):
 
         return rust_file
 
-    def _validate_output(
-        self, output: Optional[Path] = None, mode: Optional[RUST_MODES] = None, force: bool = False
-    ) -> Path:
+    def _validate_output(self, output: Path | None = None, mode: RUST_MODES | None = None, force: bool = False) -> Path:
         """Raise a ValueError if given a dir when in file mode or vice versa"""
         if output is None:
             if self.output is None:
@@ -1295,7 +1293,7 @@ class RustGenerator(Generator, LifecycleMixin):
 
         return output
 
-    def _safe_subpath(self, base: Path, relative: Union[str, Path]) -> Path:
+    def _safe_subpath(self, base: Path, relative: str | Path) -> Path:
         """Return a path nested under base, validating it does not escape."""
 
         rel_path = Path(relative)

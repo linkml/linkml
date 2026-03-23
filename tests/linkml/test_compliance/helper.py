@@ -9,11 +9,11 @@ import shutil
 import subprocess
 import tempfile
 from collections import defaultdict
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from copy import copy, deepcopy
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 import pydantic
 import pytest
@@ -84,7 +84,7 @@ DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
 OWL = "owl"
-GENERATORS: dict[FRAMEWORK, Union[type[Generator], tuple[type[Generator], dict[str, Any]]]] = {
+GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, Any]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
     JAVA: generators.JavaGenerator,
@@ -133,8 +133,8 @@ class DataCheck(BaseModel):
     data_name: str
     framework: str
     expected_behavior: ValidationBehavior
-    description: Optional[str] = None
-    notes: Optional[str] = None
+    description: str | None = None
+    notes: str | None = None
 
 
 class Feature(BaseModel):
@@ -145,6 +145,8 @@ class Feature(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
     name: str
+    display_name: str = ""
+    category: str = "Uncategorized"
     description: str
     implementations: dict[FRAMEWORK, ValidationBehavior]
     num_tests: int = 0
@@ -175,7 +177,28 @@ class FeatureSet(BaseModel):
     features: list[Feature]
 
 
-cached_generator_output: dict[tuple[SCHEMA_NAME, FRAMEWORK], tuple[Generator, str, Optional[Path]]] = {}
+def feature_category(category: str, display_name: str = "") -> Callable:
+    """Decorator that tags a compliance test function with dashboard metadata.
+
+    The category and display_name are stored as attributes on the function
+    object and picked up by ``validated_schema`` when building the Feature.
+
+    Args:
+        category: Dashboard category heading (e.g. "Core Structure").
+        display_name: Human-readable short name for this feature.
+            Defaults to the function name with ``test_`` stripped and
+            underscores replaced by spaces.
+    """
+
+    def decorator(fn: Callable) -> Callable:
+        fn._feature_category = category
+        fn._feature_display_name = display_name
+        return fn
+
+    return decorator
+
+
+cached_generator_output: dict[tuple[SCHEMA_NAME, FRAMEWORK], tuple[Generator, str, Path | None]] = {}
 """Cache generators and their outputs to avoid repeated computation."""
 
 all_test_results: list[DataCheck] = []
@@ -191,7 +214,7 @@ schema_name_to_metamodel_elements: dict[SCHEMA_NAME, list[str]] = {}
 """Map from schema name all metamodels used in that schema."""
 
 
-def _as_tsv(rows: list[dict], path: Union[str, Path]) -> str:
+def _as_tsv(rows: list[dict], path: str | Path) -> str:
     logger.info(f"Writing report to {path}")
     fn = f"{path}.tsv"
     if rows:
@@ -223,12 +246,12 @@ def report():
         # stream.write(fset.description)
     path = OUTPUT_DIR / f"{summary_base_name}.yaml"
     with open(path, "w", encoding="utf-8") as stream:
-        yaml.dump(fset.dict(), stream, sort_keys=False)
+        yaml.dump(fset.model_dump(mode="json"), stream, Dumper=SafeDumper, sort_keys=False)
     for feature in fset.features:
         with open(OUTPUT_DIR / f"{feature.name}.yaml", "w", encoding="utf-8") as stream:
-            yaml.dump(feature.dict(), stream, sort_keys=False)
+            yaml.dump(feature.model_dump(mode="json"), stream, Dumper=SafeDumper, sort_keys=False)
     _as_tsv([{"name": f.name, **f.implementations} for f in fset.features], summary_base_name)
-    _as_tsv([check.dict() for check in all_test_results], f"report{suffix}")
+    _as_tsv([check.model_dump(mode="json") for check in all_test_results], f"report{suffix}")
     pivoted = defaultdict(dict)
     for check in all_test_results:
         key = (check.schema_name, check.data_name)
@@ -273,7 +296,7 @@ def _get_metamodel_elements(obj: Any) -> Iterator[str]:
 
 def _generate_framework_output(
     schema: dict, framework: str, mappings: list = None
-) -> tuple[Generator, str, Optional[Path]]:
+) -> tuple[Generator, str, Path | None]:
     """
     Compile a schema using a framework (e.g. jsonschema generation).
 
@@ -328,7 +351,7 @@ def _generate_framework_output(
                 expected = impdict[framework]
                 if expected is None:
                     continue
-                if isinstance(expected, (list, str)) and framework in [SHACL, OWL]:
+                if isinstance(expected, list | str) and framework in [SHACL, OWL]:
                     assert compare_rdf(expected, output, subsumes=framework in [OWL]) == set()
                 elif isinstance(expected, str):
                     if "".join(expected.split()) not in "".join(output.split()):
@@ -345,10 +368,10 @@ def _generate_framework_output(
     return cached_generator_output[pair]
 
 
-TRIPLE = tuple[rdflib.URIRef, rdflib.URIRef, Union[rdflib.URIRef, rdflib.Literal]]
+TRIPLE = tuple[rdflib.URIRef, rdflib.URIRef, rdflib.URIRef | rdflib.Literal]
 
 
-def compare_rdf(expected: Union[str, list[TRIPLE]], actual: str, subsumes: bool = False) -> Optional[set]:
+def compare_rdf(expected: str | list[TRIPLE], actual: str, subsumes: bool = False) -> set | None:
     """
     Compares two rdf serializations.
 
@@ -445,7 +468,7 @@ def _make_schema(
     post_process: Callable = None,
     merge_type_imports=True,
     imported_schemas: list[dict] = None,
-    mappings: Optional[dict[str, Any]] = None,
+    mappings: dict[str, Any] | None = None,
     unsatisfiable: bool = False,
     **kwargs,
 ) -> tuple[dict, list]:
@@ -615,8 +638,12 @@ def validated_schema(test: Callable, local_name: str, framework: str, **kwargs) 
     if test_name not in feature_dict:
         if not test.__doc__:
             raise AssertionError(f"Test {test_name} has no docstring")
+        category = getattr(test, "_feature_category", "Uncategorized")
+        display_name = getattr(test, "_feature_display_name", "") or test_name.removeprefix("test_").replace("_", " ")
         feature_dict[test_name] = Feature(
             name=test_name,
+            display_name=display_name,
+            category=category,
             description=test.__doc__,
             implementations={},
         )
@@ -648,7 +675,7 @@ def _extract_mappings(schema: dict) -> Iterator[tuple[dict, list]]:
         pass
 
 
-def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, dict]) -> str:
+def _as_compact_yaml(obj: YAMLRoot | BaseModel | dict) -> str:
     if isinstance(obj, dict):
         ys = yaml.dump(_clean_dict(obj), sort_keys=False, Dumper=SafeDumper)
         ys = ys.replace("{}", "")
@@ -656,7 +683,7 @@ def _as_compact_yaml(obj: Union[YAMLRoot, BaseModel, dict]) -> str:
     return yaml_dumper.dumps(obj)
 
 
-def _objects_are_equal(obj1: Union[YAMLRoot, BaseModel, dict], obj2: Union[YAMLRoot, BaseModel, dict]) -> bool:
+def _objects_are_equal(obj1: YAMLRoot | BaseModel | dict, obj2: YAMLRoot | BaseModel | dict) -> bool:
     y1 = _as_compact_yaml(obj1)
     y2 = _as_compact_yaml(obj2)
     return y1 == y2
@@ -705,7 +732,7 @@ def check_data(
     object_to_validate: dict,
     valid: bool,
     should_warn: bool = False,
-    expected_behavior: Union[ValidationBehavior, tuple[ValidationBehavior, str]] = ValidationBehavior.IMPLEMENTS,
+    expected_behavior: ValidationBehavior | tuple[ValidationBehavior, str] = ValidationBehavior.IMPLEMENTS,
     target_class: str = None,
     description: str = None,
     coerced: dict = None,
@@ -772,7 +799,7 @@ def check_data(
         logger.warning(f"Skipping test for {expected_behavior}")
     else:
         gen, output, output_path = _generate_framework_output(schema, framework)
-        if isinstance(gen, (PydanticGenerator, PythonGenerator)):
+        if isinstance(gen, PydanticGenerator | PythonGenerator):
             # Note: this duplicates some code with PydanticValidationPlugin;
             # but currently the validation framework doesn't support explicit
             # coercion detection and output of repaired objects
@@ -931,7 +958,7 @@ def clean_null_terms(d):
         return d
 
 
-def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_path: str) -> Optional[rdflib.Graph]:
+def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_path: str) -> rdflib.Graph | None:
     ttl_path = str(ttl_path)
     gen, output, _ = _generate_framework_output(schema, PYTHON_DATACLASSES)
     mod = compile_python(output)
@@ -987,8 +1014,8 @@ def robot_is_on_path():
 
 
 def robot_check_coherency(
-    data_path: Union[str, Path], ontology_path: Union[str, Path], output_path: Union[str, Path] = None
-) -> Optional[bool]:
+    data_path: str | Path, ontology_path: str | Path, output_path: str | Path = None
+) -> bool | None:
     """
     Check the data validates using an OWL reasoner, executed by robot.
 

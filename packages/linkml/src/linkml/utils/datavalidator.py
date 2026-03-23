@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Union
 
 from linkml_runtime.linkml_model import ClassDefinitionName, SchemaDefinition
 
@@ -10,7 +9,7 @@ class DataValidator:
     Base class for all validators
     """
 
-    schema: Union[str, SchemaDefinition] = None
+    schema: str | SchemaDefinition = None
     """
     LinkML Schema to validate against
     """

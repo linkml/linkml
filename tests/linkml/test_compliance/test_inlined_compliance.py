@@ -11,12 +11,14 @@ import pytest
 from tests.linkml.test_compliance.helper import (
     JSON_SCHEMA,
     OWL,
+    PANDERA_POLARS_CLASS,
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -32,6 +34,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Inlining & References", "Inlined objects")
 @pytest.mark.parametrize("data", ["inlined_list", "flat", "nested", "flat_list"])
 @pytest.mark.parametrize("foreign_key", [0, "FK"])
 @pytest.mark.parametrize("multivalued", [0, "MV"])
@@ -287,8 +290,13 @@ ANNOTATED_ATTRS = {
     SLOT_S1: {"range": "string"},
     SLOT_S2: {"range": "string", "annotations": {"simple_dict_value": True}},
 }
+MULTIVALUED_ATTRS = {
+    SLOT_ID: {"key": True},
+    SLOT_S1: {"range": "string", "multivalued": True},
+}
 
 
+@feature_category("Inlining & References", "Inlined as simple dict")
 @pytest.mark.parametrize(
     "name,attrs,data_name,values,is_valid",
     [
@@ -310,6 +318,12 @@ ANNOTATED_ATTRS = {
         ("annotated", ANNOTATED_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S2: "y"}}, True),
         ("annotated", ANNOTATED_ATTRS, "expanded2", {"x": {SLOT_ID: "x", SLOT_S1: "z", SLOT_S2: "y"}}, True),
         ("annotated", ANNOTATED_ATTRS, "empty", {}, True),
+        ("multivalued", MULTIVALUED_ATTRS, "simple_list", {"x": ["y", "z"]}, True),
+        ("multivalued", MULTIVALUED_ATTRS, "single_item_list", {"x": ["y"]}, True),
+        ("multivalued", MULTIVALUED_ATTRS, "empty_list", {"x": []}, True),
+        ("multivalued", MULTIVALUED_ATTRS, "expanded", {"x": {SLOT_ID: "x", SLOT_S1: ["y", "z"]}}, True),
+        ("multivalued", MULTIVALUED_ATTRS, "expanded_noval", {"x": None}, True),
+        ("multivalued", MULTIVALUED_ATTRS, "empty", {}, True),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -344,6 +358,8 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
         pytest.skip("TODO: SQLA do not support inlined as simple dict")
     if framework == PYDANTIC and name != "basic":
         pytest.skip("TODO: pydantic-based methods are permissive")
+    if framework == PANDERA_POLARS_CLASS and name == "multivalued":
+        pytest.skip("Polars DataFrames cannot hold list values in SimpleDict columns")
     if name == "extra" and data_name == "t1":
         if framework != JSON_SCHEMA:
             pytest.skip("TODO: dataclasses-based methods are permissive")
@@ -375,6 +391,9 @@ def test_inlined_as_simple_dict(framework, name, attrs, data_name, values, is_va
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == PYDANTIC and data_name.startswith("expanded"):
         expected_behavior = ValidationBehavior.INCOMPLETE
+    if name == "multivalued" and data_name == "empty_list":
+        if framework in [PYTHON_DATACLASSES, OWL]:
+            expected_behavior = ValidationBehavior.INCOMPLETE
     check_data(
         schema,
         data_name,

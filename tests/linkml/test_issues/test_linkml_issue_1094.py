@@ -1,5 +1,3 @@
-from typing import Union
-
 from linkml.generators.pydanticgen import PydanticGenerator
 
 schema_str = """
@@ -57,7 +55,7 @@ def test_pydanticgen_inline_dict():
     dict_field = Person.model_fields["has_bikes"]
     list_field = Person.model_fields["has_bike_list"]
 
-    assert dict_field.annotation == dict[str, Union[str, Bike]]
+    assert dict_field.annotation == dict[str, str | Bike]
     assert list_field.annotation == list[Bike]
 
     assert dict_field.default_factory is None

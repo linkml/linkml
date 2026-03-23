@@ -1,0 +1,33 @@
+id: https://w3id.org/linkml/tests/issue_3160
+name: issue_3160
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+imports:
+  - linkml:types
+
+classes:
+  Container:
+    slots:
+      - items
+
+  Item:
+    description: >-
+      A class with no identifier but a required field,
+      used inlined_as_list to test dict-form input normalization.
+    slots:
+      - name
+      - value
+
+slots:
+  name:
+    required: true
+    range: string
+  value:
+    range: string
+  items:
+    multivalued: true
+    range: Item
+    inlined: true
+    inlined_as_list: true

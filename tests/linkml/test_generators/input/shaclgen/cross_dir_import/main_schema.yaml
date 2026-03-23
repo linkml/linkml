@@ -1,0 +1,25 @@
+id: https://example.org/main
+name: main_schema
+description: >
+  Schema that imports from a subdirectory via importmap.
+  Used to test that ShaclGenerator resolves cross-directory imports.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  main: https://example.org/main/
+  imp: https://example.org/imported/
+
+default_prefix: main
+default_range: string
+
+imports:
+  - linkml:types
+  - imported_types
+
+classes:
+  DerivedEntity:
+    is_a: BaseEntity
+    class_uri: main:DerivedEntity
+    attributes:
+      value:
+        range: integer

@@ -2,7 +2,7 @@ import logging
 import urllib
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 from curies import Converter
 from hbreader import FileInfo
@@ -27,7 +27,7 @@ from linkml_runtime.utils.yamlutils import YAMLRoot
 logger = logging.getLogger(__name__)
 
 
-VALID_SUBJECT = Union[URIRef, BNode]
+VALID_SUBJECT = URIRef | BNode
 ANYDICT = dict[str, Any]
 
 
@@ -47,12 +47,12 @@ class RDFLibLoader(Loader):
         self,
         graph: Graph,
         schemaview: SchemaView,
-        target_class: type[Union[BaseModel, YAMLRoot]],
-        prefix_map: Union[dict[str, str], Converter, None] = None,
+        target_class: type[BaseModel | YAMLRoot],
+        prefix_map: dict[str, str] | Converter | None = None,
         cast_literals: bool = True,
         allow_unprocessed_triples: bool = True,
         ignore_unmapped_predicates: bool = False,
-    ) -> list[Union[BaseModel, YAMLRoot]]:
+    ) -> list[BaseModel | YAMLRoot]:
         """
         Loads objects from graph into lists of the python target_class structure,
         recursively walking RDF graph from instances of target_class.
@@ -265,15 +265,15 @@ class RDFLibLoader(Loader):
 
     def load(
         self,
-        source: Union[str, TextIO, Graph],
-        target_class: type[Union[BaseModel, YAMLRoot]],
+        source: str | TextIO | Graph,
+        target_class: type[BaseModel | YAMLRoot],
         *,
         schemaview: SchemaView = None,
-        prefix_map: Union[dict[str, str], Converter, None] = None,
-        fmt: Optional[str] = "turtle",
-        metadata: Optional[FileInfo] = None,
+        prefix_map: dict[str, str] | Converter | None = None,
+        fmt: str | None = "turtle",
+        metadata: FileInfo | None = None,
         **kwargs,
-    ) -> Union[BaseModel, YAMLRoot]:
+    ) -> BaseModel | YAMLRoot:
         """
         Load the RDF in source into the python target_class structure
 
@@ -302,8 +302,8 @@ class RDFLibLoader(Loader):
             raise DataNotFoundError(f"Got {len(objs)} of type {target_class} from source, expected exactly 1")
         return objs[0]
 
-    def loads(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot]:
+    def loads(self, source: str, **kwargs) -> BaseModel | YAMLRoot:
         return self.load(source, **kwargs)
 
-    def load_any(self, source: str, **kwargs) -> Union[BaseModel, YAMLRoot, list[BaseModel], list[YAMLRoot]]:
+    def load_any(self, source: str, **kwargs) -> BaseModel | YAMLRoot | list[BaseModel] | list[YAMLRoot]:
         return self.load(source, **kwargs)

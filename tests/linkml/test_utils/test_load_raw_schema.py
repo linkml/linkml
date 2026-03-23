@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Callable
+from collections.abc import Callable
 
 import pytest
 from jsonasobj2 import as_dict, as_json, loads

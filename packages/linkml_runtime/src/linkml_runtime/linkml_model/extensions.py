@@ -1,5 +1,5 @@
 # Auto generated from extensions.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:16
+# Generation date: 2026-02-18T21:04:49
 # Schema: extensions
 #
 # id: https://w3id.org/linkml/extensions
@@ -35,7 +35,7 @@ class ExtensionTag(URIorCURIE):
 AnyValue = Any
 
 
-@dataclass
+@dataclass(repr=False)
 class Extension(YAMLRoot):
     """
     a tag/value pair used to add non-model information to an entry
@@ -54,7 +54,7 @@ class Extension(YAMLRoot):
         Union[dict[Union[str, ExtensionTag], Union[dict, "Extension"]], list[Union[dict, "Extension"]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.tag):
             self.MissingRequiredField("tag")
         if not isinstance(self.tag, ExtensionTag):
@@ -65,7 +65,7 @@ class Extension(YAMLRoot):
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Extensible(YAMLRoot):
     """
     mixin for classes that support extension
@@ -82,7 +82,7 @@ class Extensible(YAMLRoot):
         Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_dict(slot_name="extensions", slot_type=Extension, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)

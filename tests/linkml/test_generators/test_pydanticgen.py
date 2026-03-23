@@ -52,7 +52,7 @@ from .conftest import MyInjectedClass
 
 INDENT = " " * 4
 PACKAGE = "kitchen_sink"
-pytestmark = pytest.mark.pydanticgen
+pytestmark = [pytest.mark.pydanticgen, pytest.mark.xdist_group("pydanticgen")]
 
 
 def test_pydantic(kitchen_sink_path, tmp_path, input_path):
@@ -421,8 +421,25 @@ def test_pydantic_inlining(range, multivalued, inlined, inlined_as_list, B_has_i
     )
 
 
-def test_ifabsent():
-    schema_str = """
+@pytest.mark.parametrize(
+    "slot_name,range_,ifabsent,expected_fragment",
+    [
+        ("attr1", "integer", "int(10)", "attr1: Optional[int] = Field(default=10"),
+        ("attr2", "string", "string(hello world)", 'attr2: Optional[str] = Field(default="hello world"'),
+        ("attr3", "boolean", "True", "attr3: Optional[bool] = Field(default=True"),
+        ("attr4", "float", "float(1.0)", "attr4: Optional[float] = Field(default=1.0"),
+        ("attr5", "date", "date(2020-01-01)", "attr5: Optional[date] = Field(default=date(2020, 1, 1)"),
+        (
+            "attr6",
+            "datetime",
+            "datetime(2020-01-01T00:00:00Z)",
+            "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)",
+        ),
+        ("attr7", "string", "bnode", "attr7: Optional[str] = Field(default=None"),
+    ],
+)
+def test_ifabsent(slot_name, range_, ifabsent, expected_fragment):
+    schema_str = f"""
 id: id
 name: test_info
 description: just testing
@@ -438,34 +455,14 @@ classes:
   Test_Class:
     description: just a test
     attributes:
-      attr1:
-        range: integer
-        ifabsent: int(10)
-      attr2:
-        range: string
-        ifabsent: string(hello world)
-      attr3:
-        range: boolean
-        ifabsent: True
-      attr4:
-        range: float
-        ifabsent: float(1.0)
-      attr5:
-        range: date
-        ifabsent: date(2020-01-01)
-      attr6:
-        range: datetime
-        ifabsent: datetime(2020-01-01T00:00:00Z)
+      {slot_name}:
+        range: {range_}
+        ifabsent: {ifabsent}
         """
 
     gen = PydanticGenerator(schema_str)
     code = gen.serialize()
-    assert "attr1: Optional[int] = Field(default=10" in code
-    assert 'attr2: Optional[str] = Field(default="hello world"' in code
-    assert "attr3: Optional[bool] = Field(default=True" in code
-    assert "attr4: Optional[float] = Field(default=1.0" in code
-    assert "attr5: Optional[date] = Field(default=date(2020, 1, 1)" in code
-    assert "attr6: Optional[datetime ] = Field(default=datetime(2020, 1, 1, 0, 0, 0)" in code
+    assert expected_fragment in code
 
 
 def test_equals_string():
@@ -807,7 +804,7 @@ classes:
 
 
 @pytest.mark.parametrize(
-    "value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid",
+    "value, required, minimum_cardinality, maximum_cardinality, exact_cardinality, valid",
     (
         (
             None,
@@ -860,7 +857,7 @@ classes:
         ([1, 2, 3], True, 3, 3, 3, True),
     ),
 )
-def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_cardinality, exact_cardinality, valid):
+def test_pydantic_cardinality(value, required, minimum_cardinality, maximum_cardinality, exact_cardinality, valid):
     """
     Ensure that the cardinality constraints for list length are correctly applied
     to the generated pydantic model, using SchemaBuilder.
@@ -874,7 +871,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
                 range="float",
                 multivalued=True,
                 required=required,
-                minimum_cardinality=minimium_cardinality,
+                minimum_cardinality=minimum_cardinality,
                 maximum_cardinality=maximum_cardinality,
                 exact_cardinality=exact_cardinality,
             )
@@ -890,7 +887,7 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
     field = cls.model_fields["cardinality_array"]
 
     assert field.is_required() == required
-    assert field.annotation == list[float] if required else Optional[list[float]]
+    assert field.annotation == list[float] if required else list[float] | None
 
     # filter down the metadata to only min_length and max_length entries
     min_length = [entry.min_length for entry in field.metadata if getattr(entry, "min_length", None) is not None]
@@ -901,9 +898,9 @@ def test_pydantic_cardinality(value, required, minimium_cardinality, maximum_car
         assert len(max_length) == 1
         assert exact_cardinality == min_length[0]
         assert exact_cardinality == max_length[0]
-    if minimium_cardinality:
+    if minimum_cardinality:
         assert len(min_length) == 1
-        assert minimium_cardinality == min_length[0]
+        assert minimum_cardinality == min_length[0]
     if maximum_cardinality:
         assert len(max_length) == 1
         assert maximum_cardinality == max_length[0]
@@ -1067,7 +1064,7 @@ def test_inject_classes(kitchen_sink_path, tmp_path, input_path, inject, expecte
         (
             'object_id: Optional[str] = Field(default=None, description="Unique UUID for each object")',
             "object_id",
-            Optional[str],
+            str | None,
             None,
             "Unique UUID for each object",
         ),
@@ -1554,7 +1551,7 @@ def test_template_render():
 
     class InnerTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "inner.jinja"
-        value: Union[int, str] = 1
+        value: int | str = 1
 
     class TestTemplate(PydanticTemplateModel):
         template: ClassVar[str] = "test.jinja"
@@ -1639,7 +1636,7 @@ def test_arrays_anyshape_union():
     """
 
     class MyModel(BaseModel):
-        array: AnyShapeArray[Union[int, float]]
+        array: AnyShapeArray[int | float]
 
     arr = np.ones((2, 4, 5, 3, 2), dtype=int)
     _ = MyModel(array=arr.tolist())
@@ -1656,7 +1653,7 @@ def test_arrays_anyshape_union():
     (
         (None, [{}]),
         (int, [{"type": "integer"}]),
-        (Union[int, float], [{"type": "integer"}, {"type": "number"}]),
+        (int | float, [{"type": "integer"}, {"type": "number"}]),
     ),
 )
 def test_arrays_anyshape_json_schema(dtype, expected):
@@ -1669,7 +1666,7 @@ def test_arrays_anyshape_json_schema(dtype, expected):
 
         class MyModel(BaseModel):
             array: AnyShapeArray[dtype]
-            dummy: Optional[AnyShapeArray[str]] = None
+            dummy: AnyShapeArray[str] | None = None
 
     schema = MyModel.model_json_schema()
     array_ref = schema["properties"]["array"]["$ref"].split("/")[-1]
@@ -2393,6 +2390,7 @@ def test_template_black(array_complex):
     )
 
 
+@pytest.mark.xdist_group("serial")
 def test_template_noblack(array_complex, mock_black_import):
     """
     When we don't have black, we should still be able to render templates normally
@@ -3140,26 +3138,3 @@ classes:
     # InteractionAssociation should have narrowed constraint
     # (interacts_with and its descendants only)
     assert 'Literal["interacts_with", "physically_interacts_with"]' in code
-
-
-def test_crappy_stdlib_set_removed():
-    """
-    After support for <3.10 is dropped, remove the dang stdlib list stub
-
-    since this is just a tidiness test rather than a correctness test,
-    wrap the whole thing in a try and self-contain its imports
-    """
-    try:
-        from importlib.metadata import metadata
-
-        from packaging.specifiers import SpecifierSet
-        from packaging.version import Version
-
-        linkml_meta = metadata("linkml")
-        req_python = SpecifierSet(linkml_meta.json["requires_python"])
-        assert req_python.contains(Version("3.9")), (
-            "REMOVE _some_stdlib_module_names from the bottom of pydanticgen/template.py, "
-        )
-        "and then REMOVE THIS TEST!"
-    except Exception:
-        pass

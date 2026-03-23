@@ -102,7 +102,7 @@ types:
     assert output.startswith(f"# Auto generated from None by pythongen.py version: {PythonGenerator.generatorversion}")
 
     output = PythonGenerator(yaml, format="py", metadata=False).serialize()
-    assert output.startswith("\n# id: https://w3id.org/biolink/metamodel")
+    assert output.startswith("# id: https://w3id.org/biolink/metamodel")
 
 
 def test_repr(kitchen_sink_path):
@@ -164,3 +164,70 @@ enums:
     assert py_module.TestEnum.ADVANCED.description == "This is an advanced option"
     assert py_module.TestEnum.ADVANCED.title == "Advanced Option"
     assert py_module.TestEnum.ADVANCED.meaning == "http://example.org/advanced"
+
+
+def test_derived_class_as_key_range_ordering():
+    """Test that class reference types are ordered correctly when a key slot's range
+    is a derived class that inherits its identifier from a parent.
+
+    Regression test for https://github.com/linkml/linkml/issues/2600
+
+    The bug: when the class containing the key slot (Annotation) appeared before
+    the range class's parent (Thing) in the schema dict, gen_references() would
+    emit AnnotationAnnotationTag(AnnotationTagPid) before AnnotationTagPid(ThingPid),
+    causing a NameError on import.
+    """
+    # Annotation intentionally listed BEFORE Thing to trigger the ordering bug
+    yaml = """
+id: https://example.org/issue2600
+name: issue2600
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/issue2600/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Annotation:
+    slots:
+      - annotation_tag
+      - annotation_value
+    slot_usage:
+      annotation_tag:
+        key: true
+  Thing:
+    slots:
+      - pid
+    slot_usage:
+      pid:
+        identifier: true
+  AnnotationTag:
+    is_a: Thing
+
+slots:
+  pid:
+    range: uriorcurie
+  annotation_tag:
+    range: AnnotationTag
+  annotation_value:
+    range: string
+"""
+    gen = PythonGenerator(yaml)
+    output = gen.serialize()
+
+    # The generated code must be compilable — the original bug was a NameError
+    # from forward-referencing an undefined class
+    module = compile_python(str(output))
+    assert hasattr(module, "Annotation")
+    assert hasattr(module, "Thing")
+    assert hasattr(module, "AnnotationTag")
+
+    # Verify the class reference ordering: each parent must appear before its child
+    ref_classes = re.findall(r"^class (\w+)\((\w+)\):\n\tpass", str(output), re.MULTILINE)
+    positions = {name: i for i, (name, _parent) in enumerate(ref_classes)}
+    for name, parent in ref_classes:
+        if parent in positions:
+            assert positions[parent] < positions[name], (
+                f"Class reference {name}({parent}) appears before its parent {parent} is defined"
+            )

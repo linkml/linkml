@@ -6,16 +6,17 @@ import os
 from csv import DictWriter
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional
 
 import click
 
 from linkml._version import __version__
+from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, ClassDefinitionName
 from linkml_runtime.utils.formatutils import be, underscore
 
 
+@deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})
 @dataclass
 class CsvGenerator(Generator):
     """
@@ -33,16 +34,16 @@ class CsvGenerator(Generator):
     requires_metamodel = False
 
     # ObjectVars
-    sep: Optional[str] = None
+    sep: str | None = None
     """Separator for columns"""
 
-    closure: Optional[set[ClassDefinitionName]] = None
+    closure: set[ClassDefinitionName] | None = None
     """List of classes to include in output"""
 
-    writer: Optional[DictWriter] = None
+    writer: DictWriter | None = None
     """Python dictwriter"""
 
-    _str_io: Optional[StringIO] = None
+    _str_io: StringIO | None = None
     """String that the writer outputs to"""
 
     def __post_init__(self):

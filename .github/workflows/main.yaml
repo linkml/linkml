@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v7.2.1
+        uses: astral-sh/setup-uv@v7.3.1
         with:
           version: ${{ env.UV_VERSION }}
 
@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         # Test on Windows with only the oldest and newest Python versions
         exclude:
           - os: windows-latest
@@ -69,7 +69,7 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v7.2.1
+        uses: astral-sh/setup-uv@v7.3.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -86,9 +86,7 @@ jobs:
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Test linkml package
         run: |
-          uv run coverage run -m pytest tests/linkml/ --with-network -m "not kroki"
-          uv run coverage xml -o coverage-linkml.xml
-          uv run coverage report -m
+          uv run pytest tests/linkml/ --with-network -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
         shell: bash
       - name: Test linkml-runtime package
         run: |
@@ -121,7 +119,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        python-version: [ "3.9", "3.13" ]
+        python-version: [ "3.10", "3.13" ]
     needs:
       - quality-checks
     runs-on: ${{ matrix.os }}
@@ -132,7 +130,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v7.2.1
+        uses: astral-sh/setup-uv@v7.3.1
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -178,7 +176,7 @@ jobs:
           python-version: 3.13
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7.2.1
+        uses: astral-sh/setup-uv@v7.3.1
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
