@@ -112,15 +112,14 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
             "title": "C",
             "type": "object",
         },
-    }
-    if not parent_is_abstract:
-        json_schema_defs["D"] = {
+        "D": {
             "additionalProperties": False,
             "description": "",
             "properties": {"s1": {"type": ["string", "null"]}},
             "title": "D",
             "type": "object",
-        }
+        },
+    }
     classes = {
         CLASS_D: {
             "abstract": parent_is_abstract,
@@ -150,8 +149,9 @@ def test_basic_class_inheritance(framework, description, cls: str, object, is_va
         expected_behavior = ValidationBehavior.INCOMPLETE
     if cls == CLASS_D and parent_is_abstract:
         is_valid = False
-        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
-            # currently lax about instantiating abstract classes
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL, JSON_SCHEMA]:
+            # currently lax about instantiating abstract classes;
+            # skip JSON Schema (no concept of abstract)
             expected_behavior = ValidationBehavior.INCOMPLETE
     schema = validated_schema(
         test_basic_class_inheritance,
@@ -304,8 +304,9 @@ def test_mixins(framework, description, cls, object, is_valid):
     schema = validated_schema(test_mixins, "default", framework, classes=classes, core_elements=["mixins", "mixin"])
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if cls != CLASS_C:
-        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL]:
-            # currently lax about prohibiting instantiating mixins
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL, JSON_SCHEMA]:
+            # currently lax about prohibiting instantiating mixins;
+            # skip JSON Schema (no concept of mixin)
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
@@ -712,7 +713,7 @@ def test_abstract_classes(
     """
     Tests behavior of abstract classes.
 
-    Currently the only framework to forbid instantiation of abstract classes in JSON-Schema
+    No framework currently forbids instantiation of abstract classes.
 
     :param framework:
     :return:
@@ -760,7 +761,8 @@ def test_abstract_classes(
     if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
     if not valid and target_class in abstract_classes:
-        if framework != JSON_SCHEMA:
+        if framework in [PYDANTIC, PYTHON_DATACLASSES, SQL_DDL_SQLITE, OWL, SHACL, JSON_SCHEMA]:
+            # skip JSON Schema (no concept of abstract)
             expected_behavior = ValidationBehavior.INCOMPLETE
     if framework == PANDERA_POLARS_CLASS:
         expected_behavior = ValidationBehavior.INCOMPLETE
