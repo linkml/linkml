@@ -187,7 +187,6 @@ Generates Java classes from a LinkML schema.
 | Kevin Schaper | @kevinschaper | 17 |
 | Patrick Kalita | @pkalita-lbl | 6 |
 | Ben Dichter | @bendichter | 4 |
-| Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 4 |
 | ialarmedalien | @ialarmedalien | 2 |
 | David Linke | @dalito | 2 |
 | Sujay Patil | @sujaypatil96 | 2 |
@@ -423,7 +422,6 @@ Meta-generator that runs multiple generators at once to produce a full project o
 | Sierra Taylor Moxon | @sierra-moxon | 3 |
 | David Linke | @dalito | 2 |
 | Ben Dichter | @bendichter | 2 |
-| Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 1 |
 
 ### Protobuf Generator (`gen-proto`)
 
@@ -463,7 +461,6 @@ Includes `pydanticgen/` subpackage.
 | ialarmedalien | @ialarmedalien | 23 |
 | Corey Cox | @amc-corey-cox | 14 |
 | Chr1st0p43rR | @Chr1st0p43rR | 14 |
-| Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 12 |
 | Isaac To | @candleindark | 10 |
 | glass-ships | @glass-ships | 9 |
 | Sierra Taylor Moxon | @sierra-moxon | 9 |
@@ -514,7 +511,6 @@ Generates an RDF representation of the schema itself.
 | Chris Mungall | @cmungall | 6 |
 | Patrick Kalita | @pkalita-lbl | 4 |
 | David Linke | @dalito | 2 |
-| Silvano Cirujano Cuesta | @silvano-cirujano-cuesta | 2 |
 | Ben Dichter | @bendichter | 1 |
 | Corey Cox | @amc-corey-cox | 1 |
 | Sierra Taylor Moxon | @sierra-moxon | 1 |
