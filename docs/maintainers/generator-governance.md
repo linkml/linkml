@@ -724,6 +724,7 @@ Generates YARRRML mapping rules for RDF transformation pipelines.
 | Contributor | GitHub | Lines |
 | --- | --- | --- |
 | Volodymyr Lapkin | @kapystya | 177 |
+| Piotr Sowiński | @Ostrzyciel | NA (offered help) |
 | Corey Cox | @amc-corey-cox | 2 |
 
 ### YUML Generator (`gen-yuml`)
