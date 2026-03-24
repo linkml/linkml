@@ -52,7 +52,11 @@ class YarrrmlGenerator(Generator):
         self.schema: SchemaDefinition = self.schemaview.schema
         self.format = format
         self.source: str = self._infer_source_suffix(raw_src) if raw_src else DEFAULT_SOURCE_JSON
-        self.iterator_template: str = it or DEFAULT_ITERATOR
+        if it:
+            self.iterator_template = it
+        else:
+            has_tree_root = any(c.tree_root for c in self.schemaview.all_classes().values())
+            self.iterator_template = "$" if has_tree_root else DEFAULT_ITERATOR
 
     def _infer_source_suffix(self, path: str) -> str:
         p = (path or "").lower()
