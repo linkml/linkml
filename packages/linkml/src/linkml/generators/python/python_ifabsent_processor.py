@@ -14,8 +14,6 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
             # default_ns depends on self.id at runtime, so no static default is possible.
             # The actual initialization is handled in __post_init__ by pythongen's gen_postinit().
             return True, None
-        elif default_value == "bnode":
-            return True, "bnode()"
 
         return False, None
 
