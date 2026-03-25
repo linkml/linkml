@@ -246,7 +246,7 @@ def test_check_unique_keys_disabled():
         unique_keys={"name_key": UniqueKey(unique_key_name="name_key", unique_key_slots=["first_name", "last_name"])},
     )
     b.add_defaults()
-    gen = SQLValidationGenerator(b.schema, check_unique_keys=True)
+    gen = SQLValidationGenerator(b.schema, check_unique_keys=False)
     queries = gen.generate_validation_queries()
     assert "unique_key" not in queries
 
@@ -682,6 +682,7 @@ def test_rule_multiple_postcondition_slots():
 
     assert "age > 150" in sql
     assert "weight > 500" in sql
+    assert " OR " in sql  # at least one OR concatenation
 
 
 def test_check_rules_disabled():
