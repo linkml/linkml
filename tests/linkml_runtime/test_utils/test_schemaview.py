@@ -966,18 +966,10 @@ for value in CREATURE_EXPECTED.values():
         "creature_view",
         pytest.param(
             "creature_view_remote",
-            marks=pytest.mark.xfail(
-                reason="Remote files on main still have old linkml-runtime IDs. "
-                "Remove xfail after PR #3271 is merged to main."
-            ),
         ),
         "creature_view_local",
         pytest.param(
             "creature_view_direct_url",
-            marks=pytest.mark.xfail(
-                reason="Remote files on main still have old linkml-runtime IDs. "
-                "Remove xfail after PR #3271 is merged to main."
-            ),
         ),
     ],
 )

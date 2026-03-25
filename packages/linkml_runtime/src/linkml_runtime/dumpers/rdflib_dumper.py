@@ -116,7 +116,14 @@ class RDFLibDumper(Dumper):
             return self._as_uri(element, id_slot, schemaview)
             # return URIRef(schemaview.expand_curie(str(element)))
         element_type = type(element)
-        cn = element_type.class_name
+        if hasattr(element_type, "class_name"):
+            cn = element_type.class_name
+        else:
+            nm = schemaview.class_name_mappings()
+            cls_name = element_type.__name__
+            if cls_name not in nm:
+                raise ValueError(f"Class {cls_name} not found in schema")
+            cn = nm[cls_name].name
         id_slot = schemaview.get_identifier_slot(cn)
         if id_slot is not None:
             element_id = getattr(element, id_slot.name)
