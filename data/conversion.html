@@ -648,6 +648,29 @@ A validation step is optionally performed in between</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-boolean-output">
+<span class="sig-name descname"><span class="pre">--boolean-output</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;boolean_output&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-boolean-output" title="Link to this definition">¶</a></dt>
+<dd><p>How to write booleans in CSV/TSV output (default: true/false). Overrides the boolean_output schema annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Options<span class="colon">:</span></dt>
+<dd class="field-odd"><p>true | True | TRUE | yes | Yes | YES | on | On | ON | 1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-boolean-truthy">
+<span class="sig-name descname"><span class="pre">--boolean-truthy</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;boolean_truthy&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-boolean-truthy" title="Link to this definition">¶</a></dt>
+<dd><p>Additional truthy values to accept when loading booleans from CSV/TSV (comma-separated, e.g. ‘yes,on,1’). Added to the defaults (T, TRUE) and any boolean_truthy schema annotation.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-convert-boolean-falsy">
+<span class="sig-name descname"><span class="pre">--boolean-falsy</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;boolean_falsy&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-convert-boolean-falsy" title="Link to this definition">¶</a></dt>
+<dd><p>Additional falsy values to accept when loading booleans from CSV/TSV (comma-separated, e.g. ‘no,off,0’). Added to the defaults (F, FALSE) and any boolean_falsy schema annotation.</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-convert-V">
 <span id="cmdoption-linkml-convert-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-convert-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
