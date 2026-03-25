@@ -79,13 +79,23 @@ class SQLValidationGenerator(Generator):
         """
         Get the SQLAlchemy dialect object for the configured dialect.
 
+        Only ``sqlite`` and ``postgresql`` are supported.  Any other value is
+        rejected: a warning is logged and the dialect is reset to ``sqlite``.
+
         :return: SQLAlchemy dialect instance
         """
+        supported = {"postgresql", "sqlite"}
+        if self.dialect not in supported:
+            logger.warning(
+                f"Dialect '{self.dialect}' is not supported. "
+                "Only 'sqlite' and 'postgresql' are supported. Falling back to 'sqlite'."
+            )
+            self.dialect = "sqlite"
         dialect_map = {
             "postgresql": postgresql.dialect(),
             "sqlite": sqlite_dialect.dialect(),
         }
-        return dialect_map.get(self.dialect, sqlite_dialect.dialect())
+        return dialect_map[self.dialect]
 
     def _compile_query(self, query) -> str:
         """
