@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
-from sqlalchemy import and_, column, func, literal, null, or_, select, table, union_all
+from sqlalchemy import and_, cast, column, func, literal, null, or_, select, table, union_all
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
 from sqlalchemy.sql.selectable import TableClause
@@ -263,13 +263,15 @@ class SQLValidationGenerator(Generator):
         :param tbl: Optional SQLAlchemy table object (created if not provided)
         :return: SQLAlchemy select object
         """
+        # for postgres, all values in a column need to be of same type so we need to CAST them to text
+        _invalid_value = cast(invalid_value, Text()) if self.dialect == "postgresql" else invalid_value
 
         query = select(
             literal(class_name, type_=Text()).label("table_name"),
             literal(column_name, type_=Text()).label("column_name"),
             literal(constraint_type, type_=Text()).label("constraint_type"),
             column(identifier_slot_name).label("record_id"),
-            invalid_value.label("invalid_value"),
+            _invalid_value.label("invalid_value"),
         ).select_from(tbl)
 
         if where_condition is not None:
@@ -316,8 +318,6 @@ class SQLValidationGenerator(Generator):
 
         Uses SQLAlchemy's ``regexp_match`` which compiles to the dialect-specific
         syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).
-        NULL values are excluded implicitly: ``NULL REGEXP pattern`` evaluates to NULL,
-        which is falsy in a WHERE clause.
 
         :param col: SQLAlchemy column expression
         :param pattern: Regular expression pattern string
