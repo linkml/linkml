@@ -277,6 +277,56 @@ class SQLValidationGenerator(Generator):
 
         return query
 
+    @staticmethod
+    def _required_condition(col, negate: bool = False):
+        """
+        Build a SQLAlchemy condition for a required (non-null) constraint.
+
+        :param col: SQLAlchemy column expression
+        :param negate: If True, return the violation condition (IS NULL);
+            if False, the conformance condition (IS NOT NULL)
+        :return: SQLAlchemy condition
+        """
+        return col.is_(None) if negate else col.isnot(None)
+
+    @staticmethod
+    def _range_condition(col, min_val, max_val, negate: bool = False):
+        """
+        Build a SQLAlchemy condition for a range (minimum_value/maximum_value) constraint.
+
+        :param col: SQLAlchemy column expression
+        :param min_val: Minimum value (inclusive), or None
+        :param max_val: Maximum value (inclusive), or None
+        :param negate: If True, return the violation condition; if False, the conformance condition
+        :return: SQLAlchemy condition, or None if both bounds are None
+        """
+        conditions = []
+        if min_val is not None:
+            conditions.append(col < _literal_num(min_val) if negate else col >= _literal_num(min_val))
+        if max_val is not None:
+            conditions.append(col > _literal_num(max_val) if negate else col <= _literal_num(max_val))
+        if not conditions:
+            return None
+        return or_(*conditions) if negate else and_(*conditions)
+
+    @staticmethod
+    def _pattern_condition(col, pattern: str, negate: bool = False):
+        """
+        Build a SQLAlchemy condition for a pattern (regex) constraint.
+
+        Uses SQLAlchemy's ``regexp_match`` which compiles to the dialect-specific
+        syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).
+        NULL values are excluded implicitly: ``NULL REGEXP pattern`` evaluates to NULL,
+        which is falsy in a WHERE clause.
+
+        :param col: SQLAlchemy column expression
+        :param pattern: Regular expression pattern string
+        :param negate: If True, return the violation condition; if False, the conformance condition
+        :return: SQLAlchemy condition
+        """
+        match = col.regexp_match(literal(pattern, type_=Text()))
+        return ~match if negate else match
+
     def _generate_required_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find NULL values in required fields.
@@ -295,7 +345,7 @@ class SQLValidationGenerator(Generator):
             identifier_slot_name=identifier_slot_name,
             invalid_value=null(),
             tbl=tbl,
-            where_condition=tbl.c[slot.name].is_(None),
+            where_condition=self._required_condition(tbl.c[slot.name], negate=True),
         )
 
     def _generate_range_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
@@ -307,17 +357,9 @@ class SQLValidationGenerator(Generator):
         :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
-        conditions = []
-
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
-
-        if slot.minimum_value is not None:
-            conditions.append(tbl.c[slot.name] < _literal_num(slot.minimum_value))
-
-        if slot.maximum_value is not None:
-            conditions.append(tbl.c[slot.name] > _literal_num(slot.maximum_value))
-
-        if not conditions:
+        where_condition = self._range_condition(tbl.c[slot.name], slot.minimum_value, slot.maximum_value, negate=True)
+        if where_condition is None:
             return None
 
         return self._build_violation_query(
@@ -327,15 +369,12 @@ class SQLValidationGenerator(Generator):
             identifier_slot_name=identifier_slot_name,
             invalid_value=column(slot.name),
             tbl=tbl,
-            where_condition=or_(*conditions),
+            where_condition=where_condition,
         )
 
     def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find pattern (regex) violations.
-
-        Uses SQLAlchemy's ``regexp_match`` which compiles to the dialect-specific
-        syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
@@ -344,8 +383,6 @@ class SQLValidationGenerator(Generator):
         """
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
-        pattern_check = ~tbl.c[slot.name].regexp_match(literal(slot.pattern, type_=Text()))
-
         return self._build_violation_query(
             class_name=class_name,
             column_name=slot.name,
@@ -353,7 +390,7 @@ class SQLValidationGenerator(Generator):
             identifier_slot_name=identifier_slot_name,
             invalid_value=column(slot.name),
             tbl=tbl,
-            where_condition=and_(tbl.c[slot.name].isnot(None), pattern_check),
+            where_condition=self._pattern_condition(tbl.c[slot.name], slot.pattern, negate=True),
         )
 
     def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
@@ -525,41 +562,28 @@ class SQLValidationGenerator(Generator):
         col = tbl.c[slot_name]
 
         if slot_condition.equals_string is not None:
-            val = slot_condition.equals_string
-            lit = literal(val, type_=Text())
-            if negate:
-                conditions.append(or_(col != lit, col.is_(None)))
-            else:
-                conditions.append(col == lit)
+            lit = literal(slot_condition.equals_string, type_=Text())
+            conditions.append(col != lit if negate else col == lit)
 
         if slot_condition.equals_number is not None:
-            val = slot_condition.equals_number
-            if negate:
-                conditions.append(or_(col != _literal_num(val), col.is_(None)))
-            else:
-                conditions.append(col == _literal_num(val))
+            lit_num = _literal_num(slot_condition.equals_number)
+            conditions.append(col != lit_num if negate else col == lit_num)
 
         if slot_condition.equals_string_in:
-            vals = list(slot_condition.equals_string_in)
-            lit_vals = [literal(v, type_=Text()) for v in vals]
-            if negate:
-                conditions.append(or_(col.notin_(lit_vals), col.is_(None)))
-            else:
-                conditions.append(col.in_(lit_vals))
+            lit_vals = [literal(v, type_=Text()) for v in slot_condition.equals_string_in]
+            conditions.append(col.notin_(lit_vals) if negate else col.in_(lit_vals))
 
-        if slot_condition.minimum_value is not None:
-            val = slot_condition.minimum_value
-            if negate:
-                conditions.append(col < _literal_num(val))
-            else:
-                conditions.append(col >= _literal_num(val))
+        range_cond = self._range_condition(
+            col, slot_condition.minimum_value, slot_condition.maximum_value, negate=negate
+        )
+        if range_cond is not None:
+            conditions.append(range_cond)
 
-        if slot_condition.maximum_value is not None:
-            val = slot_condition.maximum_value
-            if negate:
-                conditions.append(col > _literal_num(val))
-            else:
-                conditions.append(col <= _literal_num(val))
+        if slot_condition.pattern is not None:
+            conditions.append(self._pattern_condition(col, slot_condition.pattern, negate=negate))
+
+        if slot_condition.required:
+            conditions.append(self._required_condition(col, negate=negate))
 
         return conditions
 

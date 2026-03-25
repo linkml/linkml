@@ -28,7 +28,7 @@ UNION ALL
 
 SELECT 'Person' AS table_name, 'primary_email' AS column_name, 'pattern' AS constraint_type, id AS record_id, primary_email AS invalid_value
 FROM "Person"
-WHERE "Person".primary_email IS NOT NULL AND "Person".primary_email NOT REGEXP '^\S+@[\S+\.]+\S+'
+WHERE "Person".primary_email NOT REGEXP '^\S+@[\S+\.]+\S+'
 
 UNION ALL
 
@@ -46,7 +46,7 @@ UNION ALL
 
 SELECT 'Person' AS table_name, 'telephone' AS column_name, 'pattern' AS constraint_type, id AS record_id, telephone AS invalid_value
 FROM "Person"
-WHERE "Person".telephone IS NOT NULL AND "Person".telephone NOT REGEXP '^[\d\(\)\-]+$'
+WHERE "Person".telephone NOT REGEXP '^[\d\(\)\-]+$'
 
 UNION ALL
 
