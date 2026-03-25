@@ -98,7 +98,7 @@ def test_metadata_flag(flag: str) -> None:
 
 def test_head_deprecated():
     'Test that expected deprecation warning appears when using "--head"'
-    runner = CliRunner(mix_stderr=False)
+    runner = CliRunner()
     with pytest.warns() as record:
         result = runner.invoke(cli, ["--head", KITCHEN_SINK_PATH])
     deprecation_shown = False

@@ -224,7 +224,7 @@ def test_end_class_with_subject_object(kitchen_sink_path):
 
 
 @requires_graphviz
-def test_end_class_renders_to_directory(kitchen_sink_path, tmp_path):
+def test_end_schema_renders_to_directory(kitchen_sink_path, tmp_path):
     """Test end_class renders graph files when directory is set"""
     gen = DotGenerator(kitchen_sink_path, format="dot")
     gen.visit_schema(directory=str(tmp_path))
@@ -232,6 +232,7 @@ def test_end_class_renders_to_directory(kitchen_sink_path, tmp_path):
     person_class = gen.schema.classes["Person"]
     gen.visit_class(person_class)
     gen.end_class(person_class)
+    gen.end_schema()
 
     # Check that a file was created (GraphViz may or may not add extension depending on environment)
     files_created = list(tmp_path.iterdir())
@@ -340,9 +341,9 @@ def test_cli_basic(runner, kitchen_sink_path, tmp_path):
 
 
 @requires_graphviz
-def test_cli_with_directory(runner, kitchen_sink_path, tmp_path):
+def test_cli_with_directory(runner, input_path, tmp_path):
     """Test CLI with directory option"""
-    result = runner.invoke(cli, [kitchen_sink_path, "--directory", str(tmp_path), "--format", "dot"])
+    result = runner.invoke(cli, [input_path("organization.yaml"), "--directory", str(tmp_path), "--format", "dot"])
 
     # Should run without error
     assert result.exit_code == 0

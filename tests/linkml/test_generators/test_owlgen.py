@@ -1,7 +1,7 @@
 from enum import Enum
 
 import pytest
-from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
+from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
@@ -386,6 +386,183 @@ def test_permissible_values(
             raise AssertionError("all combinations must be accounted for")
 
 
+# ---------------------------------------------------------------------------
+# Helpers for abstract covering-axiom tests
+# ---------------------------------------------------------------------------
+
+
+def _build_abstract_schema() -> SchemaBuilder:
+    """Return a SchemaBuilder with Animal (abstract) -> Dog, Cat subclasses."""
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+    return sb
+
+
+def _union_members(g: Graph, cls_uri: URIRef) -> set[URIRef] | None:
+    """Return the set of URIRefs in the owl:unionOf covering axiom for *cls_uri*.
+
+    Returns ``None`` when no such axiom exists.
+    """
+    for obj in g.objects(cls_uri, RDFS.subClassOf):
+        if not isinstance(obj, BNode):
+            continue
+        for union_list in g.objects(obj, OWL.unionOf):
+            return set(Collection(g, union_list))
+    return None
+
+
+def _owl_graph(sb: SchemaBuilder, **gen_kwargs) -> Graph:
+    gen = OwlSchemaGenerator(sb.schema, mergeimports=False, metaclasses=False, type_objects=False, **gen_kwargs)
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    return g
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+
+def test_abstract_class_gets_union_of_subclasses_by_default():
+    """Abstract classes emit rdfs:subClassOf owl:unionOf(subclasses) by default."""
+    g = _owl_graph(_build_abstract_schema())
+    members = _union_members(g, EX.Animal)
+    assert members is not None, "No union-of covering axiom found for Animal"
+    assert members == {EX.Dog, EX.Cat}
+
+
+def test_skip_flag_suppresses_union_of_axiom():
+    """Setting skip_abstract_class_as_unionof_subclasses=True omits the covering axiom."""
+    g = _owl_graph(_build_abstract_schema(), skip_abstract_class_as_unionof_subclasses=True)
+    assert _union_members(g, EX.Animal) is None
+
+
+def test_non_abstract_class_does_not_get_union_of_axiom():
+    """Concrete (non-abstract) classes never receive a union-of covering axiom."""
+    sb = SchemaBuilder()
+    sb.add_class("Vehicle")
+    sb.add_class("Car", is_a="Vehicle")
+    sb.add_class("Bike", is_a="Vehicle")
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert _union_members(g, EX.Vehicle) is None
+
+
+def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
+    """An abstract class with no direct subclasses emits no union-of axiom."""
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert _union_members(g, EX.Orphan) is None
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_union_of_axiom_only_covers_direct_children(skip: bool):
+    """Union-of axiom lists only direct is_a children, not grandchildren.
+
+    Schema: Animal (abstract) <- Dog <- Poodle
+            Animal (abstract) <- Cat
+    Expected union: {Dog, Cat} — Poodle is NOT included.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Poodle", is_a="Dog")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+    g = _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=skip)
+    if skip:
+        assert _union_members(g, EX.Animal) is None
+    else:
+        members = _union_members(g, EX.Animal)
+        assert members == {EX.Dog, EX.Cat}, f"Expected {{Dog, Cat}}, got {members}"
+
+
+def _restriction_values(g: Graph, predicate: URIRef) -> list:
+    """Collect the objects of *predicate* across all OWL restriction nodes in *g*."""
+    results = []
+    for r in g.subjects(RDF.type, OWL.Restriction):
+        for obj in g.objects(r, predicate):
+            results.append(obj)
+    return results
+
+
+@pytest.mark.parametrize("skip_vacuous_min_zero_cardinality_axioms", [True, False])
+def test_skip_vacuous_min_zero_cardinality_axioms(skip_vacuous_min_zero_cardinality_axioms: bool) -> None:
+    """Test that owl:minCardinality 0 axioms are suppressed when the flag is set.
+
+    Non-required slots produce a minCardinality 0 restriction by default (vacuous).
+    Required slots still produce minCardinality 1, which must never be suppressed.
+    """
+    sb = SchemaBuilder()
+    sb.add_class(
+        "MyClass",
+        slots=[
+            SlotDefinition("optional_slot", range="string"),
+            SlotDefinition("required_slot", range="string", required=True),
+        ],
+    )
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        skip_vacuous_min_zero_cardinality_axioms=skip_vacuous_min_zero_cardinality_axioms,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    min_card_values = _restriction_values(g, OWL.minCardinality)
+    if skip_vacuous_min_zero_cardinality_axioms:
+        assert Literal(0) not in min_card_values, "minCardinality 0 should be suppressed"
+    else:
+        assert Literal(0) in min_card_values, "minCardinality 0 should be present"
+    # required + non-multivalued → min=1, max=1 (consolidation is off by default)
+    assert Literal(1) in min_card_values, "minCardinality 1 for required slot must not be suppressed"
+
+
+@pytest.mark.parametrize("skip_vacuous_local_range_axioms", [True, False])
+def test_skip_vacuous_local_range_axioms(skip_vacuous_local_range_axioms: bool) -> None:
+    """Test that vacuous owl:allValuesFrom restrictions are suppressed when the flag is set.
+
+    A global slot receives a global rdfs:range axiom on the OWL property; an allValuesFrom
+    with the same filler is therefore entailed (vacuous) and can be dropped.  An attribute
+    slot (defined in class.attributes) has *no* global rdfs:range, so its allValuesFrom is
+    the only range declaration and must never be suppressed.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Target")
+    sb.add_class("AttributeTarget")
+    # Global slot — will get rdfs:range Target at property level; local allValuesFrom is vacuous.
+    sb.add_slot(SlotDefinition("global_slot", range="Target"))
+    sb.add_class("MyClass", slots=["global_slot"])
+    # Attribute slot — stored in class.attributes, no global rdfs:range; allValuesFrom is essential.
+    sb.schema.classes["MyClass"].attributes["attr_slot"] = SlotDefinition("attr_slot", range="AttributeTarget")
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        skip_vacuous_local_range_axioms=skip_vacuous_local_range_axioms,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    avf_values = _restriction_values(g, OWL.allValuesFrom)
+    target_uri = EX.Target
+    attr_target_uri = EX.AttributeTarget
+    if skip_vacuous_local_range_axioms:
+        assert target_uri not in avf_values, "vacuous allValuesFrom (global slot) should be suppressed"
+    else:
+        assert target_uri in avf_values, "allValuesFrom for global slot should be present"
+    # Attribute slots carry the only range info — must never be suppressed.
+    assert attr_target_uri in avf_values, "allValuesFrom for attribute slot must not be suppressed"
+
+
 @pytest.mark.parametrize("enum_inherits_as_subclass_of", [True, False])
 def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> None:
     """Test that enum inherits relationships are translated to rdfs:subClassOf when the flag is set.
@@ -412,6 +589,140 @@ def test_enum_inherits_as_subclass_of(enum_inherits_as_subclass_of: bool) -> Non
         assert subclass_axiom in g
     else:
         assert subclass_axiom not in g
+
+
+@pytest.mark.parametrize(
+    "slot_kwargs,consolidate,expected_exact,expected_min,expected_max",
+    [
+        pytest.param(
+            {"required": True},
+            True,
+            1,
+            None,
+            None,
+            id="required-non-multivalued-collapses-to-cardinality-1",
+        ),
+        pytest.param(
+            {"required": True},
+            False,
+            None,
+            1,
+            1,
+            id="required-non-multivalued-no-consolidation",
+        ),
+        pytest.param(
+            {"required": True, "multivalued": True},
+            False,
+            None,
+            1,
+            None,
+            id="required-multivalued-min-1-no-max",
+        ),
+        pytest.param(
+            {},
+            False,
+            None,
+            0,
+            1,
+            id="optional-non-multivalued-min-0-max-1",
+        ),
+        pytest.param(
+            {"multivalued": True},
+            False,
+            None,
+            0,
+            None,
+            id="optional-multivalued-min-0-no-max",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 2, "multivalued": True},
+            False,
+            None,
+            2,
+            None,
+            id="explicit-minimum-cardinality",
+        ),
+        pytest.param(
+            {"maximum_cardinality": 5, "multivalued": True},
+            False,
+            None,
+            0,
+            5,
+            id="explicit-maximum-cardinality",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 2, "maximum_cardinality": 5, "multivalued": True},
+            False,
+            None,
+            2,
+            5,
+            id="explicit-min-max-different",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 3, "maximum_cardinality": 3, "multivalued": True},
+            True,
+            3,
+            None,
+            None,
+            id="explicit-min-equals-max-collapses-to-cardinality",
+        ),
+        pytest.param(
+            {"minimum_cardinality": 3, "maximum_cardinality": 3, "multivalued": True},
+            False,
+            None,
+            3,
+            3,
+            id="explicit-min-equals-max-no-consolidation",
+        ),
+    ],
+)
+def test_slot_cardinality_axioms(
+    slot_kwargs: dict,
+    consolidate: bool,
+    expected_exact: int | None,
+    expected_min: int | None,
+    expected_max: int | None,
+) -> None:
+    """Test that OWL cardinality axioms are generated correctly from slot properties.
+
+    Covers minimum_cardinality, maximum_cardinality, required, and multivalued,
+    including the optimisation where min==max is collapsed to a single
+    owl:cardinality restriction instead of separate min/max restrictions.
+    """
+    sb = SchemaBuilder()
+    sb.add_class(
+        "MyClass",
+        slots=[SlotDefinition("my_slot", range="string", **slot_kwargs)],
+    )
+    sb.add_defaults()
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        consolidate_cardinality_axioms=consolidate,
+    )
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+
+    exact_values = _restriction_values(g, OWL.cardinality)
+    min_values = _restriction_values(g, OWL.minCardinality)
+    max_values = _restriction_values(g, OWL.maxCardinality)
+
+    if expected_exact is not None:
+        assert Literal(expected_exact) in exact_values
+        assert not min_values, f"expected no owl:minCardinality when min==max, got {min_values}"
+        assert not max_values, f"expected no owl:maxCardinality when min==max, got {max_values}"
+    else:
+        assert not exact_values, f"expected no owl:cardinality, got {exact_values}"
+        if expected_min is not None:
+            assert Literal(expected_min) in min_values
+        else:
+            assert not min_values, f"expected no owl:minCardinality, got {min_values}"
+        if expected_max is not None:
+            assert Literal(expected_max) in max_values
+        else:
+            assert not max_values, f"expected no owl:maxCardinality, got {max_values}"
 
 
 @pytest.mark.parametrize(
