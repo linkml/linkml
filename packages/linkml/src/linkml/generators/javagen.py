@@ -405,6 +405,7 @@ class JavaGenerator(OOCodeGenerator):
 @click.option("--extra-template", multiple=True, help="Name of an additional, arbitrary template to use")
 @click.option("--visitor", multiple=True, help="Generate a visitor interface for the specified class")
 @click.option("--true-enums/--no-true-enums", default=False, help="Treat enums as distinct types rather than strings")
+@click.option("--use-aliases/--no-use-aliases", default=False, help="Use aliases when available to name fields")
 @click.version_option(__version__, "-V", "--version")
 @click.command(name="java")
 def cli(
@@ -421,6 +422,7 @@ def cli(
     classvars=True,
     slots=True,
     true_enums=False,
+    use_aliases=False,
     extra_template=[],
     visitor=[],
     **args,
@@ -451,6 +453,7 @@ def cli(
         gen_classvars=classvars,
         gen_slots=slots,
         true_enums=true_enums,
+        use_aliases=use_aliases,
         **args,
     ).serialize(
         output_directory, template_variant=template_variant, extra_templates=extra_template, visitors=visitor, **args
