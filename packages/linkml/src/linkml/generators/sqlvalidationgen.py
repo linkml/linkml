@@ -422,6 +422,39 @@ class SQLValidationGenerator(Generator):
             where_condition=and_(tbl.c[slot.name].isnot(None), tbl.c[slot.name].notin_(permissible_values)),
         )
 
+    def _concat_columns(self, col_names: list[str]):
+        """Build a pipe-separated SQLAlchemy concatenation expression for the given column names
+        and casts these columns as TEXT.
+        This is necessary if several postconditions apply to different data types.
+
+        Example:
+            precondition  -> human has drivers license
+            postcondition -> 1. human age > 18, 2. human is "adult"
+
+            Data that does not conform then returns the following `invalid_value`:
+            16 | adult
+            22 | teenager
+
+        Here we need both the number and the adult/teenager status to be of type TEXT
+        to concat them.
+
+        :param col_names: list of column names to concatenate
+        :return: SQLAlchemy expression
+        """
+
+        if len(col_names) == 1:
+            return column(col_names[0])
+        concat_parts = []
+        # Build concatenation: CAST(col1 AS TEXT) || '|' || CAST(col2 AS TEXT) || ...
+        for i, col_name in enumerate(col_names):
+            concat_parts.append(func.cast(column(col_name), Text))
+            if i < len(col_names) - 1:
+                concat_parts.append(literal("|", type_=Text()))
+        expr = concat_parts[0]
+        for part in concat_parts[1:]:
+            expr = expr + part
+        return expr
+
     def _generate_unique_key_violations(self, class_name: str, slot_names: set[str], uk, identifier_slot_name: str):
         """
         Generate query to find unique_keys violations (multi-column uniqueness).
@@ -447,22 +480,7 @@ class SQLValidationGenerator(Generator):
         # Main table with identifier and all columns
         tbl = table(class_name, column(identifier_slot_name), *[column(col) for col in columns])
 
-        # Build concatenated value expression (pipe-separated)
-        # Use CAST to ensure all values are strings before concatenation
-        if len(columns) == 1:
-            concat_expr = func.cast(column(columns[0]), Text)
-        else:
-            # Build concatenation: CAST(col1 AS TEXT) || '|' || CAST(col2 AS TEXT) || ...
-            concat_parts = []
-            for i, col in enumerate(columns):
-                concat_parts.append(func.cast(column(col), Text))
-                if i < len(columns) - 1:
-                    concat_parts.append(literal("|", type_=Text()))
-
-            # Chain concatenation operations
-            concat_expr = concat_parts[0]
-            for part in concat_parts[1:]:
-                concat_expr = concat_expr.op("||")(part)
+        concat_expr = self._concat_columns(columns)
 
         # Subquery to find duplicate combinations
         subquery_tbl = table(class_name, *[column(col) for col in columns])
@@ -630,7 +648,7 @@ class SQLValidationGenerator(Generator):
             column_name=column_name_label,
             constraint_type="rule",
             identifier_slot_name=identifier_slot_name,
-            invalid_value=column(postcondition_slot_names[0]),
+            invalid_value=self._concat_columns(postcondition_slot_names),
             tbl=tbl,
             where_condition=where_clause,
         )
