@@ -710,9 +710,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">handle_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
-            <span class="k">return</span>
-
         <span class="n">subschema_type</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
         <span class="n">additional_properties</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
