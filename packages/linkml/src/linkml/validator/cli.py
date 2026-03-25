@@ -45,11 +45,16 @@ def _resolve_plugins(plugin_config: dict[str, dict[str, Any]]) -> list[Validatio
     return plugins
 
 
-def _resolve_loaders(loader_config: Iterable[str | dict[str, dict[str, str]]]) -> list[Loader]:
+def _resolve_loaders(
+    loader_config: Iterable[str | dict[str, dict[str, str]]],
+    *,
+    schema_path: str | Path | None = None,
+    target_class: str | None = None,
+) -> list[Loader]:
     loaders = []
     for entry in loader_config:
         if isinstance(entry, str):
-            loader = default_loader_for_file(entry)
+            loader = default_loader_for_file(entry, schema_path=schema_path, target_class=target_class)
         elif isinstance(entry, dict):
             if len(entry) > 1:
                 raise click.ClickException(f"Invalid config. Dictionary entries should only have one key: {entry}")
@@ -91,6 +96,15 @@ def _resolve_loaders(loader_config: Iterable[str | dict[str, dict[str, str]]]) -
     show_default=True,
     help="Include additional context when reporting of validation errors.",
 )
+@click.option(
+    "--allow-null-for-optional-enums",
+    is_flag=True,
+    default=False,
+    help="Downgrade enum validation errors to warnings when the value is "
+    "null/empty and the slot is not required. Prevents 'None is not "
+    "one of [...]' and \"'' is not one of [...]\" errors for optional "
+    "enum slots.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -100,6 +114,7 @@ def cli(
     data_sources: tuple[str],
     exit_on_first_failure: bool,
     include_context: bool,
+    allow_null_for_optional_enums: bool,
 ):
     """
     Validate data according to a LinkML Schema
@@ -121,10 +136,17 @@ def cli(
         )
     config = Config(**config_args)
 
+    # Pass allow_null_for_optional_enums through to JsonschemaValidationPlugin
+    if allow_null_for_optional_enums and config.plugins and "JsonschemaValidationPlugin" in config.plugins:
+        if config.plugins["JsonschemaValidationPlugin"] is None:
+            config.plugins["JsonschemaValidationPlugin"] = {}
+        config.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
+
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
-    loaders = _resolve_loaders(config.data_sources)
+    loaders = _resolve_loaders(config.data_sources, schema_path=config.schema_path, target_class=config.target_class)
     validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
     severity_counter = Counter()
+
     for loader in loaders:
         for result in validator.iter_results_from_source(loader, config.target_class):
             severity_counter[result.severity] += 1

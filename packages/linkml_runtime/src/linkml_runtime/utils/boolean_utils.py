@@ -12,7 +12,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
 
-# Default truthy/falsy values following pandas/R conventions (case-insensitive).
+# Default truthy/falsy values inspired by pandas/R/Arrow conventions (case-insensitive).
 DEFAULT_TRUTHY_VALUES = frozenset({"true", "t"})
 DEFAULT_FALSY_VALUES = frozenset({"false", "f"})
 

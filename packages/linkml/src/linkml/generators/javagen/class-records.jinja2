@@ -8,11 +8,13 @@ package {{ doc.package }};
 {% if f.range.startswith('BigDecimal') %}
 import java.math.BigDecimal;{% endif -%}
 {% if f.range.startswith('Instant') %}
-import java.time.Instant;{% endif -%}
+import java.time.LocalTime;{% endif -%}
 {% if f.range.startswith('LocalDate') %}
 import java.time.LocalDate;{% endif -%}
 {% if f.range.startswith('ZonedDateTime') %}
 import java.time.ZonedDateTime;{% endif -%}
+{% if f.range.startswith('URI') %}
+import java.net.URI;{% endif -%}
 {% if f.range.startswith('List') %}
 import java.util.List;{% endif -%}
 {%- endfor %}
