@@ -355,26 +355,31 @@ class JavaGenerator(OOCodeGenerator):
         This is to allow templates to generate their own write accessors,
         should they prefer not to use Lombok.
         """
+        name = self.get_slot_actual_name(slot)
         if slot.range == "boolean" and slot.required:
             # This replicates the logic used by Lombok for boolean-typed fields:
             # - foo -> setFoo() (general case)
             # - isFoo -> setFoo() (special case to avoid setIsFoo())
-            if len(slot.name) > 2 and slot.name[:2] == "is" and not slot.name[2].islower():
-                return "set" + camelcase(slot.name[2:])
-        return "set" + camelcase(slot.name)
+            if len(name) > 2 and name[:2] == "is" and not name[2].islower():
+                return "set" + camelcase(name[2:])
+        return "set" + camelcase(name)
 
     def get_read_accessor_name(self, slot: SlotDefinition) -> str:
         """Gets the name of the read accessor for the given slot."""
+        name = self.get_slot_actual_name(slot)
         if slot.range == "boolean" and slot.required:
             # This replicates the logic used by Lombok for boolean-typed fields
             # - foo -> isFoo() (general case)
             # - isFoo -> isFoo() (special case to avoid isIsFoo())
-            if len(slot.name) > 2 and slot.name[:2] == "is" and not slot.name[2].islower():
-                return self.get_slot_name(slot.name)
+            if len(name) > 2 and name[:2] == "is" and not name[2].islower():
+                return self.get_slot_name(name)
             else:
-                return "is" + camelcase(slot.name)
+                return "is" + camelcase(name)
         else:
-            return "get" + camelcase(slot.name)
+            return "get" + camelcase(name)
+
+    def get_slot_actual_name(self, slot: SlotDefinition) -> str:
+        return slot.alias if slot.alias and self.use_aliases else slot.name
 
 
 @shared_arguments(JavaGenerator)
