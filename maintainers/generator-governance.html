@@ -1,0 +1,2833 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="prev" title="Code of Conduct" href="code-of-conduct.html">
+        <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
+
+    <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
+        <title>Generator and Validator Governance - linkml documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/common.css?v=95000900" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/notebooks.css?v=1ce917dd" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">linkml  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="https://linkml.io/uploads/linkml-logo_color.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">linkml  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">LinkML at a glance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/install.html">Quick Install Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../intro/tutorial.html">Tutorial</a><input aria-label="Toggle navigation of Tutorial" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial01.html">Part 1: Creating your first LinkML schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial02.html">Part 2: Adding a container object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial03.html">Part 3: Adding constraints and performing validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial04.html">Part 4: Working with RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial05.html">Part 5: Using Python dataclasses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial06.html">Part 6: Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial07.html">Part 7: Slots and inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial08.html">Part 8: Generating Projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../intro/tutorial09.html">Part 9: Working with SQL databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../schemas/index.html">LinkML Schemas</a><input aria-label="Toggle navigation of LinkML Schemas" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/models.html">Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/metadata.html">Schema Element Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/inheritance.html">Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/slots.html">Slots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/arrays.html">Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/uris-and-mappings.html">URIs and Mappings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/enums.html">Semantic Enumerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/inlining.html">Inlining objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/constraints.html">Adding constraints and rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/type-designators.html">Type designators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/subsets.html">Subsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/imports.html">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/advanced.html">Advanced features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/generators.html">Mapping schemas to other frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/linter.html">Schema Linter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/derived-models.html">Derived models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/annotations.html">Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/metamodel.html">The metamodel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../schemas/expression-language.html">Expression Language</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../data/index.html">Working with Data</a><input aria-label="Toggle navigation of Working with Data" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../data/conversion.html">Converting between different representations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/validating-data.html">Data Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/rdf.html">Working with RDF and LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/csvs.html">CSVs and Tabular Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data/sql-databases.html">Working with data in SQL Databases</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../generators/index.html">Generators</a><input aria-label="Toggle navigation of Generators" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../generators/json-schema.html">JSON Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sparql.html">SPARQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/shex.html">ShEx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/shacl.html">SHACL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/owl.html">OWL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yarrrml.html">YARRRML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/docgen.html">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/erdiagram.html">ER Diagrams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/plantumlgen.html">PlantUML Diagram Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/project-generator.html">Project Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/python.html">Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/pydantic.html">Pydantic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/java.html">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/typescript.html">Typescript</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/rust.html">Rust</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqltable.html">SQL DDL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqlalchemy.html">SQL Alchemy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sqlvalidation.html">SQL Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/linkml.html">LinkML Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/prefixmap.html">Prefix Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/sssom.html">SSSOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/terminusdb.html">TerminusDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/excel.html">Excel Spreadsheet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/csv.html">CSV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/yaml.html">Yaml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/pandera.html">Pandera</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../generators/common/index.html">Common</a><input aria-label="Toggle navigation of Common" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/build.html">Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/lifecycle.html">Lifecycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../generators/common/type_designators.html">Type Designators</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/index.html">How-to Guides</a><input aria-label="Toggle navigation of How-to Guides" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/linkml-project-copier.html">LinkML Project Copier Template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/collaborative-development.html">How to run a collaborative data modeling project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/recognize-structural-forms.html">How to recognize and work with different structural forms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/yq-for-schemas.html">Using yq for querying and manipulating schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/using-jsonld.html">Using JSON-LD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/model-measurements.html">How to model quantities and measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/port-linkml.html">Porting LinkML tools to other programming languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/multidimensional-arrays.html">Multidimensional Arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/model-property-graphs.html">How to make a property graph schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/generate-ai-prompts.html">How to Generate AI prompts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/deprecating-elements.html">Deprecating elements while maintaining PURLs and other URIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/ontologies-as-values.html">Using ontology terms as values in data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../howtos/skip-logic.html">How to implement skip logic in LinkML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples of use</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ecosystem.html">The LinkML Ecosystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../specifications/linkml-spec.html">LinkML specification</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get-involved/index.html">Get Involved</a><input aria-label="Toggle navigation of Get Involved" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../get-involved/Community-Meetings.html">Community Meetings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get-involved/workshops-and-presentations.html">Workshops and Presentations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../get-involved/office-hours.html">Monthly LinkML Office Hours</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faq/index.html">FAQ</a><input aria-label="Toggle navigation of FAQ" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq/general.html">FAQ: General</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/why-linkml.html">FAQ: Why LinkML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/modeling.html">FAQ: Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tools.html">FAQ: Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/python.html">FAQ: Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/getting-help.html">FAQ: Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/contributing.html">FAQ: Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq/tricky_choices.html">FAQ: Tricky Choices</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Schema Developers Guide:</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../cli/index.html">CLI</a><input aria-label="Toggle navigation of CLI" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../cli/linkml.html"><code class="docutils literal notranslate"><span class="pre">linkml</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/generate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">generate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/lint.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/validate.html"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cli/entrypoints.html">Entrypoints</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../developers/index.html">Schema Developers Guide</a><input aria-label="Toggle navigation of Schema Developers Guide" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developers/notebooks.html">Jupyter Notebooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manipulating-schemas.html">Manipulating Schemas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/manage-releases.html">How to Manage Releases of your LinkML Schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemaview.html">SchemaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/schemabuilder.html">SchemaBuilder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/loaders-and-dumpers.html">Data Conversion: Loaders and Dumpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/inference.html">Inferring Missing Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/using-sql-dbs.html">Using SQL Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/sqlstore.html">SQLStore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers/tool-developer-guide.html">Tool Implementer Guide</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/index.html">Code</a><input aria-label="Toggle navigation of Code" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../code/metamodel.html">MetaModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/utils.html">Utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/validator.html">Validator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../code/deprecation.html">Deprecation Log</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Maintainers Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Maintainers Guide</a><input aria-label="Toggle navigation of Maintainers Guide" checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="contributing.html">Contribution Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="organization.html">GitHub Organization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deprecation.html">Deprecations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="code-of-conduct.html">Code of Conduct</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Generator and Validator Governance</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/maintainers/generator-governance.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="generator-and-validator-governance">
+<h1>Generator and Validator Governance<a class="headerlink" href="#generator-and-validator-governance" title="Link to this heading">¶</a></h1>
+<section id="why-generator-level-governance-matters">
+<h2>Why generator-level governance matters<a class="headerlink" href="#why-generator-level-governance-matters" title="Link to this heading">¶</a></h2>
+<p>LinkML supports a large and growing number of output formats, each maintained by
+different contributors with varying levels of activity. Without clear ownership
+and decision-making processes at the generator level, several problems arise:</p>
+<ul class="simple">
+<li><p><strong>Unreviewed changes</strong> can break downstream consumers who depend on a specific
+output format. A change to the JSON Schema generator, for example, can silently
+invalidate validation pipelines across many projects.</p></li>
+<li><p><strong>Stalled maintenance</strong> becomes invisible. When the sole contributor to a
+generator moves on, there is no clear path for someone else to pick up
+responsibility, and issues accumulate without triage.</p></li>
+<li><p><strong>Inconsistent quality</strong> across generators. Some have extensive test coverage
+and active reviewers; others have little of either. Users have no way to gauge
+the maturity or reliability of a given output format.</p></li>
+<li><p><strong>Decision deadlocks</strong> around breaking changes. Without a designated maintainer
+who understands the design intent and user base, even straightforward
+improvements can stall in review.</p></li>
+</ul>
+<p>Establishing per-generator maintainers, documenting contributor history, and
+linking to the relevant issue trackers makes it possible to route questions,
+reviews, and decisions to the right people, and to identify generators that need
+new maintainers or should be deprecated.</p>
+<p>Current line attribution per generator/validator based on <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">blame</span></code>, run on the 4th February 2026 (Lines reflect the current codebase, not historical contributions). These serve as <em>candidates</em> to form generator-level governance teams, and do not constitute the final structure. The idea is to (1) define the teams collaboratively (and organically as issues arise) and (2) enshrine editorial policies in CODEOWNERS.</p>
+</section>
+<section id="generators">
+<h2>Generators<a class="headerlink" href="#generators" title="Link to this heading">¶</a></h2>
+<section id="csv-generator-gen-csv">
+<h3>CSV Generator (<code class="docutils literal notranslate"><span class="pre">gen-csv</span></code>)<a class="headerlink" href="#csv-generator-gen-csv" title="Link to this heading">¶</a></h3>
+<p>Generates CSV summaries of schema classes and slots.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>24</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>19</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dbml-generator-gen-dbml">
+<h3>DBML Generator (<code class="docutils literal notranslate"><span class="pre">gen-dbml</span></code>)<a class="headerlink" href="#dbml-generator-gen-dbml" title="Link to this heading">¶</a></h3>
+<p>Converts a LinkML schema into DBML (Database Markup Language) for database diagram tools.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>170</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="doc-generator-gen-doc">
+<h3>Doc Generator (<code class="docutils literal notranslate"><span class="pre">gen-doc</span></code>)<a class="headerlink" href="#doc-generator-gen-doc" title="Link to this heading">¶</a></h3>
+<p>Generates Markdown documentation pages from a schema, with embedded Mermaid class diagrams.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-doc%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-doc</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>484</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>308</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>103</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>77</p></td>
+</tr>
+<tr class="row-even"><td><p>Vincent Kelleher</p></td>
+<td><p>&#64;VincentKelworthy</p></td>
+<td><p>59</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chien-Chun Ni</p></td>
+<td><p>&#64;saibalmars</p></td>
+<td><p>55</p></td>
+</tr>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>23</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>23</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>22</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-even"><td><p>Silvano Cirujano Cuesta</p></td>
+<td><p>&#64;silvano-cirujano-cuesta</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>15</p></td>
+</tr>
+<tr class="row-even"><td><p>timothy-trinidad-ps</p></td>
+<td><p>&#64;timothy-trinidad-ps</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Damien Goutte-Gattat</p></td>
+<td><p>&#64;gouttegd</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Yaroslav Halchenko</p></td>
+<td><p>&#64;yarikoptic</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="dot-graphviz-generator-gen-graphviz">
+<h3>Dot/Graphviz Generator (<code class="docutils literal notranslate"><span class="pre">gen-graphviz</span></code>)<a class="headerlink" href="#dot-graphviz-generator-gen-graphviz" title="Link to this heading">¶</a></h3>
+<p>Generates Graphviz dot files for schema visualization.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>50</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>19</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="er-diagram-generator-gen-erdiagram">
+<h3>ER Diagram Generator (<code class="docutils literal notranslate"><span class="pre">gen-erdiagram</span></code>)<a class="headerlink" href="#er-diagram-generator-gen-erdiagram" title="Link to this heading">¶</a></h3>
+<p>Serializes schemas as Entity-Relationship diagrams in Mermaid syntax.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>235</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>234</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>48</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chien-Chun Ni</p></td>
+<td><p>&#64;saibalmars</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>Nolan Nichols</p></td>
+<td><p>&#64;nicholsn</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Yaroslav Halchenko</p></td>
+<td><p>&#64;yarikoptic</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="excel-generator-gen-excel">
+<h3>Excel Generator (<code class="docutils literal notranslate"><span class="pre">gen-excel</span></code>)<a class="headerlink" href="#excel-generator-gen-excel" title="Link to this heading">¶</a></h3>
+<p>Generates Excel workbooks with sheets per class, columns per slot, and dropdown validation for enums.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-excel%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-excel</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>167</p></td>
+</tr>
+<tr class="row-odd"><td><p>Nico Matentzoglu</p></td>
+<td><p>&#64;matentzn</p></td>
+<td><p>34</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="golang-generator-gen-golang">
+<h3>Golang Generator (<code class="docutils literal notranslate"><span class="pre">gen-golang</span></code>)<a class="headerlink" href="#golang-generator-gen-golang" title="Link to this heading">¶</a></h3>
+<p>Generates Go structs from a LinkML schema.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jeffrey N. Johnson</p></td>
+<td><p>&#64;jeff-cohere</p></td>
+<td><p>188</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="golr-schema-generator-gen-golr-views">
+<h3>Golr Schema Generator (<code class="docutils literal notranslate"><span class="pre">gen-golr-views</span></code>)<a class="headerlink" href="#golr-schema-generator-gen-golr-views" title="Link to this heading">¶</a></h3>
+<p>Generates GOlr (Gene Ontology Lucene/Solr) YAML schema definitions.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="graphql-generator-gen-graphql">
+<h3>GraphQL Generator (<code class="docutils literal notranslate"><span class="pre">gen-graphql</span></code>)<a class="headerlink" href="#graphql-generator-gen-graphql" title="Link to this heading">¶</a></h3>
+<p>Generates a GraphQL schema from a LinkML schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-graphql%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-graphql</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Silvano Cirujano Cuesta</p></td>
+<td><p>&#64;silvano-cirujano-cuesta</p></td>
+<td><p>64</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="java-generator-gen-java">
+<h3>Java Generator (<code class="docutils literal notranslate"><span class="pre">gen-java</span></code>)<a class="headerlink" href="#java-generator-gen-java" title="Link to this heading">¶</a></h3>
+<p>Generates Java classes from a LinkML schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-java%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-java</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Damien Goutte-Gattat</p></td>
+<td><p>&#64;gouttegd</p></td>
+<td><p>86</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>51</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>46</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jules Jacobsen</p></td>
+<td><p>&#64;julesjacobsen</p></td>
+<td><p>28</p></td>
+</tr>
+<tr class="row-even"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="json-ld-context-generator-gen-jsonld-context">
+<h3>JSON-LD Context Generator (<code class="docutils literal notranslate"><span class="pre">gen-jsonld-context</span></code>)<a class="headerlink" href="#json-ld-context-generator-gen-jsonld-context" title="Link to this heading">¶</a></h3>
+<p>Generates JSON-LD context files for RDF serialization of schema-conformant data.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-jsonld%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-jsonld</span></code></a></p>
+<p>See <a class="reference internal" href="../generators/jsonld.html#module-linkml.generators.jsonldgen" title="linkml.generators.jsonldgen"><span class="xref myst py py-mod">JSON-LD Generator</span></a> for candidate reviewers.</p>
+<p><a id="jsonldgen"></a></p>
+</section>
+<section id="json-ld-generator-gen-jsonld">
+<h3>JSON-LD Generator (<code class="docutils literal notranslate"><span class="pre">gen-jsonld</span></code>)<a class="headerlink" href="#json-ld-generator-gen-jsonld" title="Link to this heading">¶</a></h3>
+<p>Generates a JSON-LD representation of the schema itself.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-jsonld%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-jsonld</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>55</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>34</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>26</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>23</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="json-schema-generator-gen-json-schema">
+<h3>JSON Schema Generator (<code class="docutils literal notranslate"><span class="pre">gen-json-schema</span></code>)<a class="headerlink" href="#json-schema-generator-gen-json-schema" title="Link to this heading">¶</a></h3>
+<p>Generates JSON Schema for validating data that conforms to a LinkML schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-jsonschema%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-jsonschema</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>405</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>137</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>79</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>33</p></td>
+</tr>
+<tr class="row-even"><td><p>Chien-Chun Ni</p></td>
+<td><p>&#64;saibalmars</p></td>
+<td><p>24</p></td>
+</tr>
+<tr class="row-odd"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>22</p></td>
+</tr>
+<tr class="row-even"><td><p>Paul Millar</p></td>
+<td><p>&#64;paulmillar</p></td>
+<td><p>19</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td><p>Gaurav Vaidya</p></td>
+<td><p>&#64;gaurav</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-odd"><td><p>madanucd</p></td>
+<td><p>&#64;madanucd</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hugh Emerson</p></td>
+<td><p>&#64;hughemerson</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Leon Kuchenbecker</p></td>
+<td><p>&#64;lkuchenb</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Nico Matentzoglu</p></td>
+<td><p>&#64;matentzn</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Silvano Cirujano Cuesta</p></td>
+<td><p>&#64;silvano-cirujano-cuesta</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bill Duncan</p></td>
+<td><p></p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="linkml-generator-gen-linkml">
+<h3>LinkML Generator (<code class="docutils literal notranslate"><span class="pre">gen-linkml</span></code>)<a class="headerlink" href="#linkml-generator-gen-linkml" title="Link to this heading">¶</a></h3>
+<p>Re-serializes a LinkML schema in normalized YAML form (useful for schema transformations).</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-linkml%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-linkml</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>109</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>18</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Yaroslav Halchenko</p></td>
+<td><p>&#64;yarikoptic</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="markdown-data-dictionary-generator-gen-markdown-datadict">
+<h3>Markdown Data Dictionary Generator (<code class="docutils literal notranslate"><span class="pre">gen-markdown-datadict</span></code>)<a class="headerlink" href="#markdown-data-dictionary-generator-gen-markdown-datadict" title="Link to this heading">¶</a></h3>
+<p>Generates a simple Markdown data dictionary table from a schema.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>1598</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="markdown-generator-gen-markdown">
+<h3>Markdown Generator (<code class="docutils literal notranslate"><span class="pre">gen-markdown</span></code>)<a class="headerlink" href="#markdown-generator-gen-markdown" title="Link to this heading">¶</a></h3>
+<p>Generates Markdown documentation for a schema.</p>
+<p>Deprecated, use <code class="docutils literal notranslate"><span class="pre">gen-doc</span></code>.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>343</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>192</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>35</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>28</p></td>
+</tr>
+<tr class="row-even"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>25</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-even"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>joeflack4</p></td>
+<td><p>&#64;joeflack4</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="mermaid-class-diagram-generator-gen-mermaid-class-diagram">
+<h3>Mermaid Class Diagram Generator (<code class="docutils literal notranslate"><span class="pre">gen-mermaid-class-diagram</span></code>)<a class="headerlink" href="#mermaid-class-diagram-generator-gen-mermaid-class-diagram" title="Link to this heading">¶</a></h3>
+<p>Generates standalone Mermaid class diagrams from a schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-mermaid%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-mermaid</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>118</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chien-Chun Ni</p></td>
+<td><p>&#64;saibalmars</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="namespace-generator-gen-namespaces">
+<h3>Namespace Generator (<code class="docutils literal notranslate"><span class="pre">gen-namespaces</span></code>)<a class="headerlink" href="#namespace-generator-gen-namespaces" title="Link to this heading">¶</a></h3>
+<p>Generates Python namespace definition modules for use with the LinkML runtime.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="owl-generator-gen-owl">
+<h3>OWL Generator (<code class="docutils literal notranslate"><span class="pre">gen-owl</span></code>)<a class="headerlink" href="#owl-generator-gen-owl" title="Link to this heading">¶</a></h3>
+<p>Generates an OWL ontology representation of a LinkML schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-owl%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-owl</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>1169</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>74</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-odd"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-even"><td><p>egavard</p></td>
+<td><p>&#64;egavard</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-odd"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Martin Janik</p></td>
+<td><p>&#64;janik-martin</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="pandera-generator-gen-pandera">
+<h3>Pandera Generator (<code class="docutils literal notranslate"><span class="pre">gen-pandera</span></code>)<a class="headerlink" href="#pandera-generator-gen-pandera" title="Link to this heading">¶</a></h3>
+<p>Generates Pandera and Polars dataframe validation schemas from a LinkML schema.</p>
+<p>Includes <code class="docutils literal notranslate"><span class="pre">panderagen/</span></code> and <code class="docutils literal notranslate"><span class="pre">polars_schema/</span></code> subpackages.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Tim Fliss</p></td>
+<td><p>&#64;timfliss</p></td>
+<td><p>1952</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="plantuml-generator-gen-plantuml">
+<h3>PlantUML Generator (<code class="docutils literal notranslate"><span class="pre">gen-plantuml</span></code>)<a class="headerlink" href="#plantuml-generator-gen-plantuml" title="Link to this heading">¶</a></h3>
+<p>Generates PlantUML class diagrams from a schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-plantuml%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-plantuml</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Silvano Cirujano Cuesta</p></td>
+<td><p>&#64;silvano-cirujano-cuesta</p></td>
+<td><p>298</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jim Snyder</p></td>
+<td><p>&#64;jsnyder-csdisco</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>18</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chien-Chun Ni</p></td>
+<td><p>&#64;saibalmars</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vladimir Alexiev</p></td>
+<td><p>&#64;VladimirAlexiev</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="prefix-map-generator-gen-prefix-map">
+<h3>Prefix Map Generator (<code class="docutils literal notranslate"><span class="pre">gen-prefix-map</span></code>)<a class="headerlink" href="#prefix-map-generator-gen-prefix-map" title="Link to this heading">¶</a></h3>
+<p>Generates a prefix map (CURIE-to-URI mappings) from a schema.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>23</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="project-generator-gen-project">
+<h3>Project Generator (<code class="docutils literal notranslate"><span class="pre">gen-project</span></code>)<a class="headerlink" href="#project-generator-gen-project" title="Link to this heading">¶</a></h3>
+<p>Meta-generator that runs multiple generators at once to produce a full project output directory.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-project%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-project</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>109</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>65</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>27</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-even"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-odd"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mark Andrew Miller</p></td>
+<td><p>&#64;turbomam</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="protobuf-generator-gen-proto">
+<h3>Protobuf Generator (<code class="docutils literal notranslate"><span class="pre">gen-proto</span></code>)<a class="headerlink" href="#protobuf-generator-gen-proto" title="Link to this heading">¶</a></h3>
+<p>Generates Protocol Buffer (protobuf) schema definitions from a LinkML schema.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>24</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="pydantic-generator-gen-pydantic">
+<h3>Pydantic Generator (<code class="docutils literal notranslate"><span class="pre">gen-pydantic</span></code>)<a class="headerlink" href="#pydantic-generator-gen-pydantic" title="Link to this heading">¶</a></h3>
+<p>Generates Pydantic BaseModel classes for data validation and serialization.</p>
+<p>Includes <code class="docutils literal notranslate"><span class="pre">pydanticgen/</span></code> subpackage.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-pydantic%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-pydantic</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>1710</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ryan Ly</p></td>
+<td><p>&#64;rly</p></td>
+<td><p>371</p></td>
+</tr>
+<tr class="row-even"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>144</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>85</p></td>
+</tr>
+<tr class="row-even"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>73</p></td>
+</tr>
+<tr class="row-odd"><td><p>Emmanuel Ferdman</p></td>
+<td><p>&#64;emmanuelferdman</p></td>
+<td><p>50</p></td>
+</tr>
+<tr class="row-even"><td><p>Daniel Ji</p></td>
+<td><p>&#64;danieljbk</p></td>
+<td><p>49</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>43</p></td>
+</tr>
+<tr class="row-even"><td><p>Frank Dekervel</p></td>
+<td><p>&#64;kervel</p></td>
+<td><p>34</p></td>
+</tr>
+<tr class="row-odd"><td><p>Elias Oltmanns</p></td>
+<td><p>&#64;EOltmanns</p></td>
+<td><p>28</p></td>
+</tr>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>23</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-even"><td><p>Chr1st0p43rR</p></td>
+<td><p>&#64;Chr1st0p43rR</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-odd"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>glass-ships</p></td>
+<td><p>&#64;glass-ships</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Vincent Kelleher</p></td>
+<td><p>&#64;VincentKelworthy</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Jules Jacobsen</p></td>
+<td><p>&#64;julesjacobsen</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="python-generator-gen-python">
+<h3>Python Generator (<code class="docutils literal notranslate"><span class="pre">gen-python</span></code>)<a class="headerlink" href="#python-generator-gen-python" title="Link to this heading">¶</a></h3>
+<p>Generates Python dataclasses compatible with the LinkML runtime.</p>
+<p>Includes <code class="docutils literal notranslate"><span class="pre">python/</span></code> subpackage. See also label <code class="docutils literal notranslate"><span class="pre">generator-dataclasses</span></code>.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-python%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-python</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>218</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>167</p></td>
+</tr>
+<tr class="row-even"><td><p>Silvano Cirujano Cuesta</p></td>
+<td><p>&#64;silvano-cirujano-cuesta</p></td>
+<td><p>131</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>124</p></td>
+</tr>
+<tr class="row-even"><td><p>Vincent Kelleher</p></td>
+<td><p>&#64;VincentKelworthy</p></td>
+<td><p>102</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>51</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>43</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>36</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-even"><td><p>Frank Dekervel</p></td>
+<td><p>&#64;kervel</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>Mark Andrew Miller</p></td>
+<td><p>&#64;turbomam</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Yaroslav Halchenko</p></td>
+<td><p>&#64;yarikoptic</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="rdf-generator-gen-rdf">
+<h3>RDF Generator (<code class="docutils literal notranslate"><span class="pre">gen-rdf</span></code>)<a class="headerlink" href="#rdf-generator-gen-rdf" title="Link to this heading">¶</a></h3>
+<p>Generates an RDF representation of the schema itself.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-rdf%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-rdf</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-even"><td><p>Volodymyr Lapkin</p></td>
+<td><p>&#64;kapystya</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="rust-generator-gen-rust">
+<h3>Rust Generator (<code class="docutils literal notranslate"><span class="pre">gen-rust</span></code>)<a class="headerlink" href="#rust-generator-gen-rust" title="Link to this heading">¶</a></h3>
+<p>Generates Rust struct and enum types from a LinkML schema.</p>
+<p>Includes <code class="docutils literal notranslate"><span class="pre">rustgen/</span></code> subpackage.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-rust%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-rust</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Frank Dekervel</p></td>
+<td><p>&#64;kervel</p></td>
+<td><p>1562</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>699</p></td>
+</tr>
+<tr class="row-even"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>159</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>10</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="shacl-generator-gen-shacl">
+<h3>SHACL Generator (<code class="docutils literal notranslate"><span class="pre">gen-shacl</span></code>)<a class="headerlink" href="#shacl-generator-gen-shacl" title="Link to this heading">¶</a></h3>
+<p>Generates SHACL shapes for RDF data validation against a LinkML schema.</p>
+<p>Includes <code class="docutils literal notranslate"><span class="pre">shacl/</span></code> subpackage.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-shacl%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-shacl</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Vincent Kelleher</p></td>
+<td><p>&#64;VincentKelworthy</p></td>
+<td><p>180</p></td>
+</tr>
+<tr class="row-odd"><td><p>anjastrunk</p></td>
+<td><p>&#64;anjastrunk</p></td>
+<td><p>98</p></td>
+</tr>
+<tr class="row-even"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>65</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>63</p></td>
+</tr>
+<tr class="row-even"><td><p>Stephan Heunis</p></td>
+<td><p>&#64;jsheunis</p></td>
+<td><p>52</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>30</p></td>
+</tr>
+<tr class="row-even"><td><p>Eli Chadwick</p></td>
+<td><p>&#64;Eli-Chadwick</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-odd"><td><p>HendrikBorgelt</p></td>
+<td><p>&#64;HendrikBorgelt</p></td>
+<td><p>15</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>13</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-even"><td><p>robertschubert</p></td>
+<td><p>&#64;robertschubert</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vincent Emonet</p></td>
+<td><p>&#64;vemonet</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Nico Matentzoglu</p></td>
+<td><p>&#64;matentzn</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>glass-ships</p></td>
+<td><p>&#64;glass-ships</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="shex-generator-gen-shex">
+<h3>ShEx Generator (<code class="docutils literal notranslate"><span class="pre">gen-shex</span></code>)<a class="headerlink" href="#shex-generator-gen-shex" title="Link to this heading">¶</a></h3>
+<p>Generates ShEx (Shape Expressions) for RDF data validation.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-shex%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-shex</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>43</p></td>
+</tr>
+<tr class="row-odd"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>35</p></td>
+</tr>
+<tr class="row-even"><td><p>Deepak Unni</p></td>
+<td><p>&#64;deepakunni3</p></td>
+<td><p>21</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>13</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>12</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sparql-generator-gen-sparql">
+<h3>SPARQL Generator (<code class="docutils literal notranslate"><span class="pre">gen-sparql</span></code>)<a class="headerlink" href="#sparql-generator-gen-sparql" title="Link to this heading">¶</a></h3>
+<p>Generates SPARQL queries for deferred validation of RDF data against a schema.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>175</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>19</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>7</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Yaroslav Halchenko</p></td>
+<td><p>&#64;yarikoptic</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sqlalchemy-generator-gen-sqla">
+<h3>SQLAlchemy Generator (<code class="docutils literal notranslate"><span class="pre">gen-sqla</span></code>)<a class="headerlink" href="#sqlalchemy-generator-gen-sqla" title="Link to this heading">¶</a></h3>
+<p>Generates SQLAlchemy ORM model classes from a LinkML schema.</p>
+<p>Includes <code class="docutils literal notranslate"><span class="pre">sqlalchemy/</span></code> subpackage.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-SQL%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-SQL</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>226</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>55</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>glass-ships</p></td>
+<td><p>&#64;glass-ships</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jan Katins</p></td>
+<td><p>&#64;jankatins</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Mark Andrew Miller</p></td>
+<td><p>&#64;turbomam</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sql-table-generator-gen-sqltables">
+<h3>SQL Table Generator (<code class="docutils literal notranslate"><span class="pre">gen-sqltables</span></code>)<a class="headerlink" href="#sql-table-generator-gen-sqltables" title="Link to this heading">¶</a></h3>
+<p>Generates SQL DDL (CREATE TABLE statements) from a LinkML schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-SQL%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-SQL</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>123</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>120</p></td>
+</tr>
+<tr class="row-even"><td><p>VictoriaSavageNNL</p></td>
+<td><p>&#64;VictoriaSavageNNL</p></td>
+<td><p>75</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>72</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>28</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>pizzashi</p></td>
+<td><p>&#64;pizzashi</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Noah Lorang</p></td>
+<td><p>&#64;noahlorang</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Florian Kotthoff</p></td>
+<td><p>&#64;FlorianK13</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sssom-generator-gen-sssom">
+<h3>SSSOM Generator (<code class="docutils literal notranslate"><span class="pre">gen-sssom</span></code>)<a class="headerlink" href="#sssom-generator-gen-sssom" title="Link to this heading">¶</a></h3>
+<p>Generates Simple Standard for Sharing Ontology Mappings (SSSOM) TSV files from schema mappings.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>162</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>14</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="summary-generator-gen-summary">
+<h3>Summary Generator (<code class="docutils literal notranslate"><span class="pre">gen-summary</span></code>)<a class="headerlink" href="#summary-generator-gen-summary" title="Link to this heading">¶</a></h3>
+<p>Generates summary spreadsheets of schema statistics.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>44</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>9</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="terminusdb-generator-gen-terminusdb">
+<h3>TerminusDB Generator (<code class="docutils literal notranslate"><span class="pre">gen-terminusdb</span></code>)<a class="headerlink" href="#terminusdb-generator-gen-terminusdb" title="Link to this heading">¶</a></h3>
+<p>Experimental generator for TerminusDB graph database schemas.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Donny Winston</p></td>
+<td><p>&#64;dwinston</p></td>
+<td><p>106</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>15</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>ialarmedalien</p></td>
+<td><p>&#64;ialarmedalien</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="typescript-generator-gen-typescript">
+<h3>TypeScript Generator (<code class="docutils literal notranslate"><span class="pre">gen-typescript</span></code>)<a class="headerlink" href="#typescript-generator-gen-typescript" title="Link to this heading">¶</a></h3>
+<p>Generates TypeScript interfaces and types from a LinkML schema.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>110</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>79</p></td>
+</tr>
+<tr class="row-even"><td><p>Kevin Schaper</p></td>
+<td><p>&#64;kevinschaper</p></td>
+<td><p>72</p></td>
+</tr>
+<tr class="row-odd"><td><p>glass-ships</p></td>
+<td><p>&#64;glass-ships</p></td>
+<td><p>37</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>Vlad Korolev</p></td>
+<td><p>&#64;v-lad</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ryan Ly</p></td>
+<td><p>&#64;rly</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="yaml-generator-gen-yaml">
+<h3>YAML Generator (<code class="docutils literal notranslate"><span class="pre">gen-yaml</span></code>)<a class="headerlink" href="#yaml-generator-gen-yaml" title="Link to this heading">¶</a></h3>
+<p>Re-serializes a schema as a normalized YAML document.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>19</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="yarrrml-generator">
+<h3>YARRRML Generator<a class="headerlink" href="#yarrrml-generator" title="Link to this heading">¶</a></h3>
+<p>Generates YARRRML mapping rules for RDF transformation pipelines.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Volodymyr Lapkin</p></td>
+<td><p>&#64;kapystya</p></td>
+<td><p>177</p></td>
+</tr>
+<tr class="row-odd"><td><p>Piotr Sowiński</p></td>
+<td><p>&#64;Ostrzyciel</p></td>
+<td><p>NA (offered help)</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="yuml-generator-gen-yuml">
+<h3>YUML Generator (<code class="docutils literal notranslate"><span class="pre">gen-yuml</span></code>)<a class="headerlink" href="#yuml-generator-gen-yuml" title="Link to this heading">¶</a></h3>
+<p>Generates yUML class diagrams.</p>
+<p>Deprecated.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>72</p></td>
+</tr>
+<tr class="row-odd"><td><p>madanucd</p></td>
+<td><p>&#64;madanucd</p></td>
+<td><p>33</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>19</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td><p>Jan Katins</p></td>
+<td><p>&#64;jankatins</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Ben Dichter</p></td>
+<td><p>&#64;bendichter</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="validators">
+<h2>Validators<a class="headerlink" href="#validators" title="Link to this heading">¶</a></h2>
+<section id="json-schema-validator-linkml-jsonschema-validate">
+<h3>JSON Schema Validator (<code class="docutils literal notranslate"><span class="pre">linkml-jsonschema-validate</span></code>)<a class="headerlink" href="#json-schema-validator-linkml-jsonschema-validate" title="Link to this heading">¶</a></h3>
+<p>Validates data instances against a LinkML schema using generated JSON Schema.</p>
+<p><strong>Issues and PRs</strong>: <a class="reference external" href="https://github.com/linkml/linkml/issues?q=label%3Agenerator-jsonschema%20state%3Aopen">label:<code class="docutils literal notranslate"><span class="pre">generator-jsonschema</span></code></a></p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>78</p></td>
+</tr>
+<tr class="row-odd"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>74</p></td>
+</tr>
+<tr class="row-even"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>29</p></td>
+</tr>
+<tr class="row-odd"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-even"><td><p>Silvano Cirujano Cuesta</p></td>
+<td><p>&#64;silvano-cirujano-cuesta</p></td>
+<td><p>15</p></td>
+</tr>
+<tr class="row-odd"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sierra Taylor Moxon</p></td>
+<td><p>&#64;sierra-moxon</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-even"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sujay Patil</p></td>
+<td><p>&#64;sujaypatil96</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="sparql-validator-linkml-sparql-validate">
+<h3>SPARQL Validator (<code class="docutils literal notranslate"><span class="pre">linkml-sparql-validate</span></code>)<a class="headerlink" href="#sparql-validator-linkml-sparql-validate" title="Link to this heading">¶</a></h3>
+<p>Validates RDF data against a LinkML schema using SPARQL queries.</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Contributor</p></th>
+<th class="head"><p>GitHub</p></th>
+<th class="head"><p>Lines</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chris Mungall</p></td>
+<td><p>&#64;cmungall</p></td>
+<td><p>90</p></td>
+</tr>
+<tr class="row-odd"><td><p>Harshad Hegde</p></td>
+<td><p>&#64;hrshdhgd</p></td>
+<td><p>39</p></td>
+</tr>
+<tr class="row-even"><td><p>Jonny Saunders</p></td>
+<td><p>&#64;sneakers-the-rat</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-odd"><td><p>Patrick Kalita</p></td>
+<td><p>&#64;pkalita-lbl</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Isaac To</p></td>
+<td><p>&#64;candleindark</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>David Linke</p></td>
+<td><p>&#64;dalito</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>Corey Cox</p></td>
+<td><p>&#64;amc-corey-cox</p></td>
+<td><p>2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="code-of-conduct.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Code of Conduct</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021-2024, LinkML Authors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Generator and Validator Governance</a><ul>
+<li><a class="reference internal" href="#why-generator-level-governance-matters">Why generator-level governance matters</a></li>
+<li><a class="reference internal" href="#generators">Generators</a><ul>
+<li><a class="reference internal" href="#csv-generator-gen-csv">CSV Generator (<code class="docutils literal notranslate"><span class="pre">gen-csv</span></code>)</a></li>
+<li><a class="reference internal" href="#dbml-generator-gen-dbml">DBML Generator (<code class="docutils literal notranslate"><span class="pre">gen-dbml</span></code>)</a></li>
+<li><a class="reference internal" href="#doc-generator-gen-doc">Doc Generator (<code class="docutils literal notranslate"><span class="pre">gen-doc</span></code>)</a></li>
+<li><a class="reference internal" href="#dot-graphviz-generator-gen-graphviz">Dot/Graphviz Generator (<code class="docutils literal notranslate"><span class="pre">gen-graphviz</span></code>)</a></li>
+<li><a class="reference internal" href="#er-diagram-generator-gen-erdiagram">ER Diagram Generator (<code class="docutils literal notranslate"><span class="pre">gen-erdiagram</span></code>)</a></li>
+<li><a class="reference internal" href="#excel-generator-gen-excel">Excel Generator (<code class="docutils literal notranslate"><span class="pre">gen-excel</span></code>)</a></li>
+<li><a class="reference internal" href="#golang-generator-gen-golang">Golang Generator (<code class="docutils literal notranslate"><span class="pre">gen-golang</span></code>)</a></li>
+<li><a class="reference internal" href="#golr-schema-generator-gen-golr-views">Golr Schema Generator (<code class="docutils literal notranslate"><span class="pre">gen-golr-views</span></code>)</a></li>
+<li><a class="reference internal" href="#graphql-generator-gen-graphql">GraphQL Generator (<code class="docutils literal notranslate"><span class="pre">gen-graphql</span></code>)</a></li>
+<li><a class="reference internal" href="#java-generator-gen-java">Java Generator (<code class="docutils literal notranslate"><span class="pre">gen-java</span></code>)</a></li>
+<li><a class="reference internal" href="#json-ld-context-generator-gen-jsonld-context">JSON-LD Context Generator (<code class="docutils literal notranslate"><span class="pre">gen-jsonld-context</span></code>)</a></li>
+<li><a class="reference internal" href="#json-ld-generator-gen-jsonld">JSON-LD Generator (<code class="docutils literal notranslate"><span class="pre">gen-jsonld</span></code>)</a></li>
+<li><a class="reference internal" href="#json-schema-generator-gen-json-schema">JSON Schema Generator (<code class="docutils literal notranslate"><span class="pre">gen-json-schema</span></code>)</a></li>
+<li><a class="reference internal" href="#linkml-generator-gen-linkml">LinkML Generator (<code class="docutils literal notranslate"><span class="pre">gen-linkml</span></code>)</a></li>
+<li><a class="reference internal" href="#markdown-data-dictionary-generator-gen-markdown-datadict">Markdown Data Dictionary Generator (<code class="docutils literal notranslate"><span class="pre">gen-markdown-datadict</span></code>)</a></li>
+<li><a class="reference internal" href="#markdown-generator-gen-markdown">Markdown Generator (<code class="docutils literal notranslate"><span class="pre">gen-markdown</span></code>)</a></li>
+<li><a class="reference internal" href="#mermaid-class-diagram-generator-gen-mermaid-class-diagram">Mermaid Class Diagram Generator (<code class="docutils literal notranslate"><span class="pre">gen-mermaid-class-diagram</span></code>)</a></li>
+<li><a class="reference internal" href="#namespace-generator-gen-namespaces">Namespace Generator (<code class="docutils literal notranslate"><span class="pre">gen-namespaces</span></code>)</a></li>
+<li><a class="reference internal" href="#owl-generator-gen-owl">OWL Generator (<code class="docutils literal notranslate"><span class="pre">gen-owl</span></code>)</a></li>
+<li><a class="reference internal" href="#pandera-generator-gen-pandera">Pandera Generator (<code class="docutils literal notranslate"><span class="pre">gen-pandera</span></code>)</a></li>
+<li><a class="reference internal" href="#plantuml-generator-gen-plantuml">PlantUML Generator (<code class="docutils literal notranslate"><span class="pre">gen-plantuml</span></code>)</a></li>
+<li><a class="reference internal" href="#prefix-map-generator-gen-prefix-map">Prefix Map Generator (<code class="docutils literal notranslate"><span class="pre">gen-prefix-map</span></code>)</a></li>
+<li><a class="reference internal" href="#project-generator-gen-project">Project Generator (<code class="docutils literal notranslate"><span class="pre">gen-project</span></code>)</a></li>
+<li><a class="reference internal" href="#protobuf-generator-gen-proto">Protobuf Generator (<code class="docutils literal notranslate"><span class="pre">gen-proto</span></code>)</a></li>
+<li><a class="reference internal" href="#pydantic-generator-gen-pydantic">Pydantic Generator (<code class="docutils literal notranslate"><span class="pre">gen-pydantic</span></code>)</a></li>
+<li><a class="reference internal" href="#python-generator-gen-python">Python Generator (<code class="docutils literal notranslate"><span class="pre">gen-python</span></code>)</a></li>
+<li><a class="reference internal" href="#rdf-generator-gen-rdf">RDF Generator (<code class="docutils literal notranslate"><span class="pre">gen-rdf</span></code>)</a></li>
+<li><a class="reference internal" href="#rust-generator-gen-rust">Rust Generator (<code class="docutils literal notranslate"><span class="pre">gen-rust</span></code>)</a></li>
+<li><a class="reference internal" href="#shacl-generator-gen-shacl">SHACL Generator (<code class="docutils literal notranslate"><span class="pre">gen-shacl</span></code>)</a></li>
+<li><a class="reference internal" href="#shex-generator-gen-shex">ShEx Generator (<code class="docutils literal notranslate"><span class="pre">gen-shex</span></code>)</a></li>
+<li><a class="reference internal" href="#sparql-generator-gen-sparql">SPARQL Generator (<code class="docutils literal notranslate"><span class="pre">gen-sparql</span></code>)</a></li>
+<li><a class="reference internal" href="#sqlalchemy-generator-gen-sqla">SQLAlchemy Generator (<code class="docutils literal notranslate"><span class="pre">gen-sqla</span></code>)</a></li>
+<li><a class="reference internal" href="#sql-table-generator-gen-sqltables">SQL Table Generator (<code class="docutils literal notranslate"><span class="pre">gen-sqltables</span></code>)</a></li>
+<li><a class="reference internal" href="#sssom-generator-gen-sssom">SSSOM Generator (<code class="docutils literal notranslate"><span class="pre">gen-sssom</span></code>)</a></li>
+<li><a class="reference internal" href="#summary-generator-gen-summary">Summary Generator (<code class="docutils literal notranslate"><span class="pre">gen-summary</span></code>)</a></li>
+<li><a class="reference internal" href="#terminusdb-generator-gen-terminusdb">TerminusDB Generator (<code class="docutils literal notranslate"><span class="pre">gen-terminusdb</span></code>)</a></li>
+<li><a class="reference internal" href="#typescript-generator-gen-typescript">TypeScript Generator (<code class="docutils literal notranslate"><span class="pre">gen-typescript</span></code>)</a></li>
+<li><a class="reference internal" href="#yaml-generator-gen-yaml">YAML Generator (<code class="docutils literal notranslate"><span class="pre">gen-yaml</span></code>)</a></li>
+<li><a class="reference internal" href="#yarrrml-generator">YARRRML Generator</a></li>
+<li><a class="reference internal" href="#yuml-generator-gen-yuml">YUML Generator (<code class="docutils literal notranslate"><span class="pre">gen-yuml</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#validators">Validators</a><ul>
+<li><a class="reference internal" href="#json-schema-validator-linkml-jsonschema-validate">JSON Schema Validator (<code class="docutils literal notranslate"><span class="pre">linkml-jsonschema-validate</span></code>)</a></li>
+<li><a class="reference internal" href="#sparql-validator-linkml-sparql-validate">SPARQL Validator (<code class="docutils literal notranslate"><span class="pre">linkml-sparql-validate</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    </body>
+</html>
