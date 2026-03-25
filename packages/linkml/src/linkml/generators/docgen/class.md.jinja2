@@ -224,7 +224,7 @@ The class must not satisfy any of:
 
 | Rule Applied | Preconditions | Postconditions | Elseconditions |
 |--------------|---------------|----------------|----------------|
-{% for key in rule.preconditions -%}
+{% for key in rule.preconditions|default({}) -%}
 | {{ key }} |
 {%- if rule.preconditions[key] is defined -%}
 ```{{ rule.preconditions[key] }}```
