@@ -460,6 +460,112 @@ def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
     assert _union_members(g, EX.Orphan) is None
 
 
+def test_abstract_class_with_no_children_emits_warning(caplog):
+    """An abstract class with no children emits a warning about missing coverage.
+
+    When an abstract class has zero subclasses, no covering axiom can be
+    generated.  The warning alerts users that the class hierarchy is incomplete.
+
+    See: mgskjaeveland's review on linkml/linkml#3309.
+    """
+    import logging
+
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # No covering axiom emitted
+    assert _union_members(g, EX.Orphan) is None
+
+    # But a warning must be logged
+    assert any("has no children" in msg for msg in caplog.messages), (
+        "Expected a warning about abstract class with no children"
+    )
+    assert any("No covering axiom" in msg for msg in caplog.messages), (
+        "Warning should mention that no covering axiom will be generated"
+    )
+
+
+def test_no_children_warning_suppressed_by_skip_flag(caplog):
+    """When --skip-abstract-class-as-unionof-subclasses is set, no warning for zero children."""
+    import logging
+
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=True)
+
+    assert not any("has no children" in msg for msg in caplog.messages)
+
+
+def test_abstract_class_with_single_child_emits_warning(caplog):
+    """An abstract class with one child still gets a covering axiom but emits a warning.
+
+    Per OWL 2 semantics, the covering axiom with a single child creates an
+    equivalence (Parent ≡ Child).  This is logically correct but may surprise
+    users who plan to extend the ontology later.  The generator should warn
+    and recommend ``--skip-abstract-class-as-unionof-subclasses``.
+
+    See: W3C OWL 2 Primer §4.2 — bidirectional rdfs:subClassOf = equivalence.
+    See: mgskjaeveland's review on linkml/linkml#3309.
+    """
+    import logging
+
+    sb = SchemaBuilder()
+    sb.add_class("GrandParent")
+    sb.add_class("Parent", is_a="GrandParent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # Covering axiom IS still emitted (single child → equivalence is OWL-correct).
+    # With one child, _union_of returns the child URI directly (no owl:unionOf wrapper),
+    # so the covering axiom materialises as Parent rdfs:subClassOf Child.
+    # Combined with Child rdfs:subClassOf Parent (from is_a), this is the equivalence.
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) in g, (
+        "Covering axiom should produce Parent rdfs:subClassOf Child for single-child case"
+    )
+    assert (EX.Child, RDFS.subClassOf, EX.Parent) in g
+    assert (EX.Parent, RDFS.subClassOf, EX.GrandParent) in g
+
+    # But a warning must be logged
+    assert any("only 1 direct child" in msg for msg in caplog.messages), (
+        "Expected a warning about single-child covering axiom creating equivalence"
+    )
+    assert any("--skip-abstract-class-as-unionof-subclasses" in msg for msg in caplog.messages), (
+        "Warning should recommend the skip flag"
+    )
+
+
+def test_single_child_warning_suppressed_by_skip_flag(caplog):
+    """When --skip-abstract-class-as-unionof-subclasses is set, no warning is emitted.
+
+    The skip flag suppresses covering axioms entirely, so the single-child
+    equivalence case never arises.
+    """
+    import logging
+
+    sb = SchemaBuilder()
+    sb.add_class("Parent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=True)
+
+    # No covering axiom emitted
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) not in g
+    # No warning either
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
 @pytest.mark.parametrize("skip", [False, True])
 def test_union_of_axiom_only_covers_direct_children(skip: bool):
     """Union-of axiom lists only direct is_a children, not grandchildren.
