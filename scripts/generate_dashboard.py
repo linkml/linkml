@@ -24,6 +24,7 @@ Usage:
 
 from __future__ import annotations
 
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -47,8 +48,8 @@ GENERATOR_DISPLAY_NAMES = {
     "jsonld": "JSON-LD",
     "sql_ddl_sqlite": "SQLite DDL",
     "sql_ddl_postgres": "Postgres DDL",
-    "sql_alchemy_imperative": "SQLAlchemy Imp",
-    "sql_alchemy_declarative": "SQLAlchemy Dec",
+    "sqlalchemy_imperative": "SQLAlchemy Imp",
+    "sqlalchemy_declarative": "SQLAlchemy Dec",
     "owl": "OWL",
     "pandera_polars_class": "Pandera",
     "dataframe_polars_schema": "Polars Schema",
@@ -116,8 +117,8 @@ def discover_frameworks(features: list[dict]) -> list[str]:
         "sql_ddl_postgres",
         "pandera_polars_class",
         "dataframe_polars_schema",
-        "sql_alchemy_imperative",
-        "sql_alchemy_declarative",
+        "sqlalchemy_imperative",
+        "sqlalchemy_declarative",
     ]
     ordered = [f for f in preferred if f in frameworks]
     ordered.extend(sorted(frameworks - set(ordered)))
@@ -145,8 +146,6 @@ def aggregate_status(statuses: list[str]) -> str:
 
 def slug(name: str) -> str:
     """Generate a URL-safe anchor id from a category name."""
-    import re
-
     s = name.lower()
     s = re.sub(r"[^\w\s-]", "", s)
     s = re.sub(r"[\s]+", "-", s)
