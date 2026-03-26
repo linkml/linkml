@@ -6,8 +6,11 @@ from pathlib import Path
 
 from linkml.validator.loaders.loader import Loader
 
+_NUMERIC_TYPE_NAMES = frozenset({"integer", "float", "double", "decimal"})
+
 
 def _parse_numeric(value: str):
+    """Attempt to coerce a string value to int or float."""
     if not isinstance(value, str) or not re.search(r"[0-9]", value):
         return value
     try:
@@ -18,9 +21,6 @@ def _parse_numeric(value: str):
         return float(value)
     except (TypeError, ValueError, OverflowError):
         return value
-
-
-_NUMERIC_TYPE_NAMES = frozenset({"integer", "float", "double", "decimal"})
 
 
 def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
@@ -49,7 +49,13 @@ def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
 
 
 class _DelimitedFileLoader(Loader, ABC):
-    """Base class for TSV and CSV loaders"""
+    """Base class for TSV and CSV loaders.
+
+    When *schema_path* and *target_class* are provided, the loader uses schema
+    information to decide whether a cell value should be kept as a string rather
+    than auto-converted to a number.  Without schema information the loader
+    falls back to the original heuristic (convert anything that looks numeric).
+    """
 
     @property
     @abstractmethod
@@ -75,6 +81,15 @@ class _DelimitedFileLoader(Loader, ABC):
             if schema_path is not None and target_class is not None
             else None
         )
+
+    def set_schema_context(self, schema_path: str | Path, target_class: str) -> None:
+        """Configure schema-aware type coercion after construction.
+
+        This is used by the :class:`~linkml.validator.Validator` to inject
+        schema information into loaders that were created without it (e.g.
+        by the CLI or ``default_loader_for_file``).
+        """
+        self._numeric_slots = _get_numeric_slots(schema_path, target_class)
 
     def _coerce_value(self, key: str, value: str):
         """Return *value* coerced to the appropriate Python type.
@@ -104,13 +119,15 @@ class _DelimitedFileLoader(Loader, ABC):
 
 
 class CsvLoader(_DelimitedFileLoader):
-    """A loader for instances serialized as CSV
+    """A loader for instances serialized as CSV.
 
     :param skip_empty_rows: If ``True``, skip empty rows instead of yielding empty dicts. Defaults
         to ``False``.
     :param index_slot_name: If provided, ``iter_instances`` will yield one dict where all rows of
         the CSV file are collected into a list with ``index_slot_name`` as the key. If ``None``,
         ``iter_instances`` will yield each row as a dict individually. Defaults to ``None``.
+    :param schema_path: Optional path to a LinkML schema for schema-aware type coercion.
+    :param target_class: Name of the target class within the schema.
     """
 
     @property
@@ -119,13 +136,15 @@ class CsvLoader(_DelimitedFileLoader):
 
 
 class TsvLoader(_DelimitedFileLoader):
-    """A loader for instances serialized as TSV
+    """A loader for instances serialized as TSV.
 
     :param skip_empty_rows: If ``True``, skip empty rows instead of yielding empty dicts. Defaults
         to ``False``.
     :param index_slot_name: If provided, ``iter_instances`` will yield one dict where all rows of
         the TSV file are collected into a list with ``index_slot_name`` as the key. If ``None``,
         ``iter_instances`` will yield each row as a dict individually. Defaults to ``None``.
+    :param schema_path: Optional path to a LinkML schema for schema-aware type coercion.
+    :param target_class: Name of the target class within the schema.
     """
 
     @property
