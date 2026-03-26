@@ -732,19 +732,19 @@
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            &gt;&gt;&gt; Import(module=&#39;sys&#39;).render()</span>
+<span class="sd">            &gt;&gt;&gt; print(Import(module=&#39;sys&#39;).render(), end=&#39;&#39;)</span>
 <span class="sd">            import sys</span>
-<span class="sd">            &gt;&gt;&gt; Import(module=&#39;numpy&#39;, alias=&#39;np&#39;).render()</span>
+<span class="sd">            &gt;&gt;&gt; print(Import(module=&#39;numpy&#39;, alias=&#39;np&#39;).render(), end=&#39;&#39;)</span>
 <span class="sd">            import numpy as np</span>
 
 <span class="sd">        Class import:</span>
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            &gt;&gt;&gt; Import(module=&#39;pathlib&#39;, objects=[</span>
-<span class="sd">            &gt;&gt;&gt;     ObjectImport(name=&quot;Path&quot;),</span>
-<span class="sd">            &gt;&gt;&gt;     ObjectImport(name=&quot;PurePath&quot;, alias=&quot;RenamedPurePath&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; ]).render()</span>
+<span class="sd">            &gt;&gt;&gt; print(Import(module=&#39;pathlib&#39;, objects=[</span>
+<span class="sd">            ...     ObjectImport(name=&quot;Path&quot;),</span>
+<span class="sd">            ...     ObjectImport(name=&quot;PurePath&quot;, alias=&quot;RenamedPurePath&quot;)</span>
+<span class="sd">            ... ]).render(), end=&#39;&#39;)</span>
 <span class="sd">            from pathlib import (</span>
 <span class="sd">                Path,</span>
 <span class="sd">                PurePath as RenamedPurePath</span>

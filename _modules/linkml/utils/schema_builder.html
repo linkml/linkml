@@ -423,12 +423,11 @@
 
 <span class="sd">        &gt;&gt;&gt; from linkml.utils.schema_builder import SchemaBuilder</span>
 <span class="sd">        &gt;&gt;&gt; sb = SchemaBuilder(&#39;test-schema&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; sb.add_class(&#39;Person&#39;, slots=[&#39;name&#39;, &#39;age&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; sb.add_class(&#39;Organization&#39;, slots=[&#39;name&#39;, &#39;employees&#39;])</span>
-<span class="sd">        &gt;&gt;&gt; sb.add_slot(&#39;name&#39;,description=&#39;Name of the person or organization&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; sb.add_slot(&#39;age&#39;,description=&#39;Age of the person&#39;, range=&#39;integer&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; _ = sb.add_class(&#39;Person&#39;, slots=[&#39;name&#39;, &#39;age&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; _ = sb.add_class(&#39;Organization&#39;, slots=[&#39;name&#39;, &#39;employees&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; _ = sb.add_slot(&#39;name&#39;,description=&#39;Name of the person or organization&#39;, replace_if_present=True)</span>
+<span class="sd">        &gt;&gt;&gt; _ = sb.add_slot(&#39;age&#39;,description=&#39;Age of the person&#39;, range=&#39;integer&#39;, replace_if_present=True)</span>
 <span class="sd">        &gt;&gt;&gt; schema = sb.schema</span>
-<span class="sd">        &gt;&gt;&gt; print()</span>
 
 <span class="sd">    Most builder methods accepts either a string, an instance of a metamodel element,</span>
 <span class="sd">    or a dictionary.  If a string is provided, then a new element is created with this</span>
@@ -437,7 +436,7 @@
 <span class="sd">    This follows the standard Builder pattern, so the results of a build operation</span>
 <span class="sd">    are a builder, allowing chaining. For example:</span>
 
-<span class="sd">        &gt;&gt;&gt; sb = SchemaBuilder(&#39;test-schema&#39;).add_class(&#39;Person&#39;, slots=[&#39;name&#39;, &#39;age&#39;])</span>
+<span class="sd">        &gt;&gt;&gt; _ = SchemaBuilder(&#39;test-schema&#39;).add_class(&#39;Person&#39;, slots=[&#39;name&#39;, &#39;age&#39;])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

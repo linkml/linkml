@@ -1560,17 +1560,17 @@ property.</p>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
 <p>Module import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;sys&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;sys&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">import sys</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s1">&#39;np&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s1">&#39;np&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">import numpy as np</span>
 </pre></div>
 </div>
 <p>Class import:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;pathlib&#39;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Path&quot;</span><span class="p">),</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;PurePath&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;RenamedPurePath&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">])</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">Import</span><span class="p">(</span><span class="n">module</span><span class="o">=</span><span class="s1">&#39;pathlib&#39;</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Path&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">ObjectImport</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;PurePath&quot;</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;RenamedPurePath&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="p">])</span><span class="o">.</span><span class="n">render</span><span class="p">(),</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="go">from pathlib import (</span>
 <span class="go">    Path,</span>
 <span class="go">    PurePath as RenamedPurePath</span>
