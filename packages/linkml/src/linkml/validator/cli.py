@@ -45,11 +45,16 @@ def _resolve_plugins(plugin_config: dict[str, dict[str, Any]]) -> list[Validatio
     return plugins
 
 
-def _resolve_loaders(loader_config: Iterable[str | dict[str, dict[str, str]]]) -> list[Loader]:
+def _resolve_loaders(
+    loader_config: Iterable[str | dict[str, dict[str, str]]],
+    *,
+    schema_path: str | Path | None = None,
+    target_class: str | None = None,
+) -> list[Loader]:
     loaders = []
     for entry in loader_config:
         if isinstance(entry, str):
-            loader = default_loader_for_file(entry)
+            loader = default_loader_for_file(entry, schema_path=schema_path, target_class=target_class)
         elif isinstance(entry, dict):
             if len(entry) > 1:
                 raise click.ClickException(f"Invalid config. Dictionary entries should only have one key: {entry}")
@@ -138,7 +143,7 @@ def cli(
         config.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
 
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
-    loaders = _resolve_loaders(config.data_sources)
+    loaders = _resolve_loaders(config.data_sources, schema_path=config.schema_path, target_class=config.target_class)
     validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
     severity_counter = Counter()
 

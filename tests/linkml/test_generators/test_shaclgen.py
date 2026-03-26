@@ -1007,6 +1007,47 @@ classes:
     assert sorted(in_values, key=str) == expected_uris
 
 
+def test_cross_directory_import_with_importmap(input_path):
+    """Test that ShaclGenerator resolves cross-directory imports via importmap.
+
+    Regression test for https://github.com/linkml/linkml/issues/2913.
+    When a schema imports another schema from a subdirectory, the SHACL
+    generator must honour the ``importmap`` and ``base_dir`` parameters
+    to resolve the import correctly.
+    """
+    from pathlib import Path
+
+    schema_path = input_path("shaclgen/cross_dir_import/main_schema.yaml")
+    base_dir = str(Path(schema_path).parent)
+    importmap = {
+        "imported_types": str(Path(base_dir) / "subdir" / "imported_types"),
+    }
+
+    shacl = ShaclGenerator(
+        schema_path,
+        importmap=importmap,
+        base_dir=base_dir,
+        mergeimports=True,
+    ).serialize()
+
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Both the imported and local shapes should be present
+    shapes = {str(s) for s in g.subjects(RDF.type, SH.NodeShape)}
+    assert "https://example.org/imported/BaseEntity" in shapes
+    assert "https://example.org/main/DerivedEntity" in shapes
+
+    # DerivedEntity should inherit BaseEntity's "name" property
+    derived_uri = URIRef("https://example.org/main/DerivedEntity")
+    prop_paths = set()
+    for prop_node in g.objects(derived_uri, SH.property):
+        for path in g.objects(prop_node, SH.path):
+            prop_paths.add(str(path))
+    assert "https://example.org/imported/name" in prop_paths
+    assert "https://example.org/main/value" in prop_paths
+
+
 def test_shacl_omits_linkml_any_class_constraint():
     """sh:class linkml:Any must not appear in SHACL output.
 
@@ -1057,3 +1098,65 @@ classes:
         if path and "payload" in str(path[0]):
             nodekind = list(g.objects(prop_node, SH.nodeKind))
             assert nodekind == [], f"sh:nodeKind should not be set for linkml:Any-ranged slot, got: {nodekind}"
+
+
+def test_nodeidentifier_range_produces_blank_node_or_iri():
+    """Test that range: nodeidentifier produces sh:nodeKind sh:BlankNodeOrIRI, not sh:Literal.
+
+    The ``nodeidentifier`` built-in type (type_uri ``shex:nonLiteral``) represents
+    an IRI or blank-node reference. The SHACL generator must emit
+    ``sh:nodeKind sh:BlankNodeOrIRI`` (not ``sh:Literal`` with ``sh:datatype``).
+    """
+    schema_yaml = """
+id: https://example.org/test-nodeident
+name: test_nodeident
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  node_ref:
+    range: nodeidentifier
+    slot_uri: ex:nodeRef
+  uri_ref:
+    range: uri
+    slot_uri: ex:uriRef
+
+classes:
+  Container:
+    slots:
+      - node_ref
+      - uri_ref
+"""
+    gen = ShaclGenerator(schema_yaml)
+    shacl = gen.serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    container_uri = URIRef("https://example.org/Container")
+
+    # Collect property shapes keyed by sh:path
+    props = {}
+    for prop_node in g.objects(container_uri, SH.property):
+        path = list(g.objects(prop_node, SH.path))
+        if path:
+            props[str(path[0])] = prop_node
+
+    # nodeidentifier → sh:nodeKind sh:BlankNodeOrIRI, no sh:datatype
+    node_ref = props["https://example.org/nodeRef"]
+    node_kinds = list(g.objects(node_ref, SH.nodeKind))
+    assert SH.BlankNodeOrIRI in node_kinds, f"Expected sh:BlankNodeOrIRI for nodeidentifier, got {node_kinds}"
+    assert SH.Literal not in node_kinds
+    assert list(g.objects(node_ref, SH.datatype)) == []
+
+    # uri → sh:nodeKind sh:IRI (unchanged existing behaviour)
+    uri_ref = props["https://example.org/uriRef"]
+    uri_kinds = list(g.objects(uri_ref, SH.nodeKind))
+    assert SH.IRI in uri_kinds, f"Expected sh:IRI for uri, got {uri_kinds}"

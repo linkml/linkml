@@ -57,7 +57,6 @@ dev = [
 ]
 
 [project.scripts]
-comparefiles = "linkml_runtime.utils.comparefiles:cli"
 linkml-normalize = "linkml_runtime.processing.referencevalidator:cli"
 
 [project.optional-dependencies]
