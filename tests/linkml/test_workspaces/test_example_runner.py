@@ -12,6 +12,8 @@ from prefixmaps.io.parser import load_multi_context
 from linkml.workspaces.example_runner import ExampleRunner
 from linkml_runtime import SchemaView
 
+pytestmark = pytest.mark.xdist_group("workspaces")
+
 
 @pytest.fixture
 def example_runner(input_path, tmp_path):

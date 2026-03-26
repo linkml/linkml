@@ -1,0 +1,2 @@
+STATUS=DEAD
+MEANING=http://purl.obolibrary.org/obo/PATO_0001422

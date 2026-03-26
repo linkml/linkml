@@ -75,7 +75,48 @@ def test_enum_permissiblevalue_ifabsent(input_path):
     # this would fail if generated python code is not compilable
     ksm = make_python(input_path("kitchen_sink_ifabsent.yaml"))
     # ensure that the right permissible value is taken if other value absent
-    assert ksm.IfAbsent().ifabsent_not_literal is ksm.CordialnessEnum.heartfelt
+    ifabsent_obj = ksm.IfAbsent()
+    assert isinstance(ifabsent_obj.ifabsent_not_literal, ksm.CordialnessEnum)
+    assert ifabsent_obj.ifabsent_not_literal.code == ksm.CordialnessEnum.heartfelt
+
+
+def test_enum_ifabsent_snake_case_name():
+    """Enum ifabsent with a snake_case enum name should use the camelcased Python class name.
+
+    Regression test for https://github.com/linkml/linkml/pull/3308#discussion_r2106197183
+    When an enum's schema name is snake_case (e.g. 'cordiality_level'), pythongen must
+    use the camelcased class name (e.g. 'CordialityLevel') in the generated __post_init__
+    constructor call, not the raw schema name.
+    """
+    yaml = """
+id: https://example.org/test_snake_case_enum_ifabsent
+name: test_snake_case_enum_ifabsent
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+
+enums:
+  cordiality_level:
+    permissible_values:
+      heartfelt:
+      hateful:
+      indifferent:
+
+classes:
+  Greeting:
+    attributes:
+      mood:
+        range: cordiality_level
+        ifabsent: cordiality_level(heartfelt)
+"""
+    module = make_python(yaml)
+    greeting = module.Greeting()
+    assert isinstance(greeting.mood, module.CordialityLevel)
+    assert greeting.mood.code == module.CordialityLevel.heartfelt
 
 
 def test_head():
@@ -164,3 +205,70 @@ enums:
     assert py_module.TestEnum.ADVANCED.description == "This is an advanced option"
     assert py_module.TestEnum.ADVANCED.title == "Advanced Option"
     assert py_module.TestEnum.ADVANCED.meaning == "http://example.org/advanced"
+
+
+def test_derived_class_as_key_range_ordering():
+    """Test that class reference types are ordered correctly when a key slot's range
+    is a derived class that inherits its identifier from a parent.
+
+    Regression test for https://github.com/linkml/linkml/issues/2600
+
+    The bug: when the class containing the key slot (Annotation) appeared before
+    the range class's parent (Thing) in the schema dict, gen_references() would
+    emit AnnotationAnnotationTag(AnnotationTagPid) before AnnotationTagPid(ThingPid),
+    causing a NameError on import.
+    """
+    # Annotation intentionally listed BEFORE Thing to trigger the ordering bug
+    yaml = """
+id: https://example.org/issue2600
+name: issue2600
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/issue2600/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Annotation:
+    slots:
+      - annotation_tag
+      - annotation_value
+    slot_usage:
+      annotation_tag:
+        key: true
+  Thing:
+    slots:
+      - pid
+    slot_usage:
+      pid:
+        identifier: true
+  AnnotationTag:
+    is_a: Thing
+
+slots:
+  pid:
+    range: uriorcurie
+  annotation_tag:
+    range: AnnotationTag
+  annotation_value:
+    range: string
+"""
+    gen = PythonGenerator(yaml)
+    output = gen.serialize()
+
+    # The generated code must be compilable — the original bug was a NameError
+    # from forward-referencing an undefined class
+    module = compile_python(str(output))
+    assert hasattr(module, "Annotation")
+    assert hasattr(module, "Thing")
+    assert hasattr(module, "AnnotationTag")
+
+    # Verify the class reference ordering: each parent must appear before its child
+    ref_classes = re.findall(r"^class (\w+)\((\w+)\):\n\tpass", str(output), re.MULTILINE)
+    positions = {name: i for i, (name, _parent) in enumerate(ref_classes)}
+    for name, parent in ref_classes:
+        if parent in positions:
+            assert positions[parent] < positions[name], (
+                f"Class reference {name}({parent}) appears before its parent {parent} is defined"
+            )
