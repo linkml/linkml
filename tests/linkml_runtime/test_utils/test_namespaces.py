@@ -59,8 +59,6 @@ def test_namespaces():
     assert "https://w3id.org/biolink/metamodel/Schema" == str(ns.uri_for(":Schema"))
     assert URIRef("http://example.org/wrong/Base") == ns.uri_for("Base")
     del ns._base
-    with pytest.raises(ValueError):
-        ns.uri_for("Base")
     with pytest.raises(ValueError, match="Unknown CURIE prefix: @base"):
         ns.uri_for("Base")
 

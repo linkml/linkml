@@ -27,6 +27,7 @@ def test_rstring_serialization():
     sv = SchemaView(SCHEMA)
     p = Person(first_name=FIRST, last_name=LAST)
     v = generate_slot_value(p, "full_name", sv)
+    assert v == FULL
 
 
 def test_string_serialization():
