@@ -5,6 +5,8 @@ from click.testing import CliRunner
 
 from linkml.linter.cli import main
 
+pytestmark = pytest.mark.xdist_group("linter_cli")
+
 SCHEMA_FILE = "schema.yaml"
 
 

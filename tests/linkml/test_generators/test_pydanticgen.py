@@ -52,7 +52,7 @@ from .conftest import MyInjectedClass
 
 INDENT = " " * 4
 PACKAGE = "kitchen_sink"
-pytestmark = pytest.mark.pydanticgen
+pytestmark = [pytest.mark.pydanticgen, pytest.mark.xdist_group("pydanticgen")]
 
 
 def test_pydantic(kitchen_sink_path, tmp_path, input_path):
@@ -2390,6 +2390,7 @@ def test_template_black(array_complex):
     )
 
 
+@pytest.mark.xdist_group("serial")
 def test_template_noblack(array_complex, mock_black_import):
     """
     When we don't have black, we should still be able to render templates normally
