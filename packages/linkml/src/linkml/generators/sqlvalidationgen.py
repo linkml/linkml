@@ -1,23 +1,30 @@
 from __future__ import annotations
 
+import copy
 import logging
 import os
 from dataclasses import dataclass
 from typing import Any
 
 import click
-from sqlalchemy import and_, column, func, literal_column, or_, select, table, union_all
+from sqlalchemy import and_, cast, column, func, literal, null, or_, select, table, union_all
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
-from sqlalchemy.types import Text
+from sqlalchemy.sql.selectable import TableClause
+from sqlalchemy.types import Float, Integer, Text
 
 from linkml._version import __version__
-from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import SlotDefinition
+from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
 
 logger = logging.getLogger(__name__)
+
+
+def _literal_num(val):
+    """Return a typed SQLAlchemy literal for a numeric value."""
+    return literal(val, type_=Integer() if isinstance(val, int) else Float())
 
 
 @dataclass
@@ -66,18 +73,29 @@ class SQLValidationGenerator(Generator):
     check_patterns: bool = True
     check_enums: bool = True
     check_unique_keys: bool = True
+    check_rules: bool = True
 
     def _get_dialect(self):
         """
         Get the SQLAlchemy dialect object for the configured dialect.
 
+        Only ``sqlite`` and ``postgresql`` are supported.  Any other value is
+        rejected: a warning is logged and the dialect is reset to ``sqlite``.
+
         :return: SQLAlchemy dialect instance
         """
+        supported = {"postgresql", "sqlite"}
+        if self.dialect not in supported:
+            logger.warning(
+                f"Dialect '{self.dialect}' is not supported. "
+                "Only 'sqlite' and 'postgresql' are supported. Falling back to 'sqlite'."
+            )
+            self.dialect = "sqlite"
         dialect_map = {
             "postgresql": postgresql.dialect(),
             "sqlite": sqlite_dialect.dialect(),
         }
-        return dialect_map.get(self.dialect, sqlite_dialect.dialect())
+        return dialect_map[self.dialect]
 
     def _compile_query(self, query) -> str:
         """
@@ -122,34 +140,34 @@ class SQLValidationGenerator(Generator):
         """
         query_objects = []
 
-        # Transform schema to relational model
-        sqltr = RelationalModelTransformer(SchemaView(self.schema))
-        sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
-        tr_result = sqltr.transform(tgt_schema_name=kwargs.get("tgt_schema_name"), top_class=kwargs.get("top_class"))
-        schema = tr_result.schema
-        sv = SchemaView(schema)
+        sv = SchemaView(self.schema)
 
         # Iterate through all classes
-        for class_name, class_def in schema.classes.items():
-            if class_def.abstract:
+        for class_name in sv.all_classes():
+            class_def = sv.get_class(class_name)
+            if class_def.abstract or class_def.mixin:
                 continue
 
-            if not class_def.attributes:
-                # skip if no attributes are present
+            raw_induced_slots = sv.class_induced_slots(class_name)
+            if not raw_induced_slots:
                 continue
+
+            induced_slots = []
+            for slot in raw_induced_slots:
+                slot = copy.copy(slot)
+                slot.name = underscore(slot.alias or slot.name)
+                if slot.identifier or slot.key:
+                    slot.required = True
+                induced_slots.append(slot)
 
             # Find the identifier slot for this class
             identifier_slot_name = "id"  # default fallback
-            for slot_name, _ in class_def.attributes.items():
-                induced = sv.induced_slot(slot_name, class_name)
+            for induced in induced_slots:
                 if induced.identifier:
-                    identifier_slot_name = slot_name
+                    identifier_slot_name = induced.name
                     break
 
-            for slot_name, _ in class_def.attributes.items():
-                # Get induced slot to capture inherited constraints
-                induced = sv.induced_slot(slot_name, class_name)
-
+            for induced in induced_slots:
                 # Generate validation queries for each constraint type
                 if self.check_required and induced.required:
                     query = self._generate_required_violations(class_name, induced, identifier_slot_name)
@@ -182,8 +200,18 @@ class SQLValidationGenerator(Generator):
 
             # Check unique_keys constraints (multi-column uniqueness)
             if self.check_unique_keys and class_def.unique_keys:
-                for _, uk in class_def.unique_keys.items():
-                    query = self._generate_unique_key_violations(class_name, class_def, uk, identifier_slot_name)
+                slot_names = {s.name for s in induced_slots}
+                for _, uk in class_def.unique_keys._items():
+                    query = self._generate_unique_key_violations(class_name, slot_names, uk, identifier_slot_name)
+                    if query is not None:
+                        query_objects.append(query)
+
+            # Check rules (precondition/postcondition constraints)
+            if self.check_rules and class_def.rules:
+                for rule in class_def.rules:
+                    if rule.deactivated:
+                        continue
+                    query = self._generate_rule_violations(class_name, rule, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
 
@@ -223,6 +251,92 @@ class SQLValidationGenerator(Generator):
         )
         return header
 
+    def _build_violation_query(
+        self,
+        class_name: str,
+        column_name: str,
+        constraint_type: str,
+        identifier_slot_name: str,
+        invalid_value,
+        tbl: TableClause,
+        where_condition=None,
+    ):
+        """
+        Build a standardized violation query SELECT statement.
+
+        :param class_name: Name of the class/table
+        :param column_name: Name of the slot/constraint for column_name label
+        :param constraint_type: Type of constraint violated
+        :param identifier_slot_name: Name of the identifier slot
+        :param invalid_value: Expression for invalid_value column (literal or column)
+        :param where_condition: SQLAlchemy WHERE condition
+        :param tbl: Optional SQLAlchemy table object (created if not provided)
+        :return: SQLAlchemy select object
+        """
+        # for postgres, all values in a column need to be of same type so we need to CAST them to text
+        _invalid_value = cast(invalid_value, Text()) if self.dialect == "postgresql" else invalid_value
+
+        query = select(
+            literal(class_name, type_=Text()).label("table_name"),
+            literal(column_name, type_=Text()).label("column_name"),
+            literal(constraint_type, type_=Text()).label("constraint_type"),
+            column(identifier_slot_name).label("record_id"),
+            _invalid_value.label("invalid_value"),
+        ).select_from(tbl)
+
+        if where_condition is not None:
+            query = query.where(where_condition)
+
+        return query
+
+    @staticmethod
+    def _required_condition(col, negate: bool = False):
+        """
+        Build a SQLAlchemy condition for a required (non-null) constraint.
+
+        :param col: SQLAlchemy column expression
+        :param negate: If True, return the violation condition (IS NULL);
+            if False, the conformance condition (IS NOT NULL)
+        :return: SQLAlchemy condition
+        """
+        return col.is_(None) if negate else col.isnot(None)
+
+    @staticmethod
+    def _range_condition(col, min_val, max_val, negate: bool = False):
+        """
+        Build a SQLAlchemy condition for a range (minimum_value/maximum_value) constraint.
+
+        :param col: SQLAlchemy column expression
+        :param min_val: Minimum value (inclusive), or None
+        :param max_val: Maximum value (inclusive), or None
+        :param negate: If True, return the violation condition; if False, the conformance condition
+        :return: SQLAlchemy condition, or None if both bounds are None
+        """
+        conditions = []
+        if min_val is not None:
+            conditions.append(col < _literal_num(min_val) if negate else col >= _literal_num(min_val))
+        if max_val is not None:
+            conditions.append(col > _literal_num(max_val) if negate else col <= _literal_num(max_val))
+        if not conditions:
+            return None
+        return or_(*conditions) if negate else and_(*conditions)
+
+    @staticmethod
+    def _pattern_condition(col, pattern: str, negate: bool = False):
+        """
+        Build a SQLAlchemy condition for a pattern (regex) constraint.
+
+        Uses SQLAlchemy's ``regexp_match`` which compiles to the dialect-specific
+        syntax (PostgreSQL: ``~``, SQLite: ``REGEXP``).
+
+        :param col: SQLAlchemy column expression
+        :param pattern: Regular expression pattern string
+        :param negate: If True, return the violation condition; if False, the conformance condition
+        :return: SQLAlchemy condition
+        """
+        match = col.regexp_match(literal(pattern, type_=Text()))
+        return ~match if negate else match
+
     def _generate_required_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find NULL values in required fields.
@@ -234,19 +348,15 @@ class SQLValidationGenerator(Generator):
         """
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{slot.name}'").label("column_name"),
-                literal_column("'required'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                literal_column("NULL").label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(tbl.c[slot.name].is_(None))
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=slot.name,
+            constraint_type="required",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=null(),
+            tbl=tbl,
+            where_condition=self._required_condition(tbl.c[slot.name], negate=True),
         )
-
-        return query
 
     def _generate_range_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
@@ -257,40 +367,24 @@ class SQLValidationGenerator(Generator):
         :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
-        conditions = []
-
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
-
-        if slot.minimum_value is not None:
-            conditions.append(tbl.c[slot.name] < literal_column(str(slot.minimum_value)))
-
-        if slot.maximum_value is not None:
-            conditions.append(tbl.c[slot.name] > literal_column(str(slot.maximum_value)))
-
-        if not conditions:
+        where_condition = self._range_condition(tbl.c[slot.name], slot.minimum_value, slot.maximum_value, negate=True)
+        if where_condition is None:
             return None
 
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{slot.name}'").label("column_name"),
-                literal_column("'range'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                column(slot.name).label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(or_(*conditions))
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=slot.name,
+            constraint_type="range",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=column(slot.name),
+            tbl=tbl,
+            where_condition=where_condition,
         )
-
-        return query
 
     def _generate_pattern_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
         Generate query to find pattern (regex) violations.
-
-        Handles dialect-specific regex syntax:
-        - PostgreSQL: ~ operator
-        - SQLite: REGEXP function (requires extension)
 
         :param class_name: Name of the class/table
         :param slot: Slot definition with pattern constraint
@@ -299,33 +393,15 @@ class SQLValidationGenerator(Generator):
         """
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
-        pattern = slot.pattern
-
-        # Generate dialect-specific pattern matching using SQLAlchemy
-        # We need to use literal_column for dialect-specific operators
-        if self.dialect == "postgresql":
-            pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
-        elif self.dialect == "sqlite":
-            # SQLite REGEXP requires extension
-            pattern_check = ~literal_column(f"(REGEXP('{pattern}', {slot.name}) = 1)")
-
-        else:
-            # Default to PostgreSQL syntax
-            pattern_check = ~literal_column(f"{slot.name} ~ '{pattern}'")
-
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{slot.name}'").label("column_name"),
-                literal_column("'pattern'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                column(slot.name).label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(and_(tbl.c[slot.name].isnot(None), pattern_check))
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=slot.name,
+            constraint_type="pattern",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=column(slot.name),
+            tbl=tbl,
+            where_condition=self._pattern_condition(tbl.c[slot.name], slot.pattern, negate=True),
         )
-
-        return query
 
     def _generate_identifier_violations(self, class_name: str, slot: SlotDefinition, identifier_slot_name: str):
         """
@@ -350,20 +426,15 @@ class SQLValidationGenerator(Generator):
             .having(func.count() > 1)
         )
 
-        # Main query to find all records with those duplicate values
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{slot.name}'").label("column_name"),
-                literal_column(f"'{constraint_type}'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                column(slot.name).label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(tbl.c[slot.name].in_(duplicate_subquery))
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=slot.name,
+            constraint_type=constraint_type,
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=column(slot.name),
+            where_condition=tbl.c[slot.name].in_(duplicate_subquery),
+            tbl=tbl,
         )
-
-        return query
 
     def _generate_enum_violations(
         self, class_name: str, slot: SlotDefinition, sv: SchemaView, identifier_slot_name: str
@@ -384,43 +455,71 @@ class SQLValidationGenerator(Generator):
         if not enum or not enum.permissible_values:
             return None
 
-        permissible_values = [str(v) for v in enum.permissible_values.keys()]
+        permissible_values = [literal(str(v), type_=Text()) for v in enum.permissible_values.keys()]
 
         tbl = table(class_name, column(identifier_slot_name), column(slot.name))
 
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{slot.name}'").label("column_name"),
-                literal_column("'enum'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                column(slot.name).label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(and_(tbl.c[slot.name].isnot(None), tbl.c[slot.name].notin_(permissible_values)))
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=slot.name,
+            constraint_type="enum",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=column(slot.name),
+            tbl=tbl,
+            where_condition=and_(tbl.c[slot.name].isnot(None), tbl.c[slot.name].notin_(permissible_values)),
         )
 
-        return query
+    def _concat_columns(self, col_names: list[str]):
+        """Build a pipe-separated SQLAlchemy concatenation expression for the given column names
+        and casts these columns as TEXT.
+        This is necessary if several postconditions apply to different data types.
 
-    def _generate_unique_key_violations(
-        self, class_name: str, class_def: ClassDefinition, uk, identifier_slot_name: str
-    ):
+        Example:
+            precondition  -> human has drivers license
+            postcondition -> 1. human age > 18, 2. human is "adult"
+
+            Data that does not conform then returns the following `invalid_value`:
+            16 | adult
+            22 | teenager
+
+        Here we need both the number and the adult/teenager status to be of type TEXT
+        to concat them.
+
+        :param col_names: list of column names to concatenate
+        :return: SQLAlchemy expression
+        """
+
+        if len(col_names) == 1:
+            return column(col_names[0])
+        concat_parts = []
+        # Build concatenation: CAST(col1 AS TEXT) || '|' || CAST(col2 AS TEXT) || ...
+        for i, col_name in enumerate(col_names):
+            concat_parts.append(func.cast(column(col_name), Text))
+            if i < len(col_names) - 1:
+                concat_parts.append(literal("|", type_=Text()))
+        expr = concat_parts[0]
+        for part in concat_parts[1:]:
+            expr = expr + part
+        return expr
+
+    def _generate_unique_key_violations(self, class_name: str, slot_names: set[str], uk, identifier_slot_name: str):
         """
         Generate query to find unique_keys violations (multi-column uniqueness).
 
         Finds individual records with duplicate combinations of values across multiple columns.
 
         :param class_name: Name of the class/table
-        :param class_def: Class definition
+        :param slot_names: Set of valid slot names for this class
         :param uk: UniqueKey definition
         :param identifier_slot_name: Name of the identifier slot
         :return: SQLAlchemy select object or None
         """
-        # Get column names from unique key slots
+        # Get column names from unique key slots (underscored for SQL)
         columns = []
         for slot_name in uk.unique_key_slots:
-            if slot_name in class_def.attributes:
-                columns.append(slot_name)
+            sql_name = underscore(slot_name)
+            if sql_name in slot_names:
+                columns.append(sql_name)
 
         if not columns:
             return None
@@ -428,22 +527,7 @@ class SQLValidationGenerator(Generator):
         # Main table with identifier and all columns
         tbl = table(class_name, column(identifier_slot_name), *[column(col) for col in columns])
 
-        # Build concatenated value expression (pipe-separated)
-        # Use CAST to ensure all values are strings before concatenation
-        if len(columns) == 1:
-            concat_expr = func.cast(column(columns[0]), Text)
-        else:
-            # Build concatenation: CAST(col1 AS TEXT) || '|' || CAST(col2 AS TEXT) || ...
-            concat_parts = []
-            for i, col in enumerate(columns):
-                concat_parts.append(func.cast(column(col), Text))
-                if i < len(columns) - 1:
-                    concat_parts.append(literal_column("'|'"))
-
-            # Chain concatenation operations
-            concat_expr = concat_parts[0]
-            for part in concat_parts[1:]:
-                concat_expr = concat_expr.op("||")(part)
+        concat_expr = self._concat_columns(columns)
 
         # Subquery to find duplicate combinations
         subquery_tbl = table(class_name, *[column(col) for col in columns])
@@ -464,20 +548,144 @@ class SQLValidationGenerator(Generator):
 
             where_clause = tuple_(*[tbl.c[col] for col in columns]).in_(duplicate_subquery)
 
-        # Main query to find all records with duplicate combinations
-        query = (
-            select(
-                literal_column(f"'{class_name}'").label("table_name"),
-                literal_column(f"'{uk.unique_key_name}'").label("column_name"),
-                literal_column("'unique_key'").label("constraint_type"),
-                column(identifier_slot_name).label("record_id"),
-                concat_expr.label("invalid_value"),
-            )
-            .select_from(tbl)
-            .where(where_clause)
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=uk.unique_key_name,
+            constraint_type="unique_key",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=concat_expr,
+            tbl=tbl,
+            where_condition=where_clause,
         )
 
-        return query
+    def _slot_condition_to_sqlalchemy(self, tbl, slot_name, slot_condition, negate=False):
+        """
+        Convert a single slot condition to SQLAlchemy WHERE clause(s).
+
+        :param tbl: SQLAlchemy table object
+        :param slot_name: Name of the slot/column
+        :param slot_condition: SlotDefinition with constraint properties
+        :param negate: If True, negate the condition (for postcondition violation detection)
+        :return: list of SQLAlchemy conditions
+        """
+        conditions = []
+        col = tbl.c[slot_name]
+
+        if slot_condition.equals_string is not None:
+            lit = literal(slot_condition.equals_string, type_=Text())
+            conditions.append(col != lit if negate else col == lit)
+
+        if slot_condition.equals_number is not None:
+            lit_num = _literal_num(slot_condition.equals_number)
+            conditions.append(col != lit_num if negate else col == lit_num)
+
+        if slot_condition.equals_string_in:
+            lit_vals = [literal(v, type_=Text()) for v in slot_condition.equals_string_in]
+            conditions.append(col.notin_(lit_vals) if negate else col.in_(lit_vals))
+
+        range_cond = self._range_condition(
+            col, slot_condition.minimum_value, slot_condition.maximum_value, negate=negate
+        )
+        if range_cond is not None:
+            conditions.append(range_cond)
+
+        if slot_condition.pattern is not None:
+            conditions.append(self._pattern_condition(col, slot_condition.pattern, negate=negate))
+
+        if slot_condition.required:
+            conditions.append(self._required_condition(col, negate=negate))
+
+        return conditions
+
+    def _class_expression_to_sqlalchemy(self, tbl, expression, negate=False):
+        """
+        Convert an AnonymousClassExpression to a composite WHERE clause.
+
+        :param tbl: SQLAlchemy table object
+        :param expression: AnonymousClassExpression with slot_conditions
+        :param negate: If True, negate the expression (for postcondition violation detection). Note that negated
+        conditions are concatenated with OR -> De Morgan's law.
+        :return: SQLAlchemy condition or None
+        """
+        if not expression or not expression.slot_conditions:
+            return None
+
+        # Warn about unsupported features
+        for attr in ("any_of", "all_of", "none_of", "exactly_one_of"):
+            if getattr(expression, attr, None):
+                logger.warning(f"Rule class expression '{attr}' is not yet supported in SQL validation")
+
+        all_conditions = []
+        for slot_name, slot_condition in expression.slot_conditions.items():
+            conds = self._slot_condition_to_sqlalchemy(tbl, slot_name, slot_condition, negate=negate)
+            all_conditions.extend(conds)
+
+        if not all_conditions:
+            return None
+
+        if negate:
+            # De Morgan's law: negating AND → OR
+            return or_(*all_conditions)
+        else:
+            return and_(*all_conditions)
+
+    def _generate_rule_violations(self, class_name, rule, identifier_slot_name):
+        """
+        Generate query to find rows violating a rule's postconditions.
+
+        A violation occurs when the precondition is met but the postcondition is not.
+
+        Preconditions are concatenated with AND. Postconditions are concatenated with OR.
+        Postcondition is required, precondition is not required. If no precondition is given,
+        the postcondition applies to all entries.
+
+        :param class_name: Name of the class/table
+        :param rule: ClassRule with preconditions/postconditions
+        :param identifier_slot_name: Name of the identifier slot
+        :return: SQLAlchemy select object or None
+        """
+        if not rule.postconditions or not rule.postconditions.slot_conditions:
+            logger.warning("Could not generate rule-based query: A rule needs to have a 'postcondition'.")
+            return None
+
+        # Collect all referenced column names
+        col_names = {identifier_slot_name}
+        if rule.preconditions and rule.preconditions.slot_conditions:
+            col_names.update(rule.preconditions.slot_conditions.keys())
+        col_names.update(rule.postconditions.slot_conditions.keys())
+
+        postcondition_slot_names = list(rule.postconditions.slot_conditions.keys())
+        column_name_label = ",".join(postcondition_slot_names)
+
+        tbl = table(class_name, *[column(c) for c in col_names])
+
+        # Build WHERE: precondition AND (negated postcondition)
+        where_parts = []
+        if rule.preconditions:
+            pre = self._class_expression_to_sqlalchemy(tbl, rule.preconditions, negate=False)
+            if pre is not None:
+                where_parts.append(pre)
+
+        post = self._class_expression_to_sqlalchemy(tbl, rule.postconditions, negate=True)
+        if post is None:
+            logger.warning(
+                "Could not generate rule-based query: postconditions exist but produced "
+                "no SQL conditions (unsupported slot condition types?)."
+            )
+            return None
+        where_parts.append(post)
+
+        where_clause = and_(*where_parts) if len(where_parts) > 1 else where_parts[0]
+
+        return self._build_violation_query(
+            class_name=class_name,
+            column_name=column_name_label,
+            constraint_type="rule",
+            identifier_slot_name=identifier_slot_name,
+            invalid_value=self._concat_columns(postcondition_slot_names),
+            tbl=tbl,
+            where_condition=where_clause,
+        )
 
 
 @shared_arguments(SQLValidationGenerator)
@@ -517,6 +725,12 @@ class SQLValidationGenerator(Generator):
     default=True,
     show_default=True,
     help="Generate queries for unique key violations",
+)
+@click.option(
+    "--check-rules/--no-check-rules",
+    default=True,
+    show_default=True,
+    help="Generate queries for rule (precondition/postcondition) violations",
 )
 @click.option(
     "--include-comments/--no-include-comments",
