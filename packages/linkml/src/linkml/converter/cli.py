@@ -240,7 +240,8 @@ def cli(
         if schema is None:
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
         obj_dict = json_dumper.to_dict(obj)
-        run_validation(obj_dict, schema, target_class, raise_=True)
+        report = run_validation(obj_dict, schema, target_class, raise_=True)
+        report.raise_for_results()
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":

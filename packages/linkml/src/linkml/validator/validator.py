@@ -42,22 +42,17 @@ class Validator:
         self._validation_plugins = validation_plugins
         self.strict = strict
 
-    def validate(self, instance: Any, target_class: str | None = None, raise_: bool = False) -> ValidationReport:
+    def validate(self, instance: Any, target_class: str | None = None) -> ValidationReport:
         """Validate the given instance
 
         :param instance: The instance to validate
         :param target_class: Name of the class within the schema to validate
             against. If ``None``, the class will be inferred from the schema by
             looking for a class with ``tree_root: true``. Defaults to ``None``.
-        :param raise_: If ``True``, raise a :class:`linkml.utils.exceptions.ValidationError`
-            rather than returning a report
         :return: A validation report
         :rtype: ValidationReport
         """
-        report = ValidationReport(results=list(self.iter_results(instance, target_class)))
-        if raise_:
-            report.raise_()
-        return report
+        return ValidationReport(results=list(self.iter_results(instance, target_class)))
 
     def validate_source(self, loader: Loader, target_class: str | None = None) -> ValidationReport:
         """Validate instances from a data source
