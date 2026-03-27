@@ -82,6 +82,11 @@ class _DelimitedFileLoader(Loader, ABC):
             else None
         )
 
+    @property
+    def has_schema_context(self) -> bool:
+        """Whether schema-aware type coercion has been configured."""
+        return self._numeric_slots is not None
+
     def set_schema_context(self, schema_path: str | Path, target_class: str) -> None:
         """Configure schema-aware type coercion after construction.
 

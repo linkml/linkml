@@ -104,7 +104,7 @@ class Validator:
         # CSV/TSV columns belong to a nested class, not the validation target.
         if (
             isinstance(loader, _DelimitedFileLoader)
-            and loader._numeric_slots is None
+            and not loader.has_schema_context
             and loader.index_slot_name is None
         ):
             schema_path = self._schema.source_file
