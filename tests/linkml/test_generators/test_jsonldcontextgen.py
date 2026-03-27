@@ -1,4 +1,5 @@
 import json
+import textwrap
 
 import pytest
 from click.testing import CliRunner
@@ -571,3 +572,97 @@ def test_exclude_imports(input_path):
     # Imported class and slot must NOT be present
     assert "BaseClass" not in ctx, "Imported class 'BaseClass' must not appear in exclude-imports context"
     assert "baseProperty" not in ctx, "Imported slot 'baseProperty' must not appear in exclude-imports context"
+
+
+@pytest.mark.parametrize("mergeimports", [True, False], ids=["merge", "no-merge"])
+def test_exclude_external_imports(tmp_path, mergeimports):
+    """With --exclude-external-imports, elements from URL-based external
+    vocabulary imports must not appear in the generated JSON-LD context,
+    while local file imports and linkml standard imports are kept.
+
+    When a schema imports terms from an external vocabulary (e.g. W3C VC
+    v2), those terms already have context definitions in their own JSON-LD
+    context file.  Re-defining them in the local context can conflict with
+    @protected term definitions from the external context (JSON-LD 1.1
+    section 4.1.11).
+    """
+    ext_dir = tmp_path / "ext"
+    ext_dir.mkdir()
+    (ext_dir / "external_vocab.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/external-vocab
+            name: external_vocab
+            default_prefix: ext
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ext: https://example.org/external-vocab/
+            imports:
+              - linkml:types
+            slots:
+              issuer:
+                slot_uri: ext:issuer
+                range: string
+              validFrom:
+                slot_uri: ext:validFrom
+                range: date
+            classes:
+              ExternalCredential:
+                class_uri: ext:ExternalCredential
+                slots:
+                  - issuer
+                  - validFrom
+        """),
+        encoding="utf-8",
+    )
+
+    (tmp_path / "main.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/main
+            name: main
+            default_prefix: main
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              main: https://example.org/main/
+              ext: https://example.org/external-vocab/
+            imports:
+              - linkml:types
+              - https://example.org/external-vocab
+            slots:
+              localName:
+                slot_uri: main:localName
+                range: string
+            classes:
+              LocalThing:
+                class_uri: main:LocalThing
+                slots:
+                  - localName
+        """),
+        encoding="utf-8",
+    )
+
+    importmap = {"https://example.org/external-vocab": str(ext_dir / "external_vocab")}
+
+    context_text = ContextGenerator(
+        str(tmp_path / "main.yaml"),
+        exclude_external_imports=True,
+        mergeimports=mergeimports,
+        importmap=importmap,
+        base_dir=str(tmp_path),
+    ).serialize()
+    context = json.loads(context_text)
+    ctx = context["@context"]
+
+    # Local terms must be present
+    assert "localName" in ctx or "local_name" in ctx, (
+        f"Local slot missing with mergeimports={mergeimports}, got: {list(ctx.keys())}"
+    )
+    assert "LocalThing" in ctx, f"Local class missing with mergeimports={mergeimports}, got: {list(ctx.keys())}"
+
+    # External vocabulary terms must NOT be present
+    assert "issuer" not in ctx, f"External slot 'issuer' present with mergeimports={mergeimports}"
+    assert "validFrom" not in ctx and "valid_from" not in ctx, (
+        f"External slot 'validFrom' present with mergeimports={mergeimports}"
+    )
+    assert "ExternalCredential" not in ctx, (
+        f"External class 'ExternalCredential' present with mergeimports={mergeimports}"
+    )
