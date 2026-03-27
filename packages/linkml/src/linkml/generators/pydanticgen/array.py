@@ -149,11 +149,9 @@ class ArrayValidator:
         """
         if array.minimum_number_dimensions is not None and array.maximum_number_dimensions is None and array.dimensions:
             raise SchemaValidationError(
-                (
-                    "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
-                    "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
-                    "maximum_number_dimensions explicitly to False for unbounded dimensions"
-                )
+                "Cannot specify a minimum_number_dimensions while maximum is None while using labeled dimensions - "
+                "either use exact_number_dimensions > len(dimensions) for extra parameterized dimensions or set "
+                "maximum_number_dimensions explicitly to False for unbounded dimensions"
             )
 
     @staticmethod

@@ -201,7 +201,7 @@ def cli(
         target_class = infer_root_class(sv)
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
-    py_target_class: "YAMLRoot" = python_module.__dict__[target_class]
+    py_target_class: YAMLRoot = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
 
