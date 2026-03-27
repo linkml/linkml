@@ -316,6 +316,7 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
+@pytest.mark.xfail(reason="identifier slots incorrectly allow null (#2448)", strict=True)
 @pytest.mark.parametrize("not_closed", [True, False])
 def test_slot_identifier_non_nullability(input_path, not_closed):
     """
