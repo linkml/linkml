@@ -23,7 +23,7 @@ def _parse_numeric(value: str):
         return value
 
 
-def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
+def _get_numeric_slots_from_view(schema_view, target_class: str) -> set[str]:
     """Return column names whose schema range is a numeric type.
 
     Only these columns should be passed through ``_parse_numeric``. All others
@@ -33,19 +33,26 @@ def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
     Uses ``SchemaView.type_ancestors()`` to walk ``typeof`` chains, so custom
     types like ``typeof: string`` are handled correctly.
     """
-    from linkml_runtime import SchemaView
-
-    sv = SchemaView(str(schema_path))
     numeric_slots: set[str] = set()
-    all_types = sv.all_types()
-    for slot in sv.class_induced_slots(target_class):
+    all_types = schema_view.all_types()
+    for slot in schema_view.class_induced_slots(target_class):
         if slot.range in all_types:
-            ancestors = sv.type_ancestors(slot.range)
+            ancestors = schema_view.type_ancestors(slot.range)
             if any(a in _NUMERIC_TYPE_NAMES for a in ancestors):
                 numeric_slots.add(slot.name)
                 if slot.alias:
                     numeric_slots.add(slot.alias)
     return numeric_slots
+
+
+def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
+    """Return column names whose schema range is a numeric type.
+
+    Convenience wrapper that creates a :class:`SchemaView` from *schema_path*.
+    """
+    from linkml_runtime import SchemaView
+
+    return _get_numeric_slots_from_view(SchemaView(str(schema_path)), target_class)
 
 
 class _DelimitedFileLoader(Loader, ABC):
@@ -87,14 +94,20 @@ class _DelimitedFileLoader(Loader, ABC):
         """Whether schema-aware type coercion has been configured."""
         return self._numeric_slots is not None
 
-    def set_schema_context(self, schema_path: str | Path, target_class: str) -> None:
+    def set_schema_context(self, schema_path_or_view, target_class: str) -> None:
         """Configure schema-aware type coercion after construction.
 
-        This is used by the :class:`~linkml.validator.Validator` to inject
-        schema information into loaders that were created without it (e.g.
-        by the CLI or ``default_loader_for_file``).
+        :param schema_path_or_view: Either a path to a LinkML schema file or an
+            existing :class:`~linkml_runtime.utils.schemaview.SchemaView`.  When
+            a ``SchemaView`` is passed the schema is not re-read from disk.
+        :param target_class: Name of the target class within the schema.
         """
-        self._numeric_slots = _get_numeric_slots(schema_path, target_class)
+        from linkml_runtime import SchemaView
+
+        if isinstance(schema_path_or_view, SchemaView):
+            self._numeric_slots = _get_numeric_slots_from_view(schema_path_or_view, target_class)
+        else:
+            self._numeric_slots = _get_numeric_slots(schema_path_or_view, target_class)
 
     def _coerce_value(self, key: str, value: str):
         """Return *value* coerced to the appropriate Python type.

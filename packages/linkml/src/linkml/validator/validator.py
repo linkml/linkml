@@ -107,9 +107,7 @@ class Validator:
             and not loader.has_schema_context
             and loader.index_slot_name is None
         ):
-            schema_path = self._schema.source_file
-            if schema_path is not None:
-                loader.set_schema_context(schema_path, context.target_class)
+            loader.set_schema_context(context.schema_view, context.target_class)
 
         for plugin in self._validation_plugins:
             plugin.pre_process(context)
