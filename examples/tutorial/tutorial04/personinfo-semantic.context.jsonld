@@ -1,0 +1,34 @@
+{
+   "@context": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "ORCID": "https://orcid.org/",
+      "linkml": "https://w3id.org/linkml/",
+      "personinfo": "https://w3id.org/linkml/examples/personinfo/",
+      "schema": "http://schema.org/",
+      "@vocab": "https://w3id.org/linkml/examples/personinfo/",
+      "persons": {
+         "@type": "@id",
+         "@id": "persons"
+      },
+      "age": {
+         "@type": "xsd:integer",
+         "@id": "age"
+      },
+      "aliases": {
+         "@id": "aliases"
+      },
+      "full_name": {
+         "@id": "schema:name"
+      },
+      "id": "@id",
+      "phone": {
+         "@id": "schema:telephone"
+      },
+      "Container": {
+         "@id": "Container"
+      },
+      "Person": {
+         "@id": "schema:Person"
+      }
+   }
+}

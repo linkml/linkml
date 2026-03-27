@@ -62,7 +62,7 @@
          "@id": "attribute3"
       },
       "attribute4": {
-         "@type": "@id",
+         "@type": "xsd:integer",
          "@id": "attribute4"
       },
       "attribute1": {
