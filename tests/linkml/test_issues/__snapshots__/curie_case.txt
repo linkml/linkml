@@ -1,3 +1,4 @@
+# --- curie_case.yaml ---
 name: curiecase
 id: http://example.org/tests/curiecase
 prefixes:
@@ -33,3 +34,26 @@ source_file: curie_case.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1
 generation_date: '2000-01-01T00:00:00'
+
+# --- curie_case.context.jsonld ---
+{
+  "@context": {
+    "@vocab": "http://example.org/tests/curiecase/",
+    "ABC": "http://example.org/abc#",
+    "C1": {
+      "@id": "aBC:c1"
+    },
+    "C2": {
+      "@id": "aBC:t2"
+    },
+    "C3": {
+      "@id": "aBC:t3"
+    },
+    "aBC": "http://example.org/abc#",
+    "aBc": "http://example.org/abc#",
+    "abc": "http://example.org/abc#",
+    "curiecase": "http://example.org/tests/curiecase/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
+
