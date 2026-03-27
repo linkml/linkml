@@ -26,11 +26,7 @@ def test_dashboard_covers_all_validation_behaviors():
     generate_dashboard.py doesn't know how to render it — update STATUS_ICONS
     in scripts/generate_dashboard.py.
     """
-    missing = [
-        v.value
-        for v in ValidationBehavior
-        if v.value not in dashboard.STATUS_ICONS
-    ]
+    missing = [v.value for v in ValidationBehavior if v.value not in dashboard.STATUS_ICONS]
     assert not missing, (
         f"ValidationBehavior values {missing} have no icon in "
         f"generate_dashboard.py STATUS_ICONS — update scripts/generate_dashboard.py"
