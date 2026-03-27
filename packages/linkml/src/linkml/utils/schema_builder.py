@@ -23,12 +23,11 @@ class SchemaBuilder:
 
         >>> from linkml.utils.schema_builder import SchemaBuilder
         >>> sb = SchemaBuilder('test-schema')
-        >>> sb.add_class('Person', slots=['name', 'age'])
-        >>> sb.add_class('Organization', slots=['name', 'employees'])
-        >>> sb.add_slot('name',description='Name of the person or organization')
-        >>> sb.add_slot('age',description='Age of the person', range='integer')
+        >>> _ = sb.add_class('Person', slots=['name', 'age'])
+        >>> _ = sb.add_class('Organization', slots=['name', 'employees'])
+        >>> _ = sb.add_slot('name',description='Name of the person or organization', replace_if_present=True)
+        >>> _ = sb.add_slot('age',description='Age of the person', range='integer', replace_if_present=True)
         >>> schema = sb.schema
-        >>> print()
 
     Most builder methods accepts either a string, an instance of a metamodel element,
     or a dictionary.  If a string is provided, then a new element is created with this
@@ -37,7 +36,7 @@ class SchemaBuilder:
     This follows the standard Builder pattern, so the results of a build operation
     are a builder, allowing chaining. For example:
 
-        >>> sb = SchemaBuilder('test-schema').add_class('Person', slots=['name', 'age'])
+        >>> _ = SchemaBuilder('test-schema').add_class('Person', slots=['name', 'age'])
 
     """
 
