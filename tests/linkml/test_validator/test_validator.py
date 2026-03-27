@@ -60,16 +60,14 @@ def test_validate_valid_instance():
     assert len(report.results) == 0
 
 
-@pytest.mark.parametrize("do_raise", [True, False])
-def test_validate_invalid_instance(do_raise):
+def test_validate_invalid_instance():
     plugins = [AcceptNothingValidationPlugin(10)]
     validator = Validator(SCHEMA, plugins)
-    if do_raise:
-        with pytest.raises(ValidationError, match=r"Error\(s\) validating data.*"):
-            validator.validate({"foo": "bar"}, raise_=do_raise)
-    else:
-        report = validator.validate({"foo": "bar"}, raise_=do_raise)
-        assert len(report.results) == 10
+    report = validator.validate({"foo": "bar"})
+    assert len(report.results) == 10
+
+    with pytest.raises(ValidationError, match=r"Error\(s\) validating data.*"):
+        report.raise_for_results()
 
 
 def test_validate_multiple_plugins():

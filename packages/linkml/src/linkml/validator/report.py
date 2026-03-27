@@ -50,9 +50,11 @@ class ValidationReport(BaseModel):
 
     results: list[ValidationResult]
 
-    def raise_(self):
+    def raise_for_results(self) -> None:
         """
         If any results, raise them as a :class:`.ValidationError`
+
+        :raises ValidationError: if any validation results are present
         """
         if self.results:
             res = textwrap.indent("\n".join(str(res) for res in self.results), "  ")
