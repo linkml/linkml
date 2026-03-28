@@ -3,7 +3,6 @@
 Schemas are defined inline to keep tests self-contained.
 """
 
-
 import pytest
 from click.testing import CliRunner
 
@@ -481,10 +480,336 @@ def test_structs_stay_topological_with_sort():
 
 def test_no_string_conversions():
     """Test that --no-gen-string-conversions omits to_string/from_string."""
-    code = CppGenerator(
-        schema=ENUM_SCHEMA, gen_string_conversions=False
-    ).serialize()
+    code = CppGenerator(schema=ENUM_SCHEMA, gen_string_conversions=False).serialize()
     assert "#include <cstring>" not in code
+
+
+# ---------------------------------------------------------------------------
+# Tests: ifabsent / default values
+# ---------------------------------------------------------------------------
+
+IFABSENT_SCHEMA = """
+id: https://example.org/ifabsent
+name: ifabsent_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Config:
+    slots:
+      - label
+      - retries
+      - ratio
+      - enabled
+      - disabled
+
+slots:
+  label:
+    range: string
+    required: true
+    identifier: true
+  retries:
+    range: integer
+    required: true
+    ifabsent: int(3)
+  ratio:
+    range: float
+    required: true
+    ifabsent: float(0.5)
+  enabled:
+    range: boolean
+    required: true
+    ifabsent: "true"
+  disabled:
+    range: boolean
+    required: true
+    ifabsent: "false"
+"""
+
+
+@pytest.mark.parametrize(
+    "slot_name, expected_default",
+    [
+        ("retries", "3"),
+        ("ratio", "0.5f"),
+        ("enabled", "true"),
+        ("disabled", "false"),
+    ],
+    ids=["int_ifabsent", "float_ifabsent", "bool_true_ifabsent", "bool_false_ifabsent"],
+)
+def test_ifabsent_defaults(slot_name, expected_default):
+    """Test that ifabsent expressions are parsed into C++ defaults."""
+    module = CppGenerator(schema=IFABSENT_SCHEMA).render()
+    config = module.structs["Config"]
+    field = config.fields[slot_name]
+    assert field.default_value == expected_default
+
+
+def test_parse_ifabsent_unknown_returns_none():
+    """Test that an unrecognized ifabsent expression returns None."""
+    gen = CppGenerator(schema=SIMPLE_SCHEMA)
+    assert gen._parse_ifabsent("unknown(foo)") is None
+
+
+def test_parse_ifabsent_string():
+    """Test that string() ifabsent produces a quoted C++ literal."""
+    gen = CppGenerator(schema=SIMPLE_SCHEMA)
+    assert gen._parse_ifabsent("string(unknown)") == '"unknown"'
+
+
+# ---------------------------------------------------------------------------
+# Tests: mixins
+# ---------------------------------------------------------------------------
+
+MIXIN_SCHEMA = """
+id: https://example.org/mixin
+name: mixin_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Identifiable:
+    mixin: true
+    slots:
+      - id
+
+  Describable:
+    mixin: true
+    slots:
+      - description
+
+  Item:
+    is_a: Identifiable
+    mixins:
+      - Describable
+    slots:
+      - name
+
+slots:
+  id:
+    range: string
+    required: true
+    identifier: true
+  description:
+    range: string
+  name:
+    range: string
+"""
+
+
+def test_mixin_inheritance():
+    """Test that mixins produce multiple base classes in the struct."""
+    code = CppGenerator(schema=MIXIN_SCHEMA).serialize()
+    assert "struct Item : public Identifiable, public Describable" in code
+
+
+# ---------------------------------------------------------------------------
+# Tests: sort_classes error
+# ---------------------------------------------------------------------------
+
+
+def test_sort_classes_cycle_raises():
+    """Test that sort_classes raises ValueError on an unresolvable cycle."""
+    from linkml_runtime.linkml_model.meta import ClassDefinition
+
+    cls_a = ClassDefinition(name="A", is_a="B")
+    cls_b = ClassDefinition(name="B", is_a="A")
+    with pytest.raises(ValueError, match="Could not topologically sort"):
+        CppGenerator.sort_classes([cls_a, cls_b])
+
+
+# ---------------------------------------------------------------------------
+# Tests: edge cases in generate_cpp_type
+# ---------------------------------------------------------------------------
+
+UNKNOWN_TYPE_SCHEMA = """
+id: https://example.org/unknown_type
+name: unknown_type_test
+default_range: string
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+types:
+  CustomType:
+    typeof: string
+    uri: xsd:string
+
+classes:
+  Thing:
+    slots:
+      - data
+
+slots:
+  data:
+    range: CustomType
+"""
+
+
+def test_type_with_known_base_maps_correctly():
+    """Test that a custom type whose base is in TYPE_MAP resolves correctly."""
+    module = CppGenerator(schema=UNKNOWN_TYPE_SCHEMA).render()
+    thing = module.structs["Thing"]
+    # CustomType -> typeof string -> base 'str' -> std::string, and it's optional
+    assert "string" in thing.fields["data"].cpp_type
+
+
+# ---------------------------------------------------------------------------
+# Tests: default_value_for_type
+# ---------------------------------------------------------------------------
+
+
+def test_default_value_for_known_type():
+    """Test default_value_for_type returns the correct literal for known types."""
+    gen = CppGenerator(schema=SIMPLE_SCHEMA)
+    assert gen.default_value_for_type("std::string") == '""'
+    assert gen.default_value_for_type("int32_t") == "0"
+    assert gen.default_value_for_type("bool") == "false"
+
+
+def test_default_value_for_unknown_type():
+    """Test default_value_for_type falls back to '{}' for unknown types."""
+    gen = CppGenerator(schema=SIMPLE_SCHEMA)
+    assert gen.default_value_for_type("SomeUnknownType") == "{}"
+
+
+# ---------------------------------------------------------------------------
+# Tests: serialize with pre-rendered module
+# ---------------------------------------------------------------------------
+
+
+def test_serialize_with_prerendered_module():
+    """Test that serialize() accepts a pre-rendered CppModule."""
+    gen = CppGenerator(schema=SIMPLE_SCHEMA)
+    module = gen.render()
+    code = gen.serialize(rendered_module=module)
+    assert "#pragma once" in code
+    assert "struct Person" in code
+
+
+# ---------------------------------------------------------------------------
+# Tests: custom template_dir
+# ---------------------------------------------------------------------------
+
+
+def test_custom_template_dir(tmp_path):
+    """Test that template_dir option adds a custom loader."""
+    gen = CppGenerator(schema=SIMPLE_SCHEMA, template_dir=str(tmp_path))
+    # Should still work — custom dir is searched first, then falls back to built-in
+    code = gen.serialize()
+    assert "#pragma once" in code
+
+
+# ---------------------------------------------------------------------------
+# Tests: template.py Includes operations
+# ---------------------------------------------------------------------------
+
+
+def test_includes_add_single():
+    """Test adding a single CppInclude to Includes."""
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    inc = Includes(includes=[CppInclude(header="string", system=True)])
+    result = inc + CppInclude(header="vector", system=True)
+    assert len(result) == 2
+
+
+def test_includes_add_deduplicates():
+    """Test that adding a duplicate include is a no-op."""
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    inc = Includes(includes=[CppInclude(header="string", system=True)])
+    result = inc + CppInclude(header="string", system=True)
+    assert len(result) == 1
+
+
+def test_includes_add_includes_object():
+    """Test merging two Includes objects."""
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    a = Includes(includes=[CppInclude(header="string")])
+    b = Includes(includes=[CppInclude(header="vector")])
+    result = a + b
+    assert len(result) == 2
+
+
+def test_includes_add_list():
+    """Test adding a list of CppInclude to Includes."""
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    inc = Includes()
+    result = inc + [CppInclude(header="string"), CppInclude(header="vector")]
+    assert len(result) == 2
+
+
+def test_includes_sort():
+    """Test that sort orders system includes first, then alphabetically."""
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    inc = Includes(
+        includes=[
+            CppInclude(header="vector", system=True),
+            CppInclude(header="myheader.h", system=False),
+            CppInclude(header="algorithm", system=True),
+        ]
+    )
+    inc.sort()
+    headers = [i.header for i in inc.includes]
+    assert headers == ["algorithm", "vector", "myheader.h"]
+
+
+# ---------------------------------------------------------------------------
+# Tests: template render without explicit environment
+# ---------------------------------------------------------------------------
+
+
+def test_template_render_without_environment():
+    """Test that CppTemplateModel.render() works without an explicit environment."""
+    from linkml.generators.cppgen.template import CppEnum, CppEnumValue
+
+    enum = CppEnum(
+        name="Color",
+        values={"RED": CppEnumValue(name="RED", value="RED")},
+    )
+    rendered = enum.render()
+    assert "enum class Color" in rendered
+
+
+# ---------------------------------------------------------------------------
+# Tests: build.py merge with includes
+# ---------------------------------------------------------------------------
+
+
+def test_build_result_merge_with_includes():
+    """Test that merging build results combines includes."""
+    from linkml.generators.cppgen.build import CppBuildResult
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    a = CppBuildResult(includes=Includes(includes=[CppInclude(header="string")]))
+    b = CppBuildResult(includes=Includes(includes=[CppInclude(header="vector")]))
+    merged = a.merge(b)
+    assert merged.includes is not None
+
+
+def test_build_result_merge_includes_into_none():
+    """Test merging includes into a result that has no includes yet."""
+    from linkml.generators.cppgen.build import CppBuildResult
+    from linkml.generators.cppgen.template import CppInclude, Includes
+
+    a = CppBuildResult(includes=None)
+    b = CppBuildResult(includes=Includes(includes=[CppInclude(header="string")]))
+    merged = a.merge(b)
+    assert merged.includes is not None
 
 
 # ---------------------------------------------------------------------------
@@ -515,3 +840,14 @@ def test_cli_custom_namespace(tmp_path):
 
     assert result.exit_code == 0
     assert "namespace game::ontology" in result.output
+
+
+def test_cli_nonexistent_template_dir(tmp_path):
+    """Test that CLI raises an error for a non-existent template directory."""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(SIMPLE_SCHEMA)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(schema_file), "--template-dir", "/nonexistent/path"])
+
+    assert result.exit_code != 0
