@@ -401,7 +401,7 @@ def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
         gen.embed_context_in_frame = True
     else:
         gen.emit_frame = emit_frame
-    print(gen.serialize(output=output, **args))
+    print(gen.serialize(output=output))
 
 
 if __name__ == "__main__":

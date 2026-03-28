@@ -3,7 +3,7 @@
 import os
 from collections.abc import Sequence
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import click
@@ -57,10 +57,10 @@ class JSONLDGenerator(Generator):
     original_schema: SchemaDefinition = None
     """See https://github.com/linkml/linkml/issues/871"""
 
-    context: str = None
+    context: str | list[str] | None = field(default_factory=list)
     """Path to a JSONLD context file"""
 
-    metamodel_context: str = None
+    metamodel_context: str | None = None
     """Override for metamodel context URI/path. When None, uses METAMODEL_CONTEXT_URI."""
 
     def __post_init__(self) -> None:
@@ -170,7 +170,7 @@ class JSONLDGenerator(Generator):
         # TODO: fix this, see https://github.com/linkml/linkml/issues/871
         # JSON LD adjusts context reference using '@base'.  If context is supplied and not a URI, generate an
         # absolute URI for it
-        if context is None and self.format == "jsonld":
+        if not context and self.format == "jsonld":
             # TODO: Once we get pyld running w/ relative contexts, we need to figure out how to generate and add
             #       the relative (?) context reference below
             # model_context = self.schema.source_file.replace('.yaml', '.prefixes.context.jsonld')
@@ -219,11 +219,16 @@ class JSONLDGenerator(Generator):
         return super().serialize(context=context, context_kwargs=context_kwargs, **kwargs)
 
 
+# Option "context" can be specified multiple times.
+# Using a callback to process "context" to get a list instead of a tuple,
+# because the context can get extended later on.
 @shared_arguments(JSONLDGenerator)
 @click.command(name="jsonld")
 @click.option(
     "--context",
     multiple=True,
+    type=click.STRING,
+    callback=lambda ctx, param, value: list(value),
     help=f"JSONLD context file (default: {METAMODEL_CONTEXT_URI} and <model>.prefixes.context.jsonld)",
 )
 @click.option(
