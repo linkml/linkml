@@ -1,0 +1,4 @@
+{% if description %}
+{{ description | cpp_comment("    ") }}
+{% endif %}
+    {{ cpp_type }} {{ name }}{% if default_value %} = {{ default_value }}{% endif %};
