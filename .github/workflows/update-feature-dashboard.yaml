@@ -1,0 +1,64 @@
+name: Update Feature Dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/linkml/src/linkml/generators/**"
+      - "tests/linkml/test_compliance/**"
+      - "scripts/generate_dashboard.py"
+  workflow_dispatch:
+
+env:
+  UV_VERSION: "0.7.13"
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    if: github.repository == 'linkml/linkml' && github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tags if not run from main repo
+        if: github.repository != 'linkml/linkml'
+        run: |
+          git remote add upstream https://github.com/linkml/linkml
+          git fetch upstream --tags
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7.3.1
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run compliance tests
+        run: uv run pytest tests/linkml/test_compliance/ --with-output -q
+
+      - name: Generate dashboard
+        run: uv run python scripts/generate_dashboard.py
+
+      - name: Create PR with updated dashboard
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "docs: update feature dashboard from compliance tests"
+          title: "docs: update feature dashboard"
+          body: |
+            Auto-generated dashboard update from compliance test results.
+
+            **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          branch: auto/update-feature-dashboard
+          delete-branch: true
