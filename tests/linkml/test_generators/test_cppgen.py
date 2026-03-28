@@ -462,14 +462,21 @@ def test_no_optional_mode():
 
 
 def test_alphabetical_sort():
-    """Test that alphabetical sort produces deterministic ordering."""
+    """Test that alphabetical sort orders enums but keeps structs topological."""
     module = CppGenerator(schema=ENUM_SCHEMA, alphabetical_sort=True).render()
 
     enum_names = list(module.enums.keys())
     assert enum_names == sorted(enum_names)
 
+
+def test_structs_stay_topological_with_sort():
+    """Test that alphabetical sort does not reorder structs (C++ needs base before derived)."""
+    module = CppGenerator(schema=INHERITANCE_SCHEMA, alphabetical_sort=True).render()
+
     struct_names = list(module.structs.keys())
-    assert struct_names == sorted(struct_names)
+    # Employee extends Person extends NamedThing, so topological order must be preserved
+    assert struct_names.index("NamedThing") < struct_names.index("Person")
+    assert struct_names.index("Person") < struct_names.index("Employee")
 
 
 def test_no_string_conversions():

@@ -410,10 +410,11 @@ class CppGenerator(OOCodeGenerator):
             struct_result = self.generate_struct(cls)
             structs[struct_result.struct.name] = struct_result.struct
 
-        # Sort alphabetically for deterministic output
+        # Sort enums alphabetically for deterministic output.
+        # Structs always stay in topological order (base before derived)
+        # because C++ requires types to be declared before use.
         if self.alphabetical_sort:
             enums = dict(sorted(enums.items()))
-            structs = dict(sorted(structs.items()))
 
         # Build includes
         include_list = [CppInclude(header=h, system=True) for h in sorted(self._needed_includes)]
