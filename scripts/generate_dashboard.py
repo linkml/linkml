@@ -19,7 +19,7 @@ Usage:
     uv run pytest tests/linkml/test_compliance/ --with-output
 
     # 2. Generate dashboard from results
-    python scripts/generate_dashboard.py
+    uv run python scripts/generate_dashboard.py
 """
 
 from __future__ import annotations
@@ -185,7 +185,7 @@ def generate_dashboard(features: list[dict]) -> str:
     lines.append(
         "*Regenerate with: "
         "`uv run pytest tests/linkml/test_compliance/ --with-output && "
-        "python scripts/generate_dashboard.py`*"
+        "uv run python scripts/generate_dashboard.py`*"
     )
     lines.append("")
 
@@ -233,7 +233,7 @@ def generate_dashboard(features: list[dict]) -> str:
     lines.append("| Generator | Implements | Partial | Ignores | N/A | Total | Score |")
     lines.append("|-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|")
 
-    for fw, name in zip(frameworks, fw_names):
+    for fw, name in zip(frameworks, fw_names, strict=True):
         impl = part = ign = na = 0
         for feat in features:
             s = feat.get("implementations", {}).get(fw, "untested")
@@ -282,7 +282,7 @@ def generate_dashboard(features: list[dict]) -> str:
     lines.append(
         "*This dashboard is auto-generated from compliance test results. "
         "To update: run the compliance tests with `--with-output`, "
-        "then run `python scripts/generate_dashboard.py`. "
+        "then run `uv run python scripts/generate_dashboard.py`. "
         "To add features, write a new compliance test and decorate it with "
         '`@feature_category("Category Name", "Display Name")`.*'
     )
