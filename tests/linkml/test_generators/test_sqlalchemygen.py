@@ -10,8 +10,8 @@ from sqlalchemy.orm import sessionmaker
 
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum, cli
 from linkml.generators.sqltablegen import RANGEMAP, SQL_TYPE_TO_PYTHON_TYPE, SQLTableGenerator
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 logger = logging.getLogger(__name__)
 
