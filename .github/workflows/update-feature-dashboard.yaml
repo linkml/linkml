@@ -21,7 +21,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
@@ -46,13 +46,14 @@ jobs:
         run: uv sync --all-groups
 
       - name: Run compliance tests
+        continue-on-error: true
         run: uv run pytest tests/linkml/test_compliance/ --with-output -q
 
       - name: Generate dashboard
         run: uv run python scripts/generate_dashboard.py
 
       - name: Create PR with updated dashboard
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@v8.1.0
         with:
           commit-message: "docs: update feature dashboard from compliance tests"
           title: "docs: update feature dashboard"
