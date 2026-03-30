@@ -342,6 +342,159 @@ classes:
     assert "requires --output" in result.output
 
 
+def test_scoped_context_for_attribute_range_override(tmp_path):
+    """When a class attribute overrides a global slot's range, the class should
+    get a scoped @context with the correct @type for that slot (issue #2970)."""
+    schema = tmp_path / "type_conflict.yaml"
+    schema.write_text(
+        """
+id: example_schema
+name: ExampleSchema
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Attribute:
+    slots:
+      - name
+      - value
+
+  Measurement:
+    slots:
+      - unit
+    attributes:
+      value:
+        required: true
+        range: double
+
+slots:
+  name:
+    required: true
+    range: string
+
+  value:
+    required: true
+    range: integer
+
+  unit:
+    required: true
+    range: string
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    # Global slot "value" should have @type xsd:integer
+    assert ctx["value"]["@type"] == "xsd:integer"
+
+    # Measurement class should have a scoped @context overriding value's type
+    assert "@context" in ctx["Measurement"]
+    assert ctx["Measurement"]["@context"]["value"]["@type"] == "xsd:double"
+
+    # Attribute class should NOT have a scoped context (it uses the global range)
+    assert "@context" not in ctx.get("Attribute", {})
+
+
+def test_scoped_context_for_slot_usage_range_override(tmp_path):
+    """When a class overrides a slot's range via slot_usage, the class should
+    get a scoped @context (issue #2970)."""
+    schema = tmp_path / "slot_usage_override.yaml"
+    schema.write_text(
+        """
+id: example_schema
+name: ExampleSchema
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Base:
+    slots:
+      - score
+
+  Extended:
+    slots:
+      - score
+    slot_usage:
+      score:
+        range: double
+
+slots:
+  score:
+    range: integer
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    assert ctx["score"]["@type"] == "xsd:integer"
+    assert "@context" in ctx["Extended"]
+    assert ctx["Extended"]["@context"]["score"]["@type"] == "xsd:double"
+    assert "@context" not in ctx.get("Base", {})
+
+
+def test_scoped_context_class_range_override(tmp_path):
+    """When a slot's range is overridden from a type to a class, the scoped
+    context should use @id as the @type."""
+    schema = tmp_path / "class_range_override.yaml"
+    schema.write_text(
+        """
+id: example_schema
+name: ExampleSchema
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Thing:
+    attributes:
+      id: {identifier: true, range: string}
+
+  Container:
+    slots:
+      - ref
+
+  TypedContainer:
+    slots:
+      - ref
+    slot_usage:
+      ref:
+        range: Thing
+
+slots:
+  ref:
+    range: string
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    # Global ref should have no @type (string range)
+    assert "@type" not in ctx.get("ref", {}) or ctx["ref"] == {"@id": "ref"}
+
+    # TypedContainer should have scoped context with @id type
+    assert ctx["TypedContainer"]["@context"]["ref"]["@type"] == "@id"
+
+
 @pytest.mark.parametrize(
     "fix_container,attribute,container_type",
     [
