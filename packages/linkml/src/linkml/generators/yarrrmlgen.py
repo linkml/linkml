@@ -128,8 +128,17 @@ class YarrrmlGenerator(Generator):
                     f"This is not supported. Please assign an identifier to '{child_class}'."
                 )
 
+        has_tree_root_anywhere = any(c.tree_root for c in sv.all_classes().values())
+
         # Build YARRRML mappings blocks
         for cls in sv.all_classes().values():
+            if cls.mixin:
+                continue
+
+            if self._is_json_source() and has_tree_root_anywhere:
+                if not cls.tree_root and cls.name not in inline_owners:
+                    continue
+
             mapping_dict: dict[str, Any] = {}
             has_own_id = sv.get_identifier_slot(cls.name) or sv.get_key_slot(cls.name)
 
@@ -231,16 +240,28 @@ class YarrrmlGenerator(Generator):
         sv = self.schemaview
         po: list[dict[str, Any]] = []
 
+        types = []
         class_uri = sv.get_uri(c, expand=False)
         class_term = str(class_uri) if class_uri else f"{sv.schema.default_prefix or 'ex'}:{c.name}"
-        po.append({"p": "a", "o": class_term})
+        types.append(class_term)
+
+        for mixin_name in c.mixins:
+            m_cls = sv.get_class(mixin_name)
+            if m_cls:
+                m_uri = sv.get_uri(m_cls, expand=False)
+                m_term = str(m_uri) if m_uri else f"{sv.schema.default_prefix or 'ex'}:{m_cls.name}"
+                if m_term not in types:
+                    types.append(m_term)
+
+        if len(types) == 1:
+            po.append({"p": "a", "o": types[0]})
+        else:
+            po.append({"p": "a", "o": FlowList(types)})
 
         default_prefix = sv.schema.default_prefix or "ex"
 
         for s in sv.class_induced_slots(c.name):
             decl = sv.get_slot(s.name)
-            if decl and decl.identifier:
-                continue
 
             slot_uri = None
             if decl is not None and getattr(decl, "slot_uri", None):
