@@ -139,6 +139,8 @@ def aggregate_status(statuses: list[str]) -> str:
         return "⚪"
     if all(s in ("implements", "accepts") for s in applicable):
         return "✅"
+    if all(s == "untested" for s in applicable):
+        return "❓"
     if all(s in ("ignores", "untested") for s in applicable):
         return "❌"
     return "⚠️"
