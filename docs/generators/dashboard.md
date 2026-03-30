@@ -4,7 +4,7 @@
 
 This dashboard shows which LinkML metamodel features each generator supports. **The compliance test suite ([tests/linkml/test_compliance/](https://github.com/linkml/linkml/tree/main/tests/linkml/test_compliance)) is the source of truth** — every cell below is derived from actual test results.
 
-*Regenerate with: `uv run pytest tests/linkml/test_compliance/ --with-output && python scripts/generate_dashboard.py`*
+*Regenerate with: `uv run pytest tests/linkml/test_compliance/ --with-output && uv run python scripts/generate_dashboard.py`*
 
 ## Legend
 
@@ -22,20 +22,20 @@ Each cell shows the aggregate result across all tests in that category. Scroll d
 
 | Category | Pydantic | Python DC | JSON Schema | Java | SHACL | ShEx | OWL | JSON-LD Ctx | SQLite DDL | Postgres DDL | Pandera | Polars Schema |
 |----------| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| <a href="#arrays">Arrays</a> | ✅ | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#arrays">Arrays</a> | ✅ | ❓ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#boolean-expressions">Boolean Expressions</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#cardinality-presence">Cardinality & Presence</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#core-structure">Core Structure</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| <a href="#defaults-computed">Defaults & Computed</a> | ✅ | ✅ | ⚠️ | ❌ | ✅ | ❌ | ❌ | ✅ | ⚠️ | ❌ | ✅ | ✅ |
+| <a href="#defaults-computed">Defaults & Computed</a> | ✅ | ✅ | ⚠️ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ |
 | <a href="#enumerations">Enumerations</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| <a href="#identity-keys">Identity & Keys</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ |
-| <a href="#inheritance-refinement">Inheritance & Refinement</a> | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#identity-keys">Identity & Keys</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ |
+| <a href="#inheritance-refinement">Inheritance & Refinement</a> | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#inlining-references">Inlining & References</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| <a href="#metadata">Metadata</a> | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ❌ | ❌ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ |
-| <a href="#other">Other</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| <a href="#rules-classification">Rules & Classification</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| <a href="#schema-level">Schema-Level</a> | ✅ | ✅ | ✅ | ❌ | ⚠️ | ❌ | ❌ | ✅ | ✅ | ❌ | ⚠️ | ✅ |
-| <a href="#slot-typing-ranges">Slot Typing & Ranges</a> | ⚠️ | ⚠️ | ⚠️ | ❌ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ | ❌ | ⚠️ | ⚠️ |
+| <a href="#metadata">Metadata</a> | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ❓ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ |
+| <a href="#other">Other</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#rules-classification">Rules & Classification</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#schema-level">Schema-Level</a> | ✅ | ✅ | ✅ | ❓ | ⚠️ | ❓ | ❓ | ✅ | ✅ | ❓ | ⚠️ | ✅ |
+| <a href="#slot-typing-ranges">Slot Typing & Ranges</a> | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ⚠️ |
 | <a href="#value-constraints">Value Constraints</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 
 ## Coverage Scores
@@ -197,4 +197,4 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 ---
 
-*This dashboard is auto-generated from compliance test results. To update: run the compliance tests with `--with-output`, then run `python scripts/generate_dashboard.py`. To add features, write a new compliance test and decorate it with `@feature_category("Category Name", "Display Name")`.*
+*This dashboard is auto-generated from compliance test results. To update: run the compliance tests with `--with-output`, then run `uv run python scripts/generate_dashboard.py`. To add features, write a new compliance test and decorate it with `@feature_category("Category Name", "Display Name")`.*
