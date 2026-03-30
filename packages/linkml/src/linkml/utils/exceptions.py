@@ -15,5 +15,5 @@ class SchemaValidationError(SchemaError):
     """Schema is invalid!"""
 
 
-class ValidationError(DataError, SchemaError):
+class ValidationError(DataError):
     """Data is invalid relative to a schema"""
