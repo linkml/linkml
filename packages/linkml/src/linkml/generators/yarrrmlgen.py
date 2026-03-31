@@ -20,11 +20,7 @@ def flow_list_representer(dumper, data):
     # Ensures that specific lists (like sources and condition parameters)
     # are serialized in flow style, e.g., [data.json~jsonpath, '$[*]']
     # This prevents unreadable block sequences that break some YAML parsers (like Matey).
-    return dumper.represent_sequence(
-        "tag:yaml.org,2002:seq",
-        data,
-        flow_style=True
-    )
+    return dumper.represent_sequence("tag:yaml.org,2002:seq", data, flow_style=True)
 
 
 class YarrrmlDumper(yaml.SafeDumper):
@@ -69,9 +65,7 @@ class YarrrmlGenerator(Generator):
         return path
 
     def serialize(self, **args) -> str:
-        data = yaml.dump(
-            self.as_dict(), Dumper=YarrrmlDumper, sort_keys=False, allow_unicode=True, indent=2, width=120
-        )
+        data = yaml.dump(self.as_dict(), Dumper=YarrrmlDumper, sort_keys=False, allow_unicode=True, indent=2, width=120)
         return data
 
     def as_dict(self) -> dict[str, Any]:
@@ -281,7 +275,8 @@ class YarrrmlGenerator(Generator):
             has_own_id = sv.get_identifier_slot(c.name) or sv.get_key_slot(c.name)
             if c.name in inline_owners and not has_own_id:
                 # Adjust JSONPath variable resolution for inlined objects without an ID.
-                # Since the iterator remains at the parent level, we access properties via dot notation (e.g. parent_slot.child_prop)
+                # Since the iterator remains at the parent level, we access properties
+                # via dot notation (e.g. parent_slot.child_prop)
                 owner_name, slot_var = inline_owners[c.name][0]
                 var = f"{slot_var}.{var}"
 
@@ -348,13 +343,7 @@ class YarrrmlGenerator(Generator):
                 datatype = sv.get_uri(t, expand=False)
 
             if datatype:
-                po.append({
-                    "p": pred,
-                    "o": {
-                        "value": f"$({var})",
-                        "datatype": str(datatype)
-                    }
-                })
+                po.append({"p": pred, "o": {"value": f"$({var})", "datatype": str(datatype)}})
             else:
                 po.append({"p": pred, "o": f"$({var})"})
 

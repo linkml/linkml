@@ -506,9 +506,7 @@ def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
     csv_path = tmp_path / "people.csv"
     csv_path.write_text(
-        "person_id,name,employer,org_id,org_name\n"
-        "P1,WorkerA,O1,O1,Org_A\n"
-        "P2,WorkerB,O2,O2,Org_B\n",
+        "person_id,name,employer,org_id,org_name\nP1,WorkerA,O1,O1,Org_A\nP2,WorkerB,O2,O2,Org_B\n",
         encoding="utf-8",
     )
     yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()) + "~csv")
@@ -534,9 +532,7 @@ def test_yarrrml_e2e_basic_tsv_morph_shacl(tmp_path: Path):
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
     tsv_path = tmp_path / "people.tsv"
     tsv_path.write_text(
-        "person_id\tname\temployer\torg_id\torg_name\n"
-        "P1\tWorkerA\tO1\tO1\tOrg_A\n"
-        "P2\tWorkerB\tO2\tO2\tOrg_B\n",
+        "person_id\tname\temployer\torg_id\torg_name\nP1\tWorkerA\tO1\tO1\tOrg_A\nP2\tWorkerB\tO2\tO2\tOrg_B\n",
         encoding="utf-8",
     )
     yg = YarrrmlGenerator(str(schema_path), source=str(tsv_path.resolve()) + "~csv")
@@ -925,7 +921,8 @@ classes:
     schema_path.write_text(schema, encoding="utf-8")
     data_path.write_text(json.dumps(data), encoding="utf-8")
 
-    with pytest.raises(ValueError, match="is an inlined list \\(multivalued: true\\), but the target class 'Address' lacks an identifier"):
+    expected_error = "is an inlined list \\(multivalued: true\\), but the target class 'Address' lacks an identifier"
+    with pytest.raises(ValueError, match=expected_error):
         YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath").serialize()
 
 
