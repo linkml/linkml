@@ -331,7 +331,7 @@ def test_regression_no_yaml_python_object_garbage(tmp_path: Path):
                 if "value" in po["o"]:
                     assert isinstance(po["o"]["value"], str)
             else:
-                assert isinstance(po["o"], (str, list))
+                assert isinstance(po["o"], str | list)
 
 
 @pytest.mark.yarrrml
