@@ -31,11 +31,10 @@ The generator produces YARRRML like:
    mappings:
      Person:
        sources:
-         - - data.json~jsonpath
-           - $.items[*]
+         - [data.json~jsonpath, '$[*]']
        s: ex:$(id)
        po:
-         - p: rdf:type
+         - p: a
            o: ex:Person
          - p: ex:name
            o: $(name)
@@ -56,7 +55,7 @@ Besides JSON, CSV/TSV is supported. The key differences:
            - ['people.csv~csv']   # note the inner list
          s: ex:$(id)
          po:
-           - p: rdf:type
+           - p: a
              o: ex:Person
            - p: ex:name
              o: $(name)
@@ -122,8 +121,10 @@ Overview
   ``rdf:type`` and predicate IRIs (including full IRIs if present)
 - subject from identifier slot (else key; else safe fallback)
 - ``po`` for all class attributes (slot aliases respected)
-- emits ``rdf:type`` as CURIEs or IRIs (depending on availability)
-- JSON by default: ``sources: [[data.json~jsonpath, $.items[*]]]``
+- emits ``a`` (rdf:type) as CURIEs or IRIs (depending on availability), and automatically aggregates mixin classes into this array
+- emits predicate-object mappings for identifier slots if they have an explicit ``slot_uri``
+- JSON by default: ``sources: [[data.json~jsonpath, '$[*]']]`` (or '$' automatically if tree_root is used)
+- preserves explicit XSD datatypes for slots (e.g., datatype: xsd:integer)
 - CSV/TSV: ``sources: [[path~csv]]`` (no iterator), values via ``$(column)``
 - a top-level ``mappings:`` section is **always** included, even for minimal schemas
 
@@ -167,10 +168,8 @@ Limitations
 - Object slots:
   - ``inlined: false`` → emitted as IRIs
   - ``inlined: true`` → emitted using YARRRML ``mapping`` + ``condition`` (join) pattern
-- Inline classes require an identifier (or key) to support join-based linking
-- An inline class can only be used in a single owning class.
-  Multiple inline usages of the same class are not supported,
-  as each mapping can define only one source/iterator.
+- Inlined objects without an identifier are assigned a synthetic IRI (e.g. ex:Child_$(parent_id)). However, multivalued inlined objects (lists) still require an identifier.
+- An inline class without an identifier can only be used in a single owning class.
 - Iterators not derived from JSON Schema
 - No per-slot JSONPath/CSV expressions or functions
 - CSV/TSV supported via ``--source``; delimiter/custom CSVW options are not yet exposed
