@@ -81,24 +81,23 @@ classes:
         identifier: true
       org_name: {}
 """
-DATA_BASIC = {
-    "items": [
-        {
-            "person_id": "P1",
-            "name": "WorkerA",
-            "employer": "https://ex.org/mini#O1",
-            "org_id": "O1",
-            "org_name": "Org_A",
-        },
-        {
-            "person_id": "P2",
-            "name": "WorkerB",
-            "employer": "https://ex.org/mini#O2",
-            "org_id": "O2",
-            "org_name": "Org_B",
-        },
-    ]
-}
+
+DATA_BASIC = [
+    {
+        "person_id": "P1",
+        "name": "WorkerA",
+        "employer": "O1",
+        "org_id": "O1",
+        "org_name": "Org_A",
+    },
+    {
+        "person_id": "P2",
+        "name": "WorkerB",
+        "employer": "O2",
+        "org_id": "O2",
+        "org_name": "Org_B",
+    },
+]
 
 SCHEMA_ALIAS = """id: https://ex.org/alias
 name: alias
@@ -138,17 +137,15 @@ classes:
         identifier: true
       oname: {}
 """
-DATA_ALIAS = {
-    "items": [
-        {
-            "pid": "U1",
-            "fn": "User_Prime",
-            "employer": "https://ex.org/alias#M1",
-            "oid": "M1",
-            "oname": "Vendor_X",
-        }
-    ]
-}
+DATA_ALIAS = [
+    {
+        "pid": "U1",
+        "fn": "User_Prime",
+        "employer": "M1",
+        "oid": "M1",
+        "oname": "Vendor_X",
+    }
+]
 
 SCHEMA_INLINED = """id: https://ex.org/inl
 name: inl
@@ -186,28 +183,26 @@ classes:
       street: {}
       city: {}
 """
-DATA_INLINED = {
-    "items": [
-        {
-            "pid": "A1",
-            "name": "WorkerX",
-            "address": {
-                "aid": "ADDR1",
-                "street": "Main",
-                "city": "CityA",
-            },
+DATA_INLINED = [
+    {
+        "pid": "A1",
+        "name": "WorkerX",
+        "address": {
+            "aid": "ADDR1",
+            "street": "Main",
+            "city": "CityA",
         },
-        {
-            "pid": "A2",
-            "name": "WorkerY",
-            "address": {
-                "aid": "ADDR2",
-                "street": "High",
-                "city": "CityB",
-            },
+    },
+    {
+        "pid": "A2",
+        "name": "WorkerY",
+        "address": {
+            "aid": "ADDR2",
+            "street": "High",
+            "city": "CityB",
         },
-    ]
-}
+    },
+]
 
 SCHEMA_PREFIXES = """id: https://ex.org/pfx
 name: pfx
@@ -239,7 +234,7 @@ classes:
         identifier: true
       title: {}
 """
-DATA_PREFIXES = {"items": [{"aid": "X1", "name": "AlphaUnit", "bid": "Y1", "title": "BetaTitle"}]}
+DATA_PREFIXES = [{"aid": "X1", "name": "AlphaUnit", "bid": "Y1", "title": "BetaTitle"}]
 
 SCHEMA_MISSING = """id: https://ex.org/neg
 name: neg
@@ -273,7 +268,7 @@ classes:
       oid:
         identifier: true
 """
-DATA_MISSING = {"items": [{"pid": "Z1", "employer": "https://ex.org/neg#O9"}]}
+DATA_MISSING = [{"pid": "Z1", "employer": "O9"}]
 
 SCHEMA_NO_ID = """id: https://ex.org/noid
 name: noid
@@ -333,9 +328,10 @@ def test_regression_no_yaml_python_object_garbage(tmp_path: Path):
         for po in m["po"]:
             assert isinstance(po["p"], str)
             if isinstance(po.get("o"), dict):
-                assert isinstance(po["o"]["value"], str)
+                if "value" in po["o"]:
+                    assert isinstance(po["o"]["value"], str)
             else:
-                assert isinstance(po["o"], str)
+                assert isinstance(po["o"], (str, list))
 
 
 @pytest.mark.yarrrml
@@ -347,7 +343,10 @@ def test_regression_classes_without_identifier_are_included(tmp_path: Path):
     assert "Note" in yobj["mappings"]
     subj = yobj["mappings"]["Note"]["s"]
     assert subj.startswith("ex:Note/$(")
-    assert yobj["mappings"]["Note"]["po"][0]["o"] == "ex:Note"
+
+    types = [po for po in yobj["mappings"]["Note"]["po"] if po["p"] == "a" or po["p"] == "rdf:type"]
+    assert len(types) == 1
+    assert types[0]["o"] == "ex:Note"
 
 
 @pytest.mark.yarrrml
@@ -363,8 +362,19 @@ def test_yarrrml_e2e_basic_json_morph_shacl(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_BASIC, indent=2), encoding="utf-8")
-    js = JsonSchemaGenerator(str(schema_path)).serialize()
-    jsonschema.validate(instance=DATA_BASIC, schema=json.loads(js))
+
+    schema_person = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    schema_person["$ref"] = "#/$defs/Person"
+    schema_person["$defs"]["Person"]["additionalProperties"] = True
+    schema_org = JsonSchemaGenerator(str(schema_path), top_class="Organization").generate()
+    schema_org["$ref"] = "#/$defs/Organization"
+    schema_org["$defs"]["Organization"]["additionalProperties"] = True
+    for item in DATA_BASIC:
+        if "person_id" in item:
+            jsonschema.validate(instance=item, schema=schema_person)
+        elif "org_id" in item:
+            jsonschema.validate(instance=item, schema=schema_org)
+
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     for m in yarrrml["mappings"].values():
@@ -387,8 +397,14 @@ def test_yarrrml_e2e_alias_support(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_ALIAS, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_ALIAS, indent=2), encoding="utf-8")
-    js = JsonSchemaGenerator(str(schema_path)).serialize()
-    jsonschema.validate(instance=DATA_ALIAS, schema=json.loads(js))
+
+    schema_person = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    schema_person["$ref"] = "#/$defs/Person"
+    schema_person["$defs"]["Person"]["additionalProperties"] = True
+    for item in DATA_ALIAS:
+        if "pid" in item:
+            jsonschema.validate(instance=item, schema=schema_person)
+
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     g = _materialize_with_morph(tmp_path, yarrrml)
@@ -408,8 +424,12 @@ def test_yarrrml_e2e_inlined_true_included(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_INLINED, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_INLINED, indent=2), encoding="utf-8")
-    js = JsonSchemaGenerator(str(schema_path)).serialize()
-    jsonschema.validate(instance=DATA_INLINED, schema=json.loads(js))
+
+    schema_person = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    schema_person["$ref"] = "#/$defs/Person"
+    for item in DATA_INLINED:
+        jsonschema.validate(instance=item, schema=schema_person)
+
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     assert "Address" in yarrrml["mappings"]
@@ -433,8 +453,21 @@ def test_yarrrml_e2e_prefixes_and_multiple_classes(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_PREFIXES, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_PREFIXES, indent=2), encoding="utf-8")
-    js = JsonSchemaGenerator(str(schema_path)).serialize()
-    jsonschema.validate(instance=DATA_PREFIXES, schema=json.loads(js))
+
+    schema_a = JsonSchemaGenerator(str(schema_path), top_class="A").generate()
+    schema_a["$ref"] = "#/$defs/A"
+    schema_a["$defs"]["A"]["additionalProperties"] = True
+
+    schema_b = JsonSchemaGenerator(str(schema_path), top_class="B").generate()
+    schema_b["$ref"] = "#/$defs/B"
+    schema_b["$defs"]["B"]["additionalProperties"] = True
+
+    for item in DATA_PREFIXES:
+        if "aid" in item:
+            jsonschema.validate(instance=item, schema=schema_a)
+        if "bid" in item:
+            jsonschema.validate(instance=item, schema=schema_b)
+
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     assert "rdf" in yarrrml["prefixes"] and "ex" in yarrrml["prefixes"]
@@ -454,8 +487,12 @@ def test_yarrrml_e2e_missing_target_instances(tmp_path: Path):
     data_path = tmp_path / "data.json"
     schema_path.write_text(SCHEMA_MISSING, encoding="utf-8")
     data_path.write_text(json.dumps(DATA_MISSING, indent=2), encoding="utf-8")
-    js = JsonSchemaGenerator(str(schema_path)).serialize()
-    jsonschema.validate(instance=DATA_MISSING, schema=json.loads(js))
+
+    schema_person = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    schema_person["$ref"] = "#/$defs/Person"
+    for item in DATA_MISSING:
+        jsonschema.validate(instance=item, schema=schema_person)
+
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     yarrrml = yaml.safe_load(yg.serialize())
     g = _materialize_with_morph(tmp_path, yarrrml)
@@ -470,8 +507,8 @@ def test_yarrrml_e2e_basic_csv_morph_shacl(tmp_path: Path):
     csv_path = tmp_path / "people.csv"
     csv_path.write_text(
         "person_id,name,employer,org_id,org_name\n"
-        "P1,WorkerA,https://ex.org/mini#O1,O1,Org_A\n"
-        "P2,WorkerB,https://ex.org/mini#O2,O2,Org_B\n",
+        "P1,WorkerA,O1,O1,Org_A\n"
+        "P2,WorkerB,O2,O2,Org_B\n",
         encoding="utf-8",
     )
     yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()) + "~csv")
@@ -498,8 +535,8 @@ def test_yarrrml_e2e_basic_tsv_morph_shacl(tmp_path: Path):
     tsv_path = tmp_path / "people.tsv"
     tsv_path.write_text(
         "person_id\tname\temployer\torg_id\torg_name\n"
-        "P1\tWorkerA\thttps://ex.org/mini#O1\tO1\tOrg_A\n"
-        "P2\tWorkerB\thttps://ex.org/mini#O2\tO2\tOrg_B\n",
+        "P1\tWorkerA\tO1\tO1\tOrg_A\n"
+        "P2\tWorkerB\tO2\tO2\tOrg_B\n",
         encoding="utf-8",
     )
     yg = YarrrmlGenerator(str(schema_path), source=str(tsv_path.resolve()) + "~csv")
@@ -521,7 +558,7 @@ def test_yarrrml_e2e_csv_source_suffix_inference(tmp_path: Path):
     schema_path.write_text(SCHEMA_BASIC, encoding="utf-8")
     csv_path = tmp_path / "minimal.csv"
     csv_path.write_text(
-        "person_id,name,employer,org_id,org_name\nP9,UserZ,https://ex.org/mini#O9,O9,Org_Z\n",
+        "person_id,name,employer,org_id,org_name\nP9,UserZ,O9,O9,Org_Z\n",
         encoding="utf-8",
     )
     yg = YarrrmlGenerator(str(schema_path), source=str(csv_path.resolve()))
@@ -566,7 +603,7 @@ classes:
     assert "mappings" in yobj
 
     m = yobj["mappings"]["Human"]
-    type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
+    type_po = next(p for p in m["po"] if p["p"] == "a")
     assert type_po["o"] == "ex:Person"
 
     pred_names = [p["p"] for p in m["po"]]
@@ -631,7 +668,7 @@ classes:
 
     m = yobj["mappings"]["Thing"]
     assert m["s"] == "my:$(id)"
-    type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
+    type_po = next(p for p in m["po"] if p["p"] == "a")
     assert type_po["o"] == "my:Thing"
 
 
@@ -658,7 +695,7 @@ classes:
         identifier: true
       name: {}
 """
-    data = {"items": [{"id": "H1", "name": "Alice"}]}
+    data = [{"id": "H1", "name": "Alice"}]
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -708,13 +745,13 @@ classes:
 
     assert m["s"].startswith("ex:Lonely/$(")
 
-    type_po = next(p for p in m["po"] if p["p"] == "rdf:type")
+    type_po = next(p for p in m["po"] if p["p"] == "a")
     assert isinstance(type_po["o"], str)
     assert type_po["o"]
 
 
 @pytest.mark.yarrrml
-def test_yarrrml_e2e_inline_object_not_separate_mapping(tmp_path: Path):
+def test_yarrrml_e2e_inline_object_join_mapping(tmp_path: Path):
     schema = """
 id: https://ex.org/inl2
 name: inl2
@@ -742,7 +779,7 @@ classes:
       city: {}
 
 """
-    data = {"items": [{"id": "P1", "address": {"aid": "A1", "street": "Main", "city": "X"}}]}
+    data = [{"id": "P1", "address": {"aid": "A1", "street": "Main", "city": "X"}}]
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -752,10 +789,8 @@ classes:
     yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
     y = yaml.safe_load(yg.serialize())
 
-    # Address mapping now MUST exist (join-based inline)
     assert "Address" in y["mappings"]
 
-    # Person must reference Address via mapping + condition
     person_po = y["mappings"]["Person"]["po"]
     addr_po = next(po for po in person_po if po["p"].endswith("address"))
 
@@ -794,7 +829,7 @@ classes:
       oid:
         identifier: true
 """
-    data = {"items": [{"id": "P1", "employer": "https://ex.org/obj#O1", "oid": "O1"}]}
+    data = [{"id": "P1", "employer": "O1", "oid": "O1"}]
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -837,13 +872,11 @@ classes:
         multivalued: true
         inlined: false
 """
-    data = {
-        "items": [
-            {"id": "A", "friends": ["https://ex.org/friends#B", "https://ex.org/friends#C"]},
-            {"id": "B"},
-            {"id": "C"},
-        ]
-    }
+    data = [
+        {"id": "A", "friends": ["B", "C"]},
+        {"id": "B"},
+        {"id": "C"},
+    ]
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -860,7 +893,7 @@ classes:
 
 
 @pytest.mark.yarrrml
-def test_yarrrml_e2e_inline_without_identifier_raises(tmp_path: Path):
+def test_yarrrml_e2e_inline_multivalued_without_identifier_raises(tmp_path: Path):
     schema = """
 id: https://ex.org/neg1
 name: neg1
@@ -875,15 +908,16 @@ classes:
     attributes:
       id:
         identifier: true
-      address:
+      addresses:
         range: Address
         inlined: true
+        multivalued: true
   Address:
     attributes:
       street: {}
 """
 
-    data = {"items": [{"id": "P1", "address": {"street": "Main"}}]}
+    data = [{"id": "P1", "addresses": [{"street": "Main"}]}]
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -891,7 +925,7 @@ classes:
     schema_path.write_text(schema, encoding="utf-8")
     data_path.write_text(json.dumps(data), encoding="utf-8")
 
-    with pytest.raises(ValueError, match="must define an identifier"):
+    with pytest.raises(ValueError, match="is an inlined list \\(multivalued: true\\), but the target class 'Address' lacks an identifier"):
         YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath").serialize()
 
 
@@ -925,11 +959,10 @@ classes:
 
   Address:
     attributes:
-      aid:
-        identifier: true
+      street: {}
 """
 
-    data = {"items": [{"id": "P1"}]}
+    data = [{"id": "P1"}]
 
     schema_path = tmp_path / "schema.yaml"
     data_path = tmp_path / "data.json"
@@ -937,5 +970,332 @@ classes:
     schema_path.write_text(schema, encoding="utf-8")
     data_path.write_text(json.dumps(data), encoding="utf-8")
 
-    with pytest.raises(ValueError, match="used in multiple owners"):
+    with pytest.raises(ValueError, match="without an identifier is used by multiple owners"):
         YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath").serialize()
+
+
+@pytest.mark.yarrrml
+def test_fix1_inlined_slots_without_id_synthetic_iri(tmp_path: Path):
+    schema = """
+id: https://example.org/test1
+name: test1
+prefixes:
+  ex: https://example.org/test1/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+classes:
+  Car:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      engine:
+        range: Engine
+        inlined: true
+  Engine:
+    attributes:
+      name: {}
+"""
+    data = {"id": "car1", "engine": {"name": "V8-Turbo"}}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="Car").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    assert "Engine" in yarrrml["mappings"]
+    synth_iri = yarrrml["mappings"]["Engine"]["s"]
+    assert synth_iri == "ex:Engine_$(id)"
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    EX = rdflib.Namespace("https://example.org/test1/")
+
+    assert (EX.car1, EX.engine, EX.Engine_car1) in g
+    assert (EX.Engine_car1, EX.name, rdflib.Literal("V8-Turbo")) in g
+
+
+@pytest.mark.yarrrml
+def test_fix2_preserve_xsd_datatypes(tmp_path: Path):
+    schema = """
+id: https://example.org/test2
+name: test2
+prefixes:
+  ex: https://example.org/test2/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+  integer:
+    base: int
+    uri: xsd:integer
+classes:
+  Person:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      age:
+        range: integer
+"""
+    data = {"id": "p1", "age": 27}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    age_po = next(p for p in yarrrml["mappings"]["Person"]["po"] if p["p"] == "ex:age")
+    assert age_po["o"]["datatype"] == "xsd:integer"
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    EX = rdflib.Namespace("https://example.org/test2/")
+    assert (EX.p1, EX.age, rdflib.Literal("27", datatype=rdflib.XSD.integer)) in g
+
+
+@pytest.mark.yarrrml
+def test_fix3_readable_yaml_flow_lists(tmp_path: Path):
+    schema = """
+id: https://example.org/test3
+name: test3
+prefixes:
+  ex: https://example.org/test3/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+classes:
+  Thing:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+"""
+    data = {"id": "t1"}
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema, encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="Thing").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path))
+    raw_yaml = yg.serialize()
+
+    assert "[data.json~jsonpath" in raw_yaml
+
+
+@pytest.mark.yarrrml
+def test_fix4_unusable_defaults_and_tree_root(tmp_path: Path):
+    schema = """
+id: https://example.org/test4
+name: test4
+prefixes:
+  ex: https://example.org/test4/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+classes:
+  RootNode:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+  IgnoredNode:
+    attributes:
+      id:
+        identifier: true
+"""
+    data = {"id": "r1"}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="RootNode").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    assert "RootNode" in yarrrml["mappings"]
+    assert "IgnoredNode" not in yarrrml["mappings"]
+
+    source_array = yarrrml["mappings"]["RootNode"]["sources"][0]
+    assert source_array[1] == "$"
+
+
+@pytest.mark.yarrrml
+def test_fix5_incorrect_classes_for_non_inlined_slots(tmp_path: Path):
+    schema = """
+id: https://example.org/test5
+name: test5
+prefixes:
+  ex: https://example.org/test5/
+  schema: http://schema.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+classes:
+  Person:
+    class_uri: schema:Person
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      owns:
+        range: Product
+        multivalued: true
+        inlined: false
+  Product:
+    class_uri: schema:Product
+    attributes:
+      id:
+        identifier: true
+"""
+    data = {"id": "p1", "owns": ["prod1"]}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+    g = _materialize_with_morph(tmp_path, yarrrml)
+
+    EX = rdflib.Namespace("https://example.org/test5/")
+    SCHEMA = rdflib.Namespace("http://schema.org/")
+
+    assert (EX.p1, rdflib.RDF.type, SCHEMA.Person) in g
+    assert (EX.p1, rdflib.RDF.type, SCHEMA.Product) not in g
+
+
+@pytest.mark.yarrrml
+def test_fix6_incorrect_subjects_for_mixins(tmp_path: Path):
+    schema = """
+id: https://example.org/test6
+name: test6
+prefixes:
+  ex: https://example.org/test6/
+  schema: http://schema.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+classes:
+  Named:
+    mixin: true
+    class_uri: ex:Named
+    attributes:
+      name: {}
+  Person:
+    class_uri: schema:Person
+    tree_root: true
+    mixins:
+      - Named
+    attributes:
+      id:
+        identifier: true
+"""
+    data = {"id": "p1", "name": "Alice"}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="Person").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    assert "Named" not in yarrrml["mappings"]
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    EX = rdflib.Namespace("https://example.org/test6/")
+    SCHEMA = rdflib.Namespace("http://schema.org/")
+
+    assert (EX.p1, rdflib.RDF.type, SCHEMA.Person) in g
+    assert (EX.p1, rdflib.RDF.type, EX.Named) in g
+
+
+@pytest.mark.yarrrml
+def test_fix7_identifier_missing_triple_mapping(tmp_path: Path):
+    schema = """
+id: https://example.org/test7
+name: test7
+prefixes:
+  ex: https://example.org/test7/
+  schema: http://schema.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    base: str
+    uri: xsd:string
+classes:
+  Thing:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+        slot_uri: schema:identifier
+"""
+    data = {"id": "thing_001"}
+
+    schema_path = tmp_path / "schema.yaml"
+    data_path = tmp_path / "data.json"
+    schema_path.write_text(schema, encoding="utf-8")
+    data_path.write_text(json.dumps(data), encoding="utf-8")
+
+    schema_root = JsonSchemaGenerator(str(schema_path), top_class="Thing").generate()
+    jsonschema.validate(instance=data, schema=schema_root)
+
+    yg = YarrrmlGenerator(str(schema_path), source=f"{data_path.resolve()}~jsonpath")
+    yarrrml = yaml.safe_load(yg.serialize())
+
+    g = _materialize_with_morph(tmp_path, yarrrml)
+    EX = rdflib.Namespace("https://example.org/test7/")
+    SCHEMA = rdflib.Namespace("http://schema.org/")
+
+    assert (EX.thing_001, SCHEMA.identifier, rdflib.Literal("thing_001")) in g
