@@ -201,7 +201,6 @@ preferred-citation:
     - family-names: Vierdag
       given-names: Wouter-Michiel A.M.
       orcid: https://orcid.org/0000-0003-1666-5421
-    - family-names: LinkML Community Contributors
     - family-names: Ruebel
       given-names: Oliver
       orcid: https://orcid.org/0000-0001-9902-1984
@@ -217,6 +216,7 @@ preferred-citation:
     - family-names: Mungall
       given-names: Christopher J.
       orcid: https://orcid.org/0000-0002-6601-2165
+    - family-names: LinkML Community Contributors
   title: "LinkML: an open data modeling framework"
   journal: GigaScience
   volume: 15
