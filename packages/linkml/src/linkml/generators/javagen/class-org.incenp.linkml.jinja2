@@ -45,9 +45,11 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {#- Marks the slot that holds the runtime type of this object. #}
     @TypeDesignator
 {%-   endif %}
-{%-   if f.source_slot.name != f.name %}
-{#- The Java field name differs from the name defined in the schema, so
-    the runtime must have a way to get the original name. #}
+{#- If the Java field name differs from the name or alias defined in the
+    schema, the runtime must have a way to get the original name. #}
+{%-   if f.source_slot.alias and f.source_slot.alias != f.name %}
+    @SlotName("{{ f.source_slot.alias }}")
+{%-   elif f.source_slot.alias is none and f.source_slot.name != f.name %}
     @SlotName("{{ f.source_slot.name }}")
 {%-   endif %}
 {#- The runtime must know how the slot is expected to be serialised. #}
@@ -136,14 +138,14 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
     public String toString() {
 {%- set identifier_slot = gen.schemaview.get_identifier_slot(cls.source_class.name, use_key=True) %}
 {%- if identifier_slot %}
-        return "{{ cls.name }}({{ identifier_slot.name }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
+        return "{{ cls.name }}({{ gen.get_slot_actual_name(identifier_slot) }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
 {%- else %}
         StringBuilder sb = new StringBuilder();
         Object o;
         sb.append("{{ cls.name }}(");
 {%- for slot in gen.schemaview.class_induced_slots(cls.source_class.name) %}
         if ( (o = this.{{ gen.get_read_accessor_name(slot) }}()) != null ) {
-            sb.append("{{ slot.name }}=");
+            sb.append("{{ gen.get_slot_actual_name(slot) }}=");
             sb.append(o);
             sb.append(",");
         }
