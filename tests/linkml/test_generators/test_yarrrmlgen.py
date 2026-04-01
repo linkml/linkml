@@ -583,6 +583,8 @@ classes:
   Human:
     class_uri: ex:Person
     attributes:
+      uid:
+        identifier: true
       name:
         slot_uri: ex:fullName
       friend:

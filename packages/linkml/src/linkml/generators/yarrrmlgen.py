@@ -96,7 +96,14 @@ class YarrrmlGenerator(Generator):
                     )
 
                 if inlined is None:
-                    inlined = not has_id
+                    inlined = False
+
+                if not inlined and not has_id:
+                    raise ValueError(
+                        f"Slot '{s.name}' in class '{owner.name}' is not inlined, "
+                        f"but target class '{range_cls.name}' lacks an identifier. "
+                        f"Cannot create IRI references to objects without IDs."
+                    )
 
                 if inlined:
                     # Prevent generating mappings for multivalued inlined objects without an identifier,
