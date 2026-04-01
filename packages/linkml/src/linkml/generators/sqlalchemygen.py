@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from types import ModuleType
 
 import click
-from jinja2 import Template
+from jinja2 import Environment, Template
 from sqlalchemy import Enum
 
 from linkml._version import __version__
@@ -86,7 +86,10 @@ class SQLAlchemyGenerator(Generator):
             template_str = sqlalchemy_declarative_2x_template_str
         else:
             raise Exception(f"Unknown template type: {template}")
-        template_obj = Template(template_str)
+        if template == TemplateEnum.DECLARATIVE_2X:
+            template_obj = Environment(trim_blocks=True, lstrip_blocks=True).from_string(template_str)
+        else:
+            template_obj = Template(template_str)
         if model_path is None:
             model_path = self.schema.name
         logger.info(f"Package for dataclasses ==  {model_path}")

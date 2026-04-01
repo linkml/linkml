@@ -351,9 +351,19 @@ def test_sqla_2x_basic_declarative(schema):
 
     # Should still have all expected classes
     expected_classes = [
-        "NamedThing", "Person", "Organization", "Place", "Address",
-        "Event", "Concept", "DiagnosisConcept", "ProcedureConcept",
-        "Relationship", "FamilialRelationship", "EmploymentEvent", "MedicalEvent",
+        "NamedThing",
+        "Person",
+        "Organization",
+        "Place",
+        "Address",
+        "Event",
+        "Concept",
+        "DiagnosisConcept",
+        "ProcedureConcept",
+        "Relationship",
+        "FamilialRelationship",
+        "EmploymentEvent",
+        "MedicalEvent",
     ]
     for expected in expected_classes:
         assert f"class {expected}(" in code
@@ -381,9 +391,7 @@ def test_sqla_2x_declarative_exec(schema):
     p1 = mod.Person(id="P1", name="a b", age=22, has_medical_history=[e1, e2])
     p1.aliases = ["Anne"]
     p1.aliases.append("Fred")
-    p1.has_familial_relationships.append(
-        mod.FamilialRelationship(related_to="P2", type="SIBLING_OF")
-    )
+    p1.has_familial_relationships.append(mod.FamilialRelationship(related_to="P2", type="SIBLING_OF"))
     p1.current_address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
     session.add(p1)
     session.add(mod.Person(id="P2", name="Ferdinand Giggleheim", aliases=["Fred"]))
