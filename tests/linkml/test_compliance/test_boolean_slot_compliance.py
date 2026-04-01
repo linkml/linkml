@@ -553,6 +553,31 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
         ("all_of", "a b", None, "b", False),
         # passes: all conditions are satisfied
         ("all_of", "a b", "a", "b", True),
+        # --EXACTLY_ONE_OF--
+        # fails: no conditions met
+        ("exactly_one_of", None, None, None, False),
+        ("exactly_one_of", None, "a", None, False),
+        ("exactly_one_of", None, None, "b", False),
+        # passes: exactly one condition met
+        ("exactly_one_of", "a b", None, None, True),
+        ("exactly_one_of", None, "a", "b", True),
+        # fails: both conditions met
+        ("exactly_one_of", "a b", "a", "b", False),
+        # fails: range atomic type violation
+        ("exactly_one_of", 5, None, None, False),
+        ("exactly_one_of", "a", "b", 5, False),
+        # --NONE_OF--
+        # passes: no conditions met
+        ("none_of", None, None, None, True),
+        ("none_of", None, "a", None, True),
+        ("none_of", None, None, "b", True),
+        # fails: at least one condition met
+        ("none_of", "a b", None, None, False),
+        ("none_of", None, "a", "b", False),
+        ("none_of", "a b", "a", "b", False),
+        # fails: range atomic type violation
+        ("none_of", 5, None, None, False),
+        ("none_of", "a", "b", 5, False),
     ],
 )
 @pytest.mark.parametrize("nest", [True, False])
@@ -579,17 +604,17 @@ def test_class_any_of_with_required(framework, nest, op, name, family_name, give
                 {
                     "slot_conditions": {
                         SLOT_S1: {
-                            "required": "true",
+                            "required": True,
                         },
                     },
                 },
                 {
                     "slot_conditions": {
                         SLOT_S2: {
-                            "required": "true",
+                            "required": True,
                         },
                         SLOT_S3: {
-                            "required": "true",
+                            "required": True,
                         },
                     },
                 },
@@ -609,7 +634,7 @@ def test_class_any_of_with_required(framework, nest, op, name, family_name, give
         framework,
         classes=classes,
         slots=slots,
-        core_elements=["any_of", "ClassDefinition"],
+        core_elements=[op, "ClassDefinition"],
     )
     expected_behavior = ValidationBehavior.IMPLEMENTS
     if framework not in [JSON_SCHEMA]:
@@ -626,7 +651,9 @@ def test_class_any_of_with_required(framework, nest, op, name, family_name, give
         is_valid,
         target_class=CLASS_D if nest else CLASS_C,
         expected_behavior=expected_behavior,
-        description=f"validity {is_valid} check for {op} name={name}, family_name={family_name}, given_name={given_name}",
+        description=(
+            f"validity {is_valid} check for {op} name={name}, family_name={family_name}, given_name={given_name}"
+        ),
     )
 
 
