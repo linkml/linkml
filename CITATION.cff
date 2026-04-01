@@ -63,8 +63,6 @@ authors:
     given-names: Gaurav
   - family-names: Vierdag
     given-names: Wouter-Michiel A.M.
-  - family-names: Putman
-    given-names: Tim
   - family-names: LinkML Community Contributors
   - family-names: Ruebel
     given-names: Oliver
@@ -162,8 +160,10 @@ preferred-citation:
     - family-names: Mungall
       given-names: Christopher J.
       orcid: https://orcid.org/0000-0002-6601-2165
-  title: "LinkML: A Linked Open Data Modeling Language"
-  journal: arXiv
+  title: "LinkML: an open data modeling framework"
+  journal: GigaScience
+  volume: 15
+  pages: giaf152
   year: 2025
-  url: https://arxiv.org/abs/2511.16935
-  doi: 10.48550/arXiv.2511.16935
+  url: https://doi.org/10.1093/gigascience/giaf152
+  doi: 10.1093/gigascience/giaf152
