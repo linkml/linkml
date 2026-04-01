@@ -1,0 +1,369 @@
+# --- activity_config.yaml ---
+# metamodel_version: 1.7.0id: activity
+schema_generating: true
+description: a provence-generating activity
+display_name: activity
+document_category: activity
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: was_informed_by
+  display_name: was informed by
+- id: was_associated_with
+  display_name: was associated with
+- id: used
+  display_name: used
+- id: description
+  display_name: description
+# --- Address_config.yaml ---
+# metamodel_version: 1.7.0id: Address
+schema_generating: true
+display_name: Address
+document_category: Address
+weight: 20
+fields:
+- id: street
+  display_name: street
+- id: city
+  display_name: city
+- id: altitude
+  display_name: altitude
+# --- agent_config.yaml ---
+# metamodel_version: 1.7.0id: agent
+schema_generating: true
+description: a provence-generating agent
+display_name: agent
+document_category: agent
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: acted_on_behalf_of
+  display_name: acted on behalf of
+- id: was_informed_by
+  display_name: was informed by
+# --- BirthEvent_config.yaml ---
+# metamodel_version: 1.7.0id: BirthEvent
+schema_generating: true
+display_name: BirthEvent
+document_category: BirthEvent
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: in_location
+  display_name: in location
+# --- CodeSystem_config.yaml ---
+# metamodel_version: 1.7.0id: CodeSystem
+schema_generating: true
+display_name: CodeSystem
+document_category: CodeSystem
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+# --- Company_config.yaml ---
+# metamodel_version: 1.7.0id: Company
+schema_generating: true
+display_name: Company
+document_category: Company
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi
+- id: ceo
+  display_name: company__ceo
+# --- Concept_config.yaml ---
+# metamodel_version: 1.7.0id: Concept
+schema_generating: true
+display_name: Concept
+document_category: Concept
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: in_code_system
+  display_name: in code system
+# --- Dataset_config.yaml ---
+# metamodel_version: 1.7.0id: Dataset
+schema_generating: true
+display_name: Dataset
+document_category: Dataset
+weight: 20
+fields:
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: persons
+  display_name: dataset__persons
+  cardinality: multi
+- id: companies
+  display_name: dataset__companies
+  cardinality: multi
+- id: activities
+  display_name: dataset__activities
+  cardinality: multi
+- id: code_systems
+  display_name: dataset__code_systems
+  cardinality: multi
+# --- DiagnosisConcept_config.yaml ---
+# metamodel_version: 1.7.0id: DiagnosisConcept
+schema_generating: true
+display_name: DiagnosisConcept
+document_category: DiagnosisConcept
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: in_code_system
+  display_name: in code system
+# --- EmploymentEvent_config.yaml ---
+# metamodel_version: 1.7.0id: EmploymentEvent
+schema_generating: true
+display_name: EmploymentEvent
+document_category: EmploymentEvent
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: employed_at
+  display_name: employed at
+- id: type
+  display_name: EmploymentEvent_type
+# --- Event_config.yaml ---
+# metamodel_version: 1.7.0id: Event
+schema_generating: true
+display_name: Event
+document_category: Event
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+# --- FamilialRelationship_config.yaml ---
+# metamodel_version: 1.7.0id: FamilialRelationship
+schema_generating: true
+display_name: FamilialRelationship
+document_category: FamilialRelationship
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: cordialness
+  display_name: cordialness
+- id: type
+  display_name: FamilialRelationship_type
+- id: related_to
+  display_name: FamilialRelationship_related to
+# --- MarriageEvent_config.yaml ---
+# metamodel_version: 1.7.0id: MarriageEvent
+schema_generating: true
+display_name: MarriageEvent
+document_category: MarriageEvent
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: married_to
+  display_name: married to
+- id: in_location
+  display_name: in location
+# --- MedicalEvent_config.yaml ---
+# metamodel_version: 1.7.0id: MedicalEvent
+schema_generating: true
+display_name: MedicalEvent
+document_category: MedicalEvent
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: is_current
+  display_name: is current
+- id: metadata
+  description: Example of a slot that has an unconstrained range
+  display_name: metadata
+- id: in_location
+  display_name: in location
+- id: diagnosis
+  display_name: diagnosis
+- id: procedure
+  display_name: procedure
+# --- Organization_config.yaml ---
+# metamodel_version: 1.7.0id: Organization
+schema_generating: true
+description: "An organization.\n\nThis description\nincludes newlines\n\n## Markdown\
+  \ headers\n\n * and\n * a\n * list"
+display_name: Organization
+document_category: Organization
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi
+# --- Person_config.yaml ---
+# metamodel_version: 1.7.0id: Person
+schema_generating: true
+description: A person, living or dead
+display_name: Person
+document_category: Person
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: Person_name
+- id: has_employment_history
+  display_name: has employment history
+  cardinality: multi
+- id: has_familial_relationships
+  display_name: has familial relationships
+  cardinality: multi
+- id: has_medical_history
+  display_name: has medical history
+  cardinality: multi
+- id: age_in_years
+  description: number of years since birth
+  display_name: age in years
+- id: addresses
+  display_name: addresses
+  cardinality: multi
+- id: has_birth_event
+  display_name: has birth event
+- id: species_name
+  display_name: Person_species name
+- id: stomach_count
+  display_name: Person_stomach count
+- id: is_living
+  display_name: person__is_living
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi
+# --- Place_config.yaml ---
+# metamodel_version: 1.7.0id: Place
+schema_generating: true
+display_name: Place
+document_category: Place
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: aliases
+  display_name: hasAliases__aliases
+  cardinality: multi
+# --- ProcedureConcept_config.yaml ---
+# metamodel_version: 1.7.0id: ProcedureConcept
+schema_generating: true
+display_name: ProcedureConcept
+document_category: ProcedureConcept
+weight: 20
+fields:
+- id: id
+  display_name: id
+- id: name
+  display_name: name
+- id: in_code_system
+  display_name: in code system
+# --- Relationship_config.yaml ---
+# metamodel_version: 1.7.0id: Relationship
+schema_generating: true
+display_name: Relationship
+document_category: Relationship
+weight: 20
+fields:
+- id: started_at_time
+  display_name: started at time
+- id: ended_at_time
+  display_name: ended at time
+- id: related_to
+  display_name: related to
+- id: type
+  display_name: type
+- id: cordialness
+  display_name: Relationship_cordialness
+# --- Sub_sub_class_2_config.yaml ---
+# metamodel_version: 1.7.0id: Sub_sub_class_2
+schema_generating: true
+display_name: Sub sub class 2
+document_category: Sub sub class 2
+weight: 20
+fields:
+- id: slot_with_space_1
+  display_name: classWithSpaces__slot_with_space_1
+- id: slot_with_space_2
+  display_name: subclassTest__slot_with_space_2
+# --- subclass_test_config.yaml ---
+# metamodel_version: 1.7.0id: subclass_test
+schema_generating: true
+display_name: subclass test
+document_category: subclass test
+weight: 20
+fields:
+- id: slot_with_space_1
+  display_name: classWithSpaces__slot_with_space_1
+- id: slot_with_space_2
+  display_name: subclassTest__slot_with_space_2
+# --- tub_sub_class_1_config.yaml ---
+# metamodel_version: 1.7.0id: tub_sub_class_1
+schema_generating: true
+description: Same depth as Sub sub class 1
+display_name: tub sub class 1
+document_category: tub sub class 1
+weight: 20
+fields:
+- id: slot_with_space_1
+  display_name: classWithSpaces__slot_with_space_1
+- id: slot_with_space_2
+  display_name: subclassTest__slot_with_space_2

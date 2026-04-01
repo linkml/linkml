@@ -2,12 +2,9 @@
 A description of the existing LinkML testing system as envisioned by
 Harold Solbrig and Dazhi Ziao
 
-__Note:__ The description below was written in the context of
-[linkml-runtime](https://github.com/linkml/linkml-runtime).  Many (most?) of
-the actual testing is performed in [linkml](https://github.com/linkml/linkml)
-proper.  This document needs to become a single text that covers _both_ of
-these test environments.  See: [duplicate testing code issue](https://github.com/linkml/linkml-runtime/issues/125)
-for followup.
+__Note:__ **Warning: Partially outdated information!** The description below was written in the context of context of
+[linkml-runtime](https://github.com/linkml/linkml-runtime).
+This document has not yet been revised after the migration to the monorepo layout and adoption of pytest.
 
 ## Philosophy
 The intent of the test harness is to verify that every intentional

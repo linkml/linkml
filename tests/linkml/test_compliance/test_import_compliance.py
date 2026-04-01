@@ -17,6 +17,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -47,6 +48,7 @@ OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
 SKIP_JSONLD_CONTEXT = True
 
 
+@feature_category("Schema-Level", "Schema imports")
 @pytest.mark.parametrize(
     "class_c_uri,class_d_uri,slot_1_uri,slot_2_uri,slot_1_alias,slot_2_alias,type_uri,data_name,instance,is_valid",
     [
@@ -210,6 +212,7 @@ def test_import(
     )
 
 
+@feature_category("Schema-Level", "Import name clashes")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.skip("Not yet implemented")
 def test_import_name_clash(framework):
@@ -286,6 +289,7 @@ def test_import_name_clash(framework):
     )
 
 
+@feature_category("Schema-Level", "Metamodel imports")
 @pytest.mark.network
 @pytest.mark.slow
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)

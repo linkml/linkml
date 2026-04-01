@@ -9,6 +9,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -24,6 +25,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Identity & Keys", "Identifier")
 @pytest.mark.parametrize("additional_slot_values", [None, "v1"])
 @pytest.mark.parametrize(
     "description,ids,is_valid",
@@ -94,6 +96,7 @@ def test_identifier(framework, description, ids, is_valid, additional_slot_value
     )
 
 
+@feature_category("Identity & Keys", "Unique keys")
 @pytest.mark.parametrize("consider_nulls_inequal", [False, True])
 @pytest.mark.parametrize(
     "description,objects,is_valid,is_valid_if_nulls_inequal",
@@ -234,6 +237,7 @@ D_INST_1 = {SLOT_ID: "ex:d1", SLOT_S3: "t"}
 D_INST_2 = {SLOT_ID: "ex:d2", SLOT_S3: "t"}
 
 
+@feature_category("Inlining & References", "Inlined with unique keys")
 @pytest.mark.parametrize(
     "schema_name,d_has_id,s1def,s2def,ddl,valid_objs,invalid_objs",
     [
@@ -420,6 +424,7 @@ def test_inlined_unique_keys(framework, schema_name, d_has_id, s1def, s2def, ddl
         )
 
 
+@feature_category("Identity & Keys", "Nested keys")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "is_local,data_name,objs,is_valid",
