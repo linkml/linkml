@@ -19,6 +19,7 @@ from rdflib.plugin import plugins as rdflib_plugins
 
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
+from linkml.generators.common.subproperty import is_xsd_anyuri_range
 from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime import SchemaView
@@ -206,6 +207,24 @@ class OwlSchemaGenerator(Generator):
     .. note:: A warning is emitted when an abstract class has no children (no axiom generated)
        or only one child (covering axiom degenerates to equivalence Parent ≡ Child).
        Use this flag to suppress covering axioms entirely if equivalence is undesired."""
+
+    xsd_anyuri_as_iri: bool = False
+    """Treat ``range: uri`` / ``range: uriorcurie`` slots as ``owl:ObjectProperty``
+    instead of ``owl:DatatypeProperty`` with ``rdfs:range xsd:anyURI``.
+
+    This aligns the OWL output with the SHACL generator (which emits
+    ``sh:nodeKind sh:IRI``) and the JSON-LD context generator (which emits
+    ``@type: @id`` when its own ``--xsd-anyuri-as-iri`` flag is set).
+
+    Without this flag, ``range: uri`` produces a semantic inconsistency:
+    OWL says the value is a literal (``DatatypeProperty``), while SHACL and
+    JSON-LD say it is an IRI node.  Enabling the flag makes all three
+    generators consistent.
+
+    When enabled, URI-range slots:
+    - become ``owl:ObjectProperty`` (not ``owl:DatatypeProperty``)
+    - have no ``rdfs:range`` restriction (any IRI is valid)
+    """
 
     def as_graph(self) -> Graph:
         """
@@ -770,14 +789,19 @@ class OwlSchemaGenerator(Generator):
         this_owl_types = set()
         if range:
             if range in sv.all_types(imports=True):
-                self.slot_is_literal_map[main_slot.name].add(True)
-                this_owl_types.add(RDFS.Literal)
-                typ = sv.get_type(range)
-                if self.type_objects:
-                    # TODO
-                    owl_exprs.append(self._type_uri(typ.name))
+                if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(sv, range):
+                    # xsd:anyURI ranges become ObjectProperty with no rdfs:range
+                    self.slot_is_literal_map[main_slot.name].add(False)
+                    this_owl_types.add(OWL.Thing)
                 else:
-                    owl_exprs.append(self._type_uri(typ.name))
+                    self.slot_is_literal_map[main_slot.name].add(True)
+                    this_owl_types.add(RDFS.Literal)
+                    typ = sv.get_type(range)
+                    if self.type_objects:
+                        # TODO
+                        owl_exprs.append(self._type_uri(typ.name))
+                    else:
+                        owl_exprs.append(self._type_uri(typ.name))
             elif range in sv.all_enums(imports=True):
                 # TODO: enums fill this in
                 owl_exprs.append(self._enum_uri(EnumDefinitionName(range)))
@@ -1354,8 +1378,9 @@ class OwlSchemaGenerator(Generator):
     def _range_is_datatype(self, slot: SlotDefinition) -> bool:
         if self.type_objects:
             return False
-        else:
-            return slot.range in self.schema.types
+        if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(self.schemaview, slot.range):
+            return False
+        return slot.range in self.schema.types
 
     def _range_uri(self, slot: SlotDefinition) -> URIRef:
         if slot.range in self.schema.types:
@@ -1474,6 +1499,8 @@ class OwlSchemaGenerator(Generator):
         elif range in sv.all_enums():
             return OWL.ObjectProperty
         elif range in sv.all_types():
+            if self.xsd_anyuri_as_iri and is_xsd_anyuri_range(sv, range):
+                return OWL.ObjectProperty
             return OWL.DatatypeProperty
         else:
             raise Exception(f"Unknown range: {slot.range}")
@@ -1595,6 +1622,17 @@ class OwlSchemaGenerator(Generator):
         "If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. "
         "By default such axioms are emitted for every abstract class that has direct is_a children. "
         "Note: warnings are emitted for abstract classes with zero children (no axiom) or one child (equivalence)."
+    ),
+)
+@click.option(
+    "--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri",
+    default=False,
+    show_default=True,
+    help=(
+        "Treat range: uri / range: uriorcurie slots as owl:ObjectProperty (IRI node) "
+        "instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). "
+        "Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and "
+        "the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id)."
     ),
 )
 @click.version_option(__version__, "-V", "--version")
