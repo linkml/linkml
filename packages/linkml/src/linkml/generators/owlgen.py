@@ -21,7 +21,7 @@ from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.generators.common.subproperty import is_xsd_anyuri_range
 from linkml.utils.deprecation import deprecation_warning
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, normalize_graph_prefixes, shared_arguments
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -272,6 +272,10 @@ class OwlSchemaGenerator(Generator):
             self.graph.bind(prefix, self.metamodel.namespaces[prefix])
         for pfx in schema.prefixes.values():
             self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
+        if self.normalize_prefixes:
+            normalize_graph_prefixes(
+                graph, {str(v.prefix_prefix): str(v.prefix_reference) for v in schema.prefixes.values()}
+            )
         graph.add((base, RDF.type, OWL.Ontology))
 
         # Add main schema elements

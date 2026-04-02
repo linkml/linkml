@@ -15,7 +15,7 @@ from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
 from linkml.utils.deprecation import deprecated_fields
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, shared_arguments, well_known_prefix_map
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, underscore
@@ -90,6 +90,9 @@ class ContextGenerator(Generator):
     frame_root: str | None = None
 
     def __post_init__(self) -> None:
+        # Must be set before super().__post_init__() because the parent triggers
+        # the visitor pattern (visit_schema), which accesses _prefix_remap.
+        self._prefix_remap: dict[str, str] = {}
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
@@ -127,14 +130,82 @@ class ContextGenerator(Generator):
                 external_slots.update(schema_def.slots.keys())
         return external_classes, external_slots
 
+    def add_prefix(self, ncname: str) -> None:
+        """Add a prefix, applying well-known prefix normalisation when enabled."""
+        super().add_prefix(self._prefix_remap.get(ncname, ncname))
+
     def visit_schema(self, base: str | Namespace | None = None, output: str | None = None, **_):
-        # Add any explicitly declared prefixes
+        # Add any explicitly declared prefixes.
+        # Direct .add() is safe here: the normalisation block below explicitly
+        # rewrites emit_prefixes entries for any renamed prefixes (Cases 1-3).
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
 
         # Add any prefixes explicitly declared
         for pfx in self.schema.emit_prefixes:
             self.add_prefix(pfx)
+
+        # Normalise well-known prefix names when --normalize-prefixes is set.
+        # If the schema declares a non-standard alias for a namespace that has
+        # a well-known standard name (e.g. ``sdo`` for
+        # ``https://schema.org/``), replace the alias with the standard name
+        # so that generated JSON-LD contexts use the conventional prefix.
+        #
+        # Three cases are handled:
+        # 1. Standard prefix is not yet bound → just rebind from old to new.
+        # 2. Standard prefix is bound to a *different* URI:
+        #    a. User-declared (in schema.prefixes) → collision, skip with warning.
+        #    b. Runtime default (e.g. linkml-runtime's ``schema: http://…``)
+        #       → remove stale binding, then rebind.
+        # 3. Standard prefix is already bound to the *same* URI (duplicate)
+        #    → just drop the non-standard alias.
+        #
+        # A remap dict is stored for ``_build_element_id`` because
+        # ``prefix_suffix()`` splits CURIEs on ``:`` without looking up the
+        # namespace dict.
+        self._prefix_remap.clear()
+        if self.normalize_prefixes:
+            wk = well_known_prefix_map()
+            for old_pfx in list(self.namespaces):
+                url = str(self.namespaces[old_pfx])
+                std_pfx = wk.get(url)
+                if not std_pfx or std_pfx == old_pfx:
+                    continue
+                if std_pfx in self.namespaces:
+                    if str(self.namespaces[std_pfx]) != url:
+                        # Case 2: std_pfx is bound to a different URI.
+                        # If the user explicitly declared std_pfx in the schema,
+                        # it is intentional — skip to avoid data loss.
+                        if std_pfx in self.schema.prefixes:
+                            self.logger.warning(
+                                "Prefix collision: cannot rename '%s' to '%s' because '%s' is "
+                                "already declared for <%s>; skipping normalisation for <%s>",
+                                old_pfx,
+                                std_pfx,
+                                std_pfx,
+                                str(self.namespaces[std_pfx]),
+                                url,
+                            )
+                            continue
+                        # Not user-declared (e.g. linkml-runtime default) — safe to remove
+                        self.emit_prefixes.discard(std_pfx)
+                        del self.namespaces[std_pfx]
+                    else:
+                        # Case 3: standard prefix already bound to same URI
+                        # — just drop the non-standard alias
+                        del self.namespaces[old_pfx]
+                        if old_pfx in self.emit_prefixes:
+                            self.emit_prefixes.discard(old_pfx)
+                            self.emit_prefixes.add(std_pfx)
+                        self._prefix_remap[old_pfx] = std_pfx
+                        continue
+                # Case 1 (or Case 2 after stale removal): bind standard name
+                self.namespaces[std_pfx] = self.namespaces[old_pfx]
+                del self.namespaces[old_pfx]
+                if old_pfx in self.emit_prefixes:
+                    self.emit_prefixes.discard(old_pfx)
+                    self.emit_prefixes.add(std_pfx)
+                self._prefix_remap[old_pfx] = std_pfx
 
         # Add the default prefix
         if self.schema.default_prefix:
@@ -143,6 +214,8 @@ class ContextGenerator(Generator):
                 self.default_ns = dflt
             if self.default_ns:
                 default_uri = self.namespaces[self.default_ns]
+                # Direct .add() is safe: default_ns is already resolved from
+                # the (possibly normalised) namespace bindings above.
                 self.emit_prefixes.add(self.default_ns)
             else:
                 default_uri = self.schema.default_prefix
@@ -417,6 +490,11 @@ class ContextGenerator(Generator):
         @return: None
         """
         uri_prefix, uri_suffix = self.namespaces.prefix_suffix(uri)
+        # Apply well-known prefix normalisation (e.g. sdo → schema).
+        # prefix_suffix() splits CURIEs on ':' without checking the
+        # namespace dict, so it may return a stale alias.
+        if uri_prefix and uri_prefix in self._prefix_remap:
+            uri_prefix = self._prefix_remap[uri_prefix]
         is_default_namespace = uri_prefix == self.context_body["@vocab"] or uri_prefix == self.namespaces.prefix_for(
             self.context_body["@vocab"]
         )

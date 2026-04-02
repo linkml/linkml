@@ -1233,3 +1233,118 @@ classes:
         assert result_iri.exit_code == 0, result_iri.output
         ctx_iri = json.loads(result_iri.output)["@context"]
         assert ctx_iri["homepage"]["@type"] == "@id"
+
+
+def test_normalize_prefixes_renames_nonstandard_alias(tmp_path):
+    """When --normalize-prefixes is set, non-standard aliases are replaced by rdflib defaults.
+
+    rdflib binds ``dc`` to ``http://purl.org/dc/elements/1.1/`` by default.
+    A schema that declares ``dce`` for the same URI should have it normalised
+    to ``dc`` when the flag is enabled.
+
+    See: rdflib default namespace bindings.
+    """
+    schema = tmp_path / "schema.yaml"
+    schema.write_text(
+        """\
+id: https://example.org/test
+name: test_normalize
+default_prefix: ex
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+  dce: http://purl.org/dc/elements/1.1/
+imports:
+  - linkml:types
+classes:
+  Record:
+    class_uri: ex:Record
+    attributes:
+      title:
+        range: string
+        slot_uri: dce:title
+""",
+        encoding="utf-8",
+    )
+
+    # Flag OFF (default): non-standard alias preserved
+    ctx_off = json.loads(ContextGenerator(str(schema), normalize_prefixes=False).serialize())["@context"]
+    assert "dce" in ctx_off, "With flag off, original prefix 'dce' must be preserved"
+
+    # Flag ON: rdflib default name used
+    ctx_on = json.loads(ContextGenerator(str(schema), normalize_prefixes=True).serialize())["@context"]
+    assert "dc" in ctx_on, "With flag on, 'dce' should be normalised to 'dc'"
+    assert "dce" not in ctx_on, "With flag on, original alias 'dce' should be removed"
+    assert ctx_on["dc"] == "http://purl.org/dc/elements/1.1/"
+
+
+def test_normalize_prefixes_default_is_off(tmp_path):
+    """The --normalize-prefixes flag defaults to False — no prefix renaming.
+
+    Ensures backward compatibility: existing schemas produce identical output.
+    """
+    schema = tmp_path / "schema.yaml"
+    schema.write_text(
+        """\
+id: https://example.org/test
+name: test_default
+default_prefix: ex
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+  sdo: https://schema.org/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    class_uri: sdo:Thing
+    attributes:
+      name:
+        range: string
+        slot_uri: sdo:name
+""",
+        encoding="utf-8",
+    )
+
+    ctx = json.loads(ContextGenerator(str(schema)).serialize())["@context"]
+    # Without the flag, the schema's own prefix name must be preserved
+    assert "sdo" in ctx, "Default behavior must preserve schema-declared prefix 'sdo'"
+
+
+def test_normalize_prefixes_curie_remapping(tmp_path):
+    """CURIEs in element @id values use the normalised prefix name.
+
+    When ``sdo`` is normalised to ``schema``, slot URIs like ``sdo:name``
+    must appear as ``schema:name`` in the generated context.
+    """
+    schema = tmp_path / "schema.yaml"
+    schema.write_text(
+        """\
+id: https://example.org/test
+name: test_curie
+default_prefix: ex
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+  sdo: https://schema.org/
+imports:
+  - linkml:types
+classes:
+  Person:
+    class_uri: sdo:Person
+    attributes:
+      full_name:
+        range: string
+        slot_uri: sdo:name
+""",
+        encoding="utf-8",
+    )
+
+    ctx = json.loads(ContextGenerator(str(schema), normalize_prefixes=True).serialize())["@context"]
+    # The prefix declaration must use the standard name
+    assert "schema" in ctx, "Normalised prefix 'schema' must appear"
+    # Element @id must use the normalised prefix
+    person = ctx.get("Person", {})
+    assert person.get("@id", "").startswith("schema:"), (
+        f"Person @id should use normalised prefix 'schema:', got {person}"
+    )

@@ -179,6 +179,11 @@ class JSONLDGenerator(Generator):
             # TODO: The _visit function above alters the schema in situ
             # force some context_kwargs
             context_kwargs["metadata"] = False
+            # Forward generator flags so prefix normalisation and deterministic
+            # output propagate into the inline @context produced for JSON-LD.
+            for flag in ("normalize_prefixes", "deterministic"):
+                if hasattr(self, flag):
+                    context_kwargs.setdefault(flag, getattr(self, flag))
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
