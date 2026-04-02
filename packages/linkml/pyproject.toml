@@ -50,7 +50,10 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "openpyxl",
     "parse",
     "prefixcommons >= 0.1.7",
-    "prefixmaps >= 0.2.2",
+    # TODO(prefixmaps-0.2.8): Replace git pin with "prefixmaps >= 0.2.8" once released,
+    #   then remove [tool.hatch.metadata] allow-direct-references and regenerate uv.lock.
+    #   Tracked in: https://github.com/linkml/prefixmaps/issues/82
+    "prefixmaps @ git+https://github.com/linkml/prefixmaps@75435150a1b31760b9780af2b64a265943a9b263",
     "pydantic >= 2.0.0, < 3.0.0",
     "pyjsg >= 0.12.3",
     "pyshex >= 0.9.0",
@@ -202,6 +205,10 @@ linkml-schema-fixer = "linkml.utils.schema_fixer:main"
 vcs = "git"
 style = "pep440"
 fallback-version = "0.0.0"
+
+[tool.hatch.metadata]
+# TODO(prefixmaps-0.2.8): Remove this section once the git pin is replaced with >= 0.2.8
+allow-direct-references = true
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
