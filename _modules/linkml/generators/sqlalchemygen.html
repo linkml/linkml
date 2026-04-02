@@ -407,15 +407,16 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">Template</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pydanticgen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PydanticGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.pythongen</span><span class="w"> </span><span class="kn">import</span> <span class="n">PythonGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqlalchemy.sqlalchemy_declarative_2x_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqlalchemy_declarative_2x_template_str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqlalchemy.sqlalchemy_declarative_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqlalchemy_declarative_template_str</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqlalchemy.sqlalchemy_imperative_template</span><span class="w"> </span><span class="kn">import</span> <span class="n">sqlalchemy_imperative_template_str</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqltablegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLTableGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.sqltablegen</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQL_TYPE_TO_PYTHON_TYPE</span><span class="p">,</span> <span class="n">SQLTableGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.transformers.relmodel_transformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKeyPolicy</span><span class="p">,</span> <span class="n">RelationalModelTransformer</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ClassDefinitionName</span><span class="p">,</span> <span class="n">SchemaDefinition</span>
@@ -429,6 +430,7 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TemplateEnum</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">DECLARATIVE</span> <span class="o">=</span> <span class="s2">&quot;declarative&quot;</span>
     <span class="n">IMPERATIVE</span> <span class="o">=</span> <span class="s2">&quot;imperative&quot;</span>
+    <span class="n">DECLARATIVE_2X</span> <span class="o">=</span> <span class="s2">&quot;declarative_2x&quot;</span>
 
 
 <div class="viewcode-block" id="SQLAlchemyGenerator">
@@ -482,9 +484,14 @@
             <span class="n">template_str</span> <span class="o">=</span> <span class="n">sqlalchemy_imperative_template_str</span>
         <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span><span class="p">:</span>
             <span class="n">template_str</span> <span class="o">=</span> <span class="n">sqlalchemy_declarative_template_str</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE_2X</span><span class="p">:</span>
+            <span class="n">template_str</span> <span class="o">=</span> <span class="n">sqlalchemy_declarative_2x_template_str</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown template type: </span><span class="si">{</span><span class="n">template</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE_2X</span><span class="p">:</span>
+            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">trim_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lstrip_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">template_obj</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">template_str</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Package for dataclasses ==  </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -511,6 +518,7 @@
             <span class="n">no_model_import</span><span class="o">=</span><span class="n">no_model_import</span><span class="p">,</span>
             <span class="n">is_join_table</span><span class="o">=</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="nb">any</span><span class="p">(</span><span class="n">tag</span> <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;linkml:derived_from&quot;</span><span class="p">),</span>
             <span class="n">classes</span><span class="o">=</span><span class="n">rel_schema_classes_ordered</span><span class="p">,</span>
+            <span class="n">python_type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">sql_repr</span><span class="p">:</span> <span class="n">SQL_TYPE_TO_PYTHON_TYPE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sql_repr</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Generated code:</span><span class="se">\n</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">code</span>
@@ -532,7 +540,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates and compiles SQL Alchemy bindings</span>
 
-<span class="sd">        - If template is DECLARATIVE, then a single python module with classes is generated</span>
+<span class="sd">        - If template is DECLARATIVE or DECLARATIVE_2X, then a single python module with classes is generated</span>
 <span class="sd">        - If template is IMPERATIVE, only mappings are generated</span>
 <span class="sd">             - if compile_python_dataclasses is True then a standard datamodel is generated</span>
 
@@ -547,7 +555,7 @@
         <span class="k">if</span> <span class="n">model_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span>
 
-        <span class="k">if</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">template</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span><span class="p">,</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE_2X</span><span class="p">):</span>
             <span class="n">sqla_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_sqla</span><span class="p">(</span><span class="n">model_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_model_import</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">compile_python</span><span class="p">(</span><span class="n">sqla_code</span><span class="p">,</span> <span class="n">package_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">compile_python_dataclasses</span><span class="p">:</span>
@@ -617,16 +625,27 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Emit FK declarations&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--sqla-style&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">Choice</span><span class="p">([</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]),</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;SQLAlchemy style to generate (1 or 2). Defaults to 1. Only applies in declarative mode.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;sqla&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">declarative</span><span class="p">,</span> <span class="n">generate_classes</span><span class="p">,</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">use_foreign_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="n">declarative</span><span class="p">,</span> <span class="n">generate_classes</span><span class="p">,</span> <span class="n">pydantic</span><span class="p">,</span> <span class="n">use_foreign_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sqla_style</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate SQL DDL representation&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">sqla_style</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">declarative</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">click</span><span class="o">.</span><span class="n">UsageError</span><span class="p">(</span><span class="s2">&quot;--sqla-style only applies in declarative mode (remove --no-declarative)&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pydantic</span><span class="p">:</span>
         <span class="n">pygen</span> <span class="o">=</span> <span class="n">PydanticGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">pygen</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
     <span class="n">gen</span> <span class="o">=</span> <span class="n">SQLAlchemyGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">declarative</span><span class="p">:</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span>
+        <span class="k">if</span> <span class="n">sqla_style</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE_2X</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">IMPERATIVE</span>
     <span class="k">if</span> <span class="n">use_foreign_keys</span><span class="p">:</span>

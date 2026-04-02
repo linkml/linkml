@@ -463,6 +463,17 @@
     <span class="s2">&quot;XSDDate&quot;</span><span class="p">:</span> <span class="n">Date</span><span class="p">(),</span>
 <span class="p">}</span>
 
+<span class="n">SQL_TYPE_TO_PYTHON_TYPE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Text()&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Integer()&quot;</span><span class="p">:</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Float()&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Numeric()&quot;</span><span class="p">:</span> <span class="s2">&quot;Decimal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Boolean()&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Time()&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DateTime()&quot;</span><span class="p">:</span> <span class="s2">&quot;datetime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Date()&quot;</span><span class="p">:</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
 
 <span class="n">VARCHAR_REGEX</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;VARCHAR2?(\((\d+)\))?&quot;</span><span class="p">)</span>
 <span class="n">ORACLE_MAX_VARCHAR_LENGTH</span> <span class="o">=</span> <span class="mi">4096</span>
