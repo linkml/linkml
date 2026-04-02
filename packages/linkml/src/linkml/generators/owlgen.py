@@ -42,6 +42,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,21 @@ OWL_TYPE = URIRef  ## RDFS.Literal or OWL.Thing
 
 SWRL = rdflib.Namespace("http://www.w3.org/2003/11/swrl#")
 SWRLB = rdflib.Namespace("http://www.w3.org/2003/11/swrlb#")
+
+
+def _expression_sort_key(expr: YAMLRoot) -> str:
+    """Return a stable sort key for LinkML anonymous expressions.
+
+    Used by ``--deterministic`` to order ``any_of``, ``all_of``,
+    ``none_of``, and ``exactly_one_of`` members reproducibly.
+
+    This relies on ``YAMLRoot.__repr__()`` which formats objects using
+    their **field values** (not memory addresses).  All anonymous
+    expression dataclasses in ``linkml_runtime.linkml_model.meta``
+    use ``@dataclass(repr=False)`` and inherit this field-based repr,
+    so the output is deterministic across runs.
+    """
+    return repr(expr)
 
 
 @unique
@@ -290,7 +306,14 @@ class OwlSchemaGenerator(Generator):
         :return:
         """
         self.as_graph()
-        data = self.graph.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        if self.deterministic and fmt == "turtle":
+            # Deferred to avoid circular import (generator.py imports from this package)
+            from linkml.utils.generator import deterministic_turtle
+
+            data = deterministic_turtle(self.graph)
+        else:
+            data = self.graph.serialize(format=fmt)
         return data
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
@@ -579,9 +602,15 @@ class OwlSchemaGenerator(Generator):
         own_slots = self.get_own_slots(cls)
         owl_exprs = []
         if cls.any_of:
-            owl_exprs.append(self._union_of([self.transform_class_expression(x) for x in cls.any_of]))
+            members = list(cls.any_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
+            owl_exprs.append(self._union_of([self.transform_class_expression(x) for x in members]))
         if cls.exactly_one_of:
-            sub_exprs = [self.transform_class_expression(x) for x in cls.exactly_one_of]
+            members = list(cls.exactly_one_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
+            sub_exprs = [self.transform_class_expression(x) for x in members]
             if isinstance(cls, ClassDefinition):
                 cls_uri = self._class_uri(cls.name)
                 listnode = BNode()
@@ -589,17 +618,23 @@ class OwlSchemaGenerator(Generator):
                 graph.add((cls_uri, OWL.disjointUnionOf, listnode))
             else:
                 sub_sub_exprs = []
-                for i, x in enumerate(cls.exactly_one_of):
-                    rest = cls.exactly_one_of[0:i] + cls.exactly_one_of[i + 1 :]
+                for i, x in enumerate(members):
+                    rest = members[0:i] + members[i + 1 :]
                     neg_expr = self._complement_of_union_of([self.transform_class_expression(nx) for nx in rest])
                     pos_expr = self._intersection_of([self.transform_class_expression(x), neg_expr])
                     sub_sub_exprs.append(pos_expr)
                 owl_exprs.append(self._union_of(sub_sub_exprs))
                 # owl_exprs.extend(sub_exprs)
         if cls.all_of:
-            owl_exprs.append(self._intersection_of([self.transform_class_expression(x) for x in cls.all_of]))
+            members = list(cls.all_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
+            owl_exprs.append(self._intersection_of([self.transform_class_expression(x) for x in members]))
         if cls.none_of:
-            owl_exprs.append(self._complement_of_union_of([self.transform_class_expression(x) for x in cls.none_of]))
+            members = list(cls.none_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
+            owl_exprs.append(self._complement_of_union_of([self.transform_class_expression(x) for x in members]))
         for slot in own_slots:
             if slot.name:
                 owltypes = self.slot_node_owltypes(sv.get_slot(slot.name), owning_class=cls)
@@ -752,27 +787,37 @@ class OwlSchemaGenerator(Generator):
             owl_exprs.append(self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types))
 
         if slot.any_of:
+            members = list(slot.any_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
             owl_exprs.append(
-                self._union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.any_of]
-                )
+                self._union_of([self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in members])
             )
         if slot.all_of:
+            members = list(slot.all_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
             owl_exprs.append(
                 self._intersection_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.all_of]
+                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in members]
                 )
             )
         if slot.none_of:
+            members = list(slot.none_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
             owl_exprs.append(
                 self._complement_of_union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.none_of]
+                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in members]
                 )
             )
         if slot.exactly_one_of:
+            members = list(slot.exactly_one_of)
+            if self.deterministic:
+                members = sorted(members, key=_expression_sort_key)
             disj_exprs = []
-            for i, operand in enumerate(slot.exactly_one_of):
-                rest = slot.exactly_one_of[0:i] + slot.exactly_one_of[i + 1 :]
+            for i, operand in enumerate(members):
+                rest = members[0:i] + members[i + 1 :]
                 neg_expr = self._complement_of_union_of(
                     [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in rest],
                     owl_types=owl_types,
@@ -1046,7 +1091,10 @@ class OwlSchemaGenerator(Generator):
         owl_types = []
         enum_owl_type = self._get_metatype(e, self.default_permissible_value_type)
 
-        for pv in e.permissible_values.values():
+        pvs = e.permissible_values.values()
+        if self.deterministic:
+            pvs = sorted(pvs, key=lambda x: x.text)
+        for pv in pvs:
             pv_owl_type = self._get_metatype(pv, enum_owl_type)
             owl_types.append(pv_owl_type)
             if pv_owl_type == RDFS.Literal:

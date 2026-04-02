@@ -93,7 +93,13 @@ class ShaclGenerator(Generator):
 
     def serialize(self, **args) -> str:
         g = self.as_graph()
-        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        if self.deterministic and fmt == "turtle":
+            from linkml.utils.generator import deterministic_turtle
+
+            data = deterministic_turtle(g)
+        else:
+            data = g.serialize(format=fmt)
         return data
 
     def as_graph(self) -> Graph:
@@ -309,13 +315,13 @@ class ShaclGenerator(Generator):
         sv = self.schemaview
         enum = sv.get_enum(r)
         pv_node = BNode()
+        pv_items = list(enum.permissible_values.items())
+        if self.deterministic:
+            pv_items = sorted(pv_items, key=lambda x: x[0])
         Collection(
             g,
             pv_node,
-            [
-                URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name)
-                for pv_name, pv in enum.permissible_values.items()
-            ],
+            [URIRef(sv.expand_curie(pv.meaning)) if pv.meaning else Literal(pv_name) for pv_name, pv in pv_items],
         )
         func(SH["in"], pv_node)
 
@@ -469,7 +475,10 @@ class ShaclGenerator(Generator):
 
         list_node = BNode()
         ignored_properties.add(RDF.type)
-        Collection(g, list_node, list(ignored_properties))
+        props = list(ignored_properties)
+        if self.deterministic:
+            props = sorted(props, key=str)
+        Collection(g, list_node, props)
 
         return list_node
 
