@@ -64,9 +64,9 @@ class ContextGenerator(Generator):
     whose terms are ``@protected`` in their own JSON-LD context — redefining
     them locally would violate JSON-LD 1.1 §4.1.11.
 
-    Note: this flag has no effect when ``mergeimports=False`` because
-    non-local elements are already absent from the visitor iteration
-    in that mode.
+    This flag is effective regardless of the ``mergeimports`` setting:
+    even with ``mergeimports=False``, external vocabulary elements can
+    leak into the context via the schema map.
     """
     _local_classes: set | None = field(default=None, repr=False)
     _local_slots: set | None = field(default=None, repr=False)
