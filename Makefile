@@ -85,6 +85,10 @@ test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
 test-tutorial-%: docs/intro/tutorial%.md
 	$(RUN) python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
 
+build-generator-dashboard:
+	$(RUN) pytest tests/linkml/test_compliance/ --with-output -q
+	$(RUN) python scripts/generate_dashboard.py
+
 docs:
 	cd docs && $(RUN) make html
 

@@ -110,6 +110,16 @@ Others
    yaml
    pandera
 
+Feature Dashboard
+-----------------
+
+See which metamodel features each generator supports at a glance.
+
+.. toctree::
+   :maxdepth: 1
+
+   dashboard
+
 Common
 ------
 
