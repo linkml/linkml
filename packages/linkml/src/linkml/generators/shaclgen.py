@@ -13,7 +13,7 @@ from linkml._version import __version__
 from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
-from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.generator import Generator, normalize_graph_prefixes, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
@@ -105,6 +105,10 @@ class ShaclGenerator(Generator):
 
         for pfx in self.schema.prefixes.values():
             g.bind(str(pfx.prefix_prefix), pfx.prefix_reference)
+        if self.normalize_prefixes:
+            normalize_graph_prefixes(
+                g, {str(v.prefix_prefix): str(v.prefix_reference) for v in self.schema.prefixes.values()}
+            )
 
         for c in sv.all_classes(imports=not self.exclude_imports).values():
 
