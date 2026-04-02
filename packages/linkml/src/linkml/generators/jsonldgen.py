@@ -190,6 +190,8 @@ class JSONLDGenerator(Generator):
             # through the same ``--importmap`` the caller supplied.
             context_kwargs.setdefault("importmap", self.importmap)
             context_kwargs.setdefault("base_dir", self.base_dir)
+            # Forward prefix normalisation into the inline @context.
+            context_kwargs.setdefault("normalize_prefixes", self.normalize_prefixes)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI
