@@ -1,7 +1,7 @@
 -- ====================================================================
 -- SQL Validation Queries
 -- Generated from LinkML schema
--- LinkML v0.0.0.post3958.dev0+0979fc25
+-- LinkML v0.0.0.post4237.dev0+893c1568
 -- Generator: sqlvalidationgen.py v0.1.0
 -- Dialect: sqlite
 -- ====================================================================
@@ -28,7 +28,7 @@ UNION ALL
 
 SELECT 'Person' AS table_name, 'primary_email' AS column_name, 'pattern' AS constraint_type, id AS record_id, primary_email AS invalid_value
 FROM "Person"
-WHERE "Person".primary_email IS NOT NULL AND NOT (REGEXP('^\S+@[\S+\.]+\S+', primary_email) = 1)
+WHERE "Person".primary_email NOT REGEXP '^\S+@[\S+\.]+\S+'
 
 UNION ALL
 
@@ -46,7 +46,7 @@ UNION ALL
 
 SELECT 'Person' AS table_name, 'telephone' AS column_name, 'pattern' AS constraint_type, id AS record_id, telephone AS invalid_value
 FROM "Person"
-WHERE "Person".telephone IS NOT NULL AND NOT (REGEXP('^[\d\(\)\-]+$', telephone) = 1)
+WHERE "Person".telephone NOT REGEXP '^[\d\(\)\-]+$'
 
 UNION ALL
 
@@ -99,6 +99,12 @@ UNION ALL
 SELECT 'Organization' AS table_name, 'name' AS column_name, 'required' AS constraint_type, id AS record_id, NULL AS invalid_value
 FROM "Organization"
 WHERE "Organization".name IS NULL
+
+UNION ALL
+
+SELECT 'Organization' AS table_name, 'score' AS column_name, 'rule' AS constraint_type, id AS record_id, score AS invalid_value
+FROM "Organization"
+WHERE "Organization".min_salary <= 80000.0 AND "Organization".score > 0
 
 UNION ALL
 
