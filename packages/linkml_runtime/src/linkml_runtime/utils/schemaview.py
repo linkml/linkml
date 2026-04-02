@@ -1701,10 +1701,10 @@ class SchemaView:
                 v = self.schema.default_range
             if v is not None:
                 setattr(induced_slot, metaslot_name, v)
-        if slot.inlined_as_list:
-            slot.inlined = True
-        if slot.identifier or slot.key:
-            slot.required = True
+        if induced_slot.inlined_as_list:
+            induced_slot.inlined = True
+        if induced_slot.identifier or induced_slot.key:
+            induced_slot.required = True
         if mangle_name:
             mangled_name = f"{camelcase(class_name)}__{underscore(slot_name)}"
             induced_slot.name = mangled_name
