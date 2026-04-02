@@ -228,7 +228,7 @@ class YarrrmlGenerator(Generator):
 
         # YARRRML parsers fail to execute RML Joins (`condition: equal`) on generated Blank Nodes.
         # For inlined objects lacking an ID, we synthesize a deterministic IRI using the parent's ID
-        # to guarantee graph connectivity and avoid broken/orphaned triples during the RDF roundtrip.
+        # to guarantee graph connectivity and avoid broken/orphaned triples during lifting.
         if c.name in inline_owners:
             owner_name, _ = inline_owners[c.name][0]
             parent_id = sv.get_identifier_slot(owner_name) or sv.get_key_slot(owner_name)

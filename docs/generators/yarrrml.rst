@@ -170,7 +170,7 @@ Limitations
 - Object slots:
   - ``inlined: false`` → emitted as IRIs
   - ``inlined: true`` → emitted using YARRRML ``mapping`` + ``condition`` (join) pattern
-- Inlined objects without an identifier are assigned a synthetic IRI using the parent's ID (e.g. ``ex:Child_$(parent_id)``). This ensures graph connectivity and avoids broken/orphaned triples during RDF roundtrips, as many YARRRML parsers fail to execute Joins (``condition: equal``) on Blank Nodes.
+- Inlined objects without an identifier are assigned a synthetic IRI using the parent's ID (e.g. ``ex:Child_$(parent_id)``). This ensures graph connectivity and avoids broken/orphaned triples during lifting, as some YARRRML implementations fail to execute joins (``condition: equal``) on Blank Nodes.
 - However, multivalued inlined objects (lists) still strictly require an identifier.
 - An inline class without an identifier can only be used in a single owning class.
 - Iterators not derived from JSON Schema
