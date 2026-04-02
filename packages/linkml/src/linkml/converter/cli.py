@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 import sys
+from typing import TYPE_CHECKING
 
 import click
 import yaml
@@ -26,6 +27,9 @@ from linkml_runtime.utils import inference_utils
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.inference_utils import infer_all_slot_values
 from linkml_runtime.utils.schemaview import SchemaView
+
+if TYPE_CHECKING:
+    from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
 
@@ -197,7 +201,7 @@ def cli(
         target_class = infer_root_class(sv)
     if target_class is None:
         raise Exception("target class not specified and could not be inferred")
-    py_target_class = python_module.__dict__[target_class]
+    py_target_class: YAMLRoot = python_module.__dict__[target_class]
     input_format = _get_format(input, input_format)
     loader = get_loader(input_format)
 
@@ -237,9 +241,7 @@ def cli(
             raise Exception("--schema must be passed in order to validate. Suppress with --no-validate")
         obj_dict = json_dumper.to_dict(obj)
         report = run_validation(obj_dict, schema, target_class)
-        if report.results:
-            errors = "\n".join(r.message for r in report.results)
-            raise Exception(f"Validation failed:\n{errors}")
+        report.raise_for_results()
 
     output_format = _get_format(output, output_format, default="json")
     if output_format == "json-ld":
