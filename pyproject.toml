@@ -132,13 +132,21 @@ select = [
   "UP", # pyupgrade
 ]
 
+[tool.ruff.format]
+# Golden files are generated output whose formatting is determined by the code generator
+exclude = ["tests/**/golden/*.py"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["linkml", "linkml_runtime"]
 
 [tool.ruff.lint.per-file-ignores]
 # These templates can have long lines
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
+"packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_2x_template.py" = ["E501"]
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
+
+# Golden files are generated output — may have unused imports, long lines, unsorted imports
+"tests/**/golden/*.py" = ["E501", "F401", "I001"]
 "packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP007", "UP035", "UP045"]
 
 # Auto-generated model files use Optional/Union with string forward references
