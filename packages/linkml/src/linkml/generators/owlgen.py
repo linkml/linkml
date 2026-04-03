@@ -201,7 +201,11 @@ class OwlSchemaGenerator(Generator):
     one direct ``is_a`` child, the generator adds
     ``AbstractClass rdfs:subClassOf (Child1 or Child2 or …)``, expressing the open-world covering
     constraint that every instance of the abstract class must also be an instance of one of its
-    direct subclasses."""
+    direct subclasses.
+
+    .. note:: A warning is emitted when an abstract class has no children (no axiom generated)
+       or only one child (covering axiom degenerates to equivalence Parent ≡ Child).
+       Use this flag to suppress covering axioms entirely if equivalence is undesired."""
 
     def as_graph(self) -> Graph:
         """
@@ -471,6 +475,26 @@ class OwlSchemaGenerator(Generator):
         # must be an instance of at least one of its direct subclasses.
         if cls.abstract and not self.skip_abstract_class_as_unionof_subclasses:
             children = sorted(sv.class_children(cls.name, imports=self.mergeimports, mixins=False, is_a=True))
+            if not children:
+                logger.warning(
+                    "Abstract class '%s' has no children. No covering axiom will be generated.",
+                    cls.name,
+                )
+            elif len(children) == 1:
+                # Warn: with one child C, the covering axiom degenerates to
+                # Parent ⊑ C which, combined with C ⊑ Parent (from is_a),
+                # creates Parent ≡ C (equivalence).  This is semantically
+                # correct per OWL 2 but may be surprising for extensible
+                # ontologies where more children are added later.
+                logger.warning(
+                    "Abstract class '%s' has only 1 direct child ('%s'). "
+                    "The covering axiom makes them equivalent (%s ≡ %s). "
+                    "Use --skip-abstract-class-as-unionof-subclasses to suppress.",
+                    cls.name,
+                    children[0],
+                    cls.name,
+                    children[0],
+                )
             if children:
                 child_uris = [self._class_uri(child) for child in children]
                 union_node = self._union_of(child_uris)
@@ -1569,7 +1593,8 @@ class OwlSchemaGenerator(Generator):
     show_default=True,
     help=(
         "If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. "
-        "By default such axioms are emitted for every abstract class that has direct is_a children."
+        "By default such axioms are emitted for every abstract class that has direct is_a children. "
+        "Note: warnings are emitted for abstract classes with zero children (no axiom) or one child (equivalence)."
     ),
 )
 @click.version_option(__version__, "-V", "--version")
