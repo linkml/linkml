@@ -1,3 +1,8 @@
+---
+search:
+  boost: {% if element.deprecated %}0.5{% else %}10.0{% endif %}
+---
+
 {%- if element.title %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
@@ -33,6 +38,8 @@
 _{{ element_description_line }}_
 {% endfor %}
 {% endif %}
+
+<div data-search-exclude markdown="1">
 
 {% if element.abstract %}
 * __NOTE__: this is an abstract class and should not be instantiated directly
@@ -279,3 +286,5 @@ The class must not satisfy any of:
 {%- if footer -%}
 {{ footer }}
 {%- endif -%}
+
+</div>
