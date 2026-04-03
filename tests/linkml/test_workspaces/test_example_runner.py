@@ -35,6 +35,28 @@ def test_load_from_dict(example_runner):
     assert obj is not None
 
 
+def test_load_from_dict_underscored_input_keys(example_runner):
+    """Pre-underscored keys must be accepted by _load_from_dict.
+
+    The personinfo schema includes slots such as ``founding location``. Callers
+    may provide pre-underscored keys (e.g. ``founding_location``) as produced by
+    JSON Schema / Python generators.
+    """
+    obj = example_runner._load_from_dict(
+        {
+            "organizations": [
+                {
+                    "id": "ROR:1",
+                    "name": "Acme Corp",
+                    "founding_location": "GEO:001",
+                }
+            ]
+        }
+    )
+    assert obj is not None
+    assert obj.organizations[0].founding_location == "GEO:001"
+
+    
 def test_load_from_dict_hyphenated_keys(example_runner):
     """Hyphenated YAML keys must be translated to underscored Python kwargs."""
     example_runner.schemaview.schema.classes["Survey"] = ClassDefinition(
