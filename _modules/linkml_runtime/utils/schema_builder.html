@@ -6,7 +6,7 @@
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>linkml.utils.schema_builder - linkml documentation</title>
+        <title>linkml_runtime.utils.schema_builder - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -397,9 +397,8 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>Source code for linkml.utils.schema_builder</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+          <h1>Source code for linkml_runtime.utils.schema_builder</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">fields</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
@@ -415,7 +414,7 @@
 
 
 <div class="viewcode-block" id="SchemaBuilder">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SchemaBuilder</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -423,7 +422,7 @@
 
 <span class="sd">    Example:</span>
 
-<span class="sd">        &gt;&gt;&gt; from linkml.utils.schema_builder import SchemaBuilder</span>
+<span class="sd">        &gt;&gt;&gt; from linkml_runtime.utils.schema_builder import SchemaBuilder</span>
 <span class="sd">        &gt;&gt;&gt; sb = SchemaBuilder(&#39;test-schema&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; _ = sb.add_class(&#39;Person&#39;, slots=[&#39;name&#39;, &#39;age&#39;])</span>
 <span class="sd">        &gt;&gt;&gt; _ = sb.add_class(&#39;Organization&#39;, slots=[&#39;name&#39;, &#39;employees&#39;])</span>
@@ -459,82 +458,88 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">SchemaDefinition</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SchemaBuilder.add_class">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_class">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_class">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">slots</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">slot_usage</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_attributes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">slots</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">slot_usage</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">replace_if_present</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_attributes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a class to the schema.</span>
 
 <span class="sd">        :param cls: name, dict object, or ClassDefinition object to add</span>
-<span class="sd">        :param slots: slot of slot names or slot objects.</span>
-<span class="sd">        :param slot_usage: slots keyed by slot name</span>
+<span class="sd">        :param slots: list of slot names or slot objects, or a dict mapping slot names</span>
+<span class="sd">            to dicts of slot properties. Must be a list of `SlotDefinition` objects</span>
+<span class="sd">            if `use_attributes=True`</span>
+<span class="sd">        :param slot_usage: dict mapping slot names to `SlotDefinition` objects or dicts</span>
+<span class="sd">            of slot properties, or a list of `SlotDefinition` objects. Ignored if</span>
+<span class="sd">            `use_attributes=True`</span>
 <span class="sd">        :param replace_if_present: if True, replace existing class if present</span>
+<span class="sd">        :param use_attributes: Whether to specify the given slots as an inline</span>
+<span class="sd">            definition of slots, attributes, in the class definition</span>
 <span class="sd">        :param kwargs: additional ClassDefinition properties</span>
-<span class="sd">        :param use_attributes: if True, add slots as attributes</span>
 <span class="sd">        :return: builder</span>
 <span class="sd">        :raises ValueError: if class already exists and replace_if_present=False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">slots</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">slots</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">slot_usage</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">slot_usage</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="n">ClassDefinition</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="n">ClassDefinition</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="o">**</span><span class="bp">cls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">})</span>
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">replace_if_present</span><span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Ensure that `cls` is a `ClassDefinition` object</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ClassDefinition</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;cls must be a string, dict, or ClassDefinition, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="n">cls_as_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">)}</span>
+
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">ClassDefinition</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="o">**</span><span class="n">cls_as_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">replace_if_present</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
         <span class="k">if</span> <span class="n">use_attributes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">):</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">s</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">SlotDefinition</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If use_attributes=True then slots must be SlotDefinitions&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">slots</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slots</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">add_slot</span><span class="p">(</span><span class="n">SlotDefinition</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">),</span> <span class="n">replace_if_present</span><span class="o">=</span><span class="n">replace_if_present</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
-                        <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-                            <span class="c1"># top-level slot already exists</span>
-                            <span class="k">continue</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">add_slot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">replace_if_present</span><span class="o">=</span><span class="n">replace_if_present</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">slot_usage</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_usage</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">slot_usage</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                            <span class="n">v</span> <span class="o">=</span> <span class="n">SlotDefinition</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span>
-                        <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_usage</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slot_usage</span><span class="p">:</span>
-                        <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;slot_usage </span><span class="si">{</span><span class="n">slot_usage</span><span class="si">}</span><span class="s2"> must be a dict or list of SlotDefinitions&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slots</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_slot</span><span class="p">(</span><span class="n">SlotDefinition</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">),</span> <span class="n">replace_if_present</span><span class="o">=</span><span class="n">replace_if_present</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="k">else</span> <span class="n">s</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                        <span class="c1"># top-level slot already exists</span>
+                        <span class="k">continue</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_slot</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">replace_if_present</span><span class="o">=</span><span class="n">replace_if_present</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slot_usage</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slot_usage</span><span class="p">:</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">slot_usage</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">SlotDefinition</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">v</span><span class="p">)</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="SchemaBuilder.add_slot">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_slot">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_slot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_slot</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds the slot to the schema.</span>
@@ -559,7 +564,7 @@
 
 
 <div class="viewcode-block" id="SchemaBuilder.set_slot">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.set_slot">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.set_slot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set details of the slot</span>
@@ -575,7 +580,7 @@
 
 
 <div class="viewcode-block" id="SchemaBuilder.add_enum">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_enum">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_enum">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_enum</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">enum_def</span><span class="p">:</span> <span class="n">EnumDefinition</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
@@ -586,39 +591,55 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds an enum to the schema</span>
 
-<span class="sd">        :param enum_def:</span>
-<span class="sd">        :param permissible_values:</span>
-<span class="sd">        :param replace_if_present:</span>
-<span class="sd">        :param kwargs:</span>
+<span class="sd">        :param enum_def: The base specification of the enum to be added</span>
+<span class="sd">        :param permissible_values: Additional, or overriding, permissible values</span>
+<span class="sd">            of the enum to be added</span>
+<span class="sd">        :param replace_if_present: Whether to replace the enum if it already exists in</span>
+<span class="sd">            the schema by name</span>
+<span class="sd">        :param kwargs: Additional `EnumDefinition` properties to be set as part of the</span>
+<span class="sd">            enum to be added</span>
 <span class="sd">        :return: builder</span>
 <span class="sd">        :raises ValueError: if enum already exists and replace_if_present=False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_def</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">permissible_values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">permissible_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_def</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">enum_def</span> <span class="o">=</span> <span class="n">EnumDefinition</span><span class="p">(</span><span class="n">enum_def</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_def</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_def</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">enum_def</span> <span class="o">=</span> <span class="n">EnumDefinition</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="o">**</span><span class="n">enum_def</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Ensure that `enum_def` is a `EnumDefinition` object</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enum_def</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;enum_def must be a `str`, `dict`, or `EnumDefinition`, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">enum_def</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">enum_def</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">replace_if_present</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Enum </span><span class="si">{</span><span class="n">enum_def</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Attach the enum definition to the schema</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">enum_def</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">enum_def</span>
-        <span class="k">if</span> <span class="n">permissible_values</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">permissible_values</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">pv</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">pv</span><span class="p">)</span>
-                    <span class="n">enum_def</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">[</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">enum_def</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">[</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv</span>
+
+        <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">permissible_values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">pv</span> <span class="o">=</span> <span class="n">PermissibleValue</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">pv</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;A permissible value must be a `str` or a `PermissibleValue` object, not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="n">enum_def</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">[</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv</span>
+
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="SchemaBuilder.add_prefix">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_prefix">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_prefix">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replace_if_present</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a prefix for use with CURIEs</span>
 
 <span class="sd">        :param prefix:</span>
 <span class="sd">        :param url:</span>
-<span class="sd">        :param replace_if_present:</span>
 <span class="sd">        :return: builder</span>
 <span class="sd">        :raises ValueError: if prefix already exists and replace_if_present=False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -629,8 +650,21 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
+<div class="viewcode-block" id="SchemaBuilder.add_imports">
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_imports">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_imports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">imports</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds imports to the schema</span>
+
+<span class="sd">        :param imports: list of imports</span>
+<span class="sd">        :return: builder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">imports</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">imports</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
 <div class="viewcode-block" id="SchemaBuilder.add_defaults">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_defaults">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_defaults">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SchemaBuilder&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets defaults, including:</span>
@@ -652,7 +686,7 @@
 
 
 <div class="viewcode-block" id="SchemaBuilder.add_type">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.add_type">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.add_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_type</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">type</span><span class="p">:</span> <span class="n">TypeDefinition</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
@@ -687,7 +721,7 @@
 
 
 <div class="viewcode-block" id="SchemaBuilder.as_dict">
-<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml.utils.schema_builder.SchemaBuilder.as_dict">[docs]</a>
+<a class="viewcode-back" href="../../../developers/schemabuilder.html#linkml_runtime.utils.schema_builder.SchemaBuilder.as_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the schema as a dictionary.</span>

@@ -406,7 +406,7 @@
         <article role="main" id="furo-main-content">
           <section id="deprecation-log">
 <span id="index-0"></span><h1>Deprecation Log<a class="headerlink" href="#deprecation-log" title="Link to this heading">¶</a></h1>
-<p>See <a class="reference external" href="../maintainers/deprecation.md">Deprecation Guide</a></p>
+<p>See <a class="reference internal" href="../maintainers/deprecation.html#deprecation-guide"><span class="std std-ref">Deprecations</span></a></p>
 <p>(<a class="reference download internal" download="" href="../_downloads/02543450437242af74ba62d72d54fd19/deprecation_plot.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/56d9697d1fd085812bcd50d6b64a8afa/deprecation_plot.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/1fa0f8320e81cc00967e4b015e6050bf/deprecation_plot.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/ed43f9800d29c9b05160dee58a9b84db/deprecation_plot.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
 <figure class="align-default">
 <img alt="../_images/deprecation_plot.png" class="plot-directive" src="../_images/deprecation_plot.png" />
@@ -459,6 +459,19 @@
 </div>
 <p>The default for <cite>consolidate_cardinality_axioms</cite> in <cite>OwlSchemaGenerator</cite> will change from <cite>False</cite> to <cite>True</cite> in a future release.</p>
 <p><strong>Recommendation:</strong> Set <cite>consolidate_cardinality_axioms=True</cite> to emit consolidated axioms, or set it explicitly to <cite>False</cite> to preserve current behaviour and silence this warning.</p>
+</section>
+<section id="schema-builder-import-location">
+<h2>schema-builder-import-location<a class="headerlink" href="#schema-builder-import-location" title="Link to this heading">¶</a></h2>
+<div class="warning admonition">
+<p class="admonition-title">Deprecated</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.11.0.</span></p>
+</div>
+<p><em>Removed in 1.12.0</em></p>
+<p>See also: <a class="reference external" href="https://github.com/linkml/linkml/issues/2372">#2372</a></p>
+</div>
+<p>Importing SchemaBuilder from linkml.utils.schema_builder is deprecated. SchemaBuilder now lives only in linkml_runtime.</p>
+<p><strong>Recommendation:</strong> Use <cite>from linkml_runtime.utils.schema_builder import SchemaBuilder</cite> instead.</p>
 </section>
 </section>
 
@@ -522,6 +535,7 @@
 <li><a class="reference internal" href="#owlgen-skip-vacuous-min-zero-cardinality-default">owlgen-skip-vacuous-min-zero-cardinality-default</a></li>
 <li><a class="reference internal" href="#owlgen-skip-vacuous-local-range-default">owlgen-skip-vacuous-local-range-default</a></li>
 <li><a class="reference internal" href="#owlgen-consolidate-cardinality-axioms-default">owlgen-consolidate-cardinality-axioms-default</a></li>
+<li><a class="reference internal" href="#schema-builder-import-location">schema-builder-import-location</a></li>
 </ul>
 </li>
 </ul>

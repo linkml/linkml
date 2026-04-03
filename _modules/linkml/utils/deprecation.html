@@ -405,15 +405,14 @@
 <span class="sd">- Tracking deprecated and removed in versions</span>
 <span class="sd">- Fail tests when something marked as removed_in is still present in the specified version</span>
 
-<span class="sd">Initial draft for deprecating Pydantic 1, to make more general, needs</span>
-<span class="sd">- function wrapper version</span>
-<span class="sd">- ...</span>
-
 <span class="sd">To deprecate something:</span>
 
 <span class="sd">- Create a :class:`.Deprecation` object within the `DEPRECATIONS` tuple</span>
 <span class="sd">- Use the :func:`.deprecation_warning` function wherever the deprecated feature would be used to emit the warning</span>
 
+<span class="sd">See also</span>
+
+<span class="sd">- https://linkml.io/linkml/maintainers/deprecation.html</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
@@ -683,6 +682,17 @@
         <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Set `consolidate_cardinality_axioms=True` to emit consolidated axioms, &quot;</span>
         <span class="s2">&quot;or set it explicitly to `False` to preserve current behaviour and silence this warning.&quot;</span><span class="p">,</span>
         <span class="n">issue</span><span class="o">=</span><span class="mi">3191</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="n">Deprecation</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;schema-builder-import-location&quot;</span><span class="p">,</span>
+        <span class="n">deprecated_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.11.0&quot;</span><span class="p">),</span>
+        <span class="n">removed_in</span><span class="o">=</span><span class="n">SemVer</span><span class="o">.</span><span class="n">from_str</span><span class="p">(</span><span class="s2">&quot;1.12.0&quot;</span><span class="p">),</span>
+        <span class="n">message</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Importing SchemaBuilder from linkml.utils.schema_builder is deprecated. &quot;</span>
+            <span class="s2">&quot;SchemaBuilder now lives only in linkml_runtime.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">recommendation</span><span class="o">=</span><span class="s2">&quot;Use `from linkml_runtime.utils.schema_builder import SchemaBuilder` instead.&quot;</span><span class="p">,</span>
+        <span class="n">issue</span><span class="o">=</span><span class="mi">2372</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">)</span>  <span class="c1"># type: tuple[Deprecation, ...]</span>
 

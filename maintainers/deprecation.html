@@ -594,13 +594,14 @@ leave the <a class="reference internal" href="#linkml.utils.deprecation.Deprecat
 <li><p>Tracking deprecated and removed in versions</p></li>
 <li><p>Fail tests when something marked as removed_in is still present in the specified version</p></li>
 </ul>
-<p>Initial draft for deprecating Pydantic 1, to make more general, needs
-- function wrapper version
-- …</p>
 <p>To deprecate something:</p>
 <ul class="simple">
 <li><p>Create a <a class="reference internal" href="#linkml.utils.deprecation.Deprecation" title="linkml.utils.deprecation.Deprecation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deprecation</span></code></a> object within the <cite>DEPRECATIONS</cite> tuple</p></li>
 <li><p>Use the <a class="reference internal" href="#linkml.utils.deprecation.deprecation_warning" title="linkml.utils.deprecation.deprecation_warning"><code class="xref py py-func docutils literal notranslate"><span class="pre">deprecation_warning()</span></code></a> function wherever the deprecated feature would be used to emit the warning</p></li>
+</ul>
+<p>See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://linkml.io/linkml/maintainers/deprecation.html">https://linkml.io/linkml/maintainers/deprecation.html</a></p></li>
 </ul>
 <dl class="py class">
 <dt class="sig sig-object py" id="linkml.utils.deprecation.Deprecation">
