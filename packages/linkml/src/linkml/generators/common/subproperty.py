@@ -15,6 +15,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 CURIE_TYPES: frozenset[str] = frozenset({"uriorcurie", "curie"})
 URI_TYPES: frozenset[str] = frozenset({"uri"})
 
+# Types whose XSD mapping is xsd:anyURI (not xsd:string).
+# ``curie`` maps to xsd:string and is deliberately excluded.
+_ANYURI_TYPES: frozenset[str] = frozenset({"uri", "uriorcurie"})
+
 
 def is_uri_range(sv: SchemaView, range_type: str | None) -> bool:
     """
@@ -58,6 +62,35 @@ def is_curie_range(sv: SchemaView, range_type: str | None) -> bool:
     if range_type in sv.all_types():
         type_ancestors = set(sv.type_ancestors(range_type))
         if type_ancestors & CURIE_TYPES:
+            return True
+
+    return False
+
+
+def is_xsd_anyuri_range(sv: SchemaView, range_type: str | None) -> bool:
+    """Check if range type resolves to ``xsd:anyURI``.
+
+    Returns True for ``uri``, ``uriorcurie``, and types that inherit from them.
+    Returns False for ``curie`` (which maps to ``xsd:string``).
+
+    This is the correct predicate for the ``--xsd-anyuri-as-iri`` flag: only
+    types whose XSD representation is ``xsd:anyURI`` should be promoted from
+    literal to IRI semantics.  ``curie`` is a compact string representation
+    that resolves to ``xsd:string`` and must not be affected.
+
+    :param sv: SchemaView for type ancestry lookup
+    :param range_type: The range type to check
+    :return: True if range type maps to xsd:anyURI
+    """
+    if range_type is None:
+        return False
+
+    if range_type in _ANYURI_TYPES:
+        return True
+
+    if range_type in sv.all_types():
+        type_ancestors = set(sv.type_ancestors(range_type))
+        if type_ancestors & _ANYURI_TYPES:
             return True
 
     return False
