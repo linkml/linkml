@@ -362,7 +362,7 @@ Person ||--}o MedicalEvent : "has medical history"
 
 | Name | Cardinality: | Type | Description |
 | --- | --- | --- | --- |
-| **[id](#id)** | <sub>0..1</sub> | string |  |
+| **[id](#id)** | <sub>1..1</sub> | string |  |
 | **[name](#name)** | <sub>0..1</sub> | string |  |
 | **[aliases](#aliases)** | <sub>0..\*</sub> | string |  |
 | **[has medical history](#has medical history)** | <sub>0..\*</sub> | [MedicalEvent](#medicalevent) |  |
