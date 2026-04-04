@@ -244,7 +244,7 @@ class SQLTableGenerator(Generator):
                     if s.range in schema.classes and self.use_foreign_keys:
                         fk = sql_name(self.get_id_or_key(s.range, sv))
                         args = [ForeignKey(fk)]
-                    field_type = self.get_sql_range(s, schema)
+                    field_type = self.get_sql_range(s, schema, sv=sv)  # reuse the Schemaview
                     fk_index_cond = (s.key or s.identifier) and self.autogenerate_index
                     pk_index_cond = is_pk and self.autogenerate_index
                     is_index = fk_index_cond or pk_index_cond
@@ -344,7 +344,7 @@ class SQLTableGenerator(Generator):
         # use standard SQL range matching for anything else
         return None
 
-    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
+    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None, sv: SchemaView = None):
         """Get the slot range as a SQL Alchemy column type."""
         slot_range = slot.range
 
@@ -361,12 +361,13 @@ class SQLTableGenerator(Generator):
         if not schema:
             schema = self.schema
 
-        sv = SchemaView(schema)
+        if sv is None:    # if no SchemaView arg is provided, then create one
+            sv = SchemaView(schema)
         if slot_range in sv.all_classes():
             # FK type should be the same as the identifier of the foreign key
             fk = sv.get_identifier_slot(slot_range)
             if fk:
-                return self.get_sql_range(fk, sv.schema)
+                return self.get_sql_range(fk, sv.schema, sv=sv)  # reuse the Schemaview
             return Text()
 
         if slot_range in sv.all_enums():
