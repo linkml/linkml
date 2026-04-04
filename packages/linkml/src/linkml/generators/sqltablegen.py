@@ -361,7 +361,7 @@ class SQLTableGenerator(Generator):
         if not schema:
             schema = self.schema
 
-        if sv is None:    # if no SchemaView arg is provided, then create one
+        if sv is None:  # if no SchemaView arg is provided, then create one
             sv = SchemaView(schema)
         if slot_range in sv.all_classes():
             # FK type should be the same as the identifier of the foreign key
