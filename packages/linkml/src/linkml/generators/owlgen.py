@@ -1369,7 +1369,7 @@ class OwlSchemaGenerator(Generator):
             logger.warning(f"Null expr in: {exprs} for {predicate} {node}")
         if len(expr_list) == 0:
             return None
-        if len(expr_list) == 1 and node is None and predicate != OWL.oneOf:
+        if len(expr_list) == 1:
             return expr_list[0]
         if node is None:
             node = BNode()
