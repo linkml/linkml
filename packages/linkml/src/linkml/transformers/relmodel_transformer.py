@@ -1,4 +1,5 @@
 import logging
+import time
 from copy import copy
 from dataclasses import dataclass, field
 
@@ -159,9 +160,9 @@ class RelationalModelTransformer:
         :return:
         """
         join_sep = self.join_table_separator
-        links = self.get_reference_map()
         source_sv = self.schemaview
-        source_sv.merge_imports()
+        source_sv.merge_imports()  # do before get_reference_map, avoid busting lru_cache
+        links = self.get_reference_map()
         source = source_sv.schema
         src_schema_name = source.name
         mappings = []
@@ -216,14 +217,18 @@ class RelationalModelTransformer:
         target_sv = SchemaView(target)
         # create surrogate/autoincrement primary keys for any class (originally: that is referenced)
         # for link in links:
-        for cn in target_sv.all_classes():
+        all_target_class_names = list(target_sv.all_classes())
+        logger.info(f"[relmodel] PK injection phase starting for {len(all_target_class_names)} classes")
+        for i, cn in enumerate(all_target_class_names, start=1):
+            if i == 1 or i % 50 == 0 or i == len(all_target_class_names):
+                logger.debug(f"[relmodel] PK phase progress: class {i}/{len(all_target_class_names)} -> {cn}")
             pk = self.get_direct_identifier_attribute(target_sv, cn)
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
-                logger.info(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
+                logger.debug(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
             else:
                 if pk is None:
                     pk = self.add_primary_key(cn, target_sv)
-                    logger.info(f"Added primary key {cn}.{pk.name}")
+                    logger.debug(f"Added primary key {cn}.{pk.name}")
                 for link in links:
                     if link.target_class == cn:
                         link.target_slot = pk.name
@@ -231,8 +236,18 @@ class RelationalModelTransformer:
         # TODO: separate out the logic into separate testable methods
         target_sv.set_modified()
         multivalued_slots_original = []
+        logger.info(f"[relmodel] Post-process phase starting for {len(target.classes)} classes")
+        post_start = time.perf_counter()
         # post-process target schema
-        for cn, c in target_sv.all_classes().items():
+        # for each class, for each slot with a range of object,
+        # we have a reference to another class.
+        for class_index, (cn, c) in enumerate(target_sv.all_classes().items(), start=1):
+            class_start = time.perf_counter()
+            if class_index == 1 or class_index % 50 == 0:
+                logger.debug(
+                    f"[relmodel] Post-process progress: class {class_index}/{len(target.classes)} -> {cn} "
+                    f"(attrs={len(c.attributes)})"
+                )
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
             pk_slot = self.get_direct_identifier_attribute(target_sv, cn)
@@ -290,7 +305,10 @@ class RelationalModelTransformer:
                             unique_key_name = f"{c.name}_{backref_key_slot.name}"
                             backref_class.unique_keys[unique_key_name] = UniqueKey(
                                 unique_key_name=unique_key_name,
-                                unique_key_slots=[backref_slot.name, backref_key_slot.name],
+                                unique_key_slots=[
+                                    backref_slot.name,
+                                    backref_key_slot.name,
+                                ],
                             )
 
                     else:
@@ -345,12 +363,21 @@ class RelationalModelTransformer:
                     del c.attributes[slot_name]
                     target_sv.set_modified()
             target.classes[c.name] = c
+            logger.debug(
+                f"[relmodel] Finished class {cn} in {time.perf_counter() - class_start:.2f}s; "
+                f"attrs_now={len(c.attributes)}"
+            )
+        logger.info(f"[relmodel] Post-process phase complete in {time.perf_counter() - post_start:.2f}s")
 
         # add PK and FK anns
         target_sv.set_modified()
         fk_policy = self.foreign_key_policy
         forward_map = {}
-        for c in target.classes.values():
+        logger.info(f"[relmodel] PK/FK annotation phase starting for {len(target.classes)} classes")
+        fk_start = time.perf_counter()
+        for class_index, c in enumerate(target.classes.values(), start=1):
+            if class_index == 1 or class_index % 50 == 0:
+                logger.debug(f"[relmodel] PK/FK phase progress: class {class_index}/{len(target.classes)} -> {c.name}")
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
             pk_slot = target_sv.get_identifier_slot(c.name)
@@ -399,6 +426,7 @@ class RelationalModelTransformer:
                 uc.unique_key_slots = new_slot_names
             for uc_name in removed_ucs:
                 del c.unique_keys[uc_name]
+        logger.info(f"[relmodel] PK/FK annotation phase complete in {time.perf_counter() - fk_start:.2f}s")
 
         result = TransformationResult(target, mappings=mappings)
         return result
@@ -453,7 +481,11 @@ class RelationalModelTransformer:
     @staticmethod
     def add_primary_key(cn: str, sv: SchemaView) -> SlotDefinition:
         """
-        Adds a surrogate/autoincrement primary key to a class
+        Adds a surrogate/autoincrement primary key to a class.
+
+        Note: do NOT call sv.set_modified() here (once per class), because it kills
+        performance due to lru_cache invalidation in bulk loops. The caller
+        is responsible for calling it once after all PKs are injected.
 
         :param cn:
         :param sv:
@@ -476,5 +508,4 @@ class RelationalModelTransformer:
         c.attributes.clear()  # See https://github.com/linkml/linkml/issues/370
         add_attribute(c.attributes, pk)  # add to start
         c.attributes.update(atts)
-        sv.set_modified()
         return pk
