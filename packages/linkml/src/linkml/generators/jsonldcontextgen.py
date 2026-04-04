@@ -200,6 +200,14 @@ class ContextGenerator(Generator):
         self.add_mappings(cls)
 
         self._build_element_id(class_def, cls.class_uri)
+
+        # Build scoped context for slots whose range differs from the global definition.
+        # This handles attributes and slot_usage overrides that change a slot's range
+        # within a specific class (see: JSON-LD Scoped Contexts).
+        scoped_context = self._build_scoped_context(cls)
+        if scoped_context:
+            class_def["@context"] = scoped_context
+
         if class_def:
             self.slot_class_maps[cn] = class_def
 
@@ -207,7 +215,6 @@ class ContextGenerator(Generator):
         if getattr(cls, "tree_root", False):
             self.frame_root = cls.name
 
-        # We don't bother to visit class slots - just all slots
         return True
 
     def _literal_coercion_for_ranges(self, ranges: list[str]) -> tuple[bool, str | None]:
@@ -297,6 +304,61 @@ class ContextGenerator(Generator):
             # collect @embed only for object-valued slots (range is a class)
             if slot.range in self.schema.classes and slot.inlined is not None:
                 self.frame_body[key] = {"@embed": "@always" if bool(slot.inlined) else "@never"}
+
+    def _resolve_slot_type(self, range_name: str) -> str | None:
+        """Resolve a slot range to its JSON-LD @type value.
+
+        Returns the appropriate @type string for a given range name,
+        or None if the range maps to xsd:string (no @type needed).
+        """
+        if range_name in self.schema.classes:
+            return "@id"
+        if range_name in self.schema.enums:
+            return None
+        if range_name in self.schema.types:
+            range_type = self.schema.types[range_name]
+            uri = self.namespaces.uri_for(range_type.uri)
+            if uri == XSD.string:
+                return None
+            if uri in URI_RANGES:
+                return "@id"
+            return range_type.uri
+        return None
+
+    def _build_scoped_context(self, cls: ClassDefinition) -> dict:
+        """Build a scoped JSON-LD context for class-level slot range overrides.
+
+        When a class overrides a slot's range (via attributes or slot_usage),
+        the global context entry won't have the right @type. This method
+        detects those overrides and returns context entries only when the
+        resolved @type actually differs from the global definition.
+        """
+        scoped: dict = {}
+
+        def _add_if_type_differs(slot_name: str, override_range: str) -> None:
+            """Add a scoped entry if the override's @type differs from the global slot's @type."""
+            global_slot = self.schema.slots[slot_name]
+            global_type = self._resolve_slot_type(global_slot.range) if global_slot.range else None
+            override_type = self._resolve_slot_type(override_range)
+            if override_type == global_type:
+                return
+            entry: dict = {}
+            self._build_element_id(entry, global_slot.slot_uri)
+            if override_type is not None:
+                entry["@type"] = override_type
+            scoped[underscore(slot_name)] = entry
+
+        # Check attributes that shadow global slots
+        for attr_name, attr in cls.attributes.items():
+            if attr.range and attr_name in self.schema.slots:
+                _add_if_type_differs(attr_name, attr.range)
+
+        # Check slot_usage overrides
+        for usage_name, usage in cls.slot_usage.items():
+            if usage.range and usage_name in self.schema.slots:
+                _add_if_type_differs(usage_name, usage.range)
+
+        return scoped
 
     def _build_element_id(self, definition: Any, uri: str) -> None:
         """
