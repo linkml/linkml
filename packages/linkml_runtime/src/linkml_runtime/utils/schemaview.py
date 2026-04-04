@@ -1703,9 +1703,11 @@ class SchemaView:
                 setattr(induced_slot, metaslot_name, v)
         if slot.inlined_as_list:
             slot.inlined = True
+            # mutate the induced_slot (so copy is updated)
             induced_slot.inlined = True
         if slot.identifier or slot.key:
             slot.required = True
+            # mutate the induced_slot (so copy is updated)
             induced_slot.required = True
         if mangle_name:
             mangled_name = f"{camelcase(class_name)}__{underscore(slot_name)}"
