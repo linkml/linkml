@@ -9,7 +9,7 @@ from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
-from linkml_runtime.linkml_model import ElementName, PermissibleValue, PermissibleValueText, SlotDefinition
+from linkml_runtime.linkml_model import ElementName, PermissibleValue, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -85,10 +85,14 @@ class RDFLibDumper(Dumper):
         slot_name_map = schemaview.slot_name_mappings()
         logger.debug(f"CONVERT: {element} // {type(element)} // {target_type}")
         if target_type in schemaview.all_enums():
-            if isinstance(element, PermissibleValueText):
+            # Handle three cases for enum target types:
+            # 1) element is string (the name of the permissible value),
+            # 2) element is PermissibleValue,
+            if isinstance(element, str):
                 e = schemaview.get_enum(target_type)
                 element = e.permissible_values[element]
-            else:
+            elif not isinstance(element, PermissibleValue):
+                # 3) element is EnumDefinitionImpl (.code -> PermissibleValue)
                 element = element.code
             element: PermissibleValue
             if element.meaning is not None:
