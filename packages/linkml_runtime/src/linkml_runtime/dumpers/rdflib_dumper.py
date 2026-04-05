@@ -86,14 +86,13 @@ class RDFLibDumper(Dumper):
         logger.debug(f"CONVERT: {element} // {type(element)} // {target_type}")
         if target_type in schemaview.all_enums():
             # Handle three cases for enum target types:
-            # 1) element is string (the name of the permissible value),
-            # 2) element is PermissibleValue,
-            if isinstance(element, str):
+            if isinstance(element, str):  # case 1: string, look up PermissibleValue
                 e = schemaview.get_enum(target_type)
                 element = e.permissible_values[element]
-            elif not isinstance(element, PermissibleValue):
-                # 3) element is EnumDefinitionImpl (.code -> PermissibleValue)
+            elif not isinstance(element, PermissibleValue):  # case 3: EnumDefinitionImpl .code
                 element = element.code
+            # 3) do nothing, element is already PermissibleValue (PermissibleValueImpl.code)
+
             element: PermissibleValue
             if element.meaning is not None:
                 return URIRef(schemaview.expand_curie(element.meaning))

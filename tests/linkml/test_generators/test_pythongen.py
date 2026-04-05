@@ -80,6 +80,57 @@ def test_enum_permissiblevalue_ifabsent(input_path):
     assert ifabsent_obj.ifabsent_not_literal.code == ksm.CordialnessEnum.heartfelt
 
 
+def test_enum_ifabsent_default_applied():
+    """When a slot has ifabsent pointing to an enum value, instantiating the class
+    without supplying that slot should give back a proper enum instance, not a string.
+
+    Regression test for https://github.com/linkml/linkml/issues/2380
+    """
+    schema = """
+id: https://examples.org/issue2380
+name: issue2380
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://examples.org/issue2380/
+
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+classes:
+  Person:
+    attributes:
+      name:
+      age_category:
+        range: AgeEnum
+        ifabsent: AgeEnum(infant)
+
+enums:
+  AgeEnum:
+    permissible_values:
+      infant:
+      juvenile:
+      adult:
+"""
+    module = make_python(schema)
+
+    # Instantiate with only `name` — age_category should default to AgeEnum.infant
+    # example from https://github.com/linkml/linkml/issues/2382#issuecomment-2437523856
+    person = module.Person(name="John Doe")
+    assert isinstance(person.age_category, module.AgeEnum), (
+        f"Expected AgeEnum instance, got {type(person.age_category)}"
+    )
+    assert person.age_category.code == module.AgeEnum.infant
+
+    # Explicitly supplying a value should override the default
+    person2 = module.Person(name="Jane Doe", age_category=module.AgeEnum.adult)
+    assert isinstance(person2.age_category, module.AgeEnum)
+    assert person2.age_category.code == module.AgeEnum.adult
+
+
 def test_enum_ifabsent_snake_case_name():
     """Enum ifabsent with a snake_case enum name should use the camelcased Python class name.
 

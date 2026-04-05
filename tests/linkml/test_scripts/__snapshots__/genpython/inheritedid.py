@@ -104,11 +104,11 @@ class AttributeId(IdentifierType):
     pass
 
 
-class OntologyClassId(NamedThingId):
+class BiologicalSexId(AttributeId):
     pass
 
 
-class BiologicalSexId(AttributeId):
+class OntologyClassId(NamedThingId):
     pass
 
 
