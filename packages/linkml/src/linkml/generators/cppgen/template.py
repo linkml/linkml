@@ -29,9 +29,6 @@ class CppTemplateModel(TemplateModel):
     _environment.filters["cpp_comment"] = lambda text, indent="": "\n".join(
         f"{indent}/// {line}" if line.strip() else f"{indent}///" for line in text.splitlines()
     )
-    _environment.filters["upper_snake"] = lambda text: (
-        "".join(f"_{c}" if c.isupper() and i > 0 else c for i, c in enumerate(text)).upper().lstrip("_")
-    )
 
     meta_exclude: ClassVar[list[str]] = None
 

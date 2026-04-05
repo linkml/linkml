@@ -507,7 +507,7 @@ Available templates to override:
     + "\n".join(["- " + name for name in _TEMPLATE_NAMES]),
 )
 @click.version_option(__version__, "-V", "--version")
-@click.command(name="cpp-header")
+@click.command(name="gen-cpp-header")
 def cli(
     yamlfile,
     namespace: str | None = None,
