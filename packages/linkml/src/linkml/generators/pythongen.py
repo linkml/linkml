@@ -2,11 +2,9 @@ import keyword
 import logging
 import os
 import re
-from collections import defaultdict
 from collections.abc import Callable, Iterator
 from copy import copy
 from dataclasses import dataclass
-from graphlib import TopologicalSorter
 from pathlib import Path
 from types import ModuleType
 
@@ -407,8 +405,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
     def gen_references(self) -> str:
         """Generate python type declarations for all identifiers (primary keys)"""
-        rval = dict()
-        graph = defaultdict(set)
+        rval = []
         for cls in self._sort_classes(self.schema.classes.values()):
             if not cls.imported_from:
                 pkeys = self.primary_keys_for(cls)
@@ -428,10 +425,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                         parent_cls = (
                             "extended_" + parents[-1] if parents[-1] in ["str", "float", "int"] else parents[-1]
                         )
-                        rval[classname] = f"class {classname}({parent_cls}):\n\tpass"
-                        graph[classname].add(parent_cls)
+                        rval.append(f"class {classname}({parent_cls}):\n\tpass")
                         break  # We only do the first primary key
-        return "\n\n\n".join(rval[name] for name in TopologicalSorter(graph).static_order() if name in rval)
+        return "\n\n\n".join(rval)
 
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
@@ -775,18 +771,18 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     @staticmethod
     def _sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
         clist = list(clist)
-        slist = []  # sorted
+        slist: list[ClassDefinition] = []  # sorted
+        slist_names: set[str] = set()
         while len(clist) > 0:
             for i in range(len(clist)):
                 candidate = clist[i]
                 can_add = False
-                if candidate.is_a is None:
+                # Class can be added if no parent, or parent already in sorted list.
+                if candidate.is_a is None or candidate.is_a in slist_names:
                     can_add = True
-                else:
-                    if candidate.is_a in [p.name for p in slist]:
-                        can_add = True
                 if can_add:
-                    slist = slist + [candidate]
+                    slist.append(candidate)
+                    slist_names.add(candidate.name)
                     del clist[i]
                     break
             if not can_add:
@@ -934,7 +930,13 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
                 if slot.range in self.schema.enums and slot.ifabsent:
-                    rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
+                    # `ifabsent` for an enumeration cannot be assigned to
+                    # the dataclass field default, because it would be a
+                    # mutable. `python_ifabsent_processor.py` can specify
+                    # the default as string and here that string gets
+                    # converted into an object attribute invocation
+                    # TODO: fix according https://github.com/linkml/linkml/pull/2329#discussion_r1797534588
+                    rlines.append(f"\tself.{aliased_slot_name} = getattr({slot.range}, self.{aliased_slot_name})")
                 elif (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
