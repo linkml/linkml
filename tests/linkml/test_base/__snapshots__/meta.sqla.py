@@ -15,7 +15,7 @@ class Anything(Base):
     """
     __tablename__ = 'Anything'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
 
     def __repr__(self):
@@ -32,7 +32,7 @@ class CommonMetadata(Base):
     """
     __tablename__ = 'common_metadata'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
@@ -298,7 +298,7 @@ class AnonymousTypeExpression(Base):
     """
     __tablename__ = 'anonymous_type_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     pattern = Column(Text())
     implicit_prefix = Column(Text())
     equals_string = Column(Text())
@@ -348,7 +348,7 @@ class AnonymousEnumExpression(Base):
     """
     __tablename__ = 'anonymous_enum_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     code_set = Column(Text())
     code_set_tag = Column(Text())
     code_set_version = Column(Text())
@@ -394,7 +394,7 @@ class EnumBinding(Base):
     """
     __tablename__ = 'enum_binding'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     range = Column(Text(), ForeignKey('enum_definition.name'))
     obligation_level = Column(Enum('REQUIRED', 'RECOMMENDED', 'OPTIONAL', 'EXAMPLE', 'DISCOURAGED', name='obligation_level_enum'))
     binds_value_of = Column(Text())
@@ -528,7 +528,7 @@ class MatchQuery(Base):
     """
     __tablename__ = 'match_query'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     identifier_pattern = Column(Text())
     source_ontology = Column(Text())
     
@@ -547,7 +547,7 @@ class ReachabilityQuery(Base):
     """
     __tablename__ = 'reachability_query'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     source_ontology = Column(Text())
     is_direct = Column(Boolean())
     include_self = Column(Boolean())
@@ -578,7 +578,7 @@ class StructuredAlias(Base):
     """
     __tablename__ = 'structured_alias'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     literal_form = Column(Text(), nullable=False )
     predicate = Column(Enum('EXACT_SYNONYM', 'RELATED_SYNONYM', 'BROAD_SYNONYM', 'NARROW_SYNONYM', name='alias_predicate_enum'))
     description = Column(Text())
@@ -734,7 +734,7 @@ class Expression(Base):
     """
     __tablename__ = 'expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
 
     def __repr__(self):
@@ -751,7 +751,7 @@ class AnonymousExpression(Base):
     """
     __tablename__ = 'anonymous_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     description = Column(Text())
     title = Column(Text())
     deprecated = Column(Text())
@@ -877,7 +877,7 @@ class PathExpression(Base):
     """
     __tablename__ = 'path_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     reversed = Column(Boolean())
     traverse = Column(Text(), ForeignKey('slot_definition.name'))
     description = Column(Text())
@@ -1025,7 +1025,7 @@ class ClassExpression(Base):
     """
     __tablename__ = 'class_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
     
     # ManyToMany
@@ -1062,7 +1062,7 @@ class ClassLevelRule(Base):
     """
     __tablename__ = 'class_level_rule'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
 
     def __repr__(self):
@@ -1079,7 +1079,7 @@ class ArrayExpression(Base):
     """
     __tablename__ = 'array_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     exact_number_dimensions = Column(Integer())
     minimum_number_dimensions = Column(Integer())
     description = Column(Text())
@@ -1213,7 +1213,7 @@ class DimensionExpression(Base):
     """
     __tablename__ = 'dimension_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     alias = Column(Text())
     maximum_cardinality = Column(Integer())
     minimum_cardinality = Column(Integer())
@@ -1343,7 +1343,7 @@ class PatternExpression(Base):
     """
     __tablename__ = 'pattern_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     syntax = Column(Text())
     interpolated = Column(Boolean())
     partial_match = Column(Boolean())
@@ -1472,7 +1472,7 @@ class ImportExpression(Base):
     """
     __tablename__ = 'import_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     import_from = Column(Text(), nullable=False )
     import_as = Column(Text())
     description = Column(Text())
@@ -1669,7 +1669,7 @@ class Example(Base):
     """
     __tablename__ = 'example'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     value = Column(Text())
     description = Column(Text())
     common_metadata_id = Column(Integer(), ForeignKey('common_metadata.id'))
@@ -2164,7 +2164,7 @@ See `extra_slots` for usage examples.
     """
     __tablename__ = 'extra_slots_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     allowed = Column(Boolean())
     range_expression_id = Column(Integer(), ForeignKey('anonymous_slot_expression.id'))
     range_expression = relationship("AnonymousSlotExpression", uselist=False, foreign_keys=[range_expression_id])
@@ -2184,7 +2184,7 @@ class AnyValue(Base):
     """
     __tablename__ = 'AnyValue'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
 
     def __repr__(self):
@@ -2249,7 +2249,7 @@ class Extensible(Base):
     """
     __tablename__ = 'extensible'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
     
     # One-To-Many: OneToAnyMapping(source_class='extensible', source_slot='extensions', mapping_type=None, target_class='extension', target_slot='extensible_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -2270,7 +2270,7 @@ class Annotatable(Base):
     """
     __tablename__ = 'annotatable'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     
     
     # One-To-Many: OneToAnyMapping(source_class='annotatable', source_slot='annotations', mapping_type=None, target_class='annotation', target_slot='annotatable_id', join_class=None, uses_join_table=None, multivalued=False)
@@ -2291,7 +2291,7 @@ class UnitOfMeasure(Base):
     """
     __tablename__ = 'UnitOfMeasure'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     symbol = Column(Text())
     abbreviation = Column(Text())
     descriptive_name = Column(Text())
@@ -10811,7 +10811,7 @@ class TypeExpression(Expression):
     """
     __tablename__ = 'type_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     pattern = Column(Text())
     implicit_prefix = Column(Text())
     equals_string = Column(Text())
@@ -11385,7 +11385,7 @@ class EnumExpression(Expression):
     """
     __tablename__ = 'enum_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     code_set = Column(Text())
     code_set_tag = Column(Text())
     code_set_version = Column(Text())
@@ -11436,7 +11436,7 @@ class SlotExpression(Expression):
     """
     __tablename__ = 'slot_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     range = Column(Text(), ForeignKey('element.name'))
     required = Column(Boolean())
     recommended = Column(Boolean())
@@ -11516,7 +11516,7 @@ class AnonymousSlotExpression(AnonymousExpression):
     """
     __tablename__ = 'anonymous_slot_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     range = Column(Text(), ForeignKey('element.name'))
     required = Column(Boolean())
     recommended = Column(Boolean())
@@ -11705,7 +11705,7 @@ class AnonymousClassExpression(AnonymousExpression):
     """
     __tablename__ = 'anonymous_class_expression'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     is_a = Column(Text(), ForeignKey('definition.name'))
     description = Column(Text())
     title = Column(Text())
@@ -11858,7 +11858,7 @@ class ClassRule(ClassLevelRule):
     """
     __tablename__ = 'class_rule'
 
-    id = Column(Integer(), primary_key=True, autoincrement=True )
+    id = Column(Integer(), primary_key=True, autoincrement=True , nullable=False )
     bidirectional = Column(Boolean())
     open_world = Column(Boolean())
     rank = Column(Integer())
