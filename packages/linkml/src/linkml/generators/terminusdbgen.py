@@ -32,15 +32,12 @@ XSD_OK = {
     ]
 }
 
-# Map LinkML XSD types that don't exist in TerminusDB to supported equivalents.
+# Map LinkML XSD types not natively supported by TerminusDB to supported equivalents.
 XSD_TRANSLATE = {
     "xsd:int": "xsd:integer",
-    "xsd:float": "xsd:double",
     "xsd:language": "xsd:string",
     "xsd:date": "xsd:dateTime",
     "xsd:time": "xsd:dateTime",
-    "xsd:nonNegativeInteger": "xsd:integer",
-    "xsd:positiveInteger": "xsd:integer",
 }
 
 
@@ -136,9 +133,10 @@ class TerminusdbGenerator(Generator):
 
         self.current_class_doc[prop_name] = prop_value
 
-        # Add property documentation
-        if slot.description and "@documentation" in self.current_class_doc:
-            self.current_class_doc["@documentation"]["@properties"][prop_name] = slot.description
+        # Add property documentation, lazily initializing @documentation if needed
+        if slot.description:
+            doc = self.current_class_doc.setdefault("@documentation", {"@comment": "", "@properties": {}})
+            doc.setdefault("@properties", {})[prop_name] = slot.description
 
     def _resolve_range(self, slot: SlotDefinition) -> str:
         """Resolve a slot range to a TerminusDB type string."""
