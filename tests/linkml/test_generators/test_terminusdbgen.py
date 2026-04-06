@@ -139,7 +139,6 @@ def test_slot_description_in_documentation():
     "xsd_uri,expected",
     [
         ("xsd:int", "xsd:integer"),
-        ("xsd:float", "xsd:double"),
         ("xsd:language", "xsd:string"),
         ("xsd:date", "xsd:dateTime"),
         ("xsd:time", "xsd:dateTime"),
@@ -147,6 +146,27 @@ def test_slot_description_in_documentation():
 )
 def test_xsd_translation(xsd_uri, expected):
     assert XSD_TRANSLATE[xsd_uri] == expected
+
+
+@pytest.mark.parametrize(
+    "xsd_uri",
+    ["xsd:float", "xsd:nonNegativeInteger", "xsd:positiveInteger"],
+)
+def test_xsd_ok_types_not_downgraded(xsd_uri):
+    """Types supported natively by TerminusDB MUST NOT be in XSD_TRANSLATE."""
+    assert xsd_uri not in XSD_TRANSLATE
+
+
+def test_slot_description_without_class_description():
+    """Slot descriptions should be captured even when the class is descriptionless."""
+    sb = SchemaBuilder("test")
+    sb.add_defaults()
+    slot = SlotDefinition(name="label", range="string", required=True, description="A human-readable label")
+    sb.add_class("Thing", slots=[slot])
+    docs = _generate(sb.schema)
+    thing = next(d for d in docs if d.get("@id") == "Thing")
+    assert "@documentation" in thing
+    assert thing["@documentation"]["@properties"]["label"] == "A human-readable label"
 
 
 def test_class_range_uses_camelcase():
