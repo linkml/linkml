@@ -602,7 +602,7 @@ class OwlSchemaGenerator(Generator):
                 min_card = slot.minimum_cardinality
             elif top_slot.minimum_cardinality is not None:
                 min_card = top_slot.minimum_cardinality
-            elif slot.required or top_slot.required:
+            elif slot.required or top_slot.required or slot.identifier or top_slot.identifier:
                 min_card = 1
             else:
                 min_card = 0
