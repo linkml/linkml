@@ -5,6 +5,7 @@ from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
+from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
@@ -100,6 +101,23 @@ def test_rdfs_profile(kitchen_sink_path):
         assert list(g.objects(c, SKOS.definition)) == []
     # check that definitions are present, and use the RDFS profile
     assert Literal("A person, living or dead") in g.objects(KS.Person, RDFS.comment)
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_path):
+    """Ambiguous attribute URIs should keep the minimal shared OWL identity."""
+    generated_owl = OwlSchemaGenerator(
+        input_path("linkml_issue_388.yaml"),
+        metaclasses=False,
+        skip_vacuous_min_zero_cardinality_axioms=False,
+        skip_vacuous_local_range_axioms=False,
+        consolidate_cardinality_axioms=False,
+    ).serialize(context=[METAMODEL_CONTEXT_URI])
+
+    owl_graph = Graph()
+    owl_graph.parse(data=generated_owl, format="turtle")
+    this_a = URIRef("https://example.org/this/a")
+    assert len(list(owl_graph.triples((this_a, None, None)))) == 1
 
 
 @pytest.mark.parametrize(
