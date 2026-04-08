@@ -7,10 +7,6 @@ import os
 from dataclasses import dataclass, field
 
 import click
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
-from linkml_runtime.linkml_model.types import SHEX
-from linkml_runtime.utils.formatutils import camelcase
-from linkml_runtime.utils.jsonasobj2 import JsonObj, as_json
 from jsonasobj2 import JsonObj, as_json
 from rdflib import XSD, Namespace
 
@@ -19,6 +15,7 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_json
 
 URI_RANGES = (XSD.anyURI, SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 

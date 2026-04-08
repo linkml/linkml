@@ -14,10 +14,7 @@ from jsonasobj2 import as_dict
 from rdflib import URIRef
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
-
-from linkml_runtime.utils.dataclass_extensions_376 import dataclasses_init_fn_with_kwargs
 from linkml_runtime.utils.jsonasobj2 import as_dict
-
 from linkml_runtime.utils.metamodelcore import empty_dict, empty_list
 from linkml_runtime.utils.slot import Slot
 from linkml_runtime.utils.yamlutils import YAMLRoot, extended_str

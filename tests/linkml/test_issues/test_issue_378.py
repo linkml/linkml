@@ -1,6 +1,5 @@
-from linkml_runtime.utils.jsonasobj2 import loads
-
 from linkml.generators.jsonldcontextgen import ContextGenerator
+from linkml_runtime.utils.jsonasobj2 import loads
 
 without_default = """
 id: http://example.org/sssom/schema/

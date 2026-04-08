@@ -1,6 +1,5 @@
-from linkml_runtime.utils.jsonasobj2 import JsonObj, as_json, loads
-
 from linkml.generators.jsonldgen import JSONLDGenerator
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_json, loads
 
 
 def test_context(input_path):

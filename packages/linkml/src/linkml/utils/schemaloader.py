@@ -14,7 +14,6 @@ from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, slot_usage_name
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemasynopsis import SchemaSynopsis
-
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
