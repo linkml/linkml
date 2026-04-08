@@ -7,9 +7,9 @@ from rdflib.namespace import OWL, RDF
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.linkml_model.meta import PermissibleValue
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
 KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
