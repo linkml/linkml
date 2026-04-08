@@ -1,0 +1,195 @@
+# Test file for JSON Schema generation when both `range` and `any_of` are specified.
+#
+# This tests the current behavior where BOTH constraints are applied (implicit AND):
+# - The direct `range` becomes a type constraint
+# - The `any_of` becomes an anyOf constraint
+# - Values must satisfy BOTH to be valid
+#
+# Cases covered:
+# 1. any_of alone (baseline) - verify anyOf works without direct range
+# 2. range + any_of with compatible types (string range, string enum any_of)
+# 3. range + any_of with same primitive type and value constraints
+# 4. range + any_of with conflicting types (demonstrates AND behavior)
+# 5. multivalued with range + any_of
+
+schema:
+  id: http://example.org/test_anyof_with_range
+  name: test_anyof_with_range
+  imports:
+    - https://w3id.org/linkml/types
+
+  slots:
+    # Case 1: any_of alone (baseline) - should validate values matching any option
+    anyof_only_enums:
+      description: Only any_of, no direct range - baseline test
+      any_of:
+        - range: Letters
+        - range: Numbers
+
+    # Case 2: range + any_of with compatible types (string range, string enum any_of)
+    # The any_of enums are strings, so both constraints can be satisfied
+    range_string_anyof_enums:
+      description: range=string with any_of of string enums - both constraints apply
+      range: string
+      any_of:
+        - range: Letters
+        - range: Numbers
+
+    # Case 3: range + any_of with same primitive type
+    # integer range with any_of of integer constraints
+    range_integer_anyof_integers:
+      description: range=integer with any_of of integer - both constraints apply
+      range: integer
+      any_of:
+        - minimum_value: 0
+          maximum_value: 10
+        - minimum_value: 100
+          maximum_value: 200
+
+    # Case 4: range + any_of with conflicting types
+    # This demonstrates the AND behavior - string range AND anyOf[integer, Letters]
+    # Only the Letters option (which is string-based) can satisfy both
+    range_string_anyof_mixed:
+      description: range=string with any_of including integer - conflict case
+      range: string
+      any_of:
+        - range: integer
+        - range: Letters
+
+    # Case 5: multivalued with range + any_of
+    multivalued_range_anyof:
+      description: multivalued slot with both range and any_of
+      multivalued: true
+      range: string
+      any_of:
+        - range: Letters
+        - range: Numbers
+
+  enums:
+    Letters:
+      permissible_values:
+        ALPHA:
+        BRAVO:
+        CHARLIE:
+    Numbers:
+      permissible_values:
+        1:
+        2:
+        3:
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - anyof_only_enums
+        - range_string_anyof_enums
+        - range_integer_anyof_integers
+        - range_string_anyof_mixed
+        - multivalued_range_anyof
+
+# Expected JSON Schema structure to verify generator output
+# Note: This verifies that BOTH type (from range) AND anyOf (from any_of) are present
+json_schema:
+  $defs:
+    Test:
+      properties:
+        # anyof_only_enums should have anyOf without a type constraint (no direct range)
+        anyof_only_enums:
+          anyOf:
+            - $ref: "#/$defs/Letters"
+            - $ref: "#/$defs/Numbers"
+        # range_string_anyof_enums should have BOTH type:string AND anyOf
+        range_string_anyof_enums:
+          type: "string"
+          anyOf:
+            - $ref: "#/$defs/Letters"
+            - $ref: "#/$defs/Numbers"
+        # range_integer_anyof_integers should have BOTH type:integer AND anyOf with constraints
+        range_integer_anyof_integers:
+          type: "integer"
+          anyOf:
+            - minimum: 0
+              maximum: 10
+            - minimum: 100
+              maximum: 200
+        # range_string_anyof_mixed demonstrates the conflict:
+        # type: string AND anyOf including integer option (which can never match string)
+        range_string_anyof_mixed:
+          type: "string"
+          anyOf:
+            - type: "integer"
+            - $ref: "#/$defs/Letters"
+        # multivalued_range_anyof: items have BOTH type:string AND anyOf
+        multivalued_range_anyof:
+          type: "array"
+          items:
+            type: "string"
+            anyOf:
+              - $ref: "#/$defs/Letters"
+              - $ref: "#/$defs/Numbers"
+
+data_cases:
+  # ===== anyof_only_enums (baseline) =====
+  - data:
+      anyof_only_enums: ALPHA
+  - data:
+      anyof_only_enums: "1"
+  - data:
+      anyof_only_enums: INVALID
+    error_message: is not valid under any of the given schemas
+
+  # ===== range_string_anyof_enums =====
+  # Valid: ALPHA is in Letters enum AND is a string
+  - data:
+      range_string_anyof_enums: ALPHA
+  # Valid: "2" is in Numbers enum AND is a string
+  - data:
+      range_string_anyof_enums: "2"
+  # Invalid: not in either enum (fails anyOf)
+  - data:
+      range_string_anyof_enums: INVALID
+    error_message: is not valid under any of the given schemas
+
+  # ===== range_integer_anyof_integers =====
+  # Valid: 5 is an integer in range 0-10
+  - data:
+      range_integer_anyof_integers: 5
+  # Valid: 150 is an integer in range 100-200
+  - data:
+      range_integer_anyof_integers: 150
+  # Invalid: 50 is an integer but not in either anyOf range
+  - data:
+      range_integer_anyof_integers: 50
+    error_message: is not valid under any of the given schemas
+  # Invalid: "five" is not an integer (fails type constraint)
+  - data:
+      range_integer_anyof_integers: "five"
+    error_message: is not of type 'integer'
+
+  # ===== range_string_anyof_mixed (conflict case) =====
+  # Valid: ALPHA satisfies both (it's a string AND matches Letters enum in anyOf)
+  - data:
+      range_string_anyof_mixed: ALPHA
+  # Invalid: 42 is an integer, fails the string type constraint even though it matches anyOf integer option
+  # This demonstrates the AND behavior: type constraint blocks the integer anyOf option
+  - data:
+      range_string_anyof_mixed: 42
+    error_message: is not of type 'string'
+  # Invalid: "hello" is a string but doesn't match the Letters enum anyOf option
+  # (the integer anyOf option is already blocked by the type constraint)
+  - data:
+      range_string_anyof_mixed: "hello"
+    error_message: is not one of
+
+  # ===== multivalued_range_anyof =====
+  # Valid: array of enum values that are strings
+  - data:
+      multivalued_range_anyof:
+        - ALPHA
+        - "1"
+  # Invalid: integers fail string type constraint in array items
+  - data:
+      multivalued_range_anyof:
+        - 1
+        - 2
+    error_message: is not of type 'string'
