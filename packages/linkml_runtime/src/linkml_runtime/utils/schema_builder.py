@@ -1,5 +1,4 @@
 from dataclasses import dataclass, fields
-from typing import Optional, Union
 
 from linkml_runtime.linkml_model import (
     ClassDefinition,
@@ -23,12 +22,11 @@ class SchemaBuilder:
 
         >>> from linkml_runtime.utils.schema_builder import SchemaBuilder
         >>> sb = SchemaBuilder('test-schema')
-        >>> sb.add_class('Person', slots=['name', 'age'])
-        >>> sb.add_class('Organization', slots=['name', 'employees'])
-        >>> sb.add_slot('name',description='Name of the person or organization')
-        >>> sb.add_slot('age',description='Age of the person', range='integer')
+        >>> _ = sb.add_class('Person', slots=['name', 'age'])
+        >>> _ = sb.add_class('Organization', slots=['name', 'employees'])
+        >>> _ = sb.add_slot('name',description='Name of the person or organization', replace_if_present=True)
+        >>> _ = sb.add_slot('age',description='Age of the person', range='integer', replace_if_present=True)
         >>> schema = sb.schema
-        >>> print()
 
     Most builder methods accepts either a string, an instance of a metamodel element,
     or a dictionary.  If a string is provided, then a new element is created with this
@@ -37,14 +35,14 @@ class SchemaBuilder:
     This follows the standard Builder pattern, so the results of a build operation
     are a builder, allowing chaining. For example:
 
-        >>> sb = SchemaBuilder('test-schema').add_class('Person', slots=['name', 'age'])
+        >>> _ = SchemaBuilder('test-schema').add_class('Person', slots=['name', 'age'])
 
     """
 
-    name: Optional[str] = None
+    name: str | None = None
     """Initialized name for the schema."""
 
-    id: Optional[str] = None
+    id: str | None = None
     """Initialized id for the schema."""
 
     schema: SchemaDefinition = None
@@ -59,9 +57,9 @@ class SchemaBuilder:
 
     def add_class(
         self,
-        cls: Union[ClassDefinition, dict, str],
-        slots: list[Union[str, SlotDefinition]] = None,
-        slot_usage: dict[str, SlotDefinition] = None,
+        cls: ClassDefinition | dict | str,
+        slots: dict[str, dict] | list[str | SlotDefinition] = None,
+        slot_usage: dict[str, SlotDefinition | dict] | list[SlotDefinition] = None,
         replace_if_present: bool = False,
         use_attributes: bool = False,
         **kwargs,
@@ -70,9 +68,12 @@ class SchemaBuilder:
         Adds a class to the schema.
 
         :param cls: name, dict object, or ClassDefinition object to add
-        :param slots: list of slot names or slot objects. This must be a list of
-            `SlotDefinition` objects if `use_attributes=True`
-        :param slot_usage: slots keyed by slot name (ignored if `use_attributes=True`)
+        :param slots: list of slot names or slot objects, or a dict mapping slot names
+            to dicts of slot properties. Must be a list of `SlotDefinition` objects
+            if `use_attributes=True`
+        :param slot_usage: dict mapping slot names to `SlotDefinition` objects or dicts
+            of slot properties, or a list of `SlotDefinition` objects. Ignored if
+            `use_attributes=True`
         :param replace_if_present: if True, replace existing class if present
         :param use_attributes: Whether to specify the given slots as an inline
             definition of slots, attributes, in the class definition
@@ -109,18 +110,29 @@ class SchemaBuilder:
                 else:
                     raise ValueError("If use_attributes=True then slots must be SlotDefinitions")
         else:
-            for s in slots:
-                cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
-                if isinstance(s, str) and s in self.schema.slots:
-                    # top-level slot already exists
-                    continue
-                self.add_slot(s, replace_if_present=replace_if_present)
-            for k, v in slot_usage.items():
-                cls.slot_usage[k] = v
+            if isinstance(slots, dict):
+                for k, v in slots.items():
+                    cls.slots.append(k)
+                    self.add_slot(SlotDefinition(k, **v), replace_if_present=replace_if_present)
+            else:
+                for s in slots:
+                    cls.slots.append(s.name if isinstance(s, SlotDefinition) else s)
+                    if isinstance(s, str) and s in self.schema.slots:
+                        # top-level slot already exists
+                        continue
+                    self.add_slot(s, replace_if_present=replace_if_present)
+            if isinstance(slot_usage, list):
+                for s in slot_usage:
+                    cls.slot_usage[s.name] = s
+            else:
+                for k, v in slot_usage.items():
+                    if isinstance(v, dict):
+                        v = SlotDefinition(k, **v)
+                    cls.slot_usage[k] = v
         return self
 
     def add_slot(
-        self, slot: Union[SlotDefinition, dict, str], class_name: str = None, replace_if_present=False, **kwargs
+        self, slot: SlotDefinition | dict | str, class_name: str = None, replace_if_present=False, **kwargs
     ) -> "SchemaBuilder":
         """
         Adds the slot to the schema.
@@ -158,8 +170,8 @@ class SchemaBuilder:
 
     def add_enum(
         self,
-        enum_def: Union[EnumDefinition, dict, str],
-        permissible_values: list[Union[str, PermissibleValue]] = None,
+        enum_def: EnumDefinition | dict | str,
+        permissible_values: list[str | PermissibleValue] = None,
         replace_if_present=False,
         **kwargs,
     ) -> "SchemaBuilder":
@@ -252,7 +264,7 @@ class SchemaBuilder:
 
     def add_type(
         self,
-        type: Union[TypeDefinition, dict, str],
+        type: TypeDefinition | dict | str,
         typeof: str = None,
         uri: str = None,
         replace_if_present=False,

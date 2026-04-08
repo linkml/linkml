@@ -2,7 +2,6 @@ import json
 import logging
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, Union
 
 import jsonschema
 import pytest
@@ -317,6 +316,27 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
+@pytest.mark.xfail(reason="identifier slots incorrectly allow null (#2448)", strict=True)
+@pytest.mark.parametrize("not_closed", [True, False])
+def test_slot_identifier_non_nullability(input_path, not_closed):
+    """
+    Identifier slots are not allowed to be "null"
+
+    References:
+        - https://github.com/linkml/linkml/issues/2448
+    """
+    schema = input_path("identifier.yaml")
+    generator = JsonSchemaGenerator(schema, mergeimports=True, not_closed=not_closed)
+    generated = json.loads(generator.serialize())
+    key = "id"
+    for cls in ["MyClass"]:
+        id = generated["$defs"][cls]["properties"][key]
+        if "type" in id:
+            assert "null" not in id["type"], f"{key} does not allow null"
+        elif "anyOf" in id:
+            assert {"type": "null"} not in id["anyOf"], f"{key} does not allow null"
+
+
 @pytest.mark.parametrize("not_closed", [True, False])
 def test_slot_not_required_nullability(input_path, not_closed):
     """
@@ -423,7 +443,7 @@ def test_lifecycle_slots(kitchen_sink_path):
 # **********************************************************
 
 
-def external_file_test(subtests, file: Union[str, Path], generator_args: Optional[dict] = None) -> None:
+def external_file_test(subtests, file: str | Path, generator_args: dict | None = None) -> None:
     if generator_args is None:
         generator_args = {"not_closed": False, "include_null": False}
 
@@ -441,10 +461,10 @@ def external_file_test(subtests, file: Union[str, Path], generator_args: Optiona
 
 def assert_schema_validates(
     subtests,
-    schema: Union[str, SchemaDefinition],
-    expected_json_schema_subset: Optional[dict] = None,
-    data_cases: Optional[list] = None,
-    generator_args: Optional[dict] = None,
+    schema: str | SchemaDefinition,
+    expected_json_schema_subset: dict | None = None,
+    data_cases: list | None = None,
+    generator_args: dict | None = None,
 ):
     if generator_args is None:
         generator_args = {}

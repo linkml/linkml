@@ -55,7 +55,7 @@ quiet-level = 3
 
 [tool.black]
 line-length = 120
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+target-version = ["py310", "py311", "py312", "py313"]
 force-exclude = '''
 /(
   # default exclude
@@ -82,11 +82,13 @@ markers = [
   "strcmp: tests that compare stringified values rather than the values themselves",
   "biolink: tests that validate that the biolink model is unchanged",
   "docker: tests that require a running docker server",
+  "kroki: tests that use Kroki diagram creation (skipped in CI)",
   "plantumlgen: Tests for the plantuml generator",
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
   "panderagen: tests for the pandera generator",
   "dataframe_polars_schema: tests for the polars schema dataframe generator",
+  "tutorial: tests that execute tutorial markdown files",
   "pythongen: Tests for python generator",
   "pydanticgen: Tests for pydantic generator",
   "javagen: Tests for java generator",
@@ -119,8 +121,7 @@ extend-exclude = [
 ]
 force-exclude = true
 line-length = 120
-# Assume Python 3.9
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint]
 extend-ignore = ["E203"]
@@ -131,14 +132,28 @@ select = [
   "UP", # pyupgrade
 ]
 
+[tool.ruff.format]
+# Golden files are generated output whose formatting is determined by the code generator
+exclude = ["tests/**/golden/*.py"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["linkml", "linkml_runtime"]
 
 [tool.ruff.lint.per-file-ignores]
 # These templates can have long lines
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_template.py" = ["E501"]
+"packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_declarative_2x_template.py" = ["E501"]
 "packages/linkml/src/linkml/generators/sqlalchemy/sqlalchemy_imperative_template.py" = ["E501"]
-"packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP035"]
+
+# Golden files are generated output — may have unused imports, long lines, unsorted imports
+"tests/**/golden/*.py" = ["E501", "F401", "I001"]
+"packages/linkml/src/linkml/linter/config/datamodel/config.py" = ["E501", "F401", "I001", "UP007", "UP035", "UP045"]
+
+# Auto-generated model files use Optional/Union with string forward references
+"packages/linkml_runtime/src/linkml_runtime/linkml_model/*.py" = ["UP007", "UP045"]
+"packages/linkml_runtime/src/linkml_runtime/processing/validation_datamodel.py" = ["UP007", "UP045"]
+"packages/linkml/src/linkml/workspaces/datamodel/workspaces.py" = ["UP007", "UP045"]
+"packages/linkml/src/linkml/reporting/model.py" = ["UP007", "UP045"]
 
 # Notebooks can have unsorted imports
 "tests/linkml/test_notebooks/input/*" = ["E402"]
@@ -148,7 +163,7 @@ known-first-party = ["linkml", "linkml_runtime"]
 
 [tool.tox]
 requires = ["tox>=4", "tox-uv"]
-env_list = ["lint", "py{39,310,311,312,313}"]
+env_list = ["lint", "py{310,311,312,313}"]
 
 [tool.tox.env_run_base]
 runner = "uv-venv-lock-runner"

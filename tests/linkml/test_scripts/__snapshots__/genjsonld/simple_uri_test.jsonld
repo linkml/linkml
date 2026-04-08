@@ -42,7 +42,7 @@
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
       "notes": [
-        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -386,13 +386,6 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
-      "annotations": [
-        {
-          "tag": "simple_dict_value",
-          "value": true,
-          "@type": "Annotation"
-        }
-      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
@@ -492,6 +485,17 @@
   "generation_date": "2000-01-01T00:00:00",
   "@type": "SchemaDefinition",
   "@context": [
+    "https://w3id.org/linkml/meta.context.jsonld",
+    {
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "bar": {
+        "@id": "http://samples.r.us/bar_",
+        "@prefix": true
+      },
+      "foo": "http://samples.r.us/foo#",
+      "linkml": "https://w3id.org/linkml/",
+      "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
+    },
     "https://w3id.org/linkml/extensions.context.jsonld",
     "simple_slots.context.jsonld",
     "includes/simple_types.context.jsonld",

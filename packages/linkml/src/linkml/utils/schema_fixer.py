@@ -1,9 +1,10 @@
 import logging
 import re
 from collections import defaultdict
+from collections.abc import Callable
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 import click
 import yaml
@@ -321,8 +322,8 @@ class SchemaFixer:
         schema_dict: dict[str, Any] = None,
         rules: dict[str, Callable] = None,
         imports=False,
-        preserve_original_using: Optional[str] = None,
-    ) -> Union[YAMLRoot, dict]:
+        preserve_original_using: str | None = None,
+    ) -> YAMLRoot | dict:
         """
         Changes element names to conform to naming conventions.
 

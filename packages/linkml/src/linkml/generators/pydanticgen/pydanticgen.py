@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from types import ModuleType
-from typing import ClassVar, Literal, Optional, TypeVar, Union, overload
+from typing import ClassVar, Literal, TypeVar, overload
 
 import click
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, Template
@@ -138,8 +138,8 @@ class SplitMode(str, Enum):
     """
 
 
-DefinitionType = TypeVar("DefinitionType", bound=Union[SchemaDefinition, ClassDefinition, SlotDefinition])
-TemplateType = TypeVar("TemplateType", bound=Union[PydanticModule, PydanticClass, PydanticAttribute])
+DefinitionType = TypeVar("DefinitionType", bound=SchemaDefinition | ClassDefinition | SlotDefinition)
+TemplateType = TypeVar("TemplateType", bound=PydanticModule | PydanticClass | PydanticAttribute)
 
 
 def make_valid_python_identifier(name: str) -> str:
@@ -175,6 +175,11 @@ def make_valid_python_identifier(name: str) -> str:
         identifier = "field"
 
     return identifier
+
+
+def _is_valid_python_name(name: str) -> bool:
+    """Check if a string is a valid Python identifier and not a keyword."""
+    return name.isidentifier() and not keyword.iskeyword(name)
 
 
 @dataclass
@@ -225,7 +230,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     If True, optional multivalued slots default to ``[]``; if False, they default to ``None``.
     """
 
-    template_dir: Optional[Union[str, Path]] = None
+    template_dir: str | Path | None = None
     """
     Override templates for each PydanticTemplateModel.
 
@@ -235,7 +240,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     """
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
     gen_mixin_inheritance: bool = True
-    injected_classes: Optional[list[Union[type, str]]] = None
+    injected_classes: list[type | str] | None = None
     """
     A list/tuple of classes to inject into the generated module.
 
@@ -244,7 +249,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     source file (ie. the module they are contained in needs a ``__file__`` attr,
     see: :func:`inspect.getsource` )
     """
-    injected_fields: Optional[list[str]] = None
+    injected_fields: list[str] | None = None
     """
     A list/tuple of field strings to inject into the base class.
 
@@ -257,7 +262,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         )
 
     """
-    imports: Optional[Union[list[Import], Imports]] = None
+    imports: list[Import] | Imports | None = None
     """
     Additional imports to inject into generated module.
 
@@ -313,7 +318,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     Default ``True``, but optional in case import order must be explicitly given,
     eg. to avoid circular import errors in complex generator subclasses.
     """
-    metadata_mode: Union[MetadataMode, str, None] = MetadataMode.AUTO
+    metadata_mode: MetadataMode | str | None = MetadataMode.AUTO
     """
     How to include schema metadata in generated pydantic models.
 
@@ -363,7 +368,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         ``from ...example_schema.v1_2_3 import ClassA, ...``
 
     """
-    split_context: Optional[dict] = None
+    split_context: dict | None = None
     """
     Additional variables to pass into ``split_pattern`` when
     generating imported module names.
@@ -398,8 +403,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     """Substitute CamelCase and non-word characters with _"""
 
     # Private attributes
-    _predefined_slot_values: Optional[dict[str, dict[str, str]]] = None
-    _class_bases: Optional[dict[str, list[str]]] = None
+    _predefined_slot_values: dict[str, dict[str, str]] | None = None
+    _class_bases: dict[str, list[str]] | None = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -417,7 +422,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             logger.error(f"Error compiling generated python code: {e}")
             raise e
 
-    def _get_classes(self, sv: SchemaView) -> tuple[list[ClassDefinition], Optional[list[ClassDefinition]]]:
+    def _get_classes(self, sv: SchemaView) -> tuple[list[ClassDefinition], list[ClassDefinition] | None]:
         all_classes = sv.all_classes(imports=True).values()
 
         if self.split:
@@ -429,7 +434,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
     @staticmethod
     def sort_classes(
-        clist: list[ClassDefinition], imported: Optional[list[ClassDefinition]] = None
+        clist: list[ClassDefinition], imported: list[ClassDefinition] | None = None
     ) -> list[ClassDefinition]:
         """
         sort classes such that if C is a child of P then C appears after P in the list
@@ -475,9 +480,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if cls.union_of:
             return self._generate_union_class(cls)
 
+        class_python_name = self._get_class_python_name(cls.name)
         pyclass = PydanticClass(
-            name=camelcase(cls.name),
-            bases=self.class_bases.get(camelcase(cls.name), PydanticBaseModel.default_name),
+            name=class_python_name,
+            bases=self.class_bases.get(class_python_name, PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
         )
 
@@ -537,14 +543,14 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             )
 
         # Get the union types with string quotes to handle forward references
-        union_types = [f'"{camelcase(union_cls)}"' for union_cls in cls.union_of]
+        union_types = [f'"{self._get_class_python_name(union_cls)}"' for union_cls in cls.union_of]
         union_type_str = f"Union[{', '.join(union_types)}]"
 
         # Create a type alias instead of a class
         # Sanitize description for single-line comment (replace newlines with spaces)
         description = cls.description.replace("\n", " ").strip() if cls.description else None
         pyclass = PydanticClass(
-            name=camelcase(cls.name),
+            name=self._get_class_python_name(cls.name),
             bases=[],  # Empty list for type aliases
             description=description,
             is_type_alias=True,
@@ -581,7 +587,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 del slot_args["alias"]
 
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(camelcase(cls.name), {}).get(slot.name, None)
+        predef = self.predefined_slot_values.get(self._get_class_python_name(cls.name), {}).get(slot.name, None)
         if predef is not None:
             slot_args["predefined"] = str(predef)
 
@@ -658,21 +664,19 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             ifabsent_processor = PydanticIfAbsentProcessor(sv)
             slot_values = defaultdict(dict)
             for class_def in sv.all_classes().values():
+                class_python_name = self._get_class_python_name(class_def.name)
                 for slot_name in sv.class_slots(class_def.name):
                     slot = sv.induced_slot(slot_name, class_def.name)
                     if slot.designates_type:
                         target_value = get_type_designator_value(sv, slot, class_def)
-                        slot_values[camelcase(class_def.name)][slot.name] = f'"{target_value}"'
+                        slot_values[class_python_name][slot.name] = f'"{target_value}"'
                         if slot.multivalued:
-                            slot_values[camelcase(class_def.name)][slot.name] = (
-                                "[" + slot_values[camelcase(class_def.name)][slot.name] + "]"
+                            slot_values[class_python_name][slot.name] = (
+                                "[" + slot_values[class_python_name][slot.name] + "]"
                             )
-                        slot_values[camelcase(class_def.name)][slot.name] = slot_values[camelcase(class_def.name)][
-                            slot.name
-                        ]
                     elif slot.ifabsent is not None:
                         value = ifabsent_processor.process_slot(slot, class_def)
-                        slot_values[camelcase(class_def.name)][slot.name] = value
+                        slot_values[class_python_name][slot.name] = value
 
                 self._predefined_slot_values = slot_values
 
@@ -690,18 +694,45 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             for class_def in sv.all_classes().values():
                 class_parents = []
                 if class_def.is_a:
-                    class_parents.append(camelcase(class_def.is_a))
+                    class_parents.append(self._get_class_python_name(class_def.is_a))
                 if self.gen_mixin_inheritance and class_def.mixins:
-                    class_parents.extend([camelcase(mixin) for mixin in class_def.mixins])
+                    class_parents.extend([self._get_class_python_name(mixin) for mixin in class_def.mixins])
                 if len(class_parents) > 0:
                     # Use the sorted list of classes to order the parent classes, but reversed to match MRO needs
                     class_parents.sort(
                         key=lambda x: self.sorted_class_names.index(x) if x in self.sorted_class_names else -1
                     )
                     class_parents.reverse()
-                    parents[camelcase(class_def.name)] = class_parents
+                    parents[self._get_class_python_name(class_def.name)] = class_parents
             self._class_bases = parents
         return self._class_bases
+
+    def _get_class_python_name(self, class_name: str) -> str:
+        """
+        Get a valid Python class name for a LinkML class.
+
+        Tries ``camelcase(name)`` first. If that is not a valid Python identifier,
+        falls back to ``camelcase(alias)`` when the class defines one. Raises
+        :class:`ValueError` if neither yields a valid identifier.
+        """
+        python_name = camelcase(class_name)
+        if _is_valid_python_name(python_name):
+            return python_name
+
+        class_def = self.schemaview.get_class(class_name)
+        if class_def and class_def.alias:
+            alias_name = camelcase(class_def.alias)
+            if _is_valid_python_name(alias_name):
+                return alias_name
+            raise ValueError(
+                f"Class '{class_name}' has alias '{class_def.alias}' but "
+                f"'{alias_name}' is not a valid Python identifier"
+            )
+
+        raise ValueError(
+            f"Class name '{class_name}' (Python: '{python_name}') is not a valid Python identifier. "
+            "Consider providing a class alias that is a valid Python identifier."
+        )
 
     def get_mixin_identifier_range(self, mixin) -> str:
         sv = self.schemaview
@@ -738,9 +769,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 len([x for x in sv.class_induced_slots(slot_range) if x.designates_type]) > 0
                 and len(sv.class_descendants(slot_range)) > 1
             ):
-                return "Union[" + ",".join([camelcase(c) for c in sv.class_descendants(slot_range)]) + "]"
+                descendants = [self._get_class_python_name(c) for c in sv.class_descendants(slot_range)]
+                return "Union[" + ",".join(descendants) + "]"
             else:
-                return f"{camelcase(slot_range)}"
+                return f"{self._get_class_python_name(slot_range)}"
 
         # For the more difficult cases, set string as the default and attempt to improve it
         range_cls_identifier_slot_range = "str"
@@ -776,7 +808,12 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = f'Literal["{slot_def.equals_string}"]'
         elif slot_def.equals_string_in:
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
-        elif self.expand_subproperty_of and slot_def.subproperty_of:
+        elif (
+            self.expand_subproperty_of
+            and slot_def.subproperty_of
+            and slot_range not in sv.all_classes()
+            and slot_range not in sv.all_enums()
+        ):
             pyrange = self._generate_subproperty_constraint(slot_def)
         elif slot_range in sv.all_classes():
             pyrange = self.get_class_slot_range(
@@ -803,7 +840,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         slot_ranges: list[str],
         slot_def: SlotDefinition,
         class_def: ClassDefinition,
-    ) -> Optional[str]:
+    ) -> str | None:
         """
         Find the python range value (str, int, etc) for the identifier slot
         of a class used as a slot range.
@@ -846,7 +883,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         values = get_subproperty_values(self.schemaview, slot_def)
         return "Literal[" + ", ".join([f'"{v}"' for v in values]) + "]"
 
-    def _clean_injected_classes(self, injected_classes: list[Union[str, type]]) -> Optional[list[str]]:
+    def _clean_injected_classes(self, injected_classes: list[str | type]) -> list[str] | None:
         """Get source, deduplicate, and dedent injected classes"""
         if len(injected_classes) == 0:
             return None
@@ -857,7 +894,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         injected_classes = [textwrap.dedent(c) for c in injected_classes]
         return injected_classes
 
-    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition) -> Optional[str]:
+    def _inline_as_simple_dict_with_value(self, slot_def: SlotDefinition) -> str | None:
         """
         Determine if a slot should be inlined as a simple dict with a value.
 
@@ -958,7 +995,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     [isinstance(item, PydanticTemplateModel) for item in model_attr.values()]
                 ):
                     meta[k] = v
-                elif not isinstance(model_attr, (list, dict, PydanticTemplateModel)):
+                elif not isinstance(model_attr, list | dict | PydanticTemplateModel):
                     meta[k] = v
 
         elif self.metadata_mode in (MetadataMode.FULL, MetadataMode.FULL.value):
@@ -971,7 +1008,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         model.meta = meta
         return model
 
-    def _get_imports(self, element: Union[ClassDefinition, SlotDefinition, None] = None) -> Imports:
+    def _get_imports(self, element: ClassDefinition | SlotDefinition | None = None) -> Imports:
         """
         Get imports that are implied by their usage in slots or classes
         (and thus need to be imported when generating schemas in :attr:`.split` == ``True`` mode).
@@ -1035,7 +1072,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         return imports
 
-    def generate_module_import(self, schema: SchemaDefinition, context: Optional[dict] = None) -> str:
+    def generate_module_import(self, schema: SchemaDefinition, context: dict | None = None) -> str:
         """
         Generate the module string for importing from python modules generated from imported schemas
         when in :attr:`.split` mode.
@@ -1059,7 +1096,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         schema_name = self.schemaview.element_by_schema_map()[class_name]
         schema = [s for s in self.schemaview.schema_map.values() if s.name == schema_name][0]
         module = self.generate_module_import(schema, self.split_context)
-        return Import(module=module, objects=[ObjectImport(name=camelcase(class_name))], is_schema=True)
+        python_name = self._get_class_python_name(class_name)
+        return Import(module=module, objects=[ObjectImport(name=python_name)], is_schema=True)
 
     def render(self) -> PydanticModule:
         """
@@ -1102,7 +1140,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         # just swap in typing.Any instead down below
         source_classes = [c for c in source_classes if c.class_uri != "linkml:Any"]
         source_classes = self.before_generate_classes(source_classes, sv)
-        self.sorted_class_names = [camelcase(c.name) for c in source_classes]
+        self.sorted_class_names = [self._get_class_python_name(c.name) for c in source_classes]
         for cls in source_classes:
             cls = self.before_generate_class(cls, sv)
             result = self.generate_class(cls)
@@ -1133,7 +1171,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         module = self.before_render_template(module, self.schemaview)
         return module
 
-    def serialize(self, rendered_module: Optional[PydanticModule] = None) -> str:
+    def serialize(self, rendered_module: PydanticModule | None = None) -> str:
         """
         Serialize the schema to a pydantic module as a string
 
@@ -1156,10 +1194,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     @classmethod
     def generate_split(
         cls,
-        schema: Union[str, Path, SchemaDefinition],
-        output_path: Union[str, Path] = Path("."),
-        split_pattern: Optional[str] = None,
-        split_context: Optional[dict] = None,
+        schema: str | Path | SchemaDefinition,
+        output_path: str | Path = Path("."),
+        split_pattern: str | None = None,
+        split_context: dict | None = None,
         split_mode: SplitMode = SplitMode.AUTO,
         **kwargs,
     ) -> list[SplitResult]:
@@ -1349,7 +1387,7 @@ Available templates to override:
 def cli(
     yamlfile,
     template_file=None,
-    template_dir: Optional[str] = None,
+    template_dir: str | None = None,
     head=True,
     genmeta=False,
     classvars=True,

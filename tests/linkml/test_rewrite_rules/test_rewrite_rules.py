@@ -1,7 +1,6 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Optional, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -27,9 +26,9 @@ default_header = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.
 @dataclass
 class TestEntry:
     __test__ = False
-    input_url: Union[str, URIRef, Namespace]
+    input_url: str | URIRef | Namespace
     expected_url: str
-    accept_header: Optional[str] = None
+    accept_header: str | None = None
 
 
 def build_test_entry_set(input_url: Namespace, model: str) -> list[TestEntry]:

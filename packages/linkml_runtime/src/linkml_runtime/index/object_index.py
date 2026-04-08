@@ -12,7 +12,7 @@ This package provides:
 import inspect
 import logging
 from collections.abc import Iterator, Mapping
-from typing import Any, Union
+from typing import Any
 
 from linkml_runtime.utils import eval_utils
 from linkml_runtime.utils.schemaview import SchemaView
@@ -31,22 +31,22 @@ class ObjectIndex:
     object references are automatically dereferenced.
 
     For example, given a container object following the standard
-    personinfo schema, an index can be created and queried:
+    personinfo schema, an index can be created and queried::
 
-        >>> ix = ObjectIndex(container, schemaview=schemaview)
-        >>> container = ix.bless(container)
-        >>> for p in container.persons:
-        >>>    for r in p.has_familial_relationships():
-        >>>        print(f"{p.name} {p.type} {r.related_to.name}")
+        ix = ObjectIndex(container, schemaview=schemaview)
+        container = ix.bless(container)
+        for p in container.persons:
+            for r in p.has_familial_relationships():
+                print(f"{p.name} {p.type} {r.related_to.name}")
 
     Note this will work even if related_to is *not* inlined.
 
     This means naive traversal of the object tree is not guaranteed
-    to be bounded, unlike with a YAMLRoot object. E.g.
+    to be bounded, unlike with a YAMLRoot object. E.g.::
 
-        >>> person.has_familial_relationships[0].
-        >>>    related_to.has_familial_relationships[0].
-        >>>    related_to.has_familial_relationships[0].name
+        person.has_familial_relationships[0]. \
+           related_to.has_familial_relationships[0]. \
+           related_to.has_familial_relationships[0].name
 
     In the above, the same proxy object is reused for any
     object with an identifier.
@@ -92,8 +92,10 @@ class ObjectIndex:
         The proxy object will mimic the domain object, which
         should be of type YAMLRoot.
 
-           >>> person = ix.bless(person)
-           >>> print(person.name)
+        ::
+
+           person = ix.bless(person)
+           print(person.name)
 
         However, whereas a domain object will return an
         identifier *reference* for a non-inlined object, the proxy
@@ -115,7 +117,7 @@ class ObjectIndex:
         else:
             return ProxyObject(obj, _db=self)
 
-    def _key(self, obj: Any) -> tuple[Union[str, YAMLRoot], str]:
+    def _key(self, obj: Any) -> tuple[str | YAMLRoot, str]:
         """
         Returns primary key value for this object.
 

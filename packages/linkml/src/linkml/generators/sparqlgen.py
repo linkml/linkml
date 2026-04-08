@@ -3,7 +3,6 @@ import os
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import click
 from jinja2 import Template
@@ -137,9 +136,9 @@ class SparqlGenerator(Generator):
     uses_schemaloader = False
 
     # ObjectVars
-    named_graphs: Optional[list[str]] = None
-    limit: Optional[int] = None
-    sparql: Optional[str] = None
+    named_graphs: list[str] | None = None
+    limit: int | None = None
+    sparql: str | None = None
 
     def __post_init__(self):
         self.schemaview = SchemaView(self.schema)

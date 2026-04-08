@@ -4,7 +4,6 @@ import os
 from csv import DictWriter
 from dataclasses import dataclass
 from io import StringIO
-from typing import Optional
 
 import click
 
@@ -22,11 +21,11 @@ class SummaryGenerator(Generator):
     valid_formats = ["tsv"]
 
     dirname: str = None
-    classtab: Optional[DictWriter] = None
-    slottab: Optional[DictWriter] = None
+    classtab: DictWriter | None = None
+    slottab: DictWriter | None = None
     dialect: str = "excel-tab"
 
-    _str_io: Optional[StringIO] = None
+    _str_io: StringIO | None = None
 
     def visit_schema(self, **_) -> None:
         self._str_io = StringIO()
@@ -68,19 +67,20 @@ class SummaryGenerator(Generator):
         identifier = "I" if slot.identifier else ""
         readonly = "R" if slot.readonly else ""
         ref = "*" if slot.range in self.schema.classes and not slot.inlined else ""
+        range_name = camelcase(slot.range) if slot.range in self.schema.enums else self.class_or_type_name(slot.range)
         self.classtab.writerow(
             {
                 "Slot Name": aliased_slot_name,
                 "Flags": abstract + key + identifier + readonly,
                 "Card": f"{min_card}..{max_card}",
                 "YAML Slot Name": slot.name if slot.name != aliased_slot_name else "",
-                "Range": ref + self.class_or_type_name(slot.range),
+                "Range": ref + range_name,
                 "Slot Description": slot.description,
                 "URI": slot.slot_uri,
             }
         )
 
-    def end_schema(self, **kwargs) -> Optional[str]:
+    def end_schema(self, **kwargs) -> str | None:
         return self._str_io.getvalue()
 
 

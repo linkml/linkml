@@ -1,6 +1,7 @@
+import json
 import re
 
-from linkml import LOCAL_TYPES_YAML_FILE, METAMODEL_NAMESPACE
+from linkml import LOCAL_ANNOTATIONS_YAML_FILE, LOCAL_TYPES_YAML_FILE, METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 
 
@@ -19,3 +20,26 @@ def test_rdflib_string_handling():
     generated = ContextGenerator(LOCAL_TYPES_YAML_FILE).serialize(base=METAMODEL_NAMESPACE)
     assert not re.search(r"http:/[^/]", generated)
     assert not re.search(r"https:/[^/]", generated)
+
+
+def test_model_field_usage(tmp_path):
+    """
+    When a field is allowed in both the generator instantiation and serialization method,
+    use the instance field when the serialization arg isn't provided
+    """
+    generated = ContextGenerator(LOCAL_TYPES_YAML_FILE, base=METAMODEL_NAMESPACE).serialize()
+    assert "@base" in generated
+
+    output_path = tmp_path.with_suffix(".context.json")
+    generated = ContextGenerator(LOCAL_TYPES_YAML_FILE, output=str(output_path)).serialize()
+    assert output_path.exists()
+    assert json.loads(generated) == json.loads(output_path.read_text())
+
+    generated = ContextGenerator(LOCAL_ANNOTATIONS_YAML_FILE, model=False).serialize()
+    assert "value" not in generated
+
+    generated = ContextGenerator(LOCAL_TYPES_YAML_FILE, prefixes=False).serialize()
+    assert "shex" not in generated
+
+    _ = ContextGenerator(LOCAL_ANNOTATIONS_YAML_FILE, flatprefixes=True).serialize()
+    # FIXME: Not sure how to test this

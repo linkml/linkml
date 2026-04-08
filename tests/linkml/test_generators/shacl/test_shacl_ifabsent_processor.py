@@ -1,5 +1,4 @@
 import pytest
-from rdflib import URIRef
 from rdflib.term import Literal
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
@@ -262,7 +261,7 @@ def test_process_class_curie():
     assert processor.process_slot(
         schema_view.all_slots()[SlotDefinitionName("thisURI")],
         schema_view.all_classes()[ClassDefinitionName("Student")],
-    ) == URIRef("https://example.org/Student")
+    ) == Literal("ex:Student", datatype=ShaclDataType.CURIE.uri_ref)
 
 
 def test_process_ifabsent_enum():
@@ -368,6 +367,24 @@ def test_process_impossible_range_ifabsent_attribute():
     assert str(e.value) == (
         "The ifabsent value `ImpossibleEnum(DivideByZero)` of the `impossibleRange` slot could not be processed"
     )
+
+
+def test_process_uri_or_curie_ifabsent_attribute():
+    schema_view = SchemaView(
+        schema_base
+        + """
+    - name: unimplementedUriOrCurie
+      range: uriorcurie
+      ifabsent: uriorcurie('https://example.org')
+    """
+    )
+
+    processor = ShaclIfAbsentProcessor(schema_view)
+
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("unimplementedUriOrCurie")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("https://example.org", datatype=ShaclDataType.URI.uri_ref)
 
 
 def test_process_nc_name_ifabsent_attribute():
@@ -482,3 +499,35 @@ def test_process_sparql_path_ifabsent_attribute():
             schema_view.all_slots()[SlotDefinitionName("unimplementedSparqlPath")],
             schema_view.all_classes()[ClassDefinitionName("Student")],
         )
+
+
+def test_process_default_range():
+    """Test that default_range resolves to the schema's default range value."""
+    schema_with_default_range = """
+id: ifabsent_tests
+name: ifabsent_tests
+default_range: string
+
+prefixes:
+  ex: https://example.org/
+default_prefix: ex
+
+classes:
+  Student:
+    attributes:
+"""
+    schema_view = SchemaView(
+        schema_with_default_range
+        + """
+    - name: rangeSlot
+      range: string
+      ifabsent: default_range
+    """
+    )
+
+    processor = ShaclIfAbsentProcessor(schema_view)
+
+    assert processor.process_slot(
+        schema_view.all_slots()[SlotDefinitionName("rangeSlot")],
+        schema_view.all_classes()[ClassDefinitionName("Student")],
+    ) == Literal("string", datatype=ShaclDataType.STRING.uri_ref)

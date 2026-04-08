@@ -3,7 +3,6 @@
 import os
 import urllib.parse as urlparse
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import click
 from jsonasobj import as_json as as_json_1
@@ -42,7 +41,7 @@ class ShExGenerator(Generator):
     # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
     shapes: list = field(default_factory=lambda: [])
-    shape: Optional[Shape] = None  # Current shape being defined
+    shape: Shape | None = None  # Current shape being defined
     list_shapes: list[IRIREF] = field(default_factory=lambda: [])  # Shapes that have been defined as lists
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to NodeConstraint value lists with slot descendants"""
@@ -170,7 +169,7 @@ class ShExGenerator(Generator):
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
-    def end_schema(self, output: Optional[str] = None, **_) -> str:
+    def end_schema(self, output: str | None = None, **_) -> str:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
@@ -190,11 +189,11 @@ class ShExGenerator(Generator):
 
     def _class_or_type_uri(
         self,
-        item: Union[TypeDefinition, ClassDefinition, ElementName],
-        suffix: Optional[str] = "",
+        item: TypeDefinition | ClassDefinition | ElementName,
+        suffix: str | None = "",
     ) -> URIorCURIE:
         # TODO: enums - figure this out
-        if isinstance(item, (TypeDefinition, ClassDefinition, EnumDefinition)):
+        if isinstance(item, TypeDefinition | ClassDefinition | EnumDefinition):
             cls_or_type = item
         else:
             cls_or_type = self.class_or_type_for(item)
@@ -205,7 +204,7 @@ class ShExGenerator(Generator):
             )
         )
 
-    def _slot_uri(self, name: str, suffix: Optional[str] = "") -> URIorCURIE:
+    def _slot_uri(self, name: str, suffix: str | None = "") -> URIorCURIE:
         slot = self.schema.slots[name]
         return self.namespaces.uri_for(
             self.namespaces.uri_or_curie_for(self.schema_defaults[slot.from_schema], camelcase(name) + suffix)

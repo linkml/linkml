@@ -62,6 +62,7 @@ def test_diagram_renderer_large_diagram_post(tmp_path):
 
 
 @pytest.mark.network
+@pytest.mark.kroki
 def test_datadict_personinfo(input_path, snapshot):
     """Test generating data dictionary for personinfo schema."""
     schema = str(input_path("personinfo.yaml"))

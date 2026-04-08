@@ -1,8 +1,6 @@
-from typing import Union
-
 from linkml_runtime.utils.schemaview import CLASS_NAME, SchemaView
 
-CLASS_NAME_OR_LIST = Union[CLASS_NAME, list[CLASS_NAME]]
+CLASS_NAME_OR_LIST = CLASS_NAME | list[CLASS_NAME]
 
 
 def roll_up(sv: SchemaView, classes: CLASS_NAME_OR_LIST = None, mixins=True, is_a=True, delete=True) -> None:

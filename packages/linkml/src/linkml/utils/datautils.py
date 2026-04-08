@@ -1,6 +1,5 @@
 import os
 from collections import defaultdict
-from typing import Optional
 
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml_runtime.dumpers import CSVDumper, JSONDumper, RDFLibDumper, TSVDumper, YAMLDumper
@@ -65,7 +64,7 @@ def _get_context(schema) -> str:
     return ContextGenerator(schema).serialize()
 
 
-def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
+def infer_root_class(sv: SchemaView) -> ClassDefinitionName | None:
     """
     Infer the class that should be at the root of the object tree
 
@@ -101,7 +100,7 @@ def infer_root_class(sv: SchemaView) -> Optional[ClassDefinitionName]:
         return None
 
 
-def infer_index_slot(sv: SchemaView, root_class: ClassDefinitionName) -> Optional[SlotDefinitionName]:
+def infer_index_slot(sv: SchemaView, root_class: ClassDefinitionName) -> SlotDefinitionName | None:
     index_slots = []
     for sn in sv.class_slots(root_class):
         slot = sv.induced_slot(sn, root_class)

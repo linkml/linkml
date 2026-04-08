@@ -3,7 +3,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
 import click
 
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # Note: The underlying types are a union of any built-in python datatype + any type defined in
 #       linkml-runtime/utils/metamodelcore.py
 # Note the keys are all lower case
-json_schema_types: dict[str, tuple[str, Optional[str]]] = {
+json_schema_types: dict[str, tuple[str, str | None]] = {
     "int": ("integer", None),
     "integer": ("integer", None),
     "bool": ("boolean", None),
@@ -70,7 +70,7 @@ class JsonSchema(dict):
             identifier_name = self._lax_forward_refs.pop(canonical_name)
             self.add_lax_def(canonical_name, identifier_name)
 
-    def add_lax_def(self, names: Union[str, list[str]], identifier_name: str) -> None:
+    def add_lax_def(self, names: str | list[str], identifier_name: str) -> None:
         # JSON-Schema does not have inheritance,
         # so we duplicate slots from inherited parents and mixins
         # Maps e.g. Person --> Person__identifier_optional
@@ -148,7 +148,7 @@ class JsonSchema(dict):
         return json.dumps(self, **kwargs)
 
     @classmethod
-    def ref_for(cls, class_name: Union[str, list[str]], identifier_optional: bool = False, required: bool = True):
+    def ref_for(cls, class_name: str | list[str], identifier_optional: bool = False, required: bool = True):
         def _ref(class_name):
             def_name = class_name if cls.PRESERVE_NAMES else camelcase(class_name)
             def_suffix = cls.OPTIONAL_IDENTIFIER_SUFFIX if identifier_optional else ""
@@ -241,16 +241,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     materialize_patterns: bool = False
 
     # @deprecated("Use top_class")
-    topClass: Optional[str] = None
+    topClass: str | None = None
 
-    not_closed: Optional[bool] = True
+    not_closed: bool | None = True
     """If not closed, then an open-ended set of attributes can be instantiated for any object"""
 
     indent: int = 4
 
     inline: bool = False
 
-    top_class: Optional[Union[ClassDefinitionName, str]] = None  # JSON object is one instance of this
+    top_class: ClassDefinitionName | str | None = None  # JSON object is one instance of this
     """Class instantiated by the root node of the document tree"""
 
     include_range_class_descendants: bool = False
@@ -309,9 +309,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
-
-        if cls.mixin or cls.abstract:
-            return
 
         subschema_type = "object"
         additional_properties = False
@@ -404,7 +401,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
     def get_subschema_for_anonymous_class(
         self, cls: AnonymousClassExpression, properties_required: bool = False
-    ) -> Union[None, JsonSchema]:
+    ) -> None | JsonSchema:
         if not cls:
             return None
 
@@ -439,9 +436,21 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         if cls.none_of is not None and len(cls.none_of) > 0:
             subschema["not"] = {
-                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
+                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.none_of]
             }
 
+        if cls.is_a is not None:
+            # `is_a: <C>` is used in the context of an AnonymousClassExpression to include a constraint
+            # that instances of the expression must be instances of class <C>.
+            if "allOf" not in subschema:
+                subschema["allOf"] = []
+            inst_of_expr = self.get_subschema_for_slot(AnonymousSlotExpression(range=cls.is_a))
+            if inst_of_expr:
+                subschema["allOf"].append(inst_of_expr)
+
+        # simplify subschemas that are simply conjunctions of a single condition
+        if "allOf" in subschema and len(subschema) == 1 and len(subschema["allOf"]) == 1:
+            subschema = subschema["allOf"][0]
         return subschema
 
     def handle_enum(self, enum: EnumDefinition) -> None:
@@ -478,8 +487,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         self.top_level_schema.add_def(enum.name, enum_schema)
 
     def get_type_info_for_slot_subschema(
-        self, slot: Union[SlotDefinition, AnonymousSlotExpression]
-    ) -> tuple[str, str, Union[str, list[str]]]:
+        self, slot: SlotDefinition | AnonymousSlotExpression
+    ) -> tuple[str, str, str | list[str]]:
         # JSON Schema type (https://json-schema.org/understanding-json-schema/reference/type.html)
         typ = None
         # Reference to a JSON schema entity (https://json-schema.org/understanding-json-schema/structuring.html#ref)
@@ -515,7 +524,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         return (typ, fmt, reference)
 
-    def get_value_constraints_for_slot(self, slot: Union[SlotDefinition, AnonymousSlotExpression, None]) -> JsonSchema:
+    def get_value_constraints_for_slot(self, slot: SlotDefinition | AnonymousSlotExpression | None) -> JsonSchema:
         if slot is None:
             return JsonSchema()
 
@@ -535,16 +544,25 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         constraints.add_keyword("const", slot.equals_number)
         if slot.equals_string_in:
             constraints.add_keyword("enum", slot.equals_string_in)
+
+        if slot.range_expression:
+            subschema = self.get_subschema_for_anonymous_class(slot.range_expression)
+            if subschema:
+                if "allOf" not in constraints:
+                    constraints["allOf"] = []
+                constraints["allOf"].append(subschema)
+
         # Handle subproperty_of constraint - generates enum from slot hierarchy
         # Only SlotDefinition has subproperty_of, not AnonymousSlotExpression
         if self.expand_subproperty_of and isinstance(slot, SlotDefinition) and slot.subproperty_of:
             subproperty_values = get_subproperty_values(self.schemaview, slot)
             if subproperty_values:
                 constraints.add_keyword("enum", subproperty_values)
+
         return constraints
 
     def get_subschema_for_slot(
-        self, slot: Union[SlotDefinition, AnonymousSlotExpression], omit_type: bool = False, include_null: bool = True
+        self, slot: SlotDefinition | AnonymousSlotExpression, omit_type: bool = False, include_null: bool = True
     ) -> JsonSchema:
         """
         Args:

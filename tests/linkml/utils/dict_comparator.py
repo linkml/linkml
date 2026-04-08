@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import jsonpatch
 import yaml
@@ -9,7 +9,7 @@ from linkml_runtime.utils.formatutils import remove_empty_items
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
-def compare_dicts(expected: dict[str, Any], actual: dict[str, Any]) -> Optional[str]:
+def compare_dicts(expected: dict[str, Any], actual: dict[str, Any]) -> str | None:
     """
     Compare two dicts
     :param expected: expected yaml -- can either be yaml text or a file name
@@ -20,15 +20,13 @@ def compare_dicts(expected: dict[str, Any], actual: dict[str, Any]) -> Optional[
     return " ".join([str(p) for p in patches])
 
 
-def compare_yaml(
-    expected: Union[str, dict, Path], actual: Union[str, dict, Path], remove_empty: bool = False
-) -> Optional[str]:
-    if isinstance(expected, (str, Path)):
+def compare_yaml(expected: str | dict | Path, actual: str | dict | Path, remove_empty: bool = False) -> str | None:
+    if isinstance(expected, str | Path):
         with open(expected) as expected_stream:
             expected_obj = yaml.safe_load(expected_stream)
     else:
         expected_obj = expected
-    if isinstance(actual, (str, Path)):
+    if isinstance(actual, str | Path):
         with open(actual) as actual_stream:
             actual_obj = yaml.safe_load(actual_stream)
     else:
@@ -41,7 +39,7 @@ def compare_yaml(
     return compare_dicts(expected_obj, actual_obj)
 
 
-def compare_objs(expected: YAMLRoot, actual: YAMLRoot) -> Optional[str]:
+def compare_objs(expected: YAMLRoot, actual: YAMLRoot) -> str | None:
     expected_obj = yaml.safe_load(yaml_dumper.dumps(expected))
     actual_obj = yaml.safe_load(yaml_dumper.dumps(actual))
     return compare_dicts(expected_obj, actual_obj)

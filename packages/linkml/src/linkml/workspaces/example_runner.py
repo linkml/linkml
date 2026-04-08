@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from io import StringIO
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Optional, TextIO, Union
+from typing import Any, TextIO
 
 import click
 import yaml
@@ -56,31 +56,31 @@ class ExampleRunner:
     Background: https://github.com/linkml/linkml/issues/501
     """
 
-    input_directory: Optional[Path] = None
+    input_directory: Path | None = None
     """Directory in which positive instance examples are found."""
 
-    input_formats: Optional[list[str]] = field(default_factory=lambda: ["yaml"])
+    input_formats: list[str] | None = field(default_factory=lambda: ["yaml"])
 
-    counter_example_input_directory: Optional[Path] = None
+    counter_example_input_directory: Path | None = None
     """Directory in which negative instance examples are found. These are expected to fail."""
 
-    output_directory: Optional[Path] = None
+    output_directory: Path | None = None
     """Directory where processed examples are written to."""
 
-    output_formats: Optional[list[str]] = field(default_factory=lambda: ["yaml", "json", "ttl"])
+    output_formats: list[str] | None = field(default_factory=lambda: ["yaml", "json", "ttl"])
 
-    schemaview: Optional[SchemaView] = None
+    schemaview: SchemaView | None = None
     """View over schema which all examples adhere to."""
 
     summary: SummaryDocument = field(default_factory=lambda: SummaryDocument())
 
-    _python_module: Optional[ModuleType] = None
+    _python_module: ModuleType | None = None
     """Module containing classes that all examples instantiate."""
 
-    prefix_map: Optional[Mapping[str, str]] = None
+    prefix_map: Mapping[str, str] | None = None
     """Custom prefix map, for emitting RDF/turtle."""
 
-    _validator: Optional[Validator] = None
+    _validator: Validator | None = None
 
     expand_dicts: bool = None
     """If true, then expand all dicts prior to validation."""
@@ -210,7 +210,7 @@ class ExampleRunner:
                         raise NotImplementedError(f"Cannot output in format: {fmt}")
                     summary.outputs.append(f"{stem}.{fmt}")
 
-    def _load_from_dict(self, dict_obj: Any, target_class: Union[str, ElementName] = None) -> Any:
+    def _load_from_dict(self, dict_obj: Any, target_class: str | ElementName = None) -> Any:
         """
         Load an object from a dict, using the target class to determine the type of object to create.
 
@@ -231,6 +231,12 @@ class ExampleRunner:
         if isinstance(dict_obj, dict):
             if target_class not in sv.all_classes():
                 raise ValueError(f"No such class as {target_class}")
+            # Classes with class_uri: linkml:Any are emitted as `ClassName = Any`
+            # by PythonGenerator.  In Python 3.11+, typing.Any(...) is not
+            # callable, so skip construction and return the raw dict unchanged.
+            target_cls_def = sv.get_class(target_class)
+            if target_cls_def and target_cls_def.class_uri == "linkml:Any":
+                return dict_obj
             td_slot = sv.get_type_designator_slot(target_class) if target_class else None
             if td_slot:
                 if td_slot.name in dict_obj:
@@ -266,7 +272,11 @@ class ExampleRunner:
                         v2 = self._load_from_dict(v_as_list, target_class=islot.range)
                     else:
                         v2 = self._load_from_dict(v, target_class=islot.range)
-                    new_dict_obj[k] = v2
+                    # YAML keys may contain hyphens (e.g. "how-many") which are
+                    # valid YAML identifiers but illegal as Python kwargs.  The
+                    # generated Python class uses underscored names, so normalise
+                    # here before passing to the constructor.
+                    new_dict_obj[k.replace("-", "_")] = v2
             py_target_class = getattr(self.python_module, camelcase(target_class))
             return py_target_class(**new_dict_obj)
         elif isinstance(dict_obj, list):

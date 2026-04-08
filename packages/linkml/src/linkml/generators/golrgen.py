@@ -9,7 +9,6 @@ See the golr-views directory in this repo for examples
 
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 import click
 
@@ -27,7 +26,7 @@ class GOLRField(YAMLRoot):
     description: str
     display_name: str
     property: list = empty_list()
-    cardinality: Optional[str] = None
+    cardinality: str | None = None
 
 
 @dataclass
@@ -54,7 +53,7 @@ class GolrSchemaGenerator(Generator):
 
     # ObjectVars
     directory: str = None
-    class_obj: Optional[GOLRClass] = None
+    class_obj: GOLRClass | None = None
 
     def generate_header(self):
         headers = [f"# metamodel_version: {self.schema.metamodel_version}"]

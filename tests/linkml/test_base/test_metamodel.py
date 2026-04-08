@@ -6,7 +6,6 @@ import pytest
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE, METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
-from linkml.generators.markdowngen import MarkdownGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
@@ -19,7 +18,6 @@ from linkml_runtime.utils.compile_python import compile_python
 @pytest.mark.parametrize(
     "generator,extension,serialize_kwargs",
     [
-        (MarkdownGenerator, "markdown", {}),
         pytest.param(
             OwlSchemaGenerator,
             ".owl",
@@ -36,7 +34,12 @@ from linkml_runtime.utils.compile_python import compile_python
         pytest.param(
             ContextGenerator, ".context.jsonld", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldcontextgen
         ),
-        pytest.param(JSONLDGenerator, ".json", {"base": METAMODEL_NAMESPACE}, marks=pytest.mark.jsonldgen),
+        pytest.param(
+            JSONLDGenerator,
+            ".json",
+            {"base": METAMODEL_NAMESPACE, "context_kwargs": {"model": True}},
+            marks=pytest.mark.jsonldgen,
+        ),
         pytest.param(PythonGenerator, ".py", {}, marks=pytest.mark.pythongen),
         pytest.param(
             SQLAlchemyGenerator, ".sqla.py", {"template": TemplateEnum.DECLARATIVE}, marks=pytest.mark.sqlalchemygen

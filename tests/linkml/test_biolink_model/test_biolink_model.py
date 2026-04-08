@@ -26,7 +26,6 @@ pytestmark = pytest.mark.biolink
 @pytest.mark.parametrize(
     "generator,extension,gen_kwargs,serialize_kwargs",
     [
-        # (MarkdownGenerator, "markdown", {}, {"image_dir": False}),
         pytest.param(OwlSchemaGenerator, ".owl.ttl", {"useuris": False}, {}, marks=[pytest.mark.owlgen]),
         pytest.param(
             RDFGenerator,
@@ -41,15 +40,14 @@ pytestmark = pytest.mark.biolink
             ],
         ),
         pytest.param(ContextGenerator, ".context.jsonld", {"useuris": False}, {}, marks=pytest.mark.jsonldcontextgen),
-        (JSONLDGenerator, ".json", {}, {}),
+        (JSONLDGenerator, ".json", {}, {"context_kwargs": {"model": True}}),
         pytest.param(PythonGenerator, ".py", {}, {}, marks=pytest.mark.pythongen),
         (CsvGenerator, ".tsv", {"format": "tsv"}, {}),
         # (DotGenerator, "graphviz", {}, {}),
-        (GolrSchemaGenerator, "golr", {}, {}),
         (GraphqlGenerator, ".graphql", {}, {}),
         pytest.param(JsonSchemaGenerator, ".schema.json", {}, {}, marks=pytest.mark.jsonschemagen),
         (ProtoGenerator, ".proto", {}, {}),
-        (NamespaceGenerator, ".namespace.py", {"emit_metadata": True}, {}),
+        (NamespaceGenerator, ".namespace.py", {"metadata": True}, {}),
         pytest.param(ShExGenerator, ".shex", {}, {}, marks=pytest.mark.shexgen),
         pytest.param(ShExGenerator, ".shexj", {"format": "json"}, {}, marks=pytest.mark.shexgen),
         pytest.param(ShExGenerator, ".native.shex", {"useuris": False}, {}, marks=pytest.mark.shexgen),
@@ -70,6 +68,21 @@ def test_biolink(generator, extension, gen_kwargs, serialize_kwargs, temp_dir, s
         if extension.endswith(".py"):
             compile_python(generated, "test")
         assert generated == snapshot(output_file)
+
+
+@pytest.mark.slow
+def test_biolink_golr(temp_dir, snapshot, input_path):
+    """Test GOLR generation with concatenated output to reduce snapshot file count."""
+    BIOLINK_YAML = input_path("biolink-model.yaml")
+    GolrSchemaGenerator(BIOLINK_YAML, directory=str(temp_dir)).serialize(directory=str(temp_dir))
+    parts = []
+    for yaml_file in sorted(temp_dir.rglob("*.yaml"), key=lambda p: p.name.casefold()):
+        parts.append(f"# --- {yaml_file.name} ---\n")
+        parts.append(yaml_file.read_text(encoding="utf-8"))
+        if not parts[-1].endswith("\n"):
+            parts[-1] += "\n"
+    concatenated = "".join(parts)
+    assert concatenated == snapshot("biolink_golr.yaml")
 
 
 @pytest.mark.skip("Needs to be refactored for snapshot rather than unittest")

@@ -127,7 +127,7 @@ def test_add_class_with_extra_kwargs(
 
     builder = SchemaBuilder()
 
-    if not isinstance(cls, (str, dict, ClassDefinition)):
+    if not isinstance(cls, str | dict | ClassDefinition):
         with pytest.raises(TypeError, match="cls must be"):
             builder.add_class(cls, **extra_kwargs)
     elif extra_kwargs.keys() - class_meta_slots:
@@ -148,6 +148,96 @@ def test_add_class_with_extra_kwargs(
         added_class = builder.schema.classes[class_name]
 
         assert added_class == expected_added_class
+
+
+# === Tests for `SchemaBuilder.add_class` with dict-based slots ===
+
+
+def test_add_class_with_dict_slots():
+    """
+    Test adding a class with slots specified as a dict of {name: {properties}}.
+    """
+    builder = SchemaBuilder()
+    builder.add_class(
+        "Person",
+        slots={"age": {"range": "integer"}, "name": {"range": "string"}},
+    )
+
+    assert sorted(builder.schema.classes["Person"].slots) == ["age", "name"]
+    assert builder.schema.slots["age"].range == "integer"
+    assert builder.schema.slots["name"].range == "string"
+
+
+def test_add_class_with_dict_slots_and_kwargs():
+    """
+    Test adding a class with dict-based slots and extra kwargs.
+    """
+    builder = SchemaBuilder()
+    builder.add_class(
+        "Person",
+        slots={"age": {"range": "integer"}},
+        is_a="Thing",
+    )
+
+    assert builder.schema.classes["Person"].is_a == "Thing"
+    assert builder.schema.slots["age"].range == "integer"
+
+
+# === Tests for `SchemaBuilder.add_class` with dict-of-dicts slot_usage ===
+
+
+def test_add_class_with_dict_slot_usage():
+    """
+    Test adding a class with slot_usage specified as a dict where values are dicts.
+    """
+    builder = SchemaBuilder()
+    builder.add_class("Thing", slots=["name", "age"])
+    builder.add_class(
+        ClassDefinition(name="Person", is_a="Thing"),
+        slot_usage={"age": {"minimum_value": 18}},
+    )
+
+    slot_usage = builder.schema.classes["Person"].slot_usage
+    assert "age" in slot_usage
+    assert isinstance(slot_usage["age"], SlotDefinition)
+    assert slot_usage["age"].minimum_value == 18
+
+
+def test_add_class_with_list_slot_usage():
+    """
+    Test adding a class with slot_usage specified as a list of SlotDefinitions.
+    """
+    builder = SchemaBuilder()
+    builder.add_class("Thing", slots=["name", "age"])
+    builder.add_class(
+        ClassDefinition(name="Person", is_a="Thing"),
+        slot_usage=[SlotDefinition(name="age", minimum_value=18)],
+    )
+
+    slot_usage = builder.schema.classes["Person"].slot_usage
+    assert "age" in slot_usage
+    assert isinstance(slot_usage["age"], SlotDefinition)
+    assert slot_usage["age"].minimum_value == 18
+
+
+def test_add_class_with_mixed_slot_usage():
+    """
+    Test slot_usage with a mix of dict values and SlotDefinition values.
+    """
+    builder = SchemaBuilder()
+    builder.add_class("Thing", slots=["name", "age"])
+    builder.add_class(
+        ClassDefinition(name="Person", is_a="Thing"),
+        slot_usage={
+            "age": {"minimum_value": 18},
+            "name": SlotDefinition(name="name", range="string"),
+        },
+    )
+
+    slot_usage = builder.schema.classes["Person"].slot_usage
+    assert slot_usage["age"].minimum_value == 18
+    assert isinstance(slot_usage["age"], SlotDefinition)
+    assert slot_usage["name"].range == "string"
 
 
 # === Tests for `SchemaBuilder.add_class` end ===
@@ -191,7 +281,7 @@ def test_add_enum_with_extra_permissible_values(
     """
     builder = SchemaBuilder()
 
-    if any(not isinstance(pv, (str, PermissibleValue)) for pv in permissible_values):
+    if any(not isinstance(pv, str | PermissibleValue) for pv in permissible_values):
         with pytest.raises(TypeError, match="permissible value must be"):
             builder.add_enum(enum_def, permissible_values=permissible_values)
     else:
@@ -239,7 +329,7 @@ def test_add_enum_with_extra_kwargs(
 
     builder = SchemaBuilder()
 
-    if not isinstance(enum_def, (str, dict, EnumDefinition)):
+    if not isinstance(enum_def, str | dict | EnumDefinition):
         with pytest.raises(TypeError, match="enum_def must be"):
             builder.add_enum(enum_def, **extra_kwargs)
     elif extra_kwargs.keys() - enum_meta_slots:
@@ -263,3 +353,52 @@ def test_add_enum_with_extra_kwargs(
 
 
 # === Tests for `SchemaBuilder.add_enum` end ===
+
+
+# === General SchemaBuilder tests ===
+
+
+def test_build_schema():
+    """
+    Test a minimal schema with no primary names declared.
+    """
+    b = SchemaBuilder("my-schema")
+    slots = ["full name", "description"]
+    b.add_class("MyClass", slots, description="A test class")
+    b.add_enum("MyEnum", ["Living", "Dead"])
+    s = b.schema
+    assert s.name == "my-schema"
+    c = s.classes["MyClass"]
+    e = s.enums["MyEnum"]
+    assert c.name == "MyClass"
+    assert c.description == "A test class"
+    assert sorted(slots) == sorted(c.slots)
+    assert e.name == "MyEnum"
+    assert ["Dead", "Living"] == sorted(e.permissible_values)
+    b.add_type("MyType", typeof="string", description="A test type")
+    assert s.types["MyType"].description == "A test type"
+    d = b.as_dict()
+    assert d["classes"]["MyClass"]["slots"] == ["full name", "description"]
+    # no defaults by default
+    assert [] == s.imports
+    # defaults added
+    b.add_defaults()
+    assert ["linkml:types"] == s.imports
+    d = b.as_dict()
+
+
+def test_slot_overrides():
+    """
+    Tests for edge cases involving overrides.
+    """
+    b = SchemaBuilder()
+    b.add_slot("age", range="integer")
+    assert b.schema.slots["age"].range == "integer"
+    b.add_class("MyClass", ["age"])
+    # add_class will (a) add the slot name to the list of applicable slots
+    # (b) add a slot definition to the top level slot definitions
+    # Note that (b) should only happen if the slot is not already present
+    assert b.schema.slots["age"].range == "integer"
+    with pytest.raises(ValueError):
+        b.add_slot("age", range="string")
+    b.add_slot("age", range="string", replace_if_present=True)

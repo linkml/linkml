@@ -1,0 +1,41 @@
+{#-
+
+  Jinja2 Template for a Java class with Lombok @Data annotation
+  Annotation details at https://projectlombok.org
+-#}
+package {{ doc.package }};
+
+{% if metamodel_version -%}
+/* metamodel_version: {{metamodel_version}} */
+{% endif -%}
+{% if model_version -%}
+/* version: {{model_version}} */
+{% endif -%}
+
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+import lombok.*;
+
+{% if cls.source_class.description -%}
+/**
+  {{ cls.source_class.description }}
+**/
+{% endif -%}
+@Data
+@EqualsAndHashCode(callSuper=false)
+public{% if cls.abstract %} abstract{% endif %} class {{ cls.name }} {% if cls.is_a -%} extends {{ cls.is_a }} {%- endif %} {
+{%   for f in cls.fields %}
+  private {{f.range}} {{ f.name }};
+{%-  endfor %}
+{% for visitor in visitors %}
+{%-   if cls.source_class.name == visitor or gen.has_ancestor(cls.source_class, visitor) %}
+  public void accept(I{{ gen.get_class_name(visitor) }}Visitor visitor) {
+    visitor.visit(this);
+  }
+{%-   endif %}
+{%- endfor %}
+
+}

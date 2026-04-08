@@ -1,5 +1,5 @@
 from dataclasses import fields
-from typing import Optional, Union
+from typing import Optional
 
 from linkml_runtime.utils.metamodelcore import Curie
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -37,7 +37,7 @@ def isinstance_dt(cls: type, inst: str) -> bool:
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     _defn: "EnumDefinition" = None  # Overridden by implementation
 
-    def __init__(self, code: Union[str, Curie]) -> None:
+    def __init__(self, code: str | Curie) -> None:
         if isinstance_dt(code, "PermissibleValue"):
             key = code.text
         elif isinstance(code, Curie):
@@ -99,6 +99,16 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     def _addvals(cls):
         """Override this to add non-python compatible values"""
         pass
+
+    def _as_value(self) -> str:
+        """Return the primitive string representation for serialization.
+
+        This is the canonical way for serializers (JSON, YAML) to convert
+        an ``EnumDefinitionImpl`` into a plain string value suitable for
+        output formats.  It simply returns the ``text`` of the underlying
+        ``PermissibleValue``.
+        """
+        return self._code.text
 
     def __str__(self) -> str:
         """The string representation of an enumerated value should be the code representing this value."""
