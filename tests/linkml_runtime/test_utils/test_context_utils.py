@@ -3,7 +3,7 @@
 import os
 
 import pytest
-from jsonasobj2 import JsonObj, loads
+from linkml_runtime.utils.jsonasobj2 import JsonObj, loads
 from rdflib import URIRef
 
 from linkml_runtime.utils.context_utils import map_import, merge_contexts, parse_import_map

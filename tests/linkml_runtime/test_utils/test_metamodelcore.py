@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 
 import pytest
-from jsonasobj2 import as_json
+from linkml_runtime.utils.jsonasobj2 import as_json
 from rdflib import RDF, XSD, Graph, Literal, Namespace
 
 from linkml_runtime.utils.metamodelcore import (

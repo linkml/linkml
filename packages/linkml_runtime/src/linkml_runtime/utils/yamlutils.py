@@ -9,12 +9,12 @@ from typing import Any, Union
 
 import yaml
 from deprecated.classic import deprecated
-from jsonasobj2 import JsonObj, JsonObjTypes, as_dict, as_json, items
 from rdflib import Graph, URIRef
 from yaml.constructor import ConstructorError
 
 from linkml_runtime.utils.context_utils import CONTEXTS_PARAM_TYPE, merge_contexts
 from linkml_runtime.utils.formatutils import is_empty, items
+from linkml_runtime.utils.jsonasobj2 import JsonObj, JsonObjTypes, as_dict, as_json, items
 
 YAMLObjTypes = Union[JsonObjTypes, "YAMLRoot"]
 

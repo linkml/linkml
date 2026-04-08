@@ -9,7 +9,6 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import as_dict
 from rdflib import URIRef
 
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue

@@ -10,7 +10,6 @@ import re
 from dataclasses import dataclass
 from typing import Any, ClassVar, Union
 
-from jsonasobj2 import as_dict
 from rdflib import URIRef
 
 from linkml_runtime.utils.curienamespace import CurieNamespace

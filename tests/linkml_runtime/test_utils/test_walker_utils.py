@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
 
-from jsonasobj2 import as_dict
+from linkml_runtime.utils.jsonasobj2 import as_dict
 
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition
 from linkml_runtime.loaders.yaml_loader import YAMLLoader

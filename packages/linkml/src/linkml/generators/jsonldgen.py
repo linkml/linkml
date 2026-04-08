@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
-from jsonasobj2 import as_json, items, loads
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__

@@ -7,7 +7,6 @@ import os
 from dataclasses import dataclass, field
 
 import click
-from jsonasobj2 import JsonObj, as_json
 from rdflib import XSD, Namespace
 
 from linkml._version import __version__

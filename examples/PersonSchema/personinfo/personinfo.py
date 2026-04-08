@@ -25,10 +25,7 @@ from typing import (
     Union
 )
 
-from jsonasobj2 import (
-    JsonObj,
-    as_dict
-)
+
 from linkml_runtime.linkml_model.meta import (
     EnumDefinition,
     PermissibleValue,

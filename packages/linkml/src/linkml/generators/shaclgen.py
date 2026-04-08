@@ -4,7 +4,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 import click
-from jsonasobj2 import JsonObj, as_dict
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD

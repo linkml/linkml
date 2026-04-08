@@ -1,5 +1,4 @@
 import pytest
-from jsonasobj2 import JsonObj
 from rdflib import Namespace
 
 from linkml.generators.pythongen import PythonGenerator

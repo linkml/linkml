@@ -3,9 +3,9 @@ from io import StringIO
 from pathlib import Path
 
 import pytest
-from jsonasobj2 import as_json
 
 from linkml.utils.schemaloader import SchemaLoader
+from linkml_runtime.utils.jsonasobj2 import as_json
 
 
 @pytest.mark.skip(reason="Disabled until we get SchemaDefinitionList implemented")

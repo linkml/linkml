@@ -8,8 +8,6 @@ from pathlib import Path
 from typing import TextIO, cast
 from urllib.parse import urlparse
 
-from jsonasobj2 import values
-
 from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.mergeutils import merge_classes, merge_schemas, merge_slots, slot_usage_name
 from linkml.utils.rawloader import load_raw_schema

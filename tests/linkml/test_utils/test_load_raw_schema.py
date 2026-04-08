@@ -3,7 +3,6 @@ import re
 from collections.abc import Callable
 
 import pytest
-from jsonasobj2 import as_dict, as_json, loads
 
 from linkml.utils.rawloader import load_raw_schema
 from linkml.utils.schemaloader import SchemaLoader

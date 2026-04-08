@@ -9,7 +9,7 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar, Optional, Union
 
-from jsonasobj2 import JsonObj
+from linkml_runtime.utils.jsonasobj2 import JsonObj
 from rdflib import URIRef
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
