@@ -13,7 +13,18 @@ LinkML allows you to work with SQL/Relational databases in a number of different
 
 ### Example Schema
 
-We will use the example from the previous tutorial (examples/tutorial07/personinfo.yaml)
+We will use the example from the previous tutorial (examples/tutorial/tutorial07/personinfo.yaml).
+
+personinfo.yaml:
+
+```{literalinclude} ../../examples/tutorial/tutorial07/personinfo.yaml
+:language: yaml
+```
+
+data.yaml:
+
+```{literalinclude} ../../examples/tutorial/tutorial07/data.yaml
+:language: yaml
 ```
 
 ### Generating SQL CREATE TABLE statements
@@ -26,26 +37,10 @@ gen-sqltables personinfo.yaml
 
 Outputs:
 
-```sql
-CREATE TABLE "Container" (
-        id INTEGER NOT NULL,
-        PRIMARY KEY (id)
-);
-CREATE TABLE "Person" (
-        id TEXT NOT NULL,
-        full_name TEXT NOT NULL,
-        phone TEXT,
-        age INTEGER,
-        "Container_id" INTEGER,
-        PRIMARY KEY (id),
-        FOREIGN KEY("Container_id") REFERENCES "Container" (id)
-);
-CREATE TABLE "Person_aliases" (
-        "Person_id" TEXT,
-        aliases TEXT,
-        PRIMARY KEY ("Person_id", aliases),
-        FOREIGN KEY("Person_id") REFERENCES "Person" (id)
-);
+<!-- no_compare -->
+<!-- SQL output order (e.g. CREATE INDEX) is non-deterministic across platforms -->
+```{literalinclude} ../../examples/tutorial/tutorial09/personinfo.sql
+:language: sql
 ```
 
 ## Using a SQL database as a backend for data
@@ -58,14 +53,30 @@ linkml-sqldb dump -s personinfo.yaml --db persons.db data.yaml
 
 This will create a SQLite database `persons.db` (you don't have to worry about creating the schema, this is handled automatically)
 
-Data can be retrieved from the database via slite3, e. g. the following command
+Data can be retrieved from the database using the `load` subcommand:
 
+```bash
+linkml-sqldb load -s personinfo.yaml --db persons.db -o data_out.yaml
+```
+
+This will export the data from the database back into YAML format.
+
+Alternatively, data can be queried directly from the database via sqlite3, e. g. the following command
+
+<!-- NO_EXECUTE -->
 ```bash
 sqlite3 persons.db "SELECT * FROM Person"
 ```
 
-will result in:
+or alternatively using the sqlite3 module from Python (if you don't have sqlite3 installed)
+
+<!-- NO_EXECUTE -->
 ```bash
+python -m sqlite3 persons.db "SELECT * FROM Person"
+```
+
+The coummand will result in:
+```text
 ORCID:1234|Clark Kent|555-555-5555|33|1
 ORCID:4567|Lois Lane||34|1
 ```

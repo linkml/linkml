@@ -1,0 +1,28 @@
+schema:
+  id: https://example.org/test
+  name: MyTestSchema
+  title: "My Test Schema"
+
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+  default_range: string
+
+  classes:
+    MyClass:
+      attributes:
+        my_slot:
+          range: MyEnum
+  enums:
+    MyEnum:
+      title: "My Enum"
+      permissible_values:
+        VALUE_1:
+        VALUE_2:
+        VALUE_3:
+
+json_schema:
+  "$defs":
+    MyEnum:
+      title: "My Enum"

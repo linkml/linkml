@@ -16,4 +16,3 @@ that conforms to a LinkML schema.
    csvs
    python
    sql-databases
-

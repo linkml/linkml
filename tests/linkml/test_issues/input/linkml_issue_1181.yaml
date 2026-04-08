@@ -1,0 +1,23 @@
+id: http://example.org/test-schema
+name: test-schema
+default_prefix: http://example.org/test-schema/
+see_also:
+  - https://github.com/linkml/linkml/issues/1181
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_range: string
+
+classes:
+  C:
+    tree_root: true
+    slots:
+      - 1x
+slots:
+  1x:
+    comments:
+      - deliberately use a field that starts with a number

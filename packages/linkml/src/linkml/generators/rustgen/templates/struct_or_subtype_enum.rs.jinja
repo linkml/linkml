@@ -1,0 +1,111 @@
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+{% if type_designator_field %}
+#[cfg_attr(feature="serde", serde(tag = "{{ type_designator_field }}"))]
+{% else %}
+#[cfg_attr(feature="serde", serde(untagged))]
+{% endif %}
+pub enum {{ enum_name }} {
+{%- for t in struct_names -%}
+    {% if type_designator_field  %}
+    {% set tds = type_designators[t] %}
+    #[serde(rename = "{{ tds[0] }}",  {% for t in tds[1:] %} alias="{{ t }}", {% endfor %} )]
+    {% endif %}
+    {{ t }}({{ t }}){% if not loop.last %}, {% endif %}
+{%- endfor -%}
+}
+
+{% for t in struct_names %}
+impl From<{{ t }}>   for {{ enum_name }} { fn from(x: {{ t }})   -> Self { Self::{{ t }}(x) } }
+{% endfor %}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for {{ enum_name }} {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+{% for t in struct_names %}
+        if let Ok(val) = ob.extract::<{{ t }}>() {
+            return Ok({{ enum_name }}::{{ t }}(val));
+        }
+{%- endfor -%}
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ enum_name }}",
+        ))
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for {{ enum_name }} {
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        match self {
+{% for t in struct_names %}
+            {{ enum_name }}::{{ t }}(val) => val.into_pyobject(py).map(move |b| b.into_any()),
+{% endfor %}
+        }
+    }
+}
+
+
+#[cfg(feature = "pyo3")]
+impl<'py> IntoPyObject<'py> for Box<{{ enum_name }}>
+{
+    type Target = PyAny;
+    type Output = Bound<'py, Self::Target>;
+    type Error = PyErr;
+    fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+        (*self).into_pyobject(py).map(move |x| x.into_any())
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl<'py> FromPyObject<'py> for Box<{{ enum_name }}> {
+    fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+        if let Ok(val) = ob.extract::<{{ enum_name }}>() {
+            return Ok(Box::new(val));
+        }
+        Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+            "invalid {{ enum_name }}",
+        ))
+    }
+}
+
+{% if as_key_value %}
+#[cfg(feature = "serde")]
+impl serde_utils::InlinedPair for {{enum_name}} {
+    type Key       = {{ key_property_type }};
+    type Value     = serde_value::Value;
+    type Error     = String;
+
+    fn from_pair_mapping(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error> {
+        {% for t in struct_names %}
+        if let Ok(x) = {{t}}::from_pair_mapping(k.clone(), v.clone()) {
+            return Ok({{enum_name}}::{{t}}(x));
+        }
+        {% endfor %}
+        Err("none of the variants matched the mapping form".into())
+    }
+
+    fn from_pair_simple(k: Self::Key, v: Self::Value) -> Result<Self, Self::Error> {
+        {% for t in struct_names %}
+        if let Ok(x) = {{t}}::from_pair_simple(k.clone(), v.clone()) {
+            return Ok({{enum_name}}::{{t}}(x));
+        }
+        {% endfor %}
+        Err("none of the variants support the primitive form".into())
+    }
+
+    fn extract_key(&self) -> &Self::Key {
+        match self {
+        {% for t in struct_names %}
+            {{enum_name}}::{{t}}(inner) => inner.extract_key(),
+        {% endfor %}
+        }
+    }
+}
+{% endif %}
+
+#[cfg(feature = "stubgen")]
+::pyo3_stub_gen::impl_stub_type!({{ enum_name }} = {{ struct_names | join(' | ') }});

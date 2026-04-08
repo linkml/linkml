@@ -1,0 +1,15 @@
+name: simple
+id: simple
+imports:
+ - linkml:types
+
+classes:
+  Sample:
+    attributes:
+      attr_1:
+        any_of:
+          - range: string
+          - range: integer
+      attr_2:
+        range: float
+        multivalued: true

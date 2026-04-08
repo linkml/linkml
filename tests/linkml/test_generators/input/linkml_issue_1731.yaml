@@ -1,0 +1,72 @@
+id: https://w3id.org/linkml/tests/linkml_issue_1731
+name: pokemon
+title: Pokemon schema
+description: >-
+  This schema describes the Pokemon universe, where creatures called
+  Pokemon exist.
+default_curi_maps:
+  - semweb_context
+imports:
+  - linkml:types
+
+default_prefix: pokemon
+default_range: string
+
+classes:
+  Pokemon:
+    description: >-
+      Creatures that co-exist with humans in a shared universe called
+      the Pokemon world.
+    slots:
+      - name
+      - type
+      - strong_against
+      - weak_against
+    rules:
+      - preconditions:
+          slot_conditions:
+            # if the type of the Pokemon is Water
+            type:
+              exactly_one_of:
+                - equals_string: Water
+        postconditions:
+          slot_conditions:
+            # then the Pokemon is strong against Fire and Rock types
+            strong_against:
+              any_of:
+                - equals_string: Fire
+                - equals_string: Rock
+            # and weak against Electric and Grass types
+            weak_against:
+              any_of:
+                - equals_string: Electric
+                - equals_string: Grass
+
+slots:
+  name:
+    description: The name of the Pokemon
+    range: string
+  type:
+    description: The type of the Pokemon
+    range: PokemonType
+  strong_against:
+    description: Type of Pokemon that their attacks are super effective against
+    range: PokemonType
+  weak_against:
+    description: Type of Pokemon that their attacks are not very effective against
+    range: PokemonType
+
+enums:
+  PokemonType:
+    description: The type of a Pokemon, which determines its strengths and weaknesses in battles
+    permissible_values:
+      Water:
+        description: Water-type Pokemon
+      Fire:
+        description: Fire-type Pokemon
+      Grass:
+        description: Grass-type Pokemon
+      Electric:
+        description: Electric-type Pokemon
+      Rock:
+        description: Rock-type Pokemon

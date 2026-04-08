@@ -1,0 +1,20 @@
+id: s3
+name: s3
+title: s3
+imports:
+  - linkml:types
+  - s3_1
+  - s3_2
+classes:
+  Main:
+    description: "The class we use to test overrides on imports!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "S3"
+  S3:
+    description: "A class from one of the imported classes!"
+    attributes:
+      value:
+        range: string
+        ifabsent: "S3"

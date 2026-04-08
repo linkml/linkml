@@ -11,7 +11,7 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 	echo done
 
 #RUN=pipenv run
-RUN=poetry run
+RUN=uv run
 
 lint-fix:
 	$(RUN) tox -e format
@@ -20,6 +20,25 @@ format: lint-fix
 
 test:
 	$(RUN) pytest
+
+# Metamodel compatibility: download latest metamodel from linkml-model
+LINKML_MODEL_BRANCH ?= main
+LINKML_MODEL_REPO = https://github.com/linkml/linkml-model.git
+METAMODEL_DIR = tests/linkml/test_metamodel_compat/input/metamodel
+
+download-metamodel:
+	rm -rf temp/linkml-model
+	git clone --depth 1 --branch $(LINKML_MODEL_BRANCH) $(LINKML_MODEL_REPO) temp/linkml-model
+	rm -f $(METAMODEL_DIR)/*.yaml
+	cp temp/linkml-model/linkml_model/model/schema/*.yaml $(METAMODEL_DIR)/
+	sed -i.bak '/^#.*- linkml:/d' $(METAMODEL_DIR)/*.yaml
+	sed -i.bak 's/- linkml:\([a-zA-Z_]*\)/- \1/g' $(METAMODEL_DIR)/*.yaml
+	rm -f $(METAMODEL_DIR)/*.bak
+	rm -rf temp/linkml-model
+
+test-metamodel:
+	mkdir -p temp
+	$(RUN) pytest tests/linkml/test_metamodel_compat/ --with-slow -v 2>&1 | tee temp/test_output.txt
 
 ## Example schema products
 examples/%.py: examples/%.yaml
@@ -45,7 +64,7 @@ examples/%.owl: examples/%.yaml
 examples/%.ttl: examples/%.yaml
 	$(RUN) gen-rdf $< > $@
 examples/%-docs: examples/%.yaml
-	$(RUN) gen-markdown $< -d $@
+	$(RUN) gen-doc $< -d $@
 
 ## Example instance data products
 examples/%.valid: examples/%-data.json examples/%.schema.json
@@ -65,6 +84,10 @@ TUTORIALS = 01 02 03 04 05 06 07 08 09 10
 test-tutorials: $(patsubst %, test-tutorial-%, $(TUTORIALS))
 test-tutorial-%: docs/intro/tutorial%.md
 	$(RUN) python -m linkml.utils.execute_tutorial -d /tmp/tutorial $<
+
+build-generator-dashboard:
+	$(RUN) pytest tests/linkml/test_compliance/ --with-output -q
+	$(RUN) python scripts/generate_dashboard.py
 
 docs:
 	cd docs && $(RUN) make html

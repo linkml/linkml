@@ -1,0 +1,12 @@
+id: http://example.org/tests/issue63
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c1:
+    deprecated_element_has_exact_replacement:
+      - s3

@@ -1,0 +1,8 @@
+{% if slot_ranges | length > 0%}
+pub mod {{ class_name_snakecase }}_utl {
+    use super::*;
+{% for u in slot_ranges %}
+{{ u}}
+{% endfor %}
+}
+{% endif %}

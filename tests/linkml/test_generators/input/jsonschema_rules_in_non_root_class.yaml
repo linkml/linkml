@@ -1,0 +1,69 @@
+schema:
+  name: test_rules_in_non_root_class
+  id: http://example.org/test_rules_in_non_root_class
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+  slots:
+    addresses:
+      range: Address
+      multivalued: true
+      inlined: true
+      inlined_as_list: true
+    street_address:
+    country:
+    postal_code:
+    telephone:
+
+  classes:
+    Address:
+      slots:
+        - street_address
+        - country
+        - postal_code
+        - telephone
+      rules:
+        - preconditions:
+            slot_conditions:
+              country:
+                any_of:
+                  - equals_string: USA
+                  - equals_string: USA_territory
+          postconditions:
+            slot_conditions:
+              postal_code:
+                pattern: "[0-9]{5}(-[0-9]{4})?"
+              telephone:
+                pattern: "^\\+1 "
+    AddressCollection:
+      slots:
+        - addresses
+      tree_root: true
+
+data_cases:
+  - data:
+      addresses:
+        - street_address: 123 main street
+          country: USA
+          postal_code: "12345"
+          telephone: "+1 555 555 1234"
+  - data:
+      addresses:
+        - street_address: 123 main street
+          country: USA_territory
+          postal_code: "12345"
+          telephone: "+1 555 555 1234"
+  - data:
+      addresses:
+        - street_address: 123 main street
+          country: USA
+          postal_code: "DK-1448"
+          telephone: "+1 555 555 1234"
+    error_message: "'DK-1448' does not match"
+  - data:
+      addresses:
+        - street_address: Asiatisk Plads 2
+          country: DEN
+          postal_code: "DK-1448"
+          telephone: "+45 5555 5555"

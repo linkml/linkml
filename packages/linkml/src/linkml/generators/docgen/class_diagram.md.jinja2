@@ -1,0 +1,76 @@
+{% macro slot_relationship(element, slot) %}
+    {% if slot.range is not none %}
+        {% set range_element = gen.name(schemaview.get_element(slot.range)) %}
+        {% set relation_label = gen.name(slot) %}
+        {{ gen.name(element) }} --> "{{ gen.cardinality(slot) }}" {{ range_element }} : {{ relation_label }}
+        click {{ range_element }} href "{{ gen.link_mermaid(schemaview.get_element(slot.range)) }}"
+    {% endif %}
+{% endmacro %}
+
+{% if schemaview.class_parents(element.name) and schemaview.class_children(element.name) %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+    class {{ gen.name(element) }}
+    click {{ gen.name(element) }} href "{{ gen.link_mermaid(element) }}"
+      {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
+        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.link_mermaid(schemaview.get_element(s)) }}"
+      {% endfor %}
+
+      {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.link_mermaid(schemaview.get_element(s)) }}"
+      {% endfor %}
+
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{ gen.name(s) }}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
+          {{ slot_relationship(element, s) }}
+        {% endif %}
+      {% endfor %}
+```
+{% elif schemaview.class_parents(element.name) %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+    class {{ gen.name(element) }}
+    click {{ gen.name(element) }} href "{{ gen.link_mermaid(element) }}"
+      {% for s in schemaview.class_parents(element.name)|sort(attribute='name') -%}
+        {{ gen.name(schemaview.get_element(s)) }} <|-- {{ gen.name(element) }}
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.link_mermaid(schemaview.get_element(s)) }}"
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{ gen.name(s) }}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
+          {{ slot_relationship(element, s) }}
+        {% endif %}
+      {% endfor %}
+```
+{% elif schemaview.class_children(element.name)  %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+    class {{ gen.name(element) }}
+    click {{ gen.name(element) }} href "{{ gen.link_mermaid(element) }}"
+      {% for s in schemaview.class_children(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} <|-- {{ gen.name(schemaview.get_element(s)) }}
+        click {{ gen.name(schemaview.get_element(s)) }} href "{{ gen.link_mermaid(schemaview.get_element(s)) }}"
+      {% endfor %}
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{ gen.name(s) }}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
+          {{ slot_relationship(element, s) }}
+        {% endif %}
+      {% endfor %}
+```
+{% else %}
+```{{ gen.mermaid_directive() }}
+ classDiagram
+    class {{ gen.name(element) }}
+    click {{ gen.name(element) }} href "{{ gen.link_mermaid(element) }}"
+      {% for s in schemaview.class_induced_slots(element.name)|sort(attribute='name') -%}
+        {{ gen.name(element) }} : {{ gen.name(s) }}
+        {% if s.range is not none and s.range not in gen.all_type_object_names() %}
+          {{ slot_relationship(element, s) }}
+        {% endif %}
+      {% endfor %}
+```
+{% endif %}

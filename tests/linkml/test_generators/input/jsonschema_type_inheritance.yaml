@@ -1,0 +1,31 @@
+schema:
+  id: http://example.org/test_type_inheritance
+  name: test_type_inheritance
+
+  types:
+    alpha:
+      base: double
+    beta:
+      typeof: alpha
+
+  slots:
+    alpha_slot:
+      range: alpha
+      required: true
+    beta_slot:
+      range: beta
+      required: true
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - alpha_slot
+        - beta_slot
+
+json_schema:
+  properties:
+    alpha_slot:
+      type: number
+    beta_slot:
+      type: number

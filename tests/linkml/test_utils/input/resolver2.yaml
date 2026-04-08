@@ -1,0 +1,31 @@
+id: "http://example.org/yaml3"
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+  t1:
+    uri: xsd:string
+    base: str
+
+  t2:
+    uri: xsd:int
+    base: int
+
+  t3:
+    typeof: string
+
+slots:
+  s1:
+    domain: c1
+
+  s2:
+    domain: c1
+    range: t2
+
+classes:
+  c1:

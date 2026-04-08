@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:is_current](https://w3id.org/linkml/examples/personinfo/is_current)
 
 
@@ -22,3 +21,4 @@ None &#8594;  <sub>0..1</sub> [Boolean](types/Boolean.md)
  * [EmploymentEvent](EmploymentEvent.md)
  * [Event](Event.md)
  * [MedicalEvent](MedicalEvent.md)
+ * [NewsEvent](NewsEvent.md)

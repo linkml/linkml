@@ -14,7 +14,7 @@ To run:
 
 .. code:: bash
 
-   gen-terminusdb personinfo.yaml 
+   gen-terminusdb personinfo.yaml
 
 
 
@@ -33,6 +33,6 @@ Command Line
 Code
 ^^^^
 
-                   
+
 .. autoclass:: TerminusdbGenerator
     :members: serialize

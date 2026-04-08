@@ -1,0 +1,4 @@
+schema1:
+  id: "http://example.org/schema1"
+
+  classes: c1

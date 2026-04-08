@@ -1,0 +1,26 @@
+id: http://example.org/tests/deprecated
+
+types:
+  string:
+    base: str
+    uri: xsd:string
+
+
+classes:
+  c4:
+    tree_root: true
+    deprecated: true
+
+  c2:
+
+  c3:
+    slots:
+      - s1
+
+slots:
+  s1:
+    deprecated: true
+    range: string
+  s3:
+    range: string
+    required: true

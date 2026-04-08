@@ -1,0 +1,5 @@
+id: https://example.com/schema/child
+name: child
+title: child
+imports:
+  - ./grandchild/index

@@ -1,0 +1,59 @@
+id: https://w3id.org/linkml/examples/animals
+name: animals
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/animals/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+classes:
+  Animal:
+    slots:
+      - age
+    attributes:
+      weight:
+        range: float
+
+  CanFly:
+    mixin: true
+    slots:
+      - maxAltitude
+
+  CanSwim:
+    mixin: true
+    attributes:
+      maxDepth:
+        range: integer
+
+  Mammal:
+    is_a: Animal
+    attributes:
+      mammaryGlandCount: integer
+
+  Whale:
+    is_a: Mammal
+    mixins:
+      - CanSwim
+    attributes:
+      ocean:
+        range: string
+
+  Dog:
+    is_a: Mammal
+    slots:
+      - name
+
+  Bat:
+    is_a: Mammal
+    mixins:
+      - CanFly
+
+slots:
+  age:
+    range: integer
+  name:
+    range: string
+  maxAltitude:
+    range: integer

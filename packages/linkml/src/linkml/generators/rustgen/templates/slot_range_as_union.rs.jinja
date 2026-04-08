@@ -1,0 +1,64 @@
+    #[derive(Debug, Clone, PartialEq)]
+    #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+    pub enum {{ slot_name }}_range {
+    {% for r in ranges %}
+        {{ r }}({{ r }}){% if not loop.last %},
+    {% endif %}
+    {% endfor %}
+    }
+
+    #[cfg(feature = "pyo3")]
+    impl<'py> FromPyObject<'py> for {{ slot_name }}_range {
+        fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+    {% for t in ranges %}
+            if let Ok(val) = ob.extract::<{{ t }}>() {
+                return Ok({{ slot_name }}_range::{{ t }}(val));
+            }
+    {%- endfor -%}
+            Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                "invalid {{ slot_name }}",
+            ))
+        }
+    }
+
+    #[cfg(feature = "pyo3")]
+    impl<'py> IntoPyObject<'py> for {{ slot_name }}_range {
+        type Target = PyAny;
+        type Output = Bound<'py, Self::Target>;
+        type Error = PyErr;
+
+        fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+            match self {
+    {% for t in ranges %}
+                {{ slot_name }}_range::{{ t }}(val) => Ok(val.into_pyobject(py).map(move |b| <pyo3::Bound<'_, _> as Clone>::clone(&b).into_any())?),
+    {% endfor %}
+            }
+        }
+    }
+
+
+    #[cfg(feature = "pyo3")]
+    impl<'py> IntoPyObject<'py> for Box<{{ slot_name }}_range>
+    {
+        type Target = PyAny;
+        type Output = Bound<'py, Self::Target>;
+        type Error = PyErr;
+        fn into_pyobject(self, py: Python<'py>) -> Result<Self::Output, Self::Error> {
+            (*self).into_pyobject(py).map(move |x| x.into_any())
+        }
+    }
+
+    #[cfg(feature = "pyo3")]
+    impl<'py> FromPyObject<'py> for Box<{{ slot_name }}_range> {
+        fn extract_bound(ob: &pyo3::Bound<'py, pyo3::types::PyAny>) -> pyo3::PyResult<Self> {
+            if let Ok(val) = ob.extract::<{{ slot_name  }}_range>() {
+                return Ok(Box::new(val));
+            }
+            Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                "invalid {{ slot_name }}",
+            ))
+        }
+    }
+
+    #[cfg(feature = "stubgen")]
+    ::pyo3_stub_gen::impl_stub_type!({{ slot_name }}_range = {{ ranges | join(' | ') }});

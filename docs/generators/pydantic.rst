@@ -24,7 +24,7 @@ Given a definition of a Person class:
 
 .. code-block:: yaml
 
-     
+
     Person:
       is_a: NamedThing
       description: >-
@@ -49,7 +49,7 @@ The generate python looks like this:
 
 .. code-block:: python
 
-             
+
     class Person(NamedThing):
         """
         A person (alive, dead, undead, or fictional).
@@ -77,11 +77,11 @@ Command Line
 .. click:: linkml.generators.pydanticgen:cli
     :prog: gen-pydantic
     :nested: short
-        
+
 Generator
 ---------
 
-        
+
 .. autoclass:: PydanticGenerator
     :members:
 
@@ -260,10 +260,74 @@ See `Schemas/Arrays <arrays>`_
     :members:
     :member-order: bysource
 
+Subproperty Constraints
+-----------------------
+
+When a slot has ``subproperty_of`` set, the generator constrains valid values
+to the referenced slot and all its descendants (via ``is_a``). This follows the
+LinkML metamodel semantics where "any ontological child (related to X via an
+is_a relationship), is a valid value for the slot".
+
+Example Schema
+^^^^^^^^^^^^^^
+
+Given this schema with a slot hierarchy:
+
+.. code-block:: yaml
+
+    slots:
+      related_to:
+        slot_uri: biolink:related_to
+      causes:
+        is_a: related_to
+        slot_uri: biolink:causes
+      treats:
+        is_a: related_to
+        slot_uri: biolink:treats
+
+      predicate:
+        range: uriorcurie
+        subproperty_of: related_to
+
+    classes:
+      Association:
+        slots:
+          - predicate
+
+Generated Output
+^^^^^^^^^^^^^^^^
+
+The generator produces a ``Literal`` type constraint:
+
+.. code-block:: python
+
+    class Association(ConfiguredBaseModel):
+        predicate: Optional[Literal["biolink:causes", "biolink:related_to", "biolink:treats"]] = Field(...)
+
+Value Formatting
+^^^^^^^^^^^^^^^^
+
+Values are formatted according to the slot's ``range`` type:
+
+- ``string``: slot names in snake_case (e.g., ``causes``)
+- ``uriorcurie``: CURIEs using ``slot_uri`` (e.g., ``biolink:causes``)
+- ``uri``: full URIs (e.g., ``https://w3id.org/biolink/vocab/causes``)
+
+Disabling Expansion
+^^^^^^^^^^^^^^^^^^^
+
+To disable subproperty expansion, set ``expand_subproperty_of=False``:
+
+.. code-block:: python
+
+    gen = PydanticGenerator(schema, expand_subproperty_of=False)
+
+When disabled, the slot uses its normal ``range`` without the hierarchy constraint.
+
 Additional Notes
 ----------------
 LinkML contains two Python generators. The Pydantic dataclass generator is specifically
-useful for FastAPI, but is newer and less full featured than the standard 
+useful for FastAPI, but is newer and less full featured than the standard
 :doc:`Python generator </generators/python>`.
 
 

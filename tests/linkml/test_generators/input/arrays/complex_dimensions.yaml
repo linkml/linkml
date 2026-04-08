@@ -1,0 +1,135 @@
+id: complex_dimensions_array
+name: complex_dimensions_array
+title: complex_dimensions_array
+imports:
+  - linkml:types
+
+classes:
+  ComplexAnyShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: false
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexMinShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 5
+          maximum_number_dimensions: false
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexMaxShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          maximum_number_dimensions: 6
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexRangeShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 5
+          maximum_number_dimensions: 7
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexExactShapeArray:
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 6
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+
+  ComplexNoOpExactShapeArray:
+    description: |
+      When the exact number of dimensions is equal to the number of parameterized dimensions,
+      the representation should be the same as if it hadn't been specified.
+      Test if this model is equivalent to parameterized_dimensions.yaml/ParameterizedArray
+    attributes:
+      array:
+        range: integer
+        array:
+          exact_number_dimensions: 4
+          dimensions:
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6
+
+  ComplexImplicitExactShapeArray:
+    description: |
+      When minimum and maximum number of dimensions are equal, the result should be the same as specifying exact dimensions
+    attributes:
+      array:
+        range: integer
+        array:
+          minimum_number_dimensions: 6
+          maximum_number_dimensions: 6
+          dimensions:
+            - alias: max_card
+              maximum_cardinality: 5
+            - alias: min_card
+              minimum_cardinality: 2
+            - alias: range_card
+              minimum_cardinality: 2
+              maximum_cardinality: 5
+            - alias: exact_card
+              exact_cardinality: 6

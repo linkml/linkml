@@ -1,0 +1,1687 @@
+{
+   "type": "Schema",
+   "@context": [
+      "http://www.w3.org/ns/shex.jsonld",
+      {
+         "@base": "https://w3id.org/linkml/tests/kitchen_sink/"
+      }
+   ],
+   "shapes": [
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/String",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Integer",
+         "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Boolean",
+         "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Float",
+         "datatype": "http://www.w3.org/2001/XMLSchema#float"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Double",
+         "datatype": "http://www.w3.org/2001/XMLSchema#double"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Decimal",
+         "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Time",
+         "datatype": "http://www.w3.org/2001/XMLSchema#time"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Date",
+         "datatype": "http://www.w3.org/2001/XMLSchema#date"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Datetime",
+         "datatype": "http://www.w3.org/2001/XMLSchema#dateTime"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/DateOrDatetime",
+         "datatype": "https://w3id.org/linkml/DateOrDatetime"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Uriorcurie",
+         "nodeKind": "iri"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Curie",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Uri",
+         "nodeKind": "iri"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Ncname",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Objectidentifier",
+         "nodeKind": "iri"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Nodeidentifier",
+         "nodeKind": "nonliteral"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Jsonpointer",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Jsonpath",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/Sparqlpath",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/tests/core/PhoneNumberType",
+         "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      {
+         "type": "NodeConstraint",
+         "id": "https://w3id.org/linkml/tests/core/AgeInYearsType",
+         "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/core/Activity",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/core/Activity_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#startedAtTime",
+                        "valueExpr": "https://w3id.org/linkml/Date",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#endedAtTime",
+                        "valueExpr": "https://w3id.org/linkml/Date",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#wasInformedBy",
+                        "valueExpr": "https://w3id.org/linkml/tests/core/Activity",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#wasAssociatedWith",
+                        "valueExpr": "https://w3id.org/linkml/tests/core/Agent",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#used",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/core/description",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/core/Activity"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Address",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/Address_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/street",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/city",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/altitude",
+                        "valueExpr": "https://w3id.org/linkml/Decimal",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/Address"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/core/Agent",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/core/Agent_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#actedOnBehalfOf",
+                        "valueExpr": "https://w3id.org/linkml/tests/core/Agent",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/ns/prov#wasInformedBy",
+                        "valueExpr": "https://w3id.org/linkml/tests/core/Activity",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "http://www.w3.org/ns/prov#Agent"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject_tes",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "min": 0,
+                  "max": -1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/Any"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute2",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute3",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute4",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute1",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Event_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Event"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Place",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "ShapeOr",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces",
+         "shapeExprs": [
+            {
+               "type": "Shape",
+               "closed": true,
+               "expression": {
+                  "type": "EachOf",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "id": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               }
+            },
+            "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest"
+         ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes",
+                  "predicate": "https://w3id.org/linkml/tests/core/name",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Company",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/Company_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Organization_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Organization"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://schema.org/ceo",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/Company"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "ShapeOr",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Concept",
+         "shapeExprs": [
+            {
+               "type": "Shape",
+               "closed": true,
+               "expression": {
+                  "type": "EachOf",
+                  "expressions": [
+                     {
+                        "type": "EachOf",
+                        "id": "https://w3id.org/linkml/tests/kitchen_sink/Concept_tes",
+                        "expressions": [
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/core/name",
+                              "valueExpr": "https://w3id.org/linkml/String",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/in_code_system",
+                              "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem",
+                              "min": 0,
+                              "max": 1
+                           }
+                        ]
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Concept"
+                           ]
+                        },
+                        "min": 1
+                     }
+                  ]
+               }
+            },
+            "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+            "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept"
+         ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Dataset",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/Dataset_tes",
+                  "expressions": [
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/persons",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/companies",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Company",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/activities",
+                        "valueExpr": "https://w3id.org/linkml/tests/core/Activity",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/code_systems",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem",
+                        "min": 0,
+                        "max": -1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/Dataset"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Concept_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Concept"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Event_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Event"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/employed_at",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Company",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/type",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute5",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/EqualsString"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/attribute6",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "ShapeOr",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Event",
+         "shapeExprs": [
+            {
+               "type": "Shape",
+               "closed": true,
+               "expression": {
+                  "type": "EachOf",
+                  "expressions": [
+                     {
+                        "type": "EachOf",
+                        "id": "https://w3id.org/linkml/tests/kitchen_sink/Event_tes",
+                        "expressions": [
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/ns/prov#startedAtTime",
+                              "valueExpr": "https://w3id.org/linkml/Date",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/ns/prov#endedAtTime",
+                              "valueExpr": "https://w3id.org/linkml/Date",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/is_current",
+                              "valueExpr": "https://w3id.org/linkml/Boolean",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/metadata",
+                              "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+                              "min": 0,
+                              "max": 1
+                           }
+                        ]
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Event"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               }
+            },
+            "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent",
+            "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent",
+            "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent",
+            "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent"
+         ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/FakeClass_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/test_attribute",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/FakeClass"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Relationship"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/cordialness",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#SIBLING_OF",
+                              "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#PARENT_OF",
+                              "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF"
+                           ]
+                        },
+                        "min": 1,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/related_to",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+                        "min": 1,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Friend",
+         "closed": false,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/Friend_tes",
+                  "predicate": "https://w3id.org/linkml/tests/core/name",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/Friend"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
+         "closed": false,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes",
+                  "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                  "valueExpr": "https://w3id.org/linkml/String",
+                  "min": 0,
+                  "max": -1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/HasAliases"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Event_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Event"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     "https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/WithLocation"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/married_to",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Place",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Event_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Event"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Place",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/diagnosis",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
+                        "min": 0,
+                        "max": 1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "ShapeOr",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Organization",
+         "shapeExprs": [
+            {
+               "type": "Shape",
+               "closed": true,
+               "expression": {
+                  "type": "EachOf",
+                  "expressions": [
+                     {
+                        "type": "EachOf",
+                        "id": "https://w3id.org/linkml/tests/kitchen_sink/Organization_tes",
+                        "expressions": [
+                           "https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes",
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/linkml/tests/kitchen_sink/HasAliases"
+                                 ]
+                              },
+                              "min": 0
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/core/name",
+                              "valueExpr": "https://w3id.org/linkml/String",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                              "valueExpr": "https://w3id.org/linkml/String",
+                              "min": 0,
+                              "max": -1
+                           }
+                        ]
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Organization"
+                           ]
+                        },
+                        "min": 1
+                     }
+                  ]
+               }
+            },
+            "https://w3id.org/linkml/tests/kitchen_sink/Company"
+         ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/Person_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/HasAliases"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/core/name",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/has_employment_history",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/has_medical_history",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/age_in_years",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/addresses",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Address",
+                        "min": 0,
+                        "max": -1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event",
+                        "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/species_name",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/stomach_count",
+                        "valueExpr": "https://w3id.org/linkml/Integer",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/kitchen_sink/is_living",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#LIVING",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#DEAD",
+                              "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#UNKNOWN"
+                           ]
+                        },
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/Person"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Place",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/Place_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/HasAliases"
+                           ]
+                        },
+                        "min": 0
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "https://w3id.org/linkml/tests/core/name",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": 1
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/2004/02/skos/core#altLabel",
+                        "valueExpr": "https://w3id.org/linkml/String",
+                        "min": 0,
+                        "max": -1
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/Place"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/Concept_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Concept"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept"
+                     ]
+                  },
+                  "min": 1
+               }
+            ]
+         }
+      },
+      {
+         "type": "ShapeOr",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/Relationship",
+         "shapeExprs": [
+            {
+               "type": "Shape",
+               "closed": true,
+               "expression": {
+                  "type": "EachOf",
+                  "expressions": [
+                     {
+                        "type": "EachOf",
+                        "id": "https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes",
+                        "expressions": [
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/ns/prov#startedAtTime",
+                              "valueExpr": "https://w3id.org/linkml/Date",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/ns/prov#endedAtTime",
+                              "valueExpr": "https://w3id.org/linkml/Date",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/related_to",
+                              "valueExpr": "https://w3id.org/linkml/String",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/type",
+                              "valueExpr": "https://w3id.org/linkml/String",
+                              "min": 0,
+                              "max": 1
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/cordialness",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt",
+                                    "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful",
+                                    "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent"
+                                 ]
+                              },
+                              "min": 0,
+                              "max": 1
+                           }
+                        ]
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/Relationship"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               }
+            },
+            "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship"
+         ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "ShapeOr",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest",
+         "shapeExprs": [
+            {
+               "type": "Shape",
+               "closed": true,
+               "expression": {
+                  "type": "EachOf",
+                  "expressions": [
+                     {
+                        "type": "EachOf",
+                        "id": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes",
+                        "expressions": [
+                           "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes",
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                              "valueExpr": {
+                                 "type": "NodeConstraint",
+                                 "values": [
+                                    "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces"
+                                 ]
+                              },
+                              "min": 0
+                           },
+                           {
+                              "type": "TripleConstraint",
+                              "predicate": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_2",
+                              "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces",
+                              "min": 0,
+                              "max": 1
+                           }
+                        ]
+                     },
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               }
+            },
+            "https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2",
+            "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1"
+         ]
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1",
+         "closed": true,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "EachOf",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1_tes",
+                  "expressions": [
+                     "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes",
+                     {
+                        "type": "TripleConstraint",
+                        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest"
+                           ]
+                        },
+                        "min": 0
+                     }
+                  ]
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      },
+      {
+         "type": "Shape",
+         "id": "https://w3id.org/linkml/tests/kitchen_sink/WithLocation",
+         "closed": false,
+         "expression": {
+            "type": "EachOf",
+            "expressions": [
+               {
+                  "type": "TripleConstraint",
+                  "id": "https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes",
+                  "predicate": "https://w3id.org/linkml/tests/kitchen_sink/in_location",
+                  "valueExpr": "https://w3id.org/linkml/tests/kitchen_sink/Place",
+                  "min": 0,
+                  "max": 1
+               },
+               {
+                  "type": "TripleConstraint",
+                  "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                  "valueExpr": {
+                     "type": "NodeConstraint",
+                     "values": [
+                        "https://w3id.org/linkml/tests/kitchen_sink/WithLocation"
+                     ]
+                  },
+                  "min": 0
+               }
+            ]
+         }
+      }
+   ]
+}
+

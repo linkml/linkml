@@ -1,0 +1,26 @@
+id: http://example.org/synopsis/synopsis2
+name: synopsis2
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+
+default_range: string
+
+types:
+    string:
+        base: str
+        uri: xsd:string
+
+slots:
+    s1:
+      domain: c1
+
+    s2:
+      domain: c2
+
+classes:
+  c1:
+    apply_to: c2
+
+  c2:
+    apply_to: c1

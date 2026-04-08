@@ -1,0 +1,97 @@
+schema:
+  id: http://example.org/test_multivalued_slot_constraints
+  name: test_multivalued_slot_constraints
+
+  imports:
+    - https://w3id.org/linkml/types
+
+  slots:
+    int_list:
+      range: integer
+      multivalued: true
+      minimum_cardinality: 2
+      maximum_cardinality: 5
+
+    int_dict:
+      range: KeyedInt
+      multivalued: true
+      inlined: true
+      inlined_as_list: false
+      minimum_cardinality: 3
+      maximum_cardinality: 4
+
+    id:
+      range: string
+      identifier: true
+
+    value:
+      range: integer
+      required: true
+
+  classes:
+    KeyedInt:
+      slots:
+        - id
+        - value
+    Test:
+      tree_root: true
+      slots:
+        - int_list
+        - int_dict
+json_schema:
+  properties:
+    int_list:
+      minItems: 2
+      maxItems: 5
+    int_dict:
+      minProperties: 3
+      maxProperties: 4
+data_cases:
+  - data:
+      int_list: [1, 2]
+  - data:
+      int_list: [1]
+    error_message: Failed validating 'minItems'
+  - data:
+      int_list: [1, 2, 3, 4, 5]
+  - data:
+      int_list: [1, 2, 3, 4, 5, 6]
+    error_message: Failed validating 'maxItems'
+  - data:
+      int_dict:
+        1:
+          value: 1
+        2:
+          value: 2
+        3:
+          value: 3
+  - data:
+      int_dict:
+        1:
+          value: 1
+        2:
+          value: 2
+    error_message: Failed validating 'minProperties'
+  - data:
+      int_dict:
+        1:
+          value: 1
+        2:
+          value: 2
+        3:
+          value: 3
+        4:
+          value: 4
+  - data:
+      int_dict:
+        1:
+          value: 1
+        2:
+          value: 2
+        3:
+          value: 3
+        4:
+          value: 4
+        5:
+          value: 5
+    error_message: Failed validating 'maxProperties'

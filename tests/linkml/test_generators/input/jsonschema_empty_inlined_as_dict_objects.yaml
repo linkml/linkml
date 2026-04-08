@@ -1,0 +1,60 @@
+schema:
+  id: http://example.org/test_empty_inlined_as_dict_objects
+  name: test_empty_inlined_as_dict_objects
+  imports:
+    - https://w3id.org/linkml/types
+  default_range: string
+
+  slots:
+    id:
+      key: true
+    s1:
+    s2:
+      required: true
+    no_non_key_required_slots:
+      range: HasNoNonKeyRequiredSlots
+      multivalued: true
+      inlined: true
+    non_key_required_slots:
+      range: HasNonKeyRequiredSlots
+      multivalued: true
+      inlined: true
+
+  classes:
+    Test:
+      tree_root: true
+      slots:
+        - no_non_key_required_slots
+        - non_key_required_slots
+    HasNoNonKeyRequiredSlots:
+      slots:
+        - id
+        - s1
+    HasNonKeyRequiredSlots:
+      slots:
+        - id
+        - s1
+        - s2
+
+data_cases:
+  - data:
+      no_non_key_required_slots:
+        id1:
+          s1: value1
+        id2:
+          s1: value2
+  - data:
+      no_non_key_required_slots:
+        id1:
+        id2:
+  - data:
+      non_key_required_slots:
+        id1:
+          s2: value1
+        id2:
+          s2: value2
+  - data:
+      non_key_required_slots:
+        id1:
+        id2:
+    error_message: "Failed validating 'anyOf'"

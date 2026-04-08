@@ -1,0 +1,102 @@
+name: minimal_redundant_slot_usage
+description: Minimal schema to test redundant slot usage removal for issue 954
+id: https://example.com/minimal_redundant_slot_usage
+imports:
+- linkml:types
+
+slots:
+  ecosystem:
+    name: ecosystem
+    description: Test slot for ecosystem
+
+  slot_a:
+    name: slot_a
+    description: Test slot A
+
+  slot_b:
+    name: slot_b
+    description: Test slot B
+
+classes:
+  BaseClass:
+    name: BaseClass
+    slots:
+    - ecosystem
+    - slot_a
+    - slot_b
+  soil_jgi_mg:
+    name: soil_jgi_mg
+    is_a: BaseClass
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: Test slot for ecosystem
+        owner: BaseClass
+        slot_group: Sample ID
+        required: true
+        range: string
+      slot_a:
+        name: slot_a
+        description: Test slot A
+        owner: BaseClass
+      slot_b:
+        name: slot_b
+        description: Test slot B
+        owner: BaseClass
+  water_jgi_mg:
+    name: water_jgi_mg
+    is_a: BaseClass
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: Test slot for ecosystem
+        owner: BaseClass
+        slot_group: Sample ID
+        required: true
+        range: string
+      slot_a:
+        name: slot_a
+        description: Test slot A
+        owner: BaseClass
+      slot_b:
+        name: slot_b
+        description: Test slot B
+        owner: BaseClass
+  air_jgi_mg:
+    name: air_jgi_mg
+    is_a: BaseClass
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: Test slot for ecosystem
+        owner: BaseClass
+        slot_group: Sample ID
+        required: true
+        range: string
+      slot_a:
+        name: slot_a
+        description: Test slot A
+        owner: BaseClass
+      slot_b:
+        name: slot_b
+        description: Test slot B
+        owner: BaseClass
+  sediment_jgi_mg:
+    name: sediment_jgi_mg
+    is_a: BaseClass
+    slot_usage:
+      ecosystem:
+        name: ecosystem
+        description: Test slot for ecosystem
+        owner: BaseClass
+        slot_group: Sample ID
+        required: true
+        range: string
+      slot_a:
+        name: slot_a
+        description: Test slot A
+        owner: BaseClass
+      slot_b:
+        name: slot_b
+        description: Test slot B
+        owner: BaseClass

@@ -1,0 +1,25 @@
+{
+    "$defs": {
+        "C1": {
+            "additionalProperties": false,
+            "description": "",
+            "title": "C1",
+            "type": "object"
+        },
+        "C2": {
+            "additionalProperties": false,
+            "description": "",
+            "title": "C2",
+            "type": "object"
+        }
+    },
+    "$id": "http://example.org/tests/issue177",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "additionalProperties": false,
+    "description": "",
+    "metamodel_version": "1.7.0",
+    "title": "issue177",
+    "type": "object",
+    "version": null
+}
+

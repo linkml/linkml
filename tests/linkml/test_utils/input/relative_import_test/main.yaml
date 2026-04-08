@@ -1,0 +1,5 @@
+id: https://example.com/schema/main
+name: main
+title: main
+imports:
+  - ./child/index

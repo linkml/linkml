@@ -45,4 +45,3 @@ slots:
       prov:spoon; prov:hadRole roles:mixing_implement ].
 enums:
   Role:
-    

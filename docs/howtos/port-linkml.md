@@ -15,7 +15,7 @@ validating data. The majority tools are in Python, but they can be executed
 during the development cycle of your project, avoiding python
 dependencies in non-python code.
 
-Before embarking on a porting project, please read the [The LinkML specification](https://linkml.io/linkml-model/docs/specification/)
+Before embarking on a porting project, please read the [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema)
 
 ## Data class generators
 
@@ -90,11 +90,13 @@ However, if you are aiming for a more powerful library, then this has a number o
 
 ## Overview of Python Framework
 
-Currently there are 3 core repos:
+Currently there are 2 core repos:
 
-- [linkml-model](https://github.com/linkml/linkml-model) This holds the Source of Truth for the *metamodel*
-- [linkml-runtime](https://github.com/linkml/linkml-runtime) A runtime library that is depended on by schema-specific generated python dataclass libraries
-- [linkml](https://github.com/linkml/linkml) The core tooling, including [generators](https://linkml.io/linkml/generators/index.html)
+- [linkml-model](https://github.com/linkml/linkml-model) This holds the Source of Truth for the *metamodel* and its documentation
+- [linkml/linkml](https://github.com/linkml/linkml) A monorepo that contains:
+  - [linkml](https://pypi.org/project/linkml/) - Python package with tooling, including [generators](https://linkml.io/linkml/generators/index.html)
+  - [linkml-runtime](https://pypi.org/project/linkml-runtime/) Python package providing a runtime library for the schema-specific generated python dataclass libraries.
+  - [documentation](https://linkml.io/linkml/)
 
 This guide assumes familiarity with all of the above
 
@@ -118,7 +120,7 @@ is required.
 Consult some of the existing generators to see how this is done. Be
 sure to use the newer style SchemaView generators.
 
-for example: [javagen](https://github.com/linkml/linkml/blob/main/linkml/generators/javagen.py)
+for example: [javagen](https://github.com/linkml/linkml/blob/main/packages/linkml/src/linkml/generators/javagen.py)
 
 Definitely make an issue on our repo, so you can coordinate with others interested in support for the target language!
 
@@ -340,14 +342,14 @@ schema = yaml_loader.load('my-schema.yaml', target=SchemaDefinition)
 
 ### Step 3: Implement core logic for derived schemas
 
-See: [Part 4 of the specification](https://linkml.io/linkml-model/docs/specification/04derived-schemas/)
+See: [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema) (derived schema rules)
 
 By this stage you can load and dump schema objects in a type-safe way. It may be tempting to just go off and implement things with this.
 
 However, you will also want to implement the core logic of LinkML as defined in the LinkML specification, under "Derived Schemas". You can do this simply by implementing the spec in your target language,
 but a more pragmatic approach is to port the python class SchemaView
 
-SchemaView is a class in linkml-runtime here: https://github.com/linkml/linkml-runtime
+SchemaView is a class in linkml-runtime here: <https://github.com/linkml/linkml/blob/main/packages/linkml_runtime/src/linkml_runtime/utils/schemaview.py>
 
 Note that you may only need to implement this for a simple profile of linkml before moving to the next step. As an example, see the SchemaView.js class in linkml-runtime.js
 
@@ -381,4 +383,3 @@ language to RDF and back, it may be sufficient to rely on the existing JSON-LD c
 ## Summary
 
 This guide is by its nature high level, and various decisions will be determined by specific features of the target language or even by developer preference. As we gain more experience and port core linkml utilities to more target languages we will update this guide.
-

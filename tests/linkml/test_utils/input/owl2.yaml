@@ -1,0 +1,42 @@
+id: "http://example.org/owl2"
+
+default_range: string
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+  meta: http://example.org/owl2/
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+slots:
+  objslot:
+    domain: c1
+    range: c2
+    inherited: true
+
+  annotslot:
+    domain: c1
+    range: c2
+
+  dataslot:
+    domain: c1
+    range: string
+    inherited: true
+
+  annotslot2:
+    domain: c1
+    range: string
+
+
+classes:
+  c1:
+    slots:
+      - objslot
+      - annotslot
+      - dataslot
+      - annotslot2
+
+  c2:

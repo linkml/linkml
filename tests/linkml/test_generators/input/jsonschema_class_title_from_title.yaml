@@ -1,0 +1,29 @@
+schema:
+  id: https://example.org/test
+  name: MyTestSchema
+  title: "My Test Schema"
+
+  prefixes:
+    linkml: https://w3id.org/linkml/
+  imports:
+    - linkml:types
+  default_range: string
+
+  classes:
+    MyClass:
+      title: "My Class"
+      attributes:
+        my_slot:
+          range: MySubClass
+    MySubClass:
+      title: "My Sub-Class"
+      attributes:
+        my_inner_slot:
+
+json_schema:
+  title: My Test Schema
+  "$defs":
+    MyClass:
+      title: "My Class"
+    MySubClass:
+      title: "My Sub-Class"

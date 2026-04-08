@@ -1,0 +1,16 @@
+concrete_thing_set:
+  - id: 123
+    name: named thing 123
+    description: the onehundredtwentythird named thing
+    alternative_identifiers:
+      - nmdc:onehundredtwentythird
+  - id: 456
+    name: named thing 456
+    description: the fourhundredfiftysixth named thing
+    alternative_identifiers:
+      - nmdc:fourhundredfiftysixth
+  - id: 789
+    name: named thing 789
+    description: the sevenhundredeightyninth named thing
+    alternative_identifiers:
+      - nmdc:sevenhundredeightyninth

@@ -1,0 +1,28 @@
+@prefix ex: <https://w3id.org/linkml/examples/test/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ex:C1 a owl:Class ;
+    rdfs:label "C1" ;
+    rdfs:subClassOf [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty ex:a ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty ex:a ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ex:a ] ;
+    skos:inScheme <https://w3id.org/linkml/examples/test> .
+
+xsd:string a rdfs:Datatype .
+
+<https://w3id.org/linkml/examples/test> a owl:Ontology ;
+    rdfs:label "test" .
+
+ex:a a owl:DatatypeProperty ;
+    rdfs:label "a" ;
+    skos:inScheme <https://w3id.org/linkml/examples/test> .
+

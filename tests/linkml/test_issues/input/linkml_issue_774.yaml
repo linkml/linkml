@@ -1,0 +1,24 @@
+id: http://example.org/issue-774
+name: issue_774
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: http://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  C:
+    slots:
+      - s
+  D:
+  E:
+
+slots:
+  s:
+    exact_mappings:
+      - ex:1
+    any_of:
+      - range: D
+      - range: E

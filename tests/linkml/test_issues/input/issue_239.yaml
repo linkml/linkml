@@ -1,0 +1,52 @@
+id: http://example.org/sample/types
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+classes:
+  c:
+    slots:
+      - id
+      - issue_type
+      - issue_status
+
+slots:
+  id:
+    identifier: true
+
+  issue_type:
+    range: issue_types
+    multivalued: true
+
+  issue_status:
+    range: issue_statuses
+    required: true
+
+enums:
+  issue_types:
+    name: issue_types
+    description: An enumeration of issue types.
+    permissible_values:
+      bug:
+        text: bug
+        description: An unexpected behavior in the software.
+      feature_request:
+        text: feature_request
+        description: A requested feature.
+
+  issue_statuses:
+    name: issue_statuses
+    description: An enumeration of issue statuses.
+    permissible_values:
+      open:
+        text: open
+        description: The issue is still open.
+      fixed:
+        text: fixed
+        description: The issue has been fixed.
+      wontfix:
+        text: wontfix
+        description: This issue will not be fixed.

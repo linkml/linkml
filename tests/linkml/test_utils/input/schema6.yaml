@@ -1,0 +1,16 @@
+id: "http://example.org/schema6.fuzz"
+title: Load Raw Schema Test
+name: schema6
+
+types:
+  foo:
+    base: str
+    uri: http://example.org/types/String
+
+slots:
+  s1:
+    domain: c1
+    range: foo
+
+classes:
+  c1:

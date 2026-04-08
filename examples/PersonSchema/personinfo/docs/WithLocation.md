@@ -3,11 +3,17 @@
 
 
 
-
 URI: [personinfo:WithLocation](https://w3id.org/linkml/examples/personinfo/WithLocation)
 
 
-[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Place]<in_location%200..1-%20[WithLocation],[Place])](https://yuml.me/diagram/nofunky;dir:TB/class/[Place]<in_location%200..1-%20[WithLocation],[Place])
+[![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Place]<in_location%200..1-%20[WithLocation],[MedicalEvent]uses%20-.->[WithLocation],[Place],[MedicalEvent])](https://yuml.me/diagram/nofunky;dir:TB/class/[Place]<in_location%200..1-%20[WithLocation],[MedicalEvent]uses%20-.->[WithLocation],[Place],[MedicalEvent])
+
+## Mixin for
+
+ * [MedicalEvent](MedicalEvent.md) (mixin)
+
+## Referenced by Class
+
 
 ## Attributes
 

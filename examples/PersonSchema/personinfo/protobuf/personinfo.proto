@@ -1,27 +1,40 @@
+ syntax="proto3";
+ package
+// metamodel_version: 1.7.0
 message Address
  {
   string street = 0
   string city = 0
   string postalCode = 0
  }
+message CodeSystem
+ {
+  uriorcurie id = 0
+  string name = 0
+ }
 message Concept
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
   string description = 0
-  string image = 0
+  imageURL depictedBy = 0
+  codeSystem codeSystem = 0
+ repeated  crossReference mappings = 0
  }
 message Container
  {
  repeated  person persons = 0
  repeated  organization organizations = 0
+ repeated  place places = 0
  }
 message DiagnosisConcept
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
   string description = 0
-  string image = 0
+  imageURL depictedBy = 0
+  codeSystem codeSystem = 0
+ repeated  crossReference mappings = 0
  }
 message EmploymentEvent
  {
@@ -30,6 +43,7 @@ message EmploymentEvent
   float duration = 0
   boolean isCurrent = 0
   organization employedAt = 0
+  salaryType salary = 0
  }
 message Event
  {
@@ -42,8 +56,29 @@ message FamilialRelationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  string relatedTo = 0
+  person relatedTo = 0
   familialRelationshipType type = 0
+  person relatedTo = 0
+ }
+message ImagingProcedureConcept
+ {
+  uriorcurie id = 0
+  string name = 0
+  string description = 0
+  imageURL depictedBy = 0
+  codeSystem codeSystem = 0
+ repeated  crossReference mappings = 0
+ }
+message IntegerPrimaryKeyObject
+ {
+  integer intId = 0
+ }
+message InterPersonalRelationship
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  person relatedTo = 0
+  string type = 0
   person relatedTo = 0
  }
 message MedicalEvent
@@ -52,64 +87,91 @@ message MedicalEvent
   date endedAtTime = 0
   float duration = 0
   boolean isCurrent = 0
-  place inLocation = 0
   diagnosisConcept diagnosis = 0
   procedureConcept procedure = 0
+  place inLocation = 0
  }
 // A generic grouping for any identifiable entity
 message NamedThing
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
   string description = 0
-  string image = 0
+  imageURL depictedBy = 0
+ }
+message NewsEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  float duration = 0
+  boolean isCurrent = 0
+  string headline = 0
+ }
+message OperationProcedureConcept
+ {
+  uriorcurie id = 0
+  string name = 0
+  string description = 0
+  imageURL depictedBy = 0
+  codeSystem codeSystem = 0
+ repeated  crossReference mappings = 0
  }
 // An organization such as a company or university
 message Organization
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
   string description = 0
-  string image = 0
+  imageURL depictedBy = 0
   string missionStatement = 0
   string foundingDate = 0
   place foundingLocation = 0
+ repeated  organizationType categories = 0
+  decimal score = 0
+  salaryType minSalary = 0
  repeated  string aliases = 0
+ repeated  newsEvent hasNewsEvents = 0
  }
 // A person (alive, dead, undead, or fictional).
 message Person
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
   string description = 0
-  string image = 0
+  imageURL depictedBy = 0
   string primaryEmail = 0
   string birthDate = 0
-  integer ageInYears = 0
+  integer age = 0
   genderType gender = 0
   address currentAddress = 0
+  string telephone = 0
  repeated  employmentEvent hasEmploymentHistory = 0
  repeated  familialRelationship hasFamilialRelationships = 0
+ repeated  interPersonalRelationship hasInterpersonalRelationships = 0
  repeated  medicalEvent hasMedicalHistory = 0
  repeated  string aliases = 0
+ repeated  newsEvent hasNewsEvents = 0
  }
 message Place
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
+  imageURL depictedBy = 0
  repeated  string aliases = 0
  }
 message ProcedureConcept
  {
-  string id = 0
+  uriorcurie id = 0
   string name = 0
   string description = 0
-  string image = 0
+  imageURL depictedBy = 0
+  codeSystem codeSystem = 0
+ repeated  crossReference mappings = 0
  }
 message Relationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  string relatedTo = 0
+  person relatedTo = 0
   string type = 0
  }

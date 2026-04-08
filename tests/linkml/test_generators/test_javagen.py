@@ -1,0 +1,183 @@
+from linkml.generators.javagen import JavaGenerator
+from linkml.generators.oocodegen import OOEnum, OOEnumValue
+from tests.linkml.utils.fileutils import assert_file_contains
+
+PACKAGE = "org.sink.kitchen"
+
+
+def test_javagen_records(kitchen_sink_path, tmp_path):
+    """Generate java records"""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), template_variant="records")
+    assert_file_contains(
+        tmp_path / "Address.java",
+        "public record Address(String street, String city, BigDecimal altitude)",
+        after="package org.sink.kitchen",
+    )
+
+
+def test_javagen_primitive_types(input_path, tmp_path):
+    """Test that primitive types are boxed unless they are required."""
+    gen = JavaGenerator(input_path("primitive_types.yaml"))
+    gen.serialize(directory=str(tmp_path))
+    expected = [
+        "int requiredInteger",
+        "Integer optionalInteger",
+        "float requiredFloat",
+        "Float optionalFloat",
+        "double requiredDouble",
+        "Double optionalDouble",
+        "boolean requiredBoolean",
+        "Boolean optionalBoolean",
+    ]
+    for decl in expected:
+        assert_file_contains(tmp_path / "SimpleClass.java", decl)
+
+
+def test_javagen_with_custom_template(kitchen_sink_path, tmp_path):
+    """Generate java records with a custom template.
+
+    This should yield the same code as the test above, but by forcefully
+    specifying the class-records template, instead of specifying the "records"
+    variant and letting the generator pick the corresponding template.
+    """
+
+    gen = JavaGenerator(
+        kitchen_sink_path,
+        package=PACKAGE,
+        template_file="packages/linkml/src/linkml/generators/javagen/class-records.jinja2",
+    )
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(
+        tmp_path / "Address.java",
+        "public record Address(String street, String city, BigDecimal altitude)",
+        after="package org.sink.kitchen",
+    )
+
+
+def test_javagen_classes(kitchen_sink_path, tmp_path):
+    """Generate java classes"""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after="package org.sink.kitchen")
+
+
+def test_javagen_classes_and_enums(kitchen_sink_path, tmp_path):
+    """Generate both Java classes and enums."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE, true_enums=True)
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(
+        tmp_path / "CordialnessEnum.java", "public enum CordialnessEnum", after="package org.sink.kitchen"
+    )
+    assert_file_contains(
+        tmp_path / "Relationship.java", "private CordialnessEnum cordialness;", after="package org.sink.kitchen"
+    )
+
+
+def test_generate_enum_objects(kitchen_sink_path):
+    """Generate object representation of enums.
+
+    Note that this is really a feature of OOCodeGenerator and not of
+    JavaGenerator, but since OOCodeGenerator is abstract it has to be
+    tested through a derived concrete class.
+    """
+    gen = JavaGenerator(kitchen_sink_path)
+    enum_definitions = gen.schemaview.all_enums()
+    enum_objects = gen.generate_enum_objects(enum_definitions)
+
+    # Check that all enums are present
+    for name in enum_definitions.keys():
+        assert name in enum_objects
+
+    # Check that one enum is complete
+    expected_enum = OOEnum(
+        name="FamilialRelationshipType",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType",
+    )
+    expected_enum.values = [
+        OOEnumValue(label="SIBLING_OF", text="SIBLING_OF"),
+        OOEnumValue(label="PARENT_OF", text="PARENT_OF"),
+        OOEnumValue(label="CHILD_OF", text="CHILD_OF"),
+    ]
+    assert expected_enum == enum_objects["FamilialRelationshipType"]
+
+    # Same, but with an enum with names that must be transformed
+    expected_enum = OOEnum(
+        name="OtherCodes",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/other codes",
+    )
+    expected_enum.values = [OOEnumValue(label="a_b", text="a b")]
+    assert expected_enum == enum_objects["other codes"]
+
+
+def test_create_documents_includes_enums(kitchen_sink_path):
+    """Check that the code generator generates documents for enums."""
+    # Default mode: enums should not be included
+    gen = JavaGenerator(kitchen_sink_path, true_enums=False)
+    docs = gen.create_documents()
+    assert not [doc for doc in docs if doc.enums]
+
+    # "True enums" mode: one document per enum
+    gen = JavaGenerator(kitchen_sink_path, true_enums=True)
+    docs = gen.create_documents()
+    enum_docs = [doc for doc in docs if doc.enums]
+    assert len(enum_docs) == 7  # 6 enums in kitchen sink + 1 in core
+
+    # A document contains either a class or an enum, but not both
+    assert not [doc for doc in docs if doc.classes and doc.enums]
+
+
+def test_do_not_generate_linkmlany_class(kitchen_sink_path, tmp_path):
+    """Check that linkml:Any is rendered as Object."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    docs = gen.create_documents()
+    assert not [doc for doc in docs if doc.name == "AnyObject"]
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(tmp_path / "Event.java", "private Object metadata;", after="package org.sink.kitchen")
+
+
+def test_oo_objects_have_uris(kitchen_sink_path):
+    """Check that OOClass and OOField objects contain URIs."""
+    gen = JavaGenerator(kitchen_sink_path)
+    docs = gen.create_documents()
+    witness = [doc for doc in docs if doc.name == "Company"][0]
+    assert witness.classes[0].class_uri == "https://w3id.org/linkml/tests/kitchen_sink/Company"
+    assert witness.classes[0].fields[0].slot_uri == "http://schema.org/ceo"
+
+
+def test_slot_aliases_used_when_required(input_path, tmp_path):
+    """Check that field names are based on slot aliases when present."""
+    gen = JavaGenerator(input_path("personinfo.yaml"), use_aliases=True)
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(tmp_path / "Person.java", "private Integer age;")
+
+
+def test_visitor_generation(kitchen_sink_path, tmp_path):
+    """Check that we can generator a visitor interface."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), visitors=["Concept"])
+    assert_file_contains(tmp_path / "IConceptVisitor.java", "public void visit(DiagnosisConcept visited);")
+    assert_file_contains(tmp_path / "ProcedureConcept.java", "public void accept(IConceptVisitor visitor)")
+
+
+def test_generation_for_org_incenp_linkml_runtime(kitchen_sink_path, tmp_path):
+    """Check that we can generate code suitable for incenp.org's LinkML-Java runtime."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/kitchen_sink/Concept")')
+    assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/core/id")')
+    assert_file_contains(tmp_path / "Concept.java", '@SlotName("in_code_system")')
+
+
+def test_org_incenp_linkml_primitive_equals(input_path, tmp_path):
+    """Primitive fields in org.incenp.linkml template must generate valid equals()."""
+    gen = JavaGenerator(input_path("primitive_types.yaml"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "SimpleClass.java", "this$requiredBoolean != other$requiredBoolean")
+
+
+def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
+    """Uriorcurie-typed slots in org.incenp.linkml templates should be rendered as String fields."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "NamedThing.java", "private String id")

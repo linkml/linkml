@@ -1,7 +1,6 @@
 
 # Slot: current_address
 
-
 The address at which a person currently lives
 
 URI: [personinfo:current_address](https://w3id.org/linkml/examples/personinfo/current_address)

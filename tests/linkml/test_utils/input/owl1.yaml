@@ -1,0 +1,48 @@
+id: "http://example.org/owl1"
+
+default_range: string
+
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+  meta: http://example.org/owl1/
+
+types:
+  string:
+    uri: xsd:string
+    base: str
+
+slots:
+  slotopt:
+    domain: c1
+    range: c2
+    inherited: true
+
+  slotreq:
+    domain: c1
+    range: c2
+    inherited: true
+    required: true
+
+  slotzeromany:
+    domain: c1
+    range: c2
+    inherited: true
+    multivalued: true
+
+  slotonemany:
+    domain: c1
+    range: c2
+    inherited: true
+    required: true
+    multivalued: true
+
+
+classes:
+  c1:
+    slots:
+      - slotopt
+      - slotreq
+      - slotzeromany
+      - slotonemany
+
+  c2:

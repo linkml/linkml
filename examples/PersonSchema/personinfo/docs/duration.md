@@ -3,7 +3,6 @@
 
 
 
-
 URI: [personinfo:duration](https://w3id.org/linkml/examples/personinfo/duration)
 
 
@@ -22,3 +21,4 @@ None &#8594;  <sub>0..1</sub> [Float](types/Float.md)
  * [EmploymentEvent](EmploymentEvent.md)
  * [Event](Event.md)
  * [MedicalEvent](MedicalEvent.md)
+ * [NewsEvent](NewsEvent.md)

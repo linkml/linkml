@@ -46,7 +46,7 @@ This can be used for programmatic manipulation, e.g:
 
 ## Loaders and dumpers
 
-The [linkml-runtime](https://github.com/linkml/linkml-runtime) framework is included by default, allowing for dynamic conversion to and from other formats:
+The [linkml-runtime](https://github.com/linkml/linkml/tree/main/packages/linkml_runtime) framework is included by default, allowing for dynamic conversion to and from other formats:
 
 The core LinkML formats are:
 
@@ -79,4 +79,3 @@ Loading:
 ```
 
 For more developer documentations, see the [loaders-and-dumpers](/developers/loaders-and-dumpers) section of the developer docs
-

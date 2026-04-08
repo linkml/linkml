@@ -1,0 +1,20 @@
+  biosample:
+    is_a: named thing
+    aliases: ['sample', 'material sample']
+    description: >-
+      A material sample. It may be environmental (encompassing many organisms) or isolate or tissue.
+      An environmental sample containing genetic material from multiple individuals is commonly referred to as a biosample.
+    slots:
+      - annotations
+    slot_usage:
+      id:
+        description: >-
+          The primary identifier for the biosample
+      name:
+        description: >-
+          A human readable name or description of the biosample
+      alternate identifiers:
+        description: >-
+          The same biosample may have distinct identifiers in different databases (e.g. GOLD and EMSL)
+      annotations:
+        range: annotation

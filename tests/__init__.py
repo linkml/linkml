@@ -5,7 +5,7 @@ import logging  # noqa: F401
 import os
 
 from linkml import LOCAL_METAMODEL_YAML_FILE, LOCAL_MODEL_YAML_FILES, METAMODEL_NAMESPACE, NAMESPACES
-from tests.utils.test_environment import MismatchAction  # noqa: F401
+from tests.linkml.utils.test_environment import MismatchAction  # noqa: F401
 
 # ---------------------------------------------------------------
 #                DO NOT change this file.
@@ -59,7 +59,7 @@ SKIP_RDF_COMPARE_REASON = test_settings.get(
 SKIP_REMOTE_SPARQL_TESTS = test_settings.getboolean("SKIP_REMOTE_SPARQL_TESTS", True)
 
 # Skip Rewrite rules tests -- these only get re-tested when we change the w3id.org server
-SKIP_REWRITE_RULES = test_settings.getboolean("SKIP_REWRITE_RULES", True)
+SKIP_REWRITE_RULES = test_settings.getboolean("SKIP_REWRITE_RULES", False)
 SKIP_REWRITE_RULES_REASON = test_settings.get(
     "SKIP_REWRITE_RULES_REASON", "tests/__init__.py SKIP_REWRITE_RULES is True"
 )

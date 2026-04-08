@@ -50,10 +50,6 @@ classes:
 
 We use yaml comment syntax (i.e the part after `#`) for comments - these are ignored by the parser.
 
-Depicted as:
-
-![img](https://yuml.me/diagram/nofunky;dir:TB/class/[Container]++-%20persons%200..*>[Person|id:string;full_name:string;aliases:string%20*;phone:string%20%3F;age:integer%20%3F],[Container])
-
 Note that we haven't declared ranges for some fields, but the *default_range* directive at the schema level ensures things default to string.
 
 ## Example data
@@ -75,9 +71,8 @@ linkml-validate -s personinfo.yaml bad-data.yaml
 
 Output:
 
-```text
-[ERROR] [bad-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
-[ERROR] [bad-data.yaml/0] 'full_name' is a required property in /persons/1
+```{literalinclude} ../../examples/tutorial/tutorial03/validate-bad-data-errors.txt
+:language: text
 ```
 
 This indicates there are two issues with our data. The first says that the phone number of the first entry in the persons list (`/persons/0/phone`) doesn’t conform to the regular expression syntax we stated. The second says that we are missing the required `full_name` slot on the second entry in the person list (`/persons/1`).
@@ -97,8 +92,8 @@ linkml-validate -s personinfo.yaml better-data.yaml
 
 Output:
 
-```text
-[ERROR] [better-data.yaml/0] '1-800-kryptonite' does not match '^[\\d\\(\\)\\-]+$' in /persons/0/phone
+```{literalinclude} ../../examples/tutorial/tutorial03/validate-better-data-errors.txt
+:language: text
 ```
 
 We have successfully fixed one of the issues with the data!

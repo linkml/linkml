@@ -3,8 +3,7 @@
 LinkML is fully described by a *metamodel* that is itself described in LinkML
 
 - [linkml-model repo](https://github.com/linkml/linkml-model/)
-- [linkml-model documentation](https://linkml.io/linkml-model/docs/)
-- [Part 3](https://linkml.io/linkml-model/docs/specification/03schemas/) of specification
+- [LinkML metamodel source](https://github.com/linkml/linkml-model/tree/main/linkml_model/model/schema)
 
 ## Metamodel Versioning scheme
 
@@ -42,7 +41,6 @@ These are tagged as pre-releases on GitHub
 For complete release notes tied to patch releases, see the release notes on GitHub:
 
 - https://github.com/linkml/linkml-model/releases
-- https://github.com/linkml/linkml-runtime/releases
 - https://github.com/linkml/linkml/releases
 
 ### LinkML-Model 1.3
@@ -68,11 +66,11 @@ Highlights:
 
 Selected Changelog:
 
-- new slot: string serialization https://github.com/linkml/linkml-model/pull/25 
-- new slot: recommended https://github.com/linkml/linkml-model/pull/26 
-- unique keys: https://github.com/linkml/linkml-model/pull/16 
-- data validation datamodel: https://github.com/linkml/linkml-model/pull/42 
-- pattern on type definitions: https://github.com/linkml/linkml-model/pull/43 
+- new slot: string serialization https://github.com/linkml/linkml-model/pull/25
+- new slot: recommended https://github.com/linkml/linkml-model/pull/26
+- unique keys: https://github.com/linkml/linkml-model/pull/16
+- data validation datamodel: https://github.com/linkml/linkml-model/pull/42
+- pattern on type definitions: https://github.com/linkml/linkml-model/pull/43
 - adding conforms_to: https://github.com/linkml/linkml-model/pull/50
 - add min-max-val-to-type-expression: https://github.com/linkml/linkml-model/pull/57
 - aligning-validation model: https://github.com/linkml/linkml-model/pull/68
@@ -102,6 +100,3 @@ Corresponding framework change highlights, from 1.1 (linkml and linkml-runtime):
 ### LinkML-Model 1.0: June 2021
 
 This is the first version of LinkML seeded from the historic BiolinkML project
-
-
-

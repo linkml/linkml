@@ -1,0 +1,63 @@
+# This file needs to be defined in addition to kitchen_sink.yaml because some generators do not support
+# ifabsent attributes and including it in the main kitchen sink would compromise many tests.
+
+id: https://w3id.org/linkml/tests/kitchen_sink_ifabsent
+name: kitchen_sink_ifabsent
+title: Kitchen Sink IfAbsent Schema
+description: |-
+  Kitchen Sink IfAbsent Schema specially designed to test ifabsent attribute generation.
+
+imports:
+  - linkml:types
+  - core
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ks: https://w3id.org/linkml/tests/kitchen_sink/
+default_prefix: ks
+default_range: string
+
+classes:
+  IfAbsent:
+    description: Example class composed of attributes using ifabsent
+    attributes:
+      ifabsent_string:
+        range: string
+        ifabsent: string(This works)
+      ifabsent_boolean:
+        range: boolean
+        slot_uri: ks:ifabsent_boolean
+        ifabsent: True
+      ifabsent_int:
+        range: integer
+        ifabsent: int(123)
+      ifabsent_decimal:
+        range: decimal
+        ifabsent: decimal(1.23)
+      ifabsent_float:
+        range: float
+        ifabsent: float(1.23456)
+      ifabsent_double:
+        range: double
+        ifabsent: double(1.234567)
+      ifabsent_date:
+        range: date
+        ifabsent: date("2024-02-08")
+      ifabsent_datetime:
+        range: datetime
+        ifabsent: datetime('2024-02-08T09:39:25Z')
+      ifabsent_uri:
+        range: uri
+        ifabsent: uri('https://w3id.org/linkml/tests/kitchen_sink/ifabsent_boolean')
+      ifabsent_not_literal:
+        range: CordialnessEnum
+        ifabsent: CordialnessEnum(heartfelt)
+
+enums:
+  CordialnessEnum:
+    permissible_values:
+      heartfelt:
+        description: warm and hearty friendliness
+      hateful:
+        description: spiteful
+      indifferent:
+        description: not overly friendly nor obnoxiously spiteful

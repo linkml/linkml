@@ -20,11 +20,10 @@ Command Line
 .. click:: linkml.generators.typescriptgen:cli
     :prog: gen-typescript
     :nested: short
-        
+
 Code
 ^^^^
 
-        
+
 .. autoclass:: TypescriptGenerator
     :members: serialize
-

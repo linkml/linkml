@@ -1,0 +1,5 @@
+name: typeerror4
+id: "http://example.org/typeerror4"
+
+subsets:
+  - abc
