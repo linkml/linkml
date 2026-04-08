@@ -260,9 +260,9 @@ class SchemaLoader:
                         f'Class "{cls.name}" unknown apply_to target: {apply_to_cls}',
                         apply_to_cls,
                     )
-            # Class URI's also count as (trivial) mappings
-            if cls.class_uri is not None:
-                cls.mappings.insert(0, cls.class_uri)
+            # TODO: discussion point is whether class_uri should always be defined as exact mappings
+            if cls.class_uri is not None and self.useuris:
+                cls.exact_mappings.insert(0, cls.class_uri)
             if cls.class_uri is None or not self.useuris:
                 from_schema = cls.from_schema
                 if from_schema is None:
