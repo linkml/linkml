@@ -62,7 +62,7 @@
 <https://example.org/this/C2> a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
     linkml:attributes <https://example.org/this/a> ;
-    linkml:class_uri "https://example.org/this/C2"^^xsd:anyURI ;
+    skos:exactMatch "this:C2"^^xsd:anyURI ;
     linkml:definition_uri "https://example.org/this/C2"^^xsd:anyURI ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c2__a> .
@@ -70,7 +70,7 @@
 <https://example.org/this/C3> a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
     linkml:attributes <https://example.org/this/a> ;
-    linkml:class_uri "https://example.org/this/C3"^^xsd:anyURI ;
+    skos:exactMatch "this:C3"^^xsd:anyURI ;
     linkml:definition_uri "https://example.org/this/C3"^^xsd:anyURI ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c3__a> .
@@ -105,7 +105,7 @@
 <https://example.org/this/C1> a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
     linkml:attributes <https://example.org/this/a> ;
-    linkml:class_uri "https://example.org/this/C1"^^xsd:anyURI ;
+    skos:exactMatch "this:C1"^^xsd:anyURI ;
     linkml:definition_uri "https://example.org/this/C1"^^xsd:anyURI ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://example.org/this/c1__a> .

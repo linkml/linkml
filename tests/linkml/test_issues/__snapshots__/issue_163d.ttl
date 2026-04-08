@@ -44,7 +44,7 @@ ex:example163d a linkml:SchemaDefinition ;
 ex:C1 a linkml:ClassDefinition ;
     skos:exactMatch "ex:mapping1"^^xsd:anyURI ;
     skos:inScheme "http://example.org/sample/example163d"^^xsd:anyURI ;
-    linkml:class_uri "http://example.org/C1"^^xsd:anyURI ;
+    skos:exactMatch "ex:C1"^^xsd:anyURI ;
     linkml:definition_uri "http://example.org/C1"^^xsd:anyURI ;
     linkml:slot_usage [ ] .
 
