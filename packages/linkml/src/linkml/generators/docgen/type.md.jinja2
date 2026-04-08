@@ -1,3 +1,8 @@
+---
+search:
+  boost: {% if element.deprecated %}0.5{% else %}1.0{% endif %}
+---
+
 {%- if element.title and element.title != element.name %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
@@ -12,6 +17,8 @@
 _{{ element_description_line }}_
 {% endfor %}
 {% endif %}
+
+<div data-search-exclude markdown="1">
 
 URI: {{ gen.uri_link(element) }}
 
@@ -132,3 +139,5 @@ URI: {{ gen.uri_link(element) }}
 {% endif %}
 
 {% include "common_metadata.md.jinja2" %}
+
+</div>
