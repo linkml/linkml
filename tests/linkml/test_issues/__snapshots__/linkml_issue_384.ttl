@@ -394,7 +394,7 @@
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
         <https://w3id.org/linkml/examples/personinfo/aliases> ;
-    linkml:class_uri "https://w3id.org/linkml/examples/personinfo/GeoObject"^^xsd:anyURI ;
+    skos:exactMatch "ex:GeoObject"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/examples/personinfo/GeoObject"^^xsd:anyURI ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;
@@ -424,7 +424,7 @@
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/unit>,
         <https://w3id.org/linkml/examples/personinfo/value> ;
-    linkml:class_uri "https://w3id.org/linkml/examples/personinfo/GeoAge"^^xsd:anyURI ;
+    skos:exactMatch "ex:GeoAge"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/examples/personinfo/GeoAge"^^xsd:anyURI ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://w3id.org/linkml/examples/personinfo/geoAge__unit>,
@@ -432,7 +432,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/Organization> a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/examples/personinfo/Organization"^^xsd:anyURI ;
+    skos:exactMatch "ex:Organization"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/examples/personinfo/Organization"^^xsd:anyURI ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;
@@ -442,7 +442,7 @@
 
 <https://w3id.org/linkml/examples/personinfo/Thing> a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/examples/personinfo"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/examples/personinfo/Thing"^^xsd:anyURI ;
+    skos:exactMatch "ex:Thing"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/examples/personinfo/Thing"^^xsd:anyURI ;
     linkml:slot_usage [ ] ;
     linkml:slots <https://w3id.org/linkml/examples/personinfo/full_name>,
@@ -464,7 +464,7 @@
     linkml:attributes <https://w3id.org/linkml/examples/personinfo/age>,
         <https://w3id.org/linkml/examples/personinfo/aliases>,
         <https://w3id.org/linkml/examples/personinfo/phone> ;
-    linkml:class_uri "http://schema.org/Person"^^xsd:anyURI ;
+    skos:exactMatch "sdo:Person"^^xsd:anyURI ;
     linkml:definition_uri "https://w3id.org/linkml/examples/personinfo/Person"^^xsd:anyURI ;
     linkml:is_a <https://w3id.org/linkml/examples/personinfo/Thing> ;
     linkml:slot_usage [ ] ;
