@@ -1,3 +1,4 @@
+import ast
 import json
 import logging
 import os
@@ -6,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
+from jsonasobj2 import as_dict
 
 from linkml._version import __version__
 from linkml.generators.common import build
@@ -20,6 +22,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     ClassDefinitionName,
     EnumDefinition,
+    Example,
     PermissibleValue,
     PermissibleValueText,
     PresenceEnum,
@@ -45,6 +48,126 @@ json_schema_types: dict[str, tuple[str, str | None]] = {
     "xsddatetime": ("string", "date-time"),
     "xsdtime": ("string", "time"),
 }
+
+
+def _slot_examples_for_json_schema(
+    examples: list[Example],
+    *,
+    json_schema_type: str | None = None,
+    is_array_valued: bool,
+) -> list:
+    """Convert a list of LinkML :class:`~linkml_runtime.linkml_model.meta.Example` objects
+    into a list suitable for the JSON Schema ``examples`` keyword.
+
+    In the LinkML metamodel ``Example.value`` is typed as ``str``, so any non-string
+    value written in YAML (integer, boolean, list, …) is coerced to its Python ``str()``
+    representation on load. ``Example.object`` holds a single structured dict/object.
+
+    Since ``Example.value`` is coerced to ``str`` in the LinkML metamodel, the values
+    are coerced back to their original basic scalar type if json_schema_type is provided
+    ("integer", "number", and "boolean" are supported). If ``is_array_valued`` is ``True``,
+    values are coerced back to list (using ``ast.literal_eval()``).
+
+    After coercion, the cardinality of the ``Example`` objects are mapped to the JSON
+    Schema ``examples`` property according to the following rules:
+
+    **Single-valued slots or class-level examples** (``is_array_valued=False``): each
+    ``Example`` contributes one independent entry.
+
+    **Array-valued slots** (``is_array_valued=True``): because the enclosing JSON Schema
+    property is ``type: array``, every entry in ``examples`` must itself be an array so
+    that it validates against the property schema. Two authoring styles are supported:
+
+    1.  If ``Example.value`` is a basic scalar (either originally a str, or coerced to
+        str) or if ``Example.object`` is defined, it is considered an example of an array
+        item and not of the full array. Hence, all such scalar examples are merged into
+        an array that together comprise a full entry in the JSON Schema ``examples`` array.
+
+    2.  If ``Example.value`` is a list (coerced to str), it is considered a full entry
+        in the JSON Schema ``examples`` array and returned as is (after coercion back
+        to list).
+
+    If examples of multiple types are present simultaneously, the merged entry is returned
+    first, e.g.::
+
+        [
+            [elem1, elem2, …],   # combined item examples  (style 1)
+            [a, b, c],           # independent complete-array example (style 2)
+            …
+        ]
+
+    Examples:
+        >>> from linkml_runtime.linkml_model.meta import Example
+        >>> _slot_examples_for_json_schema([Example(value="Alice")], json_schema_type='string', is_array_valued=False)
+        ['Alice']
+        >>> _slot_examples_for_json_schema([Example(value="42")], json_schema_type='integer', is_array_valued=False)
+        [42]
+        >>> _slot_examples_for_json_schema([Example(value="3.14")], json_schema_type='number', is_array_valued=False)
+        [3.14]
+        >>> _slot_examples_for_json_schema([Example(value="a"), Example(value="b")], is_array_valued=True)
+        [['a', 'b']]
+        >>> _slot_examples_for_json_schema([Example(value="1"), Example(value="2")], json_schema_type='integer', is_array_valued=True)
+        [[1, 2]]
+        >>> _slot_examples_for_json_schema([Example(object={"id": "GO:1"}), Example(object={"id": "GO:2"})], is_array_valued=True)
+        [[{'id': 'GO:1'}, {'id': 'GO:2'}]]
+        >>> _slot_examples_for_json_schema([Example(value="['a', 'b']"), Example(value="['c']")], is_array_valued=True)
+        [['a', 'b'], ['c']]
+        >>> _slot_examples_for_json_schema([Example(value="a"), Example(value="['b', 'c']")], is_array_valued=True)
+        [['a'], ['b', 'c']]
+    """
+    if not examples:
+        return []
+
+    def _coerce_string_to_type(v: str, json_schema_type: str, is_array_valued: bool) -> Any:
+        """Coerce string to JSON type, falling back to the original on failure."""
+
+        try:
+            # Example.value is typed as Optional[str] in the LinkML metamodel. A list
+            # written in YAML as  value: ["a", "b"]  is coerced to its Python str()
+            # representation "['a', 'b']" on load. Recover the original list with
+            # ast.literal_eval when the string looks like a Python list literal.
+            if is_array_valued and isinstance(v, str) and v.strip().startswith("["):
+                parsed = ast.literal_eval(v.strip())
+                if isinstance(parsed, list):
+                    return parsed
+
+            match json_schema_type:
+                case "integer":
+                    return int(v)
+                case "number":
+                    return float(v)
+                case "boolean":
+                    # Be conservative for boolean values
+                    match v.strip().lower():
+                        case "true":
+                            return True
+                        case "false":
+                            return False
+        except (ValueError, TypeError, SyntaxError):
+            pass  # ignore coercion errors
+
+        return v
+
+    json_example = []
+    merged_example = []
+    direct_examples = []
+
+    for ex in examples:
+        if ex.object is not None:
+            value = as_dict(ex.object)
+        elif ex.value is not None:
+            value = _coerce_string_to_type(ex.value, json_schema_type, is_array_valued)
+
+        if is_array_valued and not isinstance(value, list):
+            merged_example.append(value)
+        else:
+            direct_examples.append(value)
+
+    if merged_example:
+        json_example.append(merged_example)
+    json_example.extend(direct_examples)
+
+    return json_example
 
 
 class JsonSchema(dict):
@@ -383,6 +506,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             ClassResult.model_construct(schema_=class_subschema, source=cls), self.schemaview
         ).schema_
 
+        # Include class-level examples if present. Each Example on a class is an
+        # independent full-instance example (same semantics as single-valued slots).
+        if getattr(cls, "examples", None):
+            class_examples = _slot_examples_for_json_schema(cls.examples, is_array_valued=False)
+            if class_examples:
+                class_subschema.add_keyword("examples", class_examples)
+
         self.top_level_schema.add_def(cls.name, class_subschema)
 
         if (
@@ -578,10 +708,15 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                     "additionalProperties": True,
                 }
             )
-            return JsonSchema.array_of(prop, include_null, required=slot.required)
+            prop = JsonSchema.array_of(prop, include_null, required=slot.required)
+            if slot.examples:
+                prop.add_keyword("examples", _slot_examples_for_json_schema(slot.examples, is_array_valued=True))
+            return prop
         slot_is_multivalued = "multivalued" in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
+
+        typ = None
         if not omit_type:
             typ, fmt, reference = self.get_type_info_for_slot_subschema(slot)
             if slot_is_inlined:
@@ -693,6 +828,16 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 prop["items"].update(bool_subschema)
             else:
                 prop.update(bool_subschema)
+
+        if slot.examples:
+            prop.add_keyword(
+                "examples",
+                _slot_examples_for_json_schema(
+                    slot.examples,
+                    json_schema_type=typ,
+                    is_array_valued=slot_is_multivalued,
+                ),
+            )
 
         return prop
 
