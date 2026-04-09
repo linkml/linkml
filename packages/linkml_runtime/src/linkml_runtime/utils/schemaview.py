@@ -1942,7 +1942,7 @@ class SchemaView:
             err_msg = "A SlotDefinition must be provided to generate the slot range as union."
             raise ValueError(err_msg)
 
-        return list({y.range for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]})
+        return list({y.range: None for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]}.keys())
 
     def induced_slot_range(self, slot: SlotDefinition, strict: bool = False) -> set[str | ElementName]:  # noqa: FBT001, FBT002
         """Retrieve all applicable ranges for a slot, falling back to the default if necessary.
