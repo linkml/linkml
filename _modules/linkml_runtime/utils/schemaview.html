@@ -2568,7 +2568,10 @@
             <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;A SlotDefinition must be provided to generate the slot range as union.&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">list</span><span class="p">({</span><span class="n">y</span><span class="o">.</span><span class="n">range</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span><span class="n">slot</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">,</span> <span class="o">*</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">range</span><span class="p">]]})</span></div>
+        <span class="c1"># Using dict with None as value to mimic ordered set behavior</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">y</span><span class="o">.</span><span class="n">range</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span><span class="n">slot</span><span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="o">*</span><span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">,</span> <span class="o">*</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">range</span><span class="p">]]}</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SchemaView.induced_slot_range">
@@ -2640,20 +2643,20 @@
 <span class="sd">        :param include_induced: supplement all direct slots with induced slots, defaults to False</span>
 <span class="sd">        :return: list of slots, either direct, or both direct and induced</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">classes_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># use set to avoid duplicates</span>
+        <span class="n">classes_ordered_set</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">#  To avoid duplicates. Using dict with None as value to mimic ordered set</span>
         <span class="n">all_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">c_name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-                <span class="n">classes_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+                <span class="n">classes_ordered_set</span><span class="p">[</span><span class="n">c_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">include_induced</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">c_name</span> <span class="ow">in</span> <span class="n">all_classes</span><span class="p">:</span>
                 <span class="n">induced_slot_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind_slot</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ind_slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">c_name</span><span class="p">)]</span>
                 <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">induced_slot_names</span><span class="p">:</span>
-                    <span class="n">classes_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c_name</span><span class="p">)</span>
+                    <span class="n">classes_ordered_set</span><span class="p">[</span><span class="n">c_name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">classes_set</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">classes_ordered_set</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="SchemaView.get_slots_by_enum">
