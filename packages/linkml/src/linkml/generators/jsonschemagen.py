@@ -106,9 +106,16 @@ def _slot_examples_for_json_schema(
         [3.14]
         >>> _slot_examples_for_json_schema([Example(value="a"), Example(value="b")], is_array_valued=True)
         [['a', 'b']]
-        >>> _slot_examples_for_json_schema([Example(value="1"), Example(value="2")], json_schema_type='integer', is_array_valued=True)
+        >>> _slot_examples_for_json_schema(
+        ...     [Example(value="1"), Example(value="2")],
+        ...     json_schema_type='integer',
+        ...     is_array_valued=True,
+        ... )
         [[1, 2]]
-        >>> _slot_examples_for_json_schema([Example(object={"id": "GO:1"}), Example(object={"id": "GO:2"})], is_array_valued=True)
+        >>> _slot_examples_for_json_schema(
+        ...     [Example(object={"id": "GO:1"}), Example(object={"id": "GO:2"})],
+        ...     is_array_valued=True,
+        ... )
         [[{'id': 'GO:1'}, {'id': 'GO:2'}]]
         >>> _slot_examples_for_json_schema([Example(value="['a', 'b']"), Example(value="['c']")], is_array_valued=True)
         [['a', 'b'], ['c']]

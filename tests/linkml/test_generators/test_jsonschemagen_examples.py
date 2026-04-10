@@ -171,7 +171,7 @@ def test_jsonschemagen_multivalued_slot_examples(example_yaml, expected_examples
     """
     examples_yaml = "\n".join(f"          {v}" for v in example_yaml.splitlines())
 
-    schema = dedent(f"""
+    schema = dedent("""
         id: http://example.org/examples
         name: examples
         classes:
