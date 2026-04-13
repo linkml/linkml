@@ -87,6 +87,7 @@ markers = [
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
   "panderagen: tests for the pandera generator",
+  "integration: tests that require external services (e.g. a running TypeDB server)",
   "dataframe_polars_schema: tests for the polars schema dataframe generator",
   "tutorial: tests that execute tutorial markdown files",
   "pythongen: Tests for python generator",
@@ -201,4 +202,9 @@ deps = ["ruff==0.11.13"]
 commands = [
   ["ruff", "check", "{posargs:.}"],
   ["ruff", "format", "{posargs:.}"],
+]
+
+[dependency-groups]
+dev = [
+    "typedb-driver>=3.8.1",
 ]
