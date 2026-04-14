@@ -20,4 +20,4 @@ There is no agenda! Any community member is welcome to join the office hours to 
 | December 3 |
 
 ## Questions?
-Contact Sarah Gehrke on [Slack](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g) and they can direct you to someone who can help.
+Contact Sarah Gehrke on Slack and they can direct you to someone who can help.
