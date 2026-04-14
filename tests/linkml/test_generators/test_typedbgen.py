@@ -1,9 +1,9 @@
 """Tests for the TypeDB TypeQL generator."""
 
 import pytest
+from click.testing import CliRunner
 
 from linkml.generators.typedbgen import TypeDBGenerator, cli
-from click.testing import CliRunner
 
 
 def test_output_starts_with_define_block(input_path):
@@ -197,3 +197,35 @@ classes:
     output = gen.serialize()
     assert "entity animal @abstract" in output
     assert "entity dog, sub animal" in output
+
+
+# ---------------------------------------------------------------------------
+# kitchen_sink.yaml tests — standard schema used across all LinkML generators
+# ---------------------------------------------------------------------------
+
+
+def test_kitchen_sink_serializes_without_error(kitchen_sink_path):
+    """The generator completes without raising an exception on the kitchen_sink schema."""
+    gen = TypeDBGenerator(kitchen_sink_path, mergeimports=True)
+    output = gen.serialize()
+    assert output  # non-empty output
+
+
+def test_kitchen_sink_output_has_define_block(kitchen_sink_path):
+    """The generated TypeQL output contains a define block."""
+    output = TypeDBGenerator(kitchen_sink_path, mergeimports=True).serialize()
+    assert "define" in output
+
+
+@pytest.mark.parametrize("class_name", ["person", "company", "dataset"])
+def test_kitchen_sink_key_entities_present(kitchen_sink_path, class_name):
+    """Key kitchen_sink classes appear as entity type declarations."""
+    output = TypeDBGenerator(kitchen_sink_path, mergeimports=True).serialize()
+    assert f"entity {class_name}" in output
+
+
+def test_kitchen_sink_inheritance_present(kitchen_sink_path):
+    """A class that uses is_a produces a sub declaration in the kitchen_sink output."""
+    output = TypeDBGenerator(kitchen_sink_path, mergeimports=True).serialize()
+    # Employment is_a Relationship (or similar); any 'sub' keyword means inheritance works
+    assert ", sub " in output

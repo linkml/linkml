@@ -16,8 +16,7 @@ Mapping summary:
 """
 
 import os
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 import click
 
@@ -112,7 +111,7 @@ def _typedb_name(name: str) -> str:
     return result
 
 
-def _resolve_typedb_value_type(sv: SchemaView, range_name: Optional[str]) -> Optional[str]:
+def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None) -> str | None:
     """Return the TypeDB value type for a scalar range, or None if range is a class/enum.
 
     Walks the LinkML type hierarchy to find the XSD URI, then maps to a TypeDB primitive.
