@@ -10,7 +10,7 @@ Join the LinkML community for regular sessions featuring presentations on LinkML
 [Sarah Gehrke](https://tislab.org/members/sarah-gehrke.html), University of North Carolina at Chapel Hill <br>
 
 ## What to present at a Community meeting?
-Contact Sarah Gehrke on [Slack](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g) and they can help get you on the schedule!
+Contact Sarah Gehrke on Slack and they can help get you on the schedule!
 
 ## Helpful links
 - [Community Meeting Agenda](https://docs.google.com/document/d/1MStpDyh9LOZYJTjLtnpOsNYc3HaeU-bz0CHAI9xOjfQ/edit?tab=t.0#heading=h.6sqkx1xhumse): In this document you can find the zoom link to join the monthly call as well as recordings of previous sessions.
