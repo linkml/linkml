@@ -67,8 +67,8 @@ def test_entity_types_defined_in_db(typedb_driver, temp_db):
     # Query back the defined types: ask for subtypes of each expected type
     # (in TypeDB 3.x, `entity`/`relation`/`attribute` are kind keywords, not root type names)
     with typedb_driver.transaction(temp_db, TransactionType.READ) as tx:
-        org_result = list(tx.query("match $t sub organization; fetch { \"t\": $t };").resolve())
-        emp_result = list(tx.query("match $t sub employee; fetch { \"t\": $t };").resolve())
+        org_result = list(tx.query('match $t sub organization; fetch { "t": $t };').resolve())
+        emp_result = list(tx.query('match $t sub employee; fetch { "t": $t };').resolve())
 
     assert len(org_result) >= 1, "organization type not found in schema"
     assert len(emp_result) >= 1, "employee type not found in schema"
@@ -87,8 +87,8 @@ def test_attribute_types_defined_in_db(typedb_driver, temp_db):
         tx.commit()
 
     with typedb_driver.transaction(temp_db, TransactionType.READ) as tx:
-        name_result = list(tx.query("match $t sub name; fetch { \"t\": $t };").resolve())
-        id_result = list(tx.query("match $t sub id; fetch { \"t\": $t };").resolve())
+        name_result = list(tx.query('match $t sub name; fetch { "t": $t };').resolve())
+        id_result = list(tx.query('match $t sub id; fetch { "t": $t };').resolve())
 
     assert len(name_result) >= 1, "name attribute type not found"
     assert len(id_result) >= 1, "id attribute type not found"
@@ -104,8 +104,8 @@ def test_relation_types_defined_in_db(typedb_driver, temp_db):
         tx.commit()
 
     with typedb_driver.transaction(temp_db, TransactionType.READ) as tx:
-        boss_result = list(tx.query("match $t sub has-boss; fetch { \"t\": $t };").resolve())
-        emp_result = list(tx.query("match $t sub has-employees; fetch { \"t\": $t };").resolve())
+        boss_result = list(tx.query('match $t sub has-boss; fetch { "t": $t };').resolve())
+        emp_result = list(tx.query('match $t sub has-employees; fetch { "t": $t };').resolve())
 
     assert len(boss_result) >= 1, "has-boss relation type not found"
     assert len(emp_result) >= 1, "has-employees relation type not found"
