@@ -1942,7 +1942,10 @@ class SchemaView:
             err_msg = "A SlotDefinition must be provided to generate the slot range as union."
             raise ValueError(err_msg)
 
-        return list({y.range for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]})
+        # Using dict with None as value to mimic ordered set behavior
+        return list(
+            {y.range: None for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]}.keys()
+        )
 
     def induced_slot_range(self, slot: SlotDefinition, strict: bool = False) -> set[str | ElementName]:  # noqa: FBT001, FBT002
         """Retrieve all applicable ranges for a slot, falling back to the default if necessary.
@@ -2008,20 +2011,20 @@ class SchemaView:
         :param include_induced: supplement all direct slots with induced slots, defaults to False
         :return: list of slots, either direct, or both direct and induced
         """
-        classes_set = set()  # use set to avoid duplicates
+        classes_ordered_set = {}  #  To avoid duplicates. Using dict with None as value to mimic ordered set
         all_classes = self.all_classes()
 
         for c_name, c in all_classes.items():
             if slot.name in c.slots:
-                classes_set.add(c_name)
+                classes_ordered_set[c_name] = None
 
         if include_induced:
             for c_name in all_classes:
                 induced_slot_names = [ind_slot.name for ind_slot in self.class_induced_slots(c_name)]
                 if slot.name in induced_slot_names:
-                    classes_set.add(c_name)
+                    classes_ordered_set[c_name] = None
 
-        return list(classes_set)
+        return list(classes_ordered_set.keys())
 
     @lru_cache(None)
     def get_slots_by_enum(self, enum_name: ENUM_NAME = None) -> list[SlotDefinition]:

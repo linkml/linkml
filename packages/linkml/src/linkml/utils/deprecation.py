@@ -5,15 +5,14 @@ Utilities for deprecating functionality and dependencies.
 - Tracking deprecated and removed in versions
 - Fail tests when something marked as removed_in is still present in the specified version
 
-Initial draft for deprecating Pydantic 1, to make more general, needs
-- function wrapper version
-- ...
-
 To deprecate something:
 
 - Create a :class:`.Deprecation` object within the `DEPRECATIONS` tuple
 - Use the :func:`.deprecation_warning` function wherever the deprecated feature would be used to emit the warning
 
+See also
+
+- https://linkml.io/linkml/maintainers/deprecation.html
 """
 
 import functools
@@ -268,6 +267,17 @@ DEPRECATIONS = (
         recommendation="Set `consolidate_cardinality_axioms=True` to emit consolidated axioms, "
         "or set it explicitly to `False` to preserve current behaviour and silence this warning.",
         issue=3191,
+    ),
+    Deprecation(
+        name="schema-builder-import-location",
+        deprecated_in=SemVer.from_str("1.11.0"),
+        removed_in=SemVer.from_str("1.12.0"),
+        message=(
+            "Importing SchemaBuilder from linkml.utils.schema_builder is deprecated. "
+            "SchemaBuilder now lives only in linkml_runtime."
+        ),
+        recommendation="Use `from linkml_runtime.utils.schema_builder import SchemaBuilder` instead.",
+        issue=2372,
     ),
 )  # type: tuple[Deprecation, ...]
 
