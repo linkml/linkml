@@ -10,6 +10,7 @@ Run with::
     uv run --python 3.12 pytest tests/linkml/test_generators/test_typedbgen_integration.py -m integration -v
 """
 
+import socket
 import uuid
 from pathlib import Path
 
@@ -21,9 +22,24 @@ typedb = pytest.importorskip("typedb.driver", reason="typedb-driver not installe
 
 from typedb.driver import Credentials, DriverOptions, TransactionType, TypeDB  # noqa: E402
 
+TYPEDB_HOST = "localhost:1729"
+
+
+def _typedb_available() -> bool:
+    """Return True if a TypeDB server is listening on localhost:1729."""
+    host, port = TYPEDB_HOST.split(":")
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(1)
+        return sock.connect_ex((host, int(port))) == 0
+
+
+pytestmark = pytest.mark.skipif(
+    not _typedb_available(),
+    reason=f"TypeDB server not available at {TYPEDB_HOST}",
+)
+
 _INPUT_DIR = Path(__file__).parent / "input"
 
-TYPEDB_HOST = "localhost:1729"
 TYPEDB_CREDENTIALS = Credentials("admin", "password")
 TYPEDB_OPTIONS = DriverOptions(is_tls_enabled=False)
 
