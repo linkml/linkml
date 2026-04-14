@@ -14,7 +14,7 @@ and are attached to entity types via ``owns`` declarations. Slots whose range is
 become **relation** types with corresponding ``plays`` declarations on the participating entities.
 
 Type Mapping
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 .. list-table::
    :header-rows: 1
@@ -49,20 +49,20 @@ Type Mapping
      - Fallback; a warning comment is emitted
 
 Cardinality Annotations
-~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - ``identifier: true`` → ``@key`` (unique, mandatory)
 - ``required: true`` and not multivalued → ``@card(1..1)``
 - ``multivalued: true`` → ``@card(0..)``
 
 Abstract Classes
-~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^
 
 A class with ``abstract: true`` gets the TypeDB ``@abstract`` annotation on its entity
 declaration.
 
 Reserved Keywords
-~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^
 
 TypeDB has a set of reserved keywords (``entity``, ``relation``, ``role``, ``match``,
 ``insert``, etc.). Any class or slot name that collides with a reserved keyword is

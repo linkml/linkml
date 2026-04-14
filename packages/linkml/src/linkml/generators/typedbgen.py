@@ -69,23 +69,72 @@ _TYPEDB_PRIMITIVE: dict[str, str] = {
 
 # TypeDB 3.x reserved keywords that cannot be used as user-defined type names.
 # When a slot or class name collides with one of these, we append a suffix.
-_TYPEDB_RESERVED: frozenset[str] = frozenset({
-    # Kind keywords
-    "entity", "relation", "attribute", "role",
-    # Schema keywords
-    "sub", "owns", "plays", "relates", "abstract", "value", "type",
-    "define", "redefine", "undefine", "fun",
-    # Query keywords
-    "match", "insert", "delete", "update", "put", "fetch",
-    "reduce", "distinct", "select", "sort", "limit", "offset",
-    "not", "or", "and", "is", "has", "isa", "links",
-    "let", "as", "from", "groupby", "key", "label", "iid",
-    "like", "contains", "true", "false",
-    # Aggregation
-    "count", "sum", "max", "min", "mean", "std",
-    # Primitive value types
-    "integer", "double", "string", "boolean", "datetime", "duration",
-})
+_TYPEDB_RESERVED: frozenset[str] = frozenset(
+    {
+        # Kind keywords
+        "entity",
+        "relation",
+        "attribute",
+        "role",
+        # Schema keywords
+        "sub",
+        "owns",
+        "plays",
+        "relates",
+        "abstract",
+        "value",
+        "type",
+        "define",
+        "redefine",
+        "undefine",
+        "fun",
+        # Query keywords
+        "match",
+        "insert",
+        "delete",
+        "update",
+        "put",
+        "fetch",
+        "reduce",
+        "distinct",
+        "select",
+        "sort",
+        "limit",
+        "offset",
+        "not",
+        "or",
+        "and",
+        "is",
+        "has",
+        "isa",
+        "links",
+        "let",
+        "as",
+        "from",
+        "groupby",
+        "key",
+        "label",
+        "iid",
+        "like",
+        "contains",
+        "true",
+        "false",
+        # Aggregation
+        "count",
+        "sum",
+        "max",
+        "min",
+        "mean",
+        "std",
+        # Primitive value types
+        "integer",
+        "double",
+        "string",
+        "boolean",
+        "datetime",
+        "duration",
+    }
+)
 
 
 def _typedb_name(name: str) -> str:
@@ -180,7 +229,7 @@ def _build_name_maps(sv: SchemaView) -> tuple[dict[str, str], dict[str, str]]:
     taken = entity_names | set(attr_names.values())
     rel_names: dict[str, str] = {}
     for class_name in sv.all_classes():
-        for slot_name in (sv.get_class(class_name).slots or []):
+        for slot_name in sv.get_class(class_name).slots or []:
             if slot_name in rel_names:
                 continue
             induced = sv.induced_slot(slot_name, class_name)
@@ -293,9 +342,7 @@ class TypeDBGenerator(Generator):
         result = list(seen.values()) + enum_attr_lines
         return result
 
-    def _collect_entity_defs(
-        self, sv: SchemaView, attr_names: dict[str, str], rel_names: dict[str, str]
-    ) -> list[str]:
+    def _collect_entity_defs(self, sv: SchemaView, attr_names: dict[str, str], rel_names: dict[str, str]) -> list[str]:
         """Return entity type definition lines including owns and plays.
 
         Only directly-declared slots are emitted as ``owns`` and ``plays``
@@ -312,10 +359,7 @@ class TypeDBGenerator(Generator):
                 ancestor_cls = sv.get_class(ancestor)
                 if ancestor_cls and ancestor_cls.slots:
                     ancestor_slots.update(ancestor_cls.slots)
-            direct_slot_names = {
-                s for s in (sv.get_class(class_name).slots or [])
-                if s not in ancestor_slots
-            }
+            direct_slot_names = {s for s in (sv.get_class(class_name).slots or []) if s not in ancestor_slots}
             for slot_name in direct_slot_names:
                 induced = sv.induced_slot(slot_name, class_name)
                 if induced.range not in sv.all_classes():
@@ -341,17 +385,14 @@ class TypeDBGenerator(Generator):
                 parts[0] += f", sub {_typedb_name(class_def.is_a)}"
 
             # Slots that appear on ANY ancestor are already inherited in TypeDB —
-            # re-declaring them causes [SVL42]. Filter them out here.
+            # redeclaring them causes [SVL42]. Filter them out here.
             ancestor_slots: set[str] = set()
             for ancestor in sv.class_ancestors(class_name)[1:]:  # skip self
                 ancestor_cls = sv.get_class(ancestor)
                 if ancestor_cls and ancestor_cls.slots:
                     ancestor_slots.update(ancestor_cls.slots)
 
-            direct_slot_names = [
-                s for s in (sv.get_class(class_name).slots or [])
-                if s not in ancestor_slots
-            ]
+            direct_slot_names = [s for s in (sv.get_class(class_name).slots or []) if s not in ancestor_slots]
             for slot_name in direct_slot_names:
                 induced = sv.induced_slot(slot_name, class_name)
                 value_type = _resolve_typedb_value_type(sv, induced.range)
@@ -392,7 +433,7 @@ class TypeDBGenerator(Generator):
         # First pass: collect all (domain_class, range_class) pairs per slot.
         slot_pairs: dict[str, list[tuple[str, str]]] = {}
         for class_name in sv.all_classes():
-            for slot_name in (sv.get_class(class_name).slots or []):
+            for slot_name in sv.get_class(class_name).slots or []:
                 induced = sv.induced_slot(slot_name, class_name)
                 if induced.range not in sv.all_classes():
                     continue

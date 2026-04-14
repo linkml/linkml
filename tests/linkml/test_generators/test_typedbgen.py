@@ -99,13 +99,16 @@ def test_cli_output_matches_serialize(input_path, tmp_path):
     assert result.output.strip() == expected.strip()
 
 
-@pytest.mark.parametrize("linkml_type,expected_typedb_type", [
-    ("string", "string"),
-    ("integer", "integer"),
-    ("float", "double"),
-    ("boolean", "boolean"),
-    ("datetime", "datetime"),
-])
+@pytest.mark.parametrize(
+    "linkml_type,expected_typedb_type",
+    [
+        ("string", "string"),
+        ("integer", "integer"),
+        ("float", "double"),
+        ("boolean", "boolean"),
+        ("datetime", "datetime"),
+    ],
+)
 def test_primitive_type_mapping(linkml_type, expected_typedb_type, tmp_path):
     """Primitive LinkML types map to the correct TypeDB value types."""
     schema_yaml = f"""
