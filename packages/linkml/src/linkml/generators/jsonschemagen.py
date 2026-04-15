@@ -164,6 +164,8 @@ def _slot_examples_for_json_schema(
             value = as_dict(ex.object)
         elif ex.value is not None:
             value = _coerce_string_to_type(ex.value, json_schema_type, is_array_valued)
+        else:
+            continue
 
         if is_array_valued and not isinstance(value, list):
             merged_example.append(value)
