@@ -511,7 +511,7 @@ message Extension
 message ExtraSlotsExpression
  {
   boolean allowed = 0
-  anonymousClassExpression rangeExpression = 0
+  anonymousSlotExpression rangeExpression = 0
  }
 // an expression describing an import
 message ImportExpression
@@ -561,7 +561,7 @@ message LocalName
   ncname localNameSource = 0
   string localNameValue = 0
  }
-// A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.
+// A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.
 message MatchQuery
  {
   string identifierPattern = 0
@@ -708,7 +708,7 @@ message Prefix
   ncname prefixPrefix = 1
   uri prefixReference = 2
  }
-// A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.
+// A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.
 message ReachabilityQuery
  {
   uriorcurie sourceOntology = 0

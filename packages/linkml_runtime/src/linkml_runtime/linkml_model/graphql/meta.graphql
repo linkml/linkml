@@ -757,7 +757,7 @@ type Extension
 type ExtraSlotsExpression implements Expression
   {
     allowed: Boolean
-    rangeExpression: AnonymousClassExpression
+    rangeExpression: AnonymousSlotExpression
   }
 
 type ImportExpression implements Extensible, Annotatable, CommonMetadata
