@@ -2,7 +2,6 @@ import json
 from pathlib import PurePath
 
 import pytest
-from jsonasobj2 import as_json, loads
 from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF
 
@@ -10,6 +9,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.jsonasobj2 import as_json, loads
 from linkml_runtime.utils.yamlutils import as_rdf
 from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 

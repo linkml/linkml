@@ -1,8 +1,7 @@
-from jsonasobj2 import loads
-
 from linkml import LOCAL_TYPES_YAML_FILE
 from linkml.generators.shexgen import ShExGenerator
 from linkml_runtime.linkml_model.meta import LINKML
+from linkml_runtime.utils.jsonasobj2 import loads
 
 
 def test_uri_type():

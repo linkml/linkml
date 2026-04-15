@@ -1,5 +1,5 @@
 import pytest
-from jsonasobj2 import JsonObj
+from linkml_runtime.utils.jsonasobj2 import JsonObj
 
 from tests.linkml_runtime.test_utils.input.inlined_as_dict import E, EInst
 

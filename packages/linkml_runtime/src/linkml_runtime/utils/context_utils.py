@@ -5,7 +5,8 @@ from io import TextIOWrapper
 from typing import TYPE_CHECKING, Any
 
 import yaml
-from jsonasobj2 import JsonObj, loads
+
+from linkml_runtime.utils.jsonasobj2 import JsonObj, loads
 
 if TYPE_CHECKING:
     from linkml_runtime.utils.namespaces import Namespaces

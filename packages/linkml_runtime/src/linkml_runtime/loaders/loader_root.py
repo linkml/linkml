@@ -5,10 +5,10 @@ from logging import getLogger
 from typing import TYPE_CHECKING, Any, TextIO
 
 from hbreader import FileInfo, hbread
-from jsonasobj2 import JsonObj, as_dict
 from pydantic import BaseModel
 
 from linkml_runtime import URI_TO_LOCAL
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_dict
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 if TYPE_CHECKING:

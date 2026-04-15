@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from jsonasobj2 import JsonObj
+from linkml_runtime.utils.jsonasobj2 import JsonObj
 
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import (

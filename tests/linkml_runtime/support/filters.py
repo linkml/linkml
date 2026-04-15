@@ -3,7 +3,7 @@
 import re
 from json import loads
 
-from jsonasobj2 import as_json
+from linkml_runtime.utils.jsonasobj2 import as_json
 
 
 def ldcontext_metadata_filter(s: str) -> str:

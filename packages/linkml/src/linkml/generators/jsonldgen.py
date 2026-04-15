@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
-from jsonasobj2 import as_json, items, loads
 
 from linkml import METAMODEL_CONTEXT_URI
 from linkml._version import __version__
@@ -27,6 +26,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinitionName,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.jsonasobj2 import as_json, items, loads
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 

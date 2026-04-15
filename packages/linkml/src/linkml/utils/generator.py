@@ -28,7 +28,6 @@ from typing import ClassVar, TextIO, Union, cast
 
 import click
 from click import Argument, Command, Option
-from jsonasobj2 import JsonObj
 
 from linkml import LOCAL_METAMODEL_YAML_FILE
 from linkml.cli.logging import DEFAULT_LOG_LEVEL_INT, log_level_option
@@ -56,6 +55,7 @@ from linkml_runtime.linkml_model.meta import (
     metamodel_version,
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.jsonasobj2 import JsonObj
 from linkml_runtime.utils.namespaces import Namespaces
 
 logger = logging.getLogger(__name__)

@@ -4,11 +4,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from jsonasobj2 import JsonObj, items
-
 from linkml_runtime.linkml_model import ClassDefinitionName, PermissibleValue, SlotDefinitionName
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl
 from linkml_runtime.utils.eval_utils import eval_expr
+from linkml_runtime.utils.jsonasobj2 import JsonObj, items
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.walker_utils import traverse_object_tree
 from linkml_runtime.utils.yamlutils import YAMLRoot

@@ -3,11 +3,11 @@ import re
 from types import ModuleType
 
 import pytest
-from jsonasobj2 import as_json
 
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.jsonasobj2 import as_json
 
 pytestmark = pytest.mark.pythongen
 

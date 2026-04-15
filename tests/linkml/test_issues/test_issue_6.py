@@ -1,8 +1,8 @@
 import pytest
-from jsonasobj2 import loads
 from rdflib import Namespace
 
 from linkml.generators.shexgen import ShExGenerator
+from linkml_runtime.utils.jsonasobj2 import loads
 
 DCT = Namespace("http://purl.org/dc/terms/")
 

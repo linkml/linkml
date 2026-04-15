@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 
 import click
-from jsonasobj2 import JsonObj, as_json
 from rdflib import SKOS, XSD, Namespace
 
 from linkml._version import __version__
@@ -19,6 +18,7 @@ from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, underscore
+from linkml_runtime.utils.jsonasobj2 import JsonObj, as_json
 from linkml_runtime.utils.schemaview import SchemaView
 
 URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
