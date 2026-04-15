@@ -113,7 +113,7 @@ class SchemaLoader:
                 # Map prefix to a folder/directory
                 mapped = os.path.join(pfx_target, ":".join(toks[1:]))
             elif pfx not in self.importmap:
-                mapped = self.namespaces.uri_for(mapped)
+                mapped = str(self.namespaces.uri_for(mapped))
         # Second lookup: importmap may also key by URI or expanded form
         return self.importmap.get(mapped, mapped)
 
