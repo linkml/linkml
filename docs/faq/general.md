@@ -145,4 +145,5 @@ serializations such as HDF5 and Zarr.
 
 ## How do I cite LinkML?
 
-A paper is in progress, for now, cite the GitHub repo
+A paper is in progress, for now, cite the main GitHub repo Zotero archive doi:
+[10.5281/zenodo.5703670](https://doi.org/10.5281/zenodo.5703670).
