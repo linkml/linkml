@@ -443,6 +443,8 @@ classes:
     name: Thing
     definition_uri: https://w3id.org/linkml/examples/personinfo/Thing
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:Thing
     slots:
     - id
     - full_name
@@ -451,7 +453,7 @@ classes:
     name: Person
     definition_uri: https://w3id.org/linkml/examples/personinfo/Person
     from_schema: https://w3id.org/linkml/examples/personinfo
-    mappings:
+    exact_mappings:
     - sdo:Person
     is_a: Thing
     slots:
@@ -480,6 +482,8 @@ classes:
     name: Organization
     definition_uri: https://w3id.org/linkml/examples/personinfo/Organization
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:Organization
     is_a: Thing
     slots:
     - id
@@ -497,6 +501,8 @@ classes:
     name: GeoObject
     definition_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:GeoObject
     is_a: Thing
     slots:
     - id
@@ -521,6 +527,8 @@ classes:
     name: GeoAge
     definition_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:GeoAge
     slots:
     - geoAge__unit
     - geoAge__value
@@ -592,19 +600,19 @@ generation_date: '2000-01-01T00:00:00'
 
 # --- linkml_issue_384.ttl ---
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/2004/02/skos/core#exactMatch> "ex:GeoAge"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/unit> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/value> .
-<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/GeoAge"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/GeoAge"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/slot_usage> _:cb87aa37e3ad3dfbc100de41e622ae57a55c01252d953cd7f596f3f617c04a97ed .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoAge__unit> .
 <https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoAge__value> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <http://www.w3.org/2004/02/skos/core#exactMatch> "ex:GeoObject"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/age> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/aliases> .
-<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/GeoObject"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/GeoObject"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/Thing> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slot_usage> _:cb6f98b99448d1238734b7af2cc92e23f15ba5c211db30144440eb739460c2cd83 .
@@ -613,8 +621,8 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoObject__aliases> .
 <https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
 <https://w3id.org/linkml/examples/personinfo/Organization> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <http://www.w3.org/2004/02/skos/core#exactMatch> "ex:Organization"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Organization> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
-<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/Organization"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/Organization"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/Thing> .
 <https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/slot_usage> _:cbb30ac86ca541a453eee19cdf1b7946df090933188ade517a9677564c8beac5bd .
@@ -651,12 +659,11 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/usage_slot_name> "parent" .
 <https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/2004/02/skos/core#exactMatch> "sdo:Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
-<https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/2004/02/skos/core#mappingRelation> "sdo:Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/age> .
 <https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/aliases> .
 <https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/phone> .
-<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/class_uri> "http://schema.org/Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/Thing> .
 <https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slot_usage> _:cba5af5c45ef581571107e9f40ba038543b617d27dfa8e41f71bfa140c3e5b8c09 .
@@ -682,8 +689,8 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/usage_slot_name> "parent" .
 <https://w3id.org/linkml/examples/personinfo/Thing> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Thing> <http://www.w3.org/2004/02/skos/core#exactMatch> "ex:Thing"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Thing> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
-<https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/Thing"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/Thing"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slot_usage> _:cb0 .
 <https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/full_name> .

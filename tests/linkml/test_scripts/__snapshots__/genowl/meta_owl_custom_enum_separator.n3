@@ -80,18 +80,18 @@ ks:AnyOfMix a owl:Class ;
             owl:maxCardinality 1 ;
             owl:onProperty ks:attribute4 ],
         [ a owl:Restriction ;
-            owl:allValuesFrom [ owl:unionOf ( xsd:integer ks:Person ks:EmploymentEventType ) ] ;
+            owl:maxCardinality 1 ;
             owl:onProperty ks:attribute4 ] ;
     skos:inScheme <https://w3id.org/linkml/tests/kitchen_sink> .
 
 ks:AnyOfSimpleType a owl:Class ;
     rdfs:label "AnyOfSimpleType" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
-            owl:onProperty ks:attribute1 ],
-        [ a owl:Restriction ;
             owl:allValuesFrom [ a rdfs:Datatype ;
                     owl:unionOf ( xsd:string xsd:integer ) ] ;
+            owl:onProperty ks:attribute1 ],
+        [ a owl:Restriction ;
+            owl:minCardinality 0 ;
             owl:onProperty ks:attribute1 ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
@@ -251,7 +251,7 @@ ks:Relationship a owl:Class ;
             owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
-            owl:onProperty ks:type ],
+            owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty <https://w3id.org/linkml/tests/core/ended_at_time> ],
@@ -302,7 +302,7 @@ ks:WithLocation a owl:Class ;
             owl:minCardinality 0 ;
             owl:onProperty ks:in_location ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ks:Place ;
+            owl:minCardinality 0 ;
             owl:onProperty ks:in_location ] ;
     skos:inScheme <https://w3id.org/linkml/tests/kitchen_sink> .
 
@@ -457,7 +457,7 @@ ks:DiagnosisType a owl:Class ;
 ks:EmploymentEvent a owl:Class ;
     rdfs:label "EmploymentEvent" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom ks:Company ;
             owl:onProperty ks:employed_at ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
@@ -486,6 +486,9 @@ ks:FamilialRelationship a owl:Class ;
         [ a owl:Restriction ;
             owl:allValuesFrom ks:Person ;
             owl:onProperty ks:related_to ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom ks:FamilialRelationshipType ;
+            owl:onProperty ks:type ],
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty ks:related_to ],
@@ -559,8 +562,8 @@ ks:MedicalEvent a owl:Class ;
             owl:maxCardinality 1 ;
             owl:onProperty ks:diagnosis ],
         [ a owl:Restriction ;
-            owl:allValuesFrom ks:ProcedureConcept ;
-            owl:onProperty ks:procedure ],
+            owl:minCardinality 0 ;
+            owl:onProperty ks:in_location ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
             owl:onProperty ks:procedure ],
@@ -590,6 +593,12 @@ ks:Organization a owl:Class ;
         [ a owl:Restriction ;
             owl:maxCardinality 1 ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         [ a owl:Restriction ;
             owl:minCardinality 1 ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ],
@@ -630,7 +639,7 @@ ks:SubclassTest a owl:Class ;
             owl:maxCardinality 1 ;
             owl:onProperty ks:slot_with_space_2 ],
         [ a owl:Restriction ;
-            owl:minCardinality 0 ;
+            owl:allValuesFrom ks:ClassWithSpaces ;
             owl:onProperty ks:slot_with_space_2 ],
         ks:ClassWithSpaces ;
     skos:inScheme <https://w3id.org/linkml/tests/kitchen_sink> .
@@ -727,7 +736,7 @@ ks:CodeSystem a owl:Class ;
 ks:Company a owl:Class ;
     rdfs:label "Company" ;
     rdfs:subClassOf [ a owl:Restriction ;
-            owl:allValuesFrom ks:Person ;
+            owl:minCardinality 0 ;
             owl:onProperty ks:ceo ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
@@ -890,6 +899,9 @@ ks:Event a owl:Class ;
             owl:allValuesFrom ks:AnyObject ;
             owl:onProperty ks:metadata ],
         [ a owl:Restriction ;
+            owl:minCardinality 0 ;
+            owl:onProperty ks:metadata ],
+        [ a owl:Restriction ;
             owl:allValuesFrom xsd:date ;
             owl:onProperty <https://w3id.org/linkml/tests/core/started_at_time> ],
         [ a owl:Restriction ;
@@ -930,6 +942,18 @@ ks:Place a owl:Class ;
             owl:onProperty <https://w3id.org/linkml/tests/core/id> ],
         [ a owl:Restriction ;
             owl:minCardinality 0 ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
+        [ a owl:Restriction ;
+            owl:maxCardinality 1 ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
+            owl:onProperty <https://w3id.org/linkml/tests/core/id> ],
+        [ a owl:Restriction ;
+            owl:allValuesFrom xsd:string ;
             owl:onProperty <https://w3id.org/linkml/tests/core/name> ],
         ks:HasAliases ;
     skos:inScheme <https://w3id.org/linkml/tests/kitchen_sink> .

@@ -2921,15 +2921,13 @@
     ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
-        "@value": "PROMOTION"
+        "@value": "Concept"
       }
     ],
     "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
       {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType"
-      }
-    ],
-    "http://www.w3.org/2004/02/skos/core#definition": [
+        "@id": "_:N9fa38bf5564544ca8f7c66e3cd74624e"
+      },
       {
         "@value": "promotion event"
       }
@@ -3307,6 +3305,156 @@
     ]
   },
   {
+    "@id": "_:N9fa38bf5564544ca8f7c66e3cd74624e",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nf9451a231de94c5ba4ba88bdb8d1f4a7",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ne9ba79501e2142fc9f8dee3cc027de8c",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nc1e47d3d06f2458e97e0bc5e914abe24",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/in_code_system"
+      }
+    ]
+  },
+  {
+    "@id": "_:N7ccef2bbef474be4b7d6c625c36e2c14",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/in_code_system"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nc81499b601794fd3a64a9cc926299f36",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/in_code_system"
+      }
+    ]
+  },
+  {
+    "@id": "_:N1d0a633f3e944759b30cf38b7fd20473",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N9646b193b9e44ec0a335d64027f4ad83",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:Na54458cde2de493497f3a08cefff5a10",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
     "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum",
     "@type": [
       "http://www.w3.org/2002/07/owl#Class"
@@ -3351,7 +3499,7 @@
   {
     "@id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums",
     "@type": [
-      "http://www.w3.org/2002/07/owl#Class"
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
     ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
@@ -3452,18 +3600,12 @@
     ],
     "http://www.w3.org/2000/01/rdf-schema#range": [
       {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent"
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
       }
     ],
     "http://www.w3.org/2004/02/skos/core#inScheme": [
       {
         "@id": "https://w3id.org/linkml/tests/kitchen_sink"
-      }
-    ],
-    "http://www.w3.org/ns/shacl#order": [
-      {
-        "@type": "http://www.w3.org/2001/XMLSchema#integer",
-        "@value": 5
       }
     ]
   },
@@ -4207,13 +4349,1296 @@
     ]
   },
   {
-    "@id": "https://w3id.org/linkml/tests/core/name",
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1",
     "@type": [
       "http://www.w3.org/2002/07/owl#DatatypeProperty"
     ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
-        "@value": "name"
+        "@value": "slot with space 1"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/life_status",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "life_status"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/EqualsString",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "EqualsString"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "_:N20d5922d31e24e7593183cf04bcbe7d4"
+      },
+      {
+        "@id": "_:N98cab495d882430bb62fa342d7b6f104"
+      },
+      {
+        "@id": "_:N2b2a8a27dd9e4b50a4d3c2c9bb8f8d8b"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:N20d5922d31e24e7593183cf04bcbe7d4",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute5"
+      }
+    ]
+  },
+  {
+    "@id": "_:N98cab495d882430bb62fa342d7b6f104",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute5"
+      }
+    ]
+  },
+  {
+    "@id": "_:N2b2a8a27dd9e4b50a4d3c2c9bb8f8d8b",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute5"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Person"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#seeAlso": [
+      {
+        "@id": "https://en.wikipedia.org/wiki/Person"
+      },
+      {
+        "@id": "http://schema.org/Person"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases"
+      },
+      {
+        "@id": "_:N79aaf5e8411e48839505476296aa9d03"
+      },
+      {
+        "@id": "_:N8b8c897ec2b345eea9928ddd3d6bff70"
+      },
+      {
+        "@id": "_:N038bf2b5170847c98795406d48b5e547"
+      },
+      {
+        "@id": "_:Ncbee32831ced4c91af50220a54a0ac3d"
+      },
+      {
+        "@id": "_:Ne27d961cf86747d38779c2efaaeabe3e"
+      },
+      {
+        "@id": "_:N7a8913c2c6cf4431b97e76d47f437753"
+      },
+      {
+        "@id": "_:N12bd820eb7d44adaae4e484f5290ceb6"
+      },
+      {
+        "@id": "_:Nec24ecc6c06e4c75ae28ecdebe867cfd"
+      },
+      {
+        "@id": "_:N028b9a1647e84c75b6e139de82d8609f"
+      },
+      {
+        "@id": "_:N9ad0d60ed5304eb288288d3f37e09d72"
+      },
+      {
+        "@id": "_:N3e11ba9494eb42988bcea16377e9c818"
+      },
+      {
+        "@id": "_:N7f051137810143d3a303bbdf2840b9ed"
+      },
+      {
+        "@id": "_:N6a54398d59414509ba859baafb357e48"
+      },
+      {
+        "@id": "_:Ne65f2dcd1a064e1fb9632e5035faa43a"
+      },
+      {
+        "@id": "_:N27603351e7ef49da8269c489f316aef2"
+      },
+      {
+        "@id": "_:N2fa966e22a474af59e410cdc7e513373"
+      },
+      {
+        "@id": "_:Na05b92dd50f0433eae6bd0c8894e3a7a"
+      },
+      {
+        "@id": "_:N7e963a8690db4e4394aec204c40d6c62"
+      },
+      {
+        "@id": "_:N7a0600711f80408e859e3535cea1f174"
+      },
+      {
+        "@id": "_:N519a58581e0348e4a1b5b0e8ba95fe50"
+      },
+      {
+        "@id": "_:N3197430688c34f8e81300659f2da6ec2"
+      },
+      {
+        "@id": "_:N392962aa478d4a59aadec991ea277126"
+      },
+      {
+        "@id": "_:N6776e437f48c4371afbf3dcff1be4f7f"
+      },
+      {
+        "@id": "_:Nfcc7369b7479430f98f6b200e7b71638"
+      },
+      {
+        "@id": "_:Nb99327d0b4bb48c7b09656bb14fa529e"
+      },
+      {
+        "@id": "_:N2b16290cc1ec4e2c9b32c9326d177648"
+      },
+      {
+        "@id": "_:N1409c6e96f344929b9dcee6dc29b46e0"
+      },
+      {
+        "@id": "_:N0227e150ae064b289018505e4bd58ba8"
+      },
+      {
+        "@id": "_:N5835733d340e4ba58003e0a38141a7c9"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "A person, living or dead"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#exactMatch": [
+      {
+        "@id": "http://schema.org/Person"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ],
+    "http://www.w3.org/ns/shacl#order": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 2
+      }
+    ],
+    "https://w3id.org/linkml/tests/kitchen_sink/fallible": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
+        "@value": true
+      }
+    ],
+    "https://w3id.org/linkml/tests/kitchen_sink/opinions": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1000
+      }
+    ],
+    "https://w3id.org/linkml/tests/kitchen_sink/resting": [
+      {
+        "@value": "supine"
+      }
+    ],
+    "https://w3id.org/linkml/tests/kitchen_sink/viewer": [
+      {
+        "@value": "ks:PersonViewer"
+      }
+    ]
+  },
+  {
+    "@id": "_:N79aaf5e8411e48839505476296aa9d03",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Address"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/addresses"
+      }
+    ]
+  },
+  {
+    "@id": "_:N8b8c897ec2b345eea9928ddd3d6bff70",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/addresses"
+      }
+    ]
+  },
+  {
+    "@id": "_:N038bf2b5170847c98795406d48b5e547",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "_:N994a619c19044d96816f9e4b318cca95"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/age_in_years"
+      }
+    ]
+  },
+  {
+    "@id": "_:N994a619c19044d96816f9e4b318cca95",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@id": "_:N7b29b83ca93749c3b632fcb344ba8725"
+          },
+          {
+            "@id": "_:N4054d25a144a40e7b58cd513e496f184"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N7b29b83ca93749c3b632fcb344ba8725",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:N7afe2f5a560345c99e515d54b59c8094"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N7afe2f5a560345c99e515d54b59c8094",
+    "http://www.w3.org/2001/XMLSchema#minInclusive": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ]
+  },
+  {
+    "@id": "_:N4054d25a144a40e7b58cd513e496f184",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:Naa9beaaed12c42b5832ee3c413583ed0"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:Naa9beaaed12c42b5832ee3c413583ed0",
+    "http://www.w3.org/2001/XMLSchema#maxInclusive": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 999
+      }
+    ]
+  },
+  {
+    "@id": "_:Ncbee32831ced4c91af50220a54a0ac3d",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/age_in_years"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ne27d961cf86747d38779c2efaaeabe3e",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/age_in_years"
+      }
+    ]
+  },
+  {
+    "@id": "_:N7a8913c2c6cf4431b97e76d47f437753",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event"
+      }
+    ]
+  },
+  {
+    "@id": "_:N12bd820eb7d44adaae4e484f5290ceb6",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nec24ecc6c06e4c75ae28ecdebe867cfd",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event"
+      }
+    ]
+  },
+  {
+    "@id": "_:N028b9a1647e84c75b6e139de82d8609f",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_employment_history"
+      }
+    ]
+  },
+  {
+    "@id": "_:N9ad0d60ed5304eb288288d3f37e09d72",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_employment_history"
+      }
+    ]
+  },
+  {
+    "@id": "_:N3e11ba9494eb42988bcea16377e9c818",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships"
+      }
+    ]
+  },
+  {
+    "@id": "_:N7f051137810143d3a303bbdf2840b9ed",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships"
+      }
+    ]
+  },
+  {
+    "@id": "_:N6a54398d59414509ba859baafb357e48",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_medical_history"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ne65f2dcd1a064e1fb9632e5035faa43a",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_medical_history"
+      }
+    ]
+  },
+  {
+    "@id": "_:N27603351e7ef49da8269c489f316aef2",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:N2fa966e22a474af59e410cdc7e513373",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:Na05b92dd50f0433eae6bd0c8894e3a7a",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:N7e963a8690db4e4394aec204c40d6c62",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/is_living"
+      }
+    ]
+  },
+  {
+    "@id": "_:N7a0600711f80408e859e3535cea1f174",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/is_living"
+      }
+    ]
+  },
+  {
+    "@id": "_:N519a58581e0348e4a1b5b0e8ba95fe50",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/is_living"
+      }
+    ]
+  },
+  {
+    "@id": "_:N3197430688c34f8e81300659f2da6ec2",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "_:N91559e13de694056a7b2e5271349f144"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N91559e13de694056a7b2e5271349f144",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:N0c0d324b9cca405f832fd3cad04d0836"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N0c0d324b9cca405f832fd3cad04d0836",
+    "http://www.w3.org/2001/XMLSchema#pattern": [
+      {
+        "@value": "^\\S+ \\S+$"
+      }
+    ]
+  },
+  {
+    "@id": "_:N392962aa478d4a59aadec991ea277126",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N6776e437f48c4371afbf3dcff1be4f7f",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nfcc7369b7479430f98f6b200e7b71638",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "_:N8e4eeef349f4486d957ca102acbfddee"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/species_name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N8e4eeef349f4486d957ca102acbfddee",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:Nc61613ce09aa47529b939745812c156f"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:Nc61613ce09aa47529b939745812c156f",
+    "http://www.w3.org/2001/XMLSchema#pattern": [
+      {
+        "@value": "^[A-Z]+[a-z]+(-[A-Z]+[a-z]+)?\\\\.[A-Z]+(-[0-9]{4})?$"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nb99327d0b4bb48c7b09656bb14fa529e",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/species_name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N2b16290cc1ec4e2c9b32c9326d177648",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/species_name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N1409c6e96f344929b9dcee6dc29b46e0",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "_:N4901a0f5bae245289f06132594a186d2"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/stomach_count"
+      }
+    ]
+  },
+  {
+    "@id": "_:N4901a0f5bae245289f06132594a186d2",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@id": "_:Na708ad1386db41a29b11e5024faf68e1"
+          },
+          {
+            "@id": "_:Nce15533523ad4446aa4f0139193a51b9"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:Na708ad1386db41a29b11e5024faf68e1",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:N1fbd70b01e8248fb89976b3b55fb64b1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N1fbd70b01e8248fb89976b3b55fb64b1",
+    "http://www.w3.org/2001/XMLSchema#minInclusive": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ]
+  },
+  {
+    "@id": "_:Nce15533523ad4446aa4f0139193a51b9",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:Nfbea10ab32c64bd7ad3a606adc72a2ee"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:Nfbea10ab32c64bd7ad3a606adc72a2ee",
+    "http://www.w3.org/2001/XMLSchema#maxInclusive": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ]
+  },
+  {
+    "@id": "_:N0227e150ae064b289018505e4bd58ba8",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/stomach_count"
+      }
+    ]
+  },
+  {
+    "@id": "_:N5835733d340e4ba58003e0a38141a7c9",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/stomach_count"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "MarriageEvent"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Event"
+      },
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/WithLocation"
+      },
+      {
+        "@id": "_:N72d0963029d4465d996908ea37f3bc81"
+      },
+      {
+        "@id": "_:Nb4942cb7e9f44a0f89b60ec92e2bf6e2"
+      },
+      {
+        "@id": "_:Nc95780aa69114a7297d8352bdcac7f7d"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:N72d0963029d4465d996908ea37f3bc81",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/married_to"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nb4942cb7e9f44a0f89b60ec92e2bf6e2",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/married_to"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nc95780aa69114a7297d8352bdcac7f7d",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/married_to"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "HasAliases"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "_:Ne6145a1c265146dbacf233c7b9ff18d4"
+      },
+      {
+        "@id": "_:N2dc68bf9b4434653ad2757ba53eb0a52"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ne6145a1c265146dbacf233c7b9ff18d4",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/aliases"
+      }
+    ]
+  },
+  {
+    "@id": "_:N2dc68bf9b4434653ad2757ba53eb0a52",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/aliases"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/age_in_years",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "age in years"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "_:N51d7612f56a544b58e56f7bdbe3690e1"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "number of years since birth"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:N51d7612f56a544b58e56f7bdbe3690e1",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#intersectionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@id": "_:Nce4334abdc624dbda71b4982edd58539"
+          },
+          {
+            "@id": "_:N22937a8534344f75b4c59eee67bf42d9"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:Nce4334abdc624dbda71b4982edd58539",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:N79e00b97851e4d758211fcdf030a952a"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N79e00b97851e4d758211fcdf030a952a",
+    "http://www.w3.org/2001/XMLSchema#minInclusive": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ]
+  },
+  {
+    "@id": "_:N22937a8534344f75b4c59eee67bf42d9",
+    "@type": [
+      "http://www.w3.org/2000/01/rdf-schema#Datatype"
+    ],
+    "http://www.w3.org/2002/07/owl#onDatatype": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#withRestrictions": [
+      {
+        "@list": [
+          {
+            "@id": "_:Neb875477174f4eaf843a2eaca2077d31"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:Neb875477174f4eaf843a2eaca2077d31",
+    "http://www.w3.org/2001/XMLSchema#maxInclusive": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 999
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/married_to",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "married to"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/was_associated_with",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "was associated with"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Agent"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#DEAD",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "DEAD"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/aliases",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "aliases"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/id",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "id"
       }
     ],
     "http://www.w3.org/2004/02/skos/core#inScheme": [
@@ -4224,7 +5649,7 @@
     "http://www.w3.org/ns/shacl#order": [
       {
         "@type": "http://www.w3.org/2001/XMLSchema#integer",
-        "@value": 2
+        "@value": 1
       }
     ]
   },
@@ -4275,7 +5700,90 @@
         "@value": "activity set"
       }
     ],
-    "http://www.w3.org/2000/01/rdf-schema#range": [
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink.owl.ttl",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Ontology"
+    ],
+    "http://purl.org/dc/terms/title": [
+      {
+        "@value": "Kitchen Sink Schema"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "kitchen_sink"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#seeAlso": [
+      {
+        "@id": "https://example.org/"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "Kitchen Sink Schema\n\nThis schema does not do anything useful. It exists to test all features of linkml.\n\nThis particular text field exists to demonstrate markdown within a text field:\n\nLists:\n\n   * a\n   * b\n   * c\n\nAnd links, e.g to [Person](Person.md)"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_2",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "slot with space 2"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "BirthEvent"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Event"
+      },
+      {
+        "@id": "_:Na1a48042029a477cab28f6fc942a84a5"
+      },
+      {
+        "@id": "_:N78e17bf0068f4824909980d7a006e41c"
+      },
+      {
+        "@id": "_:N7a0fc54c95d1445ea9f645febe8f75b3"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:Na1a48042029a477cab28f6fc942a84a5",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
       {
         "@id": "https://w3id.org/linkml/tests/core/Activity"
       }
@@ -4403,6 +5911,95 @@
             "@id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF"
           }
         ]
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/in_location"
+      }
+    ]
+  },
+  {
+    "@id": "_:N78e17bf0068f4824909980d7a006e41c",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/in_location"
+      }
+    ]
+  },
+  {
+    "@id": "_:N7a0fc54c95d1445ea9f645febe8f75b3",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/in_location"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "CHILD_OF"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "EmploymentEvent"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Event"
+      },
+      {
+        "@id": "_:Nafc1fa1c72c6425fbed0738ce31571fa"
+      },
+      {
+        "@id": "_:N007057dc51214321b168c944252213fd"
+      },
+      {
+        "@id": "_:N0d24062aea2043f2a6a90e0055792ac7"
+      },
+      {
+        "@id": "_:Na0d1ac74027942dabe3bf9692861ee0d"
+      },
+      {
+        "@id": "_:N5a7d3eb59b6744c6a004a9de23a53039"
+      },
+      {
+        "@id": "_:Nb3cff618c0244731980daf90e8bce4d3"
       }
     ],
     "http://www.w3.org/2004/02/skos/core#inScheme": [
@@ -5144,18 +6741,1320 @@
     ]
   },
   {
-    "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#LIVING",
+    "@id": "_:Nafc1fa1c72c6425fbed0738ce31571fa",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Company"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/employed_at"
+      }
+    ]
+  },
+  {
+    "@id": "_:N007057dc51214321b168c944252213fd",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/employed_at"
+      }
+    ]
+  },
+  {
+    "@id": "_:N0d24062aea2043f2a6a90e0055792ac7",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/employed_at"
+      }
+    ]
+  },
+  {
+    "@id": "_:Na0d1ac74027942dabe3bf9692861ee0d",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "_:N526c458293a8401dba90ce8b4f6286b6"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/type"
+      }
+    ]
+  },
+  {
+    "@id": "_:N526c458293a8401dba90ce8b4f6286b6",
+    "http://www.w3.org/2002/07/owl#unionOf": [
+      {
+        "@list": [
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum"
+          },
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N5a7d3eb59b6744c6a004a9de23a53039",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/type"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nb3cff618c0244731980daf90e8bce4d3",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/type"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix",
     "@type": [
       "http://www.w3.org/2002/07/owl#Class"
     ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
-        "@value": "LIVING"
+        "@value": "AnyOfMix"
       }
     ],
     "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
       {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum"
+        "@id": "_:N12359a590b224056ab9d3a44b02a4df5"
+      },
+      {
+        "@id": "_:N5b2289d4e16c4bdca9549fef6c1dd02c"
+      },
+      {
+        "@id": "_:Nb6edcacda41e44c6a92a6c82faed1f07"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:N12359a590b224056ab9d3a44b02a4df5",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "_:Nec74e87d95be4b87a1ca1ffe95fd176e"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute4"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nec74e87d95be4b87a1ca1ffe95fd176e",
+    "http://www.w3.org/2002/07/owl#unionOf": [
+      {
+        "@list": [
+          {
+            "@id": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person"
+          },
+          {
+            "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEventType"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "@id": "_:N5b2289d4e16c4bdca9549fef6c1dd02c",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute4"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nb6edcacda41e44c6a92a6c82faed1f07",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute4"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "AnyObject"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "Example of unconstrained class"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#exactMatch": [
+      {
+        "@id": "https://w3id.org/linkml/Any"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/activity_set",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "activity set"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Activity"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/was_informed_by",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "was informed by"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Activity"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "ProcedureConcept"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Concept"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/Activity",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "activity"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "_:N823eadb2ab0540f3aa5235f1172c5bb3"
+      },
+      {
+        "@id": "_:N5e029e20f56041868baac425c30b2c83"
+      },
+      {
+        "@id": "_:N45964637d19e4e6caefc5d33be2656da"
+      },
+      {
+        "@id": "_:Ndd95802bba3c468081a7ecd28310199f"
+      },
+      {
+        "@id": "_:N22118dbe806f459f95be3442f723b8af"
+      },
+      {
+        "@id": "_:Nbbee5507c23c40ed8b0bd06970987965"
+      },
+      {
+        "@id": "_:N45e62d3867c7489ca555fb63abfcde39"
+      },
+      {
+        "@id": "_:N097f234e5510424e8752661daf2c796d"
+      },
+      {
+        "@id": "_:N8783a38ccaed4de4882e9bb849e2dc47"
+      },
+      {
+        "@id": "_:Ncefaaab92c4c454daca4a5fd747cdfb5"
+      },
+      {
+        "@id": "_:Nb26f1b1cfa0247eda9b2970b683dfec8"
+      },
+      {
+        "@id": "_:Nc89b8ce092b7408b9f3edcd362090d78"
+      },
+      {
+        "@id": "_:Ndd941de40eaa4e0292d71e9405def9d0"
+      },
+      {
+        "@id": "_:N90cec97b50bc484a90a8d42d6eaa7efa"
+      },
+      {
+        "@id": "_:N89340660435c47a79bf879084c2fc9bd"
+      },
+      {
+        "@id": "_:N1dcad5942db14909a6fd6772d12658f5"
+      },
+      {
+        "@id": "_:N0365f195c8e345aa9df605a62a7c8d40"
+      },
+      {
+        "@id": "_:Naf8991b71c214adea002eb637ceabc47"
+      },
+      {
+        "@id": "_:N620dd0b13b90492f80d5b6ab4708f2ad"
+      },
+      {
+        "@id": "_:N3cbbfc454ab841718d253604baf59bac"
+      },
+      {
+        "@id": "_:N23b9c3b6409a408da02e2c305630f3b8"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "a provence-generating activity"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#mappingRelation": [
+      {
+        "@id": "http://www.w3.org/ns/prov#Activity"
+      }
+    ]
+  },
+  {
+    "@id": "_:N823eadb2ab0540f3aa5235f1172c5bb3",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/description"
+      }
+    ]
+  },
+  {
+    "@id": "_:N5e029e20f56041868baac425c30b2c83",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/description"
+      }
+    ]
+  },
+  {
+    "@id": "_:N45964637d19e4e6caefc5d33be2656da",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/description"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ndd95802bba3c468081a7ecd28310199f",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#date"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/ended_at_time"
+      }
+    ]
+  },
+  {
+    "@id": "_:N22118dbe806f459f95be3442f723b8af",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/ended_at_time"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nbbee5507c23c40ed8b0bd06970987965",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/ended_at_time"
+      }
+    ]
+  },
+  {
+    "@id": "_:N45e62d3867c7489ca555fb63abfcde39",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:N097f234e5510424e8752661daf2c796d",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:N8783a38ccaed4de4882e9bb849e2dc47",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ncefaaab92c4c454daca4a5fd747cdfb5",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#date"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/started_at_time"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nb26f1b1cfa0247eda9b2970b683dfec8",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/started_at_time"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nc89b8ce092b7408b9f3edcd362090d78",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/started_at_time"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ndd941de40eaa4e0292d71e9405def9d0",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/used"
+      }
+    ]
+  },
+  {
+    "@id": "_:N90cec97b50bc484a90a8d42d6eaa7efa",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/used"
+      }
+    ]
+  },
+  {
+    "@id": "_:N89340660435c47a79bf879084c2fc9bd",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/used"
+      }
+    ]
+  },
+  {
+    "@id": "_:N1dcad5942db14909a6fd6772d12658f5",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Agent"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/was_associated_with"
+      }
+    ]
+  },
+  {
+    "@id": "_:N0365f195c8e345aa9df605a62a7c8d40",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/was_associated_with"
+      }
+    ]
+  },
+  {
+    "@id": "_:Naf8991b71c214adea002eb637ceabc47",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/was_associated_with"
+      }
+    ]
+  },
+  {
+    "@id": "_:N620dd0b13b90492f80d5b6ab4708f2ad",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Activity"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/was_informed_by"
+      }
+    ]
+  },
+  {
+    "@id": "_:N3cbbfc454ab841718d253604baf59bac",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/was_informed_by"
+      }
+    ]
+  },
+  {
+    "@id": "_:N23b9c3b6409a408da02e2c305630f3b8",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/was_informed_by"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/city",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "city"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/procedure",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "procedure"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/Dataset",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Dataset"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "_:N26fcab0aae7b4b8087b1ee2c66334d86"
+      },
+      {
+        "@id": "_:N1bcbde7edda240df931b69f26c67fd67"
+      },
+      {
+        "@id": "_:Nd524b27a0d2c439bb2abf0e07135031a"
+      },
+      {
+        "@id": "_:Ne7836c858867436dbf1e7a733cf86261"
+      },
+      {
+        "@id": "_:N78e273a677b5436395ee84172ac91cf0"
+      },
+      {
+        "@id": "_:N090b786592954dea9a5f4b61467f2ac5"
+      },
+      {
+        "@id": "_:N4afbc97d746f4c5bbc29d19a21eb21a3"
+      },
+      {
+        "@id": "_:Nc77ad3dab1ce4533a50c5debef43b887"
+      },
+      {
+        "@id": "_:N2e1b7c5bea534ad9afdcdd8d8aa91441"
+      },
+      {
+        "@id": "_:Nbd8aaca485b44e58a2bff8b3d16faa5c"
+      },
+      {
+        "@id": "_:Na2ae490493484773912e1e2b9f871cf2"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ],
+    "http://www.w3.org/ns/shacl#order": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ]
+  },
+  {
+    "@id": "_:N26fcab0aae7b4b8087b1ee2c66334d86",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Activity"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/activities"
+      }
+    ]
+  },
+  {
+    "@id": "_:N1bcbde7edda240df931b69f26c67fd67",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/activities"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nd524b27a0d2c439bb2abf0e07135031a",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/CodeSystem"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/code_systems"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ne7836c858867436dbf1e7a733cf86261",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/code_systems"
+      }
+    ]
+  },
+  {
+    "@id": "_:N78e273a677b5436395ee84172ac91cf0",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Company"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/companies"
+      }
+    ]
+  },
+  {
+    "@id": "_:N090b786592954dea9a5f4b61467f2ac5",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/companies"
+      }
+    ]
+  },
+  {
+    "@id": "_:N4afbc97d746f4c5bbc29d19a21eb21a3",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/AnyObject"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/metadata"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nc77ad3dab1ce4533a50c5debef43b887",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/metadata"
+      }
+    ]
+  },
+  {
+    "@id": "_:N2e1b7c5bea534ad9afdcdd8d8aa91441",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/metadata"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nbd8aaca485b44e58a2bff8b3d16faa5c",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Person"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/persons"
+      }
+    ]
+  },
+  {
+    "@id": "_:Na2ae490493484773912e1e2b9f871cf2",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/persons"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/companies",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "companies"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "tub sub class 1"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@value": "Same depth as Sub sub class 1"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus#DIRTY",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "DIRTY"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/KitchenStatus"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/Place",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Place"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/HasAliases"
+      },
+      {
+        "@id": "_:Ned533f3f790f4a9d82e42402e0107d37"
+      },
+      {
+        "@id": "_:N3a5a755abcb04190b7ea3297138a9663"
+      },
+      {
+        "@id": "_:N055b048098fe4a09ac1787f85d2f3fa1"
+      },
+      {
+        "@id": "_:Nfa1b81f48e3144399634ab34d77a8751"
+      },
+      {
+        "@id": "_:N91b7b0a365654ce6abe4f9b1b5d6c132"
+      },
+      {
+        "@id": "_:N35969db452e74979addd65c99d0177db"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "_:Ned533f3f790f4a9d82e42402e0107d37",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:N3a5a755abcb04190b7ea3297138a9663",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:N055b048098fe4a09ac1787f85d2f3fa1",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/id"
+      }
+    ]
+  },
+  {
+    "@id": "_:Nfa1b81f48e3144399634ab34d77a8751",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#allValuesFrom": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#string"
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N91b7b0a365654ce6abe4f9b1b5d6c132",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#minCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "_:N35969db452e74979addd65c99d0177db",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Restriction"
+    ],
+    "http://www.w3.org/2002/07/owl#maxCardinality": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 1
+      }
+    ],
+    "http://www.w3.org/2002/07/owl#onProperty": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/name"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/attribute3",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "attribute3"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/acted_on_behalf_of",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "acted on behalf of"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core/Agent"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#Class"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "DiagnosisConcept"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/Concept"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#closeMatch": [
+      {
+        "@id": "https://w3id.org/biolink/Disease"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/tree_slot_B",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "tree_slot_B"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#subPropertyOf": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/tree_slot_A"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/core/ended_at_time",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#DatatypeProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "ended at time"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "http://www.w3.org/2001/XMLSchema#date"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/core"
       }
     ]
   },
@@ -5938,13 +8837,61 @@
     ]
   },
   {
-    "@id": "https://w3id.org/linkml/tests/kitchen_sink/SubclassTest",
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_birth_event",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "has birth event"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/BirthEvent"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ]
+  },
+  {
+    "@id": "https://w3id.org/linkml/tests/kitchen_sink/has_employment_history",
+    "@type": [
+      "http://www.w3.org/2002/07/owl#ObjectProperty"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "has employment history"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#range": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#inScheme": [
+      {
+        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+      }
+    ],
+    "http://www.w3.org/ns/shacl#order": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#integer",
+        "@value": 7
+      }
+    ]
+  },
+  {
+    "@id": "https://example.org/bizcodes/002",
     "@type": [
       "http://www.w3.org/2002/07/owl#Class"
     ],
     "http://www.w3.org/2000/01/rdf-schema#label": [
       {
-        "@value": "subclass test"
+        "@value": "FIRE"
       }
     ],
     "http://www.w3.org/2000/01/rdf-schema#subClassOf": [
@@ -5961,9 +8908,9 @@
         "@id": "_:Nb308535144a247e7814f0df13b93ca5f"
       }
     ],
-    "http://www.w3.org/2004/02/skos/core#inScheme": [
+    "https://w3id.org/biolink/opposite": [
       {
-        "@id": "https://w3id.org/linkml/tests/kitchen_sink"
+        "@value": "HIRE"
       }
     ]
   },

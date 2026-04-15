@@ -23274,12 +23274,14 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MappingCollection",
       "description": "A collection of deprecated mappings.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MappingCollection"
+      ],
       "abstract": true,
       "slots": [
         "predicate_mappings"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MappingCollection",
       "tree_root": true,
       "@type": "ClassDefinition"
     },
@@ -23288,6 +23290,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PredicateMapping",
       "description": "A deprecated predicate mapping object contains the deprecated predicate and an example of the rewiring that should be done to use a qualified statement in its place.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PredicateMapping"
+      ],
       "slots": [
         "mapped_predicate",
         "subject_aspect_qualifier",
@@ -23312,7 +23317,6 @@
         "broad_match"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PredicateMapping",
       "@type": "ClassDefinition"
     },
     {
@@ -23340,6 +23344,7 @@
         "https://github.com/biolink/biolink-model/issues/486"
       ],
       "exact_mappings": [
+        "biolink:OntologyClass",
         "owl:Class",
         "schema:Class"
       ],
@@ -23348,7 +23353,6 @@
         "id"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OntologyClass",
       "@type": "ClassDefinition"
     },
     {
@@ -23356,9 +23360,11 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Annotation",
       "description": "Biolink Model root class for entity annotations.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:Annotation"
+      ],
       "abstract": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Annotation",
       "@type": "ClassDefinition"
     },
     {
@@ -23366,13 +23372,15 @@
       "definition_uri": "https://w3id.org/biolink/vocab/QuantityValue",
       "description": "A value of an attribute that is quantitative and measurable, expressed as a combination of a unit and a numeric value",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:QuantityValue"
+      ],
       "is_a": "Annotation",
       "slots": [
         "has_unit",
         "has_numeric_value"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/QuantityValue",
       "@type": "ClassDefinition"
     },
     {
@@ -23390,6 +23398,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Attribute",
         "SIO:000614"
       ],
       "is_a": "NamedThing",
@@ -23414,7 +23423,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Attribute",
       "@type": "ClassDefinition"
     },
     {
@@ -23432,6 +23440,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ChemicalRole",
         "CHEBI:51086"
       ],
       "is_a": "Attribute",
@@ -23453,7 +23462,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalRole",
       "@type": "ClassDefinition"
     },
     {
@@ -23461,6 +23469,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/BiologicalSex",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:BiologicalSex",
         "PATO:0000047"
       ],
       "is_a": "Attribute",
@@ -23482,7 +23491,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BiologicalSex",
       "@type": "ClassDefinition"
     },
     {
@@ -23491,6 +23499,7 @@
       "description": "An attribute corresponding to the phenotypic sex of the individual, based upon the reproductive organs present.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PhenotypicSex",
         "PATO:0001894"
       ],
       "is_a": "BiologicalSex",
@@ -23512,7 +23521,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhenotypicSex",
       "@type": "ClassDefinition"
     },
     {
@@ -23521,6 +23529,7 @@
       "description": "An attribute corresponding to the genotypic sex of the individual, based upon genotypic composition of sex chromosomes.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:GenotypicSex",
         "PATO:0020000"
       ],
       "is_a": "BiologicalSex",
@@ -23542,7 +23551,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypicSex",
       "@type": "ClassDefinition"
     },
     {
@@ -23551,6 +23559,9 @@
       "description": "describes the severity of a phenotypic feature or disease",
       "deprecated": "True",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SeverityValue"
+      ],
       "is_a": "Attribute",
       "slots": [
         "id",
@@ -23570,36 +23581,41 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SeverityValue",
       "@type": "ClassDefinition"
     },
     {
       "name": "RelationshipQuantifier",
       "definition_uri": "https://w3id.org/biolink/vocab/RelationshipQuantifier",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:RelationshipQuantifier"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RelationshipQuantifier",
       "@type": "ClassDefinition"
     },
     {
       "name": "SensitivityQuantifier",
       "definition_uri": "https://w3id.org/biolink/vocab/SensitivityQuantifier",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SensitivityQuantifier"
+      ],
       "is_a": "RelationshipQuantifier",
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SensitivityQuantifier",
       "@type": "ClassDefinition"
     },
     {
       "name": "SpecificityQuantifier",
       "definition_uri": "https://w3id.org/biolink/vocab/SpecificityQuantifier",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SpecificityQuantifier"
+      ],
       "is_a": "RelationshipQuantifier",
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SpecificityQuantifier",
       "@type": "ClassDefinition"
     },
     {
@@ -23607,16 +23623,21 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PathognomonicityQuantifier",
       "description": "A relationship quantifier between a variant or symptom and a disease, which is high when the presence of the feature implies the existence of the disease",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PathognomonicityQuantifier"
+      ],
       "is_a": "SpecificityQuantifier",
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathognomonicityQuantifier",
       "@type": "ClassDefinition"
     },
     {
       "name": "FrequencyQuantifier",
       "definition_uri": "https://w3id.org/biolink/vocab/FrequencyQuantifier",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:FrequencyQuantifier"
+      ],
       "is_a": "RelationshipQuantifier",
       "mixin": true,
       "slots": [
@@ -23626,7 +23647,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/FrequencyQuantifier",
       "@type": "ClassDefinition"
     },
     {
@@ -23639,9 +23659,11 @@
       ],
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalOrDrugOrTreatment"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatment",
       "@type": "ClassDefinition"
     },
     {
@@ -23649,6 +23671,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Entity",
       "description": "Root Biolink Model class for all things and informational relationships, real or imagined.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:Entity"
+      ],
       "abstract": true,
       "slots": [
         "id",
@@ -23661,7 +23686,6 @@
         "deprecated"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Entity",
       "@type": "ClassDefinition"
     },
     {
@@ -23670,6 +23694,7 @@
       "description": "a databased entity or concept/class",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:NamedThing",
         "BFO:0000001",
         "WIKIDATA:Q35120",
         "UMLSSG:OBJC",
@@ -23692,7 +23717,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/NamedThing",
       "@type": "ClassDefinition"
     },
     {
@@ -23700,12 +23724,14 @@
       "definition_uri": "https://w3id.org/biolink/vocab/RelationshipType",
       "description": "An OWL property used as an edge label",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:RelationshipType"
+      ],
       "is_a": "OntologyClass",
       "slots": [
         "id"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RelationshipType",
       "@type": "ClassDefinition"
     },
     {
@@ -23719,12 +23745,14 @@
       "mappings": [
         "WIKIDATA:Q427626"
       ],
+      "exact_mappings": [
+        "biolink:TaxonomicRank"
+      ],
       "is_a": "OntologyClass",
       "slots": [
         "id"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/TaxonomicRank",
       "@type": "ClassDefinition"
     },
     {
@@ -23745,6 +23773,7 @@
         "taxonomic classification"
       ],
       "exact_mappings": [
+        "biolink:OrganismTaxon",
         "WIKIDATA:Q16521",
         "STY:T001",
         "bioschemas:Taxon"
@@ -23772,7 +23801,6 @@
         "organism_taxon_has_taxonomic_rank"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxon",
       "@type": "ClassDefinition"
     },
     {
@@ -23781,6 +23809,7 @@
       "description": "Something that happens at a given place and time.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Event",
         "NCIT:C25499",
         "STY:T051"
       ],
@@ -23800,13 +23829,15 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Event",
       "@type": "ClassDefinition"
     },
     {
       "name": "AdministrativeEntity",
       "definition_uri": "https://w3id.org/biolink/vocab/AdministrativeEntity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:AdministrativeEntity"
+      ],
       "is_a": "NamedThing",
       "abstract": true,
       "slots": [
@@ -23824,7 +23855,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/AdministrativeEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -23835,6 +23865,9 @@
         "The data/metadata included in a Study Result object are typically a subset of data from a larger study data set, that are selected by a curator because they may be useful as evidence for deriving knowledge about a specific focus of the study. The notion of a 'study' here is defined broadly to include any research activity at any scale that is aimed at generating knowledge or hypotheses. This may include a single assay or computational analyses, or a larger scale clinical trial or experimental research investigation."
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:StudyResult"
+      ],
       "is_a": "InformationContentEntity",
       "abstract": true,
       "slots": [
@@ -23856,7 +23889,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/StudyResult",
       "@type": "ClassDefinition"
     },
     {
@@ -23865,6 +23897,7 @@
       "description": "a detailed investigation and/or analysis",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Study",
         "NCIT:C63536"
       ],
       "close_mappings": [
@@ -23890,7 +23923,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Study",
       "@type": "ClassDefinition"
     },
     {
@@ -23898,6 +23930,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/StudyVariable",
       "description": "a variable that is used as a measure in the investigation of a study",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:StudyVariable"
+      ],
       "close_mappings": [
         "STATO:0000258",
         "SIO:000367"
@@ -23925,7 +23960,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/StudyVariable",
       "@type": "ClassDefinition"
     },
     {
@@ -23933,6 +23967,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CommonDataElement",
       "description": "A Common Data Element (CDE) is a standardized, precisely defined question, paired with a set of allowable responses, used systematically across different sites, studies, or clinical trials to ensure consistent data collection. Multiple CDEs (from one or more Collections) can be curated into Forms. (https://cde.nlm.nih.gov/home)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CommonDataElement"
+      ],
       "close_mappings": [
         "NCIT:C19984"
       ],
@@ -23956,7 +23993,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CommonDataElement",
       "@type": "ClassDefinition"
     },
     {
@@ -23964,6 +24000,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ConceptCountAnalysisResult",
       "description": "A result of a concept count analysis.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ConceptCountAnalysisResult"
+      ],
       "is_a": "StudyResult",
       "slots": [
         "id",
@@ -23984,7 +24023,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ConceptCountAnalysisResult",
       "@type": "ClassDefinition"
     },
     {
@@ -23992,6 +24030,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ObservedExpectedFrequencyAnalysisResult",
       "description": "A result of a observed expected frequency analysis.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ObservedExpectedFrequencyAnalysisResult"
+      ],
       "is_a": "StudyResult",
       "slots": [
         "id",
@@ -24012,7 +24053,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ObservedExpectedFrequencyAnalysisResult",
       "@type": "ClassDefinition"
     },
     {
@@ -24020,6 +24060,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/RelativeFrequencyAnalysisResult",
       "description": "A result of a relative frequency analysis.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:RelativeFrequencyAnalysisResult"
+      ],
       "is_a": "StudyResult",
       "slots": [
         "id",
@@ -24040,7 +24083,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RelativeFrequencyAnalysisResult",
       "@type": "ClassDefinition"
     },
     {
@@ -24048,6 +24090,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/TextMiningResult",
       "description": "A result of text mining.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:TextMiningResult"
+      ],
       "is_a": "StudyResult",
       "slots": [
         "id",
@@ -24068,7 +24113,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/TextMiningResult",
       "@type": "ClassDefinition"
     },
     {
@@ -24076,6 +24120,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChiSquaredAnalysisResult",
       "description": "A result of a chi squared analysis.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChiSquaredAnalysisResult"
+      ],
       "is_a": "StudyResult",
       "slots": [
         "id",
@@ -24096,7 +24143,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChiSquaredAnalysisResult",
       "@type": "ClassDefinition"
     },
     {
@@ -24104,6 +24150,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/LogOddsAnalysisResult",
       "description": "A result of a log odds ratio analysis.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:LogOddsAnalysisResult"
+      ],
       "is_a": "StudyResult",
       "slots": [
         "id",
@@ -24124,7 +24173,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/LogOddsAnalysisResult",
       "@type": "ClassDefinition"
     },
     {
@@ -24144,6 +24192,7 @@
         "group"
       ],
       "exact_mappings": [
+        "biolink:Agent",
         "prov:Agent",
         "dct:Agent"
       ],
@@ -24173,7 +24222,6 @@
         "agent_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Agent",
       "@type": "ClassDefinition"
     },
     {
@@ -24190,6 +24238,7 @@
         "information entity"
       ],
       "exact_mappings": [
+        "biolink:InformationContentEntity",
         "IAO:0000030"
       ],
       "narrow_mappings": [
@@ -24227,7 +24276,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/InformationContentEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -24236,6 +24284,7 @@
       "description": "an item that refers to a collection of data from a data source.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Dataset",
         "IAO:0000100",
         "dctypes:Dataset",
         "schema:dataset",
@@ -24261,7 +24310,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Dataset",
       "@type": "ClassDefinition"
     },
     {
@@ -24270,6 +24318,7 @@
       "description": "an item that holds distribution level information about a dataset.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:DatasetDistribution",
         "dcat:Distribution"
       ],
       "is_a": "InformationContentEntity",
@@ -24293,7 +24342,6 @@
         "distribution_download_url"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DatasetDistribution",
       "@type": "ClassDefinition"
     },
     {
@@ -24301,6 +24349,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DatasetVersion",
       "description": "an item that holds version level information about a dataset.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DatasetVersion"
+      ],
       "is_a": "InformationContentEntity",
       "slots": [
         "id",
@@ -24324,7 +24375,6 @@
         "has_distribution"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DatasetVersion",
       "@type": "ClassDefinition"
     },
     {
@@ -24332,6 +24382,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DatasetSummary",
       "description": "an item that holds summary level information about a dataset.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DatasetSummary"
+      ],
       "is_a": "InformationContentEntity",
       "slots": [
         "id",
@@ -24354,7 +24407,6 @@
         "source_logo"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DatasetSummary",
       "@type": "ClassDefinition"
     },
     {
@@ -24363,6 +24415,7 @@
       "description": "Level of confidence in a statement",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ConfidenceLevel",
         "CIO:0000028",
         "SEPIO:0000187"
       ],
@@ -24392,7 +24445,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ConfidenceLevel",
       "@type": "ClassDefinition"
     },
     {
@@ -24404,6 +24456,7 @@
         "evidence code"
       ],
       "exact_mappings": [
+        "biolink:EvidenceType",
         "ECO:0000000"
       ],
       "is_a": "InformationContentEntity",
@@ -24429,7 +24482,6 @@
         "creation_date"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EvidenceType",
       "@type": "ClassDefinition"
     },
     {
@@ -24447,6 +24499,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Publication",
         "IAO:0000311"
       ],
       "narrow_mappings": [
@@ -24479,7 +24532,6 @@
         "publication_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Publication",
       "@type": "ClassDefinition"
     },
     {
@@ -24494,6 +24546,9 @@
         "model_organism_database"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:Book"
+      ],
       "is_a": "Publication",
       "slots": [
         "iri",
@@ -24520,7 +24575,6 @@
         "book_type"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Book",
       "@type": "ClassDefinition"
     },
     {
@@ -24530,6 +24584,9 @@
         "model_organism_database"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:BookChapter"
+      ],
       "is_a": "Publication",
       "slots": [
         "iri",
@@ -24559,7 +24616,6 @@
         "chapter"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BookChapter",
       "@type": "ClassDefinition"
     },
     {
@@ -24576,6 +24632,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "journal"
+      ],
+      "exact_mappings": [
+        "biolink:Serial"
       ],
       "is_a": "Publication",
       "slots": [
@@ -24606,7 +24665,6 @@
         "serial_type"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Serial",
       "@type": "ClassDefinition"
     },
     {
@@ -24621,6 +24679,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Article",
         "SIO:000154",
         "fabio:article"
       ],
@@ -24654,7 +24713,6 @@
         "issue"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Article",
       "@type": "ClassDefinition"
     },
     {
@@ -24668,6 +24726,7 @@
       "description": "an article, typically presenting results of research, that is published in an issue of a scientific journal.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:JournalArticle",
         "IAO:0000013",
         "fabio:JournalArticle"
       ],
@@ -24701,7 +24760,6 @@
         "issue"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/JournalArticle",
       "@type": "ClassDefinition"
     },
     {
@@ -24710,6 +24768,7 @@
       "description": "a legal document granted by a patent issuing authority which confers upon the patenter the sole right to make, use and sell an invention for a set period of time.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Patent",
         "SIO:000153",
         "IAO:0000313",
         "fabio:Patent"
@@ -24740,7 +24799,6 @@
         "publication_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Patent",
       "@type": "ClassDefinition"
     },
     {
@@ -24749,6 +24807,7 @@
       "description": "a document that is published according to World Wide Web standards, which may incorporate text, graphics, sound, and/or other features.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:WebPage",
         "SIO:000302",
         "NCIT-OBO:C142749",
         "fabio:WebPage"
@@ -24779,7 +24838,6 @@
         "publication_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/WebPage",
       "@type": "ClassDefinition"
     },
     {
@@ -24788,6 +24846,7 @@
       "description": "a document reresenting an early version of an author's original scholarly work, such as a research paper or a review, prior to formal peer review and publication in a peer-reviewed scholarly or scientific journal.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PreprintPublication",
         "EFO:0010558",
         "fabio:Preprint"
       ],
@@ -24817,7 +24876,6 @@
         "publication_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PreprintPublication",
       "@type": "ClassDefinition"
     },
     {
@@ -24825,6 +24883,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DrugLabel",
       "description": "a document accompanying a drug or its container that provides written, printed or graphic information about the drug, including drug contents, specific instructions or warnings for administration, storage and disposal instructions, etc.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DrugLabel"
+      ],
       "broad_mappings": [
         "NCIT-OBO:C41203"
       ],
@@ -24854,7 +24915,6 @@
         "publication_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DrugLabel",
       "@type": "ClassDefinition"
     },
     {
@@ -24862,6 +24922,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/RetrievalSource",
       "description": "Provides information about how a particular InformationResource served as a source from which knowledge expressed in an Edge, or data used to generate this knowledge, was retrieved.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:RetrievalSource"
+      ],
       "is_a": "InformationContentEntity",
       "slots": [
         "id",
@@ -24885,7 +24948,6 @@
         "xref"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RetrievalSource",
       "@type": "ClassDefinition"
     },
     {
@@ -24893,9 +24955,11 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PhysicalEssenceOrOccurrent",
       "description": "Either a physical or processual entity.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PhysicalEssenceOrOccurrent"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhysicalEssenceOrOccurrent",
       "@type": "ClassDefinition"
     },
     {
@@ -24903,10 +24967,12 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PhysicalEssence",
       "description": "Semantic mixin concept.  Pertains to entities that have physical properties such as mass, volume, or charge.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PhysicalEssence"
+      ],
       "is_a": "PhysicalEssenceOrOccurrent",
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhysicalEssence",
       "@type": "ClassDefinition"
     },
     {
@@ -24915,6 +24981,7 @@
       "description": "An entity that has material reality (a.k.a. physical essence).",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PhysicalEntity",
         "STY:T072"
       ],
       "narrow_mappings": [
@@ -24939,7 +25006,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhysicalEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -24948,12 +25014,12 @@
       "description": "A processual entity.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Occurrent",
         "BFO:0000003"
       ],
       "is_a": "PhysicalEssenceOrOccurrent",
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Occurrent",
       "@type": "ClassDefinition"
     },
     {
@@ -24962,12 +25028,12 @@
       "description": "Activity or behavior of any independent integral living, organization or mechanical actor in the world",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ActivityAndBehavior",
         "UMLSSG:ACTI"
       ],
       "is_a": "Occurrent",
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ActivityAndBehavior",
       "@type": "ClassDefinition"
     },
     {
@@ -24976,6 +25042,7 @@
       "description": "An activity is something that occurs over a period of time and acts upon or with entities; it may include consuming, processing, transforming, modifying, relocating, using, or generating entities.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Activity",
         "prov:Activity",
         "NCIT:C43431",
         "STY:T052"
@@ -25008,7 +25075,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Activity",
       "@type": "ClassDefinition"
     },
     {
@@ -25020,6 +25086,7 @@
       "description": "A series of actions conducted in a certain order or manner",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Procedure",
         "UMLSSG:PROC",
         "dcid:MedicalProcedure"
       ],
@@ -25048,7 +25115,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Procedure",
       "@type": "ClassDefinition"
     },
     {
@@ -25057,6 +25123,7 @@
       "description": "a fact or situation that is observed to exist or happen, especially one whose cause or explanation is in question",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Phenomenon",
         "UMLSSG:PHEN"
       ],
       "narrow_mappings": [
@@ -25088,7 +25155,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Phenomenon",
       "@type": "ClassDefinition"
     },
     {
@@ -25096,6 +25162,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Device",
       "description": "A thing made or adapted for a particular purpose, especially a piece of mechanical or electronic equipment",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:Device"
+      ],
       "narrow_mappings": [
         "UMLSSG:DEVI",
         "STY:T074",
@@ -25118,7 +25187,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Device",
       "@type": "ClassDefinition"
     },
     {
@@ -25127,6 +25195,7 @@
       "description": "A device or substance used to help diagnose disease or injury",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:DiagnosticAid",
         "STY:T130",
         "SNOMED:2949005"
       ],
@@ -25146,7 +25215,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiagnosticAid",
       "@type": "ClassDefinition"
     },
     {
@@ -25154,6 +25222,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/StudyPopulation",
       "description": "A group of people banded together or treated as a group as participants in a research study.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:StudyPopulation"
+      ],
       "close_mappings": [
         "WIKIDATA:Q7229825"
       ],
@@ -25175,7 +25246,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/StudyPopulation",
       "@type": "ClassDefinition"
     },
     {
@@ -25183,9 +25253,11 @@
       "definition_uri": "https://w3id.org/biolink/vocab/SubjectOfInvestigation",
       "description": "An entity that has the role of being studied in an investigation, study, or experiment",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SubjectOfInvestigation"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SubjectOfInvestigation",
       "@type": "ClassDefinition"
     },
     {
@@ -25204,6 +25276,7 @@
         "physical sample"
       ],
       "exact_mappings": [
+        "biolink:MaterialSample",
         "OBI:0000747",
         "SIO:001050"
       ],
@@ -25226,7 +25299,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MaterialSample",
       "@type": "ClassDefinition"
     },
     {
@@ -25234,6 +25306,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PlanetaryEntity",
       "description": "Any entity or process that exists at the level of the whole planet",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PlanetaryEntity"
+      ],
       "is_a": "NamedThing",
       "slots": [
         "id",
@@ -25250,7 +25325,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PlanetaryEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25258,6 +25332,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EnvironmentalProcess",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:EnvironmentalProcess",
         "ENVO:02500000"
       ],
       "is_a": "PlanetaryEntity",
@@ -25279,7 +25354,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EnvironmentalProcess",
       "@type": "ClassDefinition"
     },
     {
@@ -25287,6 +25361,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EnvironmentalFeature",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:EnvironmentalFeature",
         "ENVO:01000254"
       ],
       "is_a": "PlanetaryEntity",
@@ -25305,7 +25380,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EnvironmentalFeature",
       "@type": "ClassDefinition"
     },
     {
@@ -25314,6 +25388,7 @@
       "description": "a location that can be described in lat/long coordinates",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:GeographicLocation",
         "UMLSSG:GEOG",
         "STY:T083"
       ],
@@ -25335,7 +25410,6 @@
         "longitude"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeographicLocation",
       "@type": "ClassDefinition"
     },
     {
@@ -25343,6 +25417,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeographicLocationAtTime",
       "description": "a location that can be described in lat/long coordinates, for a particular time",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeographicLocationAtTime"
+      ],
       "is_a": "GeographicLocation",
       "slots": [
         "id",
@@ -25362,7 +25439,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeographicLocationAtTime",
       "@type": "ClassDefinition"
     },
     {
@@ -25370,13 +25446,15 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ThingWithTaxon",
       "description": "A mixin that can be used on any entity that can be taxonomically classified. This includes individual organisms; genes, their products and other molecular entities; body parts; biological processes",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ThingWithTaxon"
+      ],
       "mixin": true,
       "slots": [
         "in_taxon",
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ThingWithTaxon",
       "@type": "ClassDefinition"
     },
     {
@@ -25385,6 +25463,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "bioentity"
+      ],
+      "exact_mappings": [
+        "biolink:BiologicalEntity"
       ],
       "narrow_mappings": [
         "WIKIDATA:Q28845870",
@@ -25414,7 +25495,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BiologicalEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25424,6 +25504,9 @@
         "translator_minimal"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenomicEntity"
+      ],
       "narrow_mappings": [
         "STY:T028",
         "GENO:0000897"
@@ -25433,7 +25516,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenomicEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25443,12 +25525,14 @@
         "translator_minimal"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EpigenomicEntity"
+      ],
       "mixin": true,
       "slots": [
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EpigenomicEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25485,6 +25569,9 @@
         "translator_minimal"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MolecularEntity"
+      ],
       "narrow_mappings": [
         "STY:T088",
         "STY:T085",
@@ -25513,7 +25600,6 @@
         "is_metabolite"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MolecularEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25551,6 +25637,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ChemicalEntity",
         "CHEBI:24431",
         "SIO:010004",
         "WIKIDATA:Q79529",
@@ -25591,7 +25678,6 @@
         "has_chemical_role"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25632,6 +25718,9 @@
       "aliases": [
         "chemical substance"
       ],
+      "exact_mappings": [
+        "biolink:SmallMolecule"
+      ],
       "narrow_mappings": [
         "STY:T196",
         "CHEBI:59999",
@@ -25669,7 +25758,6 @@
         "is_metabolite"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SmallMolecule",
       "@type": "ClassDefinition"
     },
     {
@@ -25706,6 +25794,9 @@
         "translator_minimal"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalMixture"
+      ],
       "close_mappings": [
         "dcid:ChemicalCompound"
       ],
@@ -25738,7 +25829,6 @@
         "routes_of_delivery"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalMixture",
       "@type": "ClassDefinition"
     },
     {
@@ -25778,6 +25868,7 @@
         "genomic entity"
       ],
       "exact_mappings": [
+        "biolink:NucleicAcidEntity",
         "SO:0000110"
       ],
       "narrow_mappings": [
@@ -25815,7 +25906,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/NucleicAcidEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -25827,6 +25917,7 @@
         "regulatory element"
       ],
       "exact_mappings": [
+        "biolink:RegulatoryRegion",
         "SO:0005836",
         "SIO:001225",
         "WIKIDATA:Q3238407"
@@ -25856,7 +25947,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RegulatoryRegion",
       "@type": "ClassDefinition"
     },
     {
@@ -25869,6 +25959,7 @@
         "atac-seq accessible region"
       ],
       "exact_mappings": [
+        "biolink:AccessibleDnaRegion",
         "SO:0002231"
       ],
       "is_a": "RegulatoryRegion",
@@ -25896,7 +25987,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/AccessibleDnaRegion",
       "@type": "ClassDefinition"
     },
     {
@@ -25909,6 +25999,7 @@
         "binding site"
       ],
       "exact_mappings": [
+        "biolink:TranscriptionFactorBindingSite",
         "SO:0000235"
       ],
       "is_a": "RegulatoryRegion",
@@ -25936,7 +26027,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/TranscriptionFactorBindingSite",
       "@type": "ClassDefinition"
     },
     {
@@ -25973,6 +26063,9 @@
         "translator_minimal"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MolecularMixture"
+      ],
       "is_a": "ChemicalMixture",
       "slots": [
         "id",
@@ -25998,7 +26091,6 @@
         "routes_of_delivery"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MolecularMixture",
       "@type": "ClassDefinition"
     },
     {
@@ -26032,6 +26124,9 @@
         "translator_minimal"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ComplexMolecularMixture"
+      ],
       "is_a": "ChemicalMixture",
       "slots": [
         "id",
@@ -26057,7 +26152,6 @@
         "routes_of_delivery"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ComplexMolecularMixture",
       "@type": "ClassDefinition"
     },
     {
@@ -26069,6 +26163,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/BiologicalProcessOrActivity",
       "description": "Either an individual molecular activity, or a collection of causally connected molecular activities in a biological system.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:BiologicalProcessOrActivity"
+      ],
       "is_a": "BiologicalEntity",
       "mixins": [
         "Occurrent",
@@ -26094,7 +26191,6 @@
         "enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BiologicalProcessOrActivity",
       "@type": "ClassDefinition"
     },
     {
@@ -26123,6 +26219,7 @@
         "reaction"
       ],
       "exact_mappings": [
+        "biolink:MolecularActivity",
         "GO:0003674",
         "STY:T044"
       ],
@@ -26154,7 +26251,6 @@
         "molecular_activity_enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MolecularActivity",
       "@type": "ClassDefinition"
     },
     {
@@ -26170,6 +26266,7 @@
       "description": "One or more causally connected executions of molecular functions",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:BiologicalProcess",
         "GO:0008150",
         "SIO:000006",
         "WIKIDATA:Q2996394"
@@ -26202,7 +26299,6 @@
         "enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BiologicalProcess",
       "@type": "ClassDefinition"
     },
     {
@@ -26223,6 +26319,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Pathway",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Pathway",
         "PW:0000001",
         "WIKIDATA:Q4915012"
       ],
@@ -26254,7 +26351,6 @@
         "enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Pathway",
       "@type": "ClassDefinition"
     },
     {
@@ -26269,6 +26365,7 @@
         "physiology"
       ],
       "exact_mappings": [
+        "biolink:PhysiologicalProcess",
         "STY:T039",
         "WIKIDATA:Q30892994"
       ],
@@ -26302,7 +26399,6 @@
         "enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhysiologicalProcess",
       "@type": "ClassDefinition"
     },
     {
@@ -26310,6 +26406,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Behavior",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Behavior",
         "GO:0007610",
         "STY:T053"
       ],
@@ -26343,7 +26440,6 @@
         "enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Behavior",
       "@type": "ClassDefinition"
     },
     {
@@ -26379,6 +26475,7 @@
       "description": "A chemical entity (often a mixture) processed for consumption for nutritional, medical or technical use. Is a material entity that is created or changed during material processing.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ProcessedMaterial",
         "OBI:0000047"
       ],
       "is_a": "ChemicalMixture",
@@ -26406,7 +26503,6 @@
         "routes_of_delivery"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ProcessedMaterial",
       "@type": "ClassDefinition"
     },
     {
@@ -26447,6 +26543,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Drug",
         "WIKIDATA:Q12140",
         "CHEBI:23888",
         "STY:T200",
@@ -26487,7 +26584,6 @@
         "routes_of_delivery"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Drug",
       "@type": "ClassDefinition"
     },
     {
@@ -26521,6 +26617,9 @@
       ],
       "definition_uri": "https://w3id.org/biolink/vocab/EnvironmentalFoodContaminant",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EnvironmentalFoodContaminant"
+      ],
       "related_mappings": [
         "CHEBI:78299"
       ],
@@ -26545,7 +26644,6 @@
         "has_chemical_role"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EnvironmentalFoodContaminant",
       "@type": "ClassDefinition"
     },
     {
@@ -26579,6 +26677,9 @@
       ],
       "definition_uri": "https://w3id.org/biolink/vocab/FoodAdditive",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:FoodAdditive"
+      ],
       "related_mappings": [
         "CHEBI:64047"
       ],
@@ -26603,7 +26704,6 @@
         "has_chemical_role"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/FoodAdditive",
       "@type": "ClassDefinition"
     },
     {
@@ -26639,6 +26739,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Food",
       "description": "A substance consumed by a living organism as a source of nutrition",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:Food"
+      ],
       "is_a": "ChemicalMixture",
       "slots": [
         "id",
@@ -26664,7 +26767,6 @@
         "routes_of_delivery"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Food",
       "@type": "ClassDefinition"
     },
     {
@@ -26673,6 +26775,7 @@
       "description": "describes a characteristic of an organismal entity.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:OrganismAttribute",
         "STY:T032"
       ],
       "is_a": "Attribute",
@@ -26694,7 +26797,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismAttribute",
       "@type": "ClassDefinition"
     },
     {
@@ -26713,6 +26815,9 @@
       ],
       "mappings": [
         "PATO:0000001"
+      ],
+      "exact_mappings": [
+        "biolink:PhenotypicQuality"
       ],
       "is_a": "OrganismAttribute",
       "slots": [
@@ -26733,7 +26838,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhenotypicQuality",
       "@type": "ClassDefinition"
     },
     {
@@ -26750,6 +26854,7 @@
         "inheritance"
       ],
       "exact_mappings": [
+        "biolink:GeneticInheritance",
         "HP:0000005",
         "GENO:0000141",
         "NCIT:C45827"
@@ -26775,7 +26880,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneticInheritance",
       "@type": "ClassDefinition"
     },
     {
@@ -26784,6 +26888,7 @@
       "description": "A named entity that is either a part of an organism, a whole organism, population or clade of organisms, excluding chemical entities",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:OrganismalEntity",
         "WIKIDATA:Q7239",
         "UMLSSG:LIVB",
         "CARO:0001010"
@@ -26813,7 +26918,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismalEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -26822,6 +26926,7 @@
       "description": "A member of a group of unicellular microorganisms lacking a nuclear membrane, that reproduce by binary fission and are often motile.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Bacterium",
         "NCBITaxon:1869227",
         "STY:T007"
       ],
@@ -26843,7 +26948,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Bacterium",
       "@type": "ClassDefinition"
     },
     {
@@ -26852,6 +26956,7 @@
       "description": "A virus is a microorganism that replicates itself as a microRNA and infects the host cell.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Virus",
         "NCBITaxon:10239",
         "STY:T005"
       ],
@@ -26876,7 +26981,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Virus",
       "@type": "ClassDefinition"
     },
     {
@@ -26885,6 +26989,7 @@
       "description": "",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:CellularOrganism",
         "NCBITaxon:131567"
       ],
       "is_a": "OrganismalEntity",
@@ -26908,7 +27013,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CellularOrganism",
       "@type": "ClassDefinition"
     },
     {
@@ -26917,6 +27021,7 @@
       "description": "A member of the class Mammalia, a clade of endothermic amniotes distinguished from reptiles and birds by the possession of hair, three middle ear bones, mammary glands, and a neocortex",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Mammal",
         "NCBITaxon:40674",
         "STY:T015",
         "NCIT:C14234",
@@ -26943,7 +27048,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Mammal",
       "@type": "ClassDefinition"
     },
     {
@@ -26952,6 +27056,7 @@
       "description": "A member of the the species Homo sapiens.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Human",
         "STY:T016",
         "NCBITaxon:9606",
         "SIO:000485",
@@ -26978,7 +27083,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Human",
       "@type": "ClassDefinition"
     },
     {
@@ -26987,6 +27091,7 @@
       "description": "",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Plant",
         "NCIT:C14258",
         "STY:T002",
         "PO:0000003",
@@ -27010,7 +27115,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Plant",
       "@type": "ClassDefinition"
     },
     {
@@ -27019,6 +27123,7 @@
       "description": "An animal lacking a vertebral column. This group consists of 98% of all animal species.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Invertebrate",
         "NCIT:C14228",
         "OMIT:0008565",
         "FOODON:00002452",
@@ -27045,7 +27150,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Invertebrate",
       "@type": "ClassDefinition"
     },
     {
@@ -27054,6 +27158,7 @@
       "description": "A sub-phylum of animals consisting of those having a bony or cartilaginous vertebral column.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Vertebrate",
         "STY:T010",
         "NCBITaxon:7742",
         "OMIT:0015545"
@@ -27079,7 +27184,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Vertebrate",
       "@type": "ClassDefinition"
     },
     {
@@ -27088,6 +27192,7 @@
       "description": "A kingdom of eukaryotic, heterotrophic organisms that live as saprobes or parasites, including mushrooms, yeasts, smuts, molds, etc. They reproduce either sexually or asexually, and have life cycles that range from simple to complex. Filamentous fungi refer to those that grow as multicellular colonies (mushrooms and molds).",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Fungus",
         "STY:T004",
         "NCIT:C14209",
         "FOODON:03411261"
@@ -27114,7 +27219,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Fungus",
       "@type": "ClassDefinition"
     },
     {
@@ -27134,6 +27238,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:LifeStage",
         "UBERON:0000105"
       ],
       "narrow_mappings": [
@@ -27157,7 +27262,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/LifeStage",
       "@type": "ClassDefinition"
     },
     {
@@ -27172,6 +27276,7 @@
         "organism"
       ],
       "exact_mappings": [
+        "biolink:IndividualOrganism",
         "SIO:010000",
         "STY:T001"
       ],
@@ -27200,7 +27305,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/IndividualOrganism",
       "@type": "ClassDefinition"
     },
     {
@@ -27222,6 +27326,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PopulationOfIndividualOrganisms",
         "PCO:0000001",
         "SIO:001061",
         "STY:T098",
@@ -27248,7 +27353,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PopulationOfIndividualOrganisms",
       "@type": "ClassDefinition"
     },
     {
@@ -27258,6 +27362,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "phenome"
+      ],
+      "exact_mappings": [
+        "biolink:DiseaseOrPhenotypicFeature"
       ],
       "narrow_mappings": [
         "STY:T033"
@@ -27280,7 +27387,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeature",
       "union_of": [
         "Disease",
         "PhenotypicFeature"
@@ -27322,6 +27428,7 @@
         "medical condition"
       ],
       "exact_mappings": [
+        "biolink:Disease",
         "MONDO:0000001",
         "DOID:4",
         "NCIT:C2991",
@@ -27357,7 +27464,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Disease",
       "@type": "ClassDefinition"
     },
     {
@@ -27401,6 +27507,7 @@
         "endophenotype"
       ],
       "exact_mappings": [
+        "biolink:PhenotypicFeature",
         "UPHENO:0001001",
         "SIO:010056",
         "WIKIDATA:Q104053",
@@ -27446,7 +27553,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhenotypicFeature",
       "@type": "ClassDefinition"
     },
     {
@@ -27455,6 +27561,7 @@
       "description": "A phenotypic feature which is behavioral in nature.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:BehavioralFeature",
         "NBO:0000243"
       ],
       "is_a": "PhenotypicFeature",
@@ -27475,7 +27582,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BehavioralFeature",
       "@type": "ClassDefinition"
     },
     {
@@ -27499,6 +27605,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:AnatomicalEntity",
         "UBERON:0001062",
         "WIKIDATA:Q4936952",
         "UMLSSG:ANAT",
@@ -27544,7 +27651,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/AnatomicalEntity",
       "@type": "ClassDefinition"
     },
     {
@@ -27566,6 +27672,7 @@
         "cell part"
       ],
       "exact_mappings": [
+        "biolink:CellularComponent",
         "GO:0005575",
         "SIO:001400",
         "WIKIDATA:Q5058355",
@@ -27592,7 +27699,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CellularComponent",
       "@type": "ClassDefinition"
     },
     {
@@ -27610,6 +27716,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Cell",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Cell",
         "GO:0005623",
         "CL:0000000",
         "SIO:010001",
@@ -27635,7 +27742,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Cell",
       "@type": "ClassDefinition"
     },
     {
@@ -27646,6 +27752,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CellLine",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:CellLine",
         "CLO:0000031"
       ],
       "is_a": "OrganismalEntity",
@@ -27669,7 +27776,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CellLine",
       "@type": "ClassDefinition"
     },
     {
@@ -27689,6 +27795,7 @@
         "organ"
       ],
       "exact_mappings": [
+        "biolink:GrossAnatomicalStructure",
         "UBERON:0010000",
         "WIKIDATA:Q4936952"
       ],
@@ -27715,7 +27822,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GrossAnatomicalStructure",
       "@type": "ClassDefinition"
     },
     {
@@ -27723,9 +27829,11 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalEntityOrGeneOrGeneProduct",
       "description": "A union of chemical entities and children, and gene or gene product. This mixin is helpful to use when searching across chemical entities that must include genes and their children as chemical entities.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalEntityOrGeneOrGeneProduct"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalEntityOrGeneOrGeneProduct",
       "@type": "ClassDefinition"
     },
     {
@@ -27733,9 +27841,11 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalEntityOrProteinOrPolypeptide",
       "description": "A union of chemical entities and children, and protein and polypeptide. This mixin is helpful to use when searching across chemical entities that must include genes and their children as chemical entities.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalEntityOrProteinOrPolypeptide"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalEntityOrProteinOrPolypeptide",
       "@type": "ClassDefinition"
     },
     {
@@ -27743,12 +27853,14 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineMixin",
       "description": "A union of gene locus, gene product, and macromolecular complex. These are the basic units of function in a cell. They either carry out individual biological activities, or they encode molecules which do this.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MacromolecularMachineMixin"
+      ],
       "mixin": true,
       "slots": [
         "macromolecular_machine_mixin_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -27760,13 +27872,15 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneOrGeneProduct",
       "description": "A union of gene loci or gene products. Frequently an identifier for one will be used as proxy for another",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneOrGeneProduct"
+      ],
       "is_a": "MacromolecularMachineMixin",
       "mixin": true,
       "slots": [
         "macromolecular_machine_mixin_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneOrGeneProduct",
       "@type": "ClassDefinition"
     },
     {
@@ -27799,6 +27913,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Gene",
         "SO:0000704",
         "SIO:010035",
         "WIKIDATA:Q7187",
@@ -27837,7 +27952,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Gene",
       "@type": "ClassDefinition"
     },
     {
@@ -27851,6 +27965,7 @@
       "description": "The functional molecular product of a single gene locus. Gene products are either proteins or functional RNA molecules.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:GeneProductMixin",
         "WIKIDATA:Q424689",
         "GENO:0000907",
         "NCIT:C26548"
@@ -27863,7 +27978,6 @@
         "xref"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneProductMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -27871,6 +27985,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneProductIsoformMixin",
       "description": "This is an abstract class that can be mixed in with different kinds of gene products to indicate that the gene product is intended to represent a specific isoform rather than a canonical or reference or generic product. The designation of canonical or reference may be arbitrary, or it may represent the superclass of all isoforms.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneProductIsoformMixin"
+      ],
       "is_a": "GeneProductMixin",
       "mixin": true,
       "slots": [
@@ -27879,7 +27996,6 @@
         "xref"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneProductIsoformMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -27898,6 +28014,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:MacromolecularComplex",
         "GO:0032991",
         "WIKIDATA:Q22325163"
       ],
@@ -27922,7 +28039,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MacromolecularComplex",
       "@type": "ClassDefinition"
     },
     {
@@ -27930,6 +28046,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/NucleosomeModification",
       "description": "A chemical modification of a histone protein within a nucleosome octomer or a substitution of a histone with a variant histone isoform. e.g. Histone 4 Lysine 20 methylation (H4K20me), histone variant H2AZ substituting H2A.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:NucleosomeModification"
+      ],
       "is_a": "BiologicalEntity",
       "mixins": [
         "GeneProductIsoformMixin",
@@ -27954,7 +28073,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/NucleosomeModification",
       "@type": "ClassDefinition"
     },
     {
@@ -27966,6 +28084,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Genome",
         "SO:0001026",
         "SIO:000984",
         "WIKIDATA:Q7020"
@@ -27997,7 +28116,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Genome",
       "@type": "ClassDefinition"
     },
     {
@@ -28006,6 +28124,7 @@
       "description": "A region of the transcript sequence within a gene which is not removed from the primary RNA transcript by RNA splicing.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Exon",
         "SO:0000147",
         "SIO:010445",
         "WIKIDATA:Q373027"
@@ -28028,7 +28147,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Exon",
       "@type": "ClassDefinition"
     },
     {
@@ -28044,6 +28162,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Transcript",
         "SO:0000673",
         "SIO:010450",
         "WIKIDATA:Q7243183",
@@ -28067,7 +28186,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Transcript",
       "@type": "ClassDefinition"
     },
     {
@@ -28075,6 +28193,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CodingSequence",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:CodingSequence",
         "SO:0000316",
         "SIO:001390"
       ],
@@ -28100,7 +28219,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CodingSequence",
       "@type": "ClassDefinition"
     },
     {
@@ -28120,6 +28238,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "amino acid entity"
+      ],
+      "exact_mappings": [
+        "biolink:Polypeptide"
       ],
       "narrow_mappings": [
         "SO:0000104",
@@ -28148,7 +28269,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Polypeptide",
       "@type": "ClassDefinition"
     },
     {
@@ -28166,6 +28286,7 @@
       "description": "A gene product that is composed of a chain of amino acid sequences and is produced by ribosome-mediated translation of mRNA",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Protein",
         "PR:000000001",
         "SIO:010043",
         "WIKIDATA:Q8054"
@@ -28198,7 +28319,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Protein",
       "@type": "ClassDefinition"
     },
     {
@@ -28214,6 +28334,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "proteoform"
+      ],
+      "exact_mappings": [
+        "biolink:ProteinIsoform"
       ],
       "is_a": "Protein",
       "mixins": [
@@ -28236,7 +28359,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ProteinIsoform",
       "@type": "ClassDefinition"
     },
     {
@@ -28245,6 +28367,7 @@
       "description": "A conserved part of protein sequence and (tertiary) structure that can evolve, function, and exist independently of the rest of the protein chain. Protein domains maintain their structure and function independently of the proteins in which they are found. e.g. an SH3 domain.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ProteinDomain",
         "NCIT:C13379",
         "SIO:001379",
         "UMLS:C1514562"
@@ -28272,7 +28395,6 @@
         "has_gene_or_gene_product"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ProteinDomain",
       "@type": "ClassDefinition"
     },
     {
@@ -28280,6 +28402,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PosttranslationalModification",
       "description": "A chemical modification of a polypeptide or protein that occurs after translation. e.g. polypeptide cleavage to form separate proteins, methylation or acetylation of histone tail amino acids, protein ubiquitination.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PosttranslationalModification"
+      ],
       "is_a": "BiologicalEntity",
       "mixins": [
         "GeneProductIsoformMixin"
@@ -28301,7 +28426,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PosttranslationalModification",
       "@type": "ClassDefinition"
     },
     {
@@ -28309,6 +28433,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ProteinFamily",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ProteinFamily",
         "NCIT:C26004",
         "WIKIDATA:Q2278983"
       ],
@@ -28340,7 +28465,6 @@
         "has_gene_or_gene_product"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ProteinFamily",
       "@type": "ClassDefinition"
     },
     {
@@ -28350,6 +28474,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "consensus sequence"
+      ],
+      "exact_mappings": [
+        "biolink:NucleicAcidSequenceMotif"
       ],
       "is_a": "BiologicalEntity",
       "slots": [
@@ -28369,7 +28496,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/NucleicAcidSequenceMotif",
       "@type": "ClassDefinition"
     },
     {
@@ -28380,6 +28506,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/RNAProduct",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:RNAProduct",
         "CHEBI:33697",
         "WIKIDATA:Q11053"
       ],
@@ -28404,7 +28531,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RNAProduct",
       "@type": "ClassDefinition"
     },
     {
@@ -28415,6 +28541,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/RNAProductIsoform",
       "description": "Represents a protein that is a specific isoform of the canonical or reference RNA",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:RNAProductIsoform"
+      ],
       "is_a": "RNAProduct",
       "mixins": [
         "GeneProductIsoformMixin"
@@ -28436,7 +28565,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/RNAProductIsoform",
       "@type": "ClassDefinition"
     },
     {
@@ -28449,6 +28577,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/NoncodingRNAProduct",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:NoncodingRNAProduct",
         "SO:0000655",
         "SIO:001235"
       ],
@@ -28470,7 +28599,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/NoncodingRNAProduct",
       "@type": "ClassDefinition"
     },
     {
@@ -28486,6 +28614,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:MicroRNA",
         "SO:0000276",
         "SIO:001397",
         "WIKIDATA:Q310899"
@@ -28508,7 +28637,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MicroRNA",
       "@type": "ClassDefinition"
     },
     {
@@ -28529,6 +28657,7 @@
         "RNAi"
       ],
       "exact_mappings": [
+        "biolink:SiRNA",
         "SO:0000646",
         "WIKIDATA:Q203221"
       ],
@@ -28550,7 +28679,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SiRNA",
       "@type": "ClassDefinition"
     },
     {
@@ -28558,12 +28686,14 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneGroupingMixin",
       "description": "any grouping of multiple genes or gene products",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneGroupingMixin"
+      ],
       "mixin": true,
       "slots": [
         "has_gene_or_gene_product"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneGroupingMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -28601,6 +28731,7 @@
         "protein family"
       ],
       "exact_mappings": [
+        "biolink:GeneFamily",
         "NCIT:C26004",
         "WIKIDATA:Q2278983"
       ],
@@ -28632,7 +28763,6 @@
         "has_gene_or_gene_product"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneFamily",
       "@type": "ClassDefinition"
     },
     {
@@ -28640,6 +28770,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Zygosity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Zygosity",
         "GENO:0000133"
       ],
       "is_a": "Attribute",
@@ -28661,7 +28792,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Zygosity",
       "@type": "ClassDefinition"
     },
     {
@@ -28680,6 +28810,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Genotype",
         "GENO:0000536",
         "SIO:001079"
       ],
@@ -28708,7 +28839,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Genotype",
       "@type": "ClassDefinition"
     },
     {
@@ -28717,6 +28847,7 @@
       "description": "A set of zero or more Alleles on a single instance of a Sequence[VMC]",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Haplotype",
         "GENO:0000871",
         "SO:0001024",
         "VMC:Haplotype"
@@ -28745,7 +28876,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Haplotype",
       "@type": "ClassDefinition"
     },
     {
@@ -28797,6 +28927,7 @@
         "allele"
       ],
       "exact_mappings": [
+        "biolink:SequenceVariant",
         "WIKIDATA:Q15304597"
       ],
       "close_mappings": [
@@ -28832,7 +28963,6 @@
         "sequence_variant_id"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SequenceVariant",
       "@type": "ClassDefinition"
     },
     {
@@ -28846,6 +28976,7 @@
         "snp"
       ],
       "exact_mappings": [
+        "biolink:Snv",
         "SO:0001483"
       ],
       "is_a": "SequenceVariant",
@@ -28868,7 +28999,6 @@
         "sequence_variant_id"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Snv",
       "@type": "ClassDefinition"
     },
     {
@@ -28883,6 +29013,7 @@
         "sequence targeting reagent"
       ],
       "exact_mappings": [
+        "biolink:ReagentTargetedGene",
         "GENO:0000504"
       ],
       "is_a": "BiologicalEntity",
@@ -28909,7 +29040,6 @@
         "has_biological_sequence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ReagentTargetedGene",
       "@type": "ClassDefinition"
     },
     {
@@ -28918,6 +29048,7 @@
       "description": "Attributes relating to a clinical manifestation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ClinicalAttribute",
         "STY:T201"
       ],
       "is_a": "Attribute",
@@ -28939,7 +29070,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalAttribute",
       "@type": "ClassDefinition"
     },
     {
@@ -28948,6 +29078,7 @@
       "description": "A clinical measurement is a special kind of attribute which results from a laboratory observation from a subject individual or sample. Measurements can be connected to their subject by the 'has attribute' slot.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ClinicalMeasurement",
         "EFO:0001444"
       ],
       "is_a": "ClinicalAttribute",
@@ -28969,7 +29100,6 @@
         "clinical_measurement_has_attribute_type"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalMeasurement",
       "@type": "ClassDefinition"
     },
     {
@@ -28977,6 +29107,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ClinicalModifier",
       "description": "Used to characterize and specify the phenotypic abnormalities defined in the phenotypic abnormality sub-ontology, with respect to severity, laterality, and other aspects",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ClinicalModifier"
+      ],
       "is_a": "ClinicalAttribute",
       "slots": [
         "id",
@@ -28996,7 +29129,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalModifier",
       "@type": "ClassDefinition"
     },
     {
@@ -29005,6 +29137,7 @@
       "description": "The course a disease typically takes from its onset, progression in time, and eventual resolution or death of the affected individual",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ClinicalCourse",
         "HP:0031797"
       ],
       "is_a": "ClinicalAttribute",
@@ -29026,7 +29159,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalCourse",
       "@type": "ClassDefinition"
     },
     {
@@ -29038,6 +29170,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Onset",
         "HP:0003674"
       ],
       "is_a": "ClinicalCourse",
@@ -29059,7 +29192,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Onset",
       "@type": "ClassDefinition"
     },
     {
@@ -29067,6 +29199,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ClinicalEntity",
       "description": "Any entity or process that exists in the clinical domain and outside the biological realm. Diseases are placed under biological entities",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ClinicalEntity"
+      ],
       "is_a": "NamedThing",
       "slots": [
         "id",
@@ -29083,13 +29218,15 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalEntity",
       "@type": "ClassDefinition"
     },
     {
       "name": "ClinicalTrial",
       "definition_uri": "https://w3id.org/biolink/vocab/ClinicalTrial",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ClinicalTrial"
+      ],
       "is_a": "ClinicalEntity",
       "slots": [
         "id",
@@ -29106,13 +29243,15 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalTrial",
       "@type": "ClassDefinition"
     },
     {
       "name": "ClinicalIntervention",
       "definition_uri": "https://w3id.org/biolink/vocab/ClinicalIntervention",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ClinicalIntervention"
+      ],
       "is_a": "ClinicalEntity",
       "slots": [
         "id",
@@ -29129,7 +29268,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalIntervention",
       "@type": "ClassDefinition"
     },
     {
@@ -29142,6 +29280,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ClinicalFinding",
       "description": "this category is currently considered broad enough to tag clinical lab measurements and other biological attributes taken as 'clinical traits' with some statistical score, for example, a p value in genetic associations.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ClinicalFinding"
+      ],
       "is_a": "PhenotypicFeature",
       "slots": [
         "id",
@@ -29160,7 +29301,6 @@
         "clinical_finding_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ClinicalFinding",
       "@type": "ClassDefinition"
     },
     {
@@ -29168,6 +29308,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Hospitalization",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Hospitalization",
         "SNOMEDCT:32485007",
         "WIKIDATA:Q3140971"
       ],
@@ -29187,7 +29328,6 @@
         "named_thing_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Hospitalization",
       "@type": "ClassDefinition"
     },
     {
@@ -29195,6 +29335,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/SocioeconomicAttribute",
       "description": "Attributes relating to a socioeconomic manifestation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SocioeconomicAttribute"
+      ],
       "is_a": "Attribute",
       "slots": [
         "id",
@@ -29214,7 +29357,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SocioeconomicAttribute",
       "@type": "ClassDefinition"
     },
     {
@@ -29225,6 +29367,9 @@
       "aliases": [
         "patient",
         "proband"
+      ],
+      "exact_mappings": [
+        "biolink:Case"
       ],
       "is_a": "IndividualOrganism",
       "mixins": [
@@ -29247,7 +29392,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Case",
       "@type": "ClassDefinition"
     },
     {
@@ -29256,6 +29400,7 @@
       "description": "A group of people banded together or treated as a group who share common characteristics. A cohort 'study' is a particular form of longitudinal study that samples a cohort, performing a cross-section at intervals through time.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Cohort",
         "WIKIDATA:Q1303415"
       ],
       "narrow_mappings": [
@@ -29285,7 +29430,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Cohort",
       "@type": "ClassDefinition"
     },
     {
@@ -29301,6 +29445,7 @@
         "experimental condition"
       ],
       "exact_mappings": [
+        "biolink:ExposureEvent",
         "XCO:0000000"
       ],
       "is_a": "OntologyClass",
@@ -29310,7 +29455,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ExposureEvent",
       "@type": "ClassDefinition"
     },
     {
@@ -29318,6 +29462,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GenomicBackgroundExposure",
       "description": "A genomic background exposure is where an individual's specific genomic background of genes, sequence variants or other pre-existing genomic conditions constitute a kind of 'exposure' to the organism, leading to or influencing an outcome.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenomicBackgroundExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent",
@@ -29350,7 +29497,6 @@
         "in_taxon_label"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenomicBackgroundExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29359,6 +29505,7 @@
       "description": "A pathological (abnormal) structure or process.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PathologicalEntityMixin",
         "MPATH:0"
       ],
       "narrow_mappings": [
@@ -29366,7 +29513,6 @@
       ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalEntityMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -29375,6 +29521,7 @@
       "description": "A biologic function or a process having an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PathologicalProcess",
         "OBI:1110122",
         "NCIT:C16956",
         "MPATH:596"
@@ -29409,7 +29556,6 @@
         "enabled_by"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalProcess",
       "@type": "ClassDefinition"
     },
     {
@@ -29417,6 +29563,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PathologicalProcessExposure",
       "description": "A pathological process, when viewed as an exposure, representing a precondition, leading to or influencing an outcome, e.g. autoimmunity leading to disease.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PathologicalProcessExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent"
@@ -29440,7 +29589,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalProcessExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29449,6 +29597,7 @@
       "description": "An anatomical structure with the potential of have an abnormal or deleterious effect at the subcellular, cellular, multicellular, or organismal level.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:PathologicalAnatomicalStructure",
         "MPATH:603"
       ],
       "is_a": "AnatomicalEntity",
@@ -29472,7 +29621,6 @@
         "organismal_entity_has_attribute"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalAnatomicalStructure",
       "@type": "ClassDefinition"
     },
     {
@@ -29480,6 +29628,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PathologicalAnatomicalExposure",
       "description": "An abnormal anatomical structure, when viewed as an exposure, representing an precondition, leading to or influencing an outcome, e.g. thrombosis leading to an ischemic disease outcome.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PathologicalAnatomicalExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent"
@@ -29503,7 +29654,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalAnatomicalExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29511,6 +29661,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureExposure",
       "description": "A disease or phenotypic feature state, when viewed as an exposure, represents an precondition, leading to or influencing an outcome, e.g. HIV predisposing an individual to infections; a relative deficiency of skin pigmentation predisposing an individual to skin cancer.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseOrPhenotypicFeatureExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent",
@@ -29535,7 +29688,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29544,6 +29696,7 @@
       "description": "A chemical exposure is an intake of a particular chemical entity.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ChemicalExposure",
         "ECTO:9000000",
         "SIO:001399"
       ],
@@ -29570,7 +29723,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29578,6 +29730,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ComplexChemicalExposure",
       "description": "A complex chemical exposure is an intake of a chemical mixture (e.g. gasoline), other than a drug.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ComplexChemicalExposure"
+      ],
       "is_a": "Attribute",
       "slots": [
         "id",
@@ -29597,7 +29752,6 @@
         "iri"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ComplexChemicalExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29611,6 +29765,7 @@
         "medication intake"
       ],
       "exact_mappings": [
+        "biolink:DrugExposure",
         "ECTO:0000509"
       ],
       "broad_mappings": [
@@ -29639,7 +29794,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DrugExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29647,6 +29801,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DrugToGeneInteractionExposure",
       "description": "drug to gene interaction exposure is a drug exposure is where the interactions of the drug with specific genes are known to constitute an 'exposure' to the organism, leading to or influencing an outcome.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DrugToGeneInteractionExposure"
+      ],
       "is_a": "DrugExposure",
       "mixins": [
         "GeneGroupingMixin"
@@ -29671,7 +29828,6 @@
         "has_gene_or_gene_product"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DrugToGeneInteractionExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29684,6 +29840,7 @@
         "medical intervention"
       ],
       "exact_mappings": [
+        "biolink:Treatment",
         "OGMS:0000090",
         "SIO:001398"
       ],
@@ -29714,7 +29871,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Treatment",
       "@type": "ClassDefinition"
     },
     {
@@ -29725,6 +29881,9 @@
       "aliases": [
         "viral exposure",
         "bacterial exposure"
+      ],
+      "exact_mappings": [
+        "biolink:BioticExposure"
       ],
       "is_a": "Attribute",
       "mixins": [
@@ -29749,7 +29908,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BioticExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29757,6 +29915,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeographicExposure",
       "description": "A geographic exposure is a factor relating to geographic proximity to some impactful entity.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeographicExposure"
+      ],
       "close_mappings": [
         "dcid:GeologicalEvent"
       ],
@@ -29799,7 +29960,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeographicExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29807,6 +29967,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EnvironmentalExposure",
       "description": "A environmental exposure is a factor relating to abiotic processes in the environment including sunlight (UV-B), atmospheric (heat, cold, general pollution) and water-born contaminants.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EnvironmentalExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent"
@@ -29830,7 +29993,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EnvironmentalExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29838,6 +30000,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/BehavioralExposure",
       "description": "A behavioral exposure is a factor relating to behavior impacting an individual.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:BehavioralExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent"
@@ -29861,7 +30026,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BehavioralExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29869,6 +30033,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/SocioeconomicExposure",
       "description": "A socioeconomic exposure is a factor relating to social and financial status of an affected individual (e.g. poverty).",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SocioeconomicExposure"
+      ],
       "is_a": "Attribute",
       "mixins": [
         "ExposureEvent"
@@ -29892,7 +30059,6 @@
         "timepoint"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SocioeconomicExposure",
       "@type": "ClassDefinition"
     },
     {
@@ -29900,9 +30066,11 @@
       "definition_uri": "https://w3id.org/biolink/vocab/Outcome",
       "description": "An entity that has the role of being the consequence of an exposure event. This is an abstract mixin grouping of various categories of possible biological or non-biological (e.g. clinical) outcomes.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:Outcome"
+      ],
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Outcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29910,11 +30078,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PathologicalProcessOutcome",
       "description": "An outcome resulting from an exposure event which is the manifestation of a pathological process.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PathologicalProcessOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalProcessOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29922,11 +30092,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PathologicalAnatomicalOutcome",
       "description": "An outcome resulting from an exposure event which is the manifestation of an abnormal anatomical structure.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PathologicalAnatomicalOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PathologicalAnatomicalOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29934,11 +30106,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureOutcome",
       "description": "Physiological outcomes resulting from an exposure event which is the manifestation of a disease or other characteristic phenotype.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseOrPhenotypicFeatureOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29946,11 +30120,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/BehavioralOutcome",
       "description": "An outcome resulting from an exposure event which is the manifestation of human behavior.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:BehavioralOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BehavioralOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29958,11 +30134,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/HospitalizationOutcome",
       "description": "An outcome resulting from an exposure event which is the increased manifestation of acute (e.g. emergency room visit) or chronic (inpatient) hospitalization.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:HospitalizationOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/HospitalizationOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29970,11 +30148,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MortalityOutcome",
       "description": "An outcome of death from resulting from an exposure event.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MortalityOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MortalityOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29982,6 +30162,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EpidemiologicalOutcome",
       "description": "An epidemiological outcome, such as societal disease burden, resulting from an exposure event.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EpidemiologicalOutcome"
+      ],
       "related_mappings": [
         "NCIT:C19291"
       ],
@@ -29989,7 +30172,6 @@
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EpidemiologicalOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -29997,11 +30179,13 @@
       "definition_uri": "https://w3id.org/biolink/vocab/SocioeconomicOutcome",
       "description": "An general social or economic outcome, such as healthcare costs, utilization, etc., resulting from an exposure event",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SocioeconomicOutcome"
+      ],
       "mixins": [
         "Outcome"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SocioeconomicOutcome",
       "@type": "ClassDefinition"
     },
     {
@@ -30013,6 +30197,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:Association",
         "OBAN:association",
         "rdf:Statement",
         "owl:Axiom"
@@ -30060,13 +30245,15 @@
         "association_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/Association",
       "@type": "ClassDefinition"
     },
     {
       "name": "ChemicalEntityAssessesNamedThingAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalEntityAssessesNamedThingAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalEntityAssessesNamedThingAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -30110,7 +30297,6 @@
         "chemical_entity_assesses_named_thing_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalEntityAssessesNamedThingAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -30118,6 +30304,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ContributorAssociation",
       "description": "Any association between an entity (such as a publication) and various agents that contribute to its realisation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ContributorAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -30161,7 +30350,6 @@
         "contributor_association_qualifiers"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ContributorAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30174,6 +30362,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GenotypeToGenotypePartAssociation",
       "description": "Any association between one genotype and a genotypic entity that is a sub-component of it",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeToGenotypePartAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -30217,7 +30408,6 @@
         "genotype_to_genotype_part_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeToGenotypePartAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -30229,6 +30419,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GenotypeToGeneAssociation",
       "description": "Any association between a genotype and a gene. The genotype have have multiple variants in that gene or a single one. There is no assumption of cardinality",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeToGeneAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -30272,7 +30465,6 @@
         "genotype_to_gene_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeToGeneAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -30284,6 +30476,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GenotypeToVariantAssociation",
       "description": "Any association between a genotype and a sequence variant.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeToVariantAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -30327,7 +30522,6 @@
         "genotype_to_variant_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeToVariantAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -30341,6 +30535,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "aliases": [
         "molecular or genetic interaction"
+      ],
+      "exact_mappings": [
+        "biolink:GeneToGeneAssociation"
       ],
       "is_a": "Association",
       "abstract": true,
@@ -30386,7 +30583,6 @@
         "gene_to_gene_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToGeneAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -30398,6 +30594,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToGeneHomologyAssociation",
       "description": "A homology association between two genes. May be orthology (in which case the species of subject and object should differ) or paralogy (in which case the species may be the same)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToGeneHomologyAssociation"
+      ],
       "is_a": "GeneToGeneAssociation",
       "slots": [
         "id",
@@ -30441,7 +30640,6 @@
         "gene_to_gene_homology_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToGeneHomologyAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30454,6 +30652,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToGeneFamilyAssociation",
       "description": "Set membership of a gene in a family of genes related by common evolutionary ancestry usually inferred by sequence comparisons. The genes in a given family generally share common sequence motifs which generally map onto shared gene product structure-function relationships.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToGeneFamilyAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -30497,7 +30698,6 @@
         "gene_to_gene_family_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToGeneFamilyAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30510,6 +30710,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneExpressionMixin",
       "description": "Observed gene expression intensity, context (site, stage) and associated phenotypic status within which the expression occurs.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneExpressionMixin"
+      ],
       "mixin": true,
       "slots": [
         "gene_expression_mixin_quantifier_qualifier",
@@ -30518,7 +30721,6 @@
         "phenotypic_state"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneExpressionMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -30526,6 +30728,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToGeneCoexpressionAssociation",
       "description": "Indicates that two genes are co-expressed, generally under the same conditions.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToGeneCoexpressionAssociation"
+      ],
       "is_a": "GeneToGeneAssociation",
       "mixins": [
         "GeneExpressionMixin"
@@ -30576,7 +30781,6 @@
         "phenotypic_state"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToGeneCoexpressionAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30589,6 +30793,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PairwiseGeneToGeneInteraction",
       "description": "An interaction between two genes or two gene products. May be physical (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein interaction) or directed (e.g. phosphorylation)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PairwiseGeneToGeneInteraction"
+      ],
       "narrow_mappings": [
         "dcid:ProteinProteinInteraction"
       ],
@@ -30635,7 +30842,6 @@
         "pairwise_gene_to_gene_interaction_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PairwiseGeneToGeneInteraction",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30648,6 +30854,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PairwiseMolecularInteraction",
       "description": "An interaction at the molecular level between two physical entities",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PairwiseMolecularInteraction"
+      ],
       "is_a": "PairwiseGeneToGeneInteraction",
       "slots": [
         "iri",
@@ -30692,7 +30901,6 @@
         "pairwise_molecular_interaction_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PairwiseMolecularInteraction",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30705,6 +30913,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CellLineToEntityAssociationMixin",
       "description": "An relationship between a cell line and another entity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CellLineToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "cell_line_to_entity_association_mixin_subject",
@@ -30712,7 +30923,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CellLineToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -30723,6 +30933,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CellLineToDiseaseOrPhenotypicFeatureAssociation",
       "description": "An relationship between a cell line and a disease or a phenotype, where the cell line is derived from an individual with that disease or phenotype.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CellLineToDiseaseOrPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "CellLineToEntityAssociationMixin",
@@ -30770,7 +30983,6 @@
         "cell_line_to_disease_or_phenotypic_feature_association_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CellLineToDiseaseOrPhenotypicFeatureAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -30778,6 +30990,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalEntityToEntityAssociationMixin",
       "description": "An interaction between a chemical entity and another entity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalEntityToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "chemical_entity_to_entity_association_mixin_subject",
@@ -30785,7 +31000,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalEntityToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -30796,6 +31010,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DrugToEntityAssociationMixin",
       "description": "An interaction between a drug and another entity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DrugToEntityAssociationMixin"
+      ],
       "is_a": "ChemicalEntityToEntityAssociationMixin",
       "mixin": true,
       "slots": [
@@ -30805,7 +31022,6 @@
         "drug_to_entity_association_mixin_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DrugToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -30816,6 +31032,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalToEntityAssociationMixin",
       "description": "An interaction between a chemical entity and another entity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalToEntityAssociationMixin"
+      ],
       "is_a": "ChemicalEntityToEntityAssociationMixin",
       "mixin": true,
       "slots": [
@@ -30825,7 +31044,6 @@
         "chemical_to_entity_association_mixin_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -30836,6 +31054,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CaseToEntityAssociationMixin",
       "description": "An abstract association for use where the case is the subject",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CaseToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "case_to_entity_association_mixin_subject",
@@ -30843,7 +31064,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CaseToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -30854,6 +31074,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalToChemicalAssociation",
       "description": "A relationship between two chemical entities. This can encompass actual interactions as well as temporal causal edges, e.g. one chemical converted to another.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalToChemicalAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "ChemicalToEntityAssociationMixin"
@@ -30900,7 +31123,6 @@
         "chemical_to_chemical_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalToChemicalAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -30911,6 +31133,9 @@
       "name": "ReactionToParticipantAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/ReactionToParticipantAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ReactionToParticipantAssociation"
+      ],
       "is_a": "ChemicalToChemicalAssociation",
       "slots": [
         "id",
@@ -30957,7 +31182,6 @@
         "reaction_to_participant_association_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ReactionToParticipantAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -30969,6 +31193,9 @@
       "name": "ReactionToCatalystAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/ReactionToCatalystAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ReactionToCatalystAssociation"
+      ],
       "is_a": "ReactionToParticipantAssociation",
       "slots": [
         "id",
@@ -31015,7 +31242,6 @@
         "reaction_to_catalyst_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ReactionToCatalystAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31023,6 +31249,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalToChemicalDerivationAssociation",
       "description": "A causal relationship between two chemical entities, where the subject represents the upstream entity and the object represents the downstream. For any such association there is an implicit reaction: IF R has-input C1 AND R has-output C2 AND R enabled-by P AND R type Reaction THEN C1 derives-into C2 catalyst qualifier P",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalToChemicalDerivationAssociation"
+      ],
       "is_a": "ChemicalToChemicalAssociation",
       "slots": [
         "id",
@@ -31067,7 +31296,6 @@
         "chemical_to_chemical_derivation_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalToChemicalDerivationAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -31080,6 +31308,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalToDiseaseOrPhenotypicFeatureAssociation",
       "description": "An interaction between a chemical entity and a phenotype or disease, where the presence of the chemical gives rise to or exacerbates the phenotype.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalToDiseaseOrPhenotypicFeatureAssociation"
+      ],
       "narrow_mappings": [
         "SIO:000993"
       ],
@@ -31130,7 +31361,6 @@
         "chemical_to_disease_or_phenotypic_feature_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalToDiseaseOrPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -31142,6 +31372,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation",
       "description": "This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic feature where the disease or phenotypic feature is a secondary undesirable effect.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "ChemicalToEntityAssociationMixin",
@@ -31198,7 +31431,6 @@
         "disease_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -31211,6 +31443,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation",
       "description": "This association defines a relationship between a chemical or treatment (or procedure) and a disease or phenotypic feature where the disesae or phenotypic feature is a secondary, typically (but not always) undesirable effect.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation"
+      ],
       "is_a": "ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociation",
       "mixins": [
         "ChemicalToEntityAssociationMixin",
@@ -31266,7 +31501,6 @@
         "chemical_or_drug_or_treatment_side_effect_disease_or_phenotypic_feature_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -31279,6 +31513,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToPathwayAssociation",
       "description": "An interaction between a gene or gene product and a biological process or pathway.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToPathwayAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "GeneToEntityAssociationMixin"
@@ -31325,7 +31562,6 @@
         "gene_to_pathway_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToPathwayAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -31337,6 +31573,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MolecularActivityToPathwayAssociation",
       "description": "Association that holds the relationship between a reaction and the pathway it participates in.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MolecularActivityToPathwayAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31380,7 +31619,6 @@
         "molecular_activity_to_pathway_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MolecularActivityToPathwayAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31389,6 +31627,7 @@
       "description": "An interaction between a chemical entity and a biological process or pathway.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ChemicalToPathwayAssociation",
         "SIO:001250"
       ],
       "is_a": "Association",
@@ -31437,7 +31676,6 @@
         "chemical_to_pathway_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalToPathwayAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -31449,6 +31687,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/NamedThingAssociatedWithLikelihoodOfNamedThingAssociation",
       "description": "",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31497,7 +31738,6 @@
         "population_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/NamedThingAssociatedWithLikelihoodOfNamedThingAssociation",
       "defining_slots": [
         "subject",
         "subject_aspect_qualifier",
@@ -31516,6 +31756,7 @@
       "description": "describes a physical interaction between a chemical entity and a gene or gene product. Any biological or chemical effect resulting from such an interaction are out of scope, and covered by the ChemicalAffectsGeneAssociation type (e.g. impact of a chemical on the abundance, activity, structure, etc, of either participant in the interaction)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:ChemicalGeneInteractionAssociation",
         "SIO:001257"
       ],
       "is_a": "Association",
@@ -31572,7 +31813,6 @@
         "chemical_gene_interaction_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalGeneInteractionAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31586,6 +31826,9 @@
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneRegulatesGeneAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31633,7 +31876,6 @@
         "gene_regulates_gene_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneRegulatesGeneAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31641,6 +31883,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ProcessRegulatesProcessAssociation",
       "description": "Describes a regulatory relationship between two genes or gene products.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ProcessRegulatesProcessAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31684,7 +31929,6 @@
         "process_regulates_process_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ProcessRegulatesProcessAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31692,6 +31936,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalAffectsGeneAssociation",
       "description": "Describes an effect that a chemical has on a gene or gene product (e.g. an impact of on its abundance, activity,localization, processing, expression, etc.)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalAffectsGeneAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31750,7 +31997,6 @@
         "chemical_affects_gene_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalAffectsGeneAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31764,6 +32010,9 @@
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneAffectsChemicalAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31823,7 +32072,6 @@
         "gene_affects_chemical_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneAffectsChemicalAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -31831,6 +32079,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DrugToGeneAssociation",
       "description": "An interaction between a drug and a gene or gene product.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DrugToGeneAssociation"
+      ],
       "related_mappings": [
         "SIO:001257"
       ],
@@ -31880,7 +32131,6 @@
         "drug_to_gene_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DrugToGeneAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -31892,6 +32142,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MaterialSampleToEntityAssociationMixin",
       "description": "An association between a material sample and something.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MaterialSampleToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "material_sample_to_entity_association_mixin_subject",
@@ -31899,7 +32152,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MaterialSampleToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -31910,6 +32162,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MaterialSampleDerivationAssociation",
       "description": "An association between a material sample and the material entity from which it is derived.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MaterialSampleDerivationAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -31953,7 +32208,6 @@
         "material_sample_derivation_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MaterialSampleDerivationAssociation",
       "defining_slots": [
         "subject",
         "predicate"
@@ -31965,6 +32219,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MaterialSampleToDiseaseOrPhenotypicFeatureAssociation",
       "description": "An association between a material sample and a disease or phenotype.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MaterialSampleToDiseaseOrPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "MaterialSampleToEntityAssociationMixin",
@@ -32012,7 +32269,6 @@
         "association_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MaterialSampleToDiseaseOrPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32023,6 +32279,9 @@
       "name": "DiseaseToEntityAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseToEntityAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "disease_to_entity_association_mixin_subject",
@@ -32030,7 +32289,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -32041,6 +32299,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToExposureEventAssociationMixin",
       "description": "An association between some entity and an exposure event.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToExposureEventAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "subject",
@@ -32048,7 +32309,6 @@
         "entity_to_exposure_event_association_mixin_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToExposureEventAssociationMixin",
       "defining_slots": [
         "object"
       ],
@@ -32059,6 +32319,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseToExposureEventAssociation",
       "description": "An association between an exposure event and a disease.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseToExposureEventAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "DiseaseToEntityAssociationMixin",
@@ -32106,7 +32369,6 @@
         "association_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseToExposureEventAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32118,6 +32380,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToOutcomeAssociationMixin",
       "description": "An association between some entity and an outcome",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToOutcomeAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "subject",
@@ -32125,7 +32390,6 @@
         "entity_to_outcome_association_mixin_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToOutcomeAssociationMixin",
       "defining_slots": [
         "object"
       ],
@@ -32136,6 +32400,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ExposureEventToOutcomeAssociation",
       "description": "An association between an exposure event and an outcome.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ExposureEventToOutcomeAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "EntityToOutcomeAssociationMixin"
@@ -32184,7 +32451,6 @@
         "temporal_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ExposureEventToOutcomeAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32196,6 +32462,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/FrequencyQualifierMixin",
       "description": "Qualifier for frequency type associations",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:FrequencyQualifierMixin"
+      ],
       "mixin": true,
       "slots": [
         "frequency_qualifier",
@@ -32204,7 +32473,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/FrequencyQualifierMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -32212,6 +32480,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToFeatureOrDiseaseQualifiersMixin",
       "description": "Qualifiers for entity to disease or phenotype associations.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToFeatureOrDiseaseQualifiersMixin"
+      ],
       "is_a": "FrequencyQualifierMixin",
       "mixin": true,
       "slots": [
@@ -32227,7 +32498,6 @@
         "disease_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToFeatureOrDiseaseQualifiersMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -32235,6 +32505,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/FeatureOrDiseaseQualifiersToEntityMixin",
       "description": "Qualifiers for disease or phenotype to entity associations.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:FeatureOrDiseaseQualifiersToEntityMixin"
+      ],
       "is_a": "FrequencyQualifierMixin",
       "mixin": true,
       "slots": [
@@ -32249,13 +32522,15 @@
         "qualified_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/FeatureOrDiseaseQualifiersToEntityMixin",
       "@type": "ClassDefinition"
     },
     {
       "name": "EntityToPhenotypicFeatureAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToPhenotypicFeatureAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToPhenotypicFeatureAssociationMixin"
+      ],
       "is_a": "EntityToFeatureOrDiseaseQualifiersMixin",
       "mixin": true,
       "mixins": [
@@ -32282,7 +32557,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToPhenotypicFeatureAssociationMixin",
       "defining_slots": [
         "subject",
         "predicate",
@@ -32294,6 +32568,9 @@
       "name": "PhenotypicFeatureToEntityAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/PhenotypicFeatureToEntityAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PhenotypicFeatureToEntityAssociationMixin"
+      ],
       "is_a": "FeatureOrDiseaseQualifiersToEntityMixin",
       "mixin": true,
       "mixins": [
@@ -32316,7 +32593,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhenotypicFeatureToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -32327,6 +32603,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PhenotypicFeatureToPhenotypicFeatureAssociation",
       "description": "Association between two concept nodes of phenotypic character, qualified by the predicate used. This association may typically be used to specify 'similar_to' or 'member_of' relationships.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PhenotypicFeatureToPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "PhenotypicFeatureToEntityAssociationMixin",
@@ -32389,7 +32668,6 @@
         "anatomical_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhenotypicFeatureToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -32405,6 +32683,9 @@
         "model_organism_database"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:InformationContentEntityToNamedThingAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -32448,7 +32729,6 @@
         "information_content_entity_to_named_thing_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/InformationContentEntityToNamedThingAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32460,6 +32740,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToDiseaseAssociationMixin",
       "description": "mixin class for any association whose object (target node) is a disease",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToDiseaseAssociationMixin"
+      ],
       "is_a": "EntityToFeatureOrDiseaseQualifiersMixin",
       "mixin": true,
       "slots": [
@@ -32475,7 +32758,6 @@
         "entity_to_disease_association_mixin_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToDiseaseAssociationMixin",
       "defining_slots": [
         "object"
       ],
@@ -32485,6 +32767,9 @@
       "name": "DiseaseOrPhenotypicFeatureToEntityAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureToEntityAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseOrPhenotypicFeatureToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "disease_or_phenotypic_feature_to_entity_association_mixin_subject",
@@ -32492,7 +32777,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -32503,6 +32787,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureToLocationAssociation",
       "description": "An association between either a disease or a phenotypic feature and an anatomical entity, where the disease/feature manifests in that site.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseOrPhenotypicFeatureToLocationAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "DiseaseOrPhenotypicFeatureToEntityAssociationMixin"
@@ -32549,7 +32836,6 @@
         "disease_or_phenotypic_feature_to_location_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureToLocationAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -32557,6 +32843,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation",
       "description": "An association between either a disease or a phenotypic feature and its mode of (genetic) inheritance.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "DiseaseOrPhenotypicFeatureToEntityAssociationMixin"
@@ -32603,13 +32892,15 @@
         "disease_or_phenotypic_feature_to_genetic_inheritance_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseOrPhenotypicFeatureToGeneticInheritanceAssociation",
       "@type": "ClassDefinition"
     },
     {
       "name": "EntityToDiseaseOrPhenotypicFeatureAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToDiseaseOrPhenotypicFeatureAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToDiseaseOrPhenotypicFeatureAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "subject",
@@ -32617,7 +32908,6 @@
         "entity_to_disease_or_phenotypic_feature_association_mixin_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToDiseaseOrPhenotypicFeatureAssociationMixin",
       "defining_slots": [
         "object"
       ],
@@ -32627,6 +32917,9 @@
       "name": "GenotypeToEntityAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/GenotypeToEntityAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "genotype_to_entity_association_mixin_subject",
@@ -32634,7 +32927,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -32645,6 +32937,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GenotypeToPhenotypicFeatureAssociation",
       "description": "Any association between one genotype and a phenotypic feature, where having the genotype confers the phenotype, either in isolation or through environment",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeToPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "EntityToPhenotypicFeatureAssociationMixin",
@@ -32707,7 +33002,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32719,6 +33013,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ExposureEventToPhenotypicFeatureAssociation",
       "description": "Any association between an environment and a phenotypic feature, where being in the environment influences the phenotype.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ExposureEventToPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "EntityToPhenotypicFeatureAssociationMixin"
@@ -32780,7 +33077,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ExposureEventToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32792,6 +33088,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/DiseaseToPhenotypicFeatureAssociation",
       "description": "An association between a disease and a phenotypic feature in which the phenotypic feature is associated with the disease in some way.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DiseaseToPhenotypicFeatureAssociation"
+      ],
       "close_mappings": [
         "dcid:DiseaseSymptomAssociation"
       ],
@@ -32859,7 +33158,6 @@
         "anatomical_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DiseaseToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32871,6 +33169,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/CaseToPhenotypicFeatureAssociation",
       "description": "An association between a case (e.g. individual patient) and a phenotypic feature in which the individual has or has had the phenotype.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CaseToPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "EntityToPhenotypicFeatureAssociationMixin",
@@ -32933,7 +33234,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CaseToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -32945,6 +33245,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/BehaviorToBehavioralFeatureAssociation",
       "description": "An association between an mixture behavior and a behavioral feature manifested by the individual exhibited or has exhibited the behavior.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:BehaviorToBehavioralFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "EntityToPhenotypicFeatureAssociationMixin"
@@ -33006,7 +33309,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/BehaviorToBehavioralFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33017,6 +33319,9 @@
       "name": "GeneToEntityAssociationMixin",
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToEntityAssociationMixin",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "gene_to_entity_association_mixin_subject",
@@ -33024,7 +33329,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -33041,6 +33345,9 @@
         }
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "variant_to_entity_association_mixin_subject",
@@ -33048,7 +33355,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantToEntityAssociationMixin",
       "defining_slots": [
         "subject"
       ],
@@ -33063,6 +33369,9 @@
         "if the relationship of the statement using this predicate is statistical in nature, please use `associated with likelihood` or one of its children."
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToDiseaseOrPhenotypicFeatureAssociation"
+      ],
       "narrow_mappings": [
         "WBVocab:Gene-Phenotype-Association",
         "dcid:DiseaseGeneAssociation",
@@ -33130,7 +33439,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToDiseaseOrPhenotypicFeatureAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -33138,6 +33446,7 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToPhenotypicFeatureAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:GeneToPhenotypicFeatureAssociation",
         "WBVocab:Gene-Phenotype-Association"
       ],
       "is_a": "GeneToDiseaseOrPhenotypicFeatureAssociation",
@@ -33202,7 +33511,6 @@
         "gene_to_phenotypic_feature_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33217,6 +33525,7 @@
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:GeneToDiseaseAssociation",
         "SIO:000983"
       ],
       "close_mappings": [
@@ -33284,7 +33593,6 @@
         "gene_to_disease_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33295,6 +33603,9 @@
       "name": "CausalGeneToDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/CausalGeneToDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CausalGeneToDiseaseAssociation"
+      ],
       "is_a": "GeneToDiseaseAssociation",
       "mixins": [
         "EntityToDiseaseAssociationMixin",
@@ -33357,7 +33668,6 @@
         "causal_gene_to_disease_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CausalGeneToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33368,6 +33678,9 @@
       "name": "CorrelatedGeneToDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/CorrelatedGeneToDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CorrelatedGeneToDiseaseAssociation"
+      ],
       "is_a": "GeneToDiseaseAssociation",
       "mixins": [
         "EntityToDiseaseAssociationMixin",
@@ -33430,7 +33743,6 @@
         "correlated_gene_to_disease_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CorrelatedGeneToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33441,6 +33753,9 @@
       "name": "DruggableGeneToDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/DruggableGeneToDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:DruggableGeneToDiseaseAssociation"
+      ],
       "is_a": "GeneToDiseaseAssociation",
       "mixins": [
         "EntityToDiseaseAssociationMixin",
@@ -33503,7 +33818,6 @@
         "druggable_gene_to_disease_association_has_evidence"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/DruggableGeneToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object",
@@ -33515,6 +33829,9 @@
       "name": "PhenotypicFeatureToDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/PhenotypicFeatureToDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PhenotypicFeatureToDiseaseAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "EntityToDiseaseAssociationMixin",
@@ -33574,7 +33891,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PhenotypicFeatureToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -33587,6 +33903,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/VariantToGeneAssociation",
       "description": "An association between a variant and a gene, where the variant has a genetic association with the gene (i.e. is in linkage disequilibrium)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantToGeneAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "VariantToEntityAssociationMixin"
@@ -33633,7 +33952,6 @@
         "variant_to_gene_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantToGeneAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -33646,6 +33964,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/VariantToGeneExpressionAssociation",
       "description": "An association between a variant and expression of a gene (i.e. e-QTL)",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantToGeneExpressionAssociation"
+      ],
       "is_a": "VariantToGeneAssociation",
       "mixins": [
         "GeneExpressionMixin"
@@ -33696,7 +34017,6 @@
         "phenotypic_state"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantToGeneExpressionAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -33709,6 +34029,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/VariantToPopulationAssociation",
       "description": "An association between a variant and a population, where the variant has particular frequency in the population",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantToPopulationAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "VariantToEntityAssociationMixin",
@@ -33762,7 +34085,6 @@
         "frequency_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantToPopulationAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33774,6 +34096,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/PopulationToPopulationAssociation",
       "description": "An association between a two populations",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:PopulationToPopulationAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -33817,7 +34142,6 @@
         "population_to_population_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/PopulationToPopulationAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33828,6 +34152,9 @@
       "name": "VariantToPhenotypicFeatureAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/VariantToPhenotypicFeatureAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantToPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "VariantToEntityAssociationMixin",
@@ -33890,7 +34217,6 @@
         "has_percentage"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33904,6 +34230,9 @@
         "TODO decide no how to model pathogenicity"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantToDiseaseAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "VariantToEntityAssociationMixin",
@@ -33958,7 +34287,6 @@
         "disease_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -33972,6 +34300,9 @@
         "TODO decide no how to model pathogenicity"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeToDiseaseAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "GenotypeToEntityAssociationMixin",
@@ -34026,7 +34357,6 @@
         "disease_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -34038,6 +34368,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ModelToDiseaseAssociationMixin",
       "description": "This mixin is used for any association class for which the subject (source node) plays the role of a 'model', in that it recapitulates some features of the disease in a way that is useful for studying the disease outside a patient carrying the disease",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ModelToDiseaseAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "model_to_disease_association_mixin_subject",
@@ -34045,13 +34378,15 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ModelToDiseaseAssociationMixin",
       "@type": "ClassDefinition"
     },
     {
       "name": "GeneAsAModelOfDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/GeneAsAModelOfDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneAsAModelOfDiseaseAssociation"
+      ],
       "is_a": "GeneToDiseaseAssociation",
       "mixins": [
         "ModelToDiseaseAssociationMixin",
@@ -34114,7 +34449,6 @@
         "gene_as_a_model_of_disease_association_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneAsAModelOfDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34126,6 +34460,9 @@
       "name": "VariantAsAModelOfDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/VariantAsAModelOfDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:VariantAsAModelOfDiseaseAssociation"
+      ],
       "is_a": "VariantToDiseaseAssociation",
       "mixins": [
         "ModelToDiseaseAssociationMixin",
@@ -34180,7 +34517,6 @@
         "variant_as_a_model_of_disease_association_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/VariantAsAModelOfDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34192,6 +34528,9 @@
       "name": "GenotypeAsAModelOfDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/GenotypeAsAModelOfDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GenotypeAsAModelOfDiseaseAssociation"
+      ],
       "is_a": "GenotypeToDiseaseAssociation",
       "mixins": [
         "ModelToDiseaseAssociationMixin",
@@ -34246,7 +34585,6 @@
         "genotype_as_a_model_of_disease_association_subject"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenotypeAsAModelOfDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34258,6 +34596,9 @@
       "name": "CellLineAsAModelOfDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/CellLineAsAModelOfDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:CellLineAsAModelOfDiseaseAssociation"
+      ],
       "is_a": "CellLineToDiseaseOrPhenotypicFeatureAssociation",
       "mixins": [
         "ModelToDiseaseAssociationMixin",
@@ -34312,7 +34653,6 @@
         "disease_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/CellLineAsAModelOfDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34324,6 +34664,9 @@
       "name": "OrganismalEntityAsAModelOfDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismalEntityAsAModelOfDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismalEntityAsAModelOfDiseaseAssociation"
+      ],
       "is_a": "Association",
       "mixins": [
         "ModelToDiseaseAssociationMixin",
@@ -34378,7 +34721,6 @@
         "disease_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismalEntityAsAModelOfDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34390,6 +34732,9 @@
       "name": "OrganismToOrganismAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismToOrganismAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismToOrganismAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -34433,7 +34778,6 @@
         "organism_to_organism_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismToOrganismAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34445,6 +34789,9 @@
       "name": "TaxonToTaxonAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/TaxonToTaxonAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:TaxonToTaxonAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -34488,7 +34835,6 @@
         "taxon_to_taxon_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/TaxonToTaxonAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34500,6 +34846,9 @@
       "name": "GeneHasVariantThatContributesToDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/GeneHasVariantThatContributesToDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneHasVariantThatContributesToDiseaseAssociation"
+      ],
       "is_a": "GeneToDiseaseAssociation",
       "slots": [
         "id",
@@ -34559,7 +34908,6 @@
         "gene_has_variant_that_contributes_to_disease_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneHasVariantThatContributesToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34577,6 +34925,9 @@
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "see_also": [
         "https://github.com/monarch-initiative/ingest-artifacts/tree/master/sources/BGee"
+      ],
+      "exact_mappings": [
+        "biolink:GeneToExpressionSiteAssociation"
       ],
       "is_a": "Association",
       "slots": [
@@ -34623,7 +34974,6 @@
         "gene_to_expression_site_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToExpressionSiteAssociation",
       "defining_slots": [
         "subject",
         "predicate",
@@ -34639,6 +34989,9 @@
         "An alternate way to model the same information could be via a qualifier"
       ],
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SequenceVariantModulatesTreatmentAssociation"
+      ],
       "is_a": "Association",
       "abstract": true,
       "slots": [
@@ -34683,7 +35036,6 @@
         "sequence_variant_modulates_treatment_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SequenceVariantModulatesTreatmentAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -34695,6 +35047,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/FunctionalAssociation",
       "description": "An association between a macromolecular machine mixin (gene, gene product or complex of gene products) and either a molecular activity, a biological process or a cellular location in which a function is executed.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:FunctionalAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -34738,7 +35093,6 @@
         "functional_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/FunctionalAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -34746,6 +35100,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToEntityAssociationMixin",
       "description": "an association which has a macromolecular machine mixin as a subject",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MacromolecularMachineToEntityAssociationMixin"
+      ],
       "mixin": true,
       "slots": [
         "macromolecular_machine_to_entity_association_mixin_subject",
@@ -34754,7 +35111,6 @@
         "species_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToEntityAssociationMixin",
       "@type": "ClassDefinition"
     },
     {
@@ -34762,6 +35118,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToMolecularActivityAssociation",
       "description": "A functional association between a macromolecular machine (gene, gene product or complex) and a molecular activity (as represented in the GO molecular function branch), where the entity carries out the activity, or contributes to its execution.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MacromolecularMachineToMolecularActivityAssociation"
+      ],
       "is_a": "FunctionalAssociation",
       "mixins": [
         "MacromolecularMachineToEntityAssociationMixin"
@@ -34809,7 +35168,6 @@
         "species_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToMolecularActivityAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -34817,6 +35175,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToBiologicalProcessAssociation",
       "description": "A functional association between a macromolecular machine (gene, gene product or complex) and a biological process or pathway (as represented in the GO biological process branch), where the entity carries out some part of the process, regulates it, or acts upstream of it.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MacromolecularMachineToBiologicalProcessAssociation"
+      ],
       "is_a": "FunctionalAssociation",
       "mixins": [
         "MacromolecularMachineToEntityAssociationMixin"
@@ -34864,7 +35225,6 @@
         "species_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToBiologicalProcessAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -34872,6 +35232,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToCellularComponentAssociation",
       "description": "A functional association between a macromolecular machine (gene, gene product or complex) and a cellular component (as represented in the GO cellular component branch), where the entity carries out its function in the cellular component.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MacromolecularMachineToCellularComponentAssociation"
+      ],
       "is_a": "FunctionalAssociation",
       "mixins": [
         "MacromolecularMachineToEntityAssociationMixin"
@@ -34919,7 +35282,6 @@
         "species_context_qualifier"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MacromolecularMachineToCellularComponentAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -34927,6 +35289,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MolecularActivityToChemicalEntityAssociation",
       "description": "Added in response to capturing relationship between microbiome activities as measured via measurements of blood analytes as collected via blood and stool samples",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MolecularActivityToChemicalEntityAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -34970,7 +35335,6 @@
         "molecular_activity_to_chemical_entity_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MolecularActivityToChemicalEntityAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -34978,6 +35342,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/MolecularActivityToMolecularActivityAssociation",
       "description": "Added in response to capturing relationship between microbiome activities as measured via measurements of blood analytes as collected via blood and stool samples",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:MolecularActivityToMolecularActivityAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -35021,7 +35388,6 @@
         "molecular_activity_to_molecular_activity_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/MolecularActivityToMolecularActivityAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -35032,6 +35398,7 @@
         "functional association"
       ],
       "exact_mappings": [
+        "biolink:GeneToGoTermAssociation",
         "WBVocab:Gene-GO-Association"
       ],
       "is_a": "FunctionalAssociation",
@@ -35077,7 +35444,6 @@
         "gene_to_go_term_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToGoTermAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -35088,6 +35454,9 @@
       "name": "EntityToDiseaseAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToDiseaseAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToDiseaseAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -35133,7 +35502,6 @@
         "max_research_phase"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToDiseaseAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -35144,6 +35512,9 @@
       "name": "EntityToPhenotypicFeatureAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/EntityToPhenotypicFeatureAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:EntityToPhenotypicFeatureAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -35189,7 +35560,6 @@
         "max_research_phase"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/EntityToPhenotypicFeatureAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -35201,6 +35571,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/SequenceAssociation",
       "description": "An association between a sequence feature and a nucleic acid entity it is localized to.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:SequenceAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -35244,7 +35617,6 @@
         "association_category"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SequenceAssociation",
       "@type": "ClassDefinition"
     },
     {
@@ -35253,6 +35625,7 @@
       "description": "A relationship between a sequence feature and a nucleic acid entity it is localized to. The reference entity may be a chromosome, chromosome region or information entity such as a contig.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:GenomicSequenceLocalization",
         "dcid:GenomeAnnotation"
       ],
       "broad_mappings": [
@@ -35306,7 +35679,6 @@
         "genomic_sequence_localization_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GenomicSequenceLocalization",
       "@type": "ClassDefinition"
     },
     {
@@ -35315,6 +35687,7 @@
       "description": "For example, a particular exon is part of a particular transcript or gene",
       "from_schema": "https://w3id.org/biolink/biolink-model",
       "exact_mappings": [
+        "biolink:SequenceFeatureRelationship",
         "CHADO:feature_relationship"
       ],
       "is_a": "Association",
@@ -35360,7 +35733,6 @@
         "sequence_feature_relationship_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/SequenceFeatureRelationship",
       "defining_slots": [
         "subject",
         "object"
@@ -35372,6 +35744,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/TranscriptToGeneRelationship",
       "description": "A gene is a collection of transcripts",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:TranscriptToGeneRelationship"
+      ],
       "is_a": "SequenceFeatureRelationship",
       "slots": [
         "id",
@@ -35415,7 +35790,6 @@
         "transcript_to_gene_relationship_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/TranscriptToGeneRelationship",
       "defining_slots": [
         "subject",
         "object"
@@ -35427,6 +35801,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/GeneToGeneProductRelationship",
       "description": "A gene is transcribed and potentially translated to a gene product",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:GeneToGeneProductRelationship"
+      ],
       "is_a": "SequenceFeatureRelationship",
       "slots": [
         "id",
@@ -35470,7 +35847,6 @@
         "gene_to_gene_product_relationship_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/GeneToGeneProductRelationship",
       "defining_slots": [
         "subject",
         "object"
@@ -35482,6 +35858,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ExonToTranscriptRelationship",
       "description": "A transcript is formed from multiple exons",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ExonToTranscriptRelationship"
+      ],
       "is_a": "SequenceFeatureRelationship",
       "slots": [
         "id",
@@ -35525,7 +35904,6 @@
         "exon_to_transcript_relationship_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ExonToTranscriptRelationship",
       "defining_slots": [
         "subject",
         "object"
@@ -35537,6 +35915,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation",
       "description": "A regulatory relationship between two genes",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation"
+      ],
       "is_a": "Association",
       "slots": [
         "id",
@@ -35581,13 +35962,15 @@
         "chemical_entity_or_gene_or_gene_product_regulates_gene_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociation",
       "@type": "ClassDefinition"
     },
     {
       "name": "AnatomicalEntityToAnatomicalEntityAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/AnatomicalEntityToAnatomicalEntityAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:AnatomicalEntityToAnatomicalEntityAssociation"
+      ],
       "is_a": "Association",
       "abstract": true,
       "slots": [
@@ -35632,7 +36015,6 @@
         "anatomical_entity_to_anatomical_entity_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/AnatomicalEntityToAnatomicalEntityAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -35644,6 +36026,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/AnatomicalEntityToAnatomicalEntityPartOfAssociation",
       "description": "A relationship between two anatomical entities where the relationship is mereological, i.e the two entities are related by parthood. This includes relationships between cellular components and cells, between cells and tissues, tissues and whole organisms",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:AnatomicalEntityToAnatomicalEntityPartOfAssociation"
+      ],
       "is_a": "AnatomicalEntityToAnatomicalEntityAssociation",
       "slots": [
         "id",
@@ -35687,7 +36072,6 @@
         "anatomical_entity_to_anatomical_entity_part_of_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/AnatomicalEntityToAnatomicalEntityPartOfAssociation",
       "defining_slots": [
         "predicate"
       ],
@@ -35698,6 +36082,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/AnatomicalEntityToAnatomicalEntityOntogenicAssociation",
       "description": "A relationship between two anatomical entities where the relationship is ontogenic, i.e. the two entities are related by development. A number of different relationship types can be used to specify the precise nature of the relationship.",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:AnatomicalEntityToAnatomicalEntityOntogenicAssociation"
+      ],
       "is_a": "AnatomicalEntityToAnatomicalEntityAssociation",
       "slots": [
         "id",
@@ -35741,7 +36128,6 @@
         "anatomical_entity_to_anatomical_entity_ontogenic_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/AnatomicalEntityToAnatomicalEntityOntogenicAssociation",
       "defining_slots": [
         "predicate"
       ],
@@ -35752,6 +36138,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToEntityAssociation",
       "description": "An association between an organism taxon and another entity",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismTaxonToEntityAssociation"
+      ],
       "mixin": true,
       "slots": [
         "organism_taxon_to_entity_association_subject",
@@ -35759,7 +36148,6 @@
         "object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToEntityAssociation",
       "defining_slots": [
         "subject"
       ],
@@ -35770,6 +36158,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonAssociation",
       "description": "A relationship between two organism taxon nodes",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismTaxonToOrganismTaxonAssociation"
+      ],
       "is_a": "Association",
       "abstract": true,
       "mixins": [
@@ -35817,7 +36208,6 @@
         "organism_taxon_to_organism_taxon_association_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonAssociation",
       "defining_slots": [
         "subject",
         "object"
@@ -35829,6 +36219,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonSpecialization",
       "description": "A child-parent relationship between two taxa. For example: Homo sapiens subclass_of Homo",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismTaxonToOrganismTaxonSpecialization"
+      ],
       "is_a": "OrganismTaxonToOrganismTaxonAssociation",
       "slots": [
         "id",
@@ -35872,7 +36265,6 @@
         "organism_taxon_to_organism_taxon_specialization_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonSpecialization",
       "defining_slots": [
         "predicate"
       ],
@@ -35883,6 +36275,9 @@
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonInteraction",
       "description": "An interaction relationship between two taxa. This may be a symbiotic relationship (encompassing mutualism and parasitism), or it may be non-symbiotic. Example: plague transmitted_by flea; cattle domesticated_by Homo sapiens; plague infects Homo sapiens",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismTaxonToOrganismTaxonInteraction"
+      ],
       "is_a": "OrganismTaxonToOrganismTaxonAssociation",
       "slots": [
         "id",
@@ -35927,7 +36322,6 @@
         "organism_taxon_to_organism_taxon_interaction_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToOrganismTaxonInteraction",
       "defining_slots": [
         "predicate"
       ],
@@ -35937,6 +36331,9 @@
       "name": "OrganismTaxonToEnvironmentAssociation",
       "definition_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToEnvironmentAssociation",
       "from_schema": "https://w3id.org/biolink/biolink-model",
+      "exact_mappings": [
+        "biolink:OrganismTaxonToEnvironmentAssociation"
+      ],
       "is_a": "Association",
       "abstract": true,
       "mixins": [
@@ -35984,7 +36381,6 @@
         "organism_taxon_to_environment_association_predicate"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/biolink/vocab/OrganismTaxonToEnvironmentAssociation",
       "@type": "ClassDefinition"
     }
   ],

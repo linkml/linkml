@@ -1,7 +1,6 @@
 import json
 import logging
 
-import pytest
 from rdflib import Graph, term
 from yaml import safe_load
 
@@ -11,7 +10,6 @@ from linkml_runtime.utils.schemaview import SchemaView
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.xfail(reason="Bug 2687: class_uri should be exactMatch")
 def test_class_uri(input_path):
     """`class_uri` should result in an `skos:exactMatch` relationship
     in the generated JSON-LD and RDF."""
@@ -90,9 +88,8 @@ def test_class_uri(input_path):
                 class_properties[str(p)].append(str(o))
         assert "https://w3id.org/linkml/class_uri" not in class_properties.keys()
         assert "http://www.w3.org/2004/02/skos/core#exactMatch" in class_properties.keys()
-        assert (
-            schema_view.expand_curie(class_info["class_uri"])
-            == class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
-            or schema_view.expand_curie(class_info["class_uri"])
-            in class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
+        assert schema_view.expand_curie(class_info["class_uri"]) == schema_view.expand_curie(
+            class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
+        ) or schema_view.expand_curie(class_info["class_uri"]) in schema_view.expand_curie(
+            class_properties["http://www.w3.org/2004/02/skos/core#exactMatch"]
         )

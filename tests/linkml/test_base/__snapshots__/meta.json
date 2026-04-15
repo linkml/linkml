@@ -6701,11 +6701,10 @@
       "name": "Anything",
       "definition_uri": "https://w3id.org/linkml/Anything",
       "from_schema": "https://w3id.org/linkml/meta",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
     },
     {
@@ -6716,6 +6715,9 @@
         "BasicSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:CommonMetadata"
+      ],
       "mixin": true,
       "slots": [
         "description",
@@ -6753,7 +6755,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/CommonMetadata",
       "@type": "ClassDefinition"
     },
     {
@@ -6770,6 +6771,9 @@
       "aliases": [
         "data element",
         "object"
+      ],
+      "exact_mappings": [
+        "linkml:Element"
       ],
       "abstract": true,
       "mixins": [
@@ -6823,7 +6827,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Element",
       "@type": "ClassDefinition"
     },
     {
@@ -6849,6 +6852,9 @@
         "logical model",
         "schema",
         "model"
+      ],
+      "exact_mappings": [
+        "linkml:SchemaDefinition"
       ],
       "close_mappings": [
         "qb:ComponentSet",
@@ -6924,7 +6930,6 @@
         "schema_definition_name"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/SchemaDefinition",
       "tree_root": true,
       "@type": "ClassDefinition"
     },
@@ -6933,6 +6938,9 @@
       "definition_uri": "https://w3id.org/linkml/TypeExpression",
       "description": "An abstract class grouping named types and anonymous type expressions",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:TypeExpression"
+      ],
       "is_a": "Expression",
       "mixin": true,
       "slots": [
@@ -6951,7 +6959,6 @@
         "type_expression_all_of"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/TypeExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -6959,6 +6966,9 @@
       "definition_uri": "https://w3id.org/linkml/AnonymousTypeExpression",
       "description": "A type expression that is not a top-level named type definition. Used for nesting.",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:AnonymousTypeExpression"
+      ],
       "mixins": [
         "TypeExpression"
       ],
@@ -6978,7 +6988,6 @@
         "type_expression_all_of"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/AnonymousTypeExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -6991,6 +7000,9 @@
         "OwlProfile"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:TypeDefinition"
+      ],
       "rank": 4,
       "is_a": "Element",
       "mixins": [
@@ -7060,7 +7072,6 @@
         "type_expression_all_of"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/TypeDefinition",
       "@type": "ClassDefinition"
     },
     {
@@ -7072,6 +7083,9 @@
         "BasicSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:SubsetDefinition"
+      ],
       "rank": 6,
       "is_a": "Element",
       "slots": [
@@ -7120,7 +7134,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/SubsetDefinition",
       "@type": "ClassDefinition"
     },
     {
@@ -7133,6 +7146,9 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "see_also": [
         "https://en.wikipedia.org/wiki/Data_element_definition"
+      ],
+      "exact_mappings": [
+        "linkml:Definition"
       ],
       "is_a": "Element",
       "abstract": true,
@@ -7189,7 +7205,6 @@
         "string_serialization"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Definition",
       "@type": "ClassDefinition"
     },
     {
@@ -7197,6 +7212,9 @@
       "definition_uri": "https://w3id.org/linkml/EnumExpression",
       "description": "An expression that constrains the range of a slot",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:EnumExpression"
+      ],
       "is_a": "Expression",
       "slots": [
         "code_set",
@@ -7212,7 +7230,6 @@
         "concepts"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/EnumExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -7220,6 +7237,9 @@
       "definition_uri": "https://w3id.org/linkml/AnonymousEnumExpression",
       "description": "An enum_expression that is not named",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:AnonymousEnumExpression"
+      ],
       "mixins": [
         "EnumExpression"
       ],
@@ -7237,7 +7257,6 @@
         "concepts"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/AnonymousEnumExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -7265,6 +7284,7 @@
         "value domain"
       ],
       "exact_mappings": [
+        "linkml:EnumDefinition",
         "qb:HierarchicalCodeList",
         "NCIT:C113497",
         "cdisc:ValueDomain"
@@ -7342,7 +7362,6 @@
         "concepts"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/EnumDefinition",
       "@type": "ClassDefinition"
     },
     {
@@ -7353,6 +7372,9 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:EnumBinding"
+      ],
       "mixins": [
         "Extensible",
         "Annotatable",
@@ -7400,7 +7422,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/EnumBinding",
       "@type": "ClassDefinition"
     },
     {
@@ -7411,12 +7432,14 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:MatchQuery"
+      ],
       "slots": [
         "identifier_pattern",
         "source_ontology"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/MatchQuery",
       "@type": "ClassDefinition"
     },
     {
@@ -7427,6 +7450,9 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:ReachabilityQuery"
+      ],
       "slots": [
         "source_ontology",
         "source_nodes",
@@ -7436,7 +7462,6 @@
         "traverse_up"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ReachabilityQuery",
       "@type": "ClassDefinition"
     },
     {
@@ -7444,7 +7469,7 @@
       "definition_uri": "https://w3id.org/linkml/StructuredAlias",
       "description": "object that contains meta data about a synonym or alias including where it came from (source) and its scope (narrow, broad, etc.)",
       "from_schema": "https://w3id.org/linkml/meta",
-      "mappings": [
+      "exact_mappings": [
         "skosxl:Label"
       ],
       "mixins": [
@@ -7494,7 +7519,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "http://www.w3.org/2008/05/skos-xl#Label",
       "@type": "ClassDefinition"
     },
     {
@@ -7502,10 +7526,12 @@
       "definition_uri": "https://w3id.org/linkml/Expression",
       "description": "general mixin for any class that can represent some form of expression",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:Expression"
+      ],
       "abstract": true,
       "mixin": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Expression",
       "@type": "ClassDefinition"
     },
     {
@@ -7516,6 +7542,9 @@
         "anonymous expressions are useful for when it is necessary to build a complex expression without introducing a named element for each sub-expression"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:AnonymousExpression"
+      ],
       "abstract": true,
       "mixins": [
         "Expression",
@@ -7561,7 +7590,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/AnonymousExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -7569,6 +7597,9 @@
       "definition_uri": "https://w3id.org/linkml/PathExpression",
       "description": "An expression that describes an abstract path from an object to another through a sequence of slot lookups",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:PathExpression"
+      ],
       "mixins": [
         "Expression",
         "Extensible",
@@ -7621,7 +7652,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/PathExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -7629,6 +7659,9 @@
       "definition_uri": "https://w3id.org/linkml/SlotExpression",
       "description": "an expression that constrains the range of values a slot can take",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:SlotExpression"
+      ],
       "is_a": "Expression",
       "mixin": true,
       "slots": [
@@ -7664,13 +7697,15 @@
         "array"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/SlotExpression",
       "@type": "ClassDefinition"
     },
     {
       "name": "AnonymousSlotExpression",
       "definition_uri": "https://w3id.org/linkml/AnonymousSlotExpression",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:AnonymousSlotExpression"
+      ],
       "is_a": "AnonymousExpression",
       "mixins": [
         "SlotExpression"
@@ -7743,7 +7778,6 @@
         "array"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/AnonymousSlotExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -7764,6 +7798,9 @@
         "attribute",
         "column",
         "variable"
+      ],
+      "exact_mappings": [
+        "linkml:SlotDefinition"
       ],
       "close_mappings": [
         "rdf:Property",
@@ -7894,7 +7931,6 @@
         "array"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/SlotDefinition",
       "@type": "ClassDefinition"
     },
     {
@@ -7902,6 +7938,9 @@
       "definition_uri": "https://w3id.org/linkml/ClassExpression",
       "description": "A boolean expression that can be used to dynamically determine membership of a class",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:ClassExpression"
+      ],
       "mixin": true,
       "slots": [
         "class_expression_any_of",
@@ -7911,13 +7950,15 @@
         "slot_conditions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ClassExpression",
       "@type": "ClassDefinition"
     },
     {
       "name": "AnonymousClassExpression",
       "definition_uri": "https://w3id.org/linkml/AnonymousClassExpression",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:AnonymousClassExpression"
+      ],
       "is_a": "AnonymousExpression",
       "mixins": [
         "ClassExpression"
@@ -7966,7 +8007,6 @@
         "slot_conditions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/AnonymousClassExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -7988,6 +8028,9 @@
         "template",
         "message",
         "observation"
+      ],
+      "exact_mappings": [
+        "linkml:ClassDefinition"
       ],
       "close_mappings": [
         "owl:Class"
@@ -8072,7 +8115,6 @@
         "slot_conditions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ClassDefinition",
       "@type": "ClassDefinition"
     },
     {
@@ -8080,9 +8122,11 @@
       "definition_uri": "https://w3id.org/linkml/ClassLevelRule",
       "description": "A rule that is applied to classes",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:ClassLevelRule"
+      ],
       "abstract": true,
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ClassLevelRule",
       "@type": "ClassDefinition"
     },
     {
@@ -8095,6 +8139,9 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "aliases": [
         "if rule"
+      ],
+      "exact_mappings": [
+        "linkml:ClassRule"
       ],
       "close_mappings": [
         "sh:TripleRule",
@@ -8150,7 +8197,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ClassRule",
       "@type": "ClassDefinition"
     },
     {
@@ -8158,6 +8204,9 @@
       "definition_uri": "https://w3id.org/linkml/ArrayExpression",
       "description": "defines the dimensions of an array",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:ArrayExpression"
+      ],
       "status": "testing",
       "mixins": [
         "Extensible",
@@ -8206,7 +8255,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ArrayExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -8214,6 +8262,9 @@
       "definition_uri": "https://w3id.org/linkml/DimensionExpression",
       "description": "defines one of the dimensions of an array",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:DimensionExpression"
+      ],
       "status": "testing",
       "mixins": [
         "Extensible",
@@ -8262,7 +8313,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/DimensionExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -8270,6 +8320,9 @@
       "definition_uri": "https://w3id.org/linkml/PatternExpression",
       "description": "a regular expression pattern used to evaluate conformance of a string",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:PatternExpression"
+      ],
       "mixins": [
         "Extensible",
         "Annotatable",
@@ -8316,7 +8369,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/PatternExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -8324,6 +8376,9 @@
       "definition_uri": "https://w3id.org/linkml/ImportExpression",
       "description": "an expression describing an import",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:ImportExpression"
+      ],
       "status": "testing",
       "mixins": [
         "Extensible",
@@ -8371,7 +8426,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ImportExpression",
       "@type": "ClassDefinition"
     },
     {
@@ -8382,12 +8436,14 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:Setting"
+      ],
       "slots": [
         "setting_key",
         "setting_value"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Setting",
       "@type": "ClassDefinition"
     },
     {
@@ -8399,13 +8455,15 @@
         "BasicSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:Prefix"
+      ],
       "rank": 12,
       "slots": [
         "prefix_prefix",
         "prefix_reference"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Prefix",
       "@type": "ClassDefinition"
     },
     {
@@ -8413,12 +8471,14 @@
       "definition_uri": "https://w3id.org/linkml/LocalName",
       "description": "an attributed label",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:LocalName"
+      ],
       "slots": [
         "local_name_source",
         "local_name_value"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/LocalName",
       "@type": "ClassDefinition"
     },
     {
@@ -8429,13 +8489,15 @@
         "BasicSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:Example"
+      ],
       "slots": [
         "value",
         "value_description",
         "value_object"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Example",
       "@type": "ClassDefinition"
     },
     {
@@ -8449,12 +8511,14 @@
       "aliases": [
         "structured description"
       ],
+      "exact_mappings": [
+        "linkml:AltDescription"
+      ],
       "slots": [
         "alt_description_source",
         "alt_description_text"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/AltDescription",
       "@type": "ClassDefinition"
     },
     {
@@ -8468,6 +8532,9 @@
       "from_schema": "https://w3id.org/linkml/meta",
       "aliases": [
         "PV"
+      ],
+      "exact_mappings": [
+        "linkml:PermissibleValue"
       ],
       "close_mappings": [
         "skos:Concept"
@@ -8523,7 +8590,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/PermissibleValue",
       "@type": "ClassDefinition"
     },
     {
@@ -8536,6 +8602,9 @@
         "RelationalModelProfile"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:UniqueKey"
+      ],
       "rank": 20,
       "mixins": [
         "Extensible",
@@ -8583,7 +8652,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/UniqueKey",
       "@type": "ClassDefinition"
     },
     {
@@ -8594,6 +8662,9 @@
         "SpecificationSubset"
       ],
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:TypeMapping"
+      ],
       "rank": 21,
       "mixins": [
         "Extensible",
@@ -8641,7 +8712,6 @@
         "keywords"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/TypeMapping",
       "@type": "ClassDefinition"
     },
     {
@@ -8665,11 +8735,10 @@
       "definition_uri": "https://w3id.org/linkml/AnyValue",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
     },
     {
@@ -8678,13 +8747,15 @@
       "description": "a tag/value pair used to add non-model information to an entry",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
+      "exact_mappings": [
+        "linkml:Extension"
+      ],
       "slots": [
         "extension_tag",
         "extension_value",
         "extensions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
     {
@@ -8693,12 +8764,14 @@
       "description": "mixin for classes that support extension",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
+      "exact_mappings": [
+        "linkml:Extensible"
+      ],
       "mixin": true,
       "slots": [
         "extensions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     },
     {
@@ -8707,12 +8780,14 @@
       "description": "mixin for classes that support annotations",
       "from_schema": "https://w3id.org/linkml/annotations",
       "imported_from": "linkml:annotations",
+      "exact_mappings": [
+        "linkml:Annotatable"
+      ],
       "mixin": true,
       "slots": [
         "annotations"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Annotatable",
       "@type": "ClassDefinition"
     },
     {
@@ -8721,6 +8796,9 @@
       "description": "a tag/value pair with the semantics of OWL Annotation",
       "from_schema": "https://w3id.org/linkml/annotations",
       "imported_from": "linkml:annotations",
+      "exact_mappings": [
+        "linkml:Annotation"
+      ],
       "is_a": "Extension",
       "mixins": [
         "Annotatable"
@@ -8732,7 +8810,6 @@
         "annotations"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Annotation",
       "@type": "ClassDefinition"
     },
     {
@@ -8741,7 +8818,7 @@
       "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).",
       "from_schema": "https://w3id.org/linkml/units",
       "imported_from": "linkml:units",
-      "mappings": [
+      "exact_mappings": [
         "qudt:Unit"
       ],
       "slots": [
@@ -8755,7 +8832,6 @@
         "iec61360code"
       ],
       "slot_usage": {},
-      "class_uri": "http://qudt.org/schema/qudt/Unit",
       "any_of": [
         {
           "slot_conditions": [
