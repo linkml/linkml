@@ -5,7 +5,7 @@ from collections import OrderedDict
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from pathlib import Path
-from typing import TextIO, cast
+from typing import Any, TextIO, cast
 from urllib.parse import urlparse
 
 from jsonasobj2 import values
@@ -42,7 +42,7 @@ class SchemaLoader:
         base_dir: str | None = None,
         namespaces: Namespaces | None = None,
         useuris: bool | None = None,
-        importmap: Mapping[str, str] | None = None,
+        importmap: Mapping[str, str | dict[str, Any]] | None = None,
         logger: logging.Logger | None = None,
         mergeimports: bool | None = True,
         metadata: bool | None = True,
@@ -56,7 +56,9 @@ class SchemaLoader:
         :param base_dir: base directory or URL where Schema came from
         :param namespaces: namespaces collector
         :param useuris: True means class_uri and slot_uri are identifiers.  False means they are mappings.
-        :param importmap: A map from import entries to URI or file name.
+        :param importmap: A map from import entries to URI, file name, or an
+            in-memory schema dict. Dict values are loaded directly without
+            source-file metadata derivation.
         :param logger: Target Logger, if any
         :param mergeimports: True means combine imports into single package. False means separate packages
         :param emit_metadata: True means include source file, size and date
@@ -96,6 +98,25 @@ class SchemaLoader:
             )
             self.metadata = emit_metadata
 
+    def _resolve_string_import(self, mapped: str) -> "str | dict[str, Any]":
+        """Expand CURIEs and re-apply the importmap to a string import target.
+
+        Returns either a normalized string path/URI, or a dict if the second
+        importmap lookup chains into an in-memory schema entry.
+        """
+        # Skip CURIE expansion if we already have a local file name with drive letter (windows)
+        if not os.path.splitdrive(mapped)[0] and ":" in mapped:
+            toks = mapped.split(":")
+            pfx = toks[0]
+            pfx_target = self.importmap.get(pfx)
+            if isinstance(pfx_target, str):
+                # Map prefix to a folder/directory
+                mapped = os.path.join(pfx_target, ":".join(toks[1:]))
+            elif pfx not in self.importmap:
+                mapped = self.namespaces.uri_for(mapped)
+        # Second lookup: importmap may also key by URI or expanded form
+        return self.importmap.get(mapped, mapped)
+
     def resolve(self) -> SchemaDefinition:
         """Reconcile a loaded schema, applying is_a, mixins, apply_to's and other such things.  Also validate the
         content and load a SchemaSynopsis entry
@@ -117,25 +138,29 @@ class SchemaLoader:
 
         # Process imports
         for imp in self.schema.imports:
-            sname = self.importmap.get(str(imp), imp)  # Import map may use CURIE
-            # substitute CURIE only if we don't have a local file name with drive letter (windows)
-            if not os.path.splitdrive(sname)[0]:
-                if ":" in sname:
-                    # allow mapping of a prefix to a folder/directory
-                    toks = sname.split(":")
-                    pfx = toks[0]
-                    if pfx in self.importmap:
-                        sname = os.path.join(self.importmap[pfx], ":".join(toks[1:]))
-                    else:
-                        sname = self.namespaces.uri_for(sname)
-            sname = self.importmap.get(str(sname), sname)  # It may also use URI or other forms
-            import_schemadefinition = load_raw_schema(
-                sname + ".yaml",
-                base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
-                merge_modules=self.merge_modules,
-                metadata=self.metadata,
-            )
-            loaded_schema = (str(sname), import_schemadefinition.version)
+            mapped = self.importmap.get(str(imp), imp)  # Import map may use CURIE
+            # Path/CURIE manipulation only applies to string values; dict values are
+            # in-memory schemas passed straight to the raw loader.
+            if isinstance(mapped, str):
+                mapped = self._resolve_string_import(mapped)
+
+            if isinstance(mapped, dict):
+                # In-memory schemas have no source file; skip metadata derivation
+                # so we don't overwrite any fields the caller set on the dict.
+                import_schemadefinition = load_raw_schema(
+                    mapped,
+                    merge_modules=self.merge_modules,
+                    metadata=False,
+                )
+                loaded_schema = (str(imp), import_schemadefinition.version)
+            else:
+                import_schemadefinition = load_raw_schema(
+                    mapped + ".yaml",
+                    base_dir=os.path.dirname(self.schema.source_file) if self.schema.source_file else self.base_dir,
+                    merge_modules=self.merge_modules,
+                    metadata=self.metadata,
+                )
+                loaded_schema = (str(mapped), import_schemadefinition.version)
             if import_schemadefinition.id in self.loaded:
                 # If we've already loaded this, make sure that we've got the same version
                 if self.loaded[import_schemadefinition.id][1] != loaded_schema[1]:
