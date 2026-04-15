@@ -25,7 +25,7 @@ Each cell shows the aggregate result across all tests in that category. Scroll d
 | <a href="#arrays">Arrays</a> | ✅ | ❓ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#boolean-expressions">Boolean Expressions</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#cardinality-presence">Cardinality & Presence</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
-| <a href="#core-structure">Core Structure</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#core-structure">Core Structure</a> | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
 | <a href="#defaults-computed">Defaults & Computed</a> | ✅ | ✅ | ⚠️ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ |
 | <a href="#enumerations">Enumerations</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | <a href="#identity-keys">Identity & Keys</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ |
@@ -37,6 +37,7 @@ Each cell shows the aggregate result across all tests in that category. Scroll d
 | <a href="#schema-level">Schema-Level</a> | ✅ | ✅ | ✅ | ❓ | ⚠️ | ❓ | ❓ | ✅ | ✅ | ❓ | ⚠️ | ✅ |
 | <a href="#slot-typing-ranges">Slot Typing & Ranges</a> | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ⚠️ |
 | <a href="#value-constraints">Value Constraints</a> | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| <a href="#uncategorized">Uncategorized</a> | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ |
 
 ## Coverage Scores
 
@@ -44,18 +45,18 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 | Generator | Implements | Partial | Ignores | N/A | Total | Score |
 |-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|
-| Pydantic | 29 | 31 | 1 | 0 | 61 | 48% |
-| Python DC | 16 | 36 | 9 | 0 | 61 | 26% |
-| JSON Schema | 39 | 20 | 2 | 0 | 61 | 64% |
-| Java | 0 | 22 | 39 | 0 | 61 | 0% |
-| SHACL | 19 | 23 | 19 | 0 | 61 | 31% |
-| ShEx | 0 | 23 | 38 | 0 | 61 | 0% |
-| OWL | 0 | 25 | 36 | 0 | 61 | 0% |
-| JSON-LD Ctx | 33 | 22 | 6 | 0 | 61 | 54% |
-| SQLite DDL | 12 | 38 | 11 | 0 | 61 | 20% |
-| Postgres DDL | 0 | 22 | 39 | 0 | 61 | 0% |
-| Pandera | 14 | 27 | 20 | 0 | 61 | 23% |
-| Polars Schema | 27 | 21 | 13 | 0 | 61 | 44% |
+| Pydantic | 29 | 33 | 1 | 0 | 63 | 46% |
+| Python DC | 16 | 37 | 10 | 0 | 63 | 25% |
+| JSON Schema | 38 | 23 | 2 | 0 | 63 | 60% |
+| Java | 0 | 23 | 40 | 0 | 63 | 0% |
+| SHACL | 19 | 24 | 20 | 0 | 63 | 30% |
+| ShEx | 0 | 23 | 40 | 0 | 63 | 0% |
+| OWL | 0 | 25 | 38 | 0 | 63 | 0% |
+| JSON-LD Ctx | 34 | 23 | 6 | 0 | 63 | 54% |
+| SQLite DDL | 12 | 39 | 12 | 0 | 63 | 19% |
+| Postgres DDL | 0 | 22 | 41 | 0 | 63 | 0% |
+| Pandera | 14 | 27 | 22 | 0 | 63 | 22% |
+| Polars Schema | 28 | 22 | 13 | 0 | 63 | 44% |
 
 ## Details by Category
 
@@ -91,11 +92,11 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 | Test | Pydantic | Python DC | JSON Schema | Java | SHACL | ShEx | OWL | JSON-LD Ctx | SQLite DDL | Postgres DDL | Pandera | Polars Schema |
 |------| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| Abstract classes | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| Abstract classes | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
 | Attribute refinement | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ✅ | ❓ | ⚠️ | ✅ |
 | Attributes | ✅ | ✅ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ✅ | ❓ | ✅ | ✅ |
-| Class inheritance (is_a) | ⚠️ | ⚠️ | ✅ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
-| Mixins | ⚠️ | ⚠️ | ✅ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
+| Class inheritance (is_a) | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
+| Mixins | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ❓ | ⚠️ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
 | Slot inheritance | ✅ | ⚠️ | ✅ | ❓ | ⚠️ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
 | Slot usage | ✅ | ⚠️ | ✅ | ❓ | ⚠️ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
 
@@ -194,6 +195,13 @@ Percentage of tests where the generator fully implements the feature (excluding 
 | ID prefix | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Min/max value | ✅ | ⚠️ | ✅ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ✅ | ✅ |
 | Regex pattern | ⚠️ | ⚠️ | ⚠️ | ❓ | ✅ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ⚠️ | ✅ |
+
+### Uncategorized
+
+| Test | Pydantic | Python DC | JSON Schema | Java | SHACL | ShEx | OWL | JSON-LD Ctx | SQLite DDL | Postgres DDL | Pandera | Polars Schema |
+|------| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| range expression booleans | ⚠️ | ❓ | ✅ | ⚠️ | ❓ | ❓ | ❓ | ⚠️ | ❓ | ❓ | ❓ | ⚠️ |
+| range expression nesting | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ |
 
 ---
 
