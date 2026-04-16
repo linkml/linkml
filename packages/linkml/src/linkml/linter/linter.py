@@ -115,21 +115,30 @@ class Linter:
         validate_schema: bool = False,
         validate_only: bool = False,
     ) -> Iterable[LinterProblem]:
-        if (validate_schema or validate_only) and isinstance(schema, str):
-            yield from self.validate_schema(schema)
+        # Always validate against the metamodel when given a file path.
+        # The validate_schema parameter is deprecated — validation now always runs.
+        has_metamodel_errors = False
+        if isinstance(schema, str):
+            for problem in self.validate_schema(schema):
+                has_metamodel_errors = True
+                yield problem
 
         if validate_only:
             return
 
+        if has_metamodel_errors:
+            # Don't attempt to load a schema that failed metamodel validation —
+            # SchemaView may crash or produce misleading results.
+            return
+
         try:
             schema_view = SchemaView(schema)
-        except Exception:
-            if not validate_schema:
-                yield LinterProblem(
-                    message="File is not a valid LinkML schema. Use --validate for more details.",
-                    level=RuleLevel(RuleLevel.error),
-                    schema_source=(schema if isinstance(schema, str) else None),
-                )
+        except Exception as e:
+            yield LinterProblem(
+                message=str(e),
+                level=RuleLevel(RuleLevel.error),
+                schema_source=(schema if isinstance(schema, str) else None),
+            )
             return
 
         for rule_id, rule_config in self.config.rules.__dict__.items():

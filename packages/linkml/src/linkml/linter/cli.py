@@ -10,6 +10,7 @@ from linkml._version import __version__
 from linkml.linter.config.datamodel.config import RuleLevel
 from linkml.linter.formatters import JsonFormatter, MarkdownFormatter, TerminalFormatter, TsvFormatter
 from linkml.linter.linter import Linter
+from linkml.utils.deprecation import deprecation_warning
 
 YAML_SUFFIXES = [".yml", ".yaml"]
 DEFAULT_CONFIG_FILES = [".linkmllint.yaml", ".linkmllint.yml"]
@@ -98,6 +99,9 @@ def main(
 
     SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
     every YAML file found in the directory (recursively) will be linted."""
+    if validate:
+        deprecation_warning("lint-validate-flag")
+
     config_file = None
     if config:
         config_file = config
