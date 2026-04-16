@@ -92,8 +92,22 @@ class Linter:
 
     @staticmethod
     def validate_schema(schema_path: str):
-        with open(schema_path) as schema_file:
-            schema = yaml.safe_load(schema_file)
+        """Validate a schema file against the LinkML metamodel JSON Schema.
+
+        Yields :class:`LinterProblem` for each validation error found,
+        including YAML parse errors and file I/O errors.
+        """
+        try:
+            with open(schema_path) as schema_file:
+                schema = yaml.safe_load(schema_file)
+        except (yaml.YAMLError, OSError) as e:
+            yield LinterProblem(
+                rule_name="valid-schema",
+                message=str(e),
+                level=RuleLevel(RuleLevel.error),
+                schema_source=schema_path,
+            )
+            return
 
         validator = get_metamodel_validator()
         for err in validator.iter_errors(schema):
