@@ -92,6 +92,23 @@ classes:
           slot_conditions:
             age:
               required: true
+
+  Contact:
+    attributes:
+      name:
+        identifier: true
+      email:
+      contact_type:
+    rules:
+      - description: internal contacts must have company email
+        preconditions:
+          slot_conditions:
+            contact_type:
+              equals_string: internal
+        postconditions:
+          slot_conditions:
+            email:
+              pattern: "^[^@]+@example\\\\.com$"
 """
 
 
@@ -121,6 +138,13 @@ def person_context():
     """Validation context targeting Person."""
     schema = yaml_loader.load(SCHEMA, SchemaDefinition)
     return ValidationContext(schema, "Person")
+
+
+@pytest.fixture(scope="module")
+def contact_context():
+    """Validation context targeting Contact."""
+    schema = yaml_loader.load(SCHEMA, SchemaDefinition)
+    return ValidationContext(schema, "Contact")
 
 
 class TestPreconditionsDoNotMatch:
@@ -261,4 +285,30 @@ class TestNestedObjectRecursion:
         plugin = RulesValidationPlugin()
         instance = {"organizations": []}
         results = list(plugin.process(instance, container_context))
+        assert len(results) == 0
+
+
+class TestPatternRules:
+    """Test rules using pattern constraints."""
+
+    def test_matching_pattern(self, contact_context):
+        """Internal contact with company email should pass."""
+        plugin = RulesValidationPlugin()
+        instance = {"name": "Alice", "contact_type": "internal", "email": "alice@example.com"}
+        results = list(plugin.process(instance, contact_context))
+        assert len(results) == 0
+
+    def test_non_matching_pattern(self, contact_context):
+        """Internal contact with non-company email should fail."""
+        plugin = RulesValidationPlugin()
+        instance = {"name": "Bob", "contact_type": "internal", "email": "bob@gmail.com"}
+        results = list(plugin.process(instance, contact_context))
+        assert len(results) == 1
+        assert "email" in results[0].message
+
+    def test_precondition_not_met_pattern_ignored(self, contact_context):
+        """External contact with any email should pass (precondition not met)."""
+        plugin = RulesValidationPlugin()
+        instance = {"name": "Charlie", "contact_type": "external", "email": "charlie@gmail.com"}
+        results = list(plugin.process(instance, contact_context))
         assert len(results) == 0

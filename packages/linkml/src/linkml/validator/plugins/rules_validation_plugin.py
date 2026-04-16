@@ -15,7 +15,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassRule,
     SlotDefinition,
 )
-from linkml_runtime.utils.expression_utils import _is_numeric, matches_class_expression, matches_slot_expression
+from linkml_runtime.utils.expression_utils import is_numeric, matches_class_expression, matches_slot_expression
 
 
 class RulesValidationPlugin(ValidationPlugin):
@@ -92,17 +92,34 @@ class RulesValidationPlugin(ValidationPlugin):
 
         # Preconditions matched (or absent) — postconditions must hold
         if rule.postconditions is not None:
+            if matches_class_expression(instance, rule.postconditions):
+                return
+
+            loc = "/".join(location)
+            description = f" ({rule.description})" if rule.description else ""
             violated_slots = self._find_violations(instance, rule.postconditions)
-            for slot_name, reason in violated_slots:
-                loc = "/".join(location)
-                description = f" ({rule.description})" if rule.description else ""
+
+            if violated_slots:
+                for slot_name, reason in violated_slots:
+                    yield ValidationResult(
+                        type="class_rule",
+                        severity=Severity.ERROR,
+                        instance=instance,
+                        instantiates=class_name,
+                        message=(
+                            f"Rule violation{description} on class '{class_name}' in /{loc}: "
+                            f"slot '{slot_name}' {reason}"
+                        ),
+                    )
+            else:
                 yield ValidationResult(
                     type="class_rule",
                     severity=Severity.ERROR,
                     instance=instance,
                     instantiates=class_name,
                     message=(
-                        f"Rule violation{description} on class '{class_name}' in /{loc}: slot '{slot_name}' {reason}"
+                        f"Rule violation{description} on class '{class_name}' in /{loc}: "
+                        "postconditions were not satisfied"
                     ),
                 )
 
@@ -135,7 +152,7 @@ def _describe_violation(value, condition: SlotDefinition) -> str:
     if condition.minimum_value is not None:
         if value is None:
             return f"must be >= {condition.minimum_value} but is absent"
-        if not _is_numeric(value):
+        if not is_numeric(value):
             return f"must be >= {condition.minimum_value} but '{value}' is not numeric"
         if float(value) < float(condition.minimum_value):
             return f"must be >= {condition.minimum_value} but is {value}"
@@ -143,7 +160,7 @@ def _describe_violation(value, condition: SlotDefinition) -> str:
     if condition.maximum_value is not None:
         if value is None:
             return f"must be <= {condition.maximum_value} but is absent"
-        if not _is_numeric(value):
+        if not is_numeric(value):
             return f"must be <= {condition.maximum_value} but '{value}' is not numeric"
         if float(value) > float(condition.maximum_value):
             return f"must be <= {condition.maximum_value} but is {value}"

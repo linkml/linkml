@@ -19,9 +19,9 @@ from linkml_runtime.utils.eval_utils import eval_expr
 logger = logging.getLogger(__name__)
 
 
-def _is_numeric(value: Any) -> bool:
+def is_numeric(value: Any) -> bool:
     """Check whether a value can be interpreted as a number."""
-    if isinstance(value, int | float | complex):
+    if isinstance(value, int | float):
         return True
     if isinstance(value, str):
         stripped = value.strip()
@@ -89,13 +89,13 @@ def matches_slot_expression(
 
     # Numeric range constraints
     if expr.minimum_value is not None:
-        if slot_value is None or not _is_numeric(slot_value):
+        if slot_value is None or not is_numeric(slot_value):
             return False
         if float(slot_value) < float(expr.minimum_value):
             return False
 
     if expr.maximum_value is not None:
-        if slot_value is None or not _is_numeric(slot_value):
+        if slot_value is None or not is_numeric(slot_value):
             return False
         if float(slot_value) > float(expr.maximum_value):
             return False
@@ -104,7 +104,7 @@ def matches_slot_expression(
     if getattr(expr, "pattern", None) is not None:
         if slot_value is None:
             return False
-        if not re.search(expr.pattern, str(slot_value)):
+        if not re.match(expr.pattern, str(slot_value)):
             return False
 
     return True
