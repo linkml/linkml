@@ -15,6 +15,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassRule,
     SlotDefinition,
 )
+from linkml_runtime.utils.expression_utils import matches_class_expression, matches_slot_expression
 
 
 class RulesValidationPlugin(ValidationPlugin):
@@ -86,7 +87,7 @@ class RulesValidationPlugin(ValidationPlugin):
 
         # Check preconditions — if they don't match, rule doesn't apply
         if rule.preconditions is not None:
-            if not self._matches_expression(instance, rule.preconditions):
+            if not matches_class_expression(instance, rule.preconditions):
                 return
 
         # Preconditions matched (or absent) — postconditions must hold
@@ -105,95 +106,53 @@ class RulesValidationPlugin(ValidationPlugin):
                     ),
                 )
 
-    def _matches_expression(self, instance: dict, expression: AnonymousClassExpression) -> bool:
-        """Check whether an instance satisfies a class expression (used for preconditions).
-
-        Returns True if all slot_conditions in the expression match the instance.
-        A missing slot value means the condition does not match.
-        """
-        if expression.slot_conditions:
-            for slot_name, slot_condition in expression.slot_conditions.items():
-                value = instance.get(slot_name)
-                if not self._slot_matches(value, slot_condition):
-                    return False
-        return True
-
-    def _slot_matches(self, value, condition: SlotDefinition) -> bool:
-        """Check whether a single slot value matches a slot condition.
-
-        Used for evaluating preconditions.
-        """
-        if condition.required and value is None:
-            return False
-
-        if condition.equals_string is not None:
-            return value is not None and str(value) == condition.equals_string
-
-        if condition.minimum_value is not None:
-            if value is None:
-                return False
-            if float(value) < float(condition.minimum_value):
-                return False
-
-        if condition.maximum_value is not None:
-            if value is None:
-                return False
-            if float(value) > float(condition.maximum_value):
-                return False
-
-        if condition.pattern is not None:
-            import re
-
-            if value is None:
-                return False
-            if not re.search(condition.pattern, str(value)):
-                return False
-
-        return True
-
     def _find_violations(self, instance: dict, expression: AnonymousClassExpression) -> list[tuple[str, str]]:
-        """Find postcondition violations, returning (slot_name, reason) pairs."""
+        """Find postcondition violations, returning (slot_name, reason) pairs.
+
+        Uses the shared ``matches_slot_expression`` for matching, then generates
+        human-readable reasons for any violations found.
+        """
         violations = []
         if expression.slot_conditions:
             for slot_name, slot_condition in expression.slot_conditions.items():
                 value = instance.get(slot_name)
-                reason = self._check_postcondition(value, slot_condition)
-                if reason is not None:
+                if not matches_slot_expression(value, slot_condition, instance):
+                    reason = _describe_violation(value, slot_condition)
                     violations.append((slot_name, reason))
         return violations
 
-    def _check_postcondition(self, value, condition: SlotDefinition) -> str | None:
-        """Check whether a value satisfies a postcondition.
 
-        Returns a human-readable reason string if violated, None if satisfied.
-        """
-        if condition.required and value is None:
-            return "is required but missing"
+def _describe_violation(value, condition: SlotDefinition) -> str:
+    """Generate a human-readable description of why a slot value violates a condition."""
+    if getattr(condition, "required", None) and value is None:
+        return "is required but missing"
 
-        if condition.equals_string is not None:
-            if value is None:
-                return f"is required to equal '{condition.equals_string}' but is absent"
-            if str(value) != condition.equals_string:
-                return f"must equal '{condition.equals_string}' but is '{value}'"
+    if condition.equals_string is not None:
+        if value is None:
+            return f"is required to equal '{condition.equals_string}' but is absent"
+        return f"must equal '{condition.equals_string}' but is '{value}'"
 
-        if condition.minimum_value is not None:
-            if value is None:
-                return f"must be >= {condition.minimum_value} but is absent"
+    if condition.minimum_value is not None:
+        if value is None:
+            return f"must be >= {condition.minimum_value} but is absent"
+        try:
             if float(value) < float(condition.minimum_value):
                 return f"must be >= {condition.minimum_value} but is {value}"
+        except (ValueError, TypeError):
+            return f"must be >= {condition.minimum_value} but '{value}' is not numeric"
 
-        if condition.maximum_value is not None:
-            if value is None:
-                return f"must be <= {condition.maximum_value} but is absent"
+    if condition.maximum_value is not None:
+        if value is None:
+            return f"must be <= {condition.maximum_value} but is absent"
+        try:
             if float(value) > float(condition.maximum_value):
                 return f"must be <= {condition.maximum_value} but is {value}"
+        except (ValueError, TypeError):
+            return f"must be <= {condition.maximum_value} but '{value}' is not numeric"
 
-        if condition.pattern is not None:
-            import re
+    if getattr(condition, "pattern", None) is not None:
+        if value is None:
+            return f"must match pattern '{condition.pattern}' but is absent"
+        return f"must match pattern '{condition.pattern}' but is '{value}'"
 
-            if value is None:
-                return f"must match pattern '{condition.pattern}' but is absent"
-            if not re.search(condition.pattern, str(value)):
-                return f"must match pattern '{condition.pattern}' but is '{value}'"
-
-        return None
+    return "does not satisfy postcondition"
