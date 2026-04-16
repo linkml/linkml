@@ -295,6 +295,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
+        top_additional_properties = self.not_closed
+        if self.top_class:
+            top_class_def = self.schemaview.get_class(self.top_class)
+            if top_class_def is not None:
+                top_additional_properties = self.get_additional_properties(top_class_def)
+
         self.top_level_schema = JsonSchema(
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -303,7 +309,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
-                "additionalProperties": self.not_closed,
+                "additionalProperties": top_additional_properties,
             }
         )
 
