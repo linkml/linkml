@@ -19,6 +19,20 @@ from linkml_runtime.utils.eval_utils import eval_expr
 logger = logging.getLogger(__name__)
 
 
+def _is_numeric(value: Any) -> bool:
+    """Check whether a value can be interpreted as a number."""
+    if isinstance(value, int | float | complex):
+        return True
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            return False
+        # Handle optional leading sign and decimal point
+        stripped = stripped.lstrip("+-")
+        return stripped.replace(".", "", 1).isdigit()
+    return False
+
+
 def matches_slot_expression(
     slot_value: Any,
     expr: SlotDefinition | AnonymousSlotExpression,
@@ -75,21 +89,15 @@ def matches_slot_expression(
 
     # Numeric range constraints
     if expr.minimum_value is not None:
-        if slot_value is None:
+        if slot_value is None or not _is_numeric(slot_value):
             return False
-        try:
-            if float(slot_value) < float(expr.minimum_value):
-                return False
-        except (ValueError, TypeError):
+        if float(slot_value) < float(expr.minimum_value):
             return False
 
     if expr.maximum_value is not None:
-        if slot_value is None:
+        if slot_value is None or not _is_numeric(slot_value):
             return False
-        try:
-            if float(slot_value) > float(expr.maximum_value):
-                return False
-        except (ValueError, TypeError):
+        if float(slot_value) > float(expr.maximum_value):
             return False
 
     # Pattern matching

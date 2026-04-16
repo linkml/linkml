@@ -296,6 +296,12 @@ def merge_includes(
     for prefix in include.prefixes.values():
         if prefix.prefix_prefix not in target.prefixes:
             target.prefixes[prefix.prefix_prefix] = deepcopy(prefix)
+        elif target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference:
+            raise ValueError(
+                f"Conflicting prefix '{prefix.prefix_prefix}': "
+                f"target has '{target.prefixes[prefix.prefix_prefix].prefix_reference}' "
+                f"but include has '{prefix.prefix_reference}'"
+            )
 
 
 def resolve_merged_imports(

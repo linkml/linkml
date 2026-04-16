@@ -15,7 +15,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassRule,
     SlotDefinition,
 )
-from linkml_runtime.utils.expression_utils import matches_class_expression, matches_slot_expression
+from linkml_runtime.utils.expression_utils import _is_numeric, matches_class_expression, matches_slot_expression
 
 
 class RulesValidationPlugin(ValidationPlugin):
@@ -135,20 +135,18 @@ def _describe_violation(value, condition: SlotDefinition) -> str:
     if condition.minimum_value is not None:
         if value is None:
             return f"must be >= {condition.minimum_value} but is absent"
-        try:
-            if float(value) < float(condition.minimum_value):
-                return f"must be >= {condition.minimum_value} but is {value}"
-        except (ValueError, TypeError):
+        if not _is_numeric(value):
             return f"must be >= {condition.minimum_value} but '{value}' is not numeric"
+        if float(value) < float(condition.minimum_value):
+            return f"must be >= {condition.minimum_value} but is {value}"
 
     if condition.maximum_value is not None:
         if value is None:
             return f"must be <= {condition.maximum_value} but is absent"
-        try:
-            if float(value) > float(condition.maximum_value):
-                return f"must be <= {condition.maximum_value} but is {value}"
-        except (ValueError, TypeError):
+        if not _is_numeric(value):
             return f"must be <= {condition.maximum_value} but '{value}' is not numeric"
+        if float(value) > float(condition.maximum_value):
+            return f"must be <= {condition.maximum_value} but is {value}"
 
     if getattr(condition, "pattern", None) is not None:
         if value is None:

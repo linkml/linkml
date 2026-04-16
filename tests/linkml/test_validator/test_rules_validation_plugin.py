@@ -225,3 +225,40 @@ class TestRequiredPostcondition:
         instance = {"name": "Charlie", "status": "inactive"}
         results = list(plugin.process(instance, person_context))
         assert len(results) == 0
+
+
+class TestNestedObjectRecursion:
+    """Test that rules are evaluated on nested objects within a container."""
+
+    def test_violation_in_nested_object(self, container_context):
+        """A Container with an invalid nested Organization should report the violation."""
+        plugin = RulesValidationPlugin()
+        instance = {
+            "organizations": [
+                {"name": "Good Org", "min_salary": 50000, "score": -1},
+                {"name": "Bad Org", "min_salary": 50000, "score": 3},
+            ]
+        }
+        results = list(plugin.process(instance, container_context))
+        assert len(results) == 1
+        assert "score" in results[0].message
+        assert "organizations/1" in results[0].message
+
+    def test_no_violation_in_nested_objects(self, container_context):
+        """A Container with all valid nested Organizations should pass."""
+        plugin = RulesValidationPlugin()
+        instance = {
+            "organizations": [
+                {"name": "Org A", "min_salary": 50000, "score": -1},
+                {"name": "Org B", "min_salary": 90000, "score": 4},
+            ]
+        }
+        results = list(plugin.process(instance, container_context))
+        assert len(results) == 0
+
+    def test_empty_container(self, container_context):
+        """A Container with no organizations should pass."""
+        plugin = RulesValidationPlugin()
+        instance = {"organizations": []}
+        results = list(plugin.process(instance, container_context))
+        assert len(results) == 0
