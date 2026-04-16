@@ -238,6 +238,66 @@ def merge_enums(
     pass
 
 
+def merge_class_rules(
+    target: ClassDefinition,
+    source: ClassDefinition,
+) -> None:
+    """Additively merge list-valued class fields from source into target.
+
+    Appends ``rules`` and ``classification_rules`` from source to target.
+    Dict-valued fields (``slot_usage``, ``attributes``) are not yet handled
+    and will require conflict-resolution policies — see #3402.
+
+    :param target: The base class to merge into.
+    :param source: The overlay class whose rules are appended.
+    """
+    for rule in source.rules:
+        target.rules.append(deepcopy(rule))
+    for cr in source.classification_rules:
+        target.classification_rules.append(deepcopy(cr))
+
+
+def merge_includes(
+    target: SchemaDefinition,
+    include: SchemaDefinition,
+) -> None:
+    """Merge an included schema into a target schema with additive class-level composition.
+
+    For classes that exist in both schemas, list-valued fields (rules,
+    classification_rules) are appended from the include onto the target.
+    Classes that exist only in the include are added to the target.
+    New slots, types, enums, and subsets from the include are also added.
+
+    :param target: The base schema to merge into (modified in place).
+    :param include: The schema to include.
+    """
+    for class_name, include_class in include.classes.items():
+        if class_name in target.classes:
+            merge_class_rules(target.classes[class_name], include_class)
+        else:
+            target.classes[class_name] = deepcopy(include_class)
+
+    for slot_name, slot_def in include.slots.items():
+        if slot_name not in target.slots:
+            target.slots[slot_name] = deepcopy(slot_def)
+
+    for type_name, type_def in include.types.items():
+        if type_name not in target.types:
+            target.types[type_name] = deepcopy(type_def)
+
+    for enum_name, enum_def in include.enums.items():
+        if enum_name not in target.enums:
+            target.enums[enum_name] = deepcopy(enum_def)
+
+    for subset_name, subset_def in include.subsets.items():
+        if subset_name not in target.subsets:
+            target.subsets[subset_name] = deepcopy(subset_def)
+
+    for prefix in include.prefixes.values():
+        if prefix.prefix_prefix not in target.prefixes:
+            target.prefixes[prefix.prefix_prefix] = deepcopy(prefix)
+
+
 def resolve_merged_imports(
     target: SchemaDefinition, mergee: SchemaDefinition, imported_from: str | None = None
 ) -> None:

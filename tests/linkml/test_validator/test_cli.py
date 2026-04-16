@@ -215,6 +215,163 @@ def test_allow_null_for_optional_enums_none_value(cli_runner, json_data_file):
     assert result.exit_code == 0
 
 
+def test_include_overlay_with_rules(tmp_path, cli_runner, json_data_file):
+    """Verify that --include merges rules from an overlay schema and the rules plugin catches violations."""
+    # Base schema: Organization has no score constraints by default when min_salary > 80000
+    # Overlay adds a rule: if min_salary <= 50000, score must be <= 1
+    overlay_yaml = """\
+id: https://w3id.org/test/overlay
+name: overlay
+classes:
+  Organization:
+    rules:
+      - description: low-salary orgs must have low score
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 50000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 1
+"""
+    overlay_path = tmp_path / "overlay.yaml"
+    overlay_path.write_text(overlay_yaml)
+
+    # This org violates the overlay rule: min_salary=40000 (<= 50000) but score=3 (> 1)
+    data = {
+        "persons": [],
+        "organizations": [{"id": "ROR:1", "name": "LowPay Inc", "min_salary": 40000, "score": 3}],
+    }
+    data_path = json_data_file(data)
+
+    # Use the RulesValidationPlugin via config
+    config_yaml = f"""\
+schema: {PERSONINFO_SCHEMA}
+plugins:
+  RulesValidationPlugin:
+"""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(config_yaml)
+
+    result = cli_runner.invoke(cli, ["--config", str(config_path), "--include", str(overlay_path), data_path])
+    assert "[ERROR]" in result.output
+    assert "score" in result.output
+    assert result.exit_code == 1
+
+
+def test_include_overlay_no_violation(tmp_path, cli_runner, json_data_file):
+    """Verify that --include with conforming data passes cleanly."""
+    overlay_yaml = """\
+id: https://w3id.org/test/overlay
+name: overlay
+classes:
+  Organization:
+    rules:
+      - description: low-salary orgs must have low score
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 50000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 1
+"""
+    overlay_path = tmp_path / "overlay.yaml"
+    overlay_path.write_text(overlay_yaml)
+
+    # This org satisfies both rules: base rule (salary<=80000 → score<=0) and overlay (salary<=50000 → score<=1)
+    data = {
+        "persons": [],
+        "organizations": [{"id": "ROR:1", "name": "LowPay Inc", "min_salary": 40000, "score": -1}],
+    }
+    data_path = json_data_file(data)
+
+    config_yaml = f"""\
+schema: {PERSONINFO_SCHEMA}
+plugins:
+  RulesValidationPlugin:
+"""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(config_yaml)
+
+    result = cli_runner.invoke(cli, ["--config", str(config_path), "--include", str(overlay_path), data_path])
+    assert result.exception is None
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
+
+
+def test_include_multiple_overlays(tmp_path, cli_runner, json_data_file):
+    """Verify that multiple --include flags compose additively."""
+    overlay1_yaml = """\
+id: https://w3id.org/test/overlay1
+name: overlay1
+classes:
+  Organization:
+    rules:
+      - description: rule from overlay 1
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 50000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 1
+"""
+    overlay2_yaml = """\
+id: https://w3id.org/test/overlay2
+name: overlay2
+classes:
+  Organization:
+    rules:
+      - description: rule from overlay 2
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 100000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 3
+"""
+    overlay1_path = tmp_path / "overlay1.yaml"
+    overlay1_path.write_text(overlay1_yaml)
+    overlay2_path = tmp_path / "overlay2.yaml"
+    overlay2_path.write_text(overlay2_yaml)
+
+    # This org: min_salary=40000, score=4 — violates overlay1 (score must be <= 1) AND overlay2 (score must be <= 3)
+    data = {
+        "persons": [],
+        "organizations": [{"id": "ROR:1", "name": "Test Org", "min_salary": 40000, "score": 4}],
+    }
+    data_path = json_data_file(data)
+
+    config_yaml = f"""\
+schema: {PERSONINFO_SCHEMA}
+plugins:
+  RulesValidationPlugin:
+"""
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(config_yaml)
+
+    result = cli_runner.invoke(
+        cli,
+        [
+            "--config",
+            str(config_path),
+            "--include",
+            str(overlay1_path),
+            "--include",
+            str(overlay2_path),
+            data_path,
+        ],
+    )
+    assert result.output.count("[ERROR]") >= 2
+    assert result.exit_code == 1
+
+
 def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_data_file):
     """
     With the flag, valid enum values should still pass with no issues.

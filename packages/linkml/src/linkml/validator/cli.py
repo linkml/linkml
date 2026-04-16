@@ -10,10 +10,13 @@ import yaml
 from pydantic import BaseModel, Field
 
 from linkml._version import __version__
+from linkml.utils.mergeutils import merge_includes
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader, default_loader_for_file
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 
 class Config(BaseModel):
@@ -105,12 +108,21 @@ def _resolve_loaders(
     "one of [...]' and \"'' is not one of [...]\" errors for optional "
     "enum slots.",
 )
+@click.option(
+    "--include",
+    multiple=True,
+    type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
+    help="Additional schema files to include. Rules and classification rules "
+    "from these schemas are additively merged onto matching classes in the "
+    "base schema. May be specified multiple times.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 def cli(
     schema: Path | None,
     target_class: str | None,
     config: str | None,
+    include: tuple[Path],
     data_sources: tuple[str],
     exit_on_first_failure: bool,
     include_context: bool,
@@ -144,7 +156,15 @@ def cli(
 
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
     loaders = _resolve_loaders(config.data_sources, schema_path=config.schema_path, target_class=config.target_class)
-    validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
+
+    # Load schema and merge any included schemas
+    schema_def = yaml_loader.load(str(config.schema_path), SchemaDefinition)
+    schema_def.source_file = str(config.schema_path)
+    for include_path in include:
+        include_schema = yaml_loader.load(str(include_path), SchemaDefinition)
+        merge_includes(schema_def, include_schema)
+
+    validator = Validator(schema_def, validation_plugins=plugins, strict=exit_on_first_failure)
     severity_counter = Counter()
 
     for loader in loaders:
