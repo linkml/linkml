@@ -295,6 +295,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
+        top_additional_properties = self.not_closed
+        if self.top_class:
+            top_class_def = self.schemaview.get_class(self.top_class)
+            if top_class_def is not None:
+                top_additional_properties = self.get_additional_properties(top_class_def)
+
         self.top_level_schema = JsonSchema(
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -303,7 +309,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
-                "additionalProperties": self.not_closed,
+                "additionalProperties": top_additional_properties,
             }
         )
 
@@ -311,15 +317,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         cls = self.before_generate_class(cls, self.schemaview)
 
         subschema_type = "object"
-        additional_properties = False
         if self.is_class_unconstrained(cls):
             subschema_type = ["null", "boolean", "object", "number", "string"]
-            additional_properties = True
 
         class_subschema = JsonSchema(
             {
                 "type": subschema_type,
-                "additionalProperties": additional_properties,
+                "additionalProperties": self.get_additional_properties(cls),
                 "description": be(cls.description),
             }
         )
@@ -716,6 +720,24 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if slot.designates_type:
             type_value = get_type_designator_value(self.schemaview, slot, cls)
             prop["enum"] = [type_value]
+
+    def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
+        """
+        Implements the `extra_slots` metamodel slot.
+
+        References:
+            https://github.com/linkml/linkml-model/pull/205
+        """
+        if self.is_class_unconstrained(cls):
+            return True
+        elif not cls.extra_slots:
+            return self.not_closed
+        elif cls.extra_slots.allowed is not None:
+            return cls.extra_slots.allowed
+        elif cls.extra_slots.range_expression:
+            return self.get_subschema_for_slot(cls.extra_slots.range_expression)
+        else:
+            return False
 
     def generate(self) -> JsonSchema:
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
