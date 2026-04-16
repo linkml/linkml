@@ -396,3 +396,44 @@ classes:
         result = runner.invoke(main, [SCHEMA_FILE])
         assert result.exit_code == 2
         assert "is not a 'uri'" in result.stdout
+
+
+def test_imported_schema_validated(runner):
+    """Metamodel validation runs on imported schemas too (#2898)."""
+    with runner.isolated_filesystem():
+        with open("imported.yaml", "w") as f:
+            f.write(
+                """
+id: bad_import_no_name
+default_range: string
+classes:
+  ImportedClass:
+    attributes:
+      foo:
+        description: test
+"""
+            )
+
+        with open(SCHEMA_FILE, "w") as f:
+            f.write(
+                """
+id: https://example.org/main
+name: main
+imports:
+  - linkml:types
+  - imported
+default_range: string
+classes:
+  MainClass:
+    tree_root: true
+    description: Test.
+    is_a: ImportedClass
+    attributes:
+      bar:
+        description: test
+"""
+            )
+
+        result = runner.invoke(main, [SCHEMA_FILE])
+        assert result.exit_code == 2
+        assert "'name' is a required property" in result.stdout

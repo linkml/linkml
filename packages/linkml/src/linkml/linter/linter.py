@@ -141,6 +141,27 @@ class Linter:
             )
             return
 
+        # Validate imported schemas against the metamodel.
+        # Force import resolution by accessing all elements, then check each
+        # non-built-in imported schema.
+        if isinstance(schema, str):
+            schema_view.all_classes(imports=True)
+            main_name = schema_view.schema.name
+            for import_name, import_schema in schema_view.schema_map.items():
+                if import_name == main_name:
+                    continue
+                # Skip built-in imports (prefixed names like "linkml:types")
+                if ":" in import_name:
+                    continue
+                source_file = getattr(import_schema, "source_file", None)
+                if source_file:
+                    source_path = Path(source_file)
+                    if not source_path.is_absolute():
+                        source_path = Path(schema).parent / source_path
+                    if source_path.exists():
+                        for problem in self.validate_schema(str(source_path)):
+                            yield problem
+
         for rule_id, rule_config in self.config.rules.__dict__.items():
             rule_cls = self._rules_map.get(rule_id, None)
             if rule_cls is None:
