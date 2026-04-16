@@ -725,7 +725,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.is_class_unconstrained(cls):
             return True
         elif not cls.extra_slots:
-            return False
+            return self.not_closed
         elif cls.extra_slots.allowed is not None:
             return cls.extra_slots.allowed
         elif cls.extra_slots.range_expression:
