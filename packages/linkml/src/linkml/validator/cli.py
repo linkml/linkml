@@ -116,19 +116,19 @@ def _normalize_and_validate(
 
     severity_counter = Counter()
 
-    # Report normalization actions
+    # Report normalization actions (diagnostics go to stderr)
     for r in report.normalized_results():
-        click.echo(f"[FIXED] {r.type}: {r.instantiates} ({r.info or ''})")
+        click.echo(f"[FIXED] [{data_path}] {r.type}: {r.instantiates} ({r.info or ''})", err=True)
 
     for r in report.warnings():
         severity_counter[Severity.WARNING] += 1
-        click.echo(f"[WARN] {r.type}: {r.instantiates}")
+        click.echo(f"[WARN] [{data_path}] {r.type}: {r.instantiates}", err=True)
 
     for r in report.errors():
         severity_counter[Severity.ERROR] += 1
-        click.echo(f"[ERROR] {r.type}: {r.instantiates}")
+        click.echo(f"[ERROR] [{data_path}] {r.type}: {r.instantiates}", err=True)
 
-    # Write normalized output
+    # Write normalized output to stdout
     output_str = yaml.dump(output_object, sort_keys=False)
     click.echo(output_str)
 
@@ -144,10 +144,10 @@ def _normalize_and_validate(
             plugin.pre_process(context)
             for result in plugin.process(output_object, context):
                 severity_counter[result.severity] += 1
-                click.echo(f"[{result.severity.value}] {result.message}")
+                click.echo(f"[{result.severity.value}] [{data_path}] {result.message}", err=True)
                 if include_context:
                     for ctx in result.context:
-                        click.echo(f"[CONTEXT] {ctx}")
+                        click.echo(f"[CONTEXT] {ctx}", err=True)
             plugin.post_process(context)
 
     return severity_counter

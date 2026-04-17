@@ -146,7 +146,9 @@ classes:
 
     # With --fix: coerced and valid
     result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert result.exit_code == 0
     assert "count: 5" in result.output
+    assert "[ERROR]" not in result.output
 
 
 def test_invalid_json(cli_runner, json_data_file):
