@@ -710,24 +710,25 @@ class OwlSchemaGenerator(Generator):
         if slot.all_members:
             owl_exprs.append(self.transform_class_slot_expression(cls, slot.all_members, main_slot, owl_types))
 
-        if slot.any_of:
-            owl_exprs.append(
-                self._union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.any_of]
-                )
-            )
-        if slot.all_of:
-            owl_exprs.append(
-                self._intersection_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.all_of]
-                )
-            )
-        if slot.none_of:
-            owl_exprs.append(
-                self._complement_of_union_of(
-                    [self.transform_class_slot_expression(cls, x, main_slot, owl_types) for x in slot.none_of]
-                )
-            )
+        def _get_slot_nodes(slot_definition) -> list[BNode | URIRef] | None:
+            if not slot_definition:
+                return None
+            rdflib_nodes = [
+                rdflib_node
+                for slot_expression in slot.any_of
+                if (rdflib_node := self.transform_class_slot_expression(cls, slot_expression, main_slot, owl_types))
+            ]
+            if rdflib_nodes:
+                return rdflib_nodes
+            return None
+
+        if any_of_rdflib_nodes := _get_slot_nodes(slot.any_of):
+            owl_exprs.append(self._union_of(any_of_rdflib_nodes))
+        if all_of_rdflib_nodes := _get_slot_nodes(slot.all_of):
+            owl_exprs.append(self._intersection_of(all_of_rdflib_nodes))
+        if none_of_rdflib_nodes := _get_slot_nodes(slot.none_of):
+            owl_exprs.append(self._complement_of_union_of(none_of_rdflib_nodes))
+
         if slot.exactly_one_of:
             disj_exprs = []
             for i, operand in enumerate(slot.exactly_one_of):
