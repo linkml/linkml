@@ -1023,7 +1023,7 @@ def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextI
 
     warnings.warn(
         "linkml-normalize is deprecated and will be removed in a future release. Use 'linkml validate --fix' instead.",
-        DeprecationWarning,
+        FutureWarning,
         stacklevel=2,
     )
     sv = SchemaView(schema)

@@ -21,7 +21,7 @@ linkml lint schema.yaml
    configurable via a `.linkmllint.yaml` configuration file.
 
 If you only need to check whether a schema is structurally valid (without
-quality rules), use [`linkml validate -s schema.yaml`](./validate.md) instead.
+quality rules), use [`linkml validate schema.yaml`](./validate.md) instead.
 
 ## Reference
 

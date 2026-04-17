@@ -81,20 +81,29 @@ def _validate_schema_against_metamodel(schema_paths: tuple[str]) -> int:
     return error_count
 
 
+_FIX_SUPPORTED_EXTENSIONS = {".yaml", ".yml", ".json"}
+
+
 def _normalize_and_validate(
     data_path: str,
     schema_path: str | Path,
     target_class: str | None,
     plugins: list[ValidationPlugin],
-    exit_on_first_failure: bool,
     include_context: bool,
 ) -> Counter:
     """Run ReferenceValidator to normalize data, then validate the result.
 
-    :return: severity counter from JSON Schema validation of normalized output
+    :return: severity counter from validation of normalized output
     """
     from linkml_runtime import SchemaView
     from linkml_runtime.processing.referencevalidator import ReferenceValidator, Report
+
+    suffix = Path(data_path).suffix.lower()
+    if suffix not in _FIX_SUPPORTED_EXTENSIONS:
+        raise click.ClickException(
+            f"--fix only supports YAML and JSON files, got '{suffix}'. "
+            f"Use 'linkml validate -s schema.yaml {data_path}' without --fix for other formats."
+        )
 
     sv = SchemaView(str(schema_path))
     normalizer = ReferenceValidator(sv)
@@ -105,14 +114,18 @@ def _normalize_and_validate(
     report = Report()
     output_object = normalizer.normalize(input_object, target=target_class, report=report)
 
+    severity_counter = Counter()
+
     # Report normalization actions
     for r in report.normalized_results():
         click.echo(f"[FIXED] {r.type}: {r.instantiates} ({r.info or ''})")
 
     for r in report.warnings():
-        click.echo(f"[WARNING] {r.type}: {r.instantiates}")
+        severity_counter[Severity.WARNING] += 1
+        click.echo(f"[WARN] {r.type}: {r.instantiates}")
 
     for r in report.errors():
+        severity_counter[Severity.ERROR] += 1
         click.echo(f"[ERROR] {r.type}: {r.instantiates}")
 
     # Write normalized output
@@ -120,7 +133,6 @@ def _normalize_and_validate(
     click.echo(output_str)
 
     # Now validate the normalized output with the standard JSON Schema path
-    severity_counter = Counter()
     if plugins:
         from linkml.validator.validation_context import ValidationContext
         from linkml_runtime.linkml_model import SchemaDefinition
@@ -243,7 +255,11 @@ def cli(
         cfg.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
 
     if not data_sources and not list(cfg.data_sources):
-        raise click.ClickException("No data files specified. Provide data files as positional arguments.")
+        raise click.ClickException(
+            "No data files specified.\n\n"
+            "  Validate a schema:  linkml validate schema.yaml\n"
+            "  Validate data:      linkml validate -s schema.yaml data.yaml"
+        )
 
     plugins = _resolve_plugins(cfg.plugins) if cfg.plugins else []
     severity_counter = Counter()
@@ -251,7 +267,7 @@ def cli(
     if fix:
         for data_path in data_sources:
             severity_counter += _normalize_and_validate(
-                data_path, cfg.schema_path, cfg.target_class, plugins, exit_on_first_failure, include_context
+                data_path, cfg.schema_path, cfg.target_class, plugins, include_context
             )
     else:
         loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
