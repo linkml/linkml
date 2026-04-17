@@ -1002,34 +1002,46 @@ class ReferenceValidator:
 
 
 @click.command
-@click.option("--schema", "-s", required=True, help="Path to LinkML schema")
+@click.option("--schema", "-s", required=False, help="Path to LinkML schema")
 @click.option("--target", "-C", help="name of target class or element to normalize/validate against")
+@click.option(
+    "--metamodel",
+    is_flag=True,
+    default=False,
+    help="Normalize/validate INPUT as a LinkML schema against the metamodel. "
+    "Equivalent to --schema <metamodel-path> --target SchemaDefinition.",
+)
 @click.option(
     "--report-file", "-R", type=click.File("w"), default=sys.stderr, show_default=True, help="path to file for reports"
 )
 @click.option("--output", "-o", type=click.File("w"), default=sys.stdout)
 @click.option("--expand-all/--no-expand-all", help="If True, expand all Dicts to ExpandedDicts")
 @click.argument("input")
-def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextIO, **kwargs) -> None:
+def cli(
+    schema: str | None,
+    target: str | None,
+    metamodel: bool,
+    input: str,
+    report_file: TextIO,
+    output: TextIO,
+    **kwargs,
+) -> None:
+    """Normalize and validate a YAML document against a schema.
+
+    Normalization coerces types (e.g. "5" to 5) and restructures data between
+    LinkML collection forms (e.g. ExpandedDict to CompactDict).  Validation is
+    performed using a derived schema, as per Part 5 of the LinkML specification.
+
+    Use --metamodel to normalize a LinkML schema itself against the metamodel,
+    without needing to know where the metamodel file lives.
     """
-    Normalizes and validates a YAML document against a schema.
+    if metamodel:
+        from linkml_runtime import MAIN_SCHEMA_PATH
 
-    Normalization is a mix of casting types (e.g. "5" to 5), as well as
-    LinkML *collection forms*, e.g. ExpandedDict to CompactDict.
-
-    Validations is performed using a derived schema, as per part 5 of the specification.
-
-    Note that in future this will be folded into the main linkml-validate command.
-
-    Currently this CLI lacks features such as the ability to customize which
-    severity rules to fail on.
-
-    :param schema:
-    :param target:
-    :param input:
-    :param output:
-    :return:
-    """
+        schema = str(MAIN_SCHEMA_PATH)
+        target = target or "SchemaDefinition"
+    elif schema is None:
+        raise click.UsageError("Either --schema or --metamodel is required.")
     sv = SchemaView(schema)
     normalizer = ReferenceValidator(sv, **kwargs)
     with open(input) as f:
