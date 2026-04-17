@@ -1007,7 +1007,9 @@
                 <span class="n">min_card</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">minimum_cardinality</span>
             <span class="k">elif</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">minimum_cardinality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">min_card</span> <span class="o">=</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">minimum_cardinality</span>
-            <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">required</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">top_slot</span><span class="o">.</span><span class="n">key</span>
+            <span class="p">):</span>
                 <span class="n">min_card</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">min_card</span> <span class="o">=</span> <span class="mi">0</span>

@@ -2294,10 +2294,10 @@
                 <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
             <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">induced_slot</span><span class="p">,</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
-            <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
-            <span class="n">slot</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+            <span class="n">induced_slot</span><span class="o">.</span><span class="n">inlined</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">or</span> <span class="n">induced_slot</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+            <span class="n">induced_slot</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">mangle_name</span><span class="p">:</span>
             <span class="n">mangled_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="si">}</span><span class="s2">__</span><span class="si">{</span><span class="n">underscore</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">induced_slot</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">mangled_name</span>

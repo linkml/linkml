@@ -578,7 +578,10 @@
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">exact_cardinality</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+                <span class="c1"># Identifiers map to the node&#39;s IRI rather than a property triple,</span>
+                <span class="c1"># so there&#39;s no arc to constrain with sh:minCount 1 — emitting it</span>
+                <span class="c1"># would cause spurious violations on every instance.</span>
+                <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">required</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="c1"># maxCount</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">maximum_cardinality</span><span class="p">:</span>
