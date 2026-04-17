@@ -541,11 +541,17 @@ classes:
       slot_uri:
         range: uriorcurie
         ifabsent: slot_curie
+      direct_slot_uri:
+        range: uriorcurie
+        ifabsent: slot_uri
   ClassDefinition:
     attributes:
       class_uri:
         range: uriorcurie
         ifabsent: class_curie
+      direct_class_uri:
+        range: uriorcurie
+        ifabsent: class_uri
   EnumDefinition:
     attributes:
       enum_uri:
@@ -564,10 +570,12 @@ types:
 @pytest.mark.parametrize(
     "cls_name,slot_name",
     [
-        ("SlotDefinition", "range"),
-        ("SlotDefinition", "slot_uri"),
-        ("ClassDefinition", "class_uri"),
-        ("EnumDefinition", "enum_uri"),
+        ("SlotDefinition", "range"),  # ifabsent: default_range
+        ("SlotDefinition", "slot_uri"),  # ifabsent: slot_curie
+        ("SlotDefinition", "direct_slot_uri"),  # ifabsent: slot_uri
+        ("ClassDefinition", "class_uri"),  # ifabsent: class_curie
+        ("ClassDefinition", "direct_class_uri"),  # ifabsent: class_uri
+        ("EnumDefinition", "enum_uri"),  # ifabsent: class_curie
     ],
 )
 def test_metamodel_runtime_computed_ifabsent_returns_none(cls_name, slot_name):
