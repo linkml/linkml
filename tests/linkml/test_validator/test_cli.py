@@ -216,9 +216,7 @@ def test_allow_null_for_optional_enums_none_value(cli_runner, json_data_file):
 
 
 def test_include_overlay_with_rules(tmp_path, cli_runner, json_data_file):
-    """Verify that --include merges rules from an overlay schema and the rules plugin catches violations."""
-    # Base schema: Organization has no score constraints by default when min_salary > 80000
-    # Overlay adds a rule: if min_salary <= 50000, score must be <= 1
+    """Verify that --include merges rules from an overlay schema and violations are caught."""
     overlay_yaml = """\
 id: https://w3id.org/test/overlay
 name: overlay
@@ -245,16 +243,7 @@ classes:
     }
     data_path = json_data_file(data)
 
-    # Use the RulesValidationPlugin via config
-    config_yaml = f"""\
-schema: {PERSONINFO_SCHEMA}
-plugins:
-  RulesValidationPlugin:
-"""
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(config_yaml)
-
-    result = cli_runner.invoke(cli, ["--config", str(config_path), "--include", str(overlay_path), data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "--include", str(overlay_path), data_path])
     assert "[ERROR]" in result.output
     assert "score" in result.output
     assert result.exit_code == 1
@@ -282,21 +271,14 @@ classes:
     overlay_path.write_text(overlay_yaml)
 
     # This org satisfies both rules: base rule (salary<=80000 → score<=0) and overlay (salary<=50000 → score<=1)
+    # score=0 satisfies both rule postconditions and the base slot constraint (minimum_value: 0.0)
     data = {
         "persons": [],
-        "organizations": [{"id": "ROR:1", "name": "LowPay Inc", "min_salary": 40000, "score": -1}],
+        "organizations": [{"id": "ROR:1", "name": "LowPay Inc", "min_salary": 40000, "score": 0}],
     }
     data_path = json_data_file(data)
 
-    config_yaml = f"""\
-schema: {PERSONINFO_SCHEMA}
-plugins:
-  RulesValidationPlugin:
-"""
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(config_yaml)
-
-    result = cli_runner.invoke(cli, ["--config", str(config_path), "--include", str(overlay_path), data_path])
+    result = cli_runner.invoke(cli, ["-s", PERSONINFO_SCHEMA, "--include", str(overlay_path), data_path])
     assert result.exception is None
     assert "No issues found" in result.output
     assert result.exit_code == 0
@@ -348,19 +330,11 @@ classes:
     }
     data_path = json_data_file(data)
 
-    config_yaml = f"""\
-schema: {PERSONINFO_SCHEMA}
-plugins:
-  RulesValidationPlugin:
-"""
-    config_path = tmp_path / "config.yaml"
-    config_path.write_text(config_yaml)
-
     result = cli_runner.invoke(
         cli,
         [
-            "--config",
-            str(config_path),
+            "-s",
+            PERSONINFO_SCHEMA,
             "--include",
             str(overlay1_path),
             "--include",

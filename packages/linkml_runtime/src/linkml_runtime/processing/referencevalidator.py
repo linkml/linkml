@@ -42,7 +42,7 @@ from linkml_runtime.processing.validation_datamodel import (
     ValidationResult,
 )
 from linkml_runtime.utils import yamlutils
-from linkml_runtime.utils.expression_utils import matches_class_expression, matches_slot_expression
+from linkml_runtime.utils.eval_utils import eval_expr
 from linkml_runtime.utils.metamodelcore import (
     URI,
     Bool,
@@ -963,7 +963,11 @@ class ReferenceValidator:
         if expr.is_a:
             if expr.is_a not in self.schemaview.class_ancestors(target.name, reflexive=True):
                 return False
-        return matches_class_expression(input_object, expr)
+            for slot_name, slot_expression in expr.slot_conditions.items():
+                v = input_object.get(slot_name, None)
+                if not self._matches_slot_expression(v, slot_expression, input_object):
+                    return False
+        return True
 
     def _matches_slot_expression(
         self,
@@ -971,7 +975,30 @@ class ReferenceValidator:
         expr: SlotDefinition | AnonymousSlotExpression,
         input_object: dict,
     ) -> bool:
-        return matches_slot_expression(slot_value, expr, input_object)
+        for x in expr.none_of:
+            if self._matches_slot_expression(slot_value, x, input_object):
+                return False
+        if expr.exactly_one_of:
+            vals = [x for x in expr.exactly_one_of if self._matches_slot_expression(slot_value, x, input_object)]
+            if len(vals) != 1:
+                return False
+        if expr.any_of:
+            vals = [x for x in expr.any_of if self._matches_slot_expression(slot_value, x, input_object)]
+            if not vals:
+                return False
+        for x in expr.all_of:
+            if not self._matches_slot_expression(slot_value, x, input_object):
+                return False
+        if expr.equals_expression:
+            if eval_expr(expr.equals_expression, **input_object) != slot_value:
+                return False
+        if expr.equals_string:
+            if str(slot_value) != expr.equals_string:
+                return False
+        if expr.equals_number:
+            if slot_value != x.equals_number:
+                return False
+        return True
 
 
 @click.command
