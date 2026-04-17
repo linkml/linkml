@@ -268,6 +268,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/sqltable.html">SQL DDL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlalchemy.html">SQL Alchemy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sqlvalidation.html">SQL Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/typedb.html">TypeDB / TypeQL</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/sssom.html">SSSOM</a></li>
@@ -1011,6 +1012,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-f">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-f">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-f">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-f">gen-yarrrml command line option</a>
@@ -1247,6 +1250,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-im">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-im">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-im">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-im">gen-typescript command line option</a>
 </li>
@@ -1569,6 +1574,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-log_level">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-log_level">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-log_level">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-log_level">gen-yarrrml command line option</a>
@@ -1754,6 +1761,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-mergeimports">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-mergeimports">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-mergeimports">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-mergeimports">gen-yarrrml command line option</a>
@@ -1901,6 +1910,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-metadata">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-metadata">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-metadata">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-metadata">gen-yarrrml command line option</a>
@@ -2036,6 +2047,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-useuris">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-useuris">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-useuris">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-useuris">gen-typescript command line option</a>
 </li>
@@ -2564,6 +2577,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-mergeimports">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-mergeimports">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-mergeimports">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-mergeimports">gen-yarrrml command line option</a>
@@ -2702,6 +2717,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-metadata">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-metadata">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-metadata">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-metadata">gen-yarrrml command line option</a>
@@ -2807,8 +2824,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-golang-nullable-primitives">linkml-generate-(full)-golang command line option</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-prefixes
 
@@ -2818,6 +2833,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-jsonld-context-prefixes">linkml-generate-(full)-jsonld-context command line option</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-pydantic
 
@@ -2948,6 +2965,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-stacktrace">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-stacktrace">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-stacktrace">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-stacktrace">gen-typescript command line option</a>
 </li>
@@ -3534,6 +3553,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-stacktrace">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-stacktrace">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-stacktrace">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-stacktrace">gen-yarrrml command line option</a>
@@ -3880,6 +3901,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-useuris">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-useuris">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-useuris">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-useuris">gen-yarrrml command line option</a>
@@ -4034,6 +4057,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-v">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-v">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-v">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-v">gen-yarrrml command line option</a>
@@ -4168,6 +4193,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-V">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-V">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-V">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-V">gen-typescript command line option</a>
 </li>
@@ -4405,6 +4432,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-f">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-f">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-f">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-f">gen-yarrrml command line option</a>
@@ -4560,6 +4589,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-im">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-im">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-im">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-im">gen-typescript command line option</a>
 </li>
@@ -4850,6 +4881,8 @@
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-V">gen-terminusdb command line option</a>
 </li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-V">gen-typedb command line option</a>
+</li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-V">gen-typescript command line option</a>
 </li>
           <li><a href="generators/yarrrml.html#cmdoption-gen-yarrrml-V">gen-yarrrml command line option</a>
@@ -4994,6 +5027,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-v">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-v">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-v">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-v">gen-typescript command line option</a>
 </li>
@@ -7422,6 +7457,47 @@
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-v">-v</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
+        <li>
+    gen-typedb command line option
+
+        <ul>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-f">--format</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-im">--importmap</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-log_level">--log_level</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-metadata">--metadata</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-useuris">--metauris</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-useuris">--useuris</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-v">--verbose</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-V">--version</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-f">-f</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-im">-im</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-V">-V</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-v">-v</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
         <li>
@@ -11013,6 +11089,8 @@
 </li>
           <li><a href="generators/terminusdb.html#linkml.generators.terminusdbgen.TerminusdbGenerator.serialize">(linkml.generators.terminusdbgen.TerminusdbGenerator method)</a>
 </li>
+          <li><a href="generators/typedb.html#linkml.generators.typedbgen.TypeDBGenerator.serialize">(linkml.generators.typedbgen.TypeDBGenerator method)</a>
+</li>
           <li><a href="generators/typescript.html#linkml.generators.typescriptgen.TypescriptGenerator.serialize">(linkml.generators.typescriptgen.TypescriptGenerator method)</a>
 </li>
           <li><a href="generators/yaml.html#linkml.generators.yamlgen.YAMLGenerator.serialize">(linkml.generators.yamlgen.YAMLGenerator method)</a>
@@ -11290,6 +11368,8 @@
 </li>
         <li><a href="code/utils.html#linkml.utils.schemasynopsis.SchemaSynopsis.typebases">typebases (linkml.utils.schemasynopsis.SchemaSynopsis attribute)</a>
 </li>
+        <li><a href="generators/typedb.html#linkml.generators.typedbgen.TypeDBGenerator">TypeDBGenerator (class in linkml.generators.typedbgen)</a>
+</li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition">TypeDefinition (class in linkml_runtime.linkml_model.meta)</a>
 </li>
         <li><a href="code/metamodel.html#linkml_runtime.linkml_model.meta.TypeDefinition.typeof">typeof (linkml_runtime.linkml_model.meta.TypeDefinition attribute)</a>
@@ -11553,6 +11633,8 @@
           <li><a href="generators/sssom.html#cmdoption-gen-sssom-arg-YAMLFILE">gen-sssom command line option</a>
 </li>
           <li><a href="generators/terminusdb.html#cmdoption-gen-terminusdb-arg-YAMLFILE">gen-terminusdb command line option</a>
+</li>
+          <li><a href="generators/typedb.html#cmdoption-gen-typedb-arg-YAMLFILE">gen-typedb command line option</a>
 </li>
           <li><a href="generators/typescript.html#cmdoption-gen-typescript-arg-YAMLFILE">gen-typescript command line option</a>
 </li>
