@@ -24,6 +24,16 @@ URIs, and NCName constraints.
 For schema quality checks (naming conventions, recommended fields, canonical
 prefixes), use [`linkml lint`](./lint.md) instead.
 
+## Related Tools
+
+- **`linkml lint`** — validates the schema against the metamodel *and* checks
+  quality rules (naming conventions, recommended fields, etc.).
+- **`linkml-normalize`** — coerces and restructures data to conform to a
+  schema (type coercion, collection form normalization), outputting the
+  corrected data. Use `linkml-normalize -s schema.yaml data.yaml` to normalize
+  data, or `linkml-normalize --metamodel schema.yaml` to normalize a schema
+  against the metamodel.
+
 ## Reference
 
 ```{eval-rst}
