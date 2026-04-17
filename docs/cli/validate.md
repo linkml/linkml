@@ -11,15 +11,25 @@ Validate data against a LinkML schema, or validate a schema itself against the m
 linkml validate -s schema.yaml data.yaml
 ```
 
-**Validate a schema against the metamodel** (no data files):
+**Validate a schema against the metamodel** (no `-s` flag):
 
 ```bash
-linkml validate -s schema.yaml
+linkml validate schema.yaml
 ```
 
-When no data sources are provided, `linkml validate` checks the schema itself
-against the LinkML metamodel — verifying required fields, correct types, valid
-URIs, and NCName constraints.
+When `-s`/`--schema` is omitted, positional arguments are treated as schema
+files and validated against the LinkML metamodel — verifying required fields,
+correct types, valid URIs, and NCName constraints.
+
+**Validate and fix data:**
+
+```bash
+linkml validate -s schema.yaml --fix data.yaml
+```
+
+With `--fix`, data is normalized before validation: types are coerced
+(e.g. `"5"` → `5`), collection forms are restructured, and the corrected
+data is output. Any issues that couldn't be fixed are reported.
 
 For schema quality checks (naming conventions, recommended fields, canonical
 prefixes), use [`linkml lint`](./lint.md) instead.
@@ -28,11 +38,6 @@ prefixes), use [`linkml lint`](./lint.md) instead.
 
 - **`linkml lint`** — validates the schema against the metamodel *and* checks
   quality rules (naming conventions, recommended fields, etc.).
-- **`linkml-normalize`** — coerces and restructures data to conform to a
-  schema (type coercion, collection form normalization), outputting the
-  corrected data. Use `linkml-normalize -s schema.yaml data.yaml` to normalize
-  data, or `linkml-normalize --metamodel schema.yaml` to normalize a schema
-  against the metamodel.
 
 ## Reference
 

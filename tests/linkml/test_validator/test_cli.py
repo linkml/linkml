@@ -73,11 +73,11 @@ def test_valid_json_file_list(cli_runner, json_data_file):
     assert result.exit_code == 0
 
 
-def test_no_schema_provided(cli_runner):
-    """Verify a useful message is emitted when a schema is not specified via options or config"""
+def test_no_files_provided(cli_runner):
+    """Verify a useful message is emitted when no files are specified."""
 
     result = cli_runner.invoke(cli, [])
-    assert "No schema specified" in result.output
+    assert "No files specified" in result.output
     assert result.exit_code == 1
 
 

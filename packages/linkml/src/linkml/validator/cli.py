@@ -17,7 +17,7 @@ from linkml.validator.report import Severity
 
 
 class Config(BaseModel):
-    schema_path: str | Path = Field(alias="schema")
+    schema_path: str | Path | None = Field(alias="schema", default=None)
     target_class: str | None = None
     data_sources: Iterable[str | dict[str, dict[str, str]]] = []
     plugins: dict[str, dict[str, Any] | None] | None = {"JsonschemaValidationPlugin": {"closed": True}}
@@ -66,11 +66,88 @@ def _resolve_loaders(
     return loaders
 
 
+def _validate_schema_against_metamodel(schema_paths: tuple[str]) -> int:
+    """Validate one or more schema files against the LinkML metamodel.
+
+    :return: number of errors found
+    """
+    from linkml.linter.linter import Linter
+
+    linter = Linter({})
+    error_count = 0
+    for schema_path in schema_paths:
+        for problem in linter.validate_schema(schema_path):
+            error_count += 1
+            click.echo(f"[ERROR] [{schema_path}] {problem.message}")
+    return error_count
+
+
+def _normalize_and_validate(
+    data_path: str,
+    schema_path: str | Path,
+    target_class: str | None,
+    plugins: list[ValidationPlugin],
+    exit_on_first_failure: bool,
+    include_context: bool,
+) -> Counter:
+    """Run ReferenceValidator to normalize data, then validate the result.
+
+    :return: severity counter from JSON Schema validation of normalized output
+    """
+    from linkml_runtime import SchemaView
+    from linkml_runtime.processing.referencevalidator import ReferenceValidator, Report
+
+    sv = SchemaView(str(schema_path))
+    normalizer = ReferenceValidator(sv)
+
+    with open(data_path) as f:
+        input_object = yaml.safe_load(f)
+
+    report = Report()
+    output_object = normalizer.normalize(input_object, target=target_class, report=report)
+
+    # Report normalization actions
+    for r in report.normalized_results():
+        click.echo(f"[FIXED] {r.type}: {r.instantiates} ({r.info or ''})")
+
+    for r in report.warnings():
+        click.echo(f"[WARNING] {r.type}: {r.instantiates}")
+
+    for r in report.errors():
+        click.echo(f"[ERROR] {r.type}: {r.instantiates}")
+
+    # Write normalized output
+    output_str = yaml.dump(output_object, sort_keys=False)
+    click.echo(output_str)
+
+    # Now validate the normalized output with the standard JSON Schema path
+    severity_counter = Counter()
+    if plugins:
+        from linkml.validator.validation_context import ValidationContext
+        from linkml_runtime.linkml_model import SchemaDefinition
+        from linkml_runtime.loaders import yaml_loader
+
+        schema_def = yaml_loader.load(str(schema_path), SchemaDefinition)
+        context = ValidationContext(schema_def, target_class)
+        for plugin in plugins:
+            plugin.pre_process(context)
+            for result in plugin.process(output_object, context):
+                severity_counter[result.severity] += 1
+                click.echo(f"[{result.severity.value}] {result.message}")
+                if include_context:
+                    for ctx in result.context:
+                        click.echo(f"[CONTEXT] {ctx}")
+            plugin.post_process(context)
+
+    return severity_counter
+
+
 @click.command(name="validate")
 @click.option(
     "-s",
     "--schema",
-    help="Schema file to validate data against",
+    help="Schema file to validate data against. When omitted, positional arguments "
+    "are treated as schemas and validated against the LinkML metamodel.",
     type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
 )
 @click.option(
@@ -105,6 +182,14 @@ def _resolve_loaders(
     "one of [...]' and \"'' is not one of [...]\" errors for optional "
     "enum slots.",
 )
+@click.option(
+    "--fix",
+    is_flag=True,
+    default=False,
+    help="Attempt to normalize data to conform to the schema (type coercion, "
+    "collection form restructuring) and output the corrected data. "
+    "The normalized output is then validated to report any remaining issues.",
+)
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
 def cli(
@@ -115,10 +200,26 @@ def cli(
     exit_on_first_failure: bool,
     include_context: bool,
     allow_null_for_optional_enums: bool,
+    fix: bool,
 ):
+    """Validate data against a LinkML schema, or validate a schema against the metamodel.
+
+    When -s/--schema is provided, positional arguments are data files to validate
+    against that schema.
+
+    When -s/--schema is omitted, positional arguments are treated as schema files
+    and validated against the LinkML metamodel.
     """
-    Validate data according to a LinkML Schema
-    """
+    # Schema-against-metamodel mode: no -s flag
+    if schema is None and not config:
+        if not data_sources:
+            raise click.ClickException("No files specified.")
+        error_count = _validate_schema_against_metamodel(data_sources)
+        if error_count == 0:
+            click.echo("No issues found")
+        sys.exit(1 if error_count > 0 else 0)
+
+    # Data validation mode: -s flag or config provided
     config_args = {
         "schema": schema,
         "target_class": target_class,
@@ -134,39 +235,36 @@ def cli(
             "No schema specified. Path to schema must be specified by either "
             "the -s/--schema option or in a config file."
         )
-    config = Config(**config_args)
+    cfg = Config(**config_args)
 
     # Pass allow_null_for_optional_enums through to JsonschemaValidationPlugin
-    if allow_null_for_optional_enums and config.plugins and "JsonschemaValidationPlugin" in config.plugins:
-        if config.plugins["JsonschemaValidationPlugin"] is None:
-            config.plugins["JsonschemaValidationPlugin"] = {}
-        config.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
+    if allow_null_for_optional_enums and cfg.plugins and "JsonschemaValidationPlugin" in cfg.plugins:
+        if cfg.plugins["JsonschemaValidationPlugin"] is None:
+            cfg.plugins["JsonschemaValidationPlugin"] = {}
+        cfg.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
 
-    # When no data sources are provided, validate the schema itself against the metamodel.
-    if not data_sources:
-        from linkml.linter.linter import Linter
+    if not data_sources and not list(cfg.data_sources):
+        raise click.ClickException("No data files specified. Provide data files as positional arguments.")
 
-        linter = Linter({})
-        error_count = 0
-        for problem in linter.validate_schema(str(config.schema_path)):
-            error_count += 1
-            click.echo(f"[ERROR] {problem.message}")
-        if error_count == 0:
-            click.echo("No issues found")
-        sys.exit(1 if error_count > 0 else 0)
-
-    plugins = _resolve_plugins(config.plugins) if config.plugins else []
-    loaders = _resolve_loaders(config.data_sources, schema_path=config.schema_path, target_class=config.target_class)
-    validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
+    plugins = _resolve_plugins(cfg.plugins) if cfg.plugins else []
     severity_counter = Counter()
 
-    for loader in loaders:
-        for result in validator.iter_results_from_source(loader, config.target_class):
-            severity_counter[result.severity] += 1
-            click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
-            if include_context:
-                for ctx in result.context:
-                    click.echo(f"[CONTEXT] {ctx}")
+    if fix:
+        for data_path in data_sources:
+            severity_counter += _normalize_and_validate(
+                data_path, cfg.schema_path, cfg.target_class, plugins, exit_on_first_failure, include_context
+            )
+    else:
+        loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
+        validator = Validator(cfg.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
+
+        for loader in loaders:
+            for result in validator.iter_results_from_source(loader, cfg.target_class):
+                severity_counter[result.severity] += 1
+                click.echo(f"[{result.severity.value}] [{loader.source}/{result.instance_index}] {result.message}")
+                if include_context:
+                    for ctx in result.context:
+                        click.echo(f"[CONTEXT] {ctx}")
 
     if sum(severity_counter.values()) == 0:
         click.echo("No issues found")
