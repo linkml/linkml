@@ -1,0 +1,29 @@
+id: https://example.org/rules-import/base
+name: base
+prefixes:
+  linkml: https://w3id.org/linkml/
+  xsd: http://www.w3.org/2001/XMLSchema#
+imports:
+  - linkml:types
+  - ./rules
+default_range: string
+
+classes:
+  Organization:
+    attributes:
+      name:
+        identifier: true
+      min_salary:
+        range: decimal
+      score:
+        range: decimal
+    rules:
+      - description: base rule
+        preconditions:
+          slot_conditions:
+            score:
+              minimum_value: 0
+        postconditions:
+          slot_conditions:
+            min_salary:
+              minimum_value: 0
