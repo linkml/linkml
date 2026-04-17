@@ -233,3 +233,84 @@ def test_allow_null_for_optional_enums_valid_value_unaffected(cli_runner, json_d
     assert result.exception is None
     assert "No issues found" in result.output
     assert result.exit_code == 0
+
+
+# --- tests for schema-aware TSV/CSV type coercion (issue #2124) ---
+
+ISSUE_2124_SCHEMA = """\
+id: https://examples.org/my-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  myschema: https://examples.org/my-schema
+imports:
+  - linkml:types
+default_prefix: myschema
+default_range: string
+
+classes:
+  Room:
+    attributes:
+      room_name:
+        range: string
+      comment:
+        range: string
+"""
+
+
+@pytest.mark.parametrize(
+    "ext,rows",
+    [
+        (".tsv", "room_name\tcomment\nR1\tRoom 1\n22\tRoom 22\n"),
+        (".csv", "room_name,comment\nR1,Room 1\n22,Room 22\n"),
+    ],
+)
+def test_numeric_string_values_validate_with_schema_coercion(cli_runner, tmp_path, ext, rows):
+    """Numeric-looking values in string-ranged columns should pass validation.
+
+    Regression test for https://github.com/linkml/linkml/issues/2124.
+    The TSV/CSV loader previously auto-converted '22' to int 22, which then
+    failed validation against a string-ranged slot.
+    """
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(ISSUE_2124_SCHEMA)
+    data_path = tmp_path / f"data{ext}"
+    data_path.write_text(rows)
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "-C", "Room", str(data_path)])
+    assert result.exception is None, f"Unexpected exception: {result.exception}"
+    assert "No issues found" in result.output
+    assert result.exit_code == 0
+
+
+def test_integer_column_still_validated_as_integer(cli_runner, tmp_path):
+    """Non-string columns should still be coerced and validated correctly.
+
+    Ensures schema-aware coercion doesn't break numeric validation.
+    """
+    schema = """\
+id: https://examples.org/int-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://examples.org/
+imports:
+  - linkml:types
+default_prefix: ex
+
+classes:
+  Measurement:
+    attributes:
+      label:
+        range: string
+      count:
+        range: integer
+"""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(schema)
+
+    # "abc" in an integer column should fail validation
+    data_path = tmp_path / "data.csv"
+    data_path.write_text("label,count\nfoo,abc\n")
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "-C", "Measurement", str(data_path)])
+    assert "[ERROR]" in result.output
+    assert result.exit_code == 1

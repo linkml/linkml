@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, TextIO
 
 from linkml.validator.loaders import Loader
+from linkml.validator.loaders.delimited_file_loader import _DelimitedFileLoader
 from linkml.validator.loaders.passthrough_loader import PassthroughLoader
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity, ValidationReport, ValidationResult
@@ -95,6 +96,18 @@ class Validator:
             return []
 
         context = self._context(target_class)
+
+        # Inject schema information into delimited-file loaders so they can
+        # use type-aware coercion (e.g. keep string-ranged columns as strings
+        # instead of auto-converting to numbers).
+        # Skip injection when the loader uses index_slot_name, because then the
+        # CSV/TSV columns belong to a nested class, not the validation target.
+        if (
+            isinstance(loader, _DelimitedFileLoader)
+            and not loader.has_schema_context
+            and loader.index_slot_name is None
+        ):
+            loader.set_schema_context(context.schema_view, context.target_class)
 
         for plugin in self._validation_plugins:
             plugin.pre_process(context)
