@@ -212,3 +212,18 @@ classes:
         org = base_schema.classes["Organization"]
         assert len(org.rules) == 3
         assert org.rules[2].description == "second overlay rule"
+
+    def test_conflicting_prefix_raises(self, base_schema):
+        """Conflicting prefix references should raise ValueError."""
+        conflicting_overlay = yaml_loader.load(
+            """\
+id: https://w3id.org/test/conflicting
+name: conflicting
+prefixes:
+  xsd: https://example.org/conflicting-xsd/
+""",
+            SchemaDefinition,
+        )
+
+        with pytest.raises(ValueError):
+            merge_includes(base_schema, conflicting_overlay)

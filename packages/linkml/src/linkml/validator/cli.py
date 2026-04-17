@@ -163,11 +163,11 @@ def cli(
     if "\n" not in schema_source:
         schema_def.source_file = schema_source
     for include_path in include:
-        include_schema = yaml_loader.load(str(include_path), SchemaDefinition)
+        include_source = str(include_path)
+        include_schema = yaml_loader.load(include_source, SchemaDefinition)
+        include_schema.source_file = include_source
         try:
-            resolve_merged_imports(
-                schema_def, include_schema, imported_from=getattr(include_schema, "source_file", None)
-            )
+            resolve_merged_imports(schema_def, include_schema, imported_from=include_source)
             merge_includes(schema_def, include_schema)
         except ValueError as e:
             raise click.ClickException(str(e)) from e

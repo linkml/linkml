@@ -416,12 +416,14 @@ class SchemaView:
                 for k, v in d1.items():
                     if k in d:
                         prev = d[k]
+                        merged_v = deepcopy(v)
                         for rule in prev.rules:
-                            if rule not in v.rules:
-                                v.rules.append(copy(rule))
+                            if rule not in merged_v.rules:
+                                merged_v.rules.append(deepcopy(rule))
                         for cr in prev.classification_rules:
-                            if cr not in v.classification_rules:
-                                v.classification_rules.append(copy(cr))
+                            if cr not in merged_v.classification_rules:
+                                merged_v.classification_rules.append(deepcopy(cr))
+                        d1[k] = merged_v
             # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
             d = {**d, **d1}
 

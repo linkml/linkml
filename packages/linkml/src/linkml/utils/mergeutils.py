@@ -268,6 +268,11 @@ def merge_includes(
     Classes that exist only in the include are added to the target.
     New slots, types, enums, and subsets from the include are also added.
 
+    This function performs only the structural merge. It does not merge or
+    resolve ``include.imports`` into ``target.imports``. Callers that need the
+    included schema's import dependencies must invoke
+    :func:`resolve_merged_imports` separately before calling this function.
+
     :param target: The base schema to merge into (modified in place).
     :param include: The schema to include.
     """
