@@ -41,6 +41,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 logger = logging.getLogger(__name__)
 
@@ -267,8 +268,8 @@ class OwlSchemaGenerator(Generator):
         :return:
         """
         self.as_graph()
-        data = self.graph.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
-        return data
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        return canonicalize_rdf_graph(self.graph, output_format=fmt)
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
