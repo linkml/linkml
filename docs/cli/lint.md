@@ -23,6 +23,12 @@ linkml lint schema.yaml
 If you only need to check whether a schema is structurally valid (without
 quality rules), use [`linkml validate schema.yaml`](./validate.md) instead.
 
+## Deprecated
+
+- **`--validate`** — metamodel validation now always runs. This flag has no
+  effect and will be removed in a future release.
+- **`--validate-only`** — use `linkml validate schema.yaml` instead.
+
 ## Reference
 
 ```{eval-rst}

@@ -57,13 +57,13 @@ def get_yaml_files(root: Path, accept_dot_files: bool) -> Iterable[str]:
     "--validate",
     is_flag=True,
     default=False,
-    help="Validate the schema against the LinkML Metamodel before linting.",
+    help="[Deprecated] Metamodel validation now always runs. This flag has no effect.",
 )
 @click.option(
     "--validate-only",
     is_flag=True,
     default=False,
-    help="Validate the schema against the LinkML Metamodel and then exit without checking linter rules.",
+    help="[Deprecated] Use 'linkml validate schema.yaml' instead.",
 )
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("-o", "--output", type=click.File("w"), default="-", help="Report file name.")

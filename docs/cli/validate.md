@@ -39,6 +39,12 @@ prefixes), use [`linkml lint`](./lint.md) instead.
 - **`linkml lint`** — validates the schema against the metamodel *and* checks
   quality rules (naming conventions, recommended fields, etc.).
 
+## Deprecated
+
+- **`linkml-normalize`** — deprecated in favor of `linkml validate --fix`.
+  The `linkml-normalize` CLI performed the same normalization and validation
+  but as a standalone entry point in `linkml-runtime`.
+
 ## Reference
 
 ```{eval-rst}
