@@ -73,10 +73,9 @@ def _validate_schema_against_metamodel(schema_paths: tuple[str]) -> int:
     """
     from linkml.linter.linter import Linter
 
-    linter = Linter({})
     error_count = 0
     for schema_path in schema_paths:
-        for problem in linter.validate_schema(schema_path):
+        for problem in Linter.validate_schema(schema_path):
             error_count += 1
             click.echo(f"[ERROR] [{schema_path}] {problem.message}")
     return error_count

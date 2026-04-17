@@ -81,6 +81,33 @@ def test_no_files_provided(cli_runner):
     assert result.exit_code == 1
 
 
+def test_schema_against_metamodel_valid(cli_runner):
+    """Valid schema passes metamodel validation when no -s flag is given."""
+
+    result = cli_runner.invoke(cli, [PERSONINFO_SCHEMA])
+    assert result.exit_code == 0
+    assert "No issues found" in result.output
+
+
+def test_schema_against_metamodel_invalid(cli_runner, tmp_path):
+    """Invalid schema reports errors when no -s flag is given."""
+
+    schema_path = tmp_path / "bad_schema.yaml"
+    schema_path.write_text(
+        """
+id: not_a_uri
+classes:
+  Thing:
+    attributes:
+      foo:
+        description: test
+"""
+    )
+    result = cli_runner.invoke(cli, [str(schema_path)])
+    assert result.exit_code == 1
+    assert "[ERROR]" in result.output
+
+
 def test_invalid_json(cli_runner, json_data_file):
     """Verify that validation messages are emitted for invalid data"""
 
