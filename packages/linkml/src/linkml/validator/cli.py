@@ -10,7 +10,7 @@ import yaml
 from pydantic import BaseModel, Field
 
 from linkml._version import __version__
-from linkml.utils.mergeutils import merge_includes
+from linkml.utils.mergeutils import merge_includes, resolve_merged_imports
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader, default_loader_for_file
 from linkml.validator.plugins import ValidationPlugin
@@ -159,10 +159,18 @@ def cli(
 
     # Load schema and merge any included schemas
     schema_def = yaml_loader.load(str(config.schema_path), SchemaDefinition)
-    schema_def.source_file = str(config.schema_path)
+    schema_source = str(config.schema_path)
+    if "\n" not in schema_source:
+        schema_def.source_file = schema_source
     for include_path in include:
         include_schema = yaml_loader.load(str(include_path), SchemaDefinition)
-        merge_includes(schema_def, include_schema)
+        try:
+            resolve_merged_imports(
+                schema_def, include_schema, imported_from=getattr(include_schema, "source_file", None)
+            )
+            merge_includes(schema_def, include_schema)
+        except ValueError as e:
+            raise click.ClickException(str(e)) from e
 
     validator = Validator(schema_def, validation_plugins=plugins, strict=exit_on_first_failure)
     severity_counter = Counter()
