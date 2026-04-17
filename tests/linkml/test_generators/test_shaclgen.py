@@ -385,9 +385,7 @@ def test_ifabsent(input_path):
             if datatype and str(datatype) == "http://www.w3.org/2001/XMLSchema#string":
                 if (subject, SH.defaultValue, Literal(default_value)) in g:
                     return
-            raise AssertionError(
-                f"Expected ({subject}, sh:defaultValue, {expected!r}) not found in graph"
-            )
+            raise AssertionError(f"Expected ({subject}, sh:defaultValue, {expected!r}) not found in graph")
 
     check_slot_default_value(
         URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_string"),

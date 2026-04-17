@@ -15,13 +15,12 @@ from rdflib import Graph
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
-from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-
 from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE
 from linkml._version import __version__
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 
 @dataclass

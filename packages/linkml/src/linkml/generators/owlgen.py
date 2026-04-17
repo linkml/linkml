@@ -17,8 +17,6 @@ from rdflib.namespace import RDFS, SKOS
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
-from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.utils.deprecation import deprecation_warning
@@ -43,6 +41,7 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 logger = logging.getLogger(__name__)
 

@@ -11,8 +11,6 @@ from ShExJSG import ShExC
 from ShExJSG.SchemaWithContext import Schema
 from ShExJSG.ShExJ import IRIREF, EachOf, NodeConstraint, Shape, ShapeOr, TripleConstraint
 
-from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
-
 from linkml import METAMODEL_NAMESPACE, METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.generators.common.subproperty import get_subproperty_values
@@ -28,6 +26,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 
 @dataclass

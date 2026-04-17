@@ -3,7 +3,6 @@ from collections.abc import Callable, Mapping
 
 import pytest
 import rdflib
-from rdflib.compare import to_canonical_graph
 
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 

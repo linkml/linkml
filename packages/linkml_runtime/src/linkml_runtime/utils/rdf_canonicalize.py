@@ -29,7 +29,6 @@ with stable blank node labels and sorted triples.
 
 import io
 import logging
-from typing import Optional
 
 import pyoxigraph as ox
 import rdflib
@@ -93,8 +92,7 @@ def canonicalize_rdf_graph(
         triples = list(ox.parse(io.BytesIO(nt_bytes), format=ox.RdfFormat.N_TRIPLES))
     except SyntaxError:
         logger.warning(
-            "Graph contains non-standard RDF that pyoxigraph cannot parse; "
-            "falling back to rdflib serializer"
+            "Graph contains non-standard RDF that pyoxigraph cannot parse; falling back to rdflib serializer"
         )
         return graph.serialize(format=output_format)
 
@@ -114,7 +112,7 @@ def canonicalize_rdf_graph(
 
     # 5. Collect prefixes for formats that support them.
     base_iri = str(graph.base) if graph.base else None
-    prefixes: Optional[dict[str, str]] = None
+    prefixes: dict[str, str] | None = None
     if ox_format in _PREFIX_FORMATS:
         prefixes = {}
         for prefix, namespace in graph.namespace_manager.namespaces():
@@ -128,6 +126,9 @@ def canonicalize_rdf_graph(
                 continue
             prefixes[str(prefix)] = ns_str
     result_bytes = ox.serialize(
-        sorted_triples, format=ox_format, prefixes=prefixes, base_iri=base_iri,
+        sorted_triples,
+        format=ox_format,
+        prefixes=prefixes,
+        base_iri=base_iri,
     )
     return result_bytes.decode("utf-8")
