@@ -388,9 +388,7 @@ class TypeDBGenerator(Generator):
         :param rel_names: slot name → safe TypeDB relation name
         """
         # Pre-compute ancestor slots for all classes to avoid redundant traversal
-        ancestor_slots_cache: dict[str, set[str]] = {
-            cn: self._ancestor_slots(sv, cn) for cn in sv.all_classes()
-        }
+        ancestor_slots_cache: dict[str, set[str]] = {cn: self._ancestor_slots(sv, cn) for cn in sv.all_classes()}
 
         plays_map: dict[str, list[str]] = {cn: [] for cn in sv.all_classes()}
 
