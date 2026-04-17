@@ -105,7 +105,8 @@ markers = [
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "owlgen: Tests for OWL generator",
   "yamlgen: Tests for the YAML generator",
-  "yarrrml: End-to-end tests for the YARRRML generator"
+  "yarrrml: End-to-end tests for the YARRRML generator",
+  "typedbgen: Tests for the TypeDB generator"
 ]
 
 # https://docs.astral.sh/ruff/settings/

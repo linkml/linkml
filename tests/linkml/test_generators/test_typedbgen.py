@@ -5,6 +5,8 @@ from click.testing import CliRunner
 
 from linkml.generators.typedbgen import TypeDBGenerator, cli
 
+pytestmark = pytest.mark.typedbgen
+
 
 def test_output_starts_with_define_block(input_path):
     """Generator output starts with a define block."""
@@ -232,3 +234,90 @@ def test_kitchen_sink_inheritance_present(kitchen_sink_path):
     output = TypeDBGenerator(kitchen_sink_path, mergeimports=True).serialize()
     # Employment is_a Relationship (or similar); any 'sub' keyword means inheritance works
     assert ", sub " in output
+
+
+def test_reserved_keyword_slot_gets_suffix(tmp_path):
+    """Slots with names matching TypeDB reserved keywords get an -attr suffix."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+classes:
+  Thing:
+    slots:
+      - type
+slots:
+  type:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute type-attr, value string" in output
+    assert "owns type-attr" in output
+
+
+def test_name_collision_attr_gets_suffix(tmp_path):
+    """When an attribute name collides with an entity name it gets an -attr suffix."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+classes:
+  Person:
+    slots:
+      - person
+slots:
+  person:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute person-attr, value string" in output
+    assert "owns person-attr" in output
+
+
+def test_represents_relationship_class_becomes_relation(tmp_path):
+    """A class with represents_relationship: true becomes a TypeDB relation type."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+classes:
+  Person:
+    slots:
+      - name
+  FamilialRelationship:
+    represents_relationship: true
+    slots:
+      - subject
+      - object
+      - description
+slots:
+  name:
+    range: string
+  subject:
+    range: Person
+  object:
+    range: Person
+  description:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Relationship class becomes a TypeDB relation, not entity
+    assert "relation familialrelationship" in output
+    assert "entity familialrelationship" not in output
+    # Object-ranged slots become relates roles (using slot name)
+    assert "relates subject" in output
+    assert "relates object" in output
+    # Scalar slot becomes owns on the relation
+    assert "owns description" in output
+    # Range class (Person) gets plays declarations
+    assert "plays familialrelationship:subject" in output
+    assert "plays familialrelationship:object" in output
+    # No standalone relation per slot (since they're handled as relates)
+    assert "relation subject" not in output
+    assert "relation object" not in output
