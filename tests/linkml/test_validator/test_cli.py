@@ -108,6 +108,47 @@ classes:
     assert "[ERROR]" in result.output
 
 
+def test_fix_coerces_types(cli_runner, tmp_path):
+    """--fix normalizes data types and validates the result."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    tree_root: true
+    description: Test class.
+    attributes:
+      name:
+        identifier: true
+        description: The name.
+      count:
+        range: integer
+        description: A count.
+"""
+    )
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text('name: foo\ncount: "5"\n')
+
+    # Without --fix: type error
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), str(data_path)])
+    assert result.exit_code == 1
+    assert "[ERROR]" in result.output
+
+    # With --fix: coerced and valid
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert "count: 5" in result.output
+
+
 def test_invalid_json(cli_runner, json_data_file):
     """Verify that validation messages are emitted for invalid data"""
 

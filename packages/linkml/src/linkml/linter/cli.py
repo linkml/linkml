@@ -101,6 +101,8 @@ def main(
     every YAML file found in the directory (recursively) will be linted."""
     if validate:
         deprecation_warning("lint-validate-flag")
+    if validate_only:
+        deprecation_warning("lint-validate-only-flag")
 
     config_file = None
     if config:
