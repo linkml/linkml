@@ -707,7 +707,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
     (  $<ExtraSlotsExpression_tes> (  &<Expression_tes> ;
           rdf:type [ <Expression> ] ? ;
           <allowed> @<Boolean> ? ;
-          <range_expression> @<AnonymousClassExpression> ?
+          <range_expression> @<AnonymousSlotExpression> ?
        ) ;
        rdf:type [ <ExtraSlotsExpression> ] ?
     )
