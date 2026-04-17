@@ -9,6 +9,8 @@ from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import RDF, RDFS, SH, XSD
 
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
 from linkml._version import __version__
 from linkml.generators.common.subproperty import get_subproperty_values, is_uri_range
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
@@ -93,8 +95,8 @@ class ShaclGenerator(Generator):
 
     def serialize(self, **args) -> str:
         g = self.as_graph()
-        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
-        return data
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        return canonicalize_rdf_graph(g, output_format=fmt)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview

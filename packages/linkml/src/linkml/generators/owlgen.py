@@ -17,6 +17,8 @@ from rdflib.namespace import RDFS, SKOS
 from rdflib.plugin import Parser as rdflib_Parser
 from rdflib.plugin import plugins as rdflib_plugins
 
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
 from linkml import METAMODEL_NAMESPACE_NAME
 from linkml._version import __version__
 from linkml.utils.deprecation import deprecation_warning
@@ -267,8 +269,8 @@ class OwlSchemaGenerator(Generator):
         :return:
         """
         self.as_graph()
-        data = self.graph.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
-        return data
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        return canonicalize_rdf_graph(self.graph, output_format=fmt)
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """

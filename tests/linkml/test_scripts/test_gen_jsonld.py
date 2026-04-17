@@ -4,6 +4,8 @@ import pytest
 from click.testing import CliRunner
 from rdflib import Graph, URIRef
 
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
 from linkml import METAMODEL_NAMESPACE
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator, cli
@@ -132,9 +134,10 @@ def test_meta_output(tmp_path_factory):
     # Convert JSON to TTL
     g = Graph()
     g.load(tmp_jsonld_path, format="json-ld")
-    g.serialize(tmp_rdf_path, format="ttl")
+    with open(tmp_rdf_path, "w", encoding="utf-8") as f:
+        f.write(canonicalize_rdf_graph(g, output_format="turtle"))
     g.bind("meta", METAMODEL_NAMESPACE)
-    new_ttl = g.serialize(format="turtle")
+    new_ttl = canonicalize_rdf_graph(g, output_format="turtle")
 
     # Make sure that the generated TTL matches the JSON-LD (probably not really needed, as this is more of a test
     # of rdflib than our tooling but it doesn't hurt

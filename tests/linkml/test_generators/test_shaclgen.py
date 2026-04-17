@@ -376,7 +376,18 @@ def test_ifabsent(input_path):
 
     def check_slot_default_value(slot: URIRef, default_value: Any, datatype: str = None) -> None:
         for subject, predicate, object in g.triples((None, SH.path, slot)):
-            assert (subject, SH.defaultValue, Literal(default_value, datatype=datatype)) in g
+            # pyoxigraph's RDFC-1.0 serialization drops explicit ^^xsd:string
+            # per RDF 1.1 (plain literals and xsd:string are equivalent).
+            # Accept either form for xsd:string typed values.
+            expected = Literal(default_value, datatype=datatype)
+            if (subject, SH.defaultValue, expected) in g:
+                return
+            if datatype and str(datatype) == "http://www.w3.org/2001/XMLSchema#string":
+                if (subject, SH.defaultValue, Literal(default_value)) in g:
+                    return
+            raise AssertionError(
+                f"Expected ({subject}, sh:defaultValue, {expected!r}) not found in graph"
+            )
 
     check_slot_default_value(
         URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_string"),
