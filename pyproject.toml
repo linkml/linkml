@@ -204,7 +204,3 @@ commands = [
   ["ruff", "format", "{posargs:.}"],
 ]
 
-[dependency-groups]
-dev = [
-    "typedb-driver>=3.8.1",
-]
