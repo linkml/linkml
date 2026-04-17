@@ -1,0 +1,31 @@
+# LinkML CODEOWNERS — DRAFT (see linkml/linkml#3140)
+#
+# Opt-in model: no default (`*`) rule. Paths not listed here have no required
+# CODEOWNER and are reviewed normally. Rules only appear where someone has
+# explicitly volunteered to steward an area.
+#
+# Process for adding rules: docs/maintainers/codeowners.md
+# Later rules override earlier ones for matched paths.
+
+# --- CODEOWNERS and governance docs ---
+/.github/CODEOWNERS                         @linkml/core-team
+/docs/maintainers/contributor-hierarchy.md  @linkml/core-team
+/docs/maintainers/codeowners.md             @linkml/core-team
+/docs/maintainers/generator-governance.md   @linkml/core-team
+
+# --- Per-subsystem ownership (opt-in) ---
+
+# pydanticgen:
+/packages/linkml/src/linkml/generators/pydanticgen/                  @sneakers-the-rat @kevinschaper
+/docs/generators/pydantic.rst                                        @sneakers-the-rat @kevinschaper
+/tests/linkml/test_generators/test_pydanticgen.py                    @sneakers-the-rat @kevinschaper
+/tests/linkml/test_generators/test_pydanticgen_special_chars.py      @sneakers-the-rat @kevinschaper
+/tests/linkml/test_issues/test_pydantic_polymorphism.py              @sneakers-the-rat @kevinschaper
+/tests/linkml/test_scripts/test_gen_pydantic.py                      @sneakers-the-rat @kevinschaper
+/tests/linkml_runtime/test_loaders_dumpers/test_dumpers_pydantic.py  @sneakers-the-rat @kevinschaper
+/tests/linkml_runtime/test_loaders_dumpers/test_loaders_pydantic.py  @sneakers-the-rat @kevinschaper
+
+# yarrrml:
+/docs/generators/yarrrml.rst                          @Ostrzyciel @lapkinvladimir
+/packages/linkml/src/linkml/generators/yarrrmlgen.py  @Ostrzyciel @lapkinvladimir
+/tests/linkml/test_generators/test_yarrrmlgen.py      @Ostrzyciel @lapkinvladimir
