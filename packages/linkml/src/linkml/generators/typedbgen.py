@@ -190,8 +190,7 @@ def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None) -> str | 
         if base_lower in _TYPEDB_PRIMITIVE:
             return _TYPEDB_PRIMITIVE[base_lower]
         # Walk up
-        type_def = sv.get_type(type_def.from_schema) if type_def.from_schema else None
-        break  # avoid infinite loop; fall through to name-based lookup
+        type_def = sv.get_type(type_def.typeof) if type_def.typeof else None
 
     # Last resort: match the range name directly
     return _TYPEDB_PRIMITIVE.get(range_name.lower(), "string")
@@ -257,8 +256,9 @@ class TypeDBGenerator(Generator):
     generatorversion = "0.1.0"
     valid_formats = ["typeql"]
     uses_schemaloader = False
+    file_extension = "tql"
 
-    def serialize(self) -> str:  # type: ignore[override]
+    def serialize(self, **kwargs) -> str:
         """Generate a TypeQL define block from the LinkML schema.
 
         :return: TypeQL schema as a string
@@ -342,6 +342,15 @@ class TypeDBGenerator(Generator):
         result = list(seen.values()) + enum_attr_lines
         return result
 
+    def _ancestor_slots(self, sv: SchemaView, class_name: str) -> set[str]:
+        """Return the set of slot names inherited from all ancestors (excluding self)."""
+        result: set[str] = set()
+        for ancestor in sv.class_ancestors(class_name)[1:]:  # skip self
+            ancestor_cls = sv.get_class(ancestor)
+            if ancestor_cls and ancestor_cls.slots:
+                result.update(ancestor_cls.slots)
+        return result
+
     def _collect_entity_defs(self, sv: SchemaView, attr_names: dict[str, str], rel_names: dict[str, str]) -> list[str]:
         """Return entity type definition lines including owns and plays.
 
@@ -354,11 +363,7 @@ class TypeDBGenerator(Generator):
         """
         plays_map: dict[str, list[str]] = {cn: [] for cn in sv.all_classes()}
         for class_name in sv.all_classes():
-            ancestor_slots: set[str] = set()
-            for ancestor in sv.class_ancestors(class_name)[1:]:
-                ancestor_cls = sv.get_class(ancestor)
-                if ancestor_cls and ancestor_cls.slots:
-                    ancestor_slots.update(ancestor_cls.slots)
+            ancestor_slots = self._ancestor_slots(sv, class_name)
             direct_slot_names = {s for s in (sv.get_class(class_name).slots or []) if s not in ancestor_slots}
             for slot_name in direct_slot_names:
                 induced = sv.induced_slot(slot_name, class_name)
@@ -386,12 +391,7 @@ class TypeDBGenerator(Generator):
 
             # Slots that appear on ANY ancestor are already inherited in TypeDB —
             # redeclaring them causes [SVL42]. Filter them out here.
-            ancestor_slots: set[str] = set()
-            for ancestor in sv.class_ancestors(class_name)[1:]:  # skip self
-                ancestor_cls = sv.get_class(ancestor)
-                if ancestor_cls and ancestor_cls.slots:
-                    ancestor_slots.update(ancestor_cls.slots)
-
+            ancestor_slots = self._ancestor_slots(sv, class_name)
             direct_slot_names = [s for s in (sv.get_class(class_name).slots or []) if s not in ancestor_slots]
             for slot_name in direct_slot_names:
                 induced = sv.induced_slot(slot_name, class_name)
