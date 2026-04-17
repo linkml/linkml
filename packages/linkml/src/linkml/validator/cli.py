@@ -142,6 +142,19 @@ def cli(
             config.plugins["JsonschemaValidationPlugin"] = {}
         config.plugins["JsonschemaValidationPlugin"]["allow_null_for_optional_enums"] = True
 
+    # When no data sources are provided, validate the schema itself against the metamodel.
+    if not data_sources:
+        from linkml.linter.linter import Linter
+
+        linter = Linter({})
+        error_count = 0
+        for problem in linter.validate_schema(str(config.schema_path)):
+            error_count += 1
+            click.echo(f"[ERROR] {problem.message}")
+        if error_count == 0:
+            click.echo("No issues found")
+        sys.exit(1 if error_count > 0 else 0)
+
     plugins = _resolve_plugins(config.plugins) if config.plugins else []
     loaders = _resolve_loaders(config.data_sources, schema_path=config.schema_path, target_class=config.target_class)
     validator = Validator(config.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
