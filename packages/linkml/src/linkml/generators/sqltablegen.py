@@ -363,8 +363,22 @@ class SQLTableGenerator(Generator):
 
         sv = SchemaView(schema)
         if slot_range in sv.all_classes():
-            # FK type should be the same as the identifier of the foreign key
-            fk = sv.get_identifier_slot(slot_range)
+            # FK type should be the same as the identifier of the foreign key.
+            # Prefer the target's *direct* identifier: an abstract parent without
+            # an identifier gets an auto-injected integer PK from the relational
+            # transformer, and that injection leaks into subclasses via
+            # class_induced_slots — masking a real identifier declared on the
+            # subclass. Fall back to the inherited identifier for the common
+            # case where the subclass legitimately inherits its PK.
+            target_class = sv.get_class(slot_range)
+            fk = None
+            if target_class is not None:
+                for a in target_class.attributes.values():
+                    if a.identifier or a.key:
+                        fk = a
+                        break
+            if fk is None:
+                fk = sv.get_identifier_slot(slot_range)
             if fk:
                 return self.get_sql_range(fk, sv.schema)
             return Text()

@@ -500,6 +500,52 @@ def test_sqla_2x_fk_column_type_matches_string_identifier_target(tmp_path):
     assert "Mapped[int | None] = mapped_column(Integer(), ForeignKey" not in code
 
 
+ISSUE_3416_ABSTRACT_PARENT_SCHEMA = """
+id: https://example.org/test
+name: test_3416_abstract
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  OntologyEntity:
+    abstract: true
+    description: Abstract parent with no declared identifier.
+  Term:
+    is_a: OntologyEntity
+    attributes:
+      term_uri:
+        identifier: true
+        range: uriorcurie
+        required: true
+      term_label:
+        range: string
+  Event:
+    attributes:
+      id:
+        identifier: true
+        range: integer
+      term:
+        range: Term
+"""
+
+
+def test_sqla_2x_fk_type_when_target_inherits_from_identifier_less_abstract(tmp_path):
+    """Issue #3416: when a class inherits from an abstract parent that declares
+    no identifier and declares its own string-typed identifier, FK columns
+    pointing at it must use Text() — not the Integer() type of the transformer's
+    auto-injected PK that leaks through inheritance."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_ABSTRACT_PARENT_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    assert 'term_term_uri: Mapped[str | None] = mapped_column(Text(), ForeignKey("Term.term_uri"))' in code
+    assert 'ForeignKey("Term.term_uri")' in code
+    assert "Mapped[int | None] = mapped_column(Integer(), ForeignKey(\"Term." not in code
+
+
 def test_sqla_2x_emits_relationship_for_non_inlined_fk(tmp_path):
     """Issue #3416: non-inlined FK slots should still get a relationship()
     attribute so ORM-side joins work."""
