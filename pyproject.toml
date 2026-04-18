@@ -204,3 +204,8 @@ commands = [
   ["ruff", "check", "{posargs:.}"],
   ["ruff", "format", "{posargs:.}"],
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.11",
+]
