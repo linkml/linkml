@@ -409,6 +409,21 @@ class SchemaView:
         for s in schemas:
             # get the value of element name from the schema; if empty, return empty dictionary.
             d1 = getattr(s, element_name, {})
+            if element_name == CLASSES:
+                # For classes that appear in multiple schemas, additively merge
+                # rules and classification_rules so that imported rules are not
+                # silently lost when a later schema redefines the same class.
+                for k, v in d1.items():
+                    if k in d:
+                        prev = d[k]
+                        merged_v = deepcopy(v)
+                        for rule in prev.rules:
+                            if rule not in merged_v.rules:
+                                merged_v.rules.append(deepcopy(rule))
+                        for cr in prev.classification_rules:
+                            if cr not in merged_v.classification_rules:
+                                merged_v.classification_rules.append(deepcopy(cr))
+                        d1[k] = merged_v
             # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
             d = {**d, **d1}
 
