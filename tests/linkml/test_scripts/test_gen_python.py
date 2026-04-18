@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from linkml.generators.pythongen import cli
+from linkml.generators.pythongen import PythonGenerator, cli
+from linkml_runtime.linkml_model.meta import ClassDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from tests.conftest import KITCHEN_SINK_PATH, Snapshot
 
@@ -107,3 +108,70 @@ def test_head_deprecated():
             deprecation_shown = True
     assert result.exit_code == 0
     assert deprecation_shown
+
+
+# Unit tests for PythonGenerator._sort_classes (topological sort)
+
+
+def _cls(name: str, is_a: str | None = None) -> ClassDefinition:
+    """Build a minimal ClassDefinition with the given name and optional parent."""
+    c = ClassDefinition(name=name)
+    c.is_a = is_a
+    return c
+
+
+def test_sort_classes_empty():
+    """Empty input returns empty list."""
+    assert PythonGenerator._sort_classes([]) == []
+
+
+def test_sort_classes_no_parents():
+    """Classes with no parents can appear in any order — all must be present."""
+    classes = [_cls("C"), _cls("B"), _cls("A")]
+    result = PythonGenerator._sort_classes(classes)
+    assert {c.name for c in result} == {"A", "B", "C"}
+
+
+def test_sort_classes_linear_chain():
+    """A → B → C supplied in reverse order must come out A, B, C."""
+    classes = [_cls("C", is_a="B"), _cls("B", is_a="A"), _cls("A")]
+    result = PythonGenerator._sort_classes(classes)
+    names = [c.name for c in result]
+    assert names.index("A") < names.index("B") < names.index("C")
+
+
+def test_sort_classes_parent_before_child():
+    """Every parent must appear before all its children in the output."""
+    classes = [
+        _cls("Child", is_a="Parent"),
+        _cls("Parent"),
+    ]
+    result = PythonGenerator._sort_classes(classes)
+    names = [c.name for c in result]
+    assert names.index("Parent") < names.index("Child")
+
+
+def test_sort_classes_diamond_inheritance():
+    """Diamond: A is root; B and C extend A; D extends B (picked arbitrarily)."""
+    classes = [
+        _cls("D", is_a="B"),
+        _cls("C", is_a="A"),
+        _cls("B", is_a="A"),
+        _cls("A"),
+    ]
+    result = PythonGenerator._sort_classes(classes)
+    names = [c.name for c in result]
+    assert names.index("A") < names.index("B")
+    assert names.index("A") < names.index("C")
+    assert names.index("B") < names.index("D")
+
+
+@pytest.mark.parametrize("n", [10, 100, 500])
+def test_sort_classes_large_linear_chain(n: int):
+    """Performance regression guard: a deep linear chain of n classes must sort correctly."""
+    # Build class_0 ← class_1 ← … ← class_{n-1} in reverse order
+    classes = [_cls(f"class_{i}", is_a=f"class_{i - 1}" if i > 0 else None) for i in range(n - 1, -1, -1)]
+    result = PythonGenerator._sort_classes(classes)
+    names = [c.name for c in result]
+    for i in range(1, n):
+        assert names.index(f"class_{i - 1}") < names.index(f"class_{i}")
