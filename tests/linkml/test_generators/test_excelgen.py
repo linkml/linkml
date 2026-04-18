@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -326,3 +327,89 @@ classes:
 
     # File should be created for the mixin (abstract still excluded)
     assert xlsx_filename.exists()
+
+
+ENUM_SCHEMA = """
+id: https://example.org/enum-test
+name: enum_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+enums:
+  EmploymentStatus:
+    permissible_values:
+      FULL_TIME: {}
+      PART_TIME: {}
+      CONTRACT: {}
+
+classes:
+  Person:
+    attributes:
+      name:
+        range: string
+      status:
+        range: EmploymentStatus
+"""
+
+
+def test_enum_validation_adds_dropdown(tmp_path):
+    """Test that enum-typed slots get a DataValidation dropdown in the worksheet.
+
+    Covers lines 56 (enum_set computation), 64-65 (slot_names/add_columns_to_worksheet),
+    and 68-69 (for s in induced_slots / if s.range in enum_set).
+    """
+    schema_file = tmp_path / "enum_schema.yaml"
+    schema_file.write_text(ENUM_SCHEMA)
+    xlsx_filename = tmp_path / "enum_schema.xlsx"
+
+    ExcelGenerator(str(schema_file), output=str(xlsx_filename)).serialize()
+
+    wb = load_workbook(xlsx_filename)
+    assert "Person" in wb.sheetnames
+
+    ws = wb["Person"]
+    # Column headers must include both slots
+    headers = [ws.cell(row=1, column=i).value for i in range(1, ws.max_column + 1)]
+    assert "name" in headers
+    assert "status" in headers
+
+    # The DataValidation list for the enum column must be present
+    dv_formulas = [dv.formula1 for dv in ws.data_validations.dataValidation]
+    assert any("FULL_TIME" in f and "PART_TIME" in f and "CONTRACT" in f for f in dv_formulas)
+
+
+def test_enum_values_exceed_255_chars_logs_warning(tmp_path, caplog):
+    """Test that a warning is logged when enum permissible values exceed 255 characters."""
+    # Build an enum whose joined values will exceed 255 characters
+    long_values = {f"VALUE_{i:03d}_{'X' * 20}": {} for i in range(15)}
+    pv_yaml = "\n".join(f"      {k}: {{}}" for k in long_values)
+
+    schema_yaml = f"""
+id: https://example.org/long-enum-test
+name: long_enum_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+enums:
+  LongEnum:
+    permissible_values:
+{pv_yaml}
+
+classes:
+  Item:
+    attributes:
+      category:
+        range: LongEnum
+"""
+    schema_file = tmp_path / "long_enum_schema.yaml"
+    schema_file.write_text(schema_yaml)
+    xlsx_filename = tmp_path / "long_enum_schema.xlsx"
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.excelgen"):
+        ExcelGenerator(str(schema_file), output=str(xlsx_filename)).serialize()
+
+    assert any("255" in record.message and "LongEnum" in record.message for record in caplog.records)
