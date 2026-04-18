@@ -543,7 +543,7 @@ def test_sqla_2x_fk_type_when_target_inherits_from_identifier_less_abstract(tmp_
     code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
     assert 'term_term_uri: Mapped[str | None] = mapped_column(Text(), ForeignKey("Term.term_uri"))' in code
     assert 'ForeignKey("Term.term_uri")' in code
-    assert "Mapped[int | None] = mapped_column(Integer(), ForeignKey(\"Term." not in code
+    assert 'Mapped[int | None] = mapped_column(Integer(), ForeignKey("Term.' not in code
 
 
 def test_sqla_2x_emits_relationship_for_non_inlined_fk(tmp_path):
