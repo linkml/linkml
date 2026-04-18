@@ -372,15 +372,14 @@ def test_sqla_2x_basic_declarative(schema):
 def test_sqla_2x_declarative_exec(schema):
     """Full integration test: generate 2.x declarative, create DB, insert, query."""
     engine = create_engine("sqlite://")
-    ddl = SQLTableGenerator(schema).generate_ddl()
-    with engine.connect() as connection:
-        cur = connection.connection.cursor()
-        cur.executescript(ddl)
+    gen = SQLAlchemyGenerator(schema)
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    # 2.x declarative models use their own column naming (FK columns always
+    # suffixed). Let the ORM create the schema so the DDL matches the model.
+    mod.Base.metadata.create_all(engine)
 
     session_class = sessionmaker(bind=engine)
     session = session_class()
-    gen = SQLAlchemyGenerator(schema)
-    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
 
     # Insert and query
     session.add(mod.DiagnosisConcept(id="C999", name="rash"))
@@ -391,7 +390,7 @@ def test_sqla_2x_declarative_exec(schema):
     p1 = mod.Person(id="P1", name="a b", age=22, has_medical_history=[e1, e2])
     p1.aliases = ["Anne"]
     p1.aliases.append("Fred")
-    p1.has_familial_relationships.append(mod.FamilialRelationship(related_to="P2", type="SIBLING_OF"))
+    p1.has_familial_relationships.append(mod.FamilialRelationship(related_to_id="P2", type="SIBLING_OF"))
     p1.current_address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
     session.add(p1)
     session.add(mod.Person(id="P2", name="Ferdinand Giggleheim", aliases=["Fred"]))
@@ -406,7 +405,10 @@ def test_sqla_2x_declarative_exec(schema):
     assert len(p1_from_query.has_medical_history) == 2
     assert any(e for e in p1_from_query.has_medical_history if e.diagnosis_id == "C999")
     assert any(e for e in p1_from_query.has_medical_history if e.diagnosis.name == "cough")
-    assert any(r for r in p1_from_query.has_familial_relationships if r.related_to == "P2")
+    assert any(r for r in p1_from_query.has_familial_relationships if r.related_to_id == "P2")
+    # The relationship() attribute should resolve to a loaded Person object
+    fam = next(r for r in p1_from_query.has_familial_relationships if r.related_to_id == "P2")
+    assert fam.related_to.id == "P2"
 
     session.commit()
     session.close()
@@ -455,6 +457,87 @@ def test_sqla_style_without_declarative_fails(schema_path):
     result = runner.invoke(cli, [schema_path, "--no-declarative", "--sqla-style", "2"])
     assert result.exit_code != 0
     assert "only applies in declarative mode" in result.output
+
+
+# --- issue #3416 regression tests ---
+
+
+ISSUE_3416_SCHEMA = """
+id: https://example.org/test
+name: test_3416
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Term:
+    attributes:
+      uri:
+        identifier: true
+        range: uriorcurie
+        required: true
+  Event:
+    attributes:
+      id:
+        identifier: true
+        range: integer
+      term:
+        range: Term
+"""
+
+
+def test_sqla_2x_fk_column_type_matches_string_identifier_target(tmp_path):
+    """Issue #3416: FK column for a class with a string-typed identifier
+    must use Text(), not Integer()."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    # The FK column on Event -> Term.uri should be Text() (since uri is uriorcurie),
+    # and its Mapped annotation should be str, not int.
+    assert 'mapped_column(Text(), ForeignKey("Term.uri"))' in code
+    assert "Mapped[int | None] = mapped_column(Integer(), ForeignKey" not in code
+
+
+def test_sqla_2x_emits_relationship_for_non_inlined_fk(tmp_path):
+    """Issue #3416: non-inlined FK slots should still get a relationship()
+    attribute so ORM-side joins work."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    # FK column gets a _uri suffix, original name becomes the relationship attribute.
+    assert 'term_uri: Mapped[str | None] = mapped_column(Text(), ForeignKey("Term.uri"))' in code
+    assert "term: Mapped[Term | None] = relationship(foreign_keys=[term_uri])" in code
+
+
+def test_sqla_2x_non_inlined_fk_orm_join_works(tmp_path):
+    """Issue #3416: ORM-side joins via relationship() should work for
+    non-inlined FK slots once the relationship attribute is emitted."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+
+    engine = create_engine("sqlite://")
+    mod.Base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine)()
+
+    term = mod.Term(uri="GO:0001234")
+    event = mod.Event(id=1, term=term)
+    session.add(term)
+    session.add(event)
+    session.commit()
+
+    fetched = session.query(mod.Event).where(mod.Event.id == 1).one()
+    # FK column holds the string identifier value
+    assert fetched.term_uri == "GO:0001234"
+    # ORM relationship resolves to the Term object without a separate query
+    assert fetched.term.uri == "GO:0001234"
+
+    session.close()
+    engine.dispose()
 
 
 GOLDEN_FILE = Path(__file__).parent / "golden" / "personinfo_sqla_2x.py"
