@@ -189,15 +189,17 @@ def _closure(
         detect_cycles(f, [x])
 
     rv = [x] if reflexive else []
-    visited = []
+    rv_set: set = {x} if reflexive else set()
+    visited: set = set()
     todo = [x]
     while todo:
         i = todo.pop() if depth_first else todo.pop(0)
-        visited.append(i)
+        visited.add(i)
         for v in f(i) or []:
-            if v not in visited and v not in rv:
+            if v not in visited and v not in rv_set:
                 todo.append(v)
                 rv.append(v)
+                rv_set.add(v)
     return rv
 
 
@@ -1712,17 +1714,34 @@ class SchemaView:
             underscored = underscore(slot_name)
             if underscored != induced_slot.name:
                 induced_slot.alias = underscored
-        for c in self.all_classes().values():
-            if (
-                induced_slot.name in c.slots or induced_slot.name in c.attributes
-            ) and c.name not in induced_slot.domain_of:
-                induced_slot.domain_of.append(c.name)
+        # set() handles edge case, slot name in both c.slots and c.attributes.
+        existing_domain_of = set(induced_slot.domain_of)
+
+        for class_name_candidate in self._slot_class_map().get(induced_slot.name, []):
+            if class_name_candidate not in existing_domain_of:
+                induced_slot.domain_of.append(class_name_candidate)
+                existing_domain_of.add(class_name_candidate)
         return induced_slot
 
     @lru_cache(None)
     def _metaslots_for_slot(self):
         fake_slot = SlotDefinition("__FAKE")
         return vars(fake_slot).keys()
+
+    @lru_cache(None)
+    def _slot_class_map(self) -> dict[str, list[str]]:
+        """Build a reverse map: slot/attribute name → list of class names that declare it.
+
+        Computed once and cached; automatically invalidated when set_modified() is called
+        (because SchemaView's hash changes with each modification).
+        """
+        result: dict[str, list[str]] = {}
+        for c in self.all_classes().values():
+            for sname in c.slots:
+                result.setdefault(sname, []).append(c.name)
+            for aname in c.attributes:
+                result.setdefault(aname, []).append(c.name)
+        return result
 
     @lru_cache(None)
     def class_slots(
