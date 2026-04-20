@@ -86,7 +86,7 @@ ex:B a owl:Class,
             owl:allValuesFrom ex:A ;
             owl:onProperty ex:has_a ],
         [ a owl:Restriction ;
-            owl:maxCardinality 0 ;
+            owl:maxCardinality 1 ;
             owl:onProperty ex:has_a ],
         ex:A ;
     skos:inScheme <http://example.org/sample/example1> .
