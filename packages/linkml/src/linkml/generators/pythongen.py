@@ -460,16 +460,22 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
         # Step 2: write each wrapper only after its parent has been written.
         emitted: set[str] = set()
+        in_progress: set[str] = set()
         rval: list[str] = []
 
         def _emit(name: str) -> None:
             if name in emitted or name not in ref_info:
                 return  # Already written, or imported type — nothing to do.
+            if name in in_progress:
+                raise ValueError(f"Cyclic wrapper inheritance at {name}")
+            in_progress.add(name)
             parent_cls, line = ref_info[name]
-            _emit(parent_cls)  # Write the parent first.
-            if name not in emitted:  # Defensive check against malformed schemas.
-                emitted.add(name)
-                rval.append(line)
+            try:
+                _emit(parent_cls)  # Write the parent first.
+            finally:
+                in_progress.discard(name)
+            emitted.add(name)
+            rval.append(line)
 
         for name in emit_order:
             _emit(name)
@@ -833,7 +839,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     del clist[i]
                     break
             if not can_add:
-                raise (f"could not find suitable element in {clist} that does not ref {slist}")
+                raise ValueError(f"Cyclic or unresolved class inheritance in {clist}; emitted={slist}")
         return slist
 
     def is_key_value_class(self, range_name: DefinitionName) -> bool:

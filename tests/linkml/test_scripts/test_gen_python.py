@@ -166,6 +166,16 @@ def test_sort_classes_diamond_inheritance():
     assert names.index("B") < names.index("D")
 
 
+def test_sort_classes_cycle_raises_value_error():
+    """Cyclic inheritance should raise ValueError with a clear signal."""
+    classes = [
+        _cls("A", is_a="B"),
+        _cls("B", is_a="A"),
+    ]
+    with pytest.raises(ValueError, match="Cyclic or unresolved class inheritance"):
+        PythonGenerator._sort_classes(classes)
+
+
 @pytest.mark.parametrize("n", [10, 100, 500])
 def test_sort_classes_large_linear_chain(n: int):
     """Performance regression guard: a deep linear chain of n classes must sort correctly."""
