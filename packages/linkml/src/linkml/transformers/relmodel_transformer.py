@@ -496,7 +496,7 @@ class RelationalModelTransformer:
         valid_candidate_names = [n for n in candidate_names if n not in c.attributes]
         if not valid_candidate_names:
             raise ValueError(f"Cannot add primary key to class {cn}: no valid candidate names")
-        pk = SlotDefinition(name=valid_candidate_names[0], identifier=True, range="integer")
+        pk = SlotDefinition(name=valid_candidate_names[0], identifier=True, required=True, range="integer")
         add_annotation(pk, "dcterms:conformsTo", "rr:BlankNode")
         add_annotation(pk, "autoincrement", "true")
         if pk.name in c.attributes:

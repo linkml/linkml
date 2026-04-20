@@ -173,8 +173,9 @@ class ShaclGenerator(Generator):
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
                 elif s.exact_cardinality:
                     prop_pv_literal(SH.minCount, s.exact_cardinality)
-                # Identifiers are often represented as the subject IRI (no explicit id triple),
-                # so requiring sh:minCount 1 on the identifier path causes false violations.
+                # Identifiers map to the node's IRI rather than a property triple,
+                # so there's no arc to constrain with sh:minCount 1 — emitting it
+                # would cause spurious violations on every instance.
                 elif s.required and not s.identifier:
                     prop_pv_literal(SH.minCount, 1)
                 # maxCount

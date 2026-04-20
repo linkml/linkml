@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pytest
 
 from linkml.transformers.relmodel_transformer import (
@@ -9,6 +10,10 @@ from linkml.transformers.relmodel_transformer import (
 )
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import Annotation, ClassDefinition, SchemaDefinition, SlotDefinition
+=======
+from linkml.transformers.relmodel_transformer import RelationalModelTransformer
+from linkml_runtime import SchemaView
+>>>>>>> main
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
