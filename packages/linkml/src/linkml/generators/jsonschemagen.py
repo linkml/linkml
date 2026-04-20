@@ -386,6 +386,20 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 class_subschema["allOf"] = []
             class_subschema["allOf"].extend(rule_subschemas)
 
+        if cls.any_of is not None and len(cls.any_of) > 0:
+            class_subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.any_of]
+
+        if cls.all_of is not None and len(cls.all_of) > 0:
+            if "allOf" not in class_subschema:
+                class_subschema["allOf"] = []
+            class_subschema["allOf"].extend([self.get_subschema_for_anonymous_class(c, False) for c in cls.all_of])
+
+        if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
+            class_subschema["oneOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.exactly_one_of]
+
+        if cls.none_of is not None and len(cls.none_of) > 0:
+            class_subschema["not"] = {"anyOf": [self.get_subschema_for_anonymous_class(c, False) for c in cls.none_of]}
+
         class_subschema = self.after_generate_class(
             ClassResult.model_construct(schema_=class_subschema, source=cls), self.schemaview
         ).schema_

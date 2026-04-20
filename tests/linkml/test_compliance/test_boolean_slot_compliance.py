@@ -527,6 +527,136 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Class any_of with required")
+@pytest.mark.parametrize(
+    "op,name,family_name,given_name,is_valid",
+    [
+        # --ANY_OF--
+        # reason for failure: None of the any_ofs succeed:
+        ("any_of", None, None, None, False),
+        ("any_of", None, "a", None, False),
+        ("any_of", None, None, "b", False),
+        # passes: at least one of the any_ofs succeed
+        ("any_of", "a b", None, None, True),
+        ("any_of", None, "a", "b", True),
+        # passes: all of the any_ofs succeed
+        ("any_of", "a b", "a", "b", True),
+        # reason for failure: range atomic type violation
+        ("any_of", 5, None, None, False),
+        ("any_of", "a", "b", 5, False),
+        # --ALL_OF--
+        # fails: all conditions fail
+        ("all_of", None, None, None, False),
+        # fails: at least one condition fails
+        ("all_of", None, "a", "b", False),
+        ("all_of", "a b", "a", None, False),
+        ("all_of", "a b", None, "b", False),
+        # passes: all conditions are satisfied
+        ("all_of", "a b", "a", "b", True),
+        # --EXACTLY_ONE_OF--
+        # fails: no conditions met
+        ("exactly_one_of", None, None, None, False),
+        ("exactly_one_of", None, "a", None, False),
+        ("exactly_one_of", None, None, "b", False),
+        # passes: exactly one condition met
+        ("exactly_one_of", "a b", None, None, True),
+        ("exactly_one_of", None, "a", "b", True),
+        # fails: both conditions met
+        ("exactly_one_of", "a b", "a", "b", False),
+        # fails: range atomic type violation
+        ("exactly_one_of", 5, None, None, False),
+        ("exactly_one_of", "a", "b", 5, False),
+        # --NONE_OF--
+        # passes: no conditions met
+        ("none_of", None, None, None, True),
+        ("none_of", None, "a", None, True),
+        ("none_of", None, None, "b", True),
+        # fails: at least one condition met
+        ("none_of", "a b", None, None, False),
+        ("none_of", None, "a", "b", False),
+        ("none_of", "a b", "a", "b", False),
+        # fails: range atomic type violation
+        ("none_of", 5, None, None, False),
+        ("none_of", "a", "b", 5, False),
+    ],
+)
+@pytest.mark.parametrize("nest", [True, False])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_class_any_of_with_required(framework, nest, op, name, family_name, given_name, is_valid):
+    """
+    https://github.com/linkml/linkml/issues/2282
+    """
+    slots = {
+        SLOT_S1: {
+            "range": "string",
+        },
+        SLOT_S2: {
+            "range": "string",
+        },
+        SLOT_S3: {
+            "range": "string",
+        },
+    }
+    classes = {
+        CLASS_C: {
+            "slots": [SLOT_S1, SLOT_S2, SLOT_S3],
+            op: [
+                {
+                    "slot_conditions": {
+                        SLOT_S1: {
+                            "required": True,
+                        },
+                    },
+                },
+                {
+                    "slot_conditions": {
+                        SLOT_S2: {
+                            "required": True,
+                        },
+                        SLOT_S3: {
+                            "required": True,
+                        },
+                    },
+                },
+            ],
+        },
+    }
+    if nest:
+        classes[CLASS_D] = {
+            "slots": [SLOT_S1, SLOT_S2, SLOT_S3],
+            "slot_usage": {
+                SLOT_S1: {"inlined": True, "range": CLASS_C},
+            },
+        }
+    schema = validated_schema(
+        test_class_any_of_with_required,
+        f"{op}_nest{nest}",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=[op, "ClassDefinition"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA]:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+
+    data = {SLOT_S1: name, SLOT_S2: family_name, SLOT_S3: given_name}
+    if nest:
+        data = {SLOT_S1: data}
+    check_data(
+        schema,
+        f"{op}_{name}_{family_name}_{given_name}",
+        framework,
+        data,
+        is_valid,
+        target_class=CLASS_D if nest else CLASS_C,
+        expected_behavior=expected_behavior,
+        description=(
+            f"validity {is_valid} check for {op} name={name}, family_name={family_name}, given_name={given_name}"
+        ),
+    )
+
+
 @feature_category("Value Constraints", "Equals string")
 @pytest.mark.parametrize("value", ("EQUALS_STRING", "NOT_EQUALS_STRING"))
 @pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
