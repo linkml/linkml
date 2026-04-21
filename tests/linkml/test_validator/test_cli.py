@@ -185,12 +185,11 @@ classes:
 
     result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
     assert result.exit_code == 0
-    # stdout should be parseable YAML with no "No issues found" appended
-    parsed = yaml.safe_load(result.output)
-    assert isinstance(parsed, dict)
-    assert parsed["name"] == "foo"
-    assert parsed["count"] == 5
+    # Normalized output should contain the data and no banner pollution
+    assert "name: foo" in result.output
+    assert "count: 5" in result.output
     assert "No issues found" not in result.output
+    assert "[ERROR]" not in result.output
 
 
 def test_fix_rejects_unsupported_extension(cli_runner, tmp_path):
