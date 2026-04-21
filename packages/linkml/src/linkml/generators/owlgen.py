@@ -713,9 +713,12 @@ class OwlSchemaGenerator(Generator):
         def _get_slot_nodes(slot_definition) -> list[BNode | URIRef] | None:
             if not slot_definition:
                 return None
+            # Iterate over `slot_definition` (the argument), not the enclosing `slot.any_of`.
+            # The original code always used `slot.any_of` regardless of which boolean list
+            # (any_of / all_of / none_of) was passed, so all_of and none_of were silently ignored.
             rdflib_nodes = [
                 rdflib_node
-                for slot_expression in slot.any_of
+                for slot_expression in slot_definition
                 if (rdflib_node := self.transform_class_slot_expression(cls, slot_expression, main_slot, owl_types))
             ]
             if rdflib_nodes:
@@ -795,7 +798,20 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string is not None:
             equals_string = element.equals_string
             if is_literal is None:
-                logger.warning(f"ignoring equals_string={equals_string} as unable to tell if literal")
+                # Enum-ranged slots have is_literal=None because enums sit between
+                # literals and URIs in OWL.  Build a proper owl:oneOf datatype so that
+                # rules like `none_of: [{equals_string: "X"}]` on an enum slot produce
+                # a valid OWL DatatypeComplementOf instead of being silently dropped.
+                # _boolean_expression simplifies single-element lists to the element
+                # itself, so we create the rdfs:Datatype/owl:oneOf structure directly.
+                listnode = BNode()
+                Collection(self.graph, listnode, [Literal(equals_string)])
+                one_of_node = BNode()
+                self.graph.add((one_of_node, RDF.type, RDFS.Datatype))
+                self.graph.add((one_of_node, OWL.oneOf, listnode))
+                self.node_owltypes[one_of_node].add(RDFS.Literal)
+                owl_exprs.append(one_of_node)
+                owl_types.add(RDFS.Literal)
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
@@ -1251,6 +1267,14 @@ class OwlSchemaGenerator(Generator):
     ) -> BNode | URIRef | None:
         if not exprs:
             raise ValueError("Must pass at least one")
+        # Guard against None values from constraints that couldn't be resolved
+        # (mirrors the filtering already done in _boolean_expression).  Without
+        # this, a single unresolvable operand causes graph.add(..., None) which
+        # raises an AssertionError deep in rdflib.
+        exprs = [x for x in exprs if x is not None]
+        if not exprs:
+            logger.warning("All operands in complement expression resolved to None; skipping")
+            return None
         neg_expr = BNode()
         if not owl_types:
             owl_types = self._get_owltypes(set(), exprs)
