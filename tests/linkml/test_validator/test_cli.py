@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import pytest
-import yaml
 from click.testing import CliRunner
 
 from linkml.validator.cli import cli
