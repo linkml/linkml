@@ -10,6 +10,7 @@ import datetime
 import decimal
 import re
 import sys
+import warnings
 from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass, field
@@ -1019,8 +1020,6 @@ def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextI
     LinkML collection forms (e.g. ExpandedDict to CompactDict).  Validation is
     performed using a derived schema, as per Part 5 of the LinkML specification.
     """
-    import warnings
-
     warnings.warn(
         "linkml-normalize is deprecated and will be removed in a future release. Use 'linkml validate --fix' instead.",
         FutureWarning,

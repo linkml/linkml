@@ -77,7 +77,7 @@ def _validate_schema_against_metamodel(schema_paths: tuple[str]) -> int:
     for schema_path in schema_paths:
         for problem in Linter.validate_schema(schema_path):
             error_count += 1
-            click.echo(f"[ERROR] [{schema_path}] {problem.message}")
+            click.echo(f"[ERROR] [{schema_path}] {problem.message}", err=True)
     return error_count
 
 
@@ -89,9 +89,13 @@ def _normalize_and_validate(
     schema_path: str | Path,
     target_class: str | None,
     plugins: list[ValidationPlugin],
+    exit_on_first_failure: bool,
     include_context: bool,
 ) -> Counter:
-    """Run ReferenceValidator to normalize data, then validate the result.
+    """Run ReferenceValidator to normalize data, then validate the result
+    using the standard Validator path.
+
+    Normalized YAML is written to stdout.  All diagnostics go to stderr.
 
     :return: severity counter from validation of normalized output
     """
@@ -129,26 +133,16 @@ def _normalize_and_validate(
         click.echo(f"[ERROR] [{data_path}] {r.type}: {r.instantiates}", err=True)
 
     # Write normalized output to stdout
-    output_str = yaml.dump(output_object, sort_keys=False)
-    click.echo(output_str)
+    click.echo(yaml.dump(output_object, sort_keys=False))
 
-    # Now validate the normalized output with the standard JSON Schema path
-    if plugins:
-        from linkml.validator.validation_context import ValidationContext
-        from linkml_runtime.linkml_model import SchemaDefinition
-        from linkml_runtime.loaders import yaml_loader
-
-        schema_def = yaml_loader.load(str(schema_path), SchemaDefinition)
-        context = ValidationContext(schema_def, target_class)
-        for plugin in plugins:
-            plugin.pre_process(context)
-            for result in plugin.process(output_object, context):
-                severity_counter[result.severity] += 1
-                click.echo(f"[{result.severity.value}] [{data_path}] {result.message}", err=True)
-                if include_context:
-                    for ctx in result.context:
-                        click.echo(f"[CONTEXT] {ctx}", err=True)
-            plugin.post_process(context)
+    # Validate normalized output using the standard Validator path
+    validator = Validator(sv.schema, validation_plugins=plugins, strict=exit_on_first_failure)
+    for result in validator.iter_results(output_object, target_class):
+        severity_counter[result.severity] += 1
+        click.echo(f"[{result.severity.value}] [{data_path}/{result.instance_index}] {result.message}", err=True)
+        if include_context:
+            for ctx in result.context:
+                click.echo(f"[CONTEXT] {ctx}", err=True)
 
     return severity_counter
 
@@ -197,9 +191,10 @@ def _normalize_and_validate(
     "--fix",
     is_flag=True,
     default=False,
-    help="Attempt to normalize data to conform to the schema (type coercion, "
-    "collection form restructuring) and output the corrected data. "
-    "The normalized output is then validated to report any remaining issues.",
+    help="Normalize a YAML/JSON data file to conform to the schema (type coercion, "
+    "collection form restructuring) and write the corrected data to stdout. "
+    "Diagnostics go to stderr. The normalized output is then validated to "
+    "report any remaining issues.",
 )
 @click.argument("data_sources", nargs=-1, type=click.Path(exists=True))
 @click.version_option(__version__, "-V", "--version")
@@ -267,7 +262,12 @@ def cli(
     if fix:
         for data_path in data_sources:
             severity_counter += _normalize_and_validate(
-                data_path, cfg.schema_path, cfg.target_class, plugins, include_context
+                data_path,
+                cfg.schema_path,
+                cfg.target_class,
+                plugins,
+                exit_on_first_failure,
+                include_context,
             )
     else:
         loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
@@ -281,7 +281,7 @@ def cli(
                     for ctx in result.context:
                         click.echo(f"[CONTEXT] {ctx}")
 
-    if sum(severity_counter.values()) == 0:
+    if sum(severity_counter.values()) == 0 and not fix:
         click.echo("No issues found")
 
     exit_code = 1 if severity_counter[Severity.ERROR] > 0 else 0

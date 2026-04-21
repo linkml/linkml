@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 import pytest
+import yaml
 from click.testing import CliRunner
 
 from linkml.validator.cli import cli
@@ -149,6 +150,78 @@ classes:
     assert result.exit_code == 0
     assert "count: 5" in result.output
     assert "[ERROR]" not in result.output
+
+
+def test_fix_output_is_clean_yaml(cli_runner, tmp_path):
+    """--fix stdout is valid YAML with no diagnostic pollution."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    tree_root: true
+    description: Test class.
+    attributes:
+      name:
+        identifier: true
+        description: The name.
+      count:
+        range: integer
+        description: A count.
+"""
+    )
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text("name: foo\ncount: 5\n")
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert result.exit_code == 0
+    # stdout should be parseable YAML with no "No issues found" appended
+    parsed = yaml.safe_load(result.output)
+    assert isinstance(parsed, dict)
+    assert parsed["name"] == "foo"
+    assert parsed["count"] == 5
+    assert "No issues found" not in result.output
+
+
+def test_fix_rejects_unsupported_extension(cli_runner, tmp_path):
+    """--fix errors clearly on non-YAML/JSON files."""
+
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    tree_root: true
+    description: Test.
+    attributes:
+      name:
+        description: Test.
+"""
+    )
+    data_path = tmp_path / "data.csv"
+    data_path.write_text("name\nfoo\n")
+
+    result = cli_runner.invoke(cli, ["-s", str(schema_path), "--fix", str(data_path)])
+    assert result.exit_code == 1
+    assert ".csv" in result.output
+    assert "--fix only supports" in result.output
 
 
 def test_invalid_json(cli_runner, json_data_file):
