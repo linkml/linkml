@@ -413,6 +413,7 @@ class SchemaView:
                 # For classes that appear in multiple schemas, additively merge
                 # rules and classification_rules so that imported rules are not
                 # silently lost when a later schema redefines the same class.
+                d1 = dict(d1)
                 for k, v in d1.items():
                     if k in d:
                         prev = d[k]
