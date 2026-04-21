@@ -1,9 +1,9 @@
 """Unit / regression tests for owlgen bug-fixes.
 
 Covers:
-- Fix 1: equals_string on an enum-ranged slot (is_literal=None) must not silently
+- equals_string on an enum-ranged slot (is_literal=None) must not silently
   drop the constraint; it should produce an owl:oneOf expression with a Literal.
-- Fix 2: _complement_of_union_of must filter None operands instead of passing them
+- _complement_of_union_of must filter None operands instead of passing them
   to rdflib.Graph.add(), which raises an AssertionError.
 """
 
@@ -46,7 +46,7 @@ def _literal_values_in_complement_filler(g: Graph) -> set[str]:
     return values
 
 
-# Fix 1 — equals_string on an enum-ranged slot must not be silently dropped
+# equals_string on an enum-ranged slot must not be silently dropped
 
 
 def test_equals_string_enum_none_of_no_crash():
@@ -93,7 +93,7 @@ def test_equals_string_enum_produces_complement_expression():
     assert complement_triples, "Expected an owl:complementOf/datatypeComplementOf axiom from none_of rule"
 
 
-# Fix 2 — _complement_of_union_of must handle None operands gracefully
+# _complement_of_union_of must handle None operands gracefully
 
 
 def test_complement_of_union_of_filters_none(caplog):

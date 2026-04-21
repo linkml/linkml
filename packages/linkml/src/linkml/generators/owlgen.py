@@ -828,11 +828,11 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string is not None:
             equals_string = element.equals_string
             if is_literal is None:
-                # Enum-ranged slots have is_literal=None because enums sit between
-                # literals and URIs in OWL.  Build a proper owl:oneOf datatype so that
-                # rules like `none_of: [{equals_string: "X"}]` on an enum slot produce
+                # Enum-ranged slots have "is_literal=None" because enums sit between
+                # literals and URIs in OWL.  Build a proper "owl:oneOf" datatype so that
+                # rules like `none_of: [{equals_string: "X"}]` on enum slots produces
                 # a valid OWL DatatypeComplementOf instead of being silently dropped.
-                # _boolean_expression simplifies single-element lists to the element
+                # self._boolean_expression will simplify single-element lists to the element
                 # itself, so we create the rdfs:Datatype/owl:oneOf structure directly.
                 listnode = BNode()
                 Collection(self.graph, listnode, [Literal(equals_string)])
