@@ -2032,7 +2032,7 @@ typing = [
 [package.metadata]
 requires-dist = [
     { name = "antlr4-python3-runtime", specifier = ">=4.9.0,<4.10" },
-    { name = "click", specifier = ">=8.0" },
+    { name = "click", specifier = ">=8.2" },
     { name = "graphviz", specifier = ">=0.10.1" },
     { name = "hbreader" },
     { name = "isodate", specifier = ">=0.6.0" },
@@ -2164,7 +2164,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "click" },
+    { name = "click", specifier = ">=8.2" },
     { name = "coverage", marker = "extra == 'dev'" },
     { name = "curies", specifier = ">=0.5.4" },
     { name = "deprecated" },
