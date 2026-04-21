@@ -260,15 +260,16 @@ def cli(
     severity_counter = Counter()
 
     if fix:
-        for data_path in data_sources:
-            severity_counter += _normalize_and_validate(
-                data_path,
-                cfg.schema_path,
-                cfg.target_class,
-                plugins,
-                exit_on_first_failure,
-                include_context,
-            )
+        if len(data_sources) > 1:
+            raise click.ClickException("--fix supports a single data file at a time.")
+        severity_counter += _normalize_and_validate(
+            data_sources[0],
+            cfg.schema_path,
+            cfg.target_class,
+            plugins,
+            exit_on_first_failure,
+            include_context,
+        )
     else:
         loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
         validator = Validator(cfg.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
