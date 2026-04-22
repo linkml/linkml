@@ -107,6 +107,9 @@ pandera = [
 tests-rustgen = [
   "maturin >= 1.9.4"
 ]
+typedb = [
+  "typedb-driver >= 3.0, < 4.0",
+]
 
 tests-extra = [
   "pytest >= 7.4.0",
@@ -164,6 +167,7 @@ gen-shacl = "linkml.generators.shaclgen:cli"
 gen-sparql = "linkml.generators.sparqlgen:cli"
 gen-typescript = "linkml.generators.typescriptgen:cli"
 gen-terminusdb = "linkml.generators.terminusdbgen:cli"
+gen-typedb = "linkml.generators.typedbgen:cli"
 gen-yaml = "linkml.generators.yamlgen:cli"
 gen-erdiagram = "linkml.generators.erdiagramgen:cli"
 gen-rust = "linkml.generators.rustgen.cli:cli"
