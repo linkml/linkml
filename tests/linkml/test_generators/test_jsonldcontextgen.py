@@ -1,4 +1,5 @@
 import json
+import textwrap
 
 import pytest
 from click.testing import CliRunner
@@ -571,3 +572,293 @@ def test_exclude_imports(input_path):
     # Imported class and slot must NOT be present
     assert "BaseClass" not in ctx, "Imported class 'BaseClass' must not appear in exclude-imports context"
     assert "baseProperty" not in ctx, "Imported slot 'baseProperty' must not appear in exclude-imports context"
+
+
+@pytest.mark.parametrize("mergeimports", [True, False], ids=["merge", "no-merge"])
+def test_exclude_external_imports(tmp_path, mergeimports):
+    """With --exclude-external-imports, elements from URL-based external
+    vocabulary imports must not appear in the generated JSON-LD context,
+    while local file imports and linkml standard imports are kept.
+
+    When a schema imports terms from an external vocabulary (e.g. W3C VC
+    v2), those terms already have context definitions in their own JSON-LD
+    context file.  Re-defining them in the local context can conflict with
+    @protected term definitions from the external context (JSON-LD 1.1
+    section 4.1.11).
+    """
+    ext_dir = tmp_path / "ext"
+    ext_dir.mkdir()
+    (ext_dir / "external_vocab.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/external-vocab
+            name: external_vocab
+            default_prefix: ext
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ext: https://example.org/external-vocab/
+            imports:
+              - linkml:types
+            slots:
+              issuer:
+                slot_uri: ext:issuer
+                range: string
+              validFrom:
+                slot_uri: ext:validFrom
+                range: date
+            classes:
+              ExternalCredential:
+                class_uri: ext:ExternalCredential
+                slots:
+                  - issuer
+                  - validFrom
+        """),
+        encoding="utf-8",
+    )
+
+    (tmp_path / "main.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/main
+            name: main
+            default_prefix: main
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              main: https://example.org/main/
+              ext: https://example.org/external-vocab/
+            imports:
+              - linkml:types
+              - https://example.org/external-vocab
+            slots:
+              localName:
+                slot_uri: main:localName
+                range: string
+            classes:
+              LocalThing:
+                class_uri: main:LocalThing
+                slots:
+                  - localName
+        """),
+        encoding="utf-8",
+    )
+
+    importmap = {"https://example.org/external-vocab": str(ext_dir / "external_vocab")}
+
+    context_text = ContextGenerator(
+        str(tmp_path / "main.yaml"),
+        exclude_external_imports=True,
+        mergeimports=mergeimports,
+        importmap=importmap,
+        base_dir=str(tmp_path),
+    ).serialize()
+    context = json.loads(context_text)
+    ctx = context["@context"]
+
+    # Local terms must be present
+    assert "localName" in ctx or "local_name" in ctx, (
+        f"Local slot missing with mergeimports={mergeimports}, got: {list(ctx.keys())}"
+    )
+    assert "LocalThing" in ctx, f"Local class missing with mergeimports={mergeimports}, got: {list(ctx.keys())}"
+
+    # External vocabulary terms must NOT be present
+    assert "issuer" not in ctx, f"External slot 'issuer' present with mergeimports={mergeimports}"
+    assert "validFrom" not in ctx and "valid_from" not in ctx, (
+        f"External slot 'validFrom' present with mergeimports={mergeimports}"
+    )
+    assert "ExternalCredential" not in ctx, (
+        f"External class 'ExternalCredential' present with mergeimports={mergeimports}"
+    )
+
+
+def test_exclude_external_imports_preserves_linkml_types(tmp_path):
+    """linkml:types (standard library import) must NOT be treated as external.
+
+    The ``linkml:types`` import resolves to a URL internally
+    (``https://w3id.org/linkml/types``), but it is a standard LinkML import,
+    not a user-declared external vocabulary.  The ``_collect_external_elements``
+    method filters by ``schema_key.startswith("http")`` — this test verifies
+    that linkml built-in types (string, integer, date, etc.) survive the filter.
+    """
+    (tmp_path / "schema.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/test
+            name: test_linkml_types
+            default_prefix: ex
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ex: https://example.org/
+            imports:
+              - linkml:types
+            slots:
+              name:
+                slot_uri: ex:name
+                range: string
+              age:
+                slot_uri: ex:age
+                range: integer
+            classes:
+              Person:
+                class_uri: ex:Person
+                slots:
+                  - name
+                  - age
+        """),
+        encoding="utf-8",
+    )
+
+    context_text = ContextGenerator(
+        str(tmp_path / "schema.yaml"),
+        exclude_external_imports=True,
+    ).serialize()
+    ctx = json.loads(context_text)["@context"]
+
+    # Local classes and slots must be present
+    assert "Person" in ctx, f"Local class 'Person' missing, got: {list(ctx.keys())}"
+    assert "name" in ctx, f"Local slot 'name' missing, got: {list(ctx.keys())}"
+    assert "age" in ctx, f"Local slot 'age' missing, got: {list(ctx.keys())}"
+
+
+def test_exclude_external_imports_preserves_local_file_imports(tmp_path):
+    """Local file imports (non-URL) must be preserved when exclude_external_imports is set.
+
+    Only URL-based imports (http:// or https://) are considered external.
+    File-path imports between local schemas must remain in the context.
+    """
+    local_dir = tmp_path / "local"
+    local_dir.mkdir()
+    (local_dir / "base.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/base
+            name: base
+            default_prefix: base
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              base: https://example.org/base/
+            imports:
+              - linkml:types
+            slots:
+              baseField:
+                slot_uri: base:baseField
+                range: string
+            classes:
+              BaseRecord:
+                class_uri: base:BaseRecord
+                slots:
+                  - baseField
+        """),
+        encoding="utf-8",
+    )
+
+    (tmp_path / "main.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/main
+            name: main
+            default_prefix: main
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              main: https://example.org/main/
+              base: https://example.org/base/
+            imports:
+              - linkml:types
+              - local/base
+            slots:
+              localField:
+                slot_uri: main:localField
+                range: string
+            classes:
+              MainRecord:
+                class_uri: main:MainRecord
+                slots:
+                  - localField
+        """),
+        encoding="utf-8",
+    )
+
+    context_text = ContextGenerator(
+        str(tmp_path / "main.yaml"),
+        exclude_external_imports=True,
+        mergeimports=True,
+        base_dir=str(tmp_path),
+    ).serialize()
+    ctx = json.loads(context_text)["@context"]
+
+    # Local file import terms must be present
+    assert "MainRecord" in ctx, f"Local class 'MainRecord' missing, got: {list(ctx.keys())}"
+    assert "BaseRecord" in ctx, f"Local-file-imported class 'BaseRecord' missing, got: {list(ctx.keys())}"
+    assert "baseField" in ctx or "base_field" in ctx, (
+        f"Local-file-imported slot 'baseField' missing, got: {list(ctx.keys())}"
+    )
+
+
+def test_exclude_external_imports_works_with_mergeimports_false(tmp_path):
+    """exclude_external_imports is effective even when mergeimports=False.
+
+    Although mergeimports=False prevents most imported elements from appearing,
+    external vocabulary elements can still leak into the context via the
+    schema_map.  The exclude_external_imports flag catches these.
+    """
+    ext_dir = tmp_path / "ext"
+    ext_dir.mkdir()
+    (ext_dir / "external_vocab.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/external-vocab
+            name: external_vocab
+            default_prefix: ext
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              ext: https://example.org/external-vocab/
+            imports:
+              - linkml:types
+            slots:
+              issuer:
+                slot_uri: ext:issuer
+                range: string
+            classes:
+              ExternalCredential:
+                class_uri: ext:ExternalCredential
+                slots:
+                  - issuer
+        """),
+        encoding="utf-8",
+    )
+
+    (tmp_path / "main.yaml").write_text(
+        textwrap.dedent("""\
+            id: https://example.org/main
+            name: main
+            default_prefix: main
+            prefixes:
+              linkml: https://w3id.org/linkml/
+              main: https://example.org/main/
+              ext: https://example.org/external-vocab/
+            imports:
+              - linkml:types
+              - https://example.org/external-vocab
+            slots:
+              localName:
+                slot_uri: main:localName
+                range: string
+            classes:
+              LocalThing:
+                class_uri: main:LocalThing
+                slots:
+                  - localName
+        """),
+        encoding="utf-8",
+    )
+
+    importmap = {"https://example.org/external-vocab": str(ext_dir / "external_vocab")}
+
+    ctx_text = ContextGenerator(
+        str(tmp_path / "main.yaml"),
+        exclude_external_imports=True,
+        mergeimports=False,
+        importmap=importmap,
+        base_dir=str(tmp_path),
+    ).serialize()
+    ctx = json.loads(ctx_text)["@context"]
+
+    # Local terms must still be present
+    assert "LocalThing" in ctx, f"Local class missing, got: {list(ctx.keys())}"
+
+    # External vocabulary terms must be excluded
+    assert "issuer" not in ctx, "External slot 'issuer' should be excluded with mergeimports=False"
+    assert "ExternalCredential" not in ctx, "External class should be excluded with mergeimports=False"

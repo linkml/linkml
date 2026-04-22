@@ -1,4 +1,9 @@
+import json
+from collections.abc import Callable, Mapping
+
 import pytest
+import rdflib
+from rdflib.compare import to_canonical_graph
 
 
 @pytest.fixture
@@ -138,3 +143,32 @@ def data_str():
   ]
 }
 """
+
+
+def _normalize_snapshot_bundle_output(name: str, output: str) -> str:
+    """Normalize bundle sections that would otherwise vary in serialization order."""
+    if name.endswith((".ttl", ".owl")):
+        graph = rdflib.Graph()
+        graph.parse(data=output, format="turtle")
+        normalized = to_canonical_graph(graph).serialize(format="nt")
+        return "\n".join(sorted(line for line in normalized.splitlines() if line)) + "\n"
+    if name.endswith((".json", ".schema.json", ".context.jsonld")):
+        return json.dumps(json.loads(output), indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    return output if output.endswith("\n") else f"{output}\n"
+
+
+def render_snapshot_bundle(outputs: Mapping[str, str]) -> str:
+    """Render multiple named outputs into one deterministic snapshot string."""
+    parts: list[str] = []
+    for name, output in outputs.items():
+        parts.append(f"# --- {name} ---\n")
+        parts.append(_normalize_snapshot_bundle_output(name, output))
+        parts.append("\n")
+    return "".join(parts)
+
+
+@pytest.fixture
+def bundled_snapshot_text() -> Callable[[Mapping[str, str]], str]:
+    """Build a labeled single-file snapshot from multiple related outputs."""
+
+    return render_snapshot_bundle
