@@ -429,11 +429,10 @@
 <span class="nt">mappings</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">Person</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">sources</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">data.json~jsonpath</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$.items[*]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">data.json~jsonpath</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;$[*]&#39;</span><span class="p p-Indicator">]</span>
 <span class="w">    </span><span class="nt">s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:$(id)</span>
 <span class="w">    </span><span class="nt">po</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:type</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a</span>
 <span class="w">        </span><span class="nt">o</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:Person</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:name</span>
 <span class="w">        </span><span class="nt">o</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(name)</span>
@@ -452,7 +451,7 @@
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;people.csv~csv&#39;</span><span class="p p-Indicator">]</span><span class="w">   </span><span class="c1"># note the inner list</span>
 <span class="w">    </span><span class="nt">s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:$(id)</span>
 <span class="w">    </span><span class="nt">po</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">rdf:type</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a</span>
 <span class="w">        </span><span class="nt">o</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:Person</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ex:name</span>
 <span class="w">        </span><span class="nt">o</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(name)</span>
@@ -516,8 +515,12 @@ gen-yarrrml<span class="w"> </span>schema.yaml<span class="w"> </span>--source<s
 <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> and predicate IRIs (including full IRIs if present)</p></li>
 <li><p>subject from identifier slot (else key; else safe fallback)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">po</span></code> for all class attributes (slot aliases respected)</p></li>
-<li><p>emits <code class="docutils literal notranslate"><span class="pre">rdf:type</span></code> as CURIEs or IRIs (depending on availability)</p></li>
-<li><p>JSON by default: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[data.json~jsonpath,</span> <span class="pre">$.items[*]]]</span></code></p></li>
+<li><p>emits <code class="docutils literal notranslate"><span class="pre">a</span></code> (rdf:type) as CURIEs or IRIs (depending on availability), and automatically aggregates mixin classes into this array</p></li>
+<li><p>emits predicate-object mappings for identifier slots if they have an explicit <code class="docutils literal notranslate"><span class="pre">slot_uri</span></code></p></li>
+<li><p>JSON iterators are determined by the schema structure:
+- If a <code class="docutils literal notranslate"><span class="pre">tree_root</span></code> class exists, the default iterator is the root object: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[data.json~jsonpath,</span> <span class="pre">'$']]</span></code>
+- If no <code class="docutils literal notranslate"><span class="pre">tree_root</span></code> is defined (flat arrays), the default iterator covers all items: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[data.json~jsonpath,</span> <span class="pre">'$[*]']]</span></code></p></li>
+<li><p>preserves explicit XSD datatypes for slots (e.g., datatype: xsd:integer)</p></li>
 <li><p>CSV/TSV: <code class="docutils literal notranslate"><span class="pre">sources:</span> <span class="pre">[[path~csv]]</span></code> (no iterator), values via <code class="docutils literal notranslate"><span class="pre">$(column)</span></code></p></li>
 <li><p>a top-level <code class="docutils literal notranslate"><span class="pre">mappings:</span></code> section is <strong>always</strong> included, even for minimal schemas</p></li>
 </ul>
@@ -554,7 +557,7 @@ gen-yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-yarrrml-iterator-template">
 <span class="sig-name descname"><span class="pre">--iterator-template</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;iterator_template&gt;</span></span><a class="headerlink" href="#cmdoption-gen-yarrrml-iterator-template" title="Link to this definition">¶</a></dt>
-<dd><p>JSONPath iterator template; supports {Class}, default: “$.items[*]”</p>
+<dd><p>JSONPath iterator template; supports {Class}, default: “$[*]”</p>
 </dd></dl>
 
 <dl class="std option">
@@ -683,13 +686,14 @@ gen-yarrrml<span class="w"> </span>path/to/schema.yaml<span class="w"> </span>--
 <li><p>Object slots:
 - <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> → emitted as IRIs
 - <code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">true</span></code> → emitted using YARRRML <code class="docutils literal notranslate"><span class="pre">mapping</span></code> + <code class="docutils literal notranslate"><span class="pre">condition</span></code> (join) pattern</p></li>
-<li><p>Inline classes require an identifier (or key) to support join-based linking</p></li>
-<li><p>An inline class can only be used in a single owning class.
-Multiple inline usages of the same class are not supported,
-as each mapping can define only one source/iterator.</p></li>
+<li><p>Inlined objects without an identifier are assigned a synthetic IRI using the parent’s ID (e.g. <code class="docutils literal notranslate"><span class="pre">ex:Child_$(parent_id)</span></code>). This ensures graph connectivity and avoids broken/orphaned triples during lifting, as some YARRRML implementations fail to execute joins (<code class="docutils literal notranslate"><span class="pre">condition:</span> <span class="pre">equal</span></code>) on Blank Nodes.</p></li>
+<li><p>However, multivalued inlined objects (lists) still strictly require an identifier.</p></li>
+<li><p>An inline class without an identifier can only be used in a single owning class.</p></li>
 <li><p>Iterators not derived from JSON Schema</p></li>
 <li><p>No per-slot JSONPath/CSV expressions or functions</p></li>
 <li><p>CSV/TSV supported via <code class="docutils literal notranslate"><span class="pre">--source</span></code>; delimiter/custom CSVW options are not yet exposed</p></li>
+<li><p>The deep scan iterator (<code class="docutils literal notranslate"><span class="pre">$..slot_name</span></code>) used for inlined objects will grab all properties with that exact name, even if they are nested deeper inside each other. This can cause mapping collisions.</p></li>
+<li><p>Object slots that are not explicitly inlined (<code class="docutils literal notranslate"><span class="pre">inlined:</span> <span class="pre">false</span></code> or by default) require their target class to have an identifier (<code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">true</span></code>). If you attempt to link to a class without an ID via standard IRI reference, the generator will raise an error.</p></li>
 </ul>
 </section>
 </section>
