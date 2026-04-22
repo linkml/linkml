@@ -2245,6 +2245,19 @@
             <span class="n">slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">slot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Callers (e.g. JSON/Python generators) may often normalise slot</span>
+            <span class="c1"># names with underscore() before using as property/attribute names.</span>
+            <span class="c1"># If above literal lookup failed, try to resolve name back to the</span>
+            <span class="c1"># canonical (hyphenated / space-containing) slot name via</span>
+            <span class="c1"># slot_name_mappings(). Recurse once with that name.</span>
+            <span class="n">canonical</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_name_mappings</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">canonical</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">canonical</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">slot_name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span>
+                    <span class="n">canonical</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">class_name</span><span class="o">=</span><span class="n">class_name</span><span class="p">,</span>
+                    <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span>
+                    <span class="n">mangle_name</span><span class="o">=</span><span class="n">mangle_name</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;No such slot </span><span class="si">{</span><span class="n">slot_name</span><span class="si">}</span><span class="s2"> as an attribute of </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2"> ancestors &quot;</span>
                 <span class="s2">&quot;or as a slot definition in the schema&quot;</span>
