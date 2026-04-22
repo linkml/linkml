@@ -8,6 +8,7 @@ import pytest
 import yaml
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.yamlgen import YAMLGenerator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import (
@@ -23,6 +24,21 @@ from tests.linkml.test_generators.test_pythongen import make_python
 logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.jsonschemagen
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_yaml_and_jsonschema(input_path):
+    """Ambiguous attribute URIs should keep minimal shared metadata."""
+    schema = input_path("linkml_issue_388.yaml")
+
+    generated_yaml = yaml.safe_load(YAMLGenerator(schema).serialize())
+    assert set(generated_yaml["slots"]) == {"c1__a", "c2__a", "c3__a"}
+    assert generated_yaml["slots"]["c3__a"]["slot_uri"] == "other:a"
+
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert generated_schema["$defs"]["C1"]["properties"]["a"]["type"] == ["string", "null"]
+    assert generated_schema["$defs"]["C2"]["properties"]["a"]["type"] == ["integer", "null"]
+    assert generated_schema["$defs"]["C3"]["properties"]["a"]["anyOf"][0]["$ref"] == "#/$defs/C1"
 
 
 def test_jsonschema_integration(kitchen_sink_path, input_path):
@@ -314,6 +330,26 @@ def test_enum_title_from_title_slot(subtests, input_path):
 def test_slot_title_from_title_slot(subtests, input_path):
     """Tests that the slot-based sub-schema title is taken from title slot if option specified."""
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
+
+
+@pytest.mark.parametrize("not_closed", [True, False])
+def test_slot_identifier_non_nullability(input_path, not_closed):
+    """
+    Identifier slots are not allowed to be "null"
+
+    References:
+        - https://github.com/linkml/linkml/issues/2448
+    """
+    schema = input_path("identifier.yaml")
+    generator = JsonSchemaGenerator(schema, mergeimports=True, not_closed=not_closed)
+    generated = json.loads(generator.serialize())
+    key = "id"
+    for cls in ["MyClass"]:
+        id = generated["$defs"][cls]["properties"][key]
+        if "type" in id:
+            assert "null" not in id["type"], f"{key} does not allow null"
+        elif "anyOf" in id:
+            assert {"type": "null"} not in id["anyOf"], f"{key} does not allow null"
 
 
 @pytest.mark.parametrize("not_closed", [True, False])

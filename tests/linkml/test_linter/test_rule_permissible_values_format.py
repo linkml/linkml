@@ -2,8 +2,8 @@ import pytest
 
 from linkml.linter.config.datamodel.config import PermissibleValuesFormatRuleConfig, RuleLevel
 from linkml.linter.rules import PermissibleValuesFormatRule
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime import SchemaView
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 @pytest.fixture

@@ -40,12 +40,12 @@ from linkml.generators.pydanticgen.template import (
     PydanticValidator,
 )
 from linkml.utils.exceptions import ValidationError as ArrayValidationError
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import load_schema_wrap
 
 from .conftest import MyInjectedClass
