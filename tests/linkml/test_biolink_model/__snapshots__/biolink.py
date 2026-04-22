@@ -426,39 +426,27 @@ class EntityId(extended_str):
     pass
 
 
-class NamedThingId(EntityId):
-    pass
-
-
-class AttributeId(NamedThingId):
-    pass
-
-
-class ChemicalRoleId(AttributeId):
-    pass
-
-
-class BiologicalSexId(AttributeId):
-    pass
-
-
-class PhenotypicSexId(BiologicalSexId):
-    pass
-
-
-class GenotypicSexId(BiologicalSexId):
-    pass
-
-
-class SeverityValueId(AttributeId):
-    pass
-
-
 class RelationshipTypeId(OntologyClassId):
     pass
 
 
 class TaxonomicRankId(OntologyClassId):
+    pass
+
+
+class ExposureEventId(OntologyClassId):
+    pass
+
+
+class NamedThingId(EntityId):
+    pass
+
+
+class AssociationId(EntityId):
+    pass
+
+
+class AttributeId(NamedThingId):
     pass
 
 
@@ -474,115 +462,7 @@ class AdministrativeEntityId(NamedThingId):
     pass
 
 
-class AgentId(AdministrativeEntityId):
-    pass
-
-
 class InformationContentEntityId(NamedThingId):
-    pass
-
-
-class StudyResultId(InformationContentEntityId):
-    pass
-
-
-class StudyVariableId(InformationContentEntityId):
-    pass
-
-
-class CommonDataElementId(InformationContentEntityId):
-    pass
-
-
-class ConceptCountAnalysisResultId(StudyResultId):
-    pass
-
-
-class ObservedExpectedFrequencyAnalysisResultId(StudyResultId):
-    pass
-
-
-class RelativeFrequencyAnalysisResultId(StudyResultId):
-    pass
-
-
-class TextMiningResultId(StudyResultId):
-    pass
-
-
-class ChiSquaredAnalysisResultId(StudyResultId):
-    pass
-
-
-class LogOddsAnalysisResultId(StudyResultId):
-    pass
-
-
-class DatasetId(InformationContentEntityId):
-    pass
-
-
-class DatasetDistributionId(InformationContentEntityId):
-    pass
-
-
-class DatasetVersionId(InformationContentEntityId):
-    pass
-
-
-class DatasetSummaryId(InformationContentEntityId):
-    pass
-
-
-class ConfidenceLevelId(InformationContentEntityId):
-    pass
-
-
-class EvidenceTypeId(InformationContentEntityId):
-    pass
-
-
-class PublicationId(InformationContentEntityId):
-    pass
-
-
-class BookId(PublicationId):
-    pass
-
-
-class BookChapterId(PublicationId):
-    pass
-
-
-class SerialId(PublicationId):
-    pass
-
-
-class ArticleId(PublicationId):
-    pass
-
-
-class JournalArticleId(ArticleId):
-    pass
-
-
-class PatentId(PublicationId):
-    pass
-
-
-class WebPageId(PublicationId):
-    pass
-
-
-class PreprintPublicationId(PublicationId):
-    pass
-
-
-class DrugLabelId(PublicationId):
-    pass
-
-
-class RetrievalSourceId(InformationContentEntityId):
     pass
 
 
@@ -591,10 +471,6 @@ class PhysicalEntityId(NamedThingId):
 
 
 class ActivityId(NamedThingId):
-    pass
-
-
-class StudyId(ActivityId):
     pass
 
 
@@ -614,27 +490,7 @@ class DiagnosticAidId(NamedThingId):
     pass
 
 
-class MaterialSampleId(PhysicalEntityId):
-    pass
-
-
 class PlanetaryEntityId(NamedThingId):
-    pass
-
-
-class EnvironmentalProcessId(PlanetaryEntityId):
-    pass
-
-
-class EnvironmentalFeatureId(PlanetaryEntityId):
-    pass
-
-
-class GeographicLocationId(PlanetaryEntityId):
-    pass
-
-
-class GeographicLocationAtTimeId(GeographicLocationId):
     pass
 
 
@@ -646,415 +502,11 @@ class ChemicalEntityId(NamedThingId):
     pass
 
 
-class MolecularEntityId(ChemicalEntityId):
-    pass
-
-
-class SmallMoleculeId(MolecularEntityId):
-    pass
-
-
-class ChemicalMixtureId(ChemicalEntityId):
-    pass
-
-
-class NucleicAcidEntityId(MolecularEntityId):
-    pass
-
-
-class RegulatoryRegionId(BiologicalEntityId):
-    pass
-
-
-class AccessibleDnaRegionId(RegulatoryRegionId):
-    pass
-
-
-class TranscriptionFactorBindingSiteId(RegulatoryRegionId):
-    pass
-
-
-class MolecularMixtureId(ChemicalMixtureId):
-    pass
-
-
-class ComplexMolecularMixtureId(ChemicalMixtureId):
-    pass
-
-
-class BiologicalProcessOrActivityId(BiologicalEntityId):
-    pass
-
-
-class MolecularActivityId(BiologicalProcessOrActivityId):
-    pass
-
-
-class BiologicalProcessId(BiologicalProcessOrActivityId):
-    pass
-
-
-class PathwayId(BiologicalProcessId):
-    pass
-
-
-class PhysiologicalProcessId(BiologicalProcessId):
-    pass
-
-
-class BehaviorId(BiologicalProcessId):
-    pass
-
-
-class ProcessedMaterialId(ChemicalMixtureId):
-    pass
-
-
-class DrugId(MolecularMixtureId):
-    pass
-
-
-class EnvironmentalFoodContaminantId(ChemicalEntityId):
-    pass
-
-
-class FoodAdditiveId(ChemicalEntityId):
-    pass
-
-
-class FoodId(ChemicalMixtureId):
-    pass
-
-
-class OrganismAttributeId(AttributeId):
-    pass
-
-
-class PhenotypicQualityId(OrganismAttributeId):
-    pass
-
-
-class GeneticInheritanceId(BiologicalEntityId):
-    pass
-
-
-class OrganismalEntityId(BiologicalEntityId):
-    pass
-
-
-class BacteriumId(OrganismalEntityId):
-    pass
-
-
-class VirusId(OrganismalEntityId):
-    pass
-
-
-class CellularOrganismId(OrganismalEntityId):
-    pass
-
-
-class MammalId(CellularOrganismId):
-    pass
-
-
-class HumanId(MammalId):
-    pass
-
-
-class PlantId(CellularOrganismId):
-    pass
-
-
-class InvertebrateId(CellularOrganismId):
-    pass
-
-
-class VertebrateId(CellularOrganismId):
-    pass
-
-
-class FungusId(CellularOrganismId):
-    pass
-
-
-class LifeStageId(OrganismalEntityId):
-    pass
-
-
-class IndividualOrganismId(OrganismalEntityId):
-    pass
-
-
-class PopulationOfIndividualOrganismsId(OrganismalEntityId):
-    pass
-
-
-class StudyPopulationId(PopulationOfIndividualOrganismsId):
-    pass
-
-
-class DiseaseOrPhenotypicFeatureId(BiologicalEntityId):
-    pass
-
-
-class DiseaseId(DiseaseOrPhenotypicFeatureId):
-    pass
-
-
-class PhenotypicFeatureId(DiseaseOrPhenotypicFeatureId):
-    pass
-
-
-class BehavioralFeatureId(PhenotypicFeatureId):
-    pass
-
-
-class AnatomicalEntityId(OrganismalEntityId):
-    pass
-
-
-class CellularComponentId(AnatomicalEntityId):
-    pass
-
-
-class CellId(AnatomicalEntityId):
-    pass
-
-
-class CellLineId(OrganismalEntityId):
-    pass
-
-
-class GrossAnatomicalStructureId(AnatomicalEntityId):
-    pass
-
-
-class GeneId(BiologicalEntityId):
-    pass
-
-
-class MacromolecularComplexId(BiologicalEntityId):
-    pass
-
-
-class NucleosomeModificationId(BiologicalEntityId):
-    pass
-
-
-class GenomeId(BiologicalEntityId):
-    pass
-
-
-class ExonId(BiologicalEntityId):
-    pass
-
-
-class TranscriptId(BiologicalEntityId):
-    pass
-
-
-class CodingSequenceId(BiologicalEntityId):
-    pass
-
-
-class PolypeptideId(BiologicalEntityId):
-    pass
-
-
-class ProteinId(PolypeptideId):
-    pass
-
-
-class ProteinIsoformId(ProteinId):
-    pass
-
-
-class ProteinDomainId(BiologicalEntityId):
-    pass
-
-
-class PosttranslationalModificationId(BiologicalEntityId):
-    pass
-
-
-class ProteinFamilyId(BiologicalEntityId):
-    pass
-
-
-class NucleicAcidSequenceMotifId(BiologicalEntityId):
-    pass
-
-
-class RNAProductId(TranscriptId):
-    pass
-
-
-class RNAProductIsoformId(RNAProductId):
-    pass
-
-
-class NoncodingRNAProductId(RNAProductId):
-    pass
-
-
-class MicroRNAId(NoncodingRNAProductId):
-    pass
-
-
-class SiRNAId(NoncodingRNAProductId):
-    pass
-
-
-class GeneFamilyId(BiologicalEntityId):
-    pass
-
-
-class ZygosityId(AttributeId):
-    pass
-
-
-class GenotypeId(BiologicalEntityId):
-    pass
-
-
-class HaplotypeId(BiologicalEntityId):
-    pass
-
-
-class SequenceVariantId(BiologicalEntityId):
-    pass
-
-
-class SnvId(SequenceVariantId):
-    pass
-
-
-class ReagentTargetedGeneId(BiologicalEntityId):
-    pass
-
-
-class ClinicalAttributeId(AttributeId):
-    pass
-
-
-class ClinicalMeasurementId(ClinicalAttributeId):
-    pass
-
-
-class ClinicalModifierId(ClinicalAttributeId):
-    pass
-
-
-class ClinicalCourseId(ClinicalAttributeId):
-    pass
-
-
-class OnsetId(ClinicalCourseId):
-    pass
-
-
 class ClinicalEntityId(NamedThingId):
     pass
 
 
-class ClinicalTrialId(ClinicalEntityId):
-    pass
-
-
-class ClinicalInterventionId(ClinicalEntityId):
-    pass
-
-
-class ClinicalFindingId(PhenotypicFeatureId):
-    pass
-
-
-class HospitalizationId(ClinicalInterventionId):
-    pass
-
-
-class SocioeconomicAttributeId(AttributeId):
-    pass
-
-
-class CaseId(IndividualOrganismId):
-    pass
-
-
-class CohortId(StudyPopulationId):
-    pass
-
-
-class ExposureEventId(OntologyClassId):
-    pass
-
-
-class GenomicBackgroundExposureId(AttributeId):
-    pass
-
-
-class PathologicalProcessId(BiologicalProcessId):
-    pass
-
-
-class PathologicalProcessExposureId(AttributeId):
-    pass
-
-
-class PathologicalAnatomicalStructureId(AnatomicalEntityId):
-    pass
-
-
-class PathologicalAnatomicalExposureId(AttributeId):
-    pass
-
-
-class DiseaseOrPhenotypicFeatureExposureId(AttributeId):
-    pass
-
-
-class ChemicalExposureId(AttributeId):
-    pass
-
-
-class ComplexChemicalExposureId(AttributeId):
-    pass
-
-
-class DrugExposureId(ChemicalExposureId):
-    pass
-
-
-class DrugToGeneInteractionExposureId(DrugExposureId):
-    pass
-
-
 class TreatmentId(NamedThingId):
-    pass
-
-
-class BioticExposureId(AttributeId):
-    pass
-
-
-class EnvironmentalExposureId(AttributeId):
-    pass
-
-
-class GeographicExposureId(EnvironmentalExposureId):
-    pass
-
-
-class BehavioralExposureId(AttributeId):
-    pass
-
-
-class SocioeconomicExposureId(AttributeId):
-    pass
-
-
-class AssociationId(EntityId):
     pass
 
 
@@ -1082,23 +534,7 @@ class GeneToGeneAssociationId(AssociationId):
     pass
 
 
-class GeneToGeneHomologyAssociationId(GeneToGeneAssociationId):
-    pass
-
-
 class GeneToGeneFamilyAssociationId(AssociationId):
-    pass
-
-
-class GeneToGeneCoexpressionAssociationId(GeneToGeneAssociationId):
-    pass
-
-
-class PairwiseGeneToGeneInteractionId(GeneToGeneAssociationId):
-    pass
-
-
-class PairwiseMolecularInteractionId(PairwiseGeneToGeneInteractionId):
     pass
 
 
@@ -1110,27 +546,11 @@ class ChemicalToChemicalAssociationId(AssociationId):
     pass
 
 
-class ReactionToParticipantAssociationId(ChemicalToChemicalAssociationId):
-    pass
-
-
-class ReactionToCatalystAssociationId(ReactionToParticipantAssociationId):
-    pass
-
-
-class ChemicalToChemicalDerivationAssociationId(ChemicalToChemicalAssociationId):
-    pass
-
-
 class ChemicalToDiseaseOrPhenotypicFeatureAssociationId(AssociationId):
     pass
 
 
 class ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociationId(AssociationId):
-    pass
-
-
-class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociationId(ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociationId):
     pass
 
 
@@ -1230,35 +650,11 @@ class GeneToDiseaseOrPhenotypicFeatureAssociationId(AssociationId):
     pass
 
 
-class GeneToPhenotypicFeatureAssociationId(GeneToDiseaseOrPhenotypicFeatureAssociationId):
-    pass
-
-
-class GeneToDiseaseAssociationId(GeneToDiseaseOrPhenotypicFeatureAssociationId):
-    pass
-
-
-class CausalGeneToDiseaseAssociationId(GeneToDiseaseAssociationId):
-    pass
-
-
-class CorrelatedGeneToDiseaseAssociationId(GeneToDiseaseAssociationId):
-    pass
-
-
-class DruggableGeneToDiseaseAssociationId(GeneToDiseaseAssociationId):
-    pass
-
-
 class PhenotypicFeatureToDiseaseAssociationId(AssociationId):
     pass
 
 
 class VariantToGeneAssociationId(AssociationId):
-    pass
-
-
-class VariantToGeneExpressionAssociationId(VariantToGeneAssociationId):
     pass
 
 
@@ -1282,22 +678,6 @@ class GenotypeToDiseaseAssociationId(AssociationId):
     pass
 
 
-class GeneAsAModelOfDiseaseAssociationId(GeneToDiseaseAssociationId):
-    pass
-
-
-class VariantAsAModelOfDiseaseAssociationId(VariantToDiseaseAssociationId):
-    pass
-
-
-class GenotypeAsAModelOfDiseaseAssociationId(GenotypeToDiseaseAssociationId):
-    pass
-
-
-class CellLineAsAModelOfDiseaseAssociationId(CellLineToDiseaseOrPhenotypicFeatureAssociationId):
-    pass
-
-
 class OrganismalEntityAsAModelOfDiseaseAssociationId(AssociationId):
     pass
 
@@ -1307,10 +687,6 @@ class OrganismToOrganismAssociationId(AssociationId):
 
 
 class TaxonToTaxonAssociationId(AssociationId):
-    pass
-
-
-class GeneHasVariantThatContributesToDiseaseAssociationId(GeneToDiseaseAssociationId):
     pass
 
 
@@ -1326,27 +702,11 @@ class FunctionalAssociationId(AssociationId):
     pass
 
 
-class MacromolecularMachineToMolecularActivityAssociationId(FunctionalAssociationId):
-    pass
-
-
-class MacromolecularMachineToBiologicalProcessAssociationId(FunctionalAssociationId):
-    pass
-
-
-class MacromolecularMachineToCellularComponentAssociationId(FunctionalAssociationId):
-    pass
-
-
 class MolecularActivityToChemicalEntityAssociationId(AssociationId):
     pass
 
 
 class MolecularActivityToMolecularActivityAssociationId(AssociationId):
-    pass
-
-
-class GeneToGoTermAssociationId(FunctionalAssociationId):
     pass
 
 
@@ -1362,11 +722,339 @@ class SequenceAssociationId(AssociationId):
     pass
 
 
-class GenomicSequenceLocalizationId(SequenceAssociationId):
+class SequenceFeatureRelationshipId(AssociationId):
     pass
 
 
-class SequenceFeatureRelationshipId(AssociationId):
+class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociationId(AssociationId):
+    pass
+
+
+class AnatomicalEntityToAnatomicalEntityAssociationId(AssociationId):
+    pass
+
+
+class OrganismTaxonToOrganismTaxonAssociationId(AssociationId):
+    pass
+
+
+class OrganismTaxonToEnvironmentAssociationId(AssociationId):
+    pass
+
+
+class ChemicalRoleId(AttributeId):
+    pass
+
+
+class BiologicalSexId(AttributeId):
+    pass
+
+
+class SeverityValueId(AttributeId):
+    pass
+
+
+class OrganismAttributeId(AttributeId):
+    pass
+
+
+class ZygosityId(AttributeId):
+    pass
+
+
+class ClinicalAttributeId(AttributeId):
+    pass
+
+
+class SocioeconomicAttributeId(AttributeId):
+    pass
+
+
+class GenomicBackgroundExposureId(AttributeId):
+    pass
+
+
+class PathologicalProcessExposureId(AttributeId):
+    pass
+
+
+class PathologicalAnatomicalExposureId(AttributeId):
+    pass
+
+
+class DiseaseOrPhenotypicFeatureExposureId(AttributeId):
+    pass
+
+
+class ChemicalExposureId(AttributeId):
+    pass
+
+
+class ComplexChemicalExposureId(AttributeId):
+    pass
+
+
+class BioticExposureId(AttributeId):
+    pass
+
+
+class EnvironmentalExposureId(AttributeId):
+    pass
+
+
+class BehavioralExposureId(AttributeId):
+    pass
+
+
+class SocioeconomicExposureId(AttributeId):
+    pass
+
+
+class AgentId(AdministrativeEntityId):
+    pass
+
+
+class StudyResultId(InformationContentEntityId):
+    pass
+
+
+class StudyVariableId(InformationContentEntityId):
+    pass
+
+
+class CommonDataElementId(InformationContentEntityId):
+    pass
+
+
+class DatasetId(InformationContentEntityId):
+    pass
+
+
+class DatasetDistributionId(InformationContentEntityId):
+    pass
+
+
+class DatasetVersionId(InformationContentEntityId):
+    pass
+
+
+class DatasetSummaryId(InformationContentEntityId):
+    pass
+
+
+class ConfidenceLevelId(InformationContentEntityId):
+    pass
+
+
+class EvidenceTypeId(InformationContentEntityId):
+    pass
+
+
+class PublicationId(InformationContentEntityId):
+    pass
+
+
+class RetrievalSourceId(InformationContentEntityId):
+    pass
+
+
+class MaterialSampleId(PhysicalEntityId):
+    pass
+
+
+class StudyId(ActivityId):
+    pass
+
+
+class EnvironmentalProcessId(PlanetaryEntityId):
+    pass
+
+
+class EnvironmentalFeatureId(PlanetaryEntityId):
+    pass
+
+
+class GeographicLocationId(PlanetaryEntityId):
+    pass
+
+
+class RegulatoryRegionId(BiologicalEntityId):
+    pass
+
+
+class BiologicalProcessOrActivityId(BiologicalEntityId):
+    pass
+
+
+class GeneticInheritanceId(BiologicalEntityId):
+    pass
+
+
+class OrganismalEntityId(BiologicalEntityId):
+    pass
+
+
+class DiseaseOrPhenotypicFeatureId(BiologicalEntityId):
+    pass
+
+
+class GeneId(BiologicalEntityId):
+    pass
+
+
+class MacromolecularComplexId(BiologicalEntityId):
+    pass
+
+
+class NucleosomeModificationId(BiologicalEntityId):
+    pass
+
+
+class GenomeId(BiologicalEntityId):
+    pass
+
+
+class ExonId(BiologicalEntityId):
+    pass
+
+
+class TranscriptId(BiologicalEntityId):
+    pass
+
+
+class CodingSequenceId(BiologicalEntityId):
+    pass
+
+
+class PolypeptideId(BiologicalEntityId):
+    pass
+
+
+class ProteinDomainId(BiologicalEntityId):
+    pass
+
+
+class PosttranslationalModificationId(BiologicalEntityId):
+    pass
+
+
+class ProteinFamilyId(BiologicalEntityId):
+    pass
+
+
+class NucleicAcidSequenceMotifId(BiologicalEntityId):
+    pass
+
+
+class GeneFamilyId(BiologicalEntityId):
+    pass
+
+
+class GenotypeId(BiologicalEntityId):
+    pass
+
+
+class HaplotypeId(BiologicalEntityId):
+    pass
+
+
+class SequenceVariantId(BiologicalEntityId):
+    pass
+
+
+class ReagentTargetedGeneId(BiologicalEntityId):
+    pass
+
+
+class MolecularEntityId(ChemicalEntityId):
+    pass
+
+
+class ChemicalMixtureId(ChemicalEntityId):
+    pass
+
+
+class EnvironmentalFoodContaminantId(ChemicalEntityId):
+    pass
+
+
+class FoodAdditiveId(ChemicalEntityId):
+    pass
+
+
+class ClinicalTrialId(ClinicalEntityId):
+    pass
+
+
+class ClinicalInterventionId(ClinicalEntityId):
+    pass
+
+
+class GeneToGeneHomologyAssociationId(GeneToGeneAssociationId):
+    pass
+
+
+class GeneToGeneCoexpressionAssociationId(GeneToGeneAssociationId):
+    pass
+
+
+class PairwiseGeneToGeneInteractionId(GeneToGeneAssociationId):
+    pass
+
+
+class CellLineAsAModelOfDiseaseAssociationId(CellLineToDiseaseOrPhenotypicFeatureAssociationId):
+    pass
+
+
+class ReactionToParticipantAssociationId(ChemicalToChemicalAssociationId):
+    pass
+
+
+class ChemicalToChemicalDerivationAssociationId(ChemicalToChemicalAssociationId):
+    pass
+
+
+class ChemicalOrDrugOrTreatmentSideEffectDiseaseOrPhenotypicFeatureAssociationId(ChemicalOrDrugOrTreatmentToDiseaseOrPhenotypicFeatureAssociationId):
+    pass
+
+
+class GeneToPhenotypicFeatureAssociationId(GeneToDiseaseOrPhenotypicFeatureAssociationId):
+    pass
+
+
+class GeneToDiseaseAssociationId(GeneToDiseaseOrPhenotypicFeatureAssociationId):
+    pass
+
+
+class VariantToGeneExpressionAssociationId(VariantToGeneAssociationId):
+    pass
+
+
+class VariantAsAModelOfDiseaseAssociationId(VariantToDiseaseAssociationId):
+    pass
+
+
+class GenotypeAsAModelOfDiseaseAssociationId(GenotypeToDiseaseAssociationId):
+    pass
+
+
+class MacromolecularMachineToMolecularActivityAssociationId(FunctionalAssociationId):
+    pass
+
+
+class MacromolecularMachineToBiologicalProcessAssociationId(FunctionalAssociationId):
+    pass
+
+
+class MacromolecularMachineToCellularComponentAssociationId(FunctionalAssociationId):
+    pass
+
+
+class GeneToGoTermAssociationId(FunctionalAssociationId):
+    pass
+
+
+class GenomicSequenceLocalizationId(SequenceAssociationId):
     pass
 
 
@@ -1382,23 +1070,11 @@ class ExonToTranscriptRelationshipId(SequenceFeatureRelationshipId):
     pass
 
 
-class ChemicalEntityOrGeneOrGeneProductRegulatesGeneAssociationId(AssociationId):
-    pass
-
-
-class AnatomicalEntityToAnatomicalEntityAssociationId(AssociationId):
-    pass
-
-
 class AnatomicalEntityToAnatomicalEntityPartOfAssociationId(AnatomicalEntityToAnatomicalEntityAssociationId):
     pass
 
 
 class AnatomicalEntityToAnatomicalEntityOntogenicAssociationId(AnatomicalEntityToAnatomicalEntityAssociationId):
-    pass
-
-
-class OrganismTaxonToOrganismTaxonAssociationId(AssociationId):
     pass
 
 
@@ -1410,7 +1086,331 @@ class OrganismTaxonToOrganismTaxonInteractionId(OrganismTaxonToOrganismTaxonAsso
     pass
 
 
-class OrganismTaxonToEnvironmentAssociationId(AssociationId):
+class PhenotypicSexId(BiologicalSexId):
+    pass
+
+
+class GenotypicSexId(BiologicalSexId):
+    pass
+
+
+class PhenotypicQualityId(OrganismAttributeId):
+    pass
+
+
+class ClinicalMeasurementId(ClinicalAttributeId):
+    pass
+
+
+class ClinicalModifierId(ClinicalAttributeId):
+    pass
+
+
+class ClinicalCourseId(ClinicalAttributeId):
+    pass
+
+
+class DrugExposureId(ChemicalExposureId):
+    pass
+
+
+class GeographicExposureId(EnvironmentalExposureId):
+    pass
+
+
+class ConceptCountAnalysisResultId(StudyResultId):
+    pass
+
+
+class ObservedExpectedFrequencyAnalysisResultId(StudyResultId):
+    pass
+
+
+class RelativeFrequencyAnalysisResultId(StudyResultId):
+    pass
+
+
+class TextMiningResultId(StudyResultId):
+    pass
+
+
+class ChiSquaredAnalysisResultId(StudyResultId):
+    pass
+
+
+class LogOddsAnalysisResultId(StudyResultId):
+    pass
+
+
+class BookId(PublicationId):
+    pass
+
+
+class BookChapterId(PublicationId):
+    pass
+
+
+class SerialId(PublicationId):
+    pass
+
+
+class ArticleId(PublicationId):
+    pass
+
+
+class PatentId(PublicationId):
+    pass
+
+
+class WebPageId(PublicationId):
+    pass
+
+
+class PreprintPublicationId(PublicationId):
+    pass
+
+
+class DrugLabelId(PublicationId):
+    pass
+
+
+class GeographicLocationAtTimeId(GeographicLocationId):
+    pass
+
+
+class AccessibleDnaRegionId(RegulatoryRegionId):
+    pass
+
+
+class TranscriptionFactorBindingSiteId(RegulatoryRegionId):
+    pass
+
+
+class MolecularActivityId(BiologicalProcessOrActivityId):
+    pass
+
+
+class BiologicalProcessId(BiologicalProcessOrActivityId):
+    pass
+
+
+class BacteriumId(OrganismalEntityId):
+    pass
+
+
+class VirusId(OrganismalEntityId):
+    pass
+
+
+class CellularOrganismId(OrganismalEntityId):
+    pass
+
+
+class LifeStageId(OrganismalEntityId):
+    pass
+
+
+class IndividualOrganismId(OrganismalEntityId):
+    pass
+
+
+class PopulationOfIndividualOrganismsId(OrganismalEntityId):
+    pass
+
+
+class AnatomicalEntityId(OrganismalEntityId):
+    pass
+
+
+class CellLineId(OrganismalEntityId):
+    pass
+
+
+class DiseaseId(DiseaseOrPhenotypicFeatureId):
+    pass
+
+
+class PhenotypicFeatureId(DiseaseOrPhenotypicFeatureId):
+    pass
+
+
+class RNAProductId(TranscriptId):
+    pass
+
+
+class ProteinId(PolypeptideId):
+    pass
+
+
+class SnvId(SequenceVariantId):
+    pass
+
+
+class SmallMoleculeId(MolecularEntityId):
+    pass
+
+
+class NucleicAcidEntityId(MolecularEntityId):
+    pass
+
+
+class MolecularMixtureId(ChemicalMixtureId):
+    pass
+
+
+class ComplexMolecularMixtureId(ChemicalMixtureId):
+    pass
+
+
+class ProcessedMaterialId(ChemicalMixtureId):
+    pass
+
+
+class FoodId(ChemicalMixtureId):
+    pass
+
+
+class HospitalizationId(ClinicalInterventionId):
+    pass
+
+
+class PairwiseMolecularInteractionId(PairwiseGeneToGeneInteractionId):
+    pass
+
+
+class ReactionToCatalystAssociationId(ReactionToParticipantAssociationId):
+    pass
+
+
+class CausalGeneToDiseaseAssociationId(GeneToDiseaseAssociationId):
+    pass
+
+
+class CorrelatedGeneToDiseaseAssociationId(GeneToDiseaseAssociationId):
+    pass
+
+
+class DruggableGeneToDiseaseAssociationId(GeneToDiseaseAssociationId):
+    pass
+
+
+class GeneAsAModelOfDiseaseAssociationId(GeneToDiseaseAssociationId):
+    pass
+
+
+class GeneHasVariantThatContributesToDiseaseAssociationId(GeneToDiseaseAssociationId):
+    pass
+
+
+class OnsetId(ClinicalCourseId):
+    pass
+
+
+class DrugToGeneInteractionExposureId(DrugExposureId):
+    pass
+
+
+class JournalArticleId(ArticleId):
+    pass
+
+
+class PathwayId(BiologicalProcessId):
+    pass
+
+
+class PhysiologicalProcessId(BiologicalProcessId):
+    pass
+
+
+class BehaviorId(BiologicalProcessId):
+    pass
+
+
+class PathologicalProcessId(BiologicalProcessId):
+    pass
+
+
+class MammalId(CellularOrganismId):
+    pass
+
+
+class PlantId(CellularOrganismId):
+    pass
+
+
+class InvertebrateId(CellularOrganismId):
+    pass
+
+
+class VertebrateId(CellularOrganismId):
+    pass
+
+
+class FungusId(CellularOrganismId):
+    pass
+
+
+class CaseId(IndividualOrganismId):
+    pass
+
+
+class StudyPopulationId(PopulationOfIndividualOrganismsId):
+    pass
+
+
+class CellularComponentId(AnatomicalEntityId):
+    pass
+
+
+class CellId(AnatomicalEntityId):
+    pass
+
+
+class GrossAnatomicalStructureId(AnatomicalEntityId):
+    pass
+
+
+class PathologicalAnatomicalStructureId(AnatomicalEntityId):
+    pass
+
+
+class BehavioralFeatureId(PhenotypicFeatureId):
+    pass
+
+
+class ClinicalFindingId(PhenotypicFeatureId):
+    pass
+
+
+class RNAProductIsoformId(RNAProductId):
+    pass
+
+
+class NoncodingRNAProductId(RNAProductId):
+    pass
+
+
+class ProteinIsoformId(ProteinId):
+    pass
+
+
+class DrugId(MolecularMixtureId):
+    pass
+
+
+class HumanId(MammalId):
+    pass
+
+
+class CohortId(StudyPopulationId):
+    pass
+
+
+class MicroRNAId(NoncodingRNAProductId):
+    pass
+
+
+class SiRNAId(NoncodingRNAProductId):
     pass
 
 

@@ -44,6 +44,13 @@ json_schema_types: dict[str, tuple[str, str | None]] = {
     "xsddate": ("string", "date"),
     "xsddatetime": ("string", "date-time"),
     "xsdtime": ("string", "time"),
+    "uri": ("string", "uri"),
+}
+
+# Patterns implied by the Python base type in linkml-runtime.
+# These are used as fallbacks when the type definition itself has no ``pattern``.
+_base_implied_patterns: dict[str, str] = {
+    "ncname": r"^[a-zA-Z_][\w.-]*$",
 }
 
 
@@ -310,9 +317,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def handle_class(self, cls: ClassDefinition) -> None:
         cls = self.before_generate_class(cls, self.schemaview)
 
-        if cls.mixin or cls.abstract:
-            return
-
         subschema_type = "object"
         additional_properties = False
         if self.is_class_unconstrained(cls):
@@ -439,9 +443,21 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         if cls.none_of is not None and len(cls.none_of) > 0:
             subschema["not"] = {
-                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.any_of]
+                "anyOf": [self.get_subschema_for_anonymous_class(c, properties_required) for c in cls.none_of]
             }
 
+        if cls.is_a is not None:
+            # `is_a: <C>` is used in the context of an AnonymousClassExpression to include a constraint
+            # that instances of the expression must be instances of class <C>.
+            if "allOf" not in subschema:
+                subschema["allOf"] = []
+            inst_of_expr = self.get_subschema_for_slot(AnonymousSlotExpression(range=cls.is_a))
+            if inst_of_expr:
+                subschema["allOf"].append(inst_of_expr)
+
+        # simplify subschemas that are simply conjunctions of a single condition
+        if "allOf" in subschema and len(subschema) == 1 and len(subschema["allOf"]) == 1:
+            subschema = subschema["allOf"][0]
         return subschema
 
     def handle_enum(self, enum: EnumDefinition) -> None:
@@ -523,7 +539,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if slot.range in self.schemaview.all_types().keys():
             # types take lower priority
             schema_type = self.schemaview.induced_type(slot.range)
-            constraints.add_keyword("pattern", schema_type.pattern)
+            pattern = schema_type.pattern
+            if pattern is None and schema_type.base:
+                pattern = _base_implied_patterns.get(schema_type.base.lower())
+            constraints.add_keyword("pattern", pattern)
             constraints.add_keyword("minimum", schema_type.minimum_value)
             constraints.add_keyword("maximum", schema_type.maximum_value)
             constraints.add_keyword("const", schema_type.equals_string)
@@ -535,12 +554,21 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         constraints.add_keyword("const", slot.equals_number)
         if slot.equals_string_in:
             constraints.add_keyword("enum", slot.equals_string_in)
+
+        if slot.range_expression:
+            subschema = self.get_subschema_for_anonymous_class(slot.range_expression)
+            if subschema:
+                if "allOf" not in constraints:
+                    constraints["allOf"] = []
+                constraints["allOf"].append(subschema)
+
         # Handle subproperty_of constraint - generates enum from slot hierarchy
         # Only SlotDefinition has subproperty_of, not AnonymousSlotExpression
         if self.expand_subproperty_of and isinstance(slot, SlotDefinition) and slot.subproperty_of:
             subproperty_values = get_subproperty_values(self.schemaview, slot)
             if subproperty_values:
                 constraints.add_keyword("enum", subproperty_values)
+
         return constraints
 
     def get_subschema_for_slot(

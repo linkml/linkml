@@ -17,6 +17,8 @@ from linkml.generators.shaclgen import ShaclGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
+from linkml.generators.sqlvalidationgen import SQLValidationGenerator
+from linkml.generators.typedbgen import TypeDBGenerator
 
 __all__ = [
     "csvgen",
@@ -39,6 +41,7 @@ __all__ = [
     "shaclgen",
     "sssomgen",
     "summarygen",
+    "typedbgen",
     "yamlgen",
     "OwlSchemaGenerator",
     "PydanticGenerator",
@@ -54,7 +57,9 @@ __all__ = [
     "ShExGenerator",
     "SQLAlchemyGenerator",
     "SQLTableGenerator",
+    "SQLValidationGenerator",
     "RDFGenerator",
+    "TypeDBGenerator",
 ]
 
 # TODO: deprecate usage of these

@@ -4,21 +4,35 @@ from linkml_runtime.linkml_model import (
     EnumDefinitionName,
     SlotDefinition,
 )
+from linkml_runtime.utils.namespaces import META_URI
 
 
 class PythonIfAbsentProcessor(IfAbsentProcessor):
-    UNIMPLEMENTED_DEFAULT_VALUES = ["class_curie", "class_uri", "slot_uri", "slot_curie", "default_range"]
+    # When generating meta.py from meta.yaml, these ifabsent directives must not be
+    # baked in as dataclass-level defaults: instances of SlotDefinition/ClassDefinition
+    # represent user-schema elements, so a static default would cross-contaminate every
+    # user instance with the metamodel's own values (e.g. every user slot would carry
+    # range="string" and slot_uri="linkml:slot_uri"). SchemaView.induced_slot() resolves
+    # these at runtime. For non-metamodel schemas, baking remains correct because the
+    # generated class corresponds 1:1 with a concrete user class.
+    # TODO: replace with __post_init__ resolution per https://github.com/linkml/linkml/issues/2522.
+    _METAMODEL_RUNTIME_COMPUTED_IFABSENT = (
+        "default_range",
+        "class_curie",
+        "slot_curie",
+        "class_uri",
+        "slot_uri",
+    )
 
-    def map_custom_default_values(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition) -> (bool, str):
+    def map_custom_default_values(
+        self, default_value: str, slot: SlotDefinition, cls: ClassDefinition
+    ) -> tuple[bool, str | None]:
         if default_value in self.UNIMPLEMENTED_DEFAULT_VALUES:
-            return True, None
-
-        if default_value == "bnode":
-            return True, "bnode()"
-
-        if default_value == "default_ns":
             # default_ns depends on self.id at runtime, so no static default is possible.
             # The actual initialization is handled in __post_init__ by pythongen's gen_postinit().
+            return True, None
+
+        if default_value in self._METAMODEL_RUNTIME_COMPUTED_IFABSENT and self.schema_view.schema.id == META_URI:
             return True, None
 
         return False, None
@@ -64,12 +78,25 @@ class PythonIfAbsentProcessor(IfAbsentProcessor):
         return f"datetime({int(year)}, {int(month)}, {int(day)}, {int(hour)}, {int(minutes)}, {int(seconds)})"
 
     def map_uri_or_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
-        return self._uri_for(default_value)
+        if default_value in self.URI_SPECIAL_CASES:
+            return self._map_uri_special_case(default_value, slot, cls)
+        elif default_value in self.CURIE_SPECIAL_CASES:
+            return self._map_curie_special_case(default_value, slot, cls)
+        else:
+            return self._uri_for(default_value)
 
     def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        if default_value in self.CURIE_SPECIAL_CASES:
+            return self._map_curie_special_case(default_value, slot, cls)
+        elif default_value in self.URI_SPECIAL_CASES:
+            return None
         return self._uri_for(default_value)
 
     def map_uri_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
+        if default_value in self.URI_SPECIAL_CASES:
+            return self._map_uri_special_case(default_value, slot, cls)
+        elif default_value in self.CURIE_SPECIAL_CASES:
+            return None
         return self._uri_for(default_value)
 
     def map_enum_default_value(

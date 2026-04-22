@@ -1,8 +1,11 @@
 import pytest
 import rdflib
-from rdflib import Graph
+from rdflib import Graph, URIRef
 
+from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.rdfgen import RDFGenerator
+
+pytestmark = pytest.mark.xdist_group("rdfgen")
 
 schema = """
 id: http://example.org/interval
@@ -50,7 +53,6 @@ JSONLD = """
 }"""
 
 
-@pytest.mark.network
 def test_annotation_extensions():
     """Test that annotation extensions are properly serialized"""
     s = RDFGenerator(schema, mergeimports=False).serialize()
@@ -75,7 +77,17 @@ def test_annotation_extensions():
     # Check each annotation for the required properties
     for example, tag in results:
         assert isinstance(example, rdflib.Literal)
-        assert isinstance(tag, rdflib.URIRef)
+        assert isinstance(tag, rdflib.URIRef | rdflib.Literal)
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_rdf(input_path):
+    generated_rdf = RDFGenerator(input_path("linkml_issue_388.yaml")).serialize(context=[METAMODEL_CONTEXT_URI])
+    rdf_graph = Graph()
+    rdf_graph.parse(data=generated_rdf, format="turtle")
+
+    for slot in ("c1__a", "c2__a", "c3__a"):
+        assert len(list(rdf_graph.triples((URIRef(f"https://example.org/this/{slot}"), None, None)))) > 0
 
 
 @pytest.mark.skip("TODO")

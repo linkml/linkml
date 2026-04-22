@@ -186,6 +186,34 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "http://www.w3.org/2004/02/skos/core#altLabel",
         after="aliases",
     )
+
+    # test unit rendering on a slot (regression for https://github.com/linkml/linkml/issues/3314).
+    # A `unit` metamodel slot is a UnitOfMeasure object, not a URI, and must render as a
+    # property/value table of its populated fields.
+    assert_mdfile_contains(tmp_path / "age_in_years.md", "**Unit:**")
+    assert_mdfile_contains(
+        tmp_path / "age_in_years.md",
+        "| Property | Value |",
+        after="**Unit:**",
+        followed_by=[
+            "| --- | --- |",
+            "| symbol | yr |",
+            "| ucum_code | a |",
+            "| has_quantity_kind | [qudt:Time](http://qudt.org/vocab/quantitykind/Time) |",
+        ],
+    )
+
+    # test unit rendering on a type (same regression, different template)
+    assert_mdfile_contains(tmp_path / "AgeInYearsType.md", "**Unit:**")
+    assert_mdfile_contains(
+        tmp_path / "AgeInYearsType.md",
+        "| Property | Value |",
+        after="**Unit:**",
+        followed_by=["| --- | --- |", "| symbol | yr |", "| ucum_code | a |"],
+    )
+
+    # slots without a unit must not emit a unit table
+    assert_mdfile_does_not_contain(tmp_path / "aliases.md", "**Unit:**")
     # test index docs
     assert_mdfile_contains(
         tmp_path / "index.md",
@@ -730,6 +758,7 @@ def test_docgen_rank_ordering(kitchen_sink_path, tmp_path):
     )
 
 
+@pytest.mark.slow
 def test_gen_metamodel(tmp_path):
     """Tests generation of docs for metamodel"""
     metamodel_sv = package_schemaview("linkml_runtime.linkml_model.meta")

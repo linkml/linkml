@@ -733,18 +733,22 @@ class ReferenceValidator:
     def normalize_object(self, input_object: dict, target: ClassDefinition, report: Report) -> dict:
         if not isinstance(input_object, dict):
             raise AssertionError(f"Cannot normalize: expected dict, got {type(input_object)} for {input_object}")
+        if target.class_uri == "linkml:Any":
+            # Nothing to normalize against, take the input as it is
+            return input_object
         output_object = {}
         # Induced slot
         for slot in target.attributes.values():
             # TODO: required slots MUST be present UNLESS this is a CompactDict
-            if slot.required and slot.alias not in input_object and not (slot.identifier or slot.key):
+            slot_key = slot.alias or slot.name
+            if slot.required and slot_key not in input_object and not (slot.identifier or slot.key):
                 report.add_problem(
                     ConstraintType.RequiredConstraint,
                     slot.name,
                     input_object,
                     predicate=target.name,
                 )
-            if slot.recommended and slot.alias not in input_object and not (slot.identifier or slot.key):
+            if slot.recommended and slot_key not in input_object and not (slot.identifier or slot.key):
                 report.add_problem(
                     ConstraintType.RecommendedConstraint,
                     slot.name,

@@ -1,6 +1,6 @@
 # How to make a property graph schema
 
-LinkML is intended to be a flexible, general purpose "[polyglot](https://github.com/json-ld/yaml-ld/issues/19)" data modeling framework. You can use it with JSON documents and document databases like MongoDB, with tables and data frames, or with graph or RDF databases, and more. See [How to recognize and work with different structural forms](recognize-structural-forms.md) for more details.
+LinkML is intended to be a flexible, general purpose "[polyglot](https://github.com/w3c/yaml-ld/issues/19)" data modeling framework. You can use it with JSON documents and document databases like MongoDB, with tables and data frames, or with graph or RDF databases, and more. See [How to recognize and work with different structural forms](recognize-structural-forms.md) for more details.
 
 A lot of the LinkML documentation uses JSON/YAML as examples, as these are flexible commonly used syntaxes for exchanging data, but many of the original use cases for LinkML came from [graph modeling](https://biolink.github.io/biolink-model/), and this continues to be a driving use case.
 

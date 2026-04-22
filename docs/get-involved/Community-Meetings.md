@@ -10,7 +10,7 @@ Join the LinkML community for regular sessions featuring presentations on LinkML
 [Sarah Gehrke](https://tislab.org/members/sarah-gehrke.html), University of North Carolina at Chapel Hill <br>
 
 ## What to present at a Community meeting?
-Contact Sarah Gehrke on [Slack](https://join.slack.com/t/obo-communitygroup/shared_invite/zt-1oq48ttk7-kKo0i6TwntYtAq~Jcjjg4g) and they can help get you on the schedule!
+Contact Sarah Gehrke on Slack and they can help get you on the schedule!
 
 ## Helpful links
 - [Community Meeting Agenda](https://docs.google.com/document/d/1MStpDyh9LOZYJTjLtnpOsNYc3HaeU-bz0CHAI9xOjfQ/edit?tab=t.0#heading=h.6sqkx1xhumse): In this document you can find the zoom link to join the monthly call as well as recordings of previous sessions.
@@ -20,8 +20,10 @@ Contact Sarah Gehrke on [Slack](https://join.slack.com/t/obo-communitygroup/shar
 
 | Date | Presenter 1	| Topic 1	| Presenter 2	| Topic 2 |
 | :---: | :---: | :---: | :----: | :---: |
-| March 19, 2026 | Chris Mungall | [Term validator](https://github.com/linkml/linkml-term-validator) and [Valuesets](https://github.com/linkml/valuesets) |  |  |
-| February 19, 2026 | David Linke | [linkml-project-copier](https://github.com/linkml/linkml-project-copier) template | Nico Matentzoglu | [LinkML Community AI Covenant](https://github.com/linkml/linkml/blob/main/AI_COVENANT.md) |
+| May 21, 2026 | Inge Vejsbjerg | [LinkML for AI Governance at IBM](https://ibm.github.io/ai-atlas-nexus/) |Sierra Moxon|LinkML Microschemas| |
+| April 19, 2026 | Daniel Kapitan| [LinkML in Hospital ETL pipelines](https://github.com/linkml/linkml/pull/3257#issuecomment-4055029669)| Community Discussion Topics| | |
+| [March 19, 2026](https://docs.google.com/presentation/d/13gQtrlTJcF3V8XzW4ruva9_D1tzyp8ZzDLATp2TuuMY/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Damien Goutte-Gattat | [linkml-java](https://github.com/gouttegd/linkml-java): a LinkML runtime library for the Java language ([Slides](https://drive.google.com/file/d/1-hXJo9FFmIvpERrKNJjb_-tTO_6354cM/view?usp=sharing))| Chris Mungall| Validating dynamic value sets with [linkml-term-validator](https://github.com/linkml/linkml-term-validator) ([Slides](https://docs.google.com/presentation/d/1lhdDImxBQDaj8yFgpRYF_pnCTNDVn3Ilkb_pHfoR7Po/edit?slide=id.p#slide=id.p))|
+| [February 19, 2026](https://docs.google.com/presentation/d/1Wa_vX8JhLeA_5b7dsRDDoWAA7uTG9fsiH0nMYjxjSz0/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | David Linke | [The new LinkML project template based on copier and why we built it](https://zenodo.org/records/18704589) <br> Repo: [linkml-project-copier](https://github.com/linkml/linkml-project-copier) | Nico Matentzoglu | [The LinkML Community Governance & Community Discussion](https://drive.google.com/file/d/1s2Fslc2pN6ig2-TDkdtzjtBKa5z1oFqC/view?usp=sharing) |
 | [January 15, 2026](https://docs.google.com/presentation/d/1ed5P1BsAylCiifEw6ATHmnNY24j91mViK62oZKcVYyo/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Adam Graefe | [LinkML in Rare Diseases: Ontology-Based Interoperability for Clinical Registries and Analysis](https://docs.google.com/presentation/d/1Zeme_WzQOMyyMjHkx5UIkvZMyTIzDVHy/edit?usp=sharing&ouid=113016219988110049925&rtpof=true&sd=true) | Community Discussion Topics | Markdown-data-dictionary generator with Vlad Korolev |
 | | **--- 2025 ---** | | | |
 | [November 20, 2025](https://docs.google.com/presentation/d/1WL35y7Ok4IgTMylOvvKPi1CoVDeYEsJUAUDExx3foJA/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)	| Sigfried Gold	| Interactive Visualization of a LinkML Schema: The BioData Catalyst Harmonized Model Explorer |	Sierra Moxon	| From spreadsheet to validated data entry: Vibe coding LinkML Schema and GH Pages Data Harmonizer Instance |

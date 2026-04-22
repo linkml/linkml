@@ -90,6 +90,7 @@ LEGO = CurieNamespace('lego', 'http://geneontology.org/lego/')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 PAV = CurieNamespace('pav', 'http://purl.org/pav/')
 PROV = CurieNamespace('prov', 'http://www.w3.org/ns/prov#')
+QUDT = CurieNamespace('qudt', 'http://qudt.org/vocab/quantitykind/')
 SCHEMA = CurieNamespace('schema', 'http://schema.org/')
 SKOS = CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#')
 XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
@@ -128,18 +129,6 @@ class ConceptId(extended_str):
     pass
 
 
-class DiagnosisConceptId(ConceptId):
-    pass
-
-
-class ProcedureConceptId(ConceptId):
-    pass
-
-
-class CompanyId(OrganizationId):
-    pass
-
-
 class CodeSystemId(extended_str):
     pass
 
@@ -149,6 +138,18 @@ class ActivityId(extended_str):
 
 
 class AgentId(extended_str):
+    pass
+
+
+class CompanyId(OrganizationId):
+    pass
+
+
+class DiagnosisConceptId(ConceptId):
+    pass
+
+
+class ProcedureConceptId(ConceptId):
     pass
 
 
