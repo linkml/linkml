@@ -279,6 +279,16 @@ DEPRECATIONS = (
         recommendation="Use `from linkml_runtime.utils.schema_builder import SchemaBuilder` instead.",
         issue=2372,
     ),
+    Deprecation(
+        name="lint-validate-flag",
+        deprecated_in=SemVer.from_str("1.11.0"),
+        removed_in=SemVer.from_str("1.13.0"),
+        message=(
+            "The --validate flag for linkml-lint is deprecated. Metamodel validation now always runs before linting."
+        ),
+        recommendation="Remove the --validate flag from your command. Metamodel validation is now automatic.",
+        issue=3259,
+    ),
 )  # type: tuple[Deprecation, ...]
 
 EMITTED = set()  # type: set[str]
