@@ -6,9 +6,17 @@ import jsonschema
 from jsonschema.protocols import Validator
 
 from linkml.generators import JsonSchemaGenerator, PydanticGenerator
+from linkml.generators.jsonschemagen import JsonSchema
 from linkml.utils.datautils import infer_root_class
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
+
+# Module-level cache:
+## Stores full JsonSchema dict (including $defs) from the first generation.
+## The cache is keyed by (schema id, closed, include_range_class_descendants).
+## Using schema id is safe, because ValidationContext has a strong schema
+## reference, during its instance lifetime.
+_json_schema_cache: dict[tuple, JsonSchema] = {}
 
 
 class ValidationContext:
@@ -42,14 +50,33 @@ class ValidationContext:
                 json_schema = json.load(json_schema_file)
         else:
             not_closed = not closed
-            jsonschema_gen = JsonSchemaGenerator(
-                schema=self._schema,
-                mergeimports=True,
-                top_class=self._target_class,
-                not_closed=not_closed,
-                include_range_class_descendants=include_range_class_descendants,
-            )
-            json_schema = jsonschema_gen.generate()
+            cache_key = (id(self._schema), closed, include_range_class_descendants)
+
+            if cache_key not in _json_schema_cache:
+                # First call: generate and cache entire schema (full generation cost)
+                jsonschema_gen = JsonSchemaGenerator(
+                    schema=self._schema,
+                    mergeimports=True,
+                    top_class=self._target_class,
+                    not_closed=not_closed,
+                    include_range_class_descendants=include_range_class_descendants,
+                )
+                json_schema = jsonschema_gen.generate()
+                _json_schema_cache[cache_key] = json_schema
+            else:
+                # Subsequent calls: reuse cached $defs, re-root to new class.
+                # Uses a minimal wrapper with a $ref pointing to cached $defs.
+                # Each $defs entry has their own 'properties', 'required', etc,
+                # so delegating via `$ref` preserves the validation behaviour.
+                cached = _json_schema_cache[cache_key]
+                json_schema = JsonSchema(
+                    {
+                        "$schema": cached.get("$schema"),
+                        "$id": cached.get("$id"),
+                        "$defs": cached["$defs"],
+                        "$ref": f"#/$defs/{self._target_class}",
+                    }
+                )
 
         validator_cls = jsonschema.validators.validator_for(json_schema, default=jsonschema.Draft7Validator)
         return validator_cls(json_schema, format_checker=validator_cls.FORMAT_CHECKER)
