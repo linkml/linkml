@@ -92,7 +92,8 @@ class JsonSchema(dict):
                 self._lax_forward_refs[canonical_name] = identifier_name
             else:
                 lax_cls = deepcopy(self["$defs"][canonical_name])
-                lax_cls["required"].remove(identifier_name)
+                if "required" in lax_cls and identifier_name in lax_cls["required"]:
+                    lax_cls["required"].remove(identifier_name)
                 self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
 
     def add_property(

@@ -147,7 +147,7 @@ New tests in any directory should be written using pytest.
 
 ## Code formatting and linting
 
-This repository is configured to use [Ruff](https://beta.ruff.rs/docs/) to ensure good formatting and code quality standards.
+This repository is configured to use [Ruff](https://docs.astral.sh/ruff/) to ensure good formatting and code quality standards.
 
 Each of these tools can be run on-demand via `tox`. To check the code for issues run:
 
