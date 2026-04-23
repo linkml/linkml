@@ -406,7 +406,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">cast</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlparse</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">values</span>
@@ -445,7 +445,7 @@
         <span class="n">base_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">namespaces</span><span class="p">:</span> <span class="n">Namespaces</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">useuris</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">importmap</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">importmap</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mergeimports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">metadata</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -459,7 +459,9 @@
 <span class="sd">        :param base_dir: base directory or URL where Schema came from</span>
 <span class="sd">        :param namespaces: namespaces collector</span>
 <span class="sd">        :param useuris: True means class_uri and slot_uri are identifiers.  False means they are mappings.</span>
-<span class="sd">        :param importmap: A map from import entries to URI or file name.</span>
+<span class="sd">        :param importmap: A map from import entries to URI, file name, or an</span>
+<span class="sd">            in-memory schema dict. Dict values are loaded directly without</span>
+<span class="sd">            source-file metadata derivation.</span>
 <span class="sd">        :param logger: Target Logger, if any</span>
 <span class="sd">        :param mergeimports: True means combine imports into single package. False means separate packages</span>
 <span class="sd">        :param emit_metadata: True means include source file, size and date</span>
@@ -499,6 +501,25 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">emit_metadata</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_string_import</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapped</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;str | dict[str, Any]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Expand CURIEs and re-apply the importmap to a string import target.</span>
+
+<span class="sd">        Returns either a normalized string path/URI, or a dict if the second</span>
+<span class="sd">        importmap lookup chains into an in-memory schema entry.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Skip CURIE expansion if we already have a local file name with drive letter (windows)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitdrive</span><span class="p">(</span><span class="n">mapped</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">mapped</span><span class="p">:</span>
+            <span class="n">toks</span> <span class="o">=</span> <span class="n">mapped</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">pfx</span> <span class="o">=</span> <span class="n">toks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pfx_target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pfx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pfx_target</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="c1"># Map prefix to a folder/directory</span>
+                <span class="n">mapped</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pfx_target</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">toks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mapped</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">mapped</span><span class="p">))</span>
+        <span class="c1"># Second lookup: importmap may also key by URI or expanded form</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mapped</span><span class="p">,</span> <span class="n">mapped</span><span class="p">)</span>
+
 <div class="viewcode-block" id="SchemaLoader.resolve">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.schemaloader.SchemaLoader.resolve">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SchemaDefinition</span><span class="p">:</span>
@@ -522,25 +543,29 @@
 
         <span class="c1"># Process imports</span>
         <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">imports</span><span class="p">:</span>
-            <span class="n">sname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">imp</span><span class="p">),</span> <span class="n">imp</span><span class="p">)</span>  <span class="c1"># Import map may use CURIE</span>
-            <span class="c1"># substitute CURIE only if we don&#39;t have a local file name with drive letter (windows)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitdrive</span><span class="p">(</span><span class="n">sname</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">sname</span><span class="p">:</span>
-                    <span class="c1"># allow mapping of a prefix to a folder/directory</span>
-                    <span class="n">toks</span> <span class="o">=</span> <span class="n">sname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-                    <span class="n">pfx</span> <span class="o">=</span> <span class="n">toks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">pfx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">:</span>
-                        <span class="n">sname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">[</span><span class="n">pfx</span><span class="p">],</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">toks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">sname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">sname</span><span class="p">)</span>
-            <span class="n">sname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sname</span><span class="p">),</span> <span class="n">sname</span><span class="p">)</span>  <span class="c1"># It may also use URI or other forms</span>
-            <span class="n">import_schemadefinition</span> <span class="o">=</span> <span class="n">load_raw_schema</span><span class="p">(</span>
-                <span class="n">sname</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">,</span>
-                <span class="n">base_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
-                <span class="n">merge_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_modules</span><span class="p">,</span>
-                <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">loaded_schema</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sname</span><span class="p">),</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="n">mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">imp</span><span class="p">),</span> <span class="n">imp</span><span class="p">)</span>  <span class="c1"># Import map may use CURIE</span>
+            <span class="c1"># Path/CURIE manipulation only applies to string values; dict values are</span>
+            <span class="c1"># in-memory schemas passed straight to the raw loader.</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapped</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">mapped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_string_import</span><span class="p">(</span><span class="n">mapped</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mapped</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># In-memory schemas have no source file; skip metadata derivation</span>
+                <span class="c1"># so we don&#39;t overwrite any fields the caller set on the dict.</span>
+                <span class="n">import_schemadefinition</span> <span class="o">=</span> <span class="n">load_raw_schema</span><span class="p">(</span>
+                    <span class="n">mapped</span><span class="p">,</span>
+                    <span class="n">merge_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_modules</span><span class="p">,</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">loaded_schema</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">imp</span><span class="p">),</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">import_schemadefinition</span> <span class="o">=</span> <span class="n">load_raw_schema</span><span class="p">(</span>
+                    <span class="n">mapped</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span><span class="p">,</span>
+                    <span class="n">base_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">source_file</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
+                    <span class="n">merge_modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">merge_modules</span><span class="p">,</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">loaded_schema</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mapped</span><span class="p">),</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">:</span>
                 <span class="c1"># If we&#39;ve already loaded this, make sure that we&#39;ve got the same version</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="p">[</span><span class="n">import_schemadefinition</span><span class="o">.</span><span class="n">id</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">loaded_schema</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
