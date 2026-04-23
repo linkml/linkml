@@ -407,8 +407,37 @@
         <article role="main" id="furo-main-content">
           <section id="linkml-lint-cli">
 <h1><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code><a class="headerlink" href="#linkml-lint-cli" title="Link to this heading">¶</a></h1>
+<p>Validate a LinkML schema against the metamodel and check it against
+configurable quality rules.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>lint<span class="w"> </span>schema.yaml
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code> runs two levels of checking:</p>
+<ol class="arabic simple">
+<li><p><strong>Metamodel validation</strong> — verifies the schema conforms to the LinkML
+metamodel (required fields, valid types, URI format, NCName constraints).
+This always runs and cannot be disabled.</p></li>
+<li><p><strong>Quality rules</strong> — checks best practices like naming conventions,
+recommended fields, canonical prefixes, and tree root classes. These are
+configurable via a <code class="docutils literal notranslate"><span class="pre">.linkmllint.yaml</span></code> configuration file.</p></li>
+</ol>
+<p>If you only need to check whether a schema is structurally valid (without
+quality rules), use <a class="reference internal" href="validate.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span> <span class="pre">schema.yaml</span></code></span></a> instead.</p>
+</section>
+<section id="deprecated">
+<h2>Deprecated<a class="headerlink" href="#deprecated" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--validate</span></code></strong> — metamodel validation now always runs. This flag has no
+effect and will be removed in a future release.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">--validate-only</span></code></strong> — use <code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">validate</span> <span class="pre">schema.yaml</span></code> instead.</p></li>
+</ul>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">¶</a></h2>
 <section id="linkml-lint">
-<h2>linkml lint<a class="headerlink" href="#linkml-lint" title="Link to this heading">¶</a></h2>
+<h3>linkml lint<a class="headerlink" href="#linkml-lint" title="Link to this heading">¶</a></h3>
 <p>Run linter on SCHEMA.</p>
 <p>SCHEMA can be a single LinkML YAML file or a directory. If it is a directory
 every YAML file found in the directory (recursively) will be linted.</p>
@@ -445,13 +474,13 @@ every YAML file found in the directory (recursively) will be linted.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-validate">
 <span class="sig-name descname"><span class="pre">--validate</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate" title="Link to this definition">¶</a></dt>
-<dd><p>Validate the schema against the LinkML Metamodel before linting.</p>
+<dd><p>Metamodel validation now always runs. This flag has no effect.(DEPRECATED)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-lint-validate-only">
 <span class="sig-name descname"><span class="pre">--validate-only</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-lint-validate-only" title="Link to this definition">¶</a></dt>
-<dd><p>Validate the schema against the LinkML Metamodel and then exit without checking linter rules.</p>
+<dd><p>Use ‘linkml validate schema.yaml’ instead.(DEPRECATED)</p>
 </dd></dl>
 
 <dl class="std option">
@@ -500,6 +529,7 @@ every YAML file found in the directory (recursively) will be linted.</p>
 <dd><p>Required argument</p>
 </dd></dl>
 
+</section>
 </section>
 </section>
 
@@ -559,7 +589,12 @@ every YAML file found in the directory (recursively) will be linted.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">linkml</span> <span class="pre">lint</span></code></a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#deprecated">Deprecated</a></li>
+<li><a class="reference internal" href="#reference">Reference</a><ul>
 <li><a class="reference internal" href="#linkml-lint">linkml lint</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
