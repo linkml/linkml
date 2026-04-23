@@ -268,7 +268,7 @@ class OOCodeGenerator(Generator):
         sv: SchemaView
         sv = self.schemaview
         docs = []
-        for cn in sv.all_classes(imports=False):
+        for cn in sv.all_classes(imports=self.mergeimports):
             c = sv.get_class(cn)
             if self.map_class(c) is not None:
                 continue
