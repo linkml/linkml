@@ -104,6 +104,7 @@ Others
 
    linkml
    prefixmap
+   solr
    sssom
    terminusdb
    excel
