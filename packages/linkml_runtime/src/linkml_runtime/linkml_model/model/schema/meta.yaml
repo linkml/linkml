@@ -1368,27 +1368,27 @@ slots:
       - SpecificationSubset
       - BasicSubset
     examples:
-      - value:
+      - object:
           allowed: true
         description: Allow all additional data
-      - value:
+      - object:
           allowed: false
         description: Forbid any additional data
-      - value:
+      - object:
           range_expression:
             range: string
         description: Allow additional data that are strings
-      - value:
+      - object:
           range_expression:
             range: AClassDefinition
         description: Allow additional data if they are instances of the class definition "AClassDefinition"
-      - value:
+      - object:
           range_expression:
             any_of:
               - range: string
               - range: integer
         description: allow additional data if they are either strings or integers
-      - value:
+      - object:
           range_expression:
             range: integer
             multivalued: true
@@ -1396,14 +1396,14 @@ slots:
         description: |
           Allow additional data if they are lists of integers of at most length 5.
           Note that this does *not* mean that a maximum of 5 extra slots are allowed.
-      - value:
+      - object:
           range_expression:
             range: integer
             required: true
         description: |
           Allow additional data if they are integers.
           `required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
-      - value:
+      - object:
           allowed: false
           range_expression:
             range: string

@@ -56,6 +56,32 @@
             "title": "AltDescription",
             "type": "object"
         },
+        "Annotatable": {
+            "additionalProperties": false,
+            "description": "mixin for classes that support annotations",
+            "properties": {
+                "annotations": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Annotatable",
+            "type": "object"
+        },
         "Annotation": {
             "additionalProperties": false,
             "description": "a tag/value pair with the semantics of OWL Annotation",
@@ -680,6 +706,345 @@
                 }
             },
             "title": "AnonymousEnumExpression",
+            "type": "object"
+        },
+        "AnonymousExpression": {
+            "additionalProperties": false,
+            "description": "An abstract parent class for any nested expression",
+            "properties": {
+                "aliases": {
+                    "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "alt_descriptions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A sourced alternative description for an element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "broad_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "close_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "comments": {
+                    "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "created_by": {
+                    "description": "agent that created the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "created_on": {
+                    "description": "time at which the element was created",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated": {
+                    "description": "Description of why and when this element will no longer be used",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_exact_replacement": {
+                    "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_possible_replacement": {
+                    "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "description": "a textual description of the element's purpose and use",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "exact_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "examples": {
+                    "description": "example usages of an element",
+                    "items": {
+                        "$ref": "#/$defs/Example"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "extensions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a tag/text tuple attached to an arbitrary element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "from_schema": {
+                    "description": "id of the schema that defined the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "imported_from": {
+                    "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_language": {
+                    "description": "the primary language used in the sources",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_subset": {
+                    "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "last_updated_on": {
+                    "description": "time at which the element was last updated",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "modified_by": {
+                    "description": "agent that modified the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "narrow_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "notes": {
+                    "description": "editorial notes about an element intended primarily for internal consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "rank": {
+                    "description": "the relative order in which the element occurs, lower values are given precedence",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "related_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "see_also": {
+                    "description": "A list of related entities or URLs that may be of relevance",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "source": {
+                    "description": "A related resource from which the element is derived.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "status": {
+                    "description": "status of the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "structured_aliases": {
+                    "description": "A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.",
+                    "items": {
+                        "$ref": "#/$defs/StructuredAlias"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "description": "A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "todos": {
+                    "description": "Outstanding issues that needs resolution",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "title": "AnonymousExpression",
             "type": "object"
         },
         "AnonymousSlotExpression": {
@@ -2132,7 +2497,7 @@
                             "type": "null"
                         }
                     ],
-                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - \n  forbid all additional data (default) \n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n"
+                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n"
                 },
                 "from_schema": {
                     "description": "id of the schema that defined the element",
@@ -2836,7 +3201,7 @@
                             "type": "null"
                         }
                     ],
-                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) - \n  forbid all additional data (default) \n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n"
+                    "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n"
                 },
                 "from_schema": {
                     "description": "id of the schema that defined the element",
@@ -3217,6 +3582,77 @@
             },
             "required": [],
             "title": "ClassDefinition",
+            "type": "object"
+        },
+        "ClassExpression": {
+            "additionalProperties": false,
+            "description": "A boolean expression that can be used to dynamically determine membership of a class",
+            "properties": {
+                "all_of": {
+                    "description": "holds if all of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousClassExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "any_of": {
+                    "description": "holds if at least one of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousClassExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "exactly_one_of": {
+                    "description": "holds if only one of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousClassExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "none_of": {
+                    "description": "holds if none of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousClassExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "slot_conditions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/SlotDefinition__identifier_optional"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "description": "expresses constraints on a group of slots for a class expression",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                }
+            },
+            "title": "ClassExpression",
+            "type": "object"
+        },
+        "ClassLevelRule": {
+            "additionalProperties": false,
+            "description": "A rule that is applied to classes",
+            "title": "ClassLevelRule",
             "type": "object"
         },
         "ClassRule": {
@@ -3612,6 +4048,781 @@
             "title": "ClassRule",
             "type": "object"
         },
+        "CommonMetadata": {
+            "additionalProperties": false,
+            "description": "Generic metadata shared across definitions",
+            "properties": {
+                "aliases": {
+                    "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "alt_descriptions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A sourced alternative description for an element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "broad_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "close_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "comments": {
+                    "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "created_by": {
+                    "description": "agent that created the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "created_on": {
+                    "description": "time at which the element was created",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated": {
+                    "description": "Description of why and when this element will no longer be used",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_exact_replacement": {
+                    "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_possible_replacement": {
+                    "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "description": "a textual description of the element's purpose and use",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "exact_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "examples": {
+                    "description": "example usages of an element",
+                    "items": {
+                        "$ref": "#/$defs/Example"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "from_schema": {
+                    "description": "id of the schema that defined the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "imported_from": {
+                    "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_language": {
+                    "description": "the primary language used in the sources",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_subset": {
+                    "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "last_updated_on": {
+                    "description": "time at which the element was last updated",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "modified_by": {
+                    "description": "agent that modified the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "narrow_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "notes": {
+                    "description": "editorial notes about an element intended primarily for internal consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "rank": {
+                    "description": "the relative order in which the element occurs, lower values are given precedence",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "related_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "see_also": {
+                    "description": "A list of related entities or URLs that may be of relevance",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "source": {
+                    "description": "A related resource from which the element is derived.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "status": {
+                    "description": "status of the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "structured_aliases": {
+                    "description": "A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.",
+                    "items": {
+                        "$ref": "#/$defs/StructuredAlias"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "description": "A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "todos": {
+                    "description": "Outstanding issues that needs resolution",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "title": "CommonMetadata",
+            "type": "object"
+        },
+        "Definition": {
+            "additionalProperties": false,
+            "description": "abstract base class for core metaclasses",
+            "properties": {
+                "abstract": {
+                    "description": "Indicates the class or slot cannot be directly instantiated and is intended for grouping purposes.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "aliases": {
+                    "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "alt_descriptions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A sourced alternative description for an element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "apply_to": {
+                    "description": "Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "broad_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "close_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "comments": {
+                    "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "conforms_to": {
+                    "description": "An established standard to which the element conforms.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "created_by": {
+                    "description": "agent that created the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "created_on": {
+                    "description": "time at which the element was created",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "definition_uri": {
+                    "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated": {
+                    "description": "Description of why and when this element will no longer be used",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_exact_replacement": {
+                    "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_possible_replacement": {
+                    "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "description": "a textual description of the element's purpose and use",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "exact_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "examples": {
+                    "description": "example usages of an element",
+                    "items": {
+                        "$ref": "#/$defs/Example"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "extensions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a tag/text tuple attached to an arbitrary element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "from_schema": {
+                    "description": "id of the schema that defined the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id_prefixes": {
+                    "description": "An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "implements": {
+                    "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "imported_from": {
+                    "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_language": {
+                    "description": "the primary language used in the sources",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_subset": {
+                    "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "is_a": {
+                    "description": "A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "last_updated_on": {
+                    "description": "time at which the element was last updated",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "local_names": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "mixin": {
+                    "description": "Indicates the class or slot is intended to be inherited from without being an is_a parent. mixins should not be inherited from using is_a, except by other mixins.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "mixins": {
+                    "description": "A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "modified_by": {
+                    "description": "agent that modified the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
+                    "type": "string"
+                },
+                "narrow_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "notes": {
+                    "description": "editorial notes about an element intended primarily for internal consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "rank": {
+                    "description": "the relative order in which the element occurs, lower values are given precedence",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "related_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "see_also": {
+                    "description": "A list of related entities or URLs that may be of relevance",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "source": {
+                    "description": "A related resource from which the element is derived.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "status": {
+                    "description": "status of the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "string_serialization": {
+                    "description": "Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.\nWe call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.\nImplementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of complex objects\nFor example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot may have a string_serialization of {value}{unit} such that if unit=cm and value=2, the value of string_value shouldd be 2cm",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "structured_aliases": {
+                    "description": "A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.",
+                    "items": {
+                        "$ref": "#/$defs/StructuredAlias"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "description": "A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "todos": {
+                    "description": "Outstanding issues that needs resolution",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "values_from": {
+                    "description": "The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "title": "Definition",
+            "type": "object"
+        },
         "DimensionExpression": {
             "additionalProperties": false,
             "description": "defines one of the dimensions of an array",
@@ -3977,6 +5188,420 @@
                 }
             },
             "title": "DimensionExpression",
+            "type": "object"
+        },
+        "Element": {
+            "additionalProperties": false,
+            "description": "A named element in the model",
+            "properties": {
+                "aliases": {
+                    "description": "Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "alt_descriptions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/AltDescription__identifier_optional"
+                            },
+                            {
+                                "description": "text of an attributed description",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "description": "A sourced alternative description for an element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "annotations": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Annotation__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a collection of tag/text tuples with the semantics of OWL Annotation",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "broad_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have broader meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "categories": {
+                    "description": "Controlled terms used to categorize an element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "close_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have close meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "comments": {
+                    "description": "notes and comments about an element intended primarily for external consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "conforms_to": {
+                    "description": "An established standard to which the element conforms.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "contributors": {
+                    "description": "agent that contributed to the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "created_by": {
+                    "description": "agent that created the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "created_on": {
+                    "description": "time at which the element was created",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "definition_uri": {
+                    "description": "The native URI of the element. This is always within the namespace of the containing schema. Contrast with the assigned URI, via class_uri or slot_uri",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated": {
+                    "description": "Description of why and when this element will no longer be used",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_exact_replacement": {
+                    "description": "When an element is deprecated, it can be automatically replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "deprecated_element_has_possible_replacement": {
+                    "description": "When an element is deprecated, it can be potentially replaced by this uri or curie",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "description": {
+                    "description": "a textual description of the element's purpose and use",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "exact_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have identical meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "examples": {
+                    "description": "example usages of an element",
+                    "items": {
+                        "$ref": "#/$defs/Example"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "extensions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a tag/text tuple attached to an arbitrary element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "from_schema": {
+                    "description": "id of the schema that defined the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "id_prefixes": {
+                    "description": "An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "id_prefixes_are_closed": {
+                    "description": "If true, then the id_prefixes slot is treated as being closed, and any use of an id that does not have this prefix is considered a violation.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "implements": {
+                    "description": "An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "imported_from": {
+                    "description": "the imports entry that this element was derived from.  Empty means primary source",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_language": {
+                    "description": "the primary language used in the sources",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "in_subset": {
+                    "description": "used to indicate membership of a term in a defined subset of terms used for a particular domain or application.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "instantiates": {
+                    "description": "An element in another schema which this element instantiates.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "keywords": {
+                    "description": "Keywords or tags used to describe the element",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "last_updated_on": {
+                    "description": "time at which the element was last updated",
+                    "format": "date-time",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "local_names": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/LocalName__identifier_optional"
+                            },
+                            {
+                                "description": "a name assigned to an element in a given ontology",
+                                "type": "string"
+                            }
+                        ]
+                    },
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                },
+                "mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "modified_by": {
+                    "description": "agent that modified the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "name": {
+                    "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
+                    "type": "string"
+                },
+                "narrow_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "notes": {
+                    "description": "editorial notes about an element intended primarily for internal consumption",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "rank": {
+                    "description": "the relative order in which the element occurs, lower values are given precedence",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "related_mappings": {
+                    "description": "A list of terms from different schemas or terminology systems that have related meaning.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "see_also": {
+                    "description": "A list of related entities or URLs that may be of relevance",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "source": {
+                    "description": "A related resource from which the element is derived.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "status": {
+                    "description": "status of the element",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "structured_aliases": {
+                    "description": "A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.",
+                    "items": {
+                        "$ref": "#/$defs/StructuredAlias"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "title": {
+                    "description": "A concise human-readable display label for the element. The title should mirror the name, and should use ordinary textual punctuation.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "todos": {
+                    "description": "Outstanding issues that needs resolution",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "title": "Element",
             "type": "object"
         },
         "EnumBinding": {
@@ -5649,6 +7274,38 @@
             "title": "Example",
             "type": "object"
         },
+        "Expression": {
+            "additionalProperties": false,
+            "description": "general mixin for any class that can represent some form of expression",
+            "title": "Expression",
+            "type": "object"
+        },
+        "Extensible": {
+            "additionalProperties": false,
+            "description": "mixin for classes that support extension",
+            "properties": {
+                "extensions": {
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/Extension__identifier_optional"
+                            },
+                            {
+                                "$ref": "#/$defs/AnyValue",
+                                "description": "the actual annotation"
+                            }
+                        ]
+                    },
+                    "description": "a tag/text tuple attached to an arbitrary element",
+                    "type": [
+                        "object",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Extensible",
+            "type": "object"
+        },
         "Extension": {
             "additionalProperties": false,
             "description": "a tag/value pair used to add non-model information to an entry",
@@ -5726,7 +7383,7 @@
         },
         "ExtraSlotsExpression": {
             "additionalProperties": false,
-            "description": "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class. \nSee `extra_slots` for usage examples.",
+            "description": "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class.\nSee `extra_slots` for usage examples.",
             "properties": {
                 "allowed": {
                     "description": "Whether or not something is allowed. Usage defined by context.",
@@ -5738,7 +7395,7 @@
                 "range_expression": {
                     "anyOf": [
                         {
-                            "$ref": "#/$defs/AnonymousClassExpression"
+                            "$ref": "#/$defs/AnonymousSlotExpression"
                         },
                         {
                             "type": "null"
@@ -6165,7 +7822,7 @@
         },
         "MatchQuery": {
             "additionalProperties": false,
-            "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that  matches on properties of the external concepts.",
+            "description": "A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.",
             "properties": {
                 "identifier_pattern": {
                     "description": "A regular expression that is used to obtain a set of identifiers from a source_ontology to construct a set of permissible values",
@@ -7847,7 +9504,7 @@
         },
         "ReachabilityQuery": {
             "additionalProperties": false,
-            "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a  set of source nodes to a set of descendants or ancestors over a set of relationship types.",
+            "description": "A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a set of source nodes to a set of descendants or ancestors over a set of relationship types.",
             "properties": {
                 "include_self": {
                     "description": "True if the query is reflexive",
@@ -8344,10 +10001,7 @@
                 },
                 "name": {
                     "description": "a unique name for the schema that is both human-readable and consists of only characters from the NCName set",
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "narrow_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
@@ -9459,6 +11113,13 @@
                     ]
                 },
                 "slot_group": {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "is_grouping_slot": {}
+                            }
+                        }
+                    ],
                     "description": "allows for grouping of related slots into a grouping slot that serves the role of a group",
                     "type": [
                         "string",
@@ -10471,6 +12132,13 @@
                     ]
                 },
                 "slot_group": {
+                    "allOf": [
+                        {
+                            "properties": {
+                                "is_grouping_slot": {}
+                            }
+                        }
+                    ],
                     "description": "allows for grouping of related slots into a grouping slot that serves the role of a group",
                     "type": [
                         "string",
@@ -10633,6 +12301,275 @@
             },
             "required": [],
             "title": "SlotDefinition",
+            "type": "object"
+        },
+        "SlotExpression": {
+            "additionalProperties": false,
+            "description": "an expression that constrains the range of values a slot can take",
+            "properties": {
+                "all_members": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnonymousSlotExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "the value of the slot is multivalued with all members satisfying the condition"
+                },
+                "all_of": {
+                    "description": "holds if all of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousSlotExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "any_of": {
+                    "description": "holds if at least one of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousSlotExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "array": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ArrayExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "coerces the value of the slot into an array and defines the dimensions of that array"
+                },
+                "bindings": {
+                    "description": "A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.\nLinkML provides enums to allow string values to be restricted to one of a set of permissible values (specified statically or dynamically).\nEnum bindings allow enums to be bound to any object, including complex nested objects. For example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the values the id takes on in a given context. For example, a HumanSample class may have a slot for representing sample site, with a range of concept, but the values of that slot may be restricted to concepts from a particular branch of an anatomy ontology.",
+                    "items": {
+                        "$ref": "#/$defs/EnumBinding"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "enum_range": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/EnumExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "An inlined enumeration"
+                },
+                "equals_expression": {
+                    "description": "the value of the slot must equal the value of the evaluated expression",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "equals_number": {
+                    "description": "the slot must have range of a number and the value of the slot must equal the specified value",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "equals_string": {
+                    "description": "the slot must have range string and the value of the slot must equal the specified value",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "equals_string_in": {
+                    "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "exact_cardinality": {
+                    "description": "the exact number of entries for a multivalued slot",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "exactly_one_of": {
+                    "description": "holds if only one of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousSlotExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "has_member": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnonymousSlotExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "the value of the slot is multivalued with at least one member satisfying the condition"
+                },
+                "implicit_prefix": {
+                    "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "inlined": {
+                    "description": "True means that keyed or identified slot appears in an outer structure by value.  False means that only the key or identifier for the slot appears within the domain, referencing a structure that appears elsewhere.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "inlined_as_list": {
+                    "description": "True means that an inlined slot is represented as a list of range instances.  False means that an inlined slot is represented as a dictionary, whose key is the slot key or identifier and whose value is the range instance.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "maximum_cardinality": {
+                    "description": "the maximum number of entries for a multivalued slot",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "maximum_value": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Anything"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
+                },
+                "minimum_cardinality": {
+                    "description": "the minimum number of entries for a multivalued slot",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "minimum_value": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Anything"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
+                },
+                "multivalued": {
+                    "description": "true means that slot can have more than one value and should be represented using a list or collection structure.",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "none_of": {
+                    "description": "holds if none of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousSlotExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "pattern": {
+                    "description": "the string value of the slot must conform to this regular expression expressed in the string",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "range": {
+                    "description": "defines the type of the object of the slot.  Given the following slot definition\n  S1:\n    domain: C1\n    range:  C2\nthe declaration\n  X:\n    S1: Y\n\nimplicitly asserts Y is an instance of C2\n",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "range_expression": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/AnonymousClassExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "A range that is described as a boolean expression combining existing ranges"
+                },
+                "recommended": {
+                    "description": "true means that the slot should be present in instances of the class definition, but this is not required",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "required": {
+                    "description": "true means that the slot must be present in instances of the class definition",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "structured_pattern": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PatternExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "the string value of the slot must conform to the regular expression in the pattern expression"
+                },
+                "unit": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/UnitOfMeasure"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "an encoding of a unit"
+                },
+                "value_presence": {
+                    "$ref": "#/$defs/PresenceEnum",
+                    "description": "if PRESENT then a value must be present (for lists there must be at least one value). If ABSENT then a value must be absent (for lists, must be empty)"
+                }
+            },
+            "title": "SlotExpression",
             "type": "object"
         },
         "StructuredAlias": {
@@ -11312,7 +13249,10 @@
                 },
                 "name": {
                     "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "narrow_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
@@ -11726,7 +13666,10 @@
                 },
                 "name": {
                     "description": "the unique name of the element within the context of the schema.  Name is combined with the default prefix to form the globally unique subject of the target class.",
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "narrow_mappings": {
                     "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
@@ -12965,6 +14908,136 @@
             },
             "required": [],
             "title": "TypeDefinition",
+            "type": "object"
+        },
+        "TypeExpression": {
+            "additionalProperties": false,
+            "description": "An abstract class grouping named types and anonymous type expressions",
+            "properties": {
+                "all_of": {
+                    "description": "holds if all of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousTypeExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "any_of": {
+                    "description": "holds if at least one of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousTypeExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "equals_number": {
+                    "description": "the slot must have range of a number and the value of the slot must equal the specified value",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "equals_string": {
+                    "description": "the slot must have range string and the value of the slot must equal the specified value",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "equals_string_in": {
+                    "description": "the slot must have range string and the value of the slot must equal one of the specified values",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "exactly_one_of": {
+                    "description": "holds if only one of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousTypeExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "implicit_prefix": {
+                    "description": "Causes the slot value to be interpreted as a uriorcurie after prefixing with this string",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "maximum_value": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Anything"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "For ordinal ranges, the value must be equal to or lower than this"
+                },
+                "minimum_value": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Anything"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "For ordinal ranges, the value must be equal to or higher than this"
+                },
+                "none_of": {
+                    "description": "holds if none of the expressions hold",
+                    "items": {
+                        "$ref": "#/$defs/AnonymousTypeExpression"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                },
+                "pattern": {
+                    "description": "the string value of the slot must conform to this regular expression expressed in the string",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "structured_pattern": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/PatternExpression"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "the string value of the slot must conform to the regular expression in the pattern expression"
+                },
+                "unit": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/UnitOfMeasure"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "description": "an encoding of a unit"
+                }
+            },
+            "title": "TypeExpression",
             "type": "object"
         },
         "TypeMapping": {
@@ -14912,10 +16985,7 @@
         },
         "name": {
             "description": "a unique name for the schema that is both human-readable and consists of only characters from the NCName set",
-            "type": [
-                "string",
-                "null"
-            ]
+            "type": "string"
         },
         "narrow_mappings": {
             "description": "A list of terms from different schemas or terminology systems that have narrower meaning.",
