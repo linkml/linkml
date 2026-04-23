@@ -1651,6 +1651,19 @@ class SchemaView:
             slot = self.get_slot(slot_name, imports, attributes=True)
 
         if slot is None:
+            # Callers (e.g. JSON/Python generators) may often normalise slot
+            # names with underscore() before using as property/attribute names.
+            # If above literal lookup failed, try to resolve name back to the
+            # canonical (hyphenated / space-containing) slot name via
+            # slot_name_mappings(). Recurse once with that name.
+            canonical = self.slot_name_mappings().get(slot_name)
+            if canonical is not None and canonical.name != slot_name:
+                return self.induced_slot(
+                    canonical.name,
+                    class_name=class_name,
+                    imports=imports,
+                    mangle_name=mangle_name,
+                )
             msg = (
                 f"No such slot {slot_name} as an attribute of {class_name} ancestors "
                 "or as a slot definition in the schema"
