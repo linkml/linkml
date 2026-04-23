@@ -650,7 +650,7 @@
                     <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_foreign_keys</span><span class="p">:</span>
                         <span class="n">fk</span> <span class="o">=</span> <span class="n">sql_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_id_or_key</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="n">sv</span><span class="p">))</span>
                         <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">fk</span><span class="p">)]</span>
-                    <span class="n">field_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+                    <span class="n">field_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">schema</span><span class="p">,</span> <span class="n">sv</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>  <span class="c1"># reuse the Schemaview</span>
                     <span class="n">fk_index_cond</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">key</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogenerate_index</span>
                     <span class="n">pk_index_cond</span> <span class="o">=</span> <span class="n">is_pk</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">autogenerate_index</span>
                     <span class="n">is_index</span> <span class="o">=</span> <span class="n">fk_index_cond</span> <span class="ow">or</span> <span class="n">pk_index_cond</span>
@@ -750,7 +750,7 @@
         <span class="c1"># use standard SQL range matching for anything else</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_sql_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the slot range as a SQL Alchemy column type.&quot;&quot;&quot;</span>
         <span class="n">slot_range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
 
@@ -767,12 +767,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">schema</span><span class="p">:</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
 
-        <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># if no SchemaView arg is provided, then create one</span>
+            <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="c1"># FK type should be the same as the identifier of the foreign key</span>
             <span class="n">fk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fk</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">sv</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>  <span class="c1"># reuse the Schemaview</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
