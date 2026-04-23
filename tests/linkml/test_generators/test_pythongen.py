@@ -198,6 +198,37 @@ class ParentClass:
     assert repr(friend) != "overridden"
 
 
+@pytest.mark.parametrize("keyword_slot", ["class", "import", "return", "yield", "global"])
+def test_keyword_slot_names(keyword_slot: str):
+    """
+    Slots whose LinkML name is a Python reserved keyword must be emitted in the
+    ``slots`` class as ``slots.<name>_`` (PEP 8 trailing-underscore convention)
+    instead of the bare keyword, which would be a SyntaxError.
+    """
+    yaml = f"""id: http://example.org/test
+prefixes:
+  ex: http://example.org/
+  xsd: http://www.w3.org/2001/XMLSchema#
+default_prefix: ex
+default_range: string
+types:
+  string:
+    uri: xsd:string
+    base: str
+slots:
+  {keyword_slot}:
+    range: string
+"""
+    output = PythonGenerator(yaml, mergeimports=False).serialize()
+
+    # The slots block must use the mangled name (keyword + "_")
+    assert f"slots.{keyword_slot}_" in output, (
+        f"Expected 'slots.{keyword_slot}_' in generated output but got:\n{output}"
+    )
+    # The reserved word must NOT appear as a bare attribute assignment in the class.
+    assert f"slots.{keyword_slot} " not in output, f"Found bare 'slots.{keyword_slot} ' (unmangled) in generated output"
+
+
 def test_permissible_values():
     """
     Test that permissible values are generated correctly
