@@ -1,0 +1,31 @@
+id: https://example.org/bug_repro
+name: bug_repro
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+imports:
+  - linkml:types
+default_range: string
+
+enums:
+  ColorEnum:
+    permissible_values:
+      Red: {}
+      Green: {}
+      Blue: {}
+
+classes:
+  Item:
+    attributes:
+      color:
+        range: ColorEnum
+    rules:
+      - preconditions:
+          slot_conditions:
+            color:
+              none_of:
+                - equals_string: Red
+        postconditions:
+          slot_conditions:
+            color:
+              required: true
