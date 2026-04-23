@@ -10,6 +10,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml_runtime.utils.compile_python import compile_python
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import as_rdf
 from tests.linkml.utils.compare_jsonld_context import CompareJsonldContext
 
@@ -50,7 +51,7 @@ def test_uri_and_curie(input_path, snapshot, snapshot_path):
             instance_jsonld,
         ],
     )
-    assert g.serialize(format="ttl") == snapshot(f"{model_name}.ttl")
+    assert canonicalize_rdf_graph(g, output_format="turtle") == snapshot(f"{model_name}.ttl")
 
 
 def test_issue_80_objectidentifier_roundtrip(input_path):
@@ -72,7 +73,9 @@ def test_issue_80_objectidentifier_roundtrip(input_path):
     assert generated_context["Person"]["@id"] == "ex:PERSON"
     assert generated_context["age"]["@type"] == "xsd:integer"
 
-    rdf_output = as_rdf(example, contexts=json.dumps({"@context": generated_context})).serialize(format="turtle")
+    rdf_output = canonicalize_rdf_graph(
+        as_rdf(example, contexts=json.dumps({"@context": generated_context})), output_format="turtle"
+    )
     graph = Graph()
     graph.parse(data=rdf_output, format="turtle")
 

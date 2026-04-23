@@ -26,6 +26,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, sfx
 from linkml_runtime.utils.metamodelcore import URIorCURIE
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 
 @dataclass
@@ -176,7 +177,7 @@ class ShExGenerator(Generator):
             g = Graph()
             g.parse(data=shex, format="json-ld", version="1.1")
             g.bind("owl", OWL)
-            shex = g.serialize(format="turtle")
+            shex = canonicalize_rdf_graph(g, output_format="turtle")
         elif self.format == "shex":
             g = Graph()
             self.namespaces.load_graph(g)

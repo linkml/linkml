@@ -10,6 +10,7 @@ from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.linkml_model import ElementName, PermissibleValue, PermissibleValueText, SlotDefinition
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -193,7 +194,7 @@ class RDFLibDumper(Dumper):
         :param prefix_map:
         :return: serialization of rdflib Graph containing element
         """
-        return self.as_rdf_graph(element, schemaview, prefix_map=prefix_map).serialize(format=fmt)
+        return canonicalize_rdf_graph(self.as_rdf_graph(element, schemaview, prefix_map=prefix_map), output_format=fmt)
 
     def _as_uri(self, element_id: str, id_slot: SlotDefinition | None, schemaview: SchemaView) -> URIRef:
         if id_slot and schemaview.is_slot_percent_encoded(id_slot):

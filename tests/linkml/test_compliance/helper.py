@@ -31,6 +31,7 @@ from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from .dataframe_helper import check_data_pandera
@@ -979,7 +980,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
             "P": "http://example.org/P/",
         },
     )
-    ttl_output = g.serialize(format="turtle")
+    ttl_output = canonicalize_rdf_graph(g, output_format="turtle")
     g = rdflib.Graph()
     g.parse(data=ttl_output, format="turtle")
     _roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
