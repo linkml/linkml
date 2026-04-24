@@ -52,18 +52,21 @@ class ExcelGenerator(Generator):
         workbook.remove(workbook.active)
         sv = self.schemaview
 
+        # Compute enum lookup before next inner loop
+        enum_set = set(sv.all_enums(imports=self.mergeimports).keys())
+
         for cls_name in classes:
             workbook.create_sheet(cls_name)
 
             # Add columns to the worksheet for the current class
-            slots = [s.name for s in sv.class_induced_slots(cls_name, self.mergeimports)]
-            self.add_columns_to_worksheet(workbook, cls_name, slots)
-            workbook.save(output_path)
+            # (call class_induced_slots, reuse for heading/enum validation)
+            induced_slots = list(sv.class_induced_slots(cls_name, self.mergeimports))
+            slot_names = [s.name for s in induced_slots]
+            self.add_columns_to_worksheet(workbook, cls_name, slot_names)
 
             # Add enum validation for columns with enum types
-            enum_list = list(sv.all_enums(imports=self.mergeimports).keys())
-            for s in sv.class_induced_slots(cls_name, self.mergeimports):
-                if s.range in enum_list:
+            for s in induced_slots:
+                if s.range in enum_set:
                     pv_list = list(sv.get_enum(s.range).permissible_values.keys())
 
                     # Data Validation formula to be applied to the column and
@@ -81,7 +84,6 @@ class ExcelGenerator(Generator):
                             "length > 255 characters. Dropdowns may not work properly "
                             f"in {output_path}"
                         )
-                workbook.save(output_path)
 
         workbook.save(output_path)
         if self.split_workbook_by_class:
