@@ -1,0 +1,31 @@
+# .github/workflows/typedb-integration.yaml
+name: TypeDB Integration Tests
+on:
+  pull_request:
+    paths:
+      - 'packages/linkml/src/linkml/generators/typedbgen.py'
+      - 'tests/linkml/test_generators/test_typedbgen*.py'
+  workflow_dispatch:
+
+jobs:
+  test_typedb:
+    runs-on: ubuntu-latest
+    services:
+      typedb:
+        image: typedb/typedb:3.8.0
+        ports:
+          - 1729:1729
+        options: >-
+          --health-cmd "timeout 3 bash -c 'echo > /dev/tcp/localhost/1729'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+          --health-start-period 30s
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7.3.1
+      - uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.12"
+      - run: uv sync --group typedb --group tests-extra
+      - run: uv run pytest tests/linkml/test_generators/test_typedbgen_integration.py -m integration -v
