@@ -403,11 +403,9 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">graphlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">TopologicalSorter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModuleType</span>
 
@@ -809,18 +807,45 @@
         <span class="k">return</span> <span class="n">curienamespace_declarations</span> <span class="o">+</span> <span class="n">catalog_declaration</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_references</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python type declarations for all identifiers (primary keys)&quot;&quot;&quot;</span>
-        <span class="n">rval</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">graph</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python type declarations for all identifiers (primary keys).</span>
+
+<span class="sd">        Each class with a key or identifier slot gets a small wrapper class, e.g.</span>
+<span class="sd">        ``Thing`` with identifier ``pid`` produces::</span>
+
+<span class="sd">            class ThingPid(URIorCURIE):</span>
+<span class="sd">                pass</span>
+
+<span class="sd">        When ``AnnotationTag`` is a subclass of ``Thing`` it inherits the same</span>
+<span class="sd">        identifier, so its wrapper must extend the parent&#39;s wrapper::</span>
+
+<span class="sd">            class AnnotationTagPid(ThingPid):   # ThingPid must be defined first</span>
+<span class="sd">                pass</span>
+
+<span class="sd">        Order matters: because ``_sort_classes`` puts every data class after its parent,</span>
+<span class="sd">        but is ignorant about wrapper-class inheritance, so wrappers can still come out</span>
+<span class="sd">        in the wrong order, causing a ``NameError`` on import.</span>
+
+<span class="sd">        Approach: collect first, then emit in dependency order</span>
+<span class="sd">        -------------------------------------------------</span>
+<span class="sd">        1. Walk classes in sorted order and record each wrapper class plus its parent.</span>
+<span class="sd">        2. Before writing any wrapper, recursively write its parent first.</span>
+<span class="sd">           If the parent is an imported type (e.g. ``URIorCURIE``) it is already</span>
+<span class="sd">           available so stop immediately.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Step 1: record every wrapper class without writing anything yet.</span>
+        <span class="c1"># ref_info: name -&gt; (parent name, source line to emit)</span>
+        <span class="c1"># emit_order: original iteration order, used as sibling tie-breaker</span>
+        <span class="n">ref_info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">emit_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_classes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">imported_from</span><span class="p">:</span>
                 <span class="n">pkeys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_keys_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">pkeys</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pkeys</span><span class="p">:</span>
                         <span class="n">classname</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aliased_slot_name</span><span class="p">(</span><span class="n">pk</span><span class="p">))</span>
-                        <span class="c1"># If we&#39;ve got a parent slot and the range of the parent is the range of the child, the</span>
-                        <span class="c1"># child slot is a subclass of the parent.  Otherwise, the child range has been overridden,</span>
-                        <span class="c1"># so the inheritance chain has been broken</span>
+                        <span class="c1"># Inherit from parent&#39;s wrapper when parent has a compatible</span>
+                        <span class="c1"># identifier; otherwise fall back to the slot&#39;s own range path</span>
                         <span class="n">parent_pk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span> <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span> <span class="k">else</span> <span class="kc">None</span>
                         <span class="n">parent_pk_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">parent_pk</span><span class="p">]</span> <span class="k">if</span> <span class="n">parent_pk</span> <span class="k">else</span> <span class="kc">None</span>
                         <span class="n">pk_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">pk</span><span class="p">]</span>
@@ -828,13 +853,37 @@
                             <span class="n">parents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_identifier_path</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">parents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_range_path</span><span class="p">(</span><span class="n">pk_slot</span><span class="p">)</span>
+                        <span class="c1"># Plain Python types (str/float/int) need linkml-runtime &quot;extended_&quot; wrapper</span>
                         <span class="n">parent_cls</span> <span class="o">=</span> <span class="p">(</span>
                             <span class="s2">&quot;extended_&quot;</span> <span class="o">+</span> <span class="n">parents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">parents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="n">parents</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                         <span class="p">)</span>
-                        <span class="n">rval</span><span class="p">[</span><span class="n">classname</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;class </span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">parent_cls</span><span class="si">}</span><span class="s2">):</span><span class="se">\n\t</span><span class="s2">pass&quot;</span>
-                        <span class="n">graph</span><span class="p">[</span><span class="n">classname</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parent_cls</span><span class="p">)</span>
-                        <span class="k">break</span>  <span class="c1"># We only do the first primary key</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rval</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">TopologicalSorter</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span><span class="o">.</span><span class="n">static_order</span><span class="p">()</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">rval</span><span class="p">)</span>
+                        <span class="n">ref_info</span><span class="p">[</span><span class="n">classname</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">parent_cls</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;class </span><span class="si">{</span><span class="n">classname</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">parent_cls</span><span class="si">}</span><span class="s2">):</span><span class="se">\n\t</span><span class="s2">pass&quot;</span><span class="p">)</span>
+                        <span class="n">emit_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">classname</span><span class="p">)</span>
+                        <span class="k">break</span>  <span class="c1"># Only the first primary key matters.</span>
+
+        <span class="c1"># Step 2: write each wrapper only after its parent has been written.</span>
+        <span class="n">emitted</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">in_progress</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">rval</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_emit</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">emitted</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ref_info</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># Already written, or imported type — nothing to do.</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">in_progress</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cyclic wrapper inheritance at </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">in_progress</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">parent_cls</span><span class="p">,</span> <span class="n">line</span> <span class="o">=</span> <span class="n">ref_info</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_emit</span><span class="p">(</span><span class="n">parent_cls</span><span class="p">)</span>  <span class="c1"># Write the parent first.</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="n">in_progress</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">emitted</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">rval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">emit_order</span><span class="p">:</span>
+            <span class="n">_emit</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rval</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">gen_typedefs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate python type declarations for all defined types&quot;&quot;&quot;</span>
@@ -1178,22 +1227,22 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_sort_classes</span><span class="p">(</span><span class="n">clist</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]:</span>
         <span class="n">clist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span>
-        <span class="n">slist</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sorted</span>
+        <span class="n">slist</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ClassDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sorted</span>
+        <span class="n">slist_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">clist</span><span class="p">)):</span>
                 <span class="n">candidate</span> <span class="o">=</span> <span class="n">clist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="n">can_add</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Class can be added if no parent, or parent already in sorted list.</span>
+                <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">in</span> <span class="n">slist_names</span><span class="p">:</span>
                     <span class="n">can_add</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">in</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">slist</span><span class="p">]:</span>
-                        <span class="n">can_add</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="k">if</span> <span class="n">can_add</span><span class="p">:</span>
-                    <span class="n">slist</span> <span class="o">=</span> <span class="n">slist</span> <span class="o">+</span> <span class="p">[</span><span class="n">candidate</span><span class="p">]</span>
+                    <span class="n">slist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+                    <span class="n">slist_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                     <span class="k">del</span> <span class="n">clist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                     <span class="k">break</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">can_add</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not find suitable element in </span><span class="si">{</span><span class="n">clist</span><span class="si">}</span><span class="s2"> that does not ref </span><span class="si">{</span><span class="n">slist</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cyclic or unresolved class inheritance in </span><span class="si">{</span><span class="n">clist</span><span class="si">}</span><span class="s2">; emitted=</span><span class="si">{</span><span class="n">slist</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">slist</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_key_value_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_name</span><span class="p">:</span> <span class="n">DefinitionName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1336,9 +1385,7 @@
             <span class="p">):</span>
                 <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">base_type_name</span><span class="si">}</span><span class="s2">()&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">ifabsent</span><span class="p">:</span>
-                    <span class="n">rlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">base_type_name</span><span class="si">}</span><span class="s2">(self.</span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="p">(</span>
+                <span class="k">if</span> <span class="p">(</span>
                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_identifier</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span><span class="p">)</span>
                     <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span>
                     <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span>

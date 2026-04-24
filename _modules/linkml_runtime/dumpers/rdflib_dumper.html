@@ -410,7 +410,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">rdflib.term</span><span class="w"> </span><span class="kn">import</span> <span class="n">BNode</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Node</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.dumpers.dumper_root</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dumper</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElementName</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.schemaview</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">YAMLRoot</span>
 
@@ -488,11 +488,14 @@
         <span class="n">slot_name_map</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">slot_name_mappings</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CONVERT: </span><span class="si">{</span><span class="n">element</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span><span class="si">}</span><span class="s2"> // </span><span class="si">{</span><span class="n">target_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target_type</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_enums</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">PermissibleValueText</span><span class="p">):</span>
+            <span class="c1"># Handle three cases for enum target types:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># case 1: string, look up PermissibleValue</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">get_enum</span><span class="p">(</span><span class="n">target_type</span><span class="p">)</span>
                 <span class="n">element</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">[</span><span class="n">element</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">PermissibleValue</span><span class="p">):</span>  <span class="c1"># case 3: EnumDefinitionImpl .code</span>
                 <span class="n">element</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">code</span>
+            <span class="c1"># 3) do nothing, element is already PermissibleValue (PermissibleValueImpl.code)</span>
+
             <span class="n">element</span><span class="p">:</span> <span class="n">PermissibleValue</span>
             <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">meaning</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">schemaview</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">meaning</span><span class="p">))</span>
