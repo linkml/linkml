@@ -5,9 +5,15 @@ from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
+from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.linkml_model.meta import PermissibleValue
+from linkml_runtime.linkml_model.meta import (
+    AnonymousClassExpression,
+    AnonymousSlotExpression,
+    ClassRule,
+    PermissibleValue,
+)
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
@@ -100,6 +106,66 @@ def test_rdfs_profile(kitchen_sink_path):
         assert list(g.objects(c, SKOS.definition)) == []
     # check that definitions are present, and use the RDFS profile
     assert Literal("A person, living or dead") in g.objects(KS.Person, RDFS.comment)
+
+
+def test_rule_none_of_ignores_empty_slot_expression() -> None:
+    """Issue 3358: empty ``none_of`` operands in rules must not crash OWL generation."""
+
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("object_category", range="string"))
+    sb.add_slot(SlotDefinition("object_source", range="string"))
+    sb.add_class("MappingRule", tree_root=True, slots=["object_category", "object_source"])
+    sb.add_defaults()
+    sb.schema.classes["MappingRule"].rules = [
+        ClassRule(
+            preconditions=AnonymousClassExpression(
+                slot_conditions={
+                    "object_category": SlotDefinition(
+                        "object_category",
+                        none_of=[AnonymousSlotExpression()],
+                    )
+                }
+            ),
+            postconditions=AnonymousClassExpression(
+                slot_conditions={
+                    "object_source": SlotDefinition(
+                        "object_source",
+                        equals_string="source",
+                    )
+                }
+            ),
+        )
+    ]
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert (EX.MappingRule, RDF.type, OWL.Class) in g
+    assert list(g.objects(None, OWL.complementOf)) == []
+    assert list(g.objects(None, OWL.datatypeComplementOf)) == []
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_path):
+    """Ambiguous attribute URIs should keep the minimal shared OWL identity."""
+    generated_owl = OwlSchemaGenerator(
+        input_path("linkml_issue_388.yaml"),
+        metaclasses=False,
+        skip_vacuous_min_zero_cardinality_axioms=False,
+        skip_vacuous_local_range_axioms=False,
+        consolidate_cardinality_axioms=False,
+    ).serialize(context=[METAMODEL_CONTEXT_URI])
+
+    owl_graph = Graph()
+    owl_graph.parse(data=generated_owl, format="turtle")
+    this_a = URIRef("https://example.org/this/a")
+    assert len(list(owl_graph.triples((this_a, None, None)))) == 1
 
 
 @pytest.mark.parametrize(

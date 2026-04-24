@@ -8,6 +8,7 @@ import pytest
 import yaml
 
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.yamlgen import YAMLGenerator
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import json_dumper
 from linkml_runtime.linkml_model import (
@@ -23,6 +24,21 @@ from tests.linkml.test_generators.test_pythongen import make_python
 logger = logging.getLogger(__name__)
 
 pytestmark = pytest.mark.jsonschemagen
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_yaml_and_jsonschema(input_path):
+    """Ambiguous attribute URIs should keep minimal shared metadata."""
+    schema = input_path("linkml_issue_388.yaml")
+
+    generated_yaml = yaml.safe_load(YAMLGenerator(schema).serialize())
+    assert set(generated_yaml["slots"]) == {"c1__a", "c2__a", "c3__a"}
+    assert generated_yaml["slots"]["c3__a"]["slot_uri"] == "other:a"
+
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert generated_schema["$defs"]["C1"]["properties"]["a"]["type"] == ["string", "null"]
+    assert generated_schema["$defs"]["C2"]["properties"]["a"]["type"] == ["integer", "null"]
+    assert generated_schema["$defs"]["C3"]["properties"]["a"]["anyOf"][0]["$ref"] == "#/$defs/C1"
 
 
 def test_jsonschema_integration(kitchen_sink_path, input_path):
@@ -316,7 +332,6 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
-@pytest.mark.xfail(reason="identifier slots incorrectly allow null (#2448)", strict=True)
 @pytest.mark.parametrize("not_closed", [True, False])
 def test_slot_identifier_non_nullability(input_path, not_closed):
     """

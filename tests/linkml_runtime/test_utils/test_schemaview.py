@@ -1699,6 +1699,20 @@ def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     assert aliases_slot.alias is None  # Not set because underscore("aliases") == "aliases"
 
 
+def test_induced_slot_underscored_name(schema_view_no_imports: SchemaView) -> None:
+    """induced_slot must accept the underscore-normalised form of a slot name."""
+    view = schema_view_no_imports
+
+    # "postal code" in the schema → callers pass "postal_code"
+    slot = view.induced_slot("postal_code", "Address")
+    assert slot.name == "postal code"
+
+    # When the slot name already has no special characters the exact-match path
+    # still works and the fallback is not triggered.
+    slot_direct = view.induced_slot("aliases", "HasAliases")
+    assert slot_direct.name == "aliases"
+
+
 """Tests of SchemaView range-related functions.
 
     These tests cover range determination for slots in schemas with various combinations of default_range values and linkml:Any range declarations.
