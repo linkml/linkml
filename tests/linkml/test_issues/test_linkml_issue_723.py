@@ -1,4 +1,3 @@
-import unittest
 from dataclasses import dataclass
 from enum import Enum
 
@@ -85,9 +84,7 @@ def pydanticgen_module():
 
 
 def test_plain_dataclasses():
-    """
-    Tests the behavior of plain non-linkml enums
-    """
+    """Tests the behavior of plain non-linkml enums"""
     p = PersonDC(status=StatusEnumDC.ALIVE)
     assert p.status == StatusEnumDC.ALIVE
     assert p.status.value == StatusEnumDC.ALIVE.value
@@ -132,9 +129,8 @@ def test_initialized_enums(pythongen_module, schemaview):
     )
     # Test behavior of dumpers
     pd = json_dumper.to_dict(p)
-    tc = unittest.TestCase()
     assert pd["status"] == "ALIVE"
-    tc.assertCountEqual(pd["roles"], ["ANALYST", "INVESTIGATOR"])
+    assert sorted(pd["roles"]) == sorted(["ANALYST", "INVESTIGATOR"])
     p_json = json_dumper.dumps(p)
     p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
     assert p_roundtrip == p
@@ -142,14 +138,16 @@ def test_initialized_enums(pythongen_module, schemaview):
     # they are created as Enum instances, NOT permissible value instances
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
     assert p.status != mod.VitalStatus.ALIVE
-    tc.assertCountEqual(p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)])
+    assert sorted(p.roles, key=str) == sorted([mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)], key=str)
     assert type(p.status) is mod.VitalStatus
     assert type(p.status) is not PermissibleValue
     assert type(p.roles[0]) is mod.Role
     g = rdflib_dumper.as_rdf_graph(p, schemaview=schemaview)
     [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
     assert list(g.objects(subj, EXAMPLE.status)) == [EXAMPLE.Alive]
-    tc.assertCountEqual(list(g.objects(subj, EXAMPLE.roles)), [Literal("INVESTIGATOR"), Literal("ANALYST")])
+    assert sorted(g.objects(subj, EXAMPLE.roles), key=str) == sorted(
+        [Literal("INVESTIGATOR"), Literal("ANALYST")], key=str
+    )
 
 
 def test_assigned_enum(pythongen_module):
@@ -172,16 +170,10 @@ def test_assigned_enum(pythongen_module):
     p.status = mod.VitalStatus.ALIVE
     p.roles = [mod.Role.ANALYST, mod.Role.INVESTIGATOR]
     pd = json_dumper.to_dict(p)
-    # we might expect this
-    # self.assertEqual(pd['status'], 'ALIVE')
-    tc = unittest.TestCase()
-    tc.assertCountEqual(pd["roles"], [{"text": "ANALYST"}, {"text": "INVESTIGATOR"}])
+    assert sorted(pd["roles"], key=str) == sorted([{"text": "ANALYST"}, {"text": "INVESTIGATOR"}], key=str)
     json_dumper.dumps(p)
-    # this does NOT roundtrip:
-    # p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
-    # self.assertEqual(p_roundtrip, p)
     assert p.status == mod.VitalStatus.ALIVE
-    tc.assertCountEqual(p.roles, [mod.Role.INVESTIGATOR, mod.Role.ANALYST])
+    assert sorted(p.roles, key=str) == sorted([mod.Role.INVESTIGATOR, mod.Role.ANALYST], key=str)
     assert type(p.status) is PermissibleValue
     assert type(p.status) is not mod.VitalStatus
     assert type(p.roles[0]) is PermissibleValue
@@ -225,24 +217,22 @@ def test_assigned_wrapped_enums(pythongen_module, schemaview):
     assert p3 == p
     # Test behavior of dumpers
     pd = json_dumper.to_dict(p)
-    tc = unittest.TestCase()
     assert pd["status"] == "ALIVE"
-    tc.assertCountEqual(pd["roles"], ["ANALYST", "INVESTIGATOR"])
+    assert sorted(pd["roles"]) == sorted(["ANALYST", "INVESTIGATOR"])
     p_json = json_dumper.dumps(p)
     p_roundtrip = json_loader.loads(p_json, target_class=mod.Person)
     assert p_roundtrip == p
     assert p.status == mod.VitalStatus(mod.VitalStatus.ALIVE)
     assert p.status != mod.VitalStatus.ALIVE
-    tc.assertCountEqual(p.roles, [mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)])
+    assert sorted(p.roles, key=str) == sorted([mod.Role(mod.Role.INVESTIGATOR), mod.Role(mod.Role.ANALYST)], key=str)
     assert type(p.status) is mod.VitalStatus
     assert type(p.status) is not PermissibleValue
     assert type(p.roles[0]) is mod.Role
     g = rdflib_dumper.as_rdf_graph(p, schemaview=schemaview)
     [subj] = list(g.subjects(RDF.type, EXAMPLE.Person))
     assert list(g.objects(subj, EXAMPLE.status)) == [EXAMPLE.Alive]
-    tc.assertCountEqual(
-        list(g.objects(subj, EXAMPLE.roles)),
-        [Literal("INVESTIGATOR"), Literal("ANALYST")],
+    assert sorted(g.objects(subj, EXAMPLE.roles), key=str) == sorted(
+        [Literal("INVESTIGATOR"), Literal("ANALYST")], key=str
     )
 
 

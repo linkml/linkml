@@ -81,6 +81,28 @@ def test_load_from_dict_any_range(example_runner):
     assert obj.payload["y"] == 2
 
 
+def test_load_from_dict_underscored_input_keys(example_runner):
+    """Pre-underscored keys must be accepted by _load_from_dict.
+
+    The personinfo schema includes slots such as ``founding location``. Callers
+    may provide pre-underscored keys (e.g. ``founding_location``) as produced by
+    JSON Schema / Python generators.
+    """
+    obj = example_runner._load_from_dict(
+        {
+            "organizations": [
+                {
+                    "id": "ROR:1",
+                    "name": "Acme Corp",
+                    "founding_location": "GEO:001",
+                }
+            ]
+        }
+    )
+    assert obj is not None
+    assert obj.organizations[0].founding_location == "GEO:001"
+
+
 def test_example_runner(example_runner):
     """Process all YAML examples in input folder."""
     example_runner.process_examples()

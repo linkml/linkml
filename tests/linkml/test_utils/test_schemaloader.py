@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from io import StringIO
 from pathlib import Path
 
@@ -124,3 +125,77 @@ def test_importmap(input_path, snapshot):
     }
     output = as_json(SchemaLoader(fn, importmap=importmap).resolve())
     assert output == snapshot("import_test_1.json")
+
+
+def _main_schema_dict() -> dict:
+    return {
+        "id": "http://example.org/main",
+        "name": "main",
+        "prefixes": {"main": "http://example.org/main/"},
+        "default_prefix": "main",
+        "default_range": "string",
+        "imports": ["http://example.org/base"],
+        "classes": {"Child": {"is_a": "Parent", "slots": ["extra"]}},
+        "slots": {"extra": {"range": "string"}},
+    }
+
+
+def _base_schema_dict() -> dict:
+    return {
+        "id": "http://example.org/base",
+        "name": "base",
+        "version": "0.1.0",
+        "prefixes": {"base": "http://example.org/base/"},
+        "default_prefix": "base",
+        "default_range": "string",
+        "classes": {"Parent": {"slots": ["parent_slot"]}},
+        "slots": {"parent_slot": {"range": "string"}},
+        "types": {"string": {"uri": "xsd:string", "base": "str"}},
+    }
+
+
+def test_importmap_accepts_in_memory_schema_dict():
+    """Importmap values may be an in-memory schema dict, not just a file path."""
+    importmap = {"http://example.org/base": _base_schema_dict()}
+    resolved = SchemaLoader(_main_schema_dict(), importmap=importmap).resolve()
+
+    assert "Parent" in resolved.classes
+    assert "Child" in resolved.classes
+    assert resolved.classes["Child"].is_a == "Parent"
+    assert "parent_slot" in resolved.slots
+    assert "extra" in resolved.slots
+
+
+def test_importmap_in_memory_dict_not_mutated():
+    """Passing a dict through importmap must not mutate the caller's dict."""
+    base_dict = _base_schema_dict()
+    snapshot_before = deepcopy(base_dict)
+    SchemaLoader(
+        _main_schema_dict(),
+        importmap={"http://example.org/base": base_dict},
+    ).resolve()
+    assert base_dict == snapshot_before
+
+
+def test_importmap_mixes_dict_and_path_values(input_path):
+    """A single importmap can contain both a dict and a file-path entry."""
+    main_dict = {
+        "id": "http://example.org/main_mixed",
+        "name": "main_mixed",
+        "prefixes": {"main": "http://example.org/main_mixed/"},
+        "default_prefix": "main",
+        "default_range": "string",
+        "imports": [
+            "http://example.org/base",
+            "http://example.org/import_test_4",
+        ],
+        "classes": {"Leaf": {"is_a": "Parent"}},
+    }
+    file_path = input_path("import_test_4.yaml").removesuffix(".yaml")
+    importmap = {
+        "http://example.org/base": _base_schema_dict(),
+        "http://example.org/import_test_4": file_path,
+    }
+    resolved = SchemaLoader(main_dict, importmap=importmap).resolve()
+    assert "Parent" in resolved.classes  # from dict import
+    assert "class_4" in resolved.classes  # from file import

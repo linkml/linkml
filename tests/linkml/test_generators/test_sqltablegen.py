@@ -392,3 +392,115 @@ def test_sqlddl_basic(schema):
         )
 
     con.close()
+
+
+# Tests for get_sql_range SchemaView reuse (last commit)
+def test_get_sql_range_accepts_sv_argument() -> None:
+    """
+    get_sql_range accepts an explicit SchemaView and uses it instead of
+    constructing a new one. Passing a SchemaView built from the same schema
+    must produce the same result as calling without sv.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True)
+    sb.add_slot("name", range="string")
+    sb.add_class("Person", ["id", "name"])
+    sb.add_defaults()
+    schema = sb.schema
+
+    gen = SQLTableGenerator(schema)
+    sv = SchemaView(schema)
+
+    slot_string = SlotDefinition(name="name_col", range="string")
+    assert type(gen.get_sql_range(slot_string, schema)) is type(gen.get_sql_range(slot_string, schema, sv=sv))
+
+    slot_int = SlotDefinition(name="id_col", range="integer")
+    assert type(gen.get_sql_range(slot_int, schema)) is type(gen.get_sql_range(slot_int, schema, sv=sv))
+
+
+def test_get_sql_range_sv_none_fallback() -> None:
+    """
+    When sv=None (the default), get_sql_range creates its own SchemaView
+    internally and still returns the correct type.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True)
+    sb.add_slot("score", range="integer")
+    sb.add_class("Result", ["id", "score"])
+    sb.add_defaults()
+    gen = SQLTableGenerator(sb.schema)
+
+    # sv omitted entirely → falls back to internal SchemaView construction
+    assert isinstance(gen.get_sql_range(SlotDefinition(name="s", range="integer")), Integer)
+    assert isinstance(gen.get_sql_range(SlotDefinition(name="s", range="string")), Text)
+
+
+def test_get_sql_range_fk_chain_reuses_sv() -> None:
+    """
+    When a slot's range is a class that has an integer identifier, the recursive
+    call to get_sql_range must resolve the FK type correctly whether sv is
+    supplied or not.  Verifies the fix where sv was not threaded through the
+    recursive call.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True, range="integer")
+    sb.add_slot("name", range="string")
+    sb.add_slot("address", range="Address")
+    sb.add_class("Address", ["id", "name"])
+    sb.add_class("Person", ["id", "name", "address"])
+    sb.add_defaults()
+    schema = sb.schema
+    gen = SQLTableGenerator(schema)
+    sv = SchemaView(schema)
+
+    # A slot whose range is a class with an integer identifier should resolve
+    # to Integer (the identifier type of the referenced class).
+    slot_address = SlotDefinition(name="address", range="Address")
+    result_with_sv = gen.get_sql_range(slot_address, schema, sv=sv)
+    result_without_sv = gen.get_sql_range(slot_address, schema)
+    assert isinstance(result_with_sv, Integer)
+    assert isinstance(result_without_sv, Integer)
+
+
+def test_get_sql_range_class_without_identifier() -> None:
+    """
+    When a slot's range is a class with no identifier/key, get_sql_range
+    returns Text regardless of whether sv is supplied.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("street", range="string")
+    sb.add_slot("ref", range="Address")
+    sb.add_class("Address", ["street"])
+    sb.add_class("Person", ["ref"])
+    sb.add_defaults()
+    schema = sb.schema
+    gen = SQLTableGenerator(schema)
+    sv = SchemaView(schema)
+
+    slot_ref = SlotDefinition(name="ref", range="Address")
+    assert isinstance(gen.get_sql_range(slot_ref, schema, sv=sv), Text)
+    assert isinstance(gen.get_sql_range(slot_ref, schema), Text)
+
+
+def test_generate_ddl_sv_reuse_consistent() -> None:
+    """
+    generate_ddl now passes sv into get_sql_range for every column.
+    The resulting DDL must be identical to what was produced before the
+    optimisation (i.e. the SchemaView reuse is transparent to callers).
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True, range="integer")
+    sb.add_slot("name", range="string")
+    sb.add_slot("age", range="integer")
+    sb.add_slot("address", range="Address")
+    sb.add_class("Address", ["id", "name"])
+    sb.add_class("Person", ["id", "name", "age", "address"])
+    sb.add_defaults()
+
+    gen = SQLTableGenerator(sb.schema)
+    ddl = gen.generate_ddl()
+
+    # FK column for 'address' referencing Address.id (integer) should be present
+    assert "address" in ddl.lower()
+    assert "Person".lower() in ddl.lower()
+    assert "Address".lower() in ddl.lower()

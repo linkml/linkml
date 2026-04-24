@@ -1,0 +1,7 @@
+{% for inc in includes %}
+{% if inc.system %}
+#include <{{ inc.header }}>
+{% else %}
+#include "{{ inc.header }}"
+{% endif %}
+{% endfor %}
