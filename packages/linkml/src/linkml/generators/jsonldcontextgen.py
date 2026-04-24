@@ -16,7 +16,7 @@ from rdflib import SKOS, XSD, Namespace
 from linkml._version import __version__
 from linkml.utils.deprecation import deprecated_fields
 from linkml.utils.generator import Generator, shared_arguments
-from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
+from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
 from linkml_runtime.linkml_model.types import SHEX
 from linkml_runtime.utils.formatutils import camelcase, underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -282,6 +282,57 @@ class ContextGenerator(Generator):
             return True, next(iter(coercions))
         return False, None
 
+    def _vocab_eligible_enum(self, enum: EnumDefinition) -> tuple[bool, str | None]:
+        """Check if an enum qualifies for ``@type: @vocab`` context generation.
+
+        An enum is eligible when:
+
+        1. Every permissible value defines a ``meaning`` IRI.
+        2. All meaning IRIs share a single namespace prefix.
+        3. Each value's ``text`` equals the local part of its ``meaning`` CURIE.
+
+        When eligible, the generated context can use ``@type: @vocab`` with a
+        scoped ``@vocab`` set to the common namespace.  This lets bare string
+        values (e.g. ``"RoadTypeMotorway"``) expand to full IRIs — a JSON-LD
+        1.1 §4.2.3 / §4.1.8 compliant approach.
+
+        Returns ``(True, namespace_str)`` or ``(False, None)``.
+        """
+        if not enum.permissible_values:
+            return False, None
+
+        prefixes: set[str] = set()
+        for pv_text, pv in enum.permissible_values.items():
+            if not pv or not pv.meaning:
+                return False, None
+
+            meaning = str(pv.meaning)
+            if ":" not in meaning:
+                return False, None
+
+            prefix, local = meaning.split(":", 1)
+            prefixes.add(prefix)
+
+            if local != pv_text:
+                self.logger.debug(
+                    "Enum %s value '%s' text does not match meaning local name '%s'; falling back to ENUM_CONTEXT.",
+                    enum.name,
+                    pv_text,
+                    local,
+                )
+                return False, None
+
+        if len(prefixes) != 1:
+            return False, None
+
+        # Resolve the single prefix to a namespace URI
+        prefix = next(iter(prefixes))
+        namespace = self.namespaces.get(prefix)
+        if not namespace:
+            return False, None
+
+        return True, str(namespace)
+
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if self.exclude_imports and slot.name not in self._local_slots:
             return
@@ -307,7 +358,17 @@ class ContextGenerator(Generator):
                 elif has_class_range:
                     slot_def["@type"] = "@id"
                 elif slot.range in self.schema.enums:
-                    slot_def["@context"] = ENUM_CONTEXT
+                    enum = self.schema.enums[slot.range]
+                    eligible, vocab_ns = self._vocab_eligible_enum(enum)
+                    if eligible:
+                        # JSON-LD 1.1 §4.2.3 + §4.1.8: scoped @vocab coercion.
+                        # Bare string values expand via @vocab; structured
+                        # {text, description, meaning} objects still work via
+                        # the SKOS mappings in the scoped context.
+                        slot_def["@type"] = "@vocab"
+                        slot_def["@context"] = {**ENUM_CONTEXT, "@vocab": vocab_ns}
+                    else:
+                        slot_def["@context"] = ENUM_CONTEXT
                     # Add the necessary prefixes to the namespace
                     skos = self.namespaces.prefix_for(SKOS)
                     if not skos:
