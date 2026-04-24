@@ -23,7 +23,7 @@ from linkml.utils.deprecation import DEPRECATIONS
 # -- Project information -----------------------------------------------------
 
 project = 'linkml'
-copyright = '2021-2024, LinkML Authors'
+copyright = '2021-2026, LinkML Authors'
 author = 'LinkML Authors'
 
 

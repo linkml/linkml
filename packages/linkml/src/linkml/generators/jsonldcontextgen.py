@@ -56,8 +56,22 @@ class ContextGenerator(Generator):
     fix_multivalue_containers: bool | None = False
     exclude_imports: bool = False
     """If True, elements from imported schemas won't be included in the generated context"""
+    exclude_external_imports: bool = False
+    """If True, elements from URL-based external vocabulary imports are excluded.
+
+    Local file imports and linkml standard imports are kept.  This is useful
+    when extending an external ontology (e.g. W3C Verifiable Credentials)
+    whose terms are ``@protected`` in their own JSON-LD context — redefining
+    them locally would violate JSON-LD 1.1 §4.1.11.
+
+    This flag is effective regardless of the ``mergeimports`` setting:
+    even with ``mergeimports=False``, external vocabulary elements can
+    leak into the context via the schema map.
+    """
     _local_classes: set | None = field(default=None, repr=False)
     _local_slots: set | None = field(default=None, repr=False)
+    _external_classes: set | None = field(default=None, repr=False)
+    _external_slots: set | None = field(default=None, repr=False)
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
@@ -69,7 +83,7 @@ class ContextGenerator(Generator):
         super().__post_init__()
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
-        if self.exclude_imports:
+        if self.exclude_imports or self.exclude_external_imports:
             if self.schemaview:
                 sv = self.schemaview
             else:
@@ -77,8 +91,31 @@ class ContextGenerator(Generator):
                 if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
                     source = str(Path(self.base_dir) / source)
                 sv = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
-            self._local_classes = set(sv.all_classes(imports=False).keys())
-            self._local_slots = set(sv.all_slots(imports=False).keys())
+            if self.exclude_imports:
+                self._local_classes = set(sv.all_classes(imports=False).keys())
+                self._local_slots = set(sv.all_slots(imports=False).keys())
+            if self.exclude_external_imports:
+                self._external_classes, self._external_slots = self._collect_external_elements(sv)
+
+    @staticmethod
+    def _collect_external_elements(sv: SchemaView) -> tuple[set[str], set[str]]:
+        """Identify classes and slots from URL-based external vocabulary imports.
+
+        Walks the SchemaView ``schema_map`` (populated by ``imports_closure``)
+        and collects element names from schemas whose import key starts with
+        ``http://`` or ``https://``.  Local file imports and ``linkml:``
+        standard imports are left untouched.
+        """
+        sv.imports_closure()
+        external_classes: set[str] = set()
+        external_slots: set[str] = set()
+        for schema_key, schema_def in sv.schema_map.items():
+            if schema_key == sv.schema.name:
+                continue
+            if schema_key.startswith("http://") or schema_key.startswith("https://"):
+                external_classes.update(schema_def.classes.keys())
+                external_slots.update(schema_def.slots.keys())
+        return external_classes, external_slots
 
     def visit_schema(self, base: str | Namespace | None = None, output: str | None = None, **_):
         # Add any explicitly declared prefixes
@@ -194,6 +231,8 @@ class ContextGenerator(Generator):
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.exclude_imports and cls.name not in self._local_classes:
             return False
+        if self.exclude_external_imports and cls.name in self._external_classes:
+            return False
 
         class_def = {}
         cn = camelcase(cls.name)
@@ -245,6 +284,8 @@ class ContextGenerator(Generator):
 
     def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
         if self.exclude_imports and slot.name not in self._local_slots:
+            return
+        if self.exclude_external_imports and slot.name in self._external_slots:
             return
 
         if slot.identifier:
@@ -389,6 +430,13 @@ class ContextGenerator(Generator):
     show_default=True,
     help="Use --exclude-imports to exclude imported elements from the generated JSON-LD context. This is useful when "
     "extending an ontology whose terms already have context definitions in their own JSON-LD context file.",
+)
+@click.option(
+    "--exclude-external-imports/--no-exclude-external-imports",
+    default=False,
+    show_default=True,
+    help="Exclude elements from URL-based external vocabulary imports while keeping local file imports. "
+    "Useful when extending ontologies (e.g. W3C VC v2) whose terms are @protected in their own JSON-LD context.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
