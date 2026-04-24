@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from types import ModuleType
+from typing import ClassVar
 
 from jinja2 import Environment, PackageLoader
 
@@ -40,6 +41,7 @@ class DataframeGenerator(OOCodeGenerator, ABC):
     file_extension = "py"
     java_style = False
     TYPE_MAP: dict = None
+    environments: ClassVar[dict[str, Environment]] = {}
 
     # ObjectVars
     template_file: str = None
@@ -103,8 +105,11 @@ class DataframeGenerator(OOCodeGenerator, ABC):
         """Load the template for code generation."""
         if template_path is None:
             template_path = self.default_template_path()
-        jinja_env = Environment(loader=PackageLoader("linkml.generators.panderagen", template_path))
-        return jinja_env.get_template(template_filename)
+        if template_path not in self.environments:
+            self.environments[template_path] = Environment(
+                loader=PackageLoader("linkml.generators.panderagen", template_path)
+            )
+        return self.environments[template_path].get_template(template_filename)
 
     def serialize(self, directory: str = None, rendered_module: OODocument | None = None) -> str:
         """
