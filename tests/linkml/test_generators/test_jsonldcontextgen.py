@@ -862,3 +862,375 @@ def test_exclude_external_imports_works_with_mergeimports_false(tmp_path):
     # External vocabulary terms must be excluded
     assert "issuer" not in ctx, "External slot 'issuer' should be excluded with mergeimports=False"
     assert "ExternalCredential" not in ctx, "External class should be excluded with mergeimports=False"
+
+
+def test_xsd_anyuri_as_iri_flag():
+    """Test that --xsd-anyuri-as-iri maps uri ranges to @type: @id.
+
+    By default, ``range: uri`` (type_uri ``xsd:anyURI``) produces
+    ``@type: xsd:anyURI`` (typed literal). With ``xsd_anyuri_as_iri=True``,
+    it produces ``@type: @id`` (IRI node reference), aligning the JSON-LD
+    context with the SHACL generator which already emits ``sh:nodeKind sh:IRI``
+    for the same type.
+
+    See:
+      - W3C SHACL §4.8.1 sh:nodeKind (https://www.w3.org/TR/shacl/#NodeKindConstraintComponent)
+      - JSON-LD 1.1 §4.2.2 Type Coercion (https://www.w3.org/TR/json-ld11/#type-coercion)
+      - RDF 1.1 §3.3 Literals vs §3.2 IRIs (https://www.w3.org/TR/rdf11-concepts/)
+    """
+    schema_yaml = """
+id: https://example.org/test-uri-context
+name: test_uri_context
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+  node_ref:
+    range: nodeidentifier
+    slot_uri: ex:nodeRef
+  name:
+    range: string
+    slot_uri: ex:name
+
+classes:
+  Thing:
+    slots:
+      - homepage
+      - node_ref
+      - name
+"""
+    # Default behaviour: uri → xsd:anyURI (backward compatible)
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+    # Opt-in: uri → @id (aligned with SHACL sh:nodeKind sh:IRI)
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["homepage"]["@type"] == "@id", (
+        f"Expected @type: @id for uri range with xsd_anyuri_as_iri=True, got {ctx_iri['homepage'].get('@type')}"
+    )
+
+    # nodeidentifier is unaffected by the flag (not xsd:anyURI-typed)
+    # Its default @type depends on URI_RANGES matching shex:nonLiteral;
+    # we only verify the flag doesn't change its behaviour.
+    assert ctx_default["node_ref"]["@type"] == ctx_iri["node_ref"]["@type"]
+
+    # string → no @type regardless of flag
+    assert "@type" not in ctx_default.get("name", {})
+    assert "@type" not in ctx_iri.get("name", {})
+
+
+def test_xsd_anyuri_as_iri_with_any_of():
+    """The --xsd-anyuri-as-iri flag must also apply to ``any_of`` slots
+    whose type branches include ``uri`` mixed with class ranges.
+
+    ``_literal_coercion_for_ranges`` resolves mixed any_of type branches
+    and must use the extended URI_RANGES when the flag is active.
+    """
+    schema_yaml = """
+id: https://example.org/test-anyof-uri
+name: test_anyof_uri
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+classes:
+  Container:
+    slots:
+      - mixed_slot
+  Target:
+    class_uri: ex:Target
+
+slots:
+  mixed_slot:
+    slot_uri: ex:mixed
+    any_of:
+      - range: Target
+      - range: uri
+"""
+    # Default: mixed class+uri any_of — uri resolves to xsd:anyURI literal,
+    # which disagrees with @id from the class branch → no coercion emitted
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    default_type = ctx_default.get("mixed_slot", {}).get("@type")
+    assert default_type != "@id", f"Without flag, mixed any_of should not resolve to @id, got {default_type}"
+
+    # With flag: uri branch now also resolves to @id, matching the class branch
+    # → all branches agree → @id is emitted
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["mixed_slot"]["@type"] == "@id", (
+        f"Expected @id for mixed any_of with flag, got {ctx_iri.get('mixed_slot', {}).get('@type')}"
+    )
+
+
+def test_xsd_anyuri_as_iri_owl():
+    """OWL generator must produce owl:ObjectProperty for uri ranges when flag is set.
+
+    Without the flag, ``range: uri`` produces ``owl:DatatypeProperty`` with
+    ``rdfs:range xsd:anyURI``. With ``xsd_anyuri_as_iri=True``, it should
+    produce ``owl:ObjectProperty`` (no rdfs:range restriction), aligning
+    with the SHACL generator's ``sh:nodeKind sh:IRI``.
+    """
+    from rdflib import OWL, RDF, URIRef
+
+    from linkml.generators.owlgen import OwlSchemaGenerator
+
+    schema_yaml = """
+id: https://example.org/test-owl-uri
+name: test_owl_uri
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+  name:
+    range: string
+    slot_uri: ex:name
+classes:
+  Thing:
+    slots:
+      - homepage
+      - name
+"""
+    # Default: uri → DatatypeProperty (must disable type_objects which
+    # unconditionally returns ObjectProperty for all type-ranged slots)
+    gen_default = OwlSchemaGenerator(schema_yaml, type_objects=False)
+    g_default = gen_default.as_graph()
+    homepage_uri = URIRef("https://example.org/homepage")
+    default_rdf_type = set(g_default.objects(homepage_uri, RDF.type))
+    assert OWL.DatatypeProperty in default_rdf_type, (
+        f"Without flag, homepage should be DatatypeProperty, got {default_rdf_type}"
+    )
+
+    # With flag: uri → ObjectProperty
+    gen_iri = OwlSchemaGenerator(schema_yaml, xsd_anyuri_as_iri=True, type_objects=False)
+    g_iri = gen_iri.as_graph()
+    iri_rdf_type = set(g_iri.objects(homepage_uri, RDF.type))
+    assert OWL.ObjectProperty in iri_rdf_type, f"With flag, homepage should be ObjectProperty, got {iri_rdf_type}"
+    assert OWL.DatatypeProperty not in iri_rdf_type, (
+        f"With flag, homepage should NOT be DatatypeProperty, got {iri_rdf_type}"
+    )
+
+    # String slot must remain DatatypeProperty regardless of flag
+    name_uri = URIRef("https://example.org/name")
+    name_rdf_type = set(g_iri.objects(name_uri, RDF.type))
+    assert OWL.DatatypeProperty in name_rdf_type, f"String slot should remain DatatypeProperty, got {name_rdf_type}"
+
+
+def test_xsd_anyuri_as_iri_uriorcurie_range():
+    """``uriorcurie`` also maps to ``xsd:anyURI`` and must behave identically
+    to ``uri`` when the ``--xsd-anyuri-as-iri`` flag is active.
+
+    This is a high-priority coverage gap: ``uriorcurie`` is distinct from
+    ``uri`` at the LinkML level but shares the same XSD type.
+    """
+    schema_yaml = """
+id: https://example.org/test-uriorcurie
+name: test_uriorcurie
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  reference:
+    range: uriorcurie
+    slot_uri: ex:reference
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+
+classes:
+  Thing:
+    slots:
+      - reference
+      - homepage
+"""
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    assert ctx_default["reference"]["@type"] == "xsd:anyURI"
+    assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["reference"]["@type"] == "@id", "uriorcurie should map to @id with xsd_anyuri_as_iri=True"
+    assert ctx_iri["homepage"]["@type"] == "@id", "uri should map to @id with xsd_anyuri_as_iri=True"
+
+
+def test_xsd_anyuri_as_iri_curie_range_unchanged():
+    """``curie`` maps to ``xsd:string`` (not ``xsd:anyURI``), so the flag
+    must NOT affect its coercion.
+
+    This documents the cross-type boundary: ``uri`` and ``uriorcurie``
+    share ``xsd:anyURI``, but ``curie`` uses ``xsd:string``.
+    """
+    schema_yaml = """
+id: https://example.org/test-curie
+name: test_curie
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  curie_slot:
+    range: curie
+    slot_uri: ex:curieSlot
+  uri_slot:
+    range: uri
+    slot_uri: ex:uriSlot
+
+classes:
+  Thing:
+    slots:
+      - curie_slot
+      - uri_slot
+"""
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+
+    # curie (xsd:string) must be unaffected by the flag
+    curie_default = ctx_default.get("curie_slot", {}).get("@type")
+    curie_iri = ctx_iri.get("curie_slot", {}).get("@type")
+    assert curie_default == curie_iri, f"curie coercion should not change with flag: {curie_default} vs {curie_iri}"
+
+    # uri (xsd:anyURI) must change — sanity check
+    assert ctx_iri["uri_slot"]["@type"] == "@id"
+
+
+def test_xsd_anyuri_as_iri_owl_curie_unchanged():
+    """OWL generator must keep ``range: curie`` as DatatypeProperty even with flag.
+
+    ``curie`` maps to ``xsd:string`` (not ``xsd:anyURI``), so the
+    ``--xsd-anyuri-as-iri`` flag must not promote it to ObjectProperty.
+    This verifies cross-generator consistency: the JSON-LD context generator
+    already correctly excludes ``curie`` via ``URI_RANGES_WITH_XSD``; the
+    OWL generator must match via ``is_xsd_anyuri_range()``.
+    """
+    from rdflib import OWL, RDF, URIRef
+
+    from linkml.generators.owlgen import OwlSchemaGenerator
+
+    schema_yaml = """
+id: https://example.org/test-owl-curie
+name: test_owl_curie
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  compact_id:
+    range: curie
+    slot_uri: ex:compactId
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+classes:
+  Thing:
+    slots:
+      - compact_id
+      - homepage
+"""
+    compact_id_uri = URIRef("https://example.org/compact_id")
+    homepage_uri = URIRef("https://example.org/homepage")
+
+    # With flag: curie must stay DatatypeProperty, uri must become ObjectProperty
+    gen = OwlSchemaGenerator(schema_yaml, xsd_anyuri_as_iri=True, type_objects=False)
+    g = gen.as_graph()
+
+    curie_types = set(g.objects(compact_id_uri, RDF.type))
+    assert OWL.DatatypeProperty in curie_types, f"curie slot must remain DatatypeProperty with flag, got {curie_types}"
+    assert OWL.ObjectProperty not in curie_types, (
+        f"curie slot must NOT become ObjectProperty with flag, got {curie_types}"
+    )
+
+    # Sanity: uri must become ObjectProperty
+    uri_types = set(g.objects(homepage_uri, RDF.type))
+    assert OWL.ObjectProperty in uri_types, f"uri slot should be ObjectProperty with flag, got {uri_types}"
+
+
+def test_xsd_anyuri_as_iri_cli_flag():
+    """Verify the ``--xsd-anyuri-as-iri`` flag is wired through Click."""
+    import tempfile
+    from pathlib import Path
+
+    from click.testing import CliRunner
+
+    from linkml.generators.jsonldcontextgen import cli
+
+    schema_yaml = """
+id: https://example.org/test-cli
+name: test_cli
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+
+classes:
+  Thing:
+    slots:
+      - homepage
+"""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        schema_path = Path(tmpdir) / "test.yaml"
+        schema_path.write_text(schema_yaml)
+
+        runner = CliRunner()
+
+        # Without flag
+        result_default = runner.invoke(cli, [str(schema_path)])
+        assert result_default.exit_code == 0, result_default.output
+        ctx_default = json.loads(result_default.output)["@context"]
+        assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+        # With flag
+        result_iri = runner.invoke(cli, [str(schema_path), "--xsd-anyuri-as-iri"])
+        assert result_iri.exit_code == 0, result_iri.output
+        ctx_iri = json.loads(result_iri.output)["@context"]
+        assert ctx_iri["homepage"]["@type"] == "@id"
