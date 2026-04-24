@@ -769,7 +769,11 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 len([x for x in sv.class_induced_slots(slot_range) if x.designates_type]) > 0
                 and len(sv.class_descendants(slot_range)) > 1
             ):
-                descendants = [self._get_class_python_name(c) for c in sv.class_descendants(slot_range)]
+                descendants = [
+                    self._get_class_python_name(c)
+                    for c in sv.class_descendants(slot_range)
+                    if not sv.get_class(c).abstract
+                ]
                 return "Union[" + ",".join(descendants) + "]"
             else:
                 return f"{self._get_class_python_name(slot_range)}"
