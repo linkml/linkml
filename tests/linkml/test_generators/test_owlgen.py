@@ -824,3 +824,210 @@ def test_children_are_mutually_disjoint(
         members_node = list(g.objects(disjoint_nodes[0], OWL.members))[0]
         members = set(Collection(g, members_node))
         assert members == {EX[name] for name in child_names}
+
+
+# ---------------------------------------------------------------------------
+# --default-language tests
+# ---------------------------------------------------------------------------
+
+
+def _build_lang_test_schema():
+    """Build a small schema with classes, slots, and an enum for language-tag testing."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "vehicle_name",
+            range="string",
+            description="The vehicle name.",
+            title="Name",
+        )
+    )
+    sb.add_slot(
+        SlotDefinition(
+            "color",
+            range="ColorEnum",
+            description="Paint color.",
+        )
+    )
+    sb.add_class(
+        "Vehicle",
+        slots=["vehicle_name", "color"],
+        description="A road vehicle.",
+        title="Vehicle",
+    )
+    sb.add_enum(
+        "ColorEnum",
+        permissible_values=[
+            PermissibleValue(text="Red", description="A warm color."),
+            PermissibleValue(text="Blue", description="A cool color."),
+        ],
+    )
+    sb.add_defaults()
+    return sb.schema
+
+
+def test_default_language_tags_owl_labels():
+    """With --default-language en, rdfs:label and skos:definition get @en."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Class label
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle", lang="en") in labels
+
+    # Class description
+    defs = list(g.objects(EX.Vehicle, SKOS.definition))
+    assert Literal("A road vehicle.", lang="en") in defs
+
+    # Enum PV label — PVs are emitted as <{enum_uri}#{pv_text}>
+    pv_red = URIRef(str(EX.ColorEnum) + "#Red")
+    pv_labels = list(g.objects(pv_red, RDFS.label))
+    assert Literal("Red", lang="en") in pv_labels
+
+    # No plain (untagged) literals should be present for these predicates
+    for lit in labels + defs + pv_labels:
+        assert lit.language == "en", f"Expected @en, got lang={lit.language!r} on {lit!r}"
+
+
+def test_no_default_language_produces_plain_literals():
+    """Without --default-language, literals have no language tag (backward-compat)."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no language tag, got {lit.language!r}"
+
+
+def test_default_language_does_not_tag_uri_range_metaslots():
+    """Metaslots with range 'uri' or 'uriorcurie' must produce URIRef, never tagged literals."""
+    schema = _build_lang_test_schema()
+    # id_prefixes has range uriorcurie — set it to verify no language tag
+    schema.id_prefixes = ["http://example.org/"]
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="de",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Verify labels do get the tag
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle", lang="de") in labels
+
+    # Verify integer/boolean metaslots (if any) don't get tags
+    # The schema title should be tagged (string range)
+    assert any(
+        isinstance(o, Literal) and o.language == "de"
+        for o in g.objects(None, RDFS.label)
+    ), "At least one label should be @de"
+
+
+def test_default_language_in_language_override():
+    """Element-level in_language overrides the generator default_language."""
+    schema = _build_lang_test_schema()
+    schema.classes["Vehicle"].in_language = "de"
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Vehicle class should use element-level "de", not default "en"
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle", lang="de") in labels
+    assert Literal("Vehicle", lang="en") not in labels
+
+    # ColorEnum should still use the default "en" (no override)
+    enum_labels = list(g.objects(EX.ColorEnum, RDFS.label))
+    assert Literal("ColorEnum", lang="en") in enum_labels
+
+
+def test_default_language_annotations_tagged():
+    """OWL annotations with string values are language-tagged."""
+    from linkml_runtime.linkml_model.meta import Annotation, Prefix
+
+    sb = SchemaBuilder()
+    sb.add_class("Widget", description="A widget.")
+    sb.add_defaults()
+    sb.schema.prefixes["skos"] = Prefix(
+        prefix_prefix="skos",
+        prefix_reference="http://www.w3.org/2004/02/skos/core#",
+    )
+    sb.schema.classes["Widget"].annotations["skos:altLabel"] = Annotation(
+        tag="skos:altLabel", value="Gadget"
+    )
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    alt_labels = list(g.objects(EX.Widget, SKOS.altLabel))
+    assert Literal("Gadget", lang="en") in alt_labels
+
+
+def test_default_language_empty_string_treated_as_none():
+    """An empty string default_language is normalised to None (no tags)."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+def test_default_language_whitespace_only_treated_as_none():
+    """A whitespace-only default_language is normalised to None (no tags)."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="   ",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
