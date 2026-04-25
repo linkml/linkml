@@ -2,12 +2,13 @@
 
 import logging
 import os
+import re
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, TypeAlias, TypeVar
+from typing import Any, ClassVar, TypeAlias, TypeVar
 
 import click
 import rdflib
@@ -235,6 +236,73 @@ class OwlSchemaGenerator(Generator):
     - have no ``rdfs:range`` restriction (any IRI is valid)
     """
 
+    default_language: str | None = None
+    """Default BCP 47 language tag for human-readable string literals.
+
+    When set, ``rdfs:label``, ``rdfs:comment``, ``skos:definition``,
+    ``dcterms:title``, and other annotation literals are emitted with the
+    specified language tag (e.g. ``"Person"@en``).  An element-level
+    ``in_language`` value overrides this default for that element.
+
+    Technical literals (URIs, numeric constraints, XSD facets) are never
+    language-tagged.  Conforms to :rfc:`5646` (BCP 47).
+    """
+
+    # Metaslot ranges that represent human-readable text (eligible for language tags).
+    # Everything else (uri, uriorcurie, datetime, boolean, integer, classes, …) is technical.
+    _LANGUAGE_TAGGABLE_RANGES: ClassVar[frozenset[str]] = frozenset({"string", "ncname"})
+
+    # Syntactic validator for BCP 47 language tags (RFC 5646 §2.1 ABNF).
+    # Each group maps 1:1 to an ABNF production: language, script, region,
+    # variant, extension, privateuse, and grandfathered (irregular + regular).
+    _BCP47_RE: ClassVar[re.Pattern[str]] = re.compile(
+        r"^(?:"
+        r"(?:(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3})|[A-Za-z]{4}|[A-Za-z]{5,8})"
+        r"(?:-[A-Za-z]{4})?"
+        r"(?:-(?:[A-Za-z]{2}|\d{3}))?"
+        r"(?:-(?:[A-Za-z\d]{5,8}|\d[A-Za-z\d]{3}))*"
+        r"(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z\d]{2,8})+)*"
+        r"(?:-x(?:-[A-Za-z\d]{1,8})+)?"
+        r"|x(?:-[A-Za-z\d]{1,8})+"
+        r"|en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon"
+        r"|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu"
+        r"|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE"
+        r"|art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu"
+        r"|zh-hakka|zh-min|zh-min-nan|zh-xiang"
+        r")$",
+        re.ASCII,
+    )
+
+    def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
+        """Return the BCP 47 language tag for *element*, or ``None``.
+
+        Resolution order:
+        1. ``element.in_language`` (element-level override)
+        2. ``self.default_language`` (generator-level default)
+
+        Empty or whitespace-only strings are normalised to ``None``.
+        Tags that do not conform to RFC 5646 §2.1 syntax produce a warning.
+        """
+        if element is not None:
+            element_lang = getattr(element, "in_language", None)
+            if element_lang and element_lang.strip():
+                tag = element_lang.strip()
+                if not self._BCP47_RE.match(tag):
+                    logger.warning("in_language value %r is not a well-formed BCP 47 tag (RFC 5646 §2.1)", tag)
+                return tag
+        tag = (self.default_language or "").strip() or None
+        if tag is not None and not self._BCP47_RE.match(tag):
+            logger.warning("--default-language value %r is not a well-formed BCP 47 tag (RFC 5646 §2.1)", tag)
+        return tag
+
+    def _literal(self, value: str, element: "Definition | PermissibleValue | None" = None) -> Literal:
+        """Create a language-tagged ``Literal`` for a human-readable string.
+
+        If no language tag is resolved, falls back to a plain literal.
+        """
+        lang = self._resolve_language(element)
+        return Literal(value, lang=lang) if lang else Literal(value)
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -307,6 +375,8 @@ class OwlSchemaGenerator(Generator):
         Add annotation properties.
 
         Set the profile attribute to the appropriate OWL profile.
+        Human-readable string literals are language-tagged when
+        ``default_language`` is set or the element has ``in_language``.
 
         :param e: schema element
         :param uri: URI representation of schema element
@@ -316,6 +386,7 @@ class OwlSchemaGenerator(Generator):
         msv = self.metamodel_schemaview
         this_sv = self.schemaview
         sn_mappings = msv.slot_name_mappings()
+        lang = self._resolve_language(e)
 
         # iterate through all the assigned metamodel slots
         for metaslot_name, metaslot_value in vars(e).items():
@@ -340,6 +411,8 @@ class OwlSchemaGenerator(Generator):
                         obj = URIRef(v)
                     elif metaslot_range == "uriorcurie":
                         obj = URIRef(this_sv.expand_curie(v))
+                    elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
+                        obj = Literal(v, lang=lang)
                     else:
                         obj = Literal(v)
                 elif metaslot_range in msv.all_subsets():
@@ -351,7 +424,7 @@ class OwlSchemaGenerator(Generator):
                     # else:
                     #    logger.debug(f"Skipping {uri} {metaslot_uri} => {v}")
                 else:
-                    obj = Literal(v)
+                    obj = Literal(v, lang=lang) if lang else Literal(v)
                 self.graph.add((uri, metaslot_uri, obj))
 
         for k, v in e.annotations.items():
@@ -368,7 +441,11 @@ class OwlSchemaGenerator(Generator):
                 if k_uri == k:
                     k_uri = None
             if k_uri:
-                self.graph.add((uri, URIRef(k_uri), Literal(v.value)))
+                if isinstance(v.value, str):
+                    obj = self._literal(v.value, e)
+                else:
+                    obj = Literal(v.value)
+                self.graph.add((uri, URIRef(k_uri), obj))
 
     def add_class(self, cls: ClassDefinition) -> None:
         """
@@ -1079,7 +1156,7 @@ class OwlSchemaGenerator(Generator):
             if not isinstance(pv_node, Literal):
                 self.add_metadata(pv, pv_node)
                 g.add((pv_node, RDF.type, pv_owl_type))
-                g.add((pv_node, RDFS.label, Literal(pv.text)))
+                g.add((pv_node, RDFS.label, self._literal(pv.text, pv)))
                 # TODO: make this configurable
                 # self._add_element_properties(pv_uri, pv)
                 if self.metaclasses:
@@ -1666,6 +1743,17 @@ class OwlSchemaGenerator(Generator):
         "instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). "
         "Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and "
         "the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id)."
+    ),
+)
+@click.option(
+    "--default-language",
+    default=None,
+    show_default=True,
+    help=(
+        "Default BCP 47 language tag for human-readable string literals "
+        "(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, "
+        "skos:definition and other text annotations are emitted with the "
+        "specified language tag.  Element-level in_language overrides this."
     ),
 )
 @click.version_option(__version__, "-V", "--version")

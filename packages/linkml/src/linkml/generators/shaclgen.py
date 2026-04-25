@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -75,12 +76,64 @@ class ShaclGenerator(Generator):
     """
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
+
+    default_language: str | None = None
+    """Default BCP 47 language tag for human-readable string literals.
+
+    When set, ``sh:name``, ``sh:description``, ``rdfs:label``, and
+    ``rdfs:comment`` literals are emitted with the specified language tag.
+    Conforms to :rfc:`5646` (BCP 47).
+    """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
     file_extension = "shacl.ttl"
     visit_all_class_slots = False
     uses_schemaloader = False
+
+    # Syntactic validator for BCP 47 language tags (RFC 5646 §2.1 ABNF).
+    # Each group maps 1:1 to an ABNF production: language, script, region,
+    # variant, extension, privateuse, and grandfathered (irregular + regular).
+    _BCP47_RE: re.Pattern[str] = re.compile(
+        r"^(?:"
+        r"(?:(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3})|[A-Za-z]{4}|[A-Za-z]{5,8})"
+        r"(?:-[A-Za-z]{4})?"
+        r"(?:-(?:[A-Za-z]{2}|\d{3}))?"
+        r"(?:-(?:[A-Za-z\d]{5,8}|\d[A-Za-z\d]{3}))*"
+        r"(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z\d]{2,8})+)*"
+        r"(?:-x(?:-[A-Za-z\d]{1,8})+)?"
+        r"|x(?:-[A-Za-z\d]{1,8})+"
+        r"|en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon"
+        r"|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu"
+        r"|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE"
+        r"|art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu"
+        r"|zh-hakka|zh-min|zh-min-nan|zh-xiang"
+        r")$",
+        re.ASCII,
+    )
+
+    def _resolve_language(self, element=None) -> str | None:
+        """Return the BCP 47 language tag for *element*, or ``None``.
+
+        Resolution order:
+        1. ``element.in_language`` (element-level override)
+        2. ``self.default_language`` (generator-level default)
+
+        Empty or whitespace-only strings are normalised to ``None``.
+        Tags that do not conform to RFC 5646 §2.1 syntax produce a warning.
+        """
+        if element is not None:
+            element_lang = getattr(element, "in_language", None)
+            if element_lang and element_lang.strip():
+                tag = element_lang.strip()
+                if not self._BCP47_RE.match(tag):
+                    logger.warning("in_language value %r is not a well-formed BCP 47 tag (RFC 5646 §2.1)", tag)
+                return tag
+        tag = (self.default_language or "").strip() or None
+        if tag is not None and not self._BCP47_RE.match(tag):
+            logger.warning("--default-language value %r is not a well-formed BCP 47 tag (RFC 5646 §2.1)", tag)
+        return tag
 
     def __post_init__(self) -> None:
         super().__post_init__()
@@ -133,13 +186,13 @@ class ShaclGenerator(Generator):
             if c.title is not None:
                 # Use rdfs:label for NodeShape titles per SHACL spec.
                 # sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.
-                shape_pv(RDFS.label, Literal(c.title))
+                shape_pv(RDFS.label, Literal(c.title, lang=self._resolve_language(c)))
             if c.description is not None:
                 # Use rdfs:comment for NodeShape descriptions per SHACL spec.
                 # sh:description has rdfs:domain of sh:PropertyShape, so using it
                 # on NodeShapes causes RDFS-aware validators to incorrectly infer
                 # the NodeShape is also a PropertyShape. See issue #3059.
-                shape_pv(RDFS.comment, Literal(c.description))
+                shape_pv(RDFS.comment, Literal(c.description, lang=self._resolve_language(c)))
 
             shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
 
@@ -164,11 +217,15 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v)))
 
+                def prop_pv_text(p, v):
+                    if v is not None:
+                        g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
+
                 prop_pv(SH.path, slot_uri)
                 prop_pv_literal(SH.order, order)
                 order += 1
-                prop_pv_literal(SH.name, s.title)
-                prop_pv_literal(SH.description, s.description)
+                prop_pv_text(SH.name, s.title)
+                prop_pv_text(SH.description, s.description)
                 # minCount
                 if s.minimum_cardinality:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
@@ -430,9 +487,14 @@ class ShaclGenerator(Generator):
             else:
                 N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
-            # otherwise treat as Literal with derived XSD datatype
+            # otherwise treat as Literal with derived XSD datatype.
+            # String annotations are language-tagged when default_language is set;
+            # non-string types (bool, int, float) keep their XSD datatype.
+            lang = self._resolve_language(item)
             if type(a["value"]) is extended_str and ":" in a["value"]:
                 N_object = URIRef(sv.expand_curie(a["value"]))
+            elif isinstance(a["value"], str) and lang:
+                N_object = Literal(a["value"], lang=lang)
             else:
                 N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
 
@@ -526,6 +588,17 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
     "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--default-language",
+    default=None,
+    show_default=True,
+    help=(
+        "Default BCP 47 language tag for human-readable string literals "
+        "(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, "
+        "rdfs:label and rdfs:comment are emitted with the specified "
+        "language tag."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):
