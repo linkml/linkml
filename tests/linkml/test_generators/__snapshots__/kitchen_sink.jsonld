@@ -296,7 +296,13 @@
          "@id": "FakeClass"
       },
       "FamilialRelationship": {
-         "@id": "FamilialRelationship"
+         "@id": "FamilialRelationship",
+         "@context": {
+            "related_to": {
+               "@id": "related_to",
+               "@type": "@id"
+            }
+         }
       },
       "Friend": {
          "@id": "Friend"
