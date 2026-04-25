@@ -1192,6 +1192,34 @@ def _build_shacl_lang_schema():
     return sb.schema
 
 
+def _build_message_test_schema():
+    """Build a schema for sh:message testing (includes a second slot without title)."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "vehicle_name",
+            range="string",
+            description="The vehicle name.",
+            title="Name",
+            required=True,
+        )
+    )
+    sb.add_slot(
+        SlotDefinition(
+            "speed",
+            range="integer",
+            description="Speed in km/h.",
+        )
+    )
+    sb.add_class(
+        "Vehicle",
+        slots=["vehicle_name", "speed"],
+        description="A road vehicle.",
+    )
+    sb.add_defaults()
+    return sb.schema
+
+
 def _parse_shacl(schema, **kwargs):
     shacl = ShaclGenerator(schema, mergeimports=False, **kwargs).serialize()
     g = rdflib.Graph()
@@ -1318,3 +1346,127 @@ def test_shacl_default_language_whitespace_only_treated_as_none():
     assert Literal("Vehicle") in labels
     for lit in labels:
         assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+# ---------------------------------------------------------------------------
+# --message-template tests
+# ---------------------------------------------------------------------------
+
+
+def test_message_template_basic():
+    """--message-template emits sh:message on every property shape."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="Validation of {name} failed!")
+
+    vehicle_shape = EX.Vehicle
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Validation of vehicle_name failed!") in msgs
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert Literal("Validation of speed failed!") in msgs
+
+
+def test_message_template_title_placeholder():
+    """{title} expands to slot title, falling back to slot name."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="{title} is invalid")
+
+    vehicle_shape = EX.Vehicle
+
+    # vehicle_name has title="Name"
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Name is invalid") in msgs
+
+    # speed has no title → falls back to slot name
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert Literal("speed is invalid") in msgs
+
+
+def test_message_template_class_placeholder():
+    """{class} expands to the enclosing class name."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="{class}.{name} constraint violated")
+
+    vehicle_shape = EX.Vehicle
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Vehicle.vehicle_name constraint violated") in msgs
+
+
+def test_no_message_template_no_sh_message():
+    """Without --message-template, no sh:message is emitted (backward-compat)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema)
+
+    vehicle_shape = EX.Vehicle
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert msgs == []
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert msgs == []
+
+
+def test_message_template_invalid_placeholder_raises():
+    """An invalid placeholder in --message-template raises ValueError."""
+    import pytest
+
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Error: {invalid}")
+
+
+def test_message_template_positional_placeholder_raises():
+    """Positional placeholders like {0} raise ValueError."""
+    import pytest
+
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Error: {0}")
+
+
+def test_message_template_format_spec_raises():
+    """Format specs like {name:d} raise ValueError."""
+    import pytest
+
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Error: {name:d}")
+
+
+def test_message_template_empty_string_treated_as_none():
+    """An empty message_template is normalised to None (no sh:message)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="")
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert msgs == []
+
+
+def test_message_template_whitespace_only_treated_as_none():
+    """A whitespace-only message_template is normalised to None (no sh:message)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="   ")
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert msgs == []
+
+
+def test_message_template_with_default_language():
+    """sh:message is language-tagged when both --message-template and --default-language are set."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(
+        schema,
+        message_template="Validation of {name} failed!",
+        default_language="en",
+    )
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Validation of vehicle_name failed!", lang="en") in msgs
+
+    # Verify the message is NOT a plain literal
+    assert Literal("Validation of vehicle_name failed!") not in msgs

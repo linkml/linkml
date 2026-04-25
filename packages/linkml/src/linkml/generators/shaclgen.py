@@ -83,6 +83,23 @@ class ShaclGenerator(Generator):
     Conforms to :rfc:`5646` (BCP 47).
     """
 
+    message_template: str | None = None
+    """Template for ``sh:message`` on property shapes.
+
+    When set, each property shape receives an ``sh:message`` literal built from
+    this template.  The following placeholders are expanded:
+
+    * ``{name}`` — the slot name (underscore-separated LinkML name)
+    * ``{title}`` — the slot title (human-readable), falls back to *name*
+    * ``{class}`` — the enclosing class name
+    * ``{path}``  — the property IRI (compact or full)
+
+    Example: ``"Validation of {name} failed!"`` →
+    ``sh:message "Validation of has_speed failed!"``
+
+    If ``default_language`` is also set the literal is language-tagged.
+    """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -93,6 +110,7 @@ class ShaclGenerator(Generator):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.default_language = (self.default_language or "").strip() or None
+        self.message_template = (self.message_template or "").strip() or None
         self.generate_header()
 
     def generate_header(self) -> str:
@@ -182,6 +200,22 @@ class ShaclGenerator(Generator):
                 order += 1
                 prop_pv_text(SH.name, s.title)
                 prop_pv_text(SH.description, s.description)
+
+                # sh:message from template
+                if self.message_template is not None:
+                    try:
+                        msg_text = self.message_template.format(
+                            name=s.name,
+                            title=s.title or s.name,
+                            **{"class": c.name},
+                            path=str(slot_uri),
+                        )
+                    except (KeyError, IndexError, ValueError) as exc:
+                        raise ValueError(
+                            f"Invalid placeholder {exc} in --message-template. "
+                            f"Allowed: {{name}}, {{title}}, {{class}}, {{path}}"
+                        ) from None
+                    prop_pv_text(SH.message, msg_text)
                 # minCount
                 if s.minimum_cardinality:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
@@ -553,6 +587,17 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, "
         "rdfs:label and rdfs:comment are emitted with the specified "
         "language tag."
+    ),
+)
+@click.option(
+    "--message-template",
+    default=None,
+    show_default=True,
+    help=(
+        "Template string for sh:message on each property shape. "
+        "Placeholders: {name} (slot name), {title} (slot title or name), "
+        "{class} (class name), {path} (property IRI). "
+        'Example: "Validation of {name} failed!"'
     ),
 )
 @click.version_option(__version__, "-V", "--version")
