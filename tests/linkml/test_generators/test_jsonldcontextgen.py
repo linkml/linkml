@@ -862,3 +862,254 @@ def test_exclude_external_imports_works_with_mergeimports_false(tmp_path):
     # External vocabulary terms must be excluded
     assert "issuer" not in ctx, "External slot 'issuer' should be excluded with mergeimports=False"
     assert "ExternalCredential" not in ctx, "External class should be excluded with mergeimports=False"
+
+
+# ---------------------------------------------------------------------------
+# Enum @type: @vocab context generation (JSON-LD 1.1 §4.2.3 + §4.1.8)
+# ---------------------------------------------------------------------------
+
+
+def _ctx_for_yaml(yaml_text: str, tmp_path, **kwargs) -> dict:
+    """Generate a context from inline YAML and return the @context dict."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(textwrap.dedent(yaml_text), encoding="utf-8")
+    ctx_text = ContextGenerator(str(schema_path), **kwargs).serialize()
+    return json.loads(ctx_text)["@context"]
+
+
+ELIGIBLE_ENUM_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+      myns: https://example.org/myns/
+    imports:
+      - linkml:types
+    enums:
+      ColorEnum:
+        enum_uri: myns:Color
+        permissible_values:
+          Red:
+            meaning: myns:Red
+          Green:
+            meaning: myns:Green
+          Blue:
+            meaning: myns:Blue
+    slots:
+      favorite_color:
+        slot_uri: test:favoriteColor
+        range: ColorEnum
+    classes:
+      Thing:
+        class_uri: test:Thing
+        slots:
+          - favorite_color
+"""
+
+
+def test_eligible_enum_gets_vocab_coercion(tmp_path):
+    """Enum where all values have meanings with matching text gets @type: @vocab."""
+    ctx = _ctx_for_yaml(ELIGIBLE_ENUM_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["favorite_color"]
+    assert slot_ctx["@type"] == "@vocab", "Eligible enum slot should have @type: @vocab"
+    assert "@context" in slot_ctx
+    scoped = slot_ctx["@context"]
+    assert scoped["@vocab"] == "https://example.org/myns/"
+    # SKOS mappings preserved for backward compat with structured values
+    assert scoped["meaning"] == "@id"
+    assert scoped["text"] == "skos:notation"
+    assert scoped["description"] == "skos:prefLabel"
+
+
+INELIGIBLE_TEXT_MISMATCH_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+      codes: https://example.org/codes/
+    imports:
+      - linkml:types
+    enums:
+      EventType:
+        permissible_values:
+          HIRE:
+            meaning: codes:001
+          FIRE:
+            meaning: codes:002
+    slots:
+      event_type:
+        slot_uri: test:eventType
+        range: EventType
+    classes:
+      Event:
+        class_uri: test:Event
+        slots:
+          - event_type
+"""
+
+
+def test_text_mismatch_falls_back_to_enum_context(tmp_path):
+    """Enum where text != meaning local name falls back to ENUM_CONTEXT only."""
+    ctx = _ctx_for_yaml(INELIGIBLE_TEXT_MISMATCH_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["event_type"]
+    assert "@type" not in slot_ctx, "Ineligible enum should not get @type"
+    scoped = slot_ctx["@context"]
+    assert "@vocab" not in scoped, "Ineligible enum should not get scoped @vocab"
+    assert scoped["meaning"] == "@id"
+
+
+INELIGIBLE_NO_MEANING_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+    imports:
+      - linkml:types
+    enums:
+      MoodEnum:
+        permissible_values:
+          happy:
+            description: feeling happy
+          sad:
+            description: feeling sad
+    slots:
+      mood:
+        slot_uri: test:mood
+        range: MoodEnum
+    classes:
+      Person:
+        class_uri: test:Person
+        slots:
+          - mood
+"""
+
+
+def test_no_meaning_falls_back_to_enum_context(tmp_path):
+    """Enum where some values lack meaning falls back to ENUM_CONTEXT."""
+    ctx = _ctx_for_yaml(INELIGIBLE_NO_MEANING_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["mood"]
+    assert "@type" not in slot_ctx
+    scoped = slot_ctx["@context"]
+    assert "@vocab" not in scoped
+
+
+INELIGIBLE_MIXED_NS_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+      ns1: https://example.org/ns1/
+      ns2: https://example.org/ns2/
+    imports:
+      - linkml:types
+    enums:
+      MixedEnum:
+        permissible_values:
+          Foo:
+            meaning: ns1:Foo
+          Bar:
+            meaning: ns2:Bar
+    slots:
+      mixed:
+        slot_uri: test:mixed
+        range: MixedEnum
+    classes:
+      Container:
+        class_uri: test:Container
+        slots:
+          - mixed
+"""
+
+
+def test_mixed_namespaces_falls_back_to_enum_context(tmp_path):
+    """Enum with values from different namespaces falls back to ENUM_CONTEXT."""
+    ctx = _ctx_for_yaml(INELIGIBLE_MIXED_NS_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["mixed"]
+    assert "@type" not in slot_ctx
+    scoped = slot_ctx["@context"]
+    assert "@vocab" not in scoped
+
+
+def test_eligible_enum_bare_string_expands_to_iri(tmp_path):
+    """End-to-end: bare string enum value expands to the correct IRI.
+
+    Verifies the generated context enables the JSON-LD 1.1 expansion
+    described in §4.2.3 (type coercion via @vocab).
+
+    Uses rdflib's JSON-LD parser for expansion verification.
+    """
+    from rdflib import Graph, URIRef
+
+    ctx = _ctx_for_yaml(ELIGIBLE_ENUM_SCHEMA, tmp_path)
+
+    doc = {
+        "@context": ctx,
+        "@id": "urn:test:instance",
+        "favorite_color": "Red",
+    }
+
+    g = Graph()
+    g.parse(data=json.dumps(doc), format="json-ld")
+
+    pred = URIRef("https://example.org/test/favoriteColor")
+    objects = list(g.objects(URIRef("urn:test:instance"), pred))
+    assert len(objects) == 1
+    assert isinstance(objects[0], URIRef), f"Expected URIRef, got {type(objects[0]).__name__}: {objects[0]}"
+    assert str(objects[0]) == "https://example.org/myns/Red"
+
+
+def test_eligible_enum_structured_value_still_works(tmp_path):
+    """Structured enum value {text, meaning} still expands correctly.
+
+    The combined context (@type: @vocab + SKOS mappings) supports both
+    bare strings and structured objects simultaneously.
+
+    Uses rdflib's JSON-LD parser for expansion verification.
+    """
+    from rdflib import Graph, URIRef
+
+    ctx = _ctx_for_yaml(ELIGIBLE_ENUM_SCHEMA, tmp_path)
+
+    doc = {
+        "@context": ctx,
+        "@id": "urn:test:instance",
+        "favorite_color": {
+            "text": "Red",
+            "meaning": "https://example.org/myns/Red",
+        },
+    }
+
+    g = Graph()
+    g.parse(data=json.dumps(doc), format="json-ld")
+
+    pred = URIRef("https://example.org/test/favoriteColor")
+    subjects = list(g.objects(URIRef("urn:test:instance"), pred))
+    assert len(subjects) == 1
+    # The meaning → @id mapping makes the structured value a node with @id
+    assert isinstance(subjects[0], URIRef), f"Expected URIRef, got {type(subjects[0]).__name__}: {subjects[0]}"
+    assert str(subjects[0]) == "https://example.org/myns/Red"
+
+
+def test_kitchen_sink_employment_event_type_falls_back(kitchen_sink_path):
+    """Kitchen sink EmploymentEventType (HIRE→bizcodes:001) must fall back."""
+    ctx_text = ContextGenerator(kitchen_sink_path).serialize()
+    ctx = json.loads(ctx_text)["@context"]
+
+    # EmploymentEventType has text!=local (HIRE vs 001)
+    # Slots using this enum should not get @type: @vocab
+    if "employed_at" in ctx:
+        slot_def = ctx["employed_at"]
+        if isinstance(slot_def, dict) and "@context" in slot_def:
+            assert "@vocab" not in slot_def.get("@context", {})
