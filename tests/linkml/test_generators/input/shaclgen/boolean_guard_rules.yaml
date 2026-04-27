@@ -1,0 +1,70 @@
+id: https://example.org/boolean-guards
+name: boolean_guard_rules
+description: >-
+  Test schema for SHACL generation of sh:sparql constraints from LinkML rules.
+  Models the boolean-guard pattern where a boolean flag must be true if a
+  corresponding value property is present.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/boolean-guards/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  WeatherWind:
+    description: Whether wind conditions are present.
+    range: boolean
+    slot_uri: ex:WeatherWind
+  weatherWindValue:
+    description: Wind speed value.
+    range: decimal
+    slot_uri: ex:weatherWindValue
+  WeatherRain:
+    description: Whether rain conditions are present.
+    range: boolean
+    slot_uri: ex:WeatherRain
+  weatherRainValue:
+    description: Rain intensity value.
+    range: decimal
+    slot_uri: ex:weatherRainValue
+  Temperature:
+    description: Ambient temperature.
+    range: decimal
+    slot_uri: ex:Temperature
+
+classes:
+  Environment:
+    description: Environmental conditions.
+    class_uri: ex:Environment
+    slots:
+      - WeatherWind
+      - weatherWindValue
+      - WeatherRain
+      - weatherRainValue
+      - Temperature
+    rules:
+      - description: >-
+          If weatherWindValue is provided, WeatherWind must be true.
+        preconditions:
+          slot_conditions:
+            weatherWindValue:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            WeatherWind:
+              equals_string: "true"
+      - description: >-
+          If weatherRainValue is provided, WeatherRain must be true.
+        preconditions:
+          slot_conditions:
+            weatherRainValue:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            WeatherRain:
+              equals_string: "true"
