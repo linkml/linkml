@@ -144,5 +144,6 @@ classes:
 def test_all_descendants_abstract_raises():
     """Abstract range with no concrete descendants is a schema error."""
     import pytest
+
     with pytest.raises(ValueError, match="no concrete descendants"):
         PydanticGenerator(all_abstract_schema).compile_module()
