@@ -14,6 +14,7 @@ Contact Sarah Gehrke on Slack and they can help get you on the schedule!
 
 ## Helpful links
 - [Community Meeting Agenda](https://docs.google.com/document/d/1MStpDyh9LOZYJTjLtnpOsNYc3HaeU-bz0CHAI9xOjfQ/edit?tab=t.0#heading=h.6sqkx1xhumse): In this document you can find the zoom link to join the monthly call as well as recordings of previous sessions.
+- Community Meeting updates are often shared in the #linkml-community Slack channel. To join the LinkML Slack workspace, fill out this [form](https://docs.google.com/forms/d/e/1FAIpQLScJbdW0QcCS3432mHkTiir9D-HwT5g2iaXYiiy2aOOiCFS3RQ/viewform?usp=dialog).
 - As of 2026, community calls are recorded and uploaded to the [LinkML Youtube channel](https://www.youtube.com/@LinkML-org) to view anytime.
 
 ## Schedule
