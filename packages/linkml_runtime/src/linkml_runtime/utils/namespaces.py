@@ -1,3 +1,5 @@
+import builtins
+import keyword
 import logging
 from typing import Any
 
@@ -9,6 +11,28 @@ from requests.structures import CaseInsensitiveDict
 
 from linkml_runtime.utils.uri_validator import validate_uri
 from linkml_runtime.utils.yamlutils import TypedNode
+
+
+def _prefix_to_python_var(prefix: str) -> str:
+    """Return a safe module-level Python variable name for a CURIE prefix.
+    Mirrors ``linkml.generators.pythongen._safe_python_identifier`` so that
+    ``curie_for(pythonform=True)`` and ``gen_namespaces()`` always agree.
+    Uppercases and replaces ``.`` / ``-`` with ``_``, appends ``_NS`` on
+    keyword/builtin clashes, prepends ``NS_`` on leading-digit prefixes."""
+
+    name = prefix.upper().replace(".", "_").replace("-", "_")
+    lower = name.lower()
+    clashes = keyword.iskeyword(name) or keyword.iskeyword(lower)
+    if not clashes and hasattr(keyword, "issoftkeyword"):
+        clashes = keyword.issoftkeyword(name) or keyword.issoftkeyword(lower)
+    if not clashes:
+        clashes = hasattr(builtins, name) or hasattr(builtins, lower)
+    if clashes:
+        name = f"{name}_NS"
+    if name and not name[0].isalpha() and name[0] != "_":
+        name = f"NS_{name}"
+    return name
+
 
 META_NS = "meta"
 META_URI = "https://w3id.org/linkml/meta"
@@ -169,15 +193,11 @@ class Namespaces(CaseInsensitiveDict):
         # that matches the start of the URI coming into the method
         if len(match[0]):
             if pythonform:
-                # uppercase the namespace
-                namespace = match[1].upper()
+                namespace = _prefix_to_python_var(match[1])
                 # match[0] is the URI base string, so we remove that from the incoming URI
                 leftover_uri = uri_string.replace((match[0]), "")
                 if not leftover_uri:
                     return f"URIRef(str({namespace}))"
-                # why?
-                # elif leftover_uri.isidentifier():
-                #    return f"{namespace}.{leftover_uri}"
                 else:
                     return f'{namespace}["{leftover_uri}"]'
             else:
