@@ -56,6 +56,15 @@ not personal ownership of "your" code. CODEOWNERS are expected to:
 - **Engage constructively with proposals from the wider project**, including
   ones you would not have written yourself, when they are consistent with the
   project's direction.
+- **Review PRs in a timely manner.** Average time-to-review is the clearest
+  signal of a CODEOWNER's commitment. The cultural expectation is that most
+  PRs in an owned area receive a substantive review within roughly **two
+  weeks** of review being requested. Exceptions (holidays, unusually complex
+  PRs, release cycles) are normal and expected; persistent multi-week silence
+  is a sign that the stewardship arrangement needs to be revisited. We have
+  not yet adopted a formal numeric threshold here — the
+  [1-month fallback](#avoiding-review-bottlenecks-the-1-month-fallback) is
+  the safety net, not the target.
 
 A structural check on these expectations is built into the workflow: **no one
 can merge their own PR.** CODEOWNER approval and the act of merging are
@@ -164,11 +173,22 @@ Before requesting CODEOWNER status for an area, you should:
    team. If you are not yet, see the
    [contributor hierarchy](contributor-hierarchy.md) for how to join.
 2. Have a track record of **sustained, quality contributions** to the area in
-   question. There is no hard number, but a rough guide:
-   - At least a few merged PRs touching the area
+   question, demonstrated over an extended period. The baseline expectation
+   is **at least six merged PRs in the area, spanning at least six months**
+   — a burst of ten PRs in a single week, however high in quality, does not
+   by itself demonstrate the long-term familiarity that codeownership
+   requires. Both numbers matter: six PRs in two weeks is not enough, and
+   two PRs over six months is not enough. Further indicators:
+   - PRs spread across the period rather than concentrated in a short window
    - At least one non-trivial feature, bugfix, or refactor that required
      understanding the area's internals
-   - Ideally, you have already reviewed others' PRs in the area informally
+   - **At least three substantive reviews** of other contributors' PRs
+     anywhere in the LinkML repo — they do not have to be in the area you are
+     requesting codeownership of. Some generators have effectively a single
+     active developer, so requiring reviews specifically in that area would
+     be a catch-22. Codeownership is fundamentally a reviewing role, and
+     these three reviews are how you demonstrate that you already engage
+     with the wider group of contributors before being formally listed.
 3. Be willing to **respond to review requests** in a reasonable timeframe. If
    no CODEOWNER engages with a PR within one month, any core-team member may
    approve and merge it (see
@@ -183,11 +203,16 @@ No separate request issue — just open a PR.
 1. Open a PR against `.github/CODEOWNERS` adding yourself (and ideally a
    co-owner) to the relevant path(s).
 2. In the PR description, include:
-   - **Links to at least three merged PRs** in the area that justify
-     codeownership. These should be non-trivial contributions that
-     demonstrate you understand the area's internals.
+   - **Links to at least six merged PRs** in the area that justify
+     codeownership, spanning at least six months of activity. These should
+     be non-trivial contributions that demonstrate you understand the area's
+     internals.
+   - **Links to at least three reviews** you have given on other
+     contributors' PRs anywhere in the LinkML repo (they do not need to be
+     in the area you are requesting codeownership of), to show that you
+     already engage with the wider group of contributors.
    - A brief statement of what you intend to do as a CODEOWNER (e.g. "respond
-     to review requests within a week, help triage labelled issues").
+     to review requests within two weeks, help triage labelled issues").
    - (Optional) An [ORCID](https://orcid.org/) linked to your GitHub account.
 3. Existing CODEOWNERS of the area (or, if none, `@linkml/core-team`) review
    the PR. Rough consensus is sufficient.
@@ -201,9 +226,22 @@ No separate request issue — just open a PR.
 
 ### Merged PRs justifying codeownership
 
-- #<pr-number> — <short description>
-- #<pr-number> — <short description>
-- #<pr-number> — <short description>
+(At least six PRs, spanning at least six months of activity in the area.)
+
+- #<pr-number> — <short description> — <approximate date>
+- #<pr-number> — <short description> — <approximate date>
+- #<pr-number> — <short description> — <approximate date>
+- #<pr-number> — <short description> — <approximate date>
+- #<pr-number> — <short description> — <approximate date>
+- #<pr-number> — <short description> — <approximate date>
+
+### Reviews I have given
+
+(Anywhere in the LinkML repo — they do not need to be in this area.)
+
+- #<pr-number> — <short description of the review>
+- #<pr-number> — <short description of the review>
+- #<pr-number> — <short description of the review>
 
 ### What I will do as a CODEOWNER
 
