@@ -34,7 +34,7 @@ classifiers = [
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "click",
+    "click >= 8.2",
     "deprecated",
     "hbreader",
     "json-flattener >=0.1.9",

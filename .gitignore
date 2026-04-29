@@ -127,3 +127,4 @@ examples/PersonSchema/rust/Cargo.lock
 monorepo-cleanup.sh
 /tests/linkml/test_generators/__snapshots__/figs/class_event_local.svg
 /packages/linkml_runtime/linkml-model-github
+.worktrees/

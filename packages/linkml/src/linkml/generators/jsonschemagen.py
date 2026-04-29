@@ -44,6 +44,13 @@ json_schema_types: dict[str, tuple[str, str | None]] = {
     "xsddate": ("string", "date"),
     "xsddatetime": ("string", "date-time"),
     "xsdtime": ("string", "time"),
+    "uri": ("string", "uri"),
+}
+
+# Patterns implied by the Python base type in linkml-runtime.
+# These are used as fallbacks when the type definition itself has no ``pattern``.
+_base_implied_patterns: dict[str, str] = {
+    "ncname": r"^[a-zA-Z_][\w.-]*$",
 }
 
 
@@ -532,7 +539,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if slot.range in self.schemaview.all_types().keys():
             # types take lower priority
             schema_type = self.schemaview.induced_type(slot.range)
-            constraints.add_keyword("pattern", schema_type.pattern)
+            pattern = schema_type.pattern
+            if pattern is None and schema_type.base:
+                pattern = _base_implied_patterns.get(schema_type.base.lower())
+            constraints.add_keyword("pattern", pattern)
             constraints.add_keyword("minimum", schema_type.minimum_value)
             constraints.add_keyword("maximum", schema_type.maximum_value)
             constraints.add_keyword("const", schema_type.equals_string)

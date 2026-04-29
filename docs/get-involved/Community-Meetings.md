@@ -14,14 +14,16 @@ Contact Sarah Gehrke on Slack and they can help get you on the schedule!
 
 ## Helpful links
 - [Community Meeting Agenda](https://docs.google.com/document/d/1MStpDyh9LOZYJTjLtnpOsNYc3HaeU-bz0CHAI9xOjfQ/edit?tab=t.0#heading=h.6sqkx1xhumse): In this document you can find the zoom link to join the monthly call as well as recordings of previous sessions.
+- Community Meeting updates are often shared in the #linkml-community Slack channel. To join the LinkML Slack workspace, fill out this [form](https://docs.google.com/forms/d/e/1FAIpQLScJbdW0QcCS3432mHkTiir9D-HwT5g2iaXYiiy2aOOiCFS3RQ/viewform?usp=dialog).
 - As of 2026, community calls are recorded and uploaded to the [LinkML Youtube channel](https://www.youtube.com/@LinkML-org) to view anytime.
 
 ## Schedule
 
 | Date | Presenter 1	| Topic 1	| Presenter 2	| Topic 2 |
 | :---: | :---: | :---: | :----: | :---: |
-| May 21, 2026 | Inge Vejsbjerg | [LinkML for AI Governance at IBM](https://ibm.github.io/ai-atlas-nexus/) |Sierra Moxon|LinkML Microschemas| |
-| April 19, 2026 | Daniel Kapitan| [LinkML in Hospital ETL pipelines](https://github.com/linkml/linkml/pull/3257#issuecomment-4055029669)| Community Discussion Topics| | |
+| June 18, 2026 | Anh Nguyet Vu | Sage/Synapse's adoption of LinkML https://nf-osi.github.io/nf-metadata-dictionary/ | Corey Levinson | http://schema.oaedata.org/ |
+| May 21, 2026 | Inge Vejsbjerg | [LinkML for AI Governance at IBM](https://ibm.github.io/ai-atlas-nexus/) |Joshua Send|TypeDB and TypeQL| |
+| [April 16, 2026](https://docs.google.com/presentation/d/1d2AjM9TBESO6njMXBB-lw5A6WDIFMBb14ZhCRKN2GiY/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Daniel Kapitan| [Introducing PLUGIN and why we fell in love with LinkML](https://docs.google.com/presentation/d/1KqwKnq-f4JsSwHVRtCXZrwqBI7JIP1aqbUqlO7iEjd0/edit?slide=id.p1#slide=id.p1)| Community Discussion Topics| RareLink/REDCap + LinkML with Adam Graefe | |
 | [March 19, 2026](https://docs.google.com/presentation/d/13gQtrlTJcF3V8XzW4ruva9_D1tzyp8ZzDLATp2TuuMY/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Damien Goutte-Gattat | [linkml-java](https://github.com/gouttegd/linkml-java): a LinkML runtime library for the Java language ([Slides](https://drive.google.com/file/d/1-hXJo9FFmIvpERrKNJjb_-tTO_6354cM/view?usp=sharing))| Chris Mungall| Validating dynamic value sets with [linkml-term-validator](https://github.com/linkml/linkml-term-validator) ([Slides](https://docs.google.com/presentation/d/1lhdDImxBQDaj8yFgpRYF_pnCTNDVn3Ilkb_pHfoR7Po/edit?slide=id.p#slide=id.p))|
 | [February 19, 2026](https://docs.google.com/presentation/d/1Wa_vX8JhLeA_5b7dsRDDoWAA7uTG9fsiH0nMYjxjSz0/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | David Linke | [The new LinkML project template based on copier and why we built it](https://zenodo.org/records/18704589) <br> Repo: [linkml-project-copier](https://github.com/linkml/linkml-project-copier) | Nico Matentzoglu | [The LinkML Community Governance & Community Discussion](https://drive.google.com/file/d/1s2Fslc2pN6ig2-TDkdtzjtBKa5z1oFqC/view?usp=sharing) |
 | [January 15, 2026](https://docs.google.com/presentation/d/1ed5P1BsAylCiifEw6ATHmnNY24j91mViK62oZKcVYyo/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Adam Graefe | [LinkML in Rare Diseases: Ontology-Based Interoperability for Clinical Registries and Analysis](https://docs.google.com/presentation/d/1Zeme_WzQOMyyMjHkx5UIkvZMyTIzDVHy/edit?usp=sharing&ouid=113016219988110049925&rtpof=true&sd=true) | Community Discussion Topics | Markdown-data-dictionary generator with Vlad Korolev |

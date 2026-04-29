@@ -71,6 +71,10 @@
     {
       "prefix_prefix": "schema",
       "prefix_reference": "http://schema.org/"
+    },
+    {
+      "prefix_prefix": "qudt",
+      "prefix_reference": "http://qudt.org/vocab/quantitykind/"
     }
   ],
   "default_curi_maps": [
@@ -436,6 +440,11 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "base": "int",
       "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "unit": {
+        "symbol": "yr",
+        "ucum_code": "a",
+        "@type": "UnitOfMeasure"
+      },
       "@type": "TypeDefinition"
     }
   ],
@@ -750,6 +759,12 @@
       "range": "integer",
       "minimum_value": 0,
       "maximum_value": 999,
+      "unit": {
+        "symbol": "yr",
+        "ucum_code": "a",
+        "has_quantity_kind": "qudt:Time",
+        "@type": "UnitOfMeasure"
+      },
       "@type": "SlotDefinition"
     },
     {
