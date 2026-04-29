@@ -87,6 +87,7 @@ markers = [
   "pydanticgen_split: Split module generation in pydanticgen",
   "pydanticgen_npd: tests for the numpydantic array generator",
   "panderagen: tests for the pandera generator",
+  "integration: tests that require external services (e.g. a running TypeDB server)",
   "dataframe_polars_schema: tests for the polars schema dataframe generator",
   "tutorial: tests that execute tutorial markdown files",
   "pythongen: Tests for python generator",
@@ -104,7 +105,8 @@ markers = [
   "sqlddlpostgresgen: Tests for SQL DDL postgres generator",
   "owlgen: Tests for OWL generator",
   "yamlgen: Tests for the YAML generator",
-  "yarrrml: End-to-end tests for the YARRRML generator"
+  "yarrrml: End-to-end tests for the YARRRML generator",
+  "typedbgen: Tests for the TypeDB generator"
 ]
 
 # https://docs.astral.sh/ruff/settings/

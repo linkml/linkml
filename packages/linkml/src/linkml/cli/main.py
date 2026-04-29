@@ -57,7 +57,7 @@ from linkml.workspaces.example_runner import cli as linkml_run_examples
 # --------------------------------------------------
 
 
-@click.group()
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
 @click.version_option(__version__, "-V", "--version")
 def linkml():
     """
