@@ -291,7 +291,7 @@ classes:
     slots:
       - id
       - name
-      - long id
+      - long_id
 
   Dataset:
     tree_root: true
@@ -388,7 +388,7 @@ slots:
   diagnosis:
     range: DiagnosisConcept
     inlined: true
-  long id:
+  long_id:
     range: LongEnum
   procedure:
     range: ProcedureConcept

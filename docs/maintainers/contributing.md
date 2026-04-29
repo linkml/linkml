@@ -142,6 +142,11 @@ New tests in any directory should be written using pytest.
   If you make a change that intentionally causes some output to not match the saved snapshot file(s), you should update the snapshots by running `pytest` with the `--generate-snapshots` flag. You should try to run only a single or small group of tests with this flag (as opposed to the entire test suite). An exception to this rule is when preparing a new minor version of linkml after the metamodel changes, changes to the metamodel can have many (inconsequential) changes to multiple snapshots.
   The updated snapshot files should be checked in to Git alongside your other code changes.
 
+  Examples:
+
+  `uv run pytest tests/linkml/test_scripts/test_gen_owl.py --with-slow --generate-snapshots`
+  `uv run pytest tests/linkml/test_scripts/test_gen_shex.py --generate-snapshots --with-network`
+
   Debugging tip: sometimes a snapshot-based test may fail on GitHub actions, but may appear to pass locally. This can happen if the test is marked as a slow test,
   in which case you may need to use `--generate-snapshots` in combination with `--with-slow` (see below).
 

@@ -454,6 +454,46 @@ enums:
       indifferent:
         text: indifferent
         description: not overly friendly nor obnoxiously spiteful
+  LongEnum:
+    name: LongEnum
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/LongEnum
+    description: An example enum whose joined values will exceed 255 characters.
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern:
+        text: AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern
+      BetaSequenceIdentifier02_LongPatternLongPatternLongPattern:
+        text: BetaSequenceIdentifier02_LongPatternLongPatternLongPattern
+      GammaSequenceIdentifier03_LongPatternLongPatternLongPattern:
+        text: GammaSequenceIdentifier03_LongPatternLongPatternLongPattern
+      DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern:
+        text: DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern
+      EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern:
+        text: EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern
+      ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern:
+        text: ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern
+      EtaSequenceIdentifier07_LongPatternLongPatternLongPattern:
+        text: EtaSequenceIdentifier07_LongPatternLongPatternLongPattern
+      ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern:
+        text: ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern
+      IotaSequenceIdentifier09_LongPatternLongPatternLongPattern:
+        text: IotaSequenceIdentifier09_LongPatternLongPatternLongPattern
+      KappaSequenceIdentifier10_LongPatternLongPatternLongPattern:
+        text: KappaSequenceIdentifier10_LongPatternLongPatternLongPattern
+      LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern:
+        text: LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern
+      MuSequenceIdentifier12_LongPatternLongPatternLongPattern:
+        text: MuSequenceIdentifier12_LongPatternLongPatternLongPattern
+      NuSequenceIdentifier13_LongPatternLongPatternLongPattern:
+        text: NuSequenceIdentifier13_LongPatternLongPatternLongPattern
+      XiSequenceIdentifier14_LongPatternLongPatternLongPattern:
+        text: XiSequenceIdentifier14_LongPatternLongPatternLongPattern
+      OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern:
+        text: OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern
+      PiSequenceIdentifier16_LongPatternLongPatternLongPattern:
+        text: PiSequenceIdentifier16_LongPatternLongPatternLongPattern
+      RhoSequenceIdentifier17_LongPatternLongPatternLongPattern:
+        text: RhoSequenceIdentifier17_LongPatternLongPatternLongPattern
   KitchenStatus:
     name: KitchenStatus
     definition_uri: https://w3id.org/linkml/tests/core/KitchenStatus
@@ -574,6 +614,15 @@ slots:
     range: DiagnosisConcept
     inlined: true
     inlined_as_list: false
+  long_id:
+    name: long_id
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/long_id
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:long_id
+    owner: CodeSystem
+    domain_of:
+    - CodeSystem
+    range: LongEnum
   procedure:
     name: procedure
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/procedure
@@ -1580,6 +1629,7 @@ classes:
     slots:
     - id
     - name
+    - long_id
     class_uri: ks:CodeSystem
   Dataset:
     name: Dataset
