@@ -39,6 +39,31 @@ Implications:
 - Where possible, each rule should list **at least two people** so review is
   not blocked when one steward is unavailable.
 
+### Expectations of CODEOWNERS
+
+Being a CODEOWNER is stewardship on behalf of the wider LinkML community,
+not personal ownership of "your" code. CODEOWNERS are expected to:
+
+- **Act in the interest of the broader LinkML community** — its users,
+  downstream packages, and the long-term cohesion of the project — and not
+  only their own technical preferences for an area.
+- **Develop in line with LinkML's design principles.** Where the project has
+  established architectural directions (the meta-model, generator interfaces,
+  validation semantics, schema-driven workflows), changes in your area should
+  remain consistent with them. Disagreement with a direction is welcome, but
+  it should be argued in the open and resolved through governance — not
+  enforced through quiet vetoes.
+- **Engage constructively with proposals from the wider project**, including
+  ones you would not have written yourself, when they are consistent with the
+  project's direction.
+
+A structural check on these expectations is built into the workflow: **no one
+can merge their own PR.** CODEOWNER approval and the act of merging are
+deliberately separated, so neither a CODEOWNER nor any single core developer
+can unilaterally push a direction without engagement from at least one other
+reviewer. The mechanisms below — the 1-month fallback, the project-direction
+override, and the stepping-down process — exist within that frame.
+
 ## Avoiding review bottlenecks: the 1-month fallback
 
 CODEOWNERS is a stewardship signal, **not a veto**. If CODEOWNERS become
@@ -77,7 +102,7 @@ Details:
   if they believe the change was wrong.
 
 If a CODEOWNER consistently cannot meet the 1-month window, consider stepping
-down (see [How to step down](#how-to-step-down)) or adding co-owners so that
+down (see [Stepping down](#stepping-down)) or adding co-owners so that
 review is not dependent on a single person.
 
 ### Implementation note
@@ -89,6 +114,40 @@ required indefinitely. To make this policy effective in GitHub's UI, an
 requirement for a specific PR once the month has elapsed, or the policy may
 be encoded in a bot in the future. Until then, the policy is honour-based:
 core developers should invoke it sparingly and transparently.
+
+## When project direction and a CODEOWNER disagree
+
+CODEOWNERS exist to ensure technical review by someone familiar with an
+area; they are not a veto over the project's overall direction. From time to
+time the project will need to make a change that a CODEOWNER opposes — a
+coordinated change across generators, a deprecation, a meta-model evolution,
+or a course correction in how an area is built. The following escape hatches
+apply, in order of preference:
+
+1. **Discussion first.** Most disagreements resolve when both sides
+   articulate the underlying design principle and trade-off explicitly, in
+   the PR or in a linked governance issue. CODEOWNERS, the PR author, and
+   any interested core developers should engage at this level before
+   escalating.
+2. **Core-team override.** If discussion does not produce convergence and
+   the change is consistent with documented LinkML design principles, the
+   [`core-team`](https://github.com/orgs/linkml/teams/core-team) may approve
+   and merge the PR over the CODEOWNER's objection. The objection is recorded
+   in the PR — it is not erased — and the CODEOWNER may follow up with a
+   revert PR or a governance issue if they believe the change was wrong.
+3. **Realignment of stewardship.** If the misalignment between a CODEOWNER
+   and the project's direction is persistent across many PRs in an area,
+   repeated case-by-case overrides become a poor substitute for a clear
+   stewardship arrangement. The appropriate response is to revisit ownership
+   of the area; see [Stepping down](#stepping-down).
+
+Like the 1-month fallback, this escape hatch is intended to keep the project
+moving, not to route around stewards. CODEOWNERS retain their role and their
+voice; what the override removes is the ability for a single person to
+indefinitely block a change the wider project supports. Combined with the
+no-self-merge rule, the result is symmetrical: neither a CODEOWNER nor the
+core team can push a direction through an owned area without substantive
+engagement from someone else.
 
 ## How to ascend to CODEOWNER status
 
@@ -156,15 +215,34 @@ No separate request issue — just open a PR.
 <https://orcid.org/XXXX-XXXX-XXXX-XXXX>
 ```
 
-## How to step down
+## Stepping down
 
-If you no longer have capacity to review in an area, open a PR removing
-yourself from `CODEOWNERS`. No justification required. You can always be added
-back later.
+CODEOWNER status is a role, not a possession. It is picked up and put down as
+circumstances and the project change.
 
-If a CODEOWNER becomes unresponsive, an admin or a core developer may open a
-PR to remove them, with prior notice. This is not a punishment — it is
-hygiene. The goal of the file is to route reviews to *active* owners.
+**Voluntary stepping down.** If you no longer have capacity to review in an
+area, open a PR removing yourself from `CODEOWNERS`. No justification
+required. You can always be added back later.
+
+**Inactivity.** If a CODEOWNER becomes unresponsive over an extended period,
+an admin or a core developer may open a PR to remove them, with prior notice.
+This is not a punishment — it is hygiene. The goal of the file is to route
+reviews to *active* owners.
+
+**Realignment with project direction.** Occasionally, a CODEOWNER's vision
+for an area diverges materially from where the wider LinkML project is going,
+and case-by-case [project-direction overrides](#when-project-direction-and-a-codeowner-disagree)
+become a poor substitute for a clear stewardship arrangement. When this
+happens, the preferred outcome is a conversation: clarify the design
+principle in question, look for an arrangement that respects both the
+CODEOWNER's expertise and the project's direction, and update governance
+documents if the underlying disagreement points to something that should be
+written down. If alignment cannot be restored, the core team may, after
+explicit discussion with the person involved, open a PR to remove them as
+CODEOWNER for that area. The intent is realignment of formal sign-off, not
+removal of the person from the project — their expertise and past
+contributions are not erased, and they remain a valued contributor who can
+continue to review and advise informally.
 
 ## Editing the CODEOWNERS file
 
