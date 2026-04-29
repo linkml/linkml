@@ -26,4 +26,5 @@ update_validation_model: src/linkml_runtime/processing/validation_datamodel.py
 
 # temporary measure until linkml-model is synced
 src/linkml_runtime/processing/validation_datamodel.py: src/linkml_runtime/processing/validation_datamodel.yaml
-	gen-python $< > $@.tmp && mv $@.tmp $@
+	uv sync
+	uv run gen-python $< > $@.tmp && mv $@.tmp $@
