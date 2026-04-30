@@ -938,7 +938,20 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string is not None:
             equals_string = element.equals_string
             if is_literal is None:
-                logger.warning(f"ignoring equals_string={equals_string} as unable to tell if literal")
+                # Enum-ranged slots have "is_literal=None" because enums sit between
+                # literals and URIs in OWL.  Build a proper "owl:oneOf" datatype so that
+                # rules like `none_of: [{equals_string: "X"}]` on enum slots produces
+                # a valid OWL DatatypeComplementOf instead of being silently dropped.
+                # self._boolean_expression will simplify single-element lists to the element
+                # itself, so we create the rdfs:Datatype/owl:oneOf structure directly.
+                listnode = BNode()
+                Collection(self.graph, listnode, [Literal(equals_string)])
+                one_of_node = BNode()
+                self.graph.add((one_of_node, RDF.type, RDFS.Datatype))
+                self.graph.add((one_of_node, OWL.oneOf, listnode))
+                self.node_owltypes[one_of_node].add(RDFS.Literal)
+                owl_exprs.append(one_of_node)
+                owl_types.add(RDFS.Literal)
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
@@ -1413,6 +1426,7 @@ class OwlSchemaGenerator(Generator):
     ) -> OWL_EXPRESSION | None:
         expr_list: list[OWL_EXPRESSION] = self._present(exprs)
         if not expr_list:
+            logger.warning("All operands in complement expression resolved to None; skipping")
             return None
         neg_expr = BNode()
         if not owl_types:
