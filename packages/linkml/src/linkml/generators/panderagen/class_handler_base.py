@@ -55,6 +55,11 @@ class ClassHandlerBase:
             for slot_name in sv.class_slots(cn):
                 slot = sv.induced_slot(slot_name, cn)
                 if slot.range and slot.range in sv.all_classes() and slot.range not in sv.all_enums():
+                    ## Skip if the range is cn itself or a descendant of cn.
+                    ## The hierarchy already orders parent before child, so adding
+                    ## cn --> slot.range here would create a cycle with child --> cn.
+                    if cn in sv.class_ancestors(slot.range, reflexive=True):
+                        continue
                     # Only add dependency if slot is inlined or range has no identifier
                     if slot.inlined or slot.inlined_as_list or sv.get_identifier_slot(slot.range) is None:
                         sorter.add_dependency(cn, slot.range)

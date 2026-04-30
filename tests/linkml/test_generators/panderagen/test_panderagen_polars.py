@@ -236,3 +236,43 @@ def test_polars_transform_module(polars_transform_module_code):
         "load(",
     ]:
         assert expected in polars_transform_module_code
+
+
+_INPUT_DIR = Path(__file__).parent / "input"
+
+
+# type-mapping tests
+# date_or_datetime	linkml:DateOrDatetime   pl.Utf8 - Polars has no Date|Datetime union
+# objectidentifier	shex:iri	        pl.Utf8 - an IRI is a string
+# nodeidentifier	shex:nonLiteral         pl.Utf8 - a non-literal RDF node identifier
+
+
+@pytest.mark.parametrize(
+    "field_name, expected_dtype",
+    [
+        ("dod_field", "pl.Utf8"),
+        ("oid_field", "pl.Utf8"),
+        ("nid_field", "pl.Utf8"),
+    ],
+)
+def test_linkml_specific_type_mapping(field_name, expected_dtype):
+    """Non-XSD LinkML builtin types resolve to correct Polars dtypes without raising ValueError."""
+    generator = PolarsSchemaDataframeGenerator(str(_INPUT_DIR / "linkml_types_model.yaml"), backing_form="serialized")
+    code = generator.serialize()
+    assert f'"{field_name}": {expected_dtype},' in code
+
+
+# cyclic-dependency regression test
+
+
+def test_parent_slot_range_child_no_cycle():
+    """A parent class whose slot ranges over a child class must not raise a cyclic dependency error.
+
+    Without the fix in ClassHandlerBase.add_dependencies_by_association the hierarchy edge
+    Child→Parent and the association edge Parent→Child form a cycle in the dependency sorter.
+    """
+    generator = PolarsSchemaDataframeGenerator(str(_INPUT_DIR / "cyclic_model.yaml"), backing_form="serialized")
+    # Must not raise ValueError: Cyclic dependency detected
+    code = generator.serialize()
+    assert "ParentDict" in code
+    assert "ChildDict" in code

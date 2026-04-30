@@ -31,6 +31,10 @@ class PolarsSchemaDataframeGenerator(DataframeGenerator):
             "xsd:time": "pl.Time",
             "xsd:anyURI": "pl.Utf8",
             "xsd:decimal": "pl.Float64",
+            ## LinkML-specific types not in XSD namespace. Best matches!
+            "linkml:DateOrDatetime": "pl.Utf8",  # No direct Polars equivalent
+            "shex:iri": "pl.Utf8",  # objectidentifier
+            "shex:nonLiteral": "pl.Utf8",  # nodeidentifier
         }
 
     def __post_init__(self):
