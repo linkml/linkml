@@ -269,17 +269,14 @@ def test_keyword_named_slots_and_attributes(input_path):
     for kw in keyword.kwlist:
         if kw.islower():
             # Check slots registry
-            assert f"slots.{kw}_" in output, (
-                f"Expected 'slots.{kw}_' in slots registry but got no match"
-            )
+            assert f"slots.{kw}_" in output, f"Expected 'slots.{kw}_' in slots registry but got no match"
             # Check dataclass fields (both inline attributes and slot references)
-            assert f"{kw}_:" in output, (
-                f"Expected dataclass field '{kw}_:' in generated output but got no match"
-            )
+            assert f"{kw}_:" in output, f"Expected dataclass field '{kw}_:' in generated output but got no match"
 
     # The generated module must be valid Python (catches dataclass fields,
     # __post_init__ self-refs, and CurieNamespace attribute access).
     compile(output, "<generated>", "exec")
+
 
 def test_permissible_values():
     """
