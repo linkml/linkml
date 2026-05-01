@@ -1,0 +1,1269 @@
+# --- linkml_issue_384.yaml ---
+name: personinfo
+id: https://w3id.org/linkml/examples/personinfo
+imports:
+- linkml:types
+license: https://creativecommons.org/publicdomain/zero/1.0/
+prefixes:
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  sdo:
+    prefix_prefix: sdo
+    prefix_reference: http://schema.org/
+  ex:
+    prefix_prefix: ex
+    prefix_reference: https://w3id.org/linkml/examples/personinfo/
+default_prefix: ex
+default_range: string
+types:
+  string:
+    name: string
+    definition_uri: https://w3id.org/linkml/String
+    description: A character string
+    notes:
+    - In RDF serializations, a slot with range of string is treated as a literal or
+      type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced
+      with the lower case "string".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Text
+    base: str
+    uri: xsd:string
+  integer:
+    name: integer
+    definition_uri: https://w3id.org/linkml/Integer
+    description: An integer
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "integer".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Integer
+    base: int
+    uri: xsd:integer
+  boolean:
+    name: boolean
+    definition_uri: https://w3id.org/linkml/Boolean
+    description: A binary (true or false) value
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "boolean".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Boolean
+    base: Bool
+    uri: xsd:boolean
+    repr: bool
+  float:
+    name: float
+    definition_uri: https://w3id.org/linkml/Float
+    description: A real number that conforms to the xsd:float specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "float".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Float
+    base: float
+    uri: xsd:float
+  double:
+    name: double
+    definition_uri: https://w3id.org/linkml/Double
+    description: A real number that conforms to the xsd:double specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "double".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    close_mappings:
+    - schema:Float
+    base: float
+    uri: xsd:double
+  decimal:
+    name: decimal
+    definition_uri: https://w3id.org/linkml/Decimal
+    description: A real number with arbitrary precision that conforms to the xsd:decimal
+      specification
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "decimal".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    broad_mappings:
+    - schema:Number
+    base: Decimal
+    uri: xsd:decimal
+  time:
+    name: time
+    definition_uri: https://w3id.org/linkml/Time
+    description: A time object represents a (local) time of day, independent of any
+      particular day
+    notes:
+    - URI is dateTime because OWL reasoners do not work with straight date or time
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "time".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Time
+    base: XSDTime
+    uri: xsd:time
+    repr: str
+  date:
+    name: date
+    definition_uri: https://w3id.org/linkml/Date
+    description: a date (year, month and day) in an idealized calendar
+    notes:
+    - URI is dateTime because OWL reasoners don't work with straight date or time
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "date".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:Date
+    base: XSDDate
+    uri: xsd:date
+    repr: str
+  datetime:
+    name: datetime
+    definition_uri: https://w3id.org/linkml/Datetime
+    description: The combination of a date and time
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "datetime".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    exact_mappings:
+    - schema:DateTime
+    base: XSDDateTime
+    uri: xsd:dateTime
+    repr: str
+  date_or_datetime:
+    name: date_or_datetime
+    definition_uri: https://w3id.org/linkml/DateOrDatetime
+    description: Either a date or a datetime
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "date_or_datetime".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: linkml:DateOrDatetime
+    repr: str
+  uriorcurie:
+    name: uriorcurie
+    definition_uri: https://w3id.org/linkml/Uriorcurie
+    description: a URI or a CURIE
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "uriorcurie".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: URIorCURIE
+    uri: xsd:anyURI
+    repr: str
+  curie:
+    name: curie
+    definition_uri: https://w3id.org/linkml/Curie
+    conforms_to: https://www.w3.org/TR/curie/
+    description: a compact URI
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "curie".
+    comments:
+    - in RDF serializations this MUST be expanded to a URI
+    - in non-RDF serializations MAY be serialized as the compact representation
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: Curie
+    uri: xsd:string
+    repr: str
+  uri:
+    name: uri
+    definition_uri: https://w3id.org/linkml/Uri
+    conforms_to: https://www.ietf.org/rfc/rfc3987.txt
+    description: a complete URI
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "uri".
+    comments:
+    - in RDF serializations a slot with range of uri is treated as a literal or type
+      xsd:anyURI unless it is an identifier or a reference to an identifier, in which
+      case it is translated directly to a node
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    close_mappings:
+    - schema:URL
+    base: URI
+    uri: xsd:anyURI
+    repr: str
+  ncname:
+    name: ncname
+    definition_uri: https://w3id.org/linkml/Ncname
+    description: Prefix part of CURIE
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "ncname".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NCName
+    uri: xsd:string
+    repr: str
+  objectidentifier:
+    name: objectidentifier
+    definition_uri: https://w3id.org/linkml/Objectidentifier
+    description: A URI or CURIE that represents an object in the model.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "objectidentifier".
+    comments:
+    - Used for inheritance and type checking
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: ElementIdentifier
+    uri: shex:iri
+    repr: str
+  nodeidentifier:
+    name: nodeidentifier
+    definition_uri: https://w3id.org/linkml/Nodeidentifier
+    description: A URI, CURIE or BNODE that represents a node in a model.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "nodeidentifier".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: NodeIdentifier
+    uri: shex:nonLiteral
+    repr: str
+  jsonpointer:
+    name: jsonpointer
+    definition_uri: https://w3id.org/linkml/Jsonpointer
+    conforms_to: https://datatracker.ietf.org/doc/html/rfc6901
+    description: A string encoding a JSON Pointer. The value of the string MUST conform
+      to JSON Point syntax and SHOULD dereference to a valid object within the current
+      instance document when encoded in tree form.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "jsonpointer".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  jsonpath:
+    name: jsonpath
+    definition_uri: https://w3id.org/linkml/Jsonpath
+    conforms_to: https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html
+    description: A string encoding a JSON Path. The value of the string MUST conform
+      to JSON Point syntax and SHOULD dereference to zero or more valid objects within
+      the current instance document when encoded in tree form.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "jsonpath".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+  sparqlpath:
+    name: sparqlpath
+    definition_uri: https://w3id.org/linkml/Sparqlpath
+    conforms_to: https://www.w3.org/TR/sparql11-query/#propertypaths
+    description: A string encoding a SPARQL Property Path. The value of the string
+      MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects
+      within the current instance document when encoded as RDF.
+    notes:
+    - If you are authoring schemas in LinkML YAML, the type is referenced with the
+      lower case "sparqlpath".
+    from_schema: https://w3id.org/linkml/types
+    imported_from: linkml:types
+    base: str
+    uri: xsd:string
+    repr: str
+slots:
+  id:
+    name: id
+    definition_uri: https://w3id.org/linkml/examples/personinfo/id
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:id
+    owner: Thing
+    domain_of:
+    - Thing
+    range: string
+  full_name:
+    name: full_name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    title: full name
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:full_name
+    owner: Thing
+    domain_of:
+    - Thing
+    range: string
+  parent:
+    name: parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:parent
+    range: Thing
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  person__aliases:
+    name: person__aliases
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:aliases
+    alias: aliases
+    owner: Person
+    domain_of:
+    - Person
+    range: string
+    multivalued: true
+  person__phone:
+    name: person__phone
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:phone
+    alias: phone
+    owner: Person
+    domain_of:
+    - Person
+    range: string
+  person__age:
+    name: person__age
+    description: age in years
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:age
+    alias: age
+    owner: Person
+    domain_of:
+    - Person
+    range: integer
+  geoObject__aliases:
+    name: geoObject__aliases
+    comments:
+    - we introduce a deliberate conflict (single vs multivalied) with the aliases
+      attribute that is local to person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:aliases
+    alias: aliases
+    owner: GeoObject
+    domain_of:
+    - GeoObject
+    range: string
+    multivalued: false
+  geoObject__age:
+    name: geoObject__age
+    comments:
+    - we introduce a deliberate conflict (type vs class range) with the age attribute
+      that is local to person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:age
+    alias: age
+    owner: GeoObject
+    domain_of:
+    - GeoObject
+    range: GeoAge
+    inlined: true
+    inlined_as_list: true
+  geoAge__unit:
+    name: geoAge__unit
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:unit
+    alias: unit
+    owner: GeoAge
+    domain_of:
+    - GeoAge
+    range: string
+  geoAge__value:
+    name: geoAge__value
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slot_uri: ex:value
+    alias: value
+    owner: GeoAge
+    domain_of:
+    - GeoAge
+    range: float
+  Person_parent:
+    name: Person_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: parent
+    domain: Person
+    slot_uri: ex:parent
+    alias: parent
+    owner: Person
+    domain_of:
+    - Person
+    is_usage_slot: true
+    usage_slot_name: parent
+    range: Person
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+  Organization_full_name:
+    name: Organization_full_name
+    definition_uri: https://w3id.org/linkml/examples/personinfo/full_name
+    description: name of the organization, e.g. ACME inc
+    title: full name
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: full_name
+    domain: Organization
+    slot_uri: ex:full_name
+    alias: full_name
+    owner: Organization
+    domain_of:
+    - Organization
+    is_usage_slot: true
+    usage_slot_name: full_name
+    range: string
+  Organization_parent:
+    name: Organization_parent
+    definition_uri: https://w3id.org/linkml/examples/personinfo/parent
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: parent
+    domain: Organization
+    slot_uri: ex:parent
+    alias: parent
+    owner: Organization
+    domain_of:
+    - Organization
+    is_usage_slot: true
+    usage_slot_name: parent
+    range: Organization
+    multivalued: true
+    inlined: true
+    inlined_as_list: true
+classes:
+  Thing:
+    name: Thing
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Thing
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - id
+    - full_name
+    class_uri: ex:Thing
+  Person:
+    name: Person
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Person
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    mappings:
+    - sdo:Person
+    is_a: Thing
+    slots:
+    - id
+    - full_name
+    - person__aliases
+    - person__phone
+    - person__age
+    - Person_parent
+    slot_usage:
+      parent:
+        name: parent
+        range: Person
+    attributes:
+      aliases:
+        name: aliases
+        multivalued: true
+      phone:
+        name: phone
+      age:
+        name: age
+        description: age in years
+        range: integer
+    class_uri: sdo:Person
+  Organization:
+    name: Organization
+    definition_uri: https://w3id.org/linkml/examples/personinfo/Organization
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: Thing
+    slots:
+    - id
+    - Organization_full_name
+    - Organization_parent
+    slot_usage:
+      full_name:
+        name: full_name
+        description: name of the organization, e.g. ACME inc
+      parent:
+        name: parent
+        range: Organization
+    class_uri: ex:Organization
+  GeoObject:
+    name: GeoObject
+    definition_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    is_a: Thing
+    slots:
+    - id
+    - full_name
+    - geoObject__aliases
+    - geoObject__age
+    attributes:
+      aliases:
+        name: aliases
+        comments:
+        - we introduce a deliberate conflict (single vs multivalied) with the aliases
+          attribute that is local to person
+        multivalued: false
+      age:
+        name: age
+        comments:
+        - we introduce a deliberate conflict (type vs class range) with the age attribute
+          that is local to person
+        range: GeoAge
+    class_uri: ex:GeoObject
+  GeoAge:
+    name: GeoAge
+    definition_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
+    from_schema: https://w3id.org/linkml/examples/personinfo
+    slots:
+    - geoAge__unit
+    - geoAge__value
+    attributes:
+      unit:
+        name: unit
+      value:
+        name: value
+        range: float
+    class_uri: ex:GeoAge
+metamodel_version: 1.7.0
+source_file: linkml_issue_384.yaml
+source_file_date: '2000-01-01T00:00:00'
+source_file_size: 1
+generation_date: '2000-01-01T00:00:00'
+
+# --- linkml_issue_384.context.jsonld ---
+{
+  "@context": {
+    "@vocab": "https://w3id.org/linkml/examples/personinfo/",
+    "GeoAge": {
+      "@id": "GeoAge"
+    },
+    "GeoObject": {
+      "@id": "GeoObject"
+    },
+    "Organization": {
+      "@id": "Organization"
+    },
+    "Person": {
+      "@id": "sdo:Person"
+    },
+    "Thing": {
+      "@id": "Thing"
+    },
+    "age": {
+      "@id": "age",
+      "@type": "xsd:integer"
+    },
+    "aliases": {
+      "@id": "aliases"
+    },
+    "ex": "https://w3id.org/linkml/examples/personinfo/",
+    "full_name": {
+      "@id": "full_name"
+    },
+    "id": {
+      "@id": "id"
+    },
+    "linkml": "https://w3id.org/linkml/",
+    "parent": {
+      "@id": "parent",
+      "@type": "@id"
+    },
+    "phone": {
+      "@id": "phone"
+    },
+    "sdo": "http://schema.org/",
+    "unit": {
+      "@id": "unit"
+    },
+    "value": {
+      "@id": "value",
+      "@type": "xsd:float"
+    },
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  }
+}
+
+# --- linkml_issue_384.ttl ---
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/unit> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/value> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/GeoAge"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/GeoAge"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/slot_usage> _:cb87aa37e3ad3dfbc100de41e622ae57a55c01252d953cd7f596f3f617c04a97ed .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoAge__unit> .
+<https://w3id.org/linkml/examples/personinfo/GeoAge> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoAge__value> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/age> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/aliases> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/GeoObject"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/GeoObject"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slot_usage> _:cb6f98b99448d1238734b7af2cc92e23f15ba5c211db30144440eb739460c2cd83 .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/full_name> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoObject__age> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoObject__aliases> .
+<https://w3id.org/linkml/examples/personinfo/GeoObject> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/Organization"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/Organization"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/slot_usage> _:cbb30ac86ca541a453eee19cdf1b7946df090933188ade517a9677564c8beac5bd .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Organization_full_name> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Organization_parent> .
+<https://w3id.org/linkml/examples/personinfo/Organization> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <http://purl.org/dc/terms/title> "full name" .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <http://www.w3.org/2004/02/skos/core#prefLabel> "full_name" .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/full_name"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/description> "name of the organization, e.g. ACME inc" .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/domain> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/full_name> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/is_usage_slot> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/full_name"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization_full_name> <https://w3id.org/linkml/usage_slot_name> "full_name" .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <http://www.w3.org/2004/02/skos/core#prefLabel> "parent" .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/domain> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/inlined> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/inlined_as_list> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/parent> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/is_usage_slot> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/multivalued> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Organization_parent> <https://w3id.org/linkml/usage_slot_name> "parent" .
+<https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person> <http://www.w3.org/2004/02/skos/core#mappingRelation> "sdo:Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/age> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/aliases> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/attributes> <https://w3id.org/linkml/examples/personinfo/phone> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/class_uri> "http://schema.org/Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/Person"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slot_usage> _:cba5af5c45ef581571107e9f40ba038543b617d27dfa8e41f71bfa140c3e5b8c09 .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Person_parent> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/full_name> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/person__age> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/person__aliases> .
+<https://w3id.org/linkml/examples/personinfo/Person> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/person__phone> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <http://www.w3.org/2004/02/skos/core#prefLabel> "parent" .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/domain> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/inlined> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/inlined_as_list> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/is_a> <https://w3id.org/linkml/examples/personinfo/parent> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/is_usage_slot> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/multivalued> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Person_parent> <https://w3id.org/linkml/usage_slot_name> "parent" .
+<https://w3id.org/linkml/examples/personinfo/Thing> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/ClassDefinition> .
+<https://w3id.org/linkml/examples/personinfo/Thing> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/class_uri> "https://w3id.org/linkml/examples/personinfo/Thing"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/Thing"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slot_usage> _:cb0 .
+<https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/full_name> .
+<https://w3id.org/linkml/examples/personinfo/Thing> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
+<https://w3id.org/linkml/examples/personinfo/age> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/age> <http://www.w3.org/2004/02/skos/core#note> "we introduce a deliberate conflict (type vs class range) with the age attribute that is local to person" .
+<https://w3id.org/linkml/examples/personinfo/age> <https://w3id.org/linkml/description> "age in years" .
+<https://w3id.org/linkml/examples/personinfo/age> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/age> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/integer> .
+<https://w3id.org/linkml/examples/personinfo/aliases> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/aliases> <http://www.w3.org/2004/02/skos/core#note> "we introduce a deliberate conflict (single vs multivalied) with the aliases attribute that is local to person" .
+<https://w3id.org/linkml/examples/personinfo/aliases> <https://w3id.org/linkml/multivalued> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/boolean> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/boolean> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." .
+<https://w3id.org/linkml/examples/personinfo/boolean> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:Boolean"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/boolean> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/boolean> <https://w3id.org/linkml/base> "Bool" .
+<https://w3id.org/linkml/examples/personinfo/boolean> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Boolean"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/boolean> <https://w3id.org/linkml/description> "A binary (true or false) value" .
+<https://w3id.org/linkml/examples/personinfo/boolean> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/boolean> <https://w3id.org/linkml/repr> "bool" .
+<https://w3id.org/linkml/examples/personinfo/boolean> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#boolean"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/curie> <http://purl.org/dc/terms/conformsTo> "https://www.w3.org/TR/curie/" .
+<https://w3id.org/linkml/examples/personinfo/curie> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/curie> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." .
+<https://w3id.org/linkml/examples/personinfo/curie> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/curie> <http://www.w3.org/2004/02/skos/core#note> "in RDF serializations this MUST be expanded to a URI" .
+<https://w3id.org/linkml/examples/personinfo/curie> <http://www.w3.org/2004/02/skos/core#note> "in non-RDF serializations MAY be serialized as the compact representation" .
+<https://w3id.org/linkml/examples/personinfo/curie> <https://w3id.org/linkml/base> "Curie" .
+<https://w3id.org/linkml/examples/personinfo/curie> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Curie"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/curie> <https://w3id.org/linkml/description> "a compact URI" .
+<https://w3id.org/linkml/examples/personinfo/curie> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/curie> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/curie> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/date> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\"." .
+<https://w3id.org/linkml/examples/personinfo/date> <http://www.w3.org/2004/02/skos/core#editorialNote> "URI is dateTime because OWL reasoners don't work with straight date or time" .
+<https://w3id.org/linkml/examples/personinfo/date> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:Date"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date> <https://w3id.org/linkml/base> "XSDDate" .
+<https://w3id.org/linkml/examples/personinfo/date> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Date"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date> <https://w3id.org/linkml/description> "a date (year, month and day) in an idealized calendar" .
+<https://w3id.org/linkml/examples/personinfo/date> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/date> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/date> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#date"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <https://w3id.org/linkml/base> "str" .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/DateOrDatetime"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <https://w3id.org/linkml/description> "Either a date or a datetime" .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/date_or_datetime> <https://w3id.org/linkml/uri> "https://w3id.org/linkml/DateOrDatetime"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/datetime> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/datetime> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." .
+<https://w3id.org/linkml/examples/personinfo/datetime> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:DateTime"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/datetime> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/datetime> <https://w3id.org/linkml/base> "XSDDateTime" .
+<https://w3id.org/linkml/examples/personinfo/datetime> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Datetime"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/datetime> <https://w3id.org/linkml/description> "The combination of a date and time" .
+<https://w3id.org/linkml/examples/personinfo/datetime> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/datetime> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/datetime> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#dateTime"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/decimal> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/decimal> <http://www.w3.org/2004/02/skos/core#broadMatch> "schema:Number"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/decimal> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." .
+<https://w3id.org/linkml/examples/personinfo/decimal> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/decimal> <https://w3id.org/linkml/base> "Decimal" .
+<https://w3id.org/linkml/examples/personinfo/decimal> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Decimal"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/decimal> <https://w3id.org/linkml/description> "A real number with arbitrary precision that conforms to the xsd:decimal specification" .
+<https://w3id.org/linkml/examples/personinfo/decimal> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/decimal> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#decimal"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/double> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/double> <http://www.w3.org/2004/02/skos/core#closeMatch> "schema:Float"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/double> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." .
+<https://w3id.org/linkml/examples/personinfo/double> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/double> <https://w3id.org/linkml/base> "float" .
+<https://w3id.org/linkml/examples/personinfo/double> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Double"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/double> <https://w3id.org/linkml/description> "A real number that conforms to the xsd:double specification" .
+<https://w3id.org/linkml/examples/personinfo/double> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/double> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#double"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/float> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/float> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." .
+<https://w3id.org/linkml/examples/personinfo/float> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:Float"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/float> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/float> <https://w3id.org/linkml/base> "float" .
+<https://w3id.org/linkml/examples/personinfo/float> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Float"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/float> <https://w3id.org/linkml/description> "A real number that conforms to the xsd:float specification" .
+<https://w3id.org/linkml/examples/personinfo/float> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/float> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#float"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <http://purl.org/dc/terms/title> "full name" .
+<https://w3id.org/linkml/examples/personinfo/full_name> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/full_name"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/full_name> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/full_name"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <http://www.w3.org/2004/02/skos/core#prefLabel> "unit" .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__unit> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/unit"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <http://www.w3.org/2004/02/skos/core#prefLabel> "value" .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/float> .
+<https://w3id.org/linkml/examples/personinfo/geoAge__value> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/value"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <http://www.w3.org/2004/02/skos/core#note> "we introduce a deliberate conflict (type vs class range) with the age attribute that is local to person" .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <http://www.w3.org/2004/02/skos/core#prefLabel> "age" .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/GeoObject> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <https://w3id.org/linkml/inlined> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <https://w3id.org/linkml/inlined_as_list> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/GeoObject> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__age> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/age"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <http://www.w3.org/2004/02/skos/core#note> "we introduce a deliberate conflict (single vs multivalied) with the aliases attribute that is local to person" .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <http://www.w3.org/2004/02/skos/core#prefLabel> "aliases" .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/GeoObject> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/GeoObject> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/geoObject__aliases> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/aliases"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/id> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/id> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/id> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/id"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/id> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/id> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/id> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/id> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/id"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/integer> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/integer> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." .
+<https://w3id.org/linkml/examples/personinfo/integer> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:Integer"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/integer> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/integer> <https://w3id.org/linkml/base> "int" .
+<https://w3id.org/linkml/examples/personinfo/integer> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Integer"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/integer> <https://w3id.org/linkml/description> "An integer" .
+<https://w3id.org/linkml/examples/personinfo/integer> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/integer> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#integer"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <http://purl.org/dc/terms/conformsTo> "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <https://w3id.org/linkml/base> "str" .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Jsonpath"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <https://w3id.org/linkml/description> "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/jsonpath> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <http://purl.org/dc/terms/conformsTo> "https://datatracker.ietf.org/doc/html/rfc6901" .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <https://w3id.org/linkml/base> "str" .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Jsonpointer"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <https://w3id.org/linkml/description> "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/jsonpointer> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/ncname> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/ncname> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." .
+<https://w3id.org/linkml/examples/personinfo/ncname> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/ncname> <https://w3id.org/linkml/base> "NCName" .
+<https://w3id.org/linkml/examples/personinfo/ncname> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Ncname"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/ncname> <https://w3id.org/linkml/description> "Prefix part of CURIE" .
+<https://w3id.org/linkml/examples/personinfo/ncname> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/ncname> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/ncname> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <https://w3id.org/linkml/base> "NodeIdentifier" .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Nodeidentifier"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <https://w3id.org/linkml/description> "A URI, CURIE or BNODE that represents a node in a model." .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/nodeidentifier> <https://w3id.org/linkml/uri> "http://www.w3.org/ns/shex#nonLiteral"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <http://www.w3.org/2004/02/skos/core#note> "Used for inheritance and type checking" .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <https://w3id.org/linkml/base> "ElementIdentifier" .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Objectidentifier"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <https://w3id.org/linkml/description> "A URI or CURIE that represents an object in the model." .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/objectidentifier> <https://w3id.org/linkml/uri> "http://www.w3.org/ns/shex#iri"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/parent> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/parent> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/parent> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/parent> <https://w3id.org/linkml/inlined> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/parent> <https://w3id.org/linkml/inlined_as_list> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/parent> <https://w3id.org/linkml/multivalued> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/parent> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/parent> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/parent"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/person__age> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/person__age> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/person__age> <http://www.w3.org/2004/02/skos/core#prefLabel> "age" .
+<https://w3id.org/linkml/examples/personinfo/person__age> <https://w3id.org/linkml/description> "age in years" .
+<https://w3id.org/linkml/examples/personinfo/person__age> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/person__age> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/person__age> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/integer> .
+<https://w3id.org/linkml/examples/personinfo/person__age> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/age"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <http://www.w3.org/2004/02/skos/core#prefLabel> "aliases" .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <https://w3id.org/linkml/multivalued> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/person__aliases> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/aliases"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <http://www.w3.org/2004/02/skos/core#prefLabel> "phone" .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <https://w3id.org/linkml/domain_of> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <https://w3id.org/linkml/owner> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/person__phone> <https://w3id.org/linkml/slot_uri> "https://w3id.org/linkml/examples/personinfo/phone"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <http://purl.org/dc/terms/license> "https://creativecommons.org/publicdomain/zero/1.0/" .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SchemaDefinition> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <http://www.w3.org/ns/shacl#declare> _:cb12ea35aa63cc721cd40fd34b4d5d9273803f97d45aa2daf1ba2eaa4b56057c201 .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <http://www.w3.org/ns/shacl#declare> _:cb143d2c4dab8e5bf48fda351a4d8564e15c151870b769a85f734179402d94c77f6 .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <http://www.w3.org/ns/shacl#declare> _:cb1a41ad3544cb8764d54c45fc982a5303f0bd602841d715a83a410416873890504 .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/classes> <https://w3id.org/linkml/examples/personinfo/GeoAge> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/classes> <https://w3id.org/linkml/examples/personinfo/GeoObject> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/classes> <https://w3id.org/linkml/examples/personinfo/Organization> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/classes> <https://w3id.org/linkml/examples/personinfo/Person> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/classes> <https://w3id.org/linkml/examples/personinfo/Thing> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/default_prefix> "ex" .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/default_range> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/generation_date> "2000-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/id> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/imports> "linkml:types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/metamodel_version> "1.7.0" .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Organization_full_name> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Organization_parent> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Person_parent> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/full_name> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoAge__unit> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoAge__value> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoObject__age> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/geoObject__aliases> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/id> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/parent> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/person__age> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/person__aliases> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/person__phone> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/source_file> "linkml_issue_384.yaml" .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/source_file_date> "2000-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/source_file_size> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/boolean> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/curie> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/date> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/date_or_datetime> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/datetime> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/decimal> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/double> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/float> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/integer> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/jsonpath> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/jsonpointer> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/ncname> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/nodeidentifier> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/objectidentifier> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/sparqlpath> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/string> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/time> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/uri> .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/types> <https://w3id.org/linkml/examples/personinfo/uriorcurie> .
+<https://w3id.org/linkml/examples/personinfo/phone> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://purl.org/dc/terms/conformsTo> "https://www.w3.org/TR/sparql11-query/#propertypaths" .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <https://w3id.org/linkml/base> "str" .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Sparqlpath"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <https://w3id.org/linkml/description> "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/sparqlpath> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/string> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/string> <http://www.w3.org/2004/02/skos/core#editorialNote> "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." .
+<https://w3id.org/linkml/examples/personinfo/string> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:Text"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/string> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/string> <https://w3id.org/linkml/base> "str" .
+<https://w3id.org/linkml/examples/personinfo/string> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/String"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/string> <https://w3id.org/linkml/description> "A character string" .
+<https://w3id.org/linkml/examples/personinfo/string> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/string> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#string"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/time> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/time> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\"." .
+<https://w3id.org/linkml/examples/personinfo/time> <http://www.w3.org/2004/02/skos/core#editorialNote> "URI is dateTime because OWL reasoners do not work with straight date or time" .
+<https://w3id.org/linkml/examples/personinfo/time> <http://www.w3.org/2004/02/skos/core#exactMatch> "schema:Time"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/time> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/base> "XSDTime" .
+<https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Time"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/description> "A time object represents a (local) time of day, independent of any particular day" .
+<https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/time> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#time"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/unit> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/uri> <http://purl.org/dc/terms/conformsTo> "https://www.ietf.org/rfc/rfc3987.txt" .
+<https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/2004/02/skos/core#closeMatch> "schema:URL"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." .
+<https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/uri> <http://www.w3.org/2004/02/skos/core#note> "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" .
+<https://w3id.org/linkml/examples/personinfo/uri> <https://w3id.org/linkml/base> "URI" .
+<https://w3id.org/linkml/examples/personinfo/uri> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Uri"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/uri> <https://w3id.org/linkml/description> "a complete URI" .
+<https://w3id.org/linkml/examples/personinfo/uri> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/uri> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/uri> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#anyURI"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/TypeDefinition> .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <http://www.w3.org/2004/02/skos/core#editorialNote> "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <http://www.w3.org/2004/02/skos/core#inScheme> "https://w3id.org/linkml/types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/base> "URIorCURIE" .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/definition_uri> "https://w3id.org/linkml/Uriorcurie"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/description> "a URI or a CURIE" .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/imported_from> "linkml:types" .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/repr> "str" .
+<https://w3id.org/linkml/examples/personinfo/uriorcurie> <https://w3id.org/linkml/uri> "http://www.w3.org/2001/XMLSchema#anyURI"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+<https://w3id.org/linkml/examples/personinfo/value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/linkml/SlotDefinition> .
+<https://w3id.org/linkml/examples/personinfo/value> <https://w3id.org/linkml/range> <https://w3id.org/linkml/examples/personinfo/float> .
+_:cb12ea35aa63cc721cd40fd34b4d5d9273803f97d45aa2daf1ba2eaa4b56057c201 <http://www.w3.org/ns/shacl#namespace> "https://w3id.org/linkml/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cb12ea35aa63cc721cd40fd34b4d5d9273803f97d45aa2daf1ba2eaa4b56057c201 <http://www.w3.org/ns/shacl#prefix> "linkml" .
+_:cb143d2c4dab8e5bf48fda351a4d8564e15c151870b769a85f734179402d94c77f6 <http://www.w3.org/ns/shacl#namespace> "http://schema.org/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cb143d2c4dab8e5bf48fda351a4d8564e15c151870b769a85f734179402d94c77f6 <http://www.w3.org/ns/shacl#prefix> "sdo" .
+_:cb1a41ad3544cb8764d54c45fc982a5303f0bd602841d715a83a410416873890504 <http://www.w3.org/ns/shacl#namespace> "https://w3id.org/linkml/examples/personinfo/"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:cb1a41ad3544cb8764d54c45fc982a5303f0bd602841d715a83a410416873890504 <http://www.w3.org/ns/shacl#prefix> "ex" .
+
+# --- linkml_issue_384.py ---
+# Auto generated from linkml_issue_384.yaml by pythongen.py version: 0.0.1
+# Generation date: 2000-01-01T00:00:00
+# Schema: personinfo
+#
+# id: https://w3id.org/linkml/examples/personinfo
+# description:
+# license: https://creativecommons.org/publicdomain/zero/1.0/
+
+import dataclasses
+import re
+from dataclasses import dataclass
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
+
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+from linkml_runtime.linkml_model.types import Float, Integer, String
+
+metamodel_version = "1.7.0"
+version = None
+
+# Namespaces
+EX = CurieNamespace('ex', 'https://w3id.org/linkml/examples/personinfo/')
+LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
+SDO = CurieNamespace('sdo', 'http://schema.org/')
+DEFAULT_ = EX
+
+
+# Types
+
+# Class references
+
+
+
+@dataclass(repr=False)
+class Thing(YAMLRoot):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = EX["Thing"]
+    class_class_curie: ClassVar[str] = "ex:Thing"
+    class_name: ClassVar[str] = "Thing"
+    class_model_uri: ClassVar[URIRef] = EX.Thing
+
+    id: Optional[str] = None
+    full_name: Optional[str] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self.id is not None and not isinstance(self.id, str):
+            self.id = str(self.id)
+
+        if self.full_name is not None and not isinstance(self.full_name, str):
+            self.full_name = str(self.full_name)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class Person(Thing):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = SDO["Person"]
+    class_class_curie: ClassVar[str] = "sdo:Person"
+    class_name: ClassVar[str] = "Person"
+    class_model_uri: ClassVar[URIRef] = EX.Person
+
+    aliases: Optional[Union[str, list[str]]] = empty_list()
+    phone: Optional[str] = None
+    age: Optional[int] = None
+    parent: Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]] = empty_list()
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if not isinstance(self.aliases, list):
+            self.aliases = [self.aliases] if self.aliases is not None else []
+        self.aliases = [v if isinstance(v, str) else str(v) for v in self.aliases]
+
+        if self.phone is not None and not isinstance(self.phone, str):
+            self.phone = str(self.phone)
+
+        if self.age is not None and not isinstance(self.age, int):
+            self.age = int(self.age)
+
+        if not isinstance(self.parent, list):
+            self.parent = [self.parent] if self.parent is not None else []
+        self.parent = [v if isinstance(v, Person) else Person(**as_dict(v)) for v in self.parent]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class Organization(Thing):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = EX["Organization"]
+    class_class_curie: ClassVar[str] = "ex:Organization"
+    class_name: ClassVar[str] = "Organization"
+    class_model_uri: ClassVar[URIRef] = EX.Organization
+
+    full_name: Optional[str] = None
+    parent: Optional[Union[Union[dict, "Organization"], list[Union[dict, "Organization"]]]] = empty_list()
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self.full_name is not None and not isinstance(self.full_name, str):
+            self.full_name = str(self.full_name)
+
+        if not isinstance(self.parent, list):
+            self.parent = [self.parent] if self.parent is not None else []
+        self.parent = [v if isinstance(v, Organization) else Organization(**as_dict(v)) for v in self.parent]
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class GeoObject(Thing):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = EX["GeoObject"]
+    class_class_curie: ClassVar[str] = "ex:GeoObject"
+    class_name: ClassVar[str] = "GeoObject"
+    class_model_uri: ClassVar[URIRef] = EX.GeoObject
+
+    aliases: Optional[str] = None
+    age: Optional[Union[dict, "GeoAge"]] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self.aliases is not None and not isinstance(self.aliases, str):
+            self.aliases = str(self.aliases)
+
+        if self.age is not None and not isinstance(self.age, GeoAge):
+            self.age = GeoAge(**as_dict(self.age))
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class GeoAge(YAMLRoot):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    class_class_uri: ClassVar[URIRef] = EX["GeoAge"]
+    class_class_curie: ClassVar[str] = "ex:GeoAge"
+    class_name: ClassVar[str] = "GeoAge"
+    class_model_uri: ClassVar[URIRef] = EX.GeoAge
+
+    unit: Optional[str] = None
+    value: Optional[float] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self.unit is not None and not isinstance(self.unit, str):
+            self.unit = str(self.unit)
+
+        if self.value is not None and not isinstance(self.value, float):
+            self.value = float(self.value)
+
+        super().__post_init__(**kwargs)
+
+
+# Enumerations
+
+
+# Slots
+class slots:
+    pass
+
+slots.id = Slot(uri=EX.id, name="id", curie=EX.curie('id'),
+                   model_uri=EX.id, domain=None, range=Optional[str])
+
+slots.full_name = Slot(uri=EX.full_name, name="full_name", curie=EX.curie('full_name'),
+                   model_uri=EX.full_name, domain=None, range=Optional[str])
+
+slots.parent = Slot(uri=EX.parent, name="parent", curie=EX.curie('parent'),
+                   model_uri=EX.parent, domain=None, range=Optional[Union[Union[dict, Thing], list[Union[dict, Thing]]]])
+
+slots.person__aliases = Slot(uri=EX.aliases, name="person__aliases", curie=EX.curie('aliases'),
+                   model_uri=EX.person__aliases, domain=None, range=Optional[Union[str, list[str]]])
+
+slots.person__phone = Slot(uri=EX.phone, name="person__phone", curie=EX.curie('phone'),
+                   model_uri=EX.person__phone, domain=None, range=Optional[str])
+
+slots.person__age = Slot(uri=EX.age, name="person__age", curie=EX.curie('age'),
+                   model_uri=EX.person__age, domain=None, range=Optional[int])
+
+slots.geoObject__aliases = Slot(uri=EX.aliases, name="geoObject__aliases", curie=EX.curie('aliases'),
+                   model_uri=EX.geoObject__aliases, domain=None, range=Optional[str])
+
+slots.geoObject__age = Slot(uri=EX.age, name="geoObject__age", curie=EX.curie('age'),
+                   model_uri=EX.geoObject__age, domain=None, range=Optional[Union[dict, GeoAge]])
+
+slots.geoAge__unit = Slot(uri=EX.unit, name="geoAge__unit", curie=EX.curie('unit'),
+                   model_uri=EX.geoAge__unit, domain=None, range=Optional[str])
+
+slots.geoAge__value = Slot(uri=EX.value, name="geoAge__value", curie=EX.curie('value'),
+                   model_uri=EX.geoAge__value, domain=None, range=Optional[float])
+
+slots.Person_parent = Slot(uri=EX.parent, name="Person_parent", curie=EX.curie('parent'),
+                   model_uri=EX.Person_parent, domain=Person, range=Optional[Union[Union[dict, "Person"], list[Union[dict, "Person"]]]])
+
+slots.Organization_full_name = Slot(uri=EX.full_name, name="Organization_full_name", curie=EX.curie('full_name'),
+                   model_uri=EX.Organization_full_name, domain=Organization, range=Optional[str])
+
+slots.Organization_parent = Slot(uri=EX.parent, name="Organization_parent", curie=EX.curie('parent'),
+                   model_uri=EX.Organization_parent, domain=Organization, range=Optional[Union[Union[dict, "Organization"], list[Union[dict, "Organization"]]]])
+

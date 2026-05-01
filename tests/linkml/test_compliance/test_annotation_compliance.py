@@ -14,6 +14,7 @@ from tests.linkml.test_compliance.helper import (
     OWL,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, SLOT_S1
@@ -22,6 +23,7 @@ from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORK
 EX = rdflib.Namespace("http://example.org/")
 
 
+@feature_category("Metadata", "Annotations")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "name,slot_annotations,class_annotations",

@@ -1,0 +1,9 @@
+persons:
+  - id: ORCID:1234
+    full_name: Clark Kent
+    age: 33
+    phone: 555-555-5555
+    status: ALIVE
+  - id: ORCID:2222
+    full_name: Count Dracula
+    status: UNDEAD

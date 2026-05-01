@@ -88,7 +88,7 @@ classes:
       - https://specs.frictionlessdata.io/data-package
     slots:
       - resources
-    
+
   DataResource:
     is_a: Information
     description: An individual file or table
@@ -118,7 +118,7 @@ classes:
       double_quote:
       header:
       quote_char:
-      
+
 # ==================================
 # Slots                            #
 # ==================================
@@ -140,18 +140,18 @@ slots:
 
   language:
     description: language in which the information is expressed
-    
+
   publisher:
     slot_uri: dcterms:publisher
     range: uriorcurie
-    
+
   issued:
     slot_uri: dcterms:issued
     range: datetime
 
   page:
     slot_uri: dcat:landingPage
-    
+
   dialect:
     slot_uri: csvw:dialect
 
@@ -185,7 +185,7 @@ slots:
     is_a: hash
   md5:
     is_a: hash
-    
+
   media_type:
     # range: MediaTypeEnum
     range: string
@@ -209,7 +209,7 @@ slots:
   conforms_to_class:
     is_a: conforms_to
     description: class in schema which the data object instantiates
-      
+
   profile:
     range: uriorcurie
     exact_mappings:
@@ -222,13 +222,13 @@ slots:
     slot_uri: dcat:keyword
     exact_mappings:
       - schema:keywords
-    
+
   themes:
     singular_name: theme
     multivalued: true
     range: uriorcurie
     slot_uri: dcat:theme
-    
+
   resources:
     multivalued: true
     range: DataResource
@@ -239,7 +239,7 @@ slots:
   test_roles:
     multivalued: true
     range: TestRole
-    
+
   created_by:
     range: uriorcurie
     description: agent that created the element
@@ -285,7 +285,7 @@ slots:
     description: A derivation is a transformation of an entity into another, an update
       of an entity resulting in a new one, or the construction of a new entity based
       on a pre-existing entity.@en
-      
+
 # ==================================
 # Enumerations                     #
 # ==================================
@@ -304,7 +304,7 @@ enums:
         meaning: mediatypes:text/csv
       rdf-xml:
         meaning: mediatypes:application/rdf+xml
-        
+
   FormatEnum:
     permissible_values:
       JSON-LD:

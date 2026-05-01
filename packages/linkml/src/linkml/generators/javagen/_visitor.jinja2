@@ -1,0 +1,22 @@
+{#-
+
+  Jinja2 Template for a visitor interface
+-#}
+package {{ doc.package }};
+
+{% if metamodel_version -%}
+/* metamodel_version: {{metamodel_version}} */
+{% endif -%}
+{% if model_version -%}
+/* version: {{model_version}} */
+{% endif -%}
+
+/**
+ * Visitor interface for {{ gen.get_class_name(doc.visited_object) }} objects.
+ */
+public interface {{ doc.name }} {
+    public void visit({{ gen.get_class_name(doc.visited_object) }} visited);
+{%- for child in gen.get_descendants(doc.visited_object) %}
+    public void visit({{ gen.get_class_name(child) }} visited);
+{%- endfor %}
+}

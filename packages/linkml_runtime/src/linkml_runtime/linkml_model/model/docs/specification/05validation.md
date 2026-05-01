@@ -188,6 +188,106 @@ may choose to assign the most specific value allowed to the slot.
 
 ### Rules
 
+Rules allow conditional constraints on classes: if certain **preconditions** hold for an
+instance, then **postconditions** must also hold. Rules are declared under the `rules` slot
+of a class definition.
+
+Each rule is a `ClassRule` with the following structure:
+
+- **preconditions** — an anonymous class expression that acts as the trigger ("if")
+- **postconditions** — an anonymous class expression that must hold when preconditions are met ("then")
+- **elseconditions** — an anonymous class expression that must hold when preconditions are *not* met ("else")
+- **open_world** — if `true`, postconditions may be absent from instance data without raising an error (default `false`)
+- **bidirectional** — if `true`, postconditions also entail preconditions (default `false`)
+
+Both preconditions and postconditions use `slot_conditions` to constrain individual slots.
+Slot conditions support `required`, `equals_string`, `minimum_value`, `maximum_value`,
+`pattern`, `range`, and the boolean combinators `any_of`, `all_of`, `none_of`, and
+`exactly_one_of`.
+
+#### Example: simple conditional requirement
+
+If a `confidence` value is provided, then a `confidence_source` must also be provided:
+
+```yaml
+classes:
+  Mapping:
+    attributes:
+      subject_id:
+        required: true
+      object_id:
+        required: true
+      confidence:
+        range: float
+      confidence_source:
+    rules:
+      - preconditions:
+          slot_conditions:
+            confidence:
+              required: true
+        postconditions:
+          slot_conditions:
+            confidence_source:
+              required: true
+```
+
+#### Example: conditional requirement with `any_of` in postconditions
+
+If one field is present, then *at least one* of two other fields must be provided.
+Use `any_of` inside `postconditions` — each branch is a separate class expression:
+
+```yaml
+classes:
+  Mapping:
+    attributes:
+      subject_id:
+        required: true
+      object_id:
+        required: true
+      reviewer_confidence:
+        range: float
+      reviewer_id:
+      reviewer_label:
+    rules:
+      - description: >-
+          If reviewer_confidence is provided, then at least one of
+          reviewer_id or reviewer_label must also be provided.
+        preconditions:
+          slot_conditions:
+            reviewer_confidence:
+              required: true
+        postconditions:
+          any_of:
+            - slot_conditions:
+                reviewer_id:
+                  required: true
+            - slot_conditions:
+                reviewer_label:
+                  required: true
+```
+
+#### Example: preconditions with pattern matching
+
+Rules can also constrain values, not just presence. Here, if `country` is "USA",
+the `postal_code` must match a US zip code pattern:
+
+```yaml
+classes:
+  Address:
+    attributes:
+      country:
+      postal_code:
+    rules:
+      - preconditions:
+          slot_conditions:
+            country:
+              equals_string: "USA"
+        postconditions:
+          slot_conditions:
+            postal_code:
+              pattern: "[0-9]{5}(-[0-9]{4})?"
+```
+
 ### Uniqueness checks
 
 
@@ -220,8 +320,12 @@ In all cases, the semantics are as follows:
 
 For each rule `r` in *C*.rules:
 
-- if `r.preconditions` is `None` or `r.preconditions` is satisfied, then
-- `r.postconditions` are applied
+- if `r.deactivated` is `True`, skip this rule
+- if `r.preconditions` is `None` or `r.preconditions` is satisfied by the instance, then:
+  - `r.postconditions` MUST be satisfied (validation error if not)
+- otherwise (preconditions not satisfied):
+  - if `r.elseconditions` is not `None`, then `r.elseconditions` MUST be satisfied
+- if `r.bidirectional` is `True`, the rule is also evaluated in reverse (postconditions entail preconditions)
 
 ### Classification Rule evaluation
 

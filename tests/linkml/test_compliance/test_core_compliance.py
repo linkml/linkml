@@ -21,6 +21,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     metamodel_schemaview,
     validated_schema,
 )
@@ -38,6 +39,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Core Structure", "Attributes")
 @pytest.mark.parametrize(
     "description,object,is_valid",
     [
@@ -128,6 +130,7 @@ def test_attributes(framework, description, object, is_valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Primitive type ranges")
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4")])
 @pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
@@ -222,6 +225,7 @@ def test_type_range(framework, linkml_type, example_value):
     )
 
 
+@feature_category("Value Constraints", "Min/max value")
 @pytest.mark.parametrize(
     "name,range,minimum,maximum,value,valid",
     [
@@ -278,6 +282,7 @@ def test_min_max_values(framework, name, range, minimum, maximum, value, valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Any type")
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False, Decimal("5.4"), {}, {"foo": 1}])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_any_type(framework, example_value):
@@ -326,6 +331,7 @@ def test_any_type(framework, example_value):
     )
 
 
+@feature_category("Slot Typing & Ranges", "URI types")
 @pytest.mark.parametrize(
     "linkml_type,example_value,is_valid",
     [
@@ -387,6 +393,7 @@ def test_uri_types(framework, linkml_type, example_value, is_valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Date/datetime types")
 @pytest.mark.parametrize(
     "linkml_type,example_value,is_valid",
     [
@@ -499,6 +506,7 @@ def test_date_types(framework, linkml_type, example_value, is_valid):
     )
 
 
+@feature_category("Cardinality & Presence", "Required / multivalued")
 @pytest.mark.parametrize(
     "data_name,value",
     [
@@ -662,6 +670,7 @@ def test_cardinality(framework, multivalued, required, data_name, value):
     )
 
 
+@feature_category("Cardinality & Presence", "Identifier implies required")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize("required_asserted", [None, True])
 @pytest.mark.parametrize(
@@ -732,6 +741,7 @@ def ensafeify(name: str):
     return safe_label
 
 
+@feature_category("Schema-Level", "Non-standard names")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "class_name,safe_class_name,slot_name,safe_slot_name,type_name",
@@ -799,6 +809,7 @@ def test_non_standard_names(framework, class_name, safe_class_name, slot_name, s
     )
 
 
+@feature_category("Enumerations", "Non-standard enum names")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 @pytest.mark.parametrize(
     "enum_name,pv_name",

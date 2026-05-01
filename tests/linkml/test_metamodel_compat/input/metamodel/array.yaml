@@ -55,6 +55,14 @@ classes:
           an ordered sequence of values. The elements also have an *array interpretation*, where each
           element has a unique index which is determined by array_linearization_order
 
+  OneDimensionalSeries:
+    description: >-
+      an NDArray whose dimensionality is constrained to 1
+    is_a: NDArray
+    slot_usage:
+      dimensions:
+        equals_number: 1
+
   DataArray:
     description: >-
       a data structure containing an NDArray and a set of one-dimensional series that are used to label
@@ -105,10 +113,7 @@ slots:
       - number of elements
     range: integer
   axis:
-    range: NDArray
-    slot_usage:
-      dimensions:
-        equals_number: 1
+    range: OneDimensionalSeries
     aliases:
       - dimension
     description: >-

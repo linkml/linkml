@@ -100,6 +100,16 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         """Override this to add non-python compatible values"""
         pass
 
+    def _as_value(self) -> str:
+        """Return the primitive string representation for serialization.
+
+        This is the canonical way for serializers (JSON, YAML) to convert
+        an ``EnumDefinitionImpl`` into a plain string value suitable for
+        output formats.  It simply returns the ``text`` of the underlying
+        ``PermissibleValue``.
+        """
+        return self._code.text
+
     def __str__(self) -> str:
         """The string representation of an enumerated value should be the code representing this value."""
         return self._code.text
