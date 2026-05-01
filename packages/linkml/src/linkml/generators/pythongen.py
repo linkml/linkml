@@ -83,6 +83,18 @@ class PythonGenerator(Generator):
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
 
+    def slot_name(self, name: str) -> str:
+        """Python-safe slot identifier. Appends a trailing underscore (PEP 8)
+        if the underscored name collides with a Python reserved keyword, so
+        that emissions like ``self.class`` become ``self.class_``. The
+        original slot name is preserved on the runtime ``Slot(name=...)``
+        argument, so schema lookups and URI resolution are unaffected.
+        """
+        pyname = super().slot_name(name)
+        if keyword.iskeyword(pyname):
+            pyname += "_"
+        return pyname
+
     def compile_module(self, **kwargs) -> ModuleType:
         """
         Compiles generated python code to a module
@@ -555,7 +567,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             type_model_uri = f'URIRef("{type_model_uri}")'
         else:
             ns, ln = type_model_uri.split(":", 1)
-            ln_suffix = f".{ln}" if ln.isidentifier() else f'["{ln}"]'
+            ln_suffix = f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f'["{ln}"]'
             type_model_uri = f"{ns.upper()}{ln_suffix}"
         type_meta = [
             f"type_class_uri = {type_class_uri}",
@@ -1073,7 +1085,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if ns is None:
             return '"str(uriorcurie)"', None
         return (
-            ns.upper() + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
+            ns.upper() + (f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f"['{ln}']"),
             ns.upper() + f".curie('{ln}')",
         )
 
