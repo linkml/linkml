@@ -3057,43 +3057,82 @@
       "description": "How a class instance handles extra data not specified in the class definition.\nNote that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.\n\nPossible values:\n- `allowed: true` - allow all additional data\n- `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -\n  forbid all additional data (default)\n- `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)\n",
       "examples": [
         {
-          "value": "JsonObj(allowed=True)",
           "description": "Allow all additional data",
+          "object": {
+            "allowed": true
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(allowed=False)",
           "description": "Forbid any additional data",
+          "object": {
+            "allowed": false
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(range_expression=JsonObj(range='string'))",
           "description": "Allow additional data that are strings",
+          "object": {
+            "range_expression": {
+              "range": "string"
+            }
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(range_expression=JsonObj(range='AClassDefinition'))",
           "description": "Allow additional data if they are instances of the class definition \"AClassDefinition\"",
+          "object": {
+            "range_expression": {
+              "range": "AClassDefinition"
+            }
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(range_expression=JsonObj(any_of=[{'range': 'string'}, {'range': 'integer'}]))",
           "description": "allow additional data if they are either strings or integers",
+          "object": {
+            "range_expression": {
+              "any_of": [
+                {
+                  "range": "string"
+                },
+                {
+                  "range": "integer"
+                }
+              ]
+            }
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(range_expression=JsonObj(range='integer', multivalued=True, maximum_cardinality=5))",
           "description": "Allow additional data if they are lists of integers of at most length 5.\nNote that this does *not* mean that a maximum of 5 extra slots are allowed.\n",
+          "object": {
+            "range_expression": {
+              "range": "integer",
+              "multivalued": true,
+              "maximum_cardinality": 5
+            }
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(range_expression=JsonObj(range='integer', required=True))",
           "description": "Allow additional data if they are integers.\n`required` is meaningless in this context and ignored, since by definition all \"extra\" slots are optional.\n",
+          "object": {
+            "range_expression": {
+              "range": "integer",
+              "required": true
+            }
+          },
           "@type": "Example"
         },
         {
-          "value": "JsonObj(allowed=False, range_expression=JsonObj(range='string'))",
           "description": "A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the\n`anonymous_slot_expression` will be ignored.\n",
+          "object": {
+            "allowed": false,
+            "range_expression": {
+              "range": "string"
+            }
+          },
           "@type": "Example"
         }
       ],
@@ -5610,7 +5649,7 @@
     {
       "name": "abbreviation",
       "definition_uri": "https://w3id.org/linkml/abbreviation",
-      "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in  contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance  readability. When a power of a base unit needs to be expressed, such as squares this can be done using  abbreviations rather than symbols (source: qudt)",
+      "description": "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)",
       "from_schema": "https://w3id.org/linkml/units",
       "imported_from": "linkml:units",
       "mappings": [
@@ -8738,7 +8777,7 @@
     {
       "name": "UnitOfMeasure",
       "definition_uri": "https://w3id.org/linkml/UnitOfMeasure",
-      "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).",
+      "description": "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).",
       "from_schema": "https://w3id.org/linkml/units",
       "imported_from": "linkml:units",
       "mappings": [
