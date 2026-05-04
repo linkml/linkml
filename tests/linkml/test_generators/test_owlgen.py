@@ -1,14 +1,20 @@
 from enum import Enum
 
 import pytest
-from rdflib import RDFS, SKOS, Graph, Literal, Namespace, URIRef
+from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
+from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.linkml_model.meta import PermissibleValue
+from linkml_runtime.linkml_model.meta import (
+    AnonymousClassExpression,
+    AnonymousSlotExpression,
+    ClassRule,
+    PermissibleValue,
+)
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
 KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
@@ -100,6 +106,66 @@ def test_rdfs_profile(kitchen_sink_path):
         assert list(g.objects(c, SKOS.definition)) == []
     # check that definitions are present, and use the RDFS profile
     assert Literal("A person, living or dead") in g.objects(KS.Person, RDFS.comment)
+
+
+def test_rule_none_of_ignores_empty_slot_expression() -> None:
+    """Issue 3358: empty ``none_of`` operands in rules must not crash OWL generation."""
+
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("object_category", range="string"))
+    sb.add_slot(SlotDefinition("object_source", range="string"))
+    sb.add_class("MappingRule", tree_root=True, slots=["object_category", "object_source"])
+    sb.add_defaults()
+    sb.schema.classes["MappingRule"].rules = [
+        ClassRule(
+            preconditions=AnonymousClassExpression(
+                slot_conditions={
+                    "object_category": SlotDefinition(
+                        "object_category",
+                        none_of=[AnonymousSlotExpression()],
+                    )
+                }
+            ),
+            postconditions=AnonymousClassExpression(
+                slot_conditions={
+                    "object_source": SlotDefinition(
+                        "object_source",
+                        equals_string="source",
+                    )
+                }
+            ),
+        )
+    ]
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert (EX.MappingRule, RDF.type, OWL.Class) in g
+    assert list(g.objects(None, OWL.complementOf)) == []
+    assert list(g.objects(None, OWL.datatypeComplementOf)) == []
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_path):
+    """Ambiguous attribute URIs should keep the minimal shared OWL identity."""
+    generated_owl = OwlSchemaGenerator(
+        input_path("linkml_issue_388.yaml"),
+        metaclasses=False,
+        skip_vacuous_min_zero_cardinality_axioms=False,
+        skip_vacuous_local_range_axioms=False,
+        consolidate_cardinality_axioms=False,
+    ).serialize(context=[METAMODEL_CONTEXT_URI])
+
+    owl_graph = Graph()
+    owl_graph.parse(data=generated_owl, format="turtle")
+    this_a = URIRef("https://example.org/this/a")
+    assert len(list(owl_graph.triples((this_a, None, None)))) == 1
 
 
 @pytest.mark.parametrize(
@@ -384,6 +450,102 @@ def test_permissible_values(
             assert isinstance(pv, URIRef) or isinstance(pv, Literal)
         else:
             raise AssertionError("all combinations must be accounted for")
+
+
+# ---------------------------------------------------------------------------
+# Helpers for abstract covering-axiom tests
+# ---------------------------------------------------------------------------
+
+
+def _build_abstract_schema() -> SchemaBuilder:
+    """Return a SchemaBuilder with Animal (abstract) -> Dog, Cat subclasses."""
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+    return sb
+
+
+def _union_members(g: Graph, cls_uri: URIRef) -> set[URIRef] | None:
+    """Return the set of URIRefs in the owl:unionOf covering axiom for *cls_uri*.
+
+    Returns ``None`` when no such axiom exists.
+    """
+    for obj in g.objects(cls_uri, RDFS.subClassOf):
+        if not isinstance(obj, BNode):
+            continue
+        for union_list in g.objects(obj, OWL.unionOf):
+            return set(Collection(g, union_list))
+    return None
+
+
+def _owl_graph(sb: SchemaBuilder, **gen_kwargs) -> Graph:
+    gen = OwlSchemaGenerator(sb.schema, mergeimports=False, metaclasses=False, type_objects=False, **gen_kwargs)
+    g = Graph()
+    g.parse(data=gen.serialize(), format="turtle")
+    return g
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+
+def test_abstract_class_gets_union_of_subclasses_by_default():
+    """Abstract classes emit rdfs:subClassOf owl:unionOf(subclasses) by default."""
+    g = _owl_graph(_build_abstract_schema())
+    members = _union_members(g, EX.Animal)
+    assert members is not None, "No union-of covering axiom found for Animal"
+    assert members == {EX.Dog, EX.Cat}
+
+
+def test_skip_flag_suppresses_union_of_axiom():
+    """Setting skip_abstract_class_as_unionof_subclasses=True omits the covering axiom."""
+    g = _owl_graph(_build_abstract_schema(), skip_abstract_class_as_unionof_subclasses=True)
+    assert _union_members(g, EX.Animal) is None
+
+
+def test_non_abstract_class_does_not_get_union_of_axiom():
+    """Concrete (non-abstract) classes never receive a union-of covering axiom."""
+    sb = SchemaBuilder()
+    sb.add_class("Vehicle")
+    sb.add_class("Car", is_a="Vehicle")
+    sb.add_class("Bike", is_a="Vehicle")
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert _union_members(g, EX.Vehicle) is None
+
+
+def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
+    """An abstract class with no direct subclasses emits no union-of axiom."""
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+    g = _owl_graph(sb)
+    assert _union_members(g, EX.Orphan) is None
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_union_of_axiom_only_covers_direct_children(skip: bool):
+    """Union-of axiom lists only direct is_a children, not grandchildren.
+
+    Schema: Animal (abstract) <- Dog <- Poodle
+            Animal (abstract) <- Cat
+    Expected union: {Dog, Cat} — Poodle is NOT included.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Poodle", is_a="Dog")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+    g = _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=skip)
+    if skip:
+        assert _union_members(g, EX.Animal) is None
+    else:
+        members = _union_members(g, EX.Animal)
+        assert members == {EX.Dog, EX.Cat}, f"Expected {{Dog, Cat}}, got {members}"
 
 
 def _restriction_values(g: Graph, predicate: URIRef) -> list:

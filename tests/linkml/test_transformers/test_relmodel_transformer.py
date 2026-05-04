@@ -1,6 +1,6 @@
 from linkml.transformers.relmodel_transformer import RelationalModelTransformer
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime import SchemaView
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 def test_nested_key():

@@ -130,6 +130,10 @@ def test_incorrect_type_in_multivalued_slot(validation_context):
         "nested_inline_list": {"a": {"value1": "1"}, "b": {"value1": "2"}, "c": {"value2": "3"}},
     }
     result_iter = plugin.process(instance, validation_context)
+    # nested_inline_list has inlined_as_list=True, which implies inlined=True.
+    # The dict-shaped data triggers inlined dict validation, finding a missing
+    # recommended slot on entry "c".
+    assert next(result_iter).message == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline_list/c"
     with pytest.raises(StopIteration):
         next(result_iter)
 

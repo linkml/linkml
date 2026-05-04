@@ -9330,7 +9330,6 @@
         "@id": "maximum_cardinality"
       },
       "maximum_number_dimensions": {
-        "@type": "@id",
         "@id": "maximum_number_dimensions"
       },
       "maximum_value": {

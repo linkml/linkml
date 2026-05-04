@@ -11,6 +11,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     metamodel_schemaview,
     validated_schema,
 )
@@ -18,6 +19,7 @@ from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORK
 
 
 # TODO: consider merging into normal type test
+@feature_category("Slot Typing & Ranges", "Custom types (typeof)")
 @pytest.mark.parametrize("example_value", ["", None, 1, 1.1, "1", True, False])
 @pytest.mark.parametrize("linkml_type", ["string", "integer", "float", "double", "boolean"])
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)

@@ -226,7 +226,10 @@ def clear_package_schemaview_cache(request):
 
 @pytest.fixture(scope="function")
 def temp_dir(request) -> Path:
+    worker_id = os.environ.get("PYTEST_XDIST_WORKER", "")
     base = Path(request.path.parent) / "temp"
+    if worker_id:
+        base = base / worker_id
     test_dir = base / UNSAFE_PATHS.sub("_", request.node.name)
     test_dir.mkdir(exist_ok=True, parents=True)
     yield test_dir
@@ -252,6 +255,7 @@ def pytest_addoption(parser):
     )
 
 
+@pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(config, items: list[pytest.Item]):
     if not config.getoption("--with-slow"):
         skip_slow = pytest.mark.skip(reason="need --with-slow option to run")
@@ -277,6 +281,12 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         for item in items:
             if item.get_closest_marker("network"):
                 item.add_marker(skip_network)
+
+    # Group compliance tests on a single xdist worker - they share
+    # mutable module-level caches in helper.py that are not safe to split.
+    for item in items:
+        if "test_compliance" in str(item.path):
+            item.add_marker(pytest.mark.xdist_group("compliance"))
 
     # make sure deprecation test happens at the end
     test_deps = [i for i in items if i.name == "test_removed_are_removed"]
@@ -367,15 +377,22 @@ def patch_requests_cache(pytestconfig):
     if pytestconfig.getoption("--without-cache"):
         yield
         return
-    cache_file = Path(__file__).parent / "output" / "requests-cache.sqlite"
+    worker_id = os.environ.get("PYTEST_XDIST_WORKER", "")
+    cache_name = f"requests-cache-{worker_id}.sqlite" if worker_id else "requests-cache.sqlite"
+    cache_file = Path(__file__).parent / "output" / cache_name
     requests_cache.install_cache(
         str(cache_file),
         backend="sqlite",
         urls_expire_after={"localhost": requests_cache.DO_NOT_CACHE},
     )
     requests_cache.clear()
-    with requests_cache.enabled():
-        yield
+    yield
+    # Close the SQLite backend before uninstalling so the file handle is released
+    import requests
+
+    session = requests.Session()
+    if hasattr(session, "cache"):
+        session.cache.close()
     requests_cache.uninstall_cache()
     # delete cache file unless we have requested it to persist for inspection
     if not pytestconfig.getoption("--with-output"):

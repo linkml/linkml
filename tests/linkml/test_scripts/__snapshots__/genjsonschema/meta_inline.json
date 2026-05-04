@@ -18,10 +18,7 @@
                     ]
                 },
                 "id": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "started_at_time": {
                     "format": "date",
@@ -650,6 +647,37 @@
             "title": "FamilialRelationshipType",
             "type": "string"
         },
+        "Friend": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "name": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "Friend",
+            "type": "object"
+        },
+        "HasAliases": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "aliases": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": [
+                        "array",
+                        "null"
+                    ]
+                }
+            },
+            "title": "HasAliases",
+            "type": "object"
+        },
         "KitchenStatus": {
             "description": "",
             "enum": [
@@ -1087,6 +1115,20 @@
                 }
             },
             "title": "TubSubClass1",
+            "type": "object"
+        },
+        "WithLocation": {
+            "additionalProperties": false,
+            "description": "",
+            "properties": {
+                "in_location": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "title": "WithLocation",
             "type": "object"
         }
     },

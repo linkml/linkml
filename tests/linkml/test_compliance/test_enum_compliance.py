@@ -20,12 +20,14 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     generate_tree,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import CLASS_C, CORE_FRAMEWORKS, ENUM_E, EXAMPLE_NS, SLOT_S1
 
 
+@feature_category("Enumerations", "Static enums")
 @pytest.mark.parametrize("include_meaning", [True, False])
 @pytest.mark.parametrize("value", ["A", "C", "schema:A"])
 @pytest.mark.parametrize(
@@ -129,6 +131,7 @@ def test_enum(framework, enum_name, enum_desc, pvs, value, include_meaning):
     )
 
 
+@feature_category("Enumerations", "Typed permissible values")
 @pytest.mark.parametrize(
     "enum_name,enums,data_name,data,is_valid",
     [
@@ -349,6 +352,7 @@ def test_permissible_value_typing(framework, enum_name, enums, data_name, data, 
     )
 
 
+@feature_category("Enumerations", "Enum hierarchy")
 @pytest.mark.parametrize("include_meaning", [True, False])
 @pytest.mark.parametrize("use_mixins", [False, True])
 @pytest.mark.parametrize("propagate_down", [False, True])

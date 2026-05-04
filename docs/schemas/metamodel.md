@@ -41,7 +41,6 @@ These are tagged as pre-releases on GitHub
 For complete release notes tied to patch releases, see the release notes on GitHub:
 
 - https://github.com/linkml/linkml-model/releases
-- https://github.com/linkml/linkml-runtime/releases
 - https://github.com/linkml/linkml/releases
 
 ### LinkML-Model 1.3

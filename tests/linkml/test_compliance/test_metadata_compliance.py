@@ -16,6 +16,7 @@ from tests.linkml.test_compliance.helper import (
     PYTHON_DATACLASSES,
     SQL_DDL_POSTGRES,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -30,6 +31,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Metadata", "Descriptions")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_descriptions(framework):
     """
@@ -88,6 +90,7 @@ def test_descriptions(framework):
     )
 
 
+@feature_category("Metadata", "Deprecation")
 @pytest.mark.skip(reason="TODO - add support for deprecation annotations in generators")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_deprecated(framework):
@@ -139,6 +142,7 @@ def test_deprecated(framework):
     )
 
 
+@feature_category("Metadata", "Element URIs")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_element_uris(framework):
     """
@@ -185,6 +189,7 @@ def test_element_uris(framework):
     )
 
 
+@feature_category("Metadata", "Common metadata")
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
 def test_common_metadata(framework):
     """

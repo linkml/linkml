@@ -61,8 +61,7 @@ def validate(
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
-    :raises ValueError: If a valid ``SchemaDefinition`` cannot be constructed
-        from the ``schema`` parameter.
+    :raises ValidationError: If requested to raise and validation errors are found.
     :return: A validation report
     :rtype: ValidationReport
     """
@@ -103,7 +102,8 @@ def validate_file(
     :return: A validation report
     :rtype: ValidationReport
     """
-    loader = default_loader_for_file(file)
+    schema_path = schema if isinstance(schema, str | Path) else None
+    loader = default_loader_for_file(file, schema_path=schema_path, target_class=target_class)
     validator = _get_default_validator(schema, strict=strict)
     return validator.validate_source(loader, target_class)
 

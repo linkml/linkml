@@ -1,0 +1,16 @@
+@prefix ORCID: <https://orcid.org/> .
+@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ORCID:1234 a personinfo:Person ;
+    personinfo:age 33 ;
+    personinfo:full_name "Clark Kent" ;
+    personinfo:phone "555-555-5555" .
+
+ORCID:4567 a personinfo:Person ;
+    personinfo:age 34 ;
+    personinfo:full_name "Lois Lane" .
+
+[] a personinfo:Container ;
+    personinfo:persons ORCID:1234,
+        ORCID:4567 .
