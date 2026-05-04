@@ -4,8 +4,8 @@ import pytest
 from click.testing import CliRunner
 
 from linkml.generators.terminusdbgen import XSD_TRANSLATE, TerminusdbGenerator, cli
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SIMPLE_SCHEMA = """\
 id: https://example.org/test
