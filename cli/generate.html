@@ -2570,6 +2570,17 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-context-xsd-anyuri-as-iri">
+<span id="cmdoption-linkml-generate-full-jsonld-context-no-xsd-anyuri-as-iri"></span><span class="sig-name descname"><span class="pre">--xsd-anyuri-as-iri</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-xsd-anyuri-as-iri</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-context-xsd-anyuri-as-iri" title="Link to this definition">¶</a></dt>
+<dd><p>Map xsd:anyURI-typed ranges (uri, uriorcurie) to &#64;type: &#64;id instead of &#64;type: xsd:anyURI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-jsonld-context-V">
 <span id="cmdoption-linkml-generate-full-jsonld-context-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-jsonld-context-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
@@ -3080,6 +3091,17 @@ to include metaclasses. To restore this behavior:</p>
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-owl-skip-abstract-class-as-unionof-subclasses">
 <span id="cmdoption-linkml-generate-full-owl-no-skip-abstract-class-as-unionof-subclasses"></span><span class="sig-name descname"><span class="pre">--skip-abstract-class-as-unionof-subclasses</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-skip-abstract-class-as-unionof-subclasses</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-owl-skip-abstract-class-as-unionof-subclasses" title="Link to this definition">¶</a></dt>
 <dd><p>If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. By default such axioms are emitted for every abstract class that has direct is_a children.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-owl-xsd-anyuri-as-iri">
+<span id="cmdoption-linkml-generate-full-owl-no-xsd-anyuri-as-iri"></span><span class="sig-name descname"><span class="pre">--xsd-anyuri-as-iri</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-xsd-anyuri-as-iri</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-owl-xsd-anyuri-as-iri" title="Link to this definition">¶</a></dt>
+<dd><p>Treat range: uri / range: uriorcurie slots as owl:ObjectProperty (IRI node) instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and the JSON-LD context generator (–xsd-anyuri-as-iri → &#64;type: &#64;id).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
