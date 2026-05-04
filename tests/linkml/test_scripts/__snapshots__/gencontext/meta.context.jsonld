@@ -166,6 +166,14 @@
          },
          "@id": "life_status"
       },
+      "long_id": {
+         "@context": {
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         },
+         "@id": "long_id"
+      },
       "married_to": {
          "@type": "@id",
          "@id": "married_to"
