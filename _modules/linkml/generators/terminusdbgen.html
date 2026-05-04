@@ -401,24 +401,18 @@
           <h1>Source code for linkml.generators.terminusdbgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">be</span><span class="p">,</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">terminusdb_client.woqlquery</span><span class="w"> </span><span class="kn">import</span> <span class="n">WOQLQuery</span> <span class="k">as</span> <span class="n">WQ</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">WQ</span> <span class="o">=</span> <span class="kc">None</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">be</span><span class="p">,</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">underscore</span>
 
+<span class="c1"># TerminusDB XSD types supported as property ranges.</span>
 <span class="c1"># https://terminusdb.com/docs/terminusdb/#/reference/XSD_WHITELIST</span>
-<span class="n">XSD_Ok</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">XSD_OK</span> <span class="o">=</span> <span class="p">{</span>
     <span class="sa">f</span><span class="s2">&quot;xsd:</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span>
         <span class="s2">&quot;string&quot;</span><span class="p">,</span>
@@ -430,7 +424,6 @@
         <span class="s2">&quot;dateTime&quot;</span><span class="p">,</span>
         <span class="s2">&quot;byte&quot;</span><span class="p">,</span>
         <span class="s2">&quot;short&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
         <span class="s2">&quot;long&quot;</span><span class="p">,</span>
         <span class="s2">&quot;positiveInteger&quot;</span><span class="p">,</span>
         <span class="s2">&quot;nonNegativeInteger&quot;</span><span class="p">,</span>
@@ -440,101 +433,131 @@
     <span class="p">]</span>
 <span class="p">}</span>
 
+<span class="c1"># Map LinkML XSD types not natively supported by TerminusDB to supported equivalents.</span>
+<span class="n">XSD_TRANSLATE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;xsd:int&quot;</span><span class="p">:</span> <span class="s2">&quot;xsd:integer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:language&quot;</span><span class="p">:</span> <span class="s2">&quot;xsd:string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:date&quot;</span><span class="p">:</span> <span class="s2">&quot;xsd:dateTime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;xsd:time&quot;</span><span class="p">:</span> <span class="s2">&quot;xsd:dateTime&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
 
 <div class="viewcode-block" id="TerminusdbGenerator">
 <a class="viewcode-back" href="../../../generators/terminusdb.html#linkml.generators.terminusdbgen.TerminusdbGenerator">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TerminusdbGenerator</span><span class="p">(</span><span class="n">Generator</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Experimental generator for TerminusDB</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator for TerminusDB JSON-LD schema documents.</span>
 
-<span class="sd">    Generates JSON-LD to pass to `WOQLQuery()`.</span>
-
-<span class="sd">    Assumes an &quot;inference/main&quot; graph if any slots have &quot;is_a&quot; values, because any statements with</span>
-<span class="sd">    rdfs:subPropertyOf as the predicate must live in a TerminusDB &quot;inference&quot; graph rather than the</span>
-<span class="sd">    &quot;schema&quot; graph. When creating a new TerminusDB database, only the &quot;schema&quot; and &quot;instance&quot; graphs</span>
-<span class="sd">    are created. Thus, you may need to e.g. `WOQLClient.create_graph(&quot;inference&quot;, &quot;main&quot;)`.</span>
-
+<span class="sd">    Produces a JSON array of schema documents compatible with the</span>
+<span class="sd">    TerminusDB v10+ document interface.  The output can be loaded via</span>
+<span class="sd">    ``client.insert_document(docs, graph_type=&quot;schema&quot;)``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.0&quot;</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.2.0&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># ObjectVars</span>
-    <span class="n">classes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">raw_additions</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">clswq</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">WQ</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;terminusdb_client is not a requirement of this package, please install it separately&quot;</span><span class="p">)</span>
+    <span class="n">documents</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">current_class_doc</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw_additions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documents</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">schema_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">id</span> <span class="k">else</span> <span class="s2">&quot;terminusdb:///schema&quot;</span>
+        <span class="n">schema_base</span> <span class="o">=</span> <span class="n">schema_id</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span>
+        <span class="n">data_base</span> <span class="o">=</span> <span class="n">schema_id</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/data/&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;@context&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;@documentation&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;@title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;@description&quot;</span><span class="p">:</span> <span class="n">be</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">description</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;@schema&quot;</span><span class="p">:</span> <span class="n">schema_base</span><span class="p">,</span>
+                <span class="s2">&quot;@base&quot;</span><span class="p">:</span> <span class="n">data_base</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">WQ</span><span class="p">()</span><span class="o">.</span><span class="n">woql_and</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_additions</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># Emit enum documents</span>
+        <span class="k">for</span> <span class="n">enum_def</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_emit_enum</span><span class="p">(</span><span class="n">enum_def</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">documents</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_emit_enum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_def</span><span class="p">:</span> <span class="n">EnumDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Produce a TerminusDB Enum document.&quot;&quot;&quot;</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;Enum&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">enum_def</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+            <span class="s2">&quot;@value&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">enum_def</span><span class="o">.</span><span class="n">permissible_values</span><span class="p">],</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span> <span class="o">=</span> <span class="n">WQ</span><span class="p">()</span><span class="o">.</span><span class="n">add_class</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">label</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">))</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">))</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;Class&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@id&quot;</span><span class="p">:</span> <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;@documentation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@comment&quot;</span><span class="p">:</span> <span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">),</span> <span class="s2">&quot;@properties&quot;</span><span class="p">:</span> <span class="p">{}}</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">))</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;@inherits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">is_a</span><span class="p">)]</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">abstract</span><span class="p">()</span>
+            <span class="n">doc</span><span class="p">[</span><span class="s2">&quot;@abstract&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">broad_mappings</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="n">m</span><span class="p">))</span> <span class="o">==</span> <span class="s2">&quot;http://terminusdb.com/schema/system#Document&quot;</span>
                 <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">broad_mappings</span>
             <span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">parent</span><span class="p">(</span><span class="s2">&quot;Document&quot;</span><span class="p">)</span>
+                <span class="n">doc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;@inherits&quot;</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Document&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_class_doc</span> <span class="o">=</span> <span class="n">doc</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">documents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_class_doc</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_range</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+        <span class="n">prop_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span>
+
+        <span class="c1"># Determine cardinality wrapper</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+                <span class="n">prop_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;List&quot;</span><span class="p">,</span> <span class="s2">&quot;@class&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prop_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;Set&quot;</span><span class="p">,</span> <span class="s2">&quot;@class&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
+            <span class="n">prop_value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;Optional&quot;</span><span class="p">,</span> <span class="s2">&quot;@class&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prop_value</span> <span class="o">=</span> <span class="n">rng</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_class_doc</span><span class="p">[</span><span class="n">prop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop_value</span>
+
+        <span class="c1"># Add property documentation, lazily initializing @documentation if needed</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_class_doc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;@documentation&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;@comment&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;@properties&quot;</span><span class="p">:</span> <span class="p">{}})</span>
+            <span class="n">doc</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;@properties&quot;</span><span class="p">,</span> <span class="p">{})[</span><span class="n">prop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">description</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a slot range to a TerminusDB type string.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
-            <span class="n">rng</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
-            <span class="c1"># XXX Why does `linkml_runtime.utils.metamodelcore.Identifier` subclass `str`??</span>
+            <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
             <span class="n">rng</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">]</span><span class="o">.</span><span class="n">uri</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">rng</span> <span class="o">=</span> <span class="s2">&quot;xsd:string&quot;</span>
 
-        <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">aliased_slot_name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">is_usage_slot</span> <span class="k">else</span> <span class="n">aliased_slot_name</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">XSD_TRANSLATE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
 
-        <span class="c1"># translate to terminusdb xsd builtins:</span>
-        <span class="k">if</span> <span class="n">rng</span> <span class="o">==</span> <span class="s2">&quot;xsd:int&quot;</span><span class="p">:</span>
-            <span class="n">rng</span> <span class="o">=</span> <span class="s2">&quot;xsd:integer&quot;</span>
-        <span class="k">elif</span> <span class="n">rng</span> <span class="o">==</span> <span class="s2">&quot;xsd:float&quot;</span><span class="p">:</span>
-            <span class="n">rng</span> <span class="o">=</span> <span class="s2">&quot;xsd:double&quot;</span>
-        <span class="k">elif</span> <span class="n">rng</span> <span class="o">==</span> <span class="s2">&quot;xsd:language&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rng</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">XSD_OK</span><span class="p">:</span>
             <span class="n">rng</span> <span class="o">=</span> <span class="s2">&quot;xsd:string&quot;</span>
 
-        <span class="k">if</span> <span class="n">rng</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">XSD_Ok</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;slot range for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> must be schema class or supported xsd type. Range </span><span class="si">{</span><span class="n">rng</span><span class="si">}</span><span class="s2"> is of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">property</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="n">rng</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">slot</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">required</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">raw_additions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">WQ</span><span class="p">()</span><span class="o">.</span><span class="n">add_quad</span><span class="p">(</span>
-                    <span class="n">underscore</span><span class="p">(</span><span class="n">name</span><span class="p">),</span>
-                    <span class="s2">&quot;rdfs:subPropertyOf&quot;</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">clswq</span><span class="o">.</span><span class="n">iri</span><span class="p">(</span><span class="n">underscore</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">is_a</span><span class="p">)),</span>
-                    <span class="s2">&quot;inference/main&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">rng</span></div>
 
 
 
@@ -542,7 +565,7 @@
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;terminusdb&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate graphql representation of a LinkML model&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate TerminusDB JSON-LD schema from a LinkML model&quot;&quot;&quot;</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">TerminusdbGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">))</span>
 
 
