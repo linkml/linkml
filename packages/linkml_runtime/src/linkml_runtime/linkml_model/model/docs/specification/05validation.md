@@ -35,137 +35,29 @@ The following holds for any validation procedure:
 
 ## Types of checks
 
-| Check                 | Type      | Description                     | SHACL                             |
-|-----------------------|-----------|---------------------------------|-----------------------------------|
-| `Required`            | ERROR     | slot MUST be present            | `MinCountConstraintComponent`     |
-| `Recommended`         | WARNING   | slot SHOULD be present          | `MinCountConstraintComponent`     |
-| `Singlevalued`        | ERROR     | slot MUST NOT be collection     | `MaxCountConstraintComponent`     |
-| `Multivalued`         | ERROR     | slot MUST be collection         | `MinCountConstraintComponent`     |
-| `Inlined`             | ERROR     | object value MUST be nested     |                                   |
-| `Referenced`          | ERROR     | object value MUST NOT be nested |                                   |
-| `ClassRange`          | ERROR     | class matches range             | `ClassConstraintComponent`        |
-| `Datatype`            | ERROR     | datatype matches range          | `DatatypeConstraintComponent`     |
-| `NodeKind`            | ERROR     | range metatype                  | `NodeKindConstraintComponent`     |
-| `MinimumValue`        | ERROR     | value of slot MUST NOT be lower | `MinInclusiveConstraintComponent` |
-| `MaximumValue`        | ERROR     | value of slot MUST NOT exceed   | `MaxInclusiveConstraintComponent` |
-| `Pattern`             | ERROR     | string value MUST match         | `PatternConstraintComponent`      |
-| `EqualsExpression`    | INFERENCE | value MUST be equal to          | `EqualsConstraintComponent`       |
-| `StringSerialization` | INFERENCE |                                 | `EqualsConstraintComponent`       |
-| `TypeDesignator`      | INFERENCE |                                 |                                   |
+| Check                 | Type      | Description            | SHACL                             |
+|-----------------------|-----------|------------------------|-----------------------------------|
+| `Required`            | ERROR     |                        | `MinCountConstraintComponent`     |
+| `Recommended`         | WARNING   |                        | `MinCountConstraintComponent`     |
+| `Singlevalued`        | ERROR     |                        | `MaxCountConstraintComponent`     |
+| `Multivalued`         | ERROR     |                        | `MinCountConstraintComponent`     |
+| `Inlined`             | ERROR     |                        |                                   |
+| `Referenced`          | ERROR     |                        |                                   |
+| `ClassRange`          | ERROR     | class matches range    | `ClassConstraintComponent`        |
+| `Datatype`            | ERROR     | datatype matches range | `DatatypeConstraintComponent`     |
+| `NodeKind`            | ERROR     | range metatype         | `NodeKindConstraintComponent`     |
+| `MinimumValue`        | ERROR     |                        | `MinInclusiveConstraintComponent` |
+| `MaximumValue`        | ERROR     |                        | `MaxInclusiveConstraintComponent` |
+| `Pattern`             | ERROR     |                        | `PatternConstraintComponent`      |
+| `EqualsExpression`    | INFERENCE |                        | `EqualsConstraintComponent`       |
+| `StringSerialization` | INFERENCE |                        | `EqualsConstraintComponent`       |
+| `TypeDesignator`      | INFERENCE |                        |                                   |
 
 For the `INFERENCE` type, the validation procedure MAY fill in missing values in the instance.
 There is only an error if the inferred value is not consistent with the asserted value.
 
 ## Validation procedure for instances
 
-### Validation against an element
-
-To **Validate** an instance `i` against an element `e` and a schema `m` , perform the following steps. They return
-a **ValidationResult** object.
-
-**Validate**(*i*, *e*, *m*):
-
-* Set *errors* to an empty list
-* Set *problems* to an empty list
-* For each *e'* in *e*.`all_of` + **Parents**(*e*):
-    - Set *r* to **Validate**(*i*, *e'*, *m*)
-    - If *r.error* is `True`, append *r* to *errors*
-    - If *r.problem* is `True`, append *r* to *problems*
-* For each *e'* in *e*.`none_of`:
-    - Set *r* to **ValidateAssignment**(*i*, *e'*, *m*)
-    - If *r.error* is `False`, append *r* to *errors*
-* If *e*.`any_of` is set:
-    - Set *any_of_results* to `{` **ValidateAssignment**(*i*, *e'*, *m*) : *e'* in *e*.`any_of` `}`
-    - Set *any_of_passes* to `{` *r* : *r* in *any_of_results* if *r.error* is `False` `}`
-    - If *any_of_passes* is empty, append *s* to *errors*
-    - If *any_of_passes* is not empty, append *any_of_passes*`[0].types` to *types* (greedy non-determinism)
-* If *s*.`exactly_one_of` is set:
-    - Set *exactly_one_of_results* to `{` **ValidateAssignment**(*i*, *s'*, *m*) : *s'* in *s*.`exactly_one_of` `}`
-    - Set *exactly_one_of_passes* to `{` *r* : *r* in *exactly_one_of_results* if *r.error* is `False` `}`
-    - If *len*(*exactly_one_of_passes*) is not 1, append *s* to *errors*
-    - otherwise append *exactly_one_of_passes*`[0].types` to *types*
-* If *i* is a **InstanceOfType**:
-    - if *e* is not a **TypeDefinition**:
-        - append **DatatypeCheck**(*e*) to *errors*
-* If *i* is a **InstanceOfEnum**:
-    - if *e* is not a **EnumDefinition**:
-        - append **DatatypeCheck**(*e*) to *errors*
-    - if *i* is not in *e*.`permissible_values`:
-        - append **PermissibleValueCheck**(*e*) to *errors*
-* If *i* is a **InstanceOfClass**:
-    - for each *sn*, *j* in *i*.`assignments`:
-        - Set *s* to **Resolve**(*sn*)
-            - append **ValidateAssignment**(*j*, *s'*, *m*) to *errors* // todo
-* Return **ValidationResult**(*i*, **errors**, **problems**, **e**)
-
-### Validation of an assignment
-
-To perform a **ValidateAssignment** operation on an instance `i` against a **SlotExpression** *s* and schema `m` perform the following steps.
-They return a **ValidationResult** object.
-
-**ValidateAssignment**(*i*, *s*, *m*):
-
-* Set *errors* to an empty list
-* Set *problems* to an empty list
-* Set *types* to an empty list
-* For each *s'* in *s*.`all_of` + **Resolve**(*s*.`is_a` + *s*.`mixins`):
-    - Set *r* to **ValidateAssignment**(*i*, *s'*, *m*)
-    - If *r.error* is `True`, append *r* to *errors*
-    - If *r.problem* is `True`, append *r* to *problems*
-    - If *r.error* is `False`, append *r.types* to *types*
-* For each *s'* in *s*.`none_of`:
-    - Set *r* to **ValidateAssignment**(*i*, *s'*, *m*)
-    - If *r.error* is `False`, append *r* to *errors*
-* If *s*.`any_of` is set:
-    - Set *any_of_results* to `{` **ValidateAssignment**(*i*, *s'*, *m*) : *s'* in *s*.`any_of` `}`
-    - Set *any_of_passes* to `{` *r* : *r* in *any_of_results* if *r.error* is `False` `}`
-    - If *any_of_passes* is empty, append *s* to *errors*
-    - If *any_of_passes* is not empty, append *any_of_passes*`[0].types` to *types* (greedy non-determinism)
-* If *s*.`exactly_one_of` is set:
-    - Set *exactly_one_of_results* to `{` **ValidateAssignment**(*i*, *s'*, *m*) : *s'* in *s*.`exactly_one_of` `}`
-    - Set *exactly_one_of_passes* to `{` *r* : *r* in *exactly_one_of_results* if *r.error* is `False` `}`
-    - If *len*(*exactly_one_of_passes*) is not 1, append *s* to *errors*
-    - otherwise append *exactly_one_of_passes*`[0].types` to *types*
-* If *s*.`required` is `True`:
-   - if *i* is `None` then append *s* to *errors*
-* If *s*.`recommended` is `True`:
-   - if *i* is `None` then append *s* to *problems*
-* If *s*.`range` is set:
-   - append *s.range* to *types*
-* If *s*`.multivalued` is `True`:
-    - if *i* is not a **Collection**:
-        - add **MinCountConstraintComponent**(i) to *errors*
-    - else:
-        - copy *s* to *s'*
-        - set *s'*`.multivalued to `False`
-        - for *i'* in **AtomicMembers**(i):
-            - append **ValidateAssignment**(*i'*, *s'*, *m*) to *errors* and *problems*
-* If *s*`.multivalued` is `False`:
-    * If *i* is a **Collection**:
-        - add **MaxCountConstraintComponent**(i) to *errors*
-    * If *s*.`maximum_value` is set:
-        - If *i* is not `None` and *i* > *s*.`maximum_value`, append *s* to *errors*
-    * If *s*.`minimum_value` is set:
-        - If *i* is not `None` and *i* < *s*.`minimum_value`, append *s* to *errors*
-    * If *s*.`pattern` is set:
-        - If *i* is not `None` and *i* does not match *s*.`pattern`, append *s* to *errors*
-    * If *s*.`equals_expression` is set:
-        - If *i* is not `None` and *i* != *Eval*(*s*.`equals_expression`), append *s* to *errors*
-    * If *s*.`equals_string` is set:
-        - If *i* is not `None` and *i* != *s*.`equals_string`, append *s* to *errors*
-    * If *s*.`range` is set:
-        - Set *r* to **Validate**(*i*, *s*.`range`, *m*)
-        - append *r*.`errors` to *errors*
-        - append *r*.`problems` to *problems*
-* Return **ValidationResult**(*i*, **errors**, **problems**, **types**)
-
-
-**ValidateClassInstance**(*i*, *s*, *m*):
-
-* for each *sn*, *j* in *i*.`assignments`:
-    - Set *s* to **Resolve**(*sn*)
-    - for each *s'* in **GetSlotExpressions**(*sn*, *types*)
-        - append **ValidateAssignment**(*v*, *s'*, *m*) to *errors*
 
 ```
 Validate(i, m, t):
@@ -296,6 +188,106 @@ may choose to assign the most specific value allowed to the slot.
 
 ### Rules
 
+Rules allow conditional constraints on classes: if certain **preconditions** hold for an
+instance, then **postconditions** must also hold. Rules are declared under the `rules` slot
+of a class definition.
+
+Each rule is a `ClassRule` with the following structure:
+
+- **preconditions** — an anonymous class expression that acts as the trigger ("if")
+- **postconditions** — an anonymous class expression that must hold when preconditions are met ("then")
+- **elseconditions** — an anonymous class expression that must hold when preconditions are *not* met ("else")
+- **open_world** — if `true`, postconditions may be absent from instance data without raising an error (default `false`)
+- **bidirectional** — if `true`, postconditions also entail preconditions (default `false`)
+
+Both preconditions and postconditions use `slot_conditions` to constrain individual slots.
+Slot conditions support `required`, `equals_string`, `minimum_value`, `maximum_value`,
+`pattern`, `range`, and the boolean combinators `any_of`, `all_of`, `none_of`, and
+`exactly_one_of`.
+
+#### Example: simple conditional requirement
+
+If a `confidence` value is provided, then a `confidence_source` must also be provided:
+
+```yaml
+classes:
+  Mapping:
+    attributes:
+      subject_id:
+        required: true
+      object_id:
+        required: true
+      confidence:
+        range: float
+      confidence_source:
+    rules:
+      - preconditions:
+          slot_conditions:
+            confidence:
+              required: true
+        postconditions:
+          slot_conditions:
+            confidence_source:
+              required: true
+```
+
+#### Example: conditional requirement with `any_of` in postconditions
+
+If one field is present, then *at least one* of two other fields must be provided.
+Use `any_of` inside `postconditions` — each branch is a separate class expression:
+
+```yaml
+classes:
+  Mapping:
+    attributes:
+      subject_id:
+        required: true
+      object_id:
+        required: true
+      reviewer_confidence:
+        range: float
+      reviewer_id:
+      reviewer_label:
+    rules:
+      - description: >-
+          If reviewer_confidence is provided, then at least one of
+          reviewer_id or reviewer_label must also be provided.
+        preconditions:
+          slot_conditions:
+            reviewer_confidence:
+              required: true
+        postconditions:
+          any_of:
+            - slot_conditions:
+                reviewer_id:
+                  required: true
+            - slot_conditions:
+                reviewer_label:
+                  required: true
+```
+
+#### Example: preconditions with pattern matching
+
+Rules can also constrain values, not just presence. Here, if `country` is "USA",
+the `postal_code` must match a US zip code pattern:
+
+```yaml
+classes:
+  Address:
+    attributes:
+      country:
+      postal_code:
+    rules:
+      - preconditions:
+          slot_conditions:
+            country:
+              equals_string: "USA"
+        postconditions:
+          slot_conditions:
+            postal_code:
+              pattern: "[0-9]{5}(-[0-9]{4})?"
+```
+
 ### Uniqueness checks
 
 
@@ -328,8 +320,12 @@ In all cases, the semantics are as follows:
 
 For each rule `r` in *C*.rules:
 
-- if `r.preconditions` is `None` or `r.preconditions` is satisfied, then
-- `r.postconditions` are applied
+- if `r.deactivated` is `True`, skip this rule
+- if `r.preconditions` is `None` or `r.preconditions` is satisfied by the instance, then:
+  - `r.postconditions` MUST be satisfied (validation error if not)
+- otherwise (preconditions not satisfied):
+  - if `r.elseconditions` is not `None`, then `r.elseconditions` MUST be satisfied
+- if `r.bidirectional` is `True`, the rule is also evaluated in reverse (postconditions entail preconditions)
 
 ### Classification Rule evaluation
 

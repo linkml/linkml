@@ -44,23 +44,8 @@ linkml-convert -s personinfo.yaml -t rdf data.yaml
 
 Outputs:
 
-```turtle
-@prefix ORCID: <https://orcid.org/> .
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-ORCID:1234 a personinfo:Person ;
-    personinfo:age 33 ;
-    personinfo:full_name "Clark Kent" ;
-    personinfo:phone "555-555-5555" .
-
-ORCID:4567 a personinfo:Person ;
-    personinfo:age 34 ;
-    personinfo:full_name "Lois Lane" .
-
-[] a personinfo:Container ;
-    personinfo:persons ORCID:1234,
-        ORCID:4567 .
+```{literalinclude} ../../examples/tutorial/tutorial04/data.ttl
+:language: turtle
 ```
 
 Note that each person is now represented by an ORCID URI. This is a
@@ -90,25 +75,8 @@ linkml-convert -s personinfo-semantic.yaml -t rdf data.yaml
 
 Outputs:
 
-```turtle
-@prefix ORCID: <https://orcid.org/> .
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix schema1: <http://schema.org/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-ORCID:1234 a schema1:Person ;
-    schema1:name "Clark Kent" ;
-    schema1:telephone "555-555-5555" ;
-    personinfo:age 33 .
-
-ORCID:4567 a schema1:Person ;
-    schema1:name "Lois Lane" ;
-    personinfo:age 34 .
-
-[] a personinfo:Container ;
-    personinfo:persons ORCID:1234,
-        ORCID:4567 .
-
+```{literalinclude} ../../examples/tutorial/tutorial04/data-semantic.ttl
+:language: turtle
 ```
 
 Note that the prefixes are hidden but the effect is to reuse URIs such as [schema:telephone](http://schema.org/telephone)
@@ -127,41 +95,8 @@ gen-jsonld-context --no-metadata personinfo-semantic.yaml
 
 Outputs:
 
-```json
-{
-   "@context": {
-      "xsd": "http://www.w3.org/2001/XMLSchema#",
-      "ORCID": "https://orcid.org/",
-      "linkml": "https://w3id.org/linkml/",
-      "personinfo": "https://w3id.org/linkml/examples/personinfo/",
-      "schema": "http://schema.org/",
-      "@vocab": "https://w3id.org/linkml/examples/personinfo/",
-      "persons": {
-         "@type": "schema:Person",
-         "@id": "persons"
-      },
-      "age": {
-         "@type": "xsd:integer",
-         "@id": "age"
-      },
-      "aliases": {
-         "@id": "aliases"
-      },
-      "full_name": {
-         "@id": "schema:name"
-      },
-      "id": "@id",
-      "phone": {
-         "@id": "schema:telephone"
-      },
-      "Container": {
-         "@id": "Container"
-      },
-      "Person": {
-         "@id": "schema:Person"
-      }
-   }
-}
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo-semantic.context.jsonld
+:language: json
 ```
 
 NOTE: currently you need to declare your own type object and map this to `rdf:type` for typing information to be shown
@@ -177,68 +112,8 @@ gen-shex --no-metadata personinfo-semantic.yaml
 
 Outputs:
 
-```shex
-# metamodel_version: 1.7.0
-BASE <https://w3id.org/linkml/examples/personinfo/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX linkml: <https://w3id.org/linkml/>
-PREFIX schema1: <http://schema.org/>
-
-
-linkml:String xsd:string
-
-linkml:Integer xsd:integer
-
-linkml:Boolean xsd:boolean
-
-linkml:Float xsd:float
-
-linkml:Double xsd:double
-
-linkml:Decimal xsd:decimal
-
-linkml:Time xsd:time
-
-linkml:Date xsd:date
-
-linkml:Datetime xsd:dateTime
-
-linkml:DateOrDatetime linkml:DateOrDatetime
-
-linkml:Uriorcurie IRI
-
-linkml:Curie xsd:string
-
-linkml:Uri IRI
-
-linkml:Ncname xsd:string
-
-linkml:Objectidentifier IRI
-
-linkml:Nodeidentifier NONLITERAL
-
-linkml:Jsonpointer xsd:string
-
-linkml:Jsonpath xsd:string
-
-linkml:Sparqlpath xsd:string
-
-<Container> CLOSED {
-    (  $<Container_tes> <persons> @<Person> * ;
-       rdf:type [ <Container> ] ?
-    )
-}
-
-<Person> CLOSED {
-    (  $<Person_tes> (  schema1:name @linkml:String ;
-          <aliases> @linkml:String * ;
-          schema1:telephone @linkml:String ? ;
-          <age> @linkml:Integer ?
-       ) ;
-       rdf:type [ schema1:Person ]
-    )
-}
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo-semantic.shex
+:language: shex
 ```
 
 
@@ -250,46 +125,8 @@ Outputs:
 
 <!-- compare_rdf -->
 <!-- NOTE: the order of properties is non-deterministic so we cannot compare string directly>
-```turtle
-@prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix schema1: <http://schema.org/> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-personinfo:Container a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class schema1:Person ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:persons ] ;
-    sh:targetClass personinfo:Container .
-
-schema1:Person a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:maxCount 1 ;
-            sh:maxInclusive 200 ;
-            sh:minInclusive 0 ;
-            sh:order 4 ;
-            sh:path personinfo:age ],
-        [ sh:description "name of the person" ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:order 1 ;
-            sh:path schema1:name ],
-        [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path personinfo:id ],
-        [ sh:description "other names for the person" ;
-            sh:order 2 ;
-            sh:path personinfo:aliases ],
-        [ sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path schema1:telephone ;
-            sh:pattern "^[\\d\\(\\)\\-]+$" ] ;
-    sh:targetClass schema1:Person .
+```{literalinclude} ../../examples/tutorial/tutorial04/personinfo-semantic.shacl.ttl
+:language: turtle
 ```
 
 <!-- TODO: SPARQL -->

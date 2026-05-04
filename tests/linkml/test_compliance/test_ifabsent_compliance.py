@@ -14,6 +14,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -29,6 +30,7 @@ from tests.linkml.test_compliance.test_compliance import (
 FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
 
 
+@feature_category("Defaults & Computed", "If-absent defaults")
 @pytest.mark.parametrize(
     "schema_name,range,ifabsent,data_name,initial_value,expected,schema_valid,valid,skip_for",
     [
@@ -39,6 +41,9 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
         ("boolT", "boolean", "true", "no_value", None, True, True, True, []),
         ("boolF", "boolean", "false", "no_value", None, False, True, True, []),
         ("class_curie", "uriorcurie", "class_curie", "no_value", None, "ex:C", True, True, []),
+        ("slot_curie", "uriorcurie", "slot_curie", "no_value", None, "ex:s1", True, True, []),
+        ("class_uri", "uri", "class_uri", "no_value", None, "https://example.com/C", True, True, []),
+        ("slot_uri", "uri", "slot_uri", "no_value", None, "https://example.com/s1", True, True, []),
         ("default_range", "string", "default_range", "no_value", None, "string", True, True, []),
         ("D", CLASS_D, "string(p1)", "no_value", None, "p1", False, True, []),
         # Skip Python, Pydantic and Shacl frameworks because this incompatibility is not possible with the processor
@@ -76,7 +81,7 @@ FUZZ_STR = "a b_c!@#$%^&*_+{}|:<>?[]()'\""
             [PYTHON_DATACLASSES, PYDANTIC, SHACL, PANDERA_POLARS_CLASS],
         ),
         ("fuzz_str", "string", f"string({FUZZ_STR})", "has_value", None, FUZZ_STR, True, True, []),
-        # ("enum", ENUM_E, f"(EnumName({PV_1})", "has_value", None, PV_1, True, True),
+        ("enum", ENUM_E, f"{ENUM_E}({PV_1})", "no_value", None, PV_1, True, True, []),
     ],
 )
 @pytest.mark.parametrize("framework", CORE_FRAMEWORKS)

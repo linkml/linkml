@@ -9,7 +9,7 @@ from rdflib.namespace import RDF
 from rdflib.term import BNode, Literal, Node
 
 from linkml_runtime.dumpers.dumper_root import Dumper
-from linkml_runtime.linkml_model import ElementName, PermissibleValue, PermissibleValueText, SlotDefinition
+from linkml_runtime.linkml_model import ElementName, PermissibleValue, SlotDefinition
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
@@ -85,11 +85,14 @@ class RDFLibDumper(Dumper):
         slot_name_map = schemaview.slot_name_mappings()
         logger.debug(f"CONVERT: {element} // {type(element)} // {target_type}")
         if target_type in schemaview.all_enums():
-            if isinstance(element, PermissibleValueText):
+            # Handle three cases for enum target types:
+            if isinstance(element, str):  # case 1: string, look up PermissibleValue
                 e = schemaview.get_enum(target_type)
                 element = e.permissible_values[element]
-            else:
+            elif not isinstance(element, PermissibleValue):  # case 3: EnumDefinitionImpl .code
                 element = element.code
+            # 3) do nothing, element is already PermissibleValue (PermissibleValueImpl.code)
+
             element: PermissibleValue
             if element.meaning is not None:
                 return URIRef(schemaview.expand_curie(element.meaning))
@@ -99,7 +102,7 @@ class RDFLibDumper(Dumper):
             t = schemaview.get_type(target_type)
             dt_uri = t.uri
             if dt_uri:
-                if dt_uri == "rdfs:Resource":
+                if dt_uri in ("rdfs:Resource", "xsd:anyURI"):
                     return URIRef(schemaview.expand_curie(element))
                 elif dt_uri == "xsd:string":
                     return Literal(element)
@@ -116,7 +119,14 @@ class RDFLibDumper(Dumper):
             return self._as_uri(element, id_slot, schemaview)
             # return URIRef(schemaview.expand_curie(str(element)))
         element_type = type(element)
-        cn = element_type.class_name
+        if hasattr(element_type, "class_name"):
+            cn = element_type.class_name
+        else:
+            nm = schemaview.class_name_mappings()
+            cls_name = element_type.__name__
+            if cls_name not in nm:
+                raise ValueError(f"Class {cls_name} not found in schema")
+            cn = nm[cls_name].name
         id_slot = schemaview.get_identifier_slot(cn)
         if id_slot is not None:
             element_id = getattr(element, id_slot.name)

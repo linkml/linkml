@@ -55,10 +55,8 @@ SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1
 SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
-CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml-runtime/tests/test_utils/input/mcc"
-CREATURE_SCHEMA_RAW_URL = (
-    "https://github.com/linkml/linkml-runtime/raw/main/tests/test_utils/input/mcc/creature_schema.yaml"
-)
+CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
+CREATURE_SCHEMA_RAW_URL = "https://github.com/linkml/linkml/raw/refs/heads/main/tests/linkml_runtime/test_utils/input/mcc/creature_schema.yaml"
 
 CREATURE_SCHEMA_BASE_PATH = INPUT_DIR_PATH / "mcc"
 
@@ -538,8 +536,8 @@ def test_imports_direct_remote_imports() -> None:
 def test_imports_remote_url_with_imports() -> None:
     """Test_remote_modular_schema_view."""
     url = (
-        "https://raw.githubusercontent.com/linkml/linkml-runtime/"
-        "2a46c65fe2e7db08e5e524342e5ff2ffb94bec92/tests/test_utils/input/kitchen_sink.yaml"
+        "https://raw.githubusercontent.com/linkml/linkml/refs/heads/main/"
+        "tests/linkml_runtime/test_utils/input/kitchen_sink.yaml"
     )
     sv = SchemaView(url)
     assert sv.schema.name == "kitchen_sink"
@@ -963,7 +961,17 @@ for value in CREATURE_EXPECTED.values():
 
 
 @pytest.mark.parametrize(
-    "schema", ["creature_view", "creature_view_remote", "creature_view_local", "creature_view_direct_url"]
+    "schema",
+    [
+        "creature_view",
+        pytest.param(
+            "creature_view_remote",
+        ),
+        "creature_view_local",
+        pytest.param(
+            "creature_view_direct_url",
+        ),
+    ],
 )
 @pytest.mark.parametrize("entity", CREATURE_EXPECTED.keys())
 def test_creature_schema_entities_with_without_imports(
@@ -1675,17 +1683,34 @@ def test_all_aliases(schema_view_no_imports: SchemaView) -> None:
 def test_alias_slot(schema_view_no_imports: SchemaView) -> None:
     """Tests the alias slot.
 
-    The induced slot alias should always be populated. For induced slots, it should default to the
-    name field if not present.
+    The induced slot alias should only be populated when it differs from the slot name.
+    See https://github.com/linkml/linkml/issues/2911
     """
     view = schema_view_no_imports
-    for c in view.all_classes().values():
-        for s in view.class_induced_slots(c.name):
-            assert s.alias is not None  # Assert that alias is not None
 
+    # Test explicit alias that differs from name
     postal_code_slot = view.induced_slot("postal code", "Address")
-    assert postal_code_slot.name == "postal code"  # Assert name is 'postal code'
-    assert postal_code_slot.alias == "zip"  # Assert alias is 'zip'
+    assert postal_code_slot.name == "postal code"
+    assert postal_code_slot.alias == "zip"
+
+    # Test that alias is None when it would equal the name (after underscoring)
+    aliases_slot = view.induced_slot("aliases", "HasAliases")
+    assert aliases_slot.name == "aliases"
+    assert aliases_slot.alias is None  # Not set because underscore("aliases") == "aliases"
+
+
+def test_induced_slot_underscored_name(schema_view_no_imports: SchemaView) -> None:
+    """induced_slot must accept the underscore-normalised form of a slot name."""
+    view = schema_view_no_imports
+
+    # "postal code" in the schema → callers pass "postal_code"
+    slot = view.induced_slot("postal_code", "Address")
+    assert slot.name == "postal code"
+
+    # When the slot name already has no special characters the exact-match path
+    # still works and the fallback is not triggered.
+    slot_direct = view.induced_slot("aliases", "HasAliases")
+    assert slot_direct.name == "aliases"
 
 
 """Tests of SchemaView range-related functions.
@@ -3304,3 +3329,146 @@ def test_add_delete_get_entity(
     # expect that retrieving the entity will return an error if strict mode is on
     with pytest.raises(ValueError, match=f"No such {type_for_methods}"):
         getattr(view, get_method)(entity_name, strict=True)
+
+
+@pytest.mark.parametrize(
+    ("slot_name", "expected_alias"),
+    [
+        ("my_slot", None),  # underscore("my_slot") == "my_slot" == name → no alias
+        ("mySlot", None),  # underscore("mySlot") == "mySlot" == name → no alias
+        ("my slot", "my_slot"),  # underscore("my slot") == "my_slot" != name → alias set
+    ],
+)
+def test_induced_slot_alias_not_equal_to_name(slot_name: str, expected_alias: str | None) -> None:
+    """Test that induced_slot does not set alias when it equals slot name.
+
+    See https://github.com/linkml/linkml/issues/2911
+    """
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("MyClass", slots=[slot_name]))
+    view.add_slot(SlotDefinition(slot_name, range="string"))
+
+    induced = view.induced_slot(slot_name, "MyClass")
+
+    assert induced.alias == expected_alias, (
+        f"Expected alias={expected_alias!r} but got {induced.alias!r}. Alias should not equal the slot name."
+    )
+
+
+# Tests for _closure optimisation (rv_set + visited as sets)
+
+
+def test_closure_reflexive_includes_start() -> None:
+    """With reflexive=True the start node is the first element."""
+    result = graph_closure(lambda _: [], "A", reflexive=True)
+    assert result == ["A"]
+
+
+def test_closure_non_reflexive_excludes_start() -> None:
+    """With reflexive=False the start node is excluded."""
+    result = graph_closure(lambda _: [], "A", reflexive=False)
+    assert result == []
+
+
+def test_closure_linear_chain() -> None:
+    """A linear A→B→C→D chain returns all nodes in depth-first order."""
+    graph = {"A": ["B"], "B": ["C"], "C": ["D"], "D": []}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    assert result == ["A", "B", "C", "D"]
+
+
+def test_closure_no_duplicates_diamond() -> None:
+    """Diamond graph A→{B,C}→D: D must appear exactly once."""
+    graph = {"A": ["B", "C"], "B": ["D"], "C": ["D"], "D": []}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    assert result.count("D") == 1
+
+
+def test_closure_no_duplicates_with_cycle() -> None:
+    """Cycles must not produce infinite loops or duplicate entries."""
+    # A→B→C→A cycle; starting from A with reflexive=True
+    graph = {"A": ["B"], "B": ["C"], "C": ["A"]}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    # Every node appears exactly once
+    assert sorted(result) == ["A", "B", "C"]
+    assert len(result) == len(set(result))
+
+
+def test_closure_none_returning_function() -> None:
+    """A neighbour function that returns None should not crash."""
+    result = graph_closure(lambda _: None, "X", reflexive=True)
+    assert result == ["X"]
+
+
+# Tests for _slot_class_map and domain_of population in induced_slot
+
+
+def test_slot_class_map_slots() -> None:
+    """_slot_class_map maps slot names to the classes that declare them."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["s1", "s2"]))
+    view.add_class(ClassDefinition("B", slots=["s2", "s3"]))
+    view.add_slot(SlotDefinition("s1", range="string"))
+    view.add_slot(SlotDefinition("s2", range="string"))
+    view.add_slot(SlotDefinition("s3", range="string"))
+
+    m = view._slot_class_map()
+    assert set(m["s1"]) == {"A"}
+    assert set(m["s2"]) == {"A", "B"}
+    assert set(m["s3"]) == {"B"}
+
+
+def test_slot_class_map_attributes() -> None:
+    """_slot_class_map must also pick up inline attribute declarations."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    cls = ClassDefinition("MyClass")
+    cls.attributes["attr1"] = SlotDefinition("attr1")
+    view.add_class(cls)
+
+    m = view._slot_class_map()
+    assert "MyClass" in m.get("attr1", [])
+
+
+def test_slot_class_map_invalidated_after_set_modified() -> None:
+    """_slot_class_map cache is re-built after schema modification."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["s1"]))
+    view.add_slot(SlotDefinition("s1", range="string"))
+
+    m_before = view._slot_class_map()
+    assert "s1" in m_before
+
+    # Modify: add a new class that also declares s1
+    view.add_class(ClassDefinition("B", slots=["s1"]))
+
+    m_after = view._slot_class_map()
+    assert set(m_after["s1"]) == {"A", "B"}
+
+
+def test_induced_slot_domain_of_populated() -> None:
+    """induced_slot must populate domain_of with every class that declares the slot."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["shared"]))
+    view.add_class(ClassDefinition("B", slots=["shared"]))
+    view.add_slot(SlotDefinition("shared", range="string"))
+
+    induced = view.induced_slot("shared", "A")
+    assert set(induced.domain_of) >= {"A", "B"}
+
+
+def test_induced_slot_domain_of_no_duplicates() -> None:
+    """domain_of must not contain duplicates even if a slot appears in both slots and attributes."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    cls = ClassDefinition("A", slots=["s1"])
+    cls.attributes["s1"] = SlotDefinition("s1")
+    view.add_class(cls)
+    view.add_slot(SlotDefinition("s1", range="string"))
+
+    induced = view.induced_slot("s1", "A")
+    assert induced.domain_of.count("A") == 1

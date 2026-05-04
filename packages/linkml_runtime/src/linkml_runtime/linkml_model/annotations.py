@@ -1,5 +1,5 @@
 # Auto generated from annotations.yaml by pythongen.py version: 0.0.1
-# Generation date: 2024-06-27T23:15:03
+# Generation date: 2026-02-18T21:04:45
 # Schema: annotations
 #
 # id: https://w3id.org/linkml/annotations
@@ -34,7 +34,7 @@ class AnnotationTag(ExtensionTag):
     pass
 
 
-@dataclass
+@dataclass(repr=False)
 class Annotatable(YAMLRoot):
     """
     mixin for classes that support annotations
@@ -51,13 +51,13 @@ class Annotatable(YAMLRoot):
         Union[dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], list[Union[dict, "Annotation"]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         self._normalize_inlined_as_dict(slot_name="annotations", slot_type=Annotation, key_name="tag", keyed=True)
 
         super().__post_init__(**kwargs)
 
 
-@dataclass
+@dataclass(repr=False)
 class Annotation(Extension):
     """
     a tag/value pair with the semantics of OWL Annotation
@@ -76,7 +76,7 @@ class Annotation(Extension):
         Union[dict[Union[str, AnnotationTag], Union[dict, "Annotation"]], list[Union[dict, "Annotation"]]]
     ] = empty_dict()
 
-    def __post_init__(self, *_: list[str], **kwargs: dict[str, Any]):
+    def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.tag):
             self.MissingRequiredField("tag")
         if not isinstance(self.tag, AnnotationTag):

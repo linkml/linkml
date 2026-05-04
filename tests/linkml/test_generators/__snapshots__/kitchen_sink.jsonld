@@ -22,6 +22,7 @@
       "linkml": "https://w3id.org/linkml/",
       "pav": "http://purl.org/pav/",
       "prov": "http://www.w3.org/ns/prov#",
+      "qudt": "http://qudt.org/vocab/quantitykind/",
       "schema": "http://schema.org/",
       "skos": "http://www.w3.org/2004/02/skos/core#",
       "@vocab": "https://w3id.org/linkml/tests/kitchen_sink/",
@@ -57,7 +58,7 @@
          "@id": "attribute3"
       },
       "attribute4": {
-         "@type": "@id",
+         "@type": "xsd:integer",
          "@id": "attribute4"
       },
       "attribute1": {

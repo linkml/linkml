@@ -18,6 +18,7 @@ from tests.linkml.test_compliance.helper import (
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -33,6 +34,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Inlining & References", "Inlined objects")
 @pytest.mark.parametrize("data", ["inlined_list", "flat", "nested", "flat_list"])
 @pytest.mark.parametrize("foreign_key", [0, "FK"])
 @pytest.mark.parametrize("multivalued", [0, "MV"])
@@ -294,6 +296,7 @@ MULTIVALUED_ATTRS = {
 }
 
 
+@feature_category("Inlining & References", "Inlined as simple dict")
 @pytest.mark.parametrize(
     "name,attrs,data_name,values,is_valid",
     [

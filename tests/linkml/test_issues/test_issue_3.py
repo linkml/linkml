@@ -12,5 +12,5 @@ def test_date_time():
     rdf = RDFGenerator(LOCAL_TYPES_YAML_FILE).serialize()
     g = Graph()
     g.parse(data=rdf, format="turtle")
-    assert XSD.date == g.value(LINKML.date, LINKML.uri)
-    assert XSD.dateTime == g.value(LINKML.datetime, LINKML.uri)
+    assert str(XSD.date) == str(g.value(LINKML.date, LINKML.uri))
+    assert str(XSD.dateTime) == str(g.value(LINKML.datetime, LINKML.uri))

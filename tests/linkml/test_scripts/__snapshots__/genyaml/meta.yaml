@@ -57,6 +57,9 @@ prefixes:
   schema:
     prefix_prefix: schema
     prefix_reference: http://schema.org/
+  qudt:
+    prefix_prefix: qudt
+    prefix_reference: http://qudt.org/vocab/quantitykind/
 default_curi_maps:
 - semweb_context
 default_prefix: ks
@@ -95,8 +98,8 @@ types:
     description: A character string
     notes:
     - In RDF serializations, a slot with range of string is treated as a literal or
-      type xsd:string.   If you are authoring schemas in LinkML YAML, the type is
-      referenced with the lower case "string".
+      type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced
+      with the lower case "string".
     from_schema: https://w3id.org/linkml/types
     imported_from: linkml:types
     exact_mappings:
@@ -370,6 +373,9 @@ types:
     from_schema: https://w3id.org/linkml/tests/core
     base: int
     uri: xsd:integer
+    unit:
+      symbol: yr
+      ucum_code: a
 enums:
   FamilialRelationshipType:
     name: FamilialRelationshipType
@@ -606,6 +612,10 @@ slots:
     range: integer
     minimum_value: 0
     maximum_value: 999
+    unit:
+      symbol: yr
+      ucum_code: a
+      has_quantity_kind: qudt:Time
   related to:
     name: related to
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/related_to

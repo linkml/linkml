@@ -13,6 +13,7 @@ def test_help():
     assert "Generate an OWL representation of a LinkML model" in result.output
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "arguments,snapshot_file,rdf_format",
     [
@@ -35,6 +36,7 @@ def test_metamodel(arguments, snapshot_file, rdf_format, snapshot):
     assert result.output == snapshot(f"genowl/{snapshot_file}", rdf_format=rdf_format)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "arguments,snapshot_file,rdf_format",
     [

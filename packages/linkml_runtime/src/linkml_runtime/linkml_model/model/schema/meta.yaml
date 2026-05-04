@@ -192,7 +192,7 @@ slots:
     description: >-
       An element in another schema which this element instantiates.
     multivalued: true
-      
+
   categories:
     range: uriorcurie
     singular_name: category
@@ -277,7 +277,7 @@ slots:
       A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.
     see_also:
       - linkml:aliases
-      
+
   aliases:
     aliases:
       - synonyms
@@ -1032,7 +1032,7 @@ slots:
     description: the refinement of a slot in the context of the containing class definition.
     comments:
       - >-
-        Many slots may be re-used across different classes, but the meaning of the slot may be refined by context.
+        Many slots may be reused across different classes, but the meaning of the slot may be refined by context.
         For example, a generic association model may use slots subject/predicate/object with generic semantics and
         minimal constraints. When this is subclasses, e.g. to disease-phenotype associations then slot usage may
         specify both local naming (e.g. subject=disease) and local constraints
@@ -1351,7 +1351,72 @@ slots:
     range: boolean
     description: if true then induced/mangled slot names are not created for class_usage and attributes
     status: testing
-    
+
+  extra_slots:
+    description: |
+      How a class instance handles extra data not specified in the class definition.
+      Note that this does *not* define the constraints that are placed on additional slots defined by inheriting classes.
+
+      Possible values:
+      - `allowed: true` - allow all additional data
+      - `allowed: false` (or `allowed:` or `allowed: null` while `range_expression` is `null`) -
+        forbid all additional data (default)
+      - `range_expression: ...`  - allow additional data if it matches the slot expression (see examples)
+    domain: class_definition
+    range: extra_slots_expression
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+    examples:
+      - value:
+          allowed: true
+        description: Allow all additional data
+      - value:
+          allowed: false
+        description: Forbid any additional data
+      - value:
+          range_expression:
+            range: string
+        description: Allow additional data that are strings
+      - value:
+          range_expression:
+            range: AClassDefinition
+        description: Allow additional data if they are instances of the class definition "AClassDefinition"
+      - value:
+          range_expression:
+            any_of:
+              - range: string
+              - range: integer
+        description: allow additional data if they are either strings or integers
+      - value:
+          range_expression:
+            range: integer
+            multivalued: true
+            maximum_cardinality: 5
+        description: |
+          Allow additional data if they are lists of integers of at most length 5.
+          Note that this does *not* mean that a maximum of 5 extra slots are allowed.
+      - value:
+          range_expression:
+            range: integer
+            required: true
+        description: |
+          Allow additional data if they are integers.
+          `required` is meaningless in this context and ignored, since by definition all "extra" slots are optional.
+      - value:
+          allowed: false
+          range_expression:
+            range: string
+        description: |
+          A semantically *invalid* use of `extra_slots`, as extra slots will be forbidden and the
+          `anonymous_slot_expression` will be ignored.
+
+  allowed:
+    description: Whether or not something is allowed. Usage defined by context.
+    range: boolean
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
 
   # -----------------------------------
   # Slot definition slots
@@ -1382,6 +1447,7 @@ slots:
     inherited: true
     comments:
       - range is underspecified, as not all elements can appear as the range of a slot.
+      - to use a URI or CURIE as the range, create a class with the URI or curie as the class_uri
     description: |
       defines the type of the object of the slot.  Given the following slot definition
         S1:
@@ -1410,6 +1476,7 @@ slots:
       URI of the class that provides a semantic interpretation of the slot in a linked data context. The URI may come from any namespace and may be shared between schemas.
     comments:
       - Assigning slot_uris can provide additional hooks for interoperation, indicating a common conceptual model
+      - To use a URI or CURIE as a range, create a class with the URI or CURIE as the class_uri
     in_subset:
       - SpecificationSubset
       - BasicSubset
@@ -2091,7 +2158,7 @@ slots:
       expansion.
 
       Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations
-      by parsing denormalized strings into complex objects (b) GENERARE: implement automated to_string labeling of
+      by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of
       complex objects
 
       For example, a Measurement class may have 3 fields: unit, value, and string_value. The string_value slot
@@ -2145,7 +2212,7 @@ slots:
       A collection of type mappings that specify how a slot's range should be mapped or
       serialized in different frameworks
     multivalued: true
-      
+
   framework_key:
     range: string
     alias: framework
@@ -2154,7 +2221,7 @@ slots:
       The name of a format that can be used to serialize LinkML data.
       The string value should be a code from the LinkML frameworks vocabulary,
       but this is not strictly enforced
-    
+
   mapped_type:
     range: type_definition
     alias: type
@@ -2481,7 +2548,7 @@ classes:
 
   Anything:
     class_uri: linkml:Any
-  
+
   common_metadata:
     description: Generic metadata shared across definitions
     mixin: true
@@ -2756,7 +2823,7 @@ classes:
 
   match_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that 
+      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
       matches on properties of the external concepts.
     slots:
       - identifier_pattern
@@ -2766,7 +2833,7 @@ classes:
 
   reachability_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a 
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via walking from a
       set of source nodes to a set of descendants or ancestors over a set of relationship types.
     slots:
       - source_ontology
@@ -2880,6 +2947,7 @@ classes:
       - exactly_one_of
       - any_of
       - all_of
+      - array
     slot_usage:
       any_of:
         range: anonymous_slot_expression
@@ -2915,7 +2983,6 @@ classes:
       - singular_name
       - domain
       - slot_uri
-      - array
       - inherited
       - readonly
       - ifabsent
@@ -3023,6 +3090,8 @@ classes:
       - represents_relationship
       - disjoint_with
       - children_are_mutually_disjoint
+      - extra_slots
+      - alias
     slot_usage:
       is_a:
         range: class_definition
@@ -3225,6 +3294,21 @@ classes:
       - string_serialization
     in_subset:
       - SpecificationSubset
+
+  extra_slots_expression:
+    description: |
+      An expression that defines how to handle additional data in an instance of class
+      beyond the slots/attributes defined for that class.
+      See `extra_slots` for usage examples.
+    mixins:
+      - expression
+    slots:
+      - allowed
+      - range_expression
+    slot_usage:
+      range_expression:
+        range: anonymous_slot_expression
+
 
 # ==================================
 # Enumerations                     #

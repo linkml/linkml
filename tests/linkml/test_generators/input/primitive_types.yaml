@@ -1,0 +1,39 @@
+id: https://w3id.org/linkml/tests/primitive_types
+name: primitive_types
+title: Primitive types demonstration
+description: |-
+  Primitive types schema
+
+  This schema is intended to illustrate the use of "primitive types"
+  (integers, single- or double-precision floating point numbers,
+  booleans).
+imports:
+  - linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  pt: https://w3id.org/linkml/tests/primitive_types/
+default_prefix: pt
+
+classes:
+  SimpleClass:
+    attributes:
+      requiredInteger:
+        range: integer
+        required: true
+      optionalInteger:
+        range: integer
+      requiredFloat:
+        range: float
+        required: true
+      optionalFloat:
+        range: float
+      requiredDouble:
+        range: double
+        required: true
+      optionalDouble:
+        range: double
+      requiredBoolean:
+        range: boolean
+        required: true
+      optionalBoolean:
+        range: boolean

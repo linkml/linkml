@@ -71,6 +71,10 @@
     {
       "prefix_prefix": "schema",
       "prefix_reference": "http://schema.org/"
+    },
+    {
+      "prefix_prefix": "qudt",
+      "prefix_reference": "http://qudt.org/vocab/quantitykind/"
     }
   ],
   "default_curi_maps": [
@@ -118,7 +122,7 @@
       "definition_uri": "https://w3id.org/linkml/String",
       "description": "A character string",
       "notes": [
-        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string.   If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
+        "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"."
       ],
       "from_schema": "https://w3id.org/linkml/types",
       "imported_from": "linkml:types",
@@ -436,6 +440,11 @@
       "from_schema": "https://w3id.org/linkml/tests/core",
       "base": "int",
       "uri": "http://www.w3.org/2001/XMLSchema#integer",
+      "unit": {
+        "symbol": "yr",
+        "ucum_code": "a",
+        "@type": "UnitOfMeasure"
+      },
       "@type": "TypeDefinition"
     }
   ],
@@ -750,6 +759,12 @@
       "range": "integer",
       "minimum_value": 0,
       "maximum_value": 999,
+      "unit": {
+        "symbol": "yr",
+        "ucum_code": "a",
+        "has_quantity_kind": "qudt:Time",
+        "@type": "UnitOfMeasure"
+      },
       "@type": "SlotDefinition"
     },
     {

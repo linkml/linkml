@@ -231,6 +231,12 @@ class ExampleRunner:
         if isinstance(dict_obj, dict):
             if target_class not in sv.all_classes():
                 raise ValueError(f"No such class as {target_class}")
+            # Classes with class_uri: linkml:Any are emitted as `ClassName = Any`
+            # by PythonGenerator.  In Python 3.11+, typing.Any(...) is not
+            # callable, so skip construction and return the raw dict unchanged.
+            target_cls_def = sv.get_class(target_class)
+            if target_cls_def and target_cls_def.class_uri == "linkml:Any":
+                return dict_obj
             td_slot = sv.get_type_designator_slot(target_class) if target_class else None
             if td_slot:
                 if td_slot.name in dict_obj:
@@ -266,7 +272,11 @@ class ExampleRunner:
                         v2 = self._load_from_dict(v_as_list, target_class=islot.range)
                     else:
                         v2 = self._load_from_dict(v, target_class=islot.range)
-                    new_dict_obj[k] = v2
+                    # YAML keys may contain hyphens (e.g. "how-many") which are
+                    # valid YAML identifiers but illegal as Python kwargs.  The
+                    # generated Python class uses underscored names, so normalise
+                    # here before passing to the constructor.
+                    new_dict_obj[k.replace("-", "_")] = v2
             py_target_class = getattr(self.python_module, camelcase(target_class))
             return py_target_class(**new_dict_obj)
         elif isinstance(dict_obj, list):

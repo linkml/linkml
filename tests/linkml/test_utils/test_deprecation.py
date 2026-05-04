@@ -12,6 +12,8 @@ from linkml.utils.deprecation import DEPRECATIONS, EMITTED, Deprecation, SemVer,
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.xdist_group("serial")
+
 all_ops = {le, lt, gt, ge, eq}
 
 
@@ -233,6 +235,7 @@ def test_deprecation_warns_selectively(linkml_version):
         assert len(record) == 1
 
 
+@pytest.mark.xdist_group("serial")
 def test_removed_are_removed():
     """
     Test that any Deprecation marked as having been removed in this version have been.

@@ -1,0 +1,12 @@
+{#- For when used with Import model -#}
+{%- if module -%}
+{% if alias %}{{ alias }} {% endif %}"{{ module }}"
+{%- endif -%}
+{#- For when used with Imports container -#}
+{%- if imports %}
+import (
+{% for imp in imports %}
+	{{ imp }}
+{% endfor %}
+)
+{%- endif %}

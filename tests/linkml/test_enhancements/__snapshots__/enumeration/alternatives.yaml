@@ -37,8 +37,8 @@ types:
     description: A character string
     notes:
     - In RDF serializations, a slot with range of string is treated as a literal or
-      type xsd:string.   If you are authoring schemas in LinkML YAML, the type is
-      referenced with the lower case "string".
+      type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced
+      with the lower case "string".
     from_schema: https://w3id.org/linkml/types
     imported_from: linkml:types
     exact_mappings:
@@ -327,10 +327,7 @@ enums:
     - hpo_options
     from_schema: http://example.org/test/alternatives
     code_set: CS:HPO
-    pv_formula:
-      text: CODE
-      description: The permissible values are the set of possible codes in the code
-        set
+    pv_formula: CODE
   constrained_enum_3:
     name: constrained_enum_3
     definition_uri: http://example.org/test/evidence/ConstrainedEnum3
@@ -340,9 +337,7 @@ enums:
     from_schema: http://example.org/test/alternatives
     code_set: CS:HPO
     code_set_tag: production
-    pv_formula:
-      text: URI
-      description: The permissible values are the set of code URIs in the code set
+    pv_formula: URI
   constrained_enum_4:
     name: constrained_enum_4
     definition_uri: http://example.org/test/evidence/ConstrainedEnum4
@@ -352,9 +347,7 @@ enums:
     from_schema: http://example.org/test/alternatives
     code_set: CS:HPO
     code_set_version: '1.17'
-    pv_formula:
-      text: CURIE
-      description: The permissible values are the set of CURIES in the code set
+    pv_formula: CURIE
   constrained_enum_5:
     name: constrained_enum_5
     definition_uri: http://example.org/test/evidence/ConstrainedEnum5
@@ -362,10 +355,7 @@ enums:
       options" value set
     from_schema: http://example.org/test/alternatives
     code_set: CLUE:mustard_options
-    pv_formula:
-      text: FHIR_CODING
-      description: The permissible values are the set of FHIR coding elements derived
-        from the code set
+    pv_formula: FHIR_CODING
   constrained_enum_6:
     name: constrained_enum_6
     definition_uri: http://example.org/test/evidence/ConstrainedEnum6
@@ -373,10 +363,7 @@ enums:
     from_schema: http://example.org/test/alternatives
     code_set: CS:SCT
     code_set_version: '>=2020-7-31'
-    pv_formula:
-      text: CODE
-      description: The permissible values are the set of possible codes in the code
-        set
+    pv_formula: CODE
   constrained_evidence:
     name: constrained_evidence
     definition_uri: http://example.org/test/evidence/ConstrainedEvidence
@@ -399,9 +386,7 @@ enums:
     - test_subset
     from_schema: http://example.org/test/alternatives
     code_set: clue_answers
-    pv_formula:
-      text: URI
-      description: The permissible values are the set of code URIs in the code set
+    pv_formula: URI
 slots:
   allEnums__entry_name:
     name: allEnums__entry_name

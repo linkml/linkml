@@ -84,7 +84,7 @@ languages such as Python, Javascript, or Java.
 Database
 --------
 
-Generators specific to database frameworks. Currently only SQL databases.
+Generators specific to database frameworks, including SQL and graph databases.
 
 .. toctree::
    :maxdepth: 1
@@ -92,6 +92,8 @@ Generators specific to database frameworks. Currently only SQL databases.
 
    sqltable
    sqlalchemy
+   sqlvalidation
+   typedb
 
 Others
 ------
@@ -108,6 +110,16 @@ Others
    csv
    yaml
    pandera
+
+Feature Dashboard
+-----------------
+
+See which metamodel features each generator supports at a glance.
+
+.. toctree::
+   :maxdepth: 1
+
+   dashboard
 
 Common
 ------

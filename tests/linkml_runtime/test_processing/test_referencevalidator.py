@@ -9,6 +9,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Any, Optional, Union
 
+import pytest
 import yaml
 
 from linkml_runtime.dumpers import json_dumper, yaml_dumper
@@ -1135,6 +1136,7 @@ class ReferenceValidatorTestCase(unittest.TestCase):
         self.assertEqual(0, len(report.errors()))
         self.assertEqual(0, len(report.normalized_results()))
 
+    @pytest.mark.slow
     def test_metamodel(self):
         view = package_schemaview("linkml_runtime.linkml_model.meta")
         validator = ReferenceValidator(view)

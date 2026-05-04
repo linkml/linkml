@@ -63,6 +63,10 @@
          "@type": "@id",
          "@id": "all_of"
       },
+      "allowed": {
+         "@type": "xsd:boolean",
+         "@id": "allowed"
+      },
       "source": {
          "@type": "xsd:anyURI",
          "@id": "dcterms:source"
@@ -306,6 +310,10 @@
          "@type": "@id",
          "@id": "extensions"
       },
+      "extra_slots": {
+         "@type": "@id",
+         "@id": "extra_slots"
+      },
       "followed_by": {
          "@type": "@id",
          "@id": "followed_by"
@@ -512,7 +520,6 @@
          "@id": "maximum_cardinality"
       },
       "maximum_number_dimensions": {
-         "@type": "@id",
          "@id": "maximum_number_dimensions"
       },
       "maximum_value": {
@@ -982,6 +989,9 @@
       },
       "Extension": {
          "@id": "Extension"
+      },
+      "ExtraSlotsExpression": {
+         "@id": "ExtraSlotsExpression"
       },
       "ImportExpression": {
          "@id": "ImportExpression"

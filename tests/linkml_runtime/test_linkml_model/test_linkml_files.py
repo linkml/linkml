@@ -21,6 +21,8 @@ from linkml_runtime.linkml_model.linkml_files import (
     _Path,
 )
 
+_LOCAL_BASE = Path(LOCAL_BASE) if not isinstance(LOCAL_BASE, Path) else LOCAL_BASE
+
 EXPECTED_FORMATS = [
     (source, fmt) for source, fmt in product(Source, Format) if (fmt not in META_ONLY or source == Source.META)
 ]
@@ -62,14 +64,14 @@ def test_no_unmapped_dirs():
     """
     EXCLUDES = ("__pycache__",)
 
-    expected = {LOCAL_BASE / _Path.get(fmt.name).path for fmt in Format}
-    expected.add(LOCAL_BASE / "model")
+    expected = {_LOCAL_BASE / _Path.get(fmt.name).path for fmt in Format}
+    expected.add(_LOCAL_BASE / "model")
 
-    actual = {a_dir for a_dir in LOCAL_BASE.iterdir() if a_dir.is_dir() and a_dir.name not in EXCLUDES}
+    actual = {a_dir for a_dir in _LOCAL_BASE.iterdir() if a_dir.is_dir() and a_dir.name not in EXCLUDES}
     # Special case the root directory
-    actual.add(LOCAL_BASE)
+    actual.add(_LOCAL_BASE)
     # Special case YAML which is in a subdirectory - we've checked for existence above
-    actual.add(LOCAL_BASE / _Path.get("YAML").path)
+    actual.add(_LOCAL_BASE / _Path.get("YAML").path)
     assert expected == actual
 
 
@@ -122,3 +124,30 @@ def test_fixed_meta_url():
     """
     assert URL_FOR(Source.META, Format.YAML) == "https://w3id.org/linkml/meta.yaml"
     assert URL_FOR(Source.META, Format.JSONLD) == "https://w3id.org/linkml/meta.context.jsonld"
+
+
+VENDORED_RUNTIME_FILES = [(source, fmt) for source in Source for fmt in (Format.YAML, Format.JSONLD)]
+"""Source files resolved locally at runtime by generators (YAML for schema imports,
+JSONLD for context resolution). Drift here means generators silently use stale definitions."""
+
+
+@pytest.mark.network
+@pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
+def test_vendored_files_match_upstream(source, fmt):
+    """Detect drift between vendored files and their upstream w3id.org versions.
+
+    Generators resolve these files locally instead of fetching from the network.
+    If upstream changes without updating the vendored copies, generated output
+    will silently diverge from what users expect.
+    """
+    local_path = Path(LOCAL_PATH_FOR(source, fmt))
+    url = URL_FOR(source, fmt)
+
+    local_content = local_path.read_text()
+    response = requests.get(url, timeout=10)
+    assert response.ok, f"Failed to fetch {url}: {response.status_code}"
+
+    assert local_content == response.text, (
+        f"Vendored {local_path.name} differs from upstream {url}. "
+        "Update vendored files to match the current upstream release."
+    )
