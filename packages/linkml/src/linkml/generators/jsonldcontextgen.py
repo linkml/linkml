@@ -23,6 +23,10 @@ from linkml_runtime.utils.schemaview import SchemaView
 
 URI_RANGES = (SHEX.nonliteral, SHEX.bnode, SHEX.iri)
 
+# Extended URI_RANGES that also treats xsd:anyURI as an IRI reference (@id)
+# rather than a typed literal. Opt-in via --xsd-anyuri-as-iri flag.
+URI_RANGES_WITH_XSD = (*URI_RANGES, XSD.anyURI)
+
 ENUM_CONTEXT = {
     "text": "skos:notation",
     "description": "skos:prefLabel",
@@ -72,6 +76,12 @@ class ContextGenerator(Generator):
     _local_slots: set | None = field(default=None, repr=False)
     _external_classes: set | None = field(default=None, repr=False)
     _external_slots: set | None = field(default=None, repr=False)
+    xsd_anyuri_as_iri: bool = False
+    """Map xsd:anyURI-typed ranges (uri, uriorcurie) to ``@type: @id`` instead of ``@type: xsd:anyURI``.
+
+    This aligns the JSON-LD context with the SHACL generator, which emits
+    ``sh:nodeKind sh:IRI`` for the same types.
+    """
 
     # Framing (opt-in via CLI flag)
     emit_frame: bool = False
@@ -239,6 +249,14 @@ class ContextGenerator(Generator):
         self.add_mappings(cls)
 
         self._build_element_id(class_def, cls.class_uri)
+
+        # Build scoped context for slots whose range differs from the global definition.
+        # This handles attributes and slot_usage overrides that change a slot's range
+        # within a specific class (see: JSON-LD Scoped Contexts).
+        scoped_context = self._build_scoped_context(cls)
+        if scoped_context:
+            class_def["@context"] = scoped_context
+
         if class_def:
             self.slot_class_maps[cn] = class_def
 
@@ -246,7 +264,6 @@ class ContextGenerator(Generator):
         if getattr(cls, "tree_root", False):
             self.frame_root = cls.name
 
-        # We don't bother to visit class slots - just all slots
         return True
 
     def _literal_coercion_for_ranges(self, ranges: list[str]) -> tuple[bool, str | None]:
@@ -263,6 +280,7 @@ class ContextGenerator(Generator):
         and "could not resolve safely because the branches disagree".
         """
         coercions: set[str | None] = set()
+        uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
         for range_name in ranges:
             if range_name not in self.schema.types:
                 continue
@@ -271,7 +289,7 @@ class ContextGenerator(Generator):
             range_uri = self.namespaces.uri_for(range_type.uri)
             if range_uri == XSD.string:
                 coercions.add(None)
-            elif range_uri in URI_RANGES:
+            elif range_uri in uri_ranges:
                 coercions.add("@id")
             else:
                 coercions.add(range_type.uri)
@@ -316,9 +334,10 @@ class ContextGenerator(Generator):
                     self.emit_prefixes.add(skos)
                 else:
                     range_type = self.schema.types[slot.range]
+                    uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
                     if self.namespaces.uri_for(range_type.uri) == XSD.string:
                         pass
-                    elif self.namespaces.uri_for(range_type.uri) in URI_RANGES:
+                    elif self.namespaces.uri_for(range_type.uri) in uri_ranges:
                         slot_def["@type"] = "@id"
                     else:
                         slot_def["@type"] = range_type.uri
@@ -338,6 +357,61 @@ class ContextGenerator(Generator):
             # collect @embed only for object-valued slots (range is a class)
             if slot.range in self.schema.classes and slot.inlined is not None:
                 self.frame_body[key] = {"@embed": "@always" if bool(slot.inlined) else "@never"}
+
+    def _resolve_slot_type(self, range_name: str) -> str | None:
+        """Resolve a slot range to its JSON-LD @type value.
+
+        Returns the appropriate @type string for a given range name,
+        or None if the range maps to xsd:string (no @type needed).
+        """
+        if range_name in self.schema.classes:
+            return "@id"
+        if range_name in self.schema.enums:
+            return None
+        if range_name in self.schema.types:
+            range_type = self.schema.types[range_name]
+            uri = self.namespaces.uri_for(range_type.uri)
+            if uri == XSD.string:
+                return None
+            if uri in URI_RANGES:
+                return "@id"
+            return range_type.uri
+        return None
+
+    def _build_scoped_context(self, cls: ClassDefinition) -> dict:
+        """Build a scoped JSON-LD context for class-level slot range overrides.
+
+        When a class overrides a slot's range (via attributes or slot_usage),
+        the global context entry won't have the right @type. This method
+        detects those overrides and returns context entries only when the
+        resolved @type actually differs from the global definition.
+        """
+        scoped: dict = {}
+
+        def _add_if_type_differs(slot_name: str, override_range: str) -> None:
+            """Add a scoped entry if the override's @type differs from the global slot's @type."""
+            global_slot = self.schema.slots[slot_name]
+            global_type = self._resolve_slot_type(global_slot.range) if global_slot.range else None
+            override_type = self._resolve_slot_type(override_range)
+            if override_type == global_type:
+                return
+            entry: dict = {}
+            self._build_element_id(entry, global_slot.slot_uri)
+            if override_type is not None:
+                entry["@type"] = override_type
+            scoped[underscore(slot_name)] = entry
+
+        # Check attributes that shadow global slots
+        for attr_name, attr in cls.attributes.items():
+            if attr.range and attr_name in self.schema.slots:
+                _add_if_type_differs(attr_name, attr.range)
+
+        # Check slot_usage overrides
+        for usage_name, usage in cls.slot_usage.items():
+            if usage.range and usage_name in self.schema.slots:
+                _add_if_type_differs(usage_name, usage.range)
+
+        return scoped
 
     def _build_element_id(self, definition: Any, uri: str) -> None:
         """
@@ -437,6 +511,12 @@ class ContextGenerator(Generator):
     show_default=True,
     help="Exclude elements from URL-based external vocabulary imports while keeping local file imports. "
     "Useful when extending ontologies (e.g. W3C VC v2) whose terms are @protected in their own JSON-LD context.",
+)
+@click.option(
+    "--xsd-anyuri-as-iri/--no-xsd-anyuri-as-iri",
+    default=False,
+    show_default=True,
+    help="Map xsd:anyURI-typed ranges (uri, uriorcurie) to @type: @id instead of @type: xsd:anyURI.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
