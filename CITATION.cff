@@ -6,70 +6,100 @@ authors:
     orcid: https://orcid.org/0000-0002-8719-7760
   - family-names: Solbrig
     given-names: Harold
+    orcid: https://orcid.org/0000-0002-5928-3071
   - family-names: Harris
     given-names: Nomi L.
     orcid: https://orcid.org/0000-0001-6315-3707
   - family-names: Kalita
     given-names: Patrick
+    orcid: https://orcid.org/0000-0002-6150-307X
   - family-names: Miller
     given-names: Mark A.
   - family-names: Patil
     given-names: Sujay
+    orcid: https://orcid.org/0000-0001-6142-1106
   - family-names: Schaper
     given-names: Kevin
+    orcid: https://orcid.org/0000-0003-3311-7320
   - family-names: Bizon
     given-names: Chris
+    orcid: https://orcid.org/0000-0002-9491-7674
   - family-names: Caufield
     given-names: J. Harry
+    orcid: https://orcid.org/0000-0001-5705-7831
   - family-names: Cirujano Cuesta
     given-names: Silvano
   - family-names: Cox
     given-names: Corey
+    orcid: https://orcid.org/0000-0001-9042-5982
   - family-names: Dekervel
     given-names: Frank
+    orcid: https://orcid.org/0009-0008-4913-7127
   - family-names: Dooley
     given-names: Damion M.
+    orcid: https://orcid.org/0000-0002-8844-9165
   - family-names: Duncan
     given-names: William D.
+    orcid: https://orcid.org/0000-0001-9625-1899
   - family-names: Fliss
     given-names: Tim
+    orcid: https://orcid.org/0000-0003-3303-658X
   - family-names: Gehrke
     given-names: Sarah
+    orcid: https://orcid.org/0000-0003-3245-2880
   - family-names: Graefe
     given-names: Adam S.L.
+    orcid: https://orcid.org/0009-0004-8124-8864
   - family-names: Hegde
     given-names: Harshad
+    orcid: https://orcid.org/0000-0002-2411-565X
   - family-names: Ireland
     given-names: AJ
+    orcid: https://orcid.org/0000-0003-1982-9065
   - family-names: Jacobsen
     given-names: Julius O.B.
+    orcid: https://orcid.org/0000-0002-3265-1591
   - family-names: Krishnamurthy
     given-names: Madan
+    orcid: https://orcid.org/0000-0002-9767-3636
   - family-names: Kroll
     given-names: Carlo
+    orcid: https://orcid.org/0009-0008-4562-7399
   - family-names: Linke
     given-names: David
+    orcid: https://orcid.org/0000-0002-5898-1820
   - family-names: Ly
     given-names: Ryan
+    orcid: https://orcid.org/0000-0001-9238-0642
   - family-names: Matentzoglu
     given-names: Nicolas
+    orcid: https://orcid.org/0000-0002-7356-1779
   - family-names: Overton
     given-names: James A.
+    orcid: https://orcid.org/0000-0001-5139-5557
   - family-names: Saunders
     given-names: Jonny L.
+    orcid: https://orcid.org/0000-0003-0545-5066
   - family-names: Unni
     given-names: Deepak R.
+    orcid: https://orcid.org/0000-0002-3583-7340
   - family-names: Vaidya
     given-names: Gaurav
+    orcid: https://orcid.org/0000-0003-0587-0454
   - family-names: Vierdag
     given-names: Wouter-Michiel A.M.
-  - family-names: LinkML Community Contributors
+    orcid: https://orcid.org/0000-0003-1666-5421
+  - family-names: Putman
+    given-names: Tim
   - family-names: Ruebel
     given-names: Oliver
+    orcid: https://orcid.org/0000-0001-9902-1984
   - family-names: Chute
     given-names: Christopher G.
+    orcid: https://orcid.org/0000-0001-5437-2545
   - family-names: Brush
     given-names: Matthew H.
+    orcid: https://orcid.org/0000-0002-1048-5019
   - family-names: Haendel
     given-names: Melissa A.
     orcid: https://orcid.org/0000-0001-9114-8737
@@ -88,82 +118,109 @@ preferred-citation:
       orcid: https://orcid.org/0000-0002-8719-7760
     - family-names: Solbrig
       given-names: Harold
+      orcid: https://orcid.org/0000-0002-5928-3071
     - family-names: Harris
       given-names: Nomi L.
       orcid: https://orcid.org/0000-0001-6315-3707
     - family-names: Kalita
       given-names: Patrick
+      orcid: https://orcid.org/0000-0002-6150-307X
     - family-names: Miller
       given-names: Mark A.
     - family-names: Patil
       given-names: Sujay
+      orcid: https://orcid.org/0000-0001-6142-1106
     - family-names: Schaper
       given-names: Kevin
+      orcid: https://orcid.org/0000-0003-3311-7320
     - family-names: Bizon
       given-names: Chris
+      orcid: https://orcid.org/0000-0002-9491-7674
     - family-names: Caufield
       given-names: J. Harry
+      orcid: https://orcid.org/0000-0001-5705-7831
     - family-names: Cirujano Cuesta
       given-names: Silvano
     - family-names: Cox
       given-names: Corey
+      orcid: https://orcid.org/0000-0001-9042-5982
     - family-names: Dekervel
       given-names: Frank
+      orcid: https://orcid.org/0009-0008-4913-7127
     - family-names: Dooley
       given-names: Damion M.
+      orcid: https://orcid.org/0000-0002-8844-9165
     - family-names: Duncan
       given-names: William D.
+      orcid: https://orcid.org/0000-0001-9625-1899
     - family-names: Fliss
       given-names: Tim
+      orcid: https://orcid.org/0000-0003-3303-658X
     - family-names: Gehrke
       given-names: Sarah
+      orcid: https://orcid.org/0000-0003-3245-2880
     - family-names: Graefe
       given-names: Adam S.L.
+      orcid: https://orcid.org/0009-0004-8124-8864
     - family-names: Hegde
       given-names: Harshad
+      orcid: https://orcid.org/0000-0002-2411-565X
     - family-names: Ireland
       given-names: AJ
+      orcid: https://orcid.org/0000-0003-1982-9065
     - family-names: Jacobsen
       given-names: Julius O.B.
+      orcid: https://orcid.org/0000-0002-3265-1591
     - family-names: Krishnamurthy
       given-names: Madan
+      orcid: https://orcid.org/0000-0002-9767-3636
     - family-names: Kroll
       given-names: Carlo
+      orcid: https://orcid.org/0009-0008-4562-7399
     - family-names: Linke
       given-names: David
+      orcid: https://orcid.org/0000-0002-5898-1820
     - family-names: Ly
       given-names: Ryan
+      orcid: https://orcid.org/0000-0001-9238-0642
     - family-names: Matentzoglu
       given-names: Nicolas
+      orcid: https://orcid.org/0000-0002-7356-1779
     - family-names: Overton
       given-names: James A.
+      orcid: https://orcid.org/0000-0001-5139-5557
     - family-names: Saunders
       given-names: Jonny L.
+      orcid: https://orcid.org/0000-0003-0545-5066
     - family-names: Unni
       given-names: Deepak R.
+      orcid: https://orcid.org/0000-0002-3583-7340
     - family-names: Vaidya
       given-names: Gaurav
+      orcid: https://orcid.org/0000-0003-0587-0454
     - family-names: Vierdag
       given-names: Wouter-Michiel A.M.
-    - family-names: Putman
-      given-names: Tim
-    - family-names: LinkML Community Contributors
+      orcid: https://orcid.org/0000-0003-1666-5421
     - family-names: Ruebel
       given-names: Oliver
+      orcid: https://orcid.org/0000-0001-9902-1984
     - family-names: Chute
       given-names: Christopher G.
+      orcid: https://orcid.org/0000-0001-5437-2545
     - family-names: Brush
       given-names: Matthew H.
+      orcid: https://orcid.org/0000-0002-1048-5019
     - family-names: Haendel
       given-names: Melissa A.
       orcid: https://orcid.org/0000-0001-9114-8737
     - family-names: Mungall
       given-names: Christopher J.
       orcid: https://orcid.org/0000-0002-6601-2165
+    - family-names: LinkML Community Contributors
   title: "LinkML: an open data modeling framework"
   journal: GigaScience
   volume: 15
   pages: giaf152
-  year: 2025
+  year: 2026
   url: https://doi.org/10.1093/gigascience/giaf152
   doi: 10.1093/gigascience/giaf152

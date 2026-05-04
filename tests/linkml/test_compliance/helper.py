@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from copy import copy, deepcopy
@@ -1013,6 +1014,23 @@ def robot_is_on_path():
     return shutil.which("robot") is not None
 
 
+@lru_cache
+def _warn_robot_missing_for_owl_compliance() -> None:
+    """
+    Emit one visible warning when OWL coherency checks are skipped.
+
+    The compliance suite currently treats missing ROBOT as an untested path.
+    Make that explicit in pytest output so CI and local runs do not silently
+    look stronger than they are.
+    """
+    warnings.warn(
+        "ROBOT is not on PATH; OWL coherency checks are being marked UNTESTED. "
+        "Install ROBOT to exercise OWL reasoner-backed compliance validation.",
+        pytest.PytestWarning,
+        stacklevel=2,
+    )
+
+
 def robot_check_coherency(
     data_path: str | Path, ontology_path: str | Path, output_path: str | Path = None
 ) -> bool | None:
@@ -1028,6 +1046,7 @@ def robot_check_coherency(
     :return:
     """
     if not robot_is_on_path():
+        _warn_robot_missing_for_owl_compliance()
         return None
     if not ontology_path:
         return None

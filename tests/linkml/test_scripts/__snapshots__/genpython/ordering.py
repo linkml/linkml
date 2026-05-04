@@ -100,11 +100,11 @@ class AttributeId(IdentifierType):
     pass
 
 
-class NamedThingId(IdentifierType):
+class BiologicalSexId(AttributeId):
     pass
 
 
-class BiologicalSexId(AttributeId):
+class NamedThingId(IdentifierType):
     pass
 
 

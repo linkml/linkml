@@ -80,6 +80,22 @@ def test_docgen_includes(kitchen_sink_path, input_path, tmp_path):
     assert_mdfile_contains(tmp_path / "index.md", "C1", after="## Classes")
 
 
+def test_docgen_dynamic_enum_include_minus(input_path, tmp_path):
+    """Regression for linkml/linkml#3242: a dynamic enum whose ``include`` and
+    ``minus`` are lists of ``AnonymousEnumExpression`` objects must render
+    without raising ``TypeError: unhashable type: 'AnonymousEnumExpression'``.
+    """
+    schema = str(input_path("linkml_issue_3242.yaml"))
+    gen = DocGenerator(schema, mergeimports=True, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+    assert_mdfile_contains(
+        tmp_path / "LeukocyteLoincCodes.md",
+        "## Enumeration Operations",
+        after="Enum: LeukocyteLoincCodes",
+        followed_by=["**Includes:**", "**Excludes:**"],
+    )
+
+
 def test_docgen(kitchen_sink_path, input_path, tmp_path):
     """Tests basic document generator functionality"""
     example_dir = str(input_path("examples"))
@@ -186,6 +202,34 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         "http://www.w3.org/2004/02/skos/core#altLabel",
         after="aliases",
     )
+
+    # test unit rendering on a slot (regression for https://github.com/linkml/linkml/issues/3314).
+    # A `unit` metamodel slot is a UnitOfMeasure object, not a URI, and must render as a
+    # property/value table of its populated fields.
+    assert_mdfile_contains(tmp_path / "age_in_years.md", "**Unit:**")
+    assert_mdfile_contains(
+        tmp_path / "age_in_years.md",
+        "| Property | Value |",
+        after="**Unit:**",
+        followed_by=[
+            "| --- | --- |",
+            "| symbol | yr |",
+            "| ucum_code | a |",
+            "| has_quantity_kind | [qudt:Time](http://qudt.org/vocab/quantitykind/Time) |",
+        ],
+    )
+
+    # test unit rendering on a type (same regression, different template)
+    assert_mdfile_contains(tmp_path / "AgeInYearsType.md", "**Unit:**")
+    assert_mdfile_contains(
+        tmp_path / "AgeInYearsType.md",
+        "| Property | Value |",
+        after="**Unit:**",
+        followed_by=["| --- | --- |", "| symbol | yr |", "| ucum_code | a |"],
+    )
+
+    # slots without a unit must not emit a unit table
+    assert_mdfile_does_not_contain(tmp_path / "aliases.md", "**Unit:**")
     # test index docs
     assert_mdfile_contains(
         tmp_path / "index.md",
