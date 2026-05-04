@@ -18,10 +18,7 @@
                     ]
                 },
                 "id": {
-                    "type": [
-                        "string",
-                        "null"
-                    ]
+                    "type": "string"
                 },
                 "started_at_time": {
                     "format": "date",
