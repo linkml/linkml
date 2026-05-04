@@ -3354,3 +3354,121 @@ def test_induced_slot_alias_not_equal_to_name(slot_name: str, expected_alias: st
     assert induced.alias == expected_alias, (
         f"Expected alias={expected_alias!r} but got {induced.alias!r}. Alias should not equal the slot name."
     )
+
+
+# Tests for _closure optimisation (rv_set + visited as sets)
+
+
+def test_closure_reflexive_includes_start() -> None:
+    """With reflexive=True the start node is the first element."""
+    result = graph_closure(lambda _: [], "A", reflexive=True)
+    assert result == ["A"]
+
+
+def test_closure_non_reflexive_excludes_start() -> None:
+    """With reflexive=False the start node is excluded."""
+    result = graph_closure(lambda _: [], "A", reflexive=False)
+    assert result == []
+
+
+def test_closure_linear_chain() -> None:
+    """A linear A→B→C→D chain returns all nodes in depth-first order."""
+    graph = {"A": ["B"], "B": ["C"], "C": ["D"], "D": []}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    assert result == ["A", "B", "C", "D"]
+
+
+def test_closure_no_duplicates_diamond() -> None:
+    """Diamond graph A→{B,C}→D: D must appear exactly once."""
+    graph = {"A": ["B", "C"], "B": ["D"], "C": ["D"], "D": []}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    assert result.count("D") == 1
+
+
+def test_closure_no_duplicates_with_cycle() -> None:
+    """Cycles must not produce infinite loops or duplicate entries."""
+    # A→B→C→A cycle; starting from A with reflexive=True
+    graph = {"A": ["B"], "B": ["C"], "C": ["A"]}
+    result = graph_closure(lambda n: graph.get(n, []), "A", reflexive=True)
+    # Every node appears exactly once
+    assert sorted(result) == ["A", "B", "C"]
+    assert len(result) == len(set(result))
+
+
+def test_closure_none_returning_function() -> None:
+    """A neighbour function that returns None should not crash."""
+    result = graph_closure(lambda _: None, "X", reflexive=True)
+    assert result == ["X"]
+
+
+# Tests for _slot_class_map and domain_of population in induced_slot
+
+
+def test_slot_class_map_slots() -> None:
+    """_slot_class_map maps slot names to the classes that declare them."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["s1", "s2"]))
+    view.add_class(ClassDefinition("B", slots=["s2", "s3"]))
+    view.add_slot(SlotDefinition("s1", range="string"))
+    view.add_slot(SlotDefinition("s2", range="string"))
+    view.add_slot(SlotDefinition("s3", range="string"))
+
+    m = view._slot_class_map()
+    assert set(m["s1"]) == {"A"}
+    assert set(m["s2"]) == {"A", "B"}
+    assert set(m["s3"]) == {"B"}
+
+
+def test_slot_class_map_attributes() -> None:
+    """_slot_class_map must also pick up inline attribute declarations."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    cls = ClassDefinition("MyClass")
+    cls.attributes["attr1"] = SlotDefinition("attr1")
+    view.add_class(cls)
+
+    m = view._slot_class_map()
+    assert "MyClass" in m.get("attr1", [])
+
+
+def test_slot_class_map_invalidated_after_set_modified() -> None:
+    """_slot_class_map cache is re-built after schema modification."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["s1"]))
+    view.add_slot(SlotDefinition("s1", range="string"))
+
+    m_before = view._slot_class_map()
+    assert "s1" in m_before
+
+    # Modify: add a new class that also declares s1
+    view.add_class(ClassDefinition("B", slots=["s1"]))
+
+    m_after = view._slot_class_map()
+    assert set(m_after["s1"]) == {"A", "B"}
+
+
+def test_induced_slot_domain_of_populated() -> None:
+    """induced_slot must populate domain_of with every class that declares the slot."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    view.add_class(ClassDefinition("A", slots=["shared"]))
+    view.add_class(ClassDefinition("B", slots=["shared"]))
+    view.add_slot(SlotDefinition("shared", range="string"))
+
+    induced = view.induced_slot("shared", "A")
+    assert set(induced.domain_of) >= {"A", "B"}
+
+
+def test_induced_slot_domain_of_no_duplicates() -> None:
+    """domain_of must not contain duplicates even if a slot appears in both slots and attributes."""
+    schema = SchemaDefinition(id="test", name="test")
+    view = SchemaView(schema)
+    cls = ClassDefinition("A", slots=["s1"])
+    cls.attributes["s1"] = SlotDefinition("s1")
+    view.add_class(cls)
+    view.add_slot(SlotDefinition("s1", range="string"))
+
+    induced = view.induced_slot("s1", "A")
+    assert induced.domain_of.count("A") == 1

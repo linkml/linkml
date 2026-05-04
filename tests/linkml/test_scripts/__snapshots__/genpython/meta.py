@@ -129,6 +129,18 @@ class ConceptId(extended_str):
     pass
 
 
+class DiagnosisConceptId(ConceptId):
+    pass
+
+
+class ProcedureConceptId(ConceptId):
+    pass
+
+
+class CompanyId(OrganizationId):
+    pass
+
+
 class CodeSystemId(extended_str):
     pass
 
@@ -138,18 +150,6 @@ class ActivityId(extended_str):
 
 
 class AgentId(extended_str):
-    pass
-
-
-class CompanyId(OrganizationId):
-    pass
-
-
-class DiagnosisConceptId(ConceptId):
-    pass
-
-
-class ProcedureConceptId(ConceptId):
     pass
 
 
