@@ -61,17 +61,19 @@ not personal ownership of "your" code. CODEOWNERS are expected to:
   PRs in an owned area receive a substantive review within roughly **two
   weeks** of review being requested. Exceptions (holidays, unusually complex
   PRs, release cycles) are normal and expected; persistent multi-week silence
-  is a sign that the stewardship arrangement needs to be revisited. We have
+  is a sign that the stewardship arrangement needs to be revisited. A
+  CODEOWNER who knows they will be slow on a PR — too busy, on holiday, in a
+  release crunch — is expected to say so in the PR and propose a longer
+  window; staying communicative is what matters, silence is not. We have
   not yet adopted a formal numeric threshold here — the
   [1-month fallback](#avoiding-review-bottlenecks-the-1-month-fallback) is
   the safety net, not the target.
 
-A structural check on these expectations is built into the workflow: **no one
-can merge their own PR.** CODEOWNER approval and the act of merging are
-deliberately separated, so neither a CODEOWNER nor any single core developer
-can unilaterally push a direction without engagement from at least one other
-reviewer. The mechanisms below — the 1-month fallback, the project-direction
-override, and the stepping-down process — exist within that frame.
+A structural check on these expectations is built into the workflow: **all
+PRs require review from at least one other person who is not the author**,
+including PRs authored by CODEOWNERS or core developers. The mechanisms
+below — the 1-month fallback, the project-direction override, and the
+stepping-down process — exist within that frame.
 
 ## Avoiding review bottlenecks: the 1-month fallback
 
@@ -157,6 +159,13 @@ indefinitely block a change the wider project supports. Combined with the
 no-self-merge rule, the result is symmetrical: neither a CODEOWNER nor the
 core team can push a direction through an owned area without substantive
 engagement from someone else.
+
+CODEOWNERS take on real responsibility — sustained review, area-level
+stewardship, mentoring — and the project depends on that work in ways that
+go beyond a sign-off button. The arrangement is **collaborative**:
+stewardship comes with real decision-making weight in an area, and a
+steward who has carried that work should not feel their judgement is
+treated as advisory or their voice as one input among many.
 
 ## How to ascend to CODEOWNER status
 
@@ -262,10 +271,17 @@ circumstances and the project change.
 area, open a PR removing yourself from `CODEOWNERS`. No justification
 required. You can always be added back later.
 
-**Inactivity.** If a CODEOWNER becomes unresponsive over an extended period,
-an admin or a core developer may open a PR to remove them, with prior notice.
-This is not a punishment — it is hygiene. The goal of the file is to route
-reviews to *active* owners.
+**Hiatus.** If you need to step away for a defined period rather than
+indefinitely — a sabbatical, a heavy work stretch, parental leave, anything
+else — that is also fine. Open a PR temporarily removing yourself with a
+note about when you expect to return, and add yourself back when you do.
+There is no expectation to justify the break, and no clock running against
+you while you are away.
+
+**Inactivity.** If a CODEOWNER becomes unresponsive over an extended period
+without a hiatus arrangement, an admin or a core developer may open a PR to
+remove them, with prior notice. This is not a punishment — it is hygiene.
+The goal of the file is to route reviews to *active* owners.
 
 **Realignment with project direction.** Occasionally, a CODEOWNER's vision
 for an area diverges materially from where the wider LinkML project is going,
@@ -281,6 +297,11 @@ CODEOWNER for that area. The intent is realignment of formal sign-off, not
 removal of the person from the project — their expertise and past
 contributions are not erased, and they remain a valued contributor who can
 continue to review and advise informally.
+
+If this policy is ever tested in earnest and a more formal dispute
+resolution process is needed, the preference is for **open discussion among
+active contributors**, with policy refined from there. We will write this
+down properly when we have to.
 
 ## Editing the CODEOWNERS file
 
