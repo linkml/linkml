@@ -39,7 +39,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticTemplateModel,
     PydanticValidator,
 )
-from linkml.utils.exceptions import ValidationError as ArrayValidationError
+from linkml.utils.exceptions import SchemaValidationError as ArrayValidationError
 from linkml_runtime import SchemaView
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefinition, SlotDefinition

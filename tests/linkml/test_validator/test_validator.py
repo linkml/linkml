@@ -2,6 +2,7 @@ from collections.abc import Iterable
 
 import pytest
 
+from linkml.utils.exceptions import ValidationError
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader
 from linkml.validator.plugins import ValidationPlugin
@@ -64,6 +65,9 @@ def test_validate_invalid_instance():
     validator = Validator(SCHEMA, plugins)
     report = validator.validate({"foo": "bar"})
     assert len(report.results) == 10
+
+    with pytest.raises(ValidationError, match=r"Error\(s\) validating data.*"):
+        report.raise_for_results()
 
 
 def test_validate_multiple_plugins():
