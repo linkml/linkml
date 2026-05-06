@@ -527,7 +527,7 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
     )
 
 
-@feature_category("Boolean Expressions", "Class any_of with required")
+@feature_category("Boolean Expressions", "Class boolean constraints with required")
 @pytest.mark.parametrize(
     "op,name,family_name,given_name,is_valid",
     [
