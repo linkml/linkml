@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytest
@@ -326,3 +327,40 @@ classes:
 
     # File should be created for the mixin (abstract still excluded)
     assert xlsx_filename.exists()
+
+
+def test_enum_validation_adds_dropdown(input_path, tmp_path):
+    """Test that slots that have an enum range asserted on them get a
+    DataValidation dropdown in the worksheet.
+    """
+    kitchen_sink_schema = str(input_path("kitchen_sink.yaml"))
+    xlsx_filename = tmp_path / "kitchen_sink_enum.xlsx"
+    ExcelGenerator(kitchen_sink_schema, output=str(xlsx_filename)).serialize()
+
+    wb = load_workbook(xlsx_filename)
+    assert "Person" in wb.sheetnames
+
+    ws = wb["FamilialRelationship"]
+    # Column headers must include both slots
+    headers = [ws.cell(row=1, column=i).value for i in range(1, ws.max_column + 1)]
+    assert "cordialness" in headers
+    assert "type" in headers
+
+    # The DataValidation list for the enum column must be present
+    dv_formulas = [dv.formula1 for dv in ws.data_validations.dataValidation]
+    assert any("SIBLING_OF" in f and "PARENT_OF" in f and "CHILD_OF" in f for f in dv_formulas)
+
+
+def test_enum_values_exceed_255_chars_logs_warning(input_path, tmp_path, caplog):
+    """Test that a warning is logged when enum permissible values exceed 255 characters."""
+
+    kitchen_sink_schema = str(input_path("kitchen_sink.yaml"))
+    xlsx_filename = tmp_path / "kitchen_sink_enum.xlsx"
+    ExcelGenerator(kitchen_sink_schema, output=str(xlsx_filename)).serialize()
+
+    # https://docs.pytest.org/en/stable/how-to/logging.html#caplog-fixture
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.excelgen"):
+        ExcelGenerator(kitchen_sink_schema, output=str(xlsx_filename)).serialize()
+
+    # Assert a warning was logged about enum values exceeding 255 characters
+    assert any("255" in record.message and "LongEnum" in record.message for record in caplog.records)
