@@ -76,6 +76,8 @@ fields:
   display_name: id
 - id: name
   display_name: name
+- id: long_id
+  display_name: long_id
 # --- Company_config.yaml ---
 # metamodel_version: 1.7.0id: Company
 schema_generating: true
