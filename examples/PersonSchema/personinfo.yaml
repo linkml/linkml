@@ -80,6 +80,7 @@ classes:
       - has_familial_relationships
       - has_interpersonal_relationships
       - has_medical_history
+      - person_comment
     slot_usage:
       primary_email:
         pattern: "^\\S+@[\\S+\\.]+\\S+"
@@ -278,6 +279,9 @@ slots:
 
   primary_email:
     slot_uri: schema:email
+  person_comment:
+    description: Free-text comment about the person.
+    range: string
   birth_date:
     slot_uri: schema:birthDate
   employed_at:
