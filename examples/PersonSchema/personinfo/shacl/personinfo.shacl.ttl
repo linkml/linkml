@@ -1,693 +1,840 @@
-@prefix GSSO: <http://purl.obolibrary.org/obo/GSSO_> .
-@prefix bizcodes: <https://example.org/bizcodes/> .
-@prefix famrel: <https://example.org/FamilialRelations#> .
 @prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix wgs: <https://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix famrel: <https://example.org/FamilialRelations#> .
+@prefix brick: <https://brickschema.org/schema/Brick#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix schema1: <http://schema.org/> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix GSSO: <http://purl.obolibrary.org/obo/GSSO_> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix qb: <http://purl.org/linked-data/cube#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-personinfo:Concept a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:datatype rdfs:Resource ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path skos:exactMatch ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path schema1:name ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path schema1:description ],
-        [ sh:class personinfo:CodeSystem ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:code_system ] ;
-    sh:targetClass personinfo:Concept .
-
-personinfo:Container a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class schema1:Person ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:persons ],
-        [ sh:class personinfo:Place ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path personinfo:places ],
-        [ sh:class schema1:Organization ;
-            sh:nodeKind sh:IRI ;
-            sh:order 1 ;
-            sh:path personinfo:organizations ] ;
-    sh:targetClass personinfo:Container .
-
-personinfo:Event a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( personinfo:headline rdf:type personinfo:in_location personinfo:diagnosis personinfo:procedure personinfo:salary personinfo:employed_at ) ;
-    sh:property [ sh:datatype xsd:float ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path personinfo:duration ],
-        [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path personinfo:is_current ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path prov:startedAtTime ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path prov:endedAtTime ] ;
-    sh:targetClass personinfo:Event .
-
-personinfo:HasAliases a sh:NodeShape ;
-    sh:closed false ;
-    sh:description "A mixin applied to any class that can have aliases/alternateNames" ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path personinfo:aliases ] ;
-    sh:targetClass personinfo:HasAliases .
-
-personinfo:HasNewsEvents a sh:NodeShape ;
-    sh:closed false ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class personinfo:NewsEvent ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 0 ;
-            sh:path personinfo:has_news_events ] ;
-    sh:targetClass personinfo:HasNewsEvents .
-
-personinfo:ImagingProcedureConcept a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path schema1:description ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path schema1:name ],
-        [ sh:datatype rdfs:Resource ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path skos:exactMatch ],
-        [ sh:class personinfo:CodeSystem ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:code_system ] ;
-    sh:targetClass personinfo:ImagingProcedureConcept .
-
-personinfo:IntegerPrimaryKeyObject a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:integer ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path schema1:int_identifier ] ;
-    sh:targetClass personinfo:IntegerPrimaryKeyObject .
-
-personinfo:NamedThing a sh:NodeShape ;
-    sh:closed true ;
-    sh:description "A generic grouping for any identifiable entity" ;
-    sh:ignoredProperties ( personinfo:score personinfo:age_in_years rdf:type schema1:gender personinfo:has_familial_relationships schema1:email personinfo:CodeSystem personinfo:current_address personinfo:founding_date personinfo:has_employment_history personinfo:aliases personinfo:has_news_events personinfo:min_salary personinfo:mission_statement schema1:telephone personinfo:has_interpersonal_relationships schema1:birthDate skos:exactMatch personinfo:categories personinfo:has_medical_history personinfo:founding_location ) ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path schema1:name ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path schema1:description ] ;
-    sh:targetClass personinfo:NamedThing .
-
-personinfo:OperationProcedureConcept a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype rdfs:Resource ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path skos:exactMatch ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path schema1:name ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path schema1:description ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path schema1:identifier ],
-        [ sh:class personinfo:CodeSystem ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:code_system ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:depicted_by ] ;
-    sh:targetClass personinfo:OperationProcedureConcept .
-
-personinfo:Relationship a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path prov:startedAtTime ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path prov:endedAtTime ],
-        [ sh:class schema1:Person ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path personinfo:related_to ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path personinfo:type ] ;
-    sh:targetClass personinfo:Relationship .
-
-personinfo:WithLocation a sh:NodeShape ;
-    sh:closed false ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class personinfo:Place ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:in_location ] ;
-    sh:targetClass personinfo:WithLocation .
-
-schema1:PostalAddress a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path personinfo:street ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path personinfo:city ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path personinfo:postal_code ] ;
-    sh:targetClass schema1:PostalAddress .
-
-personinfo:DiagnosisConcept a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class personinfo:CodeSystem ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:code_system ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path schema1:description ],
-        [ sh:datatype rdfs:Resource ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path skos:exactMatch ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path schema1:name ] ;
-    sh:targetClass personinfo:DiagnosisConcept .
-
-personinfo:EmploymentEvent a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:is_current ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path prov:startedAtTime ],
-        [ sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path personinfo:salary ],
-        [ sh:datatype xsd:float ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path personinfo:duration ],
-        [ sh:class schema1:Organization ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:employed_at ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path prov:endedAtTime ] ;
-    sh:targetClass personinfo:EmploymentEvent .
-
-personinfo:FamilialRelationship a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class schema1:Person ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path personinfo:related_to ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path prov:endedAtTime ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path prov:startedAtTime ],
-        [ sh:in ( famrel:01 famrel:02 famrel:03 ) ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:order 3 ;
-            sh:path personinfo:type ] ;
-    sh:targetClass personinfo:FamilialRelationship .
-
-personinfo:InterPersonalRelationship a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path prov:startedAtTime ],
-        [ sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:or ( [ sh:in ( famrel:01 famrel:02 famrel:03 ) ] [ sh:in ( famrel:70 famrel:71 "BEST_FRIEND_OF" "MORTAL_ENEMY_OF" ) ] ) ;
-            sh:order 3 ;
-            sh:path personinfo:type ],
-        [ sh:class schema1:Person ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path personinfo:related_to ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path prov:endedAtTime ] ;
-    sh:targetClass personinfo:InterPersonalRelationship .
-
-personinfo:MedicalEvent a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class personinfo:Place ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path personinfo:in_location ],
-        [ sh:class personinfo:DiagnosisConcept ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:diagnosis ],
-        [ sh:class personinfo:ProcedureConcept ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 1 ;
-            sh:path personinfo:procedure ],
-        [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 6 ;
-            sh:path personinfo:is_current ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path prov:endedAtTime ],
-        [ sh:datatype xsd:float ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:duration ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path prov:startedAtTime ] ;
-    sh:targetClass personinfo:MedicalEvent .
-
-personinfo:ProcedureConcept a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype rdfs:Resource ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path skos:exactMatch ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path schema1:name ],
-        [ sh:class personinfo:CodeSystem ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:code_system ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path schema1:description ] ;
-    sh:targetClass personinfo:ProcedureConcept .
-
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix bizcodes: <https://example.org/bizcodes/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix prof: <http://www.w3.org/ns/dx/prof/> .
+@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix GEO: <http://example.org/geoloc/> .
+@prefix csvw: <http://www.w3.org/ns/csvw#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix CODE: <http://example.org/code/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix dcam: <http://purl.org/dc/dcam/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix ROR: <http://example.org/ror/> .
+@prefix P: <http://example.org/P/> .
+@prefix schema: <https://schema.org/> .
+@prefix schema1: <http://schema.org/> .
 schema1:Organization a sh:NodeShape ;
-    sh:closed true ;
-    sh:description "An organization such as a company or university" ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 8 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype xsd:string ;
-            sh:nodeKind sh:Literal ;
-            sh:order 6 ;
-            sh:path personinfo:aliases ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 10 ;
-            sh:path schema1:description ],
-        [ sh:class personinfo:Place ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:IRI ;
-            sh:order 2 ;
-            sh:path personinfo:founding_location ],
-        [ sh:datatype xsd:decimal ;
-            sh:description "A score between 0 and 5, represented as a decimal" ;
-            sh:maxCount 1 ;
-            sh:maxInclusive 5e+00 ;
-            sh:minInclusive 0e+00 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path personinfo:score ],
-        [ sh:in ( "non profit" "for profit" "offshore" bizcodes:001 "shell company" "loose organization" ) ;
-            sh:order 3 ;
-            sh:path personinfo:categories ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 9 ;
-            sh:path schema1:name ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path personinfo:mission_statement ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path personinfo:founding_date ],
-        [ sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path personinfo:min_salary ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 11 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:class personinfo:NewsEvent ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 7 ;
-            sh:path personinfo:has_news_events ] ;
-    sh:targetClass schema1:Organization .
-
-personinfo:NewsEvent a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:boolean ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 4 ;
-            sh:path personinfo:is_current ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path prov:endedAtTime ],
-        [ sh:datatype xsd:date ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path prov:startedAtTime ],
-        [ sh:datatype xsd:float ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path personinfo:duration ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path personinfo:headline ] ;
-    sh:targetClass personinfo:NewsEvent .
-
+	rdfs:comment "An organization such as a company or university" ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n120 ;
+	sh:property _:c14n101 , _:c14n119 , _:c14n158 , _:c14n171 , _:c14n175 , _:c14n37 , _:c14n55 , _:c14n57 , _:c14n69 , _:c14n76 , _:c14n84 , _:c14n91 ;
+	sh:targetClass schema1:Organization .
 schema1:Person a sh:NodeShape ;
-    sh:closed true ;
-    sh:description "A person (alive, dead, undead, or fictional)." ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class personinfo:MedicalEvent ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 9 ;
-            sh:path personinfo:has_medical_history ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 12 ;
-            sh:path schema1:identifier ],
-        [ sh:class personinfo:InterPersonalRelationship ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 8 ;
-            sh:path personinfo:has_interpersonal_relationships ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 13 ;
-            sh:path schema1:name ],
-        [ sh:class personinfo:EmploymentEvent ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 6 ;
-            sh:path personinfo:has_employment_history ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 5 ;
-            sh:path schema1:telephone ;
-            sh:pattern "^[\\d\\(\\)\\-]+$" ],
-        [ sh:class schema1:PostalAddress ;
-            sh:description "The address at which a person currently lives" ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 4 ;
-            sh:path personinfo:current_address ],
-        [ sh:datatype xsd:string ;
-            sh:nodeKind sh:Literal ;
-            sh:order 10 ;
-            sh:path personinfo:aliases ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 14 ;
-            sh:path schema1:description ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path schema1:email ;
-            sh:pattern "^\\S+@[\\S+\\.]+\\S+" ],
-        [ sh:class personinfo:FamilialRelationship ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 7 ;
-            sh:path personinfo:has_familial_relationships ],
-        [ sh:datatype xsd:integer ;
-            sh:maxCount 1 ;
-            sh:maxInclusive 999 ;
-            sh:minInclusive 0 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path personinfo:age_in_years ],
-        [ sh:in ( GSSO:009254 GSSO:009253 GSSO:000384 GSSO:000372 GSSO:000371 GSSO:000385 ) ;
-            sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path schema1:gender ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path schema1:birthDate ],
-        [ sh:class personinfo:NewsEvent ;
-            sh:nodeKind sh:BlankNodeOrIRI ;
-            sh:order 11 ;
-            sh:path personinfo:has_news_events ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 15 ;
-            sh:path personinfo:depicted_by ] ;
-    sh:targetClass schema1:Person .
-
-personinfo:Place a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:nodeKind sh:Literal ;
-            sh:order 3 ;
-            sh:path personinfo:aliases ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 2 ;
-            sh:path personinfo:depicted_by ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path schema1:identifier ],
-        [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path schema1:name ] ;
-    sh:targetClass personinfo:Place .
-
+	rdfs:comment "A person (alive, dead, undead, or fictional)." ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n176 ;
+	sh:property _:c14n104 , _:c14n111 , _:c14n128 , _:c14n133 , _:c14n139 , _:c14n170 , _:c14n173 , _:c14n24 , _:c14n3 , _:c14n30 , _:c14n34 , _:c14n54 , _:c14n60 , _:c14n9 , _:c14n90 , _:c14n99 ;
+	sh:targetClass schema1:Person .
+schema1:PostalAddress a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n141 ;
+	sh:property _:c14n112 , _:c14n149 , _:c14n62 ;
+	sh:targetClass schema1:PostalAddress .
 personinfo:CodeSystem a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:datatype xsd:string ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 1 ;
-            sh:path schema1:name ],
-        [ sh:datatype xsd:anyURI ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:nodeKind sh:Literal ;
-            sh:order 0 ;
-            sh:path schema1:identifier ] ;
-    sh:targetClass personinfo:CodeSystem .
+	sh:closed true ;
+	sh:ignoredProperties _:c14n59 ;
+	sh:property _:c14n105 , _:c14n122 ;
+	sh:targetClass personinfo:CodeSystem .
+personinfo:Concept a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n148 ;
+	sh:property _:c14n102 , _:c14n131 , _:c14n146 , _:c14n160 , _:c14n64 , _:c14n68 ;
+	sh:targetClass personinfo:Concept .
+personinfo:Container a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n31 ;
+	sh:property _:c14n151 , _:c14n163 , _:c14n96 ;
+	sh:targetClass personinfo:Container .
+personinfo:DiagnosisConcept a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n44 ;
+	sh:property _:c14n121 , _:c14n164 , _:c14n174 , _:c14n23 , _:c14n35 , _:c14n36 ;
+	sh:targetClass personinfo:DiagnosisConcept .
+personinfo:EmploymentEvent a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n136 ;
+	sh:property _:c14n103 , _:c14n130 , _:c14n169 , _:c14n41 , _:c14n77 , _:c14n81 ;
+	sh:targetClass personinfo:EmploymentEvent .
+personinfo:Event a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n50 ;
+	sh:property _:c14n22 , _:c14n46 , _:c14n56 , _:c14n80 ;
+	sh:targetClass personinfo:Event .
+personinfo:FamilialRelationship a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n113 ;
+	sh:property _:c14n11 , _:c14n134 , _:c14n18 , _:c14n66 ;
+	sh:targetClass personinfo:FamilialRelationship .
+personinfo:HasAliases a sh:NodeShape ;
+	rdfs:comment "A mixin applied to any class that can have aliases/alternateNames" ;
+	sh:closed false ;
+	sh:ignoredProperties _:c14n2 ;
+	sh:property _:c14n140 ;
+	sh:targetClass personinfo:HasAliases .
+personinfo:HasNewsEvents a sh:NodeShape ;
+	sh:closed false ;
+	sh:ignoredProperties _:c14n117 ;
+	sh:property _:c14n107 ;
+	sh:targetClass personinfo:HasNewsEvents .
+personinfo:ImagingProcedureConcept a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n14 ;
+	sh:property _:c14n114 , _:c14n12 , _:c14n123 , _:c14n138 , _:c14n144 , _:c14n172 ;
+	sh:targetClass personinfo:ImagingProcedureConcept .
+personinfo:IntegerPrimaryKeyObject a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n61 ;
+	sh:property _:c14n19 ;
+	sh:targetClass personinfo:IntegerPrimaryKeyObject .
+personinfo:InterPersonalRelationship a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n118 ;
+	sh:property _:c14n115 , _:c14n155 , _:c14n52 , _:c14n88 ;
+	sh:targetClass personinfo:InterPersonalRelationship .
+personinfo:MedicalEvent a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n74 ;
+	sh:property _:c14n132 , _:c14n135 , _:c14n17 , _:c14n58 , _:c14n73 , _:c14n83 , _:c14n98 ;
+	sh:targetClass personinfo:MedicalEvent .
+personinfo:NamedThing a sh:NodeShape ;
+	rdfs:comment "A generic grouping for any identifiable entity" ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n0 ;
+	sh:property _:c14n145 , _:c14n152 , _:c14n6 , _:c14n92 ;
+	sh:targetClass personinfo:NamedThing .
+personinfo:NewsEvent a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n49 ;
+	sh:property _:c14n162 , _:c14n33 , _:c14n70 , _:c14n82 , _:c14n97 ;
+	sh:targetClass personinfo:NewsEvent .
+personinfo:OperationProcedureConcept a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n21 ;
+	sh:property _:c14n116 , _:c14n26 , _:c14n38 , _:c14n39 , _:c14n53 , _:c14n7 ;
+	sh:targetClass personinfo:OperationProcedureConcept .
+personinfo:Place a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n51 ;
+	sh:property _:c14n106 , _:c14n110 , _:c14n147 , _:c14n75 ;
+	sh:targetClass personinfo:Place .
+personinfo:ProcedureConcept a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n45 ;
+	sh:property _:c14n1 , _:c14n159 , _:c14n161 , _:c14n5 , _:c14n72 , _:c14n79 ;
+	sh:targetClass personinfo:ProcedureConcept .
+personinfo:Relationship a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n100 ;
+	sh:property _:c14n109 , _:c14n43 , _:c14n78 , _:c14n86 ;
+	sh:targetClass personinfo:Relationship .
+personinfo:WithLocation a sh:NodeShape ;
+	sh:closed false ;
+	sh:ignoredProperties _:c14n47 ;
+	sh:property _:c14n16 ;
+	sh:targetClass personinfo:WithLocation .
+_:c14n0 rdf:first personinfo:CodeSystem ;
+	rdf:rest _:c14n8 .
+_:c14n1 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path schema1:identifier .
+_:c14n10 rdf:first personinfo:aliases ;
+	rdf:rest _:c14n93 .
+_:c14n100 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n101 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path personinfo:founding_date .
+_:c14n102 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 5 ;
+	sh:path personinfo:depicted_by .
+_:c14n103 sh:maxCount 1 ;
+	sh:order 1 ;
+	sh:path personinfo:salary .
+_:c14n104 sh:datatype xsd:integer ;
+	sh:maxCount 1 ;
+	sh:maxInclusive 999 ;
+	sh:minInclusive 0 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path personinfo:age_in_years .
+_:c14n105 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path schema1:identifier .
+_:c14n106 sh:datatype xsd:string ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path personinfo:aliases .
+_:c14n107 sh:class personinfo:NewsEvent ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 0 ;
+	sh:path personinfo:has_news_events .
+_:c14n108 rdf:first personinfo:procedure ;
+	rdf:rest _:c14n124 .
+_:c14n109 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path personinfo:type .
+_:c14n11 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path prov:startedAtTime .
+_:c14n110 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path schema1:identifier .
+_:c14n111 sh:datatype xsd:string ;
+	sh:nodeKind sh:Literal ;
+	sh:order 10 ;
+	sh:path personinfo:aliases .
+_:c14n112 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path personinfo:street .
+_:c14n113 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n114 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path schema1:identifier .
+_:c14n115 sh:class schema1:Person ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:related_to .
+_:c14n116 sh:datatype rdfs:Resource ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path skos:exactMatch .
+_:c14n117 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n118 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n119 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 10 ;
+	sh:path schema1:description .
+_:c14n12 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 5 ;
+	sh:path personinfo:depicted_by .
+_:c14n120 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n121 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path schema1:identifier .
+_:c14n122 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path schema1:name .
+_:c14n123 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path schema1:name .
+_:c14n124 rdf:first personinfo:employed_at ;
+	rdf:rest _:c14n186 .
+_:c14n125 rdf:first personinfo:salary ;
+	rdf:rest rdf:nil .
+_:c14n126 rdf:first personinfo:min_salary ;
+	rdf:rest _:c14n85 .
+_:c14n127 rdf:first personinfo:categories ;
+	rdf:rest _:c14n15 .
+_:c14n128 sh:in _:c14n167 ;
+	sh:maxCount 1 ;
+	sh:order 3 ;
+	sh:path schema1:gender .
+_:c14n129 rdf:first schema1:birthDate ;
+	rdf:rest _:c14n20 .
+_:c14n13 rdf:first GSSO:000371 ;
+	rdf:rest _:c14n40 .
+_:c14n130 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path prov:endedAtTime .
+_:c14n131 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path schema1:name .
+_:c14n132 sh:class personinfo:Place ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:in_location .
+_:c14n133 sh:class personinfo:EmploymentEvent ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 6 ;
+	sh:path personinfo:has_employment_history .
+_:c14n134 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path prov:endedAtTime .
+_:c14n135 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path prov:endedAtTime .
+_:c14n136 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n137 rdf:first GSSO:000384 ;
+	rdf:rest _:c14n67 .
+_:c14n138 sh:class personinfo:CodeSystem ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:code_system .
+_:c14n139 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 13 ;
+	sh:path schema1:name .
+_:c14n14 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n140 sh:datatype xsd:string ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path personinfo:aliases .
+_:c14n141 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n142 rdf:first bizcodes:001 ;
+	rdf:rest _:c14n4 .
+_:c14n143 rdf:first personinfo:mission_statement ;
+	rdf:rest _:c14n25 .
+_:c14n144 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path schema1:description .
+_:c14n145 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path schema1:name .
+_:c14n146 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path schema1:identifier .
+_:c14n147 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path schema1:name .
+_:c14n148 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n149 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path personinfo:city .
+_:c14n15 rdf:first personinfo:score ;
+	rdf:rest _:c14n185 .
+_:c14n150 rdf:first personinfo:founding_date ;
+	rdf:rest _:c14n48 .
+_:c14n151 sh:class schema1:Person ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:persons .
+_:c14n152 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path schema1:description .
+_:c14n153 rdf:first personinfo:headline ;
+	rdf:rest _:c14n94 .
+_:c14n154 rdf:first personinfo:has_interpersonal_relationships ;
+	rdf:rest _:c14n129 .
+_:c14n155 sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:or _:c14n63 ;
+	sh:order 3 ;
+	sh:path personinfo:type .
+_:c14n156 rdf:first "for profit" ;
+	rdf:rest _:c14n29 .
+_:c14n157 rdf:first famrel:70 ;
+	rdf:rest _:c14n32 .
+_:c14n158 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 8 ;
+	sh:path schema1:identifier .
+_:c14n159 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 5 ;
+	sh:path personinfo:depicted_by .
+_:c14n16 sh:class personinfo:Place ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:in_location .
+_:c14n160 sh:class personinfo:CodeSystem ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:code_system .
+_:c14n161 sh:datatype rdfs:Resource ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path skos:exactMatch .
+_:c14n162 sh:datatype xsd:boolean ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path personinfo:is_current .
+_:c14n163 sh:class schema1:Organization ;
+	sh:nodeKind sh:IRI ;
+	sh:order 1 ;
+	sh:path personinfo:organizations .
+_:c14n164 sh:class personinfo:CodeSystem ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:code_system .
+_:c14n165 rdf:first "MORTAL_ENEMY_OF" ;
+	rdf:rest rdf:nil .
+_:c14n166 rdf:first schema1:gender ;
+	rdf:rest _:c14n126 .
+_:c14n167 rdf:first GSSO:009254 ;
+	rdf:rest _:c14n87 .
+_:c14n168 rdf:first personinfo:age_in_years ;
+	rdf:rest _:c14n71 .
+_:c14n169 sh:datatype xsd:boolean ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 5 ;
+	sh:path personinfo:is_current .
+_:c14n17 sh:datatype xsd:float ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 5 ;
+	sh:path personinfo:duration .
+_:c14n170 sh:class personinfo:NewsEvent ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 11 ;
+	sh:path personinfo:has_news_events .
+_:c14n171 sh:datatype xsd:string ;
+	sh:nodeKind sh:Literal ;
+	sh:order 6 ;
+	sh:path personinfo:aliases .
+_:c14n172 sh:datatype rdfs:Resource ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path skos:exactMatch .
+_:c14n173 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path schema1:birthDate .
+_:c14n174 sh:datatype rdfs:Resource ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path skos:exactMatch .
+_:c14n175 sh:class personinfo:NewsEvent ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 7 ;
+	sh:path personinfo:has_news_events .
+_:c14n176 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n177 rdf:first famrel:02 ;
+	rdf:rest _:c14n180 .
+_:c14n178 rdf:first famrel:01 ;
+	rdf:rest _:c14n177 .
+_:c14n179 sh:in _:c14n178 .
+_:c14n18 sh:class schema1:Person ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:related_to .
+_:c14n180 rdf:first famrel:03 ;
+	rdf:rest rdf:nil .
+_:c14n181 rdf:first famrel:02 ;
+	rdf:rest _:c14n183 .
+_:c14n182 rdf:first famrel:01 ;
+	rdf:rest _:c14n181 .
+_:c14n183 rdf:first famrel:03 ;
+	rdf:rest rdf:nil .
+_:c14n184 sh:in _:c14n157 .
+_:c14n185 rdf:first rdf:type ;
+	rdf:rest _:c14n168 .
+_:c14n186 rdf:first rdf:type ;
+	rdf:rest _:c14n125 .
+_:c14n19 sh:datatype xsd:integer ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path schema1:int_identifier .
+_:c14n2 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n20 rdf:first personinfo:has_medical_history ;
+	rdf:rest _:c14n143 .
+_:c14n21 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n22 sh:datatype xsd:boolean ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path personinfo:is_current .
+_:c14n23 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path schema1:description .
+_:c14n24 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 5 ;
+	sh:path schema1:telephone ;
+	sh:pattern "^[\\d\\(\\)\\-]+$" .
+_:c14n25 rdf:first personinfo:has_familial_relationships ;
+	rdf:rest _:c14n65 .
+_:c14n26 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path schema1:name .
+_:c14n27 rdf:first "non profit" ;
+	rdf:rest _:c14n156 .
+_:c14n28 rdf:first "loose organization" ;
+	rdf:rest rdf:nil .
+_:c14n29 rdf:first "offshore" ;
+	rdf:rest _:c14n142 .
+_:c14n3 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 12 ;
+	sh:path schema1:identifier .
+_:c14n30 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 15 ;
+	sh:path personinfo:depicted_by .
+_:c14n31 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n32 rdf:first famrel:71 ;
+	rdf:rest _:c14n42 .
+_:c14n33 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path personinfo:headline .
+_:c14n34 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path schema1:email ;
+	sh:pattern "^\\S+@[\\S+\\.]+\\S+" .
+_:c14n35 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 5 ;
+	sh:path personinfo:depicted_by .
+_:c14n36 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path schema1:name .
+_:c14n37 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 11 ;
+	sh:path personinfo:depicted_by .
+_:c14n38 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 5 ;
+	sh:path personinfo:depicted_by .
+_:c14n39 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path schema1:description .
+_:c14n4 rdf:first "shell company" ;
+	rdf:rest _:c14n28 .
+_:c14n40 rdf:first GSSO:000385 ;
+	rdf:rest rdf:nil .
+_:c14n41 sh:class schema1:Organization ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:employed_at .
+_:c14n42 rdf:first "BEST_FRIEND_OF" ;
+	rdf:rest _:c14n165 .
+_:c14n43 sh:class schema1:Person ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:related_to .
+_:c14n44 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n45 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n46 sh:datatype xsd:float ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path personinfo:duration .
+_:c14n47 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n48 rdf:first skos:exactMatch ;
+	rdf:rest _:c14n154 .
+_:c14n49 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n5 sh:class personinfo:CodeSystem ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:code_system .
+_:c14n50 rdf:first personinfo:in_location ;
+	rdf:rest _:c14n153 .
+_:c14n51 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n52 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path prov:endedAtTime .
+_:c14n53 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path schema1:identifier .
+_:c14n54 sh:class personinfo:FamilialRelationship ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 7 ;
+	sh:path personinfo:has_familial_relationships .
+_:c14n55 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path personinfo:mission_statement .
+_:c14n56 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path prov:endedAtTime .
+_:c14n57 sh:datatype xsd:decimal ;
+	sh:description "A score between 0 and 5, represented as a decimal" ;
+	sh:maxCount 1 ;
+	sh:maxInclusive "5.0"^^xsd:double ;
+	sh:minInclusive "0.0"^^xsd:double ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path personinfo:score .
+_:c14n58 sh:class personinfo:DiagnosisConcept ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:diagnosis .
+_:c14n59 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n6 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 3 ;
+	sh:path personinfo:depicted_by .
+_:c14n60 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 14 ;
+	sh:path schema1:description .
+_:c14n61 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n62 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path personinfo:postal_code .
+_:c14n63 rdf:first _:c14n179 ;
+	rdf:rest _:c14n95 .
+_:c14n64 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path schema1:description .
+_:c14n65 rdf:first personinfo:has_news_events ;
+	rdf:rest rdf:nil .
+_:c14n66 sh:in _:c14n182 ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:order 3 ;
+	sh:path personinfo:type .
+_:c14n67 rdf:first GSSO:000372 ;
+	rdf:rest _:c14n13 .
+_:c14n68 sh:datatype rdfs:Resource ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path skos:exactMatch .
+_:c14n69 sh:in _:c14n27 ;
+	sh:order 3 ;
+	sh:path personinfo:categories .
+_:c14n7 sh:class personinfo:CodeSystem ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:code_system .
+_:c14n70 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path prov:startedAtTime .
+_:c14n71 rdf:first personinfo:current_address ;
+	rdf:rest _:c14n166 .
+_:c14n72 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path schema1:description .
+_:c14n73 sh:datatype xsd:boolean ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 6 ;
+	sh:path personinfo:is_current .
+_:c14n74 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n75 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:depicted_by .
+_:c14n76 sh:maxCount 1 ;
+	sh:order 5 ;
+	sh:path personinfo:min_salary .
+_:c14n77 sh:datatype xsd:float ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path personinfo:duration .
+_:c14n78 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path prov:endedAtTime .
+_:c14n79 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path schema1:name .
+_:c14n8 rdf:first personinfo:has_employment_history ;
+	rdf:rest _:c14n89 .
+_:c14n80 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path prov:startedAtTime .
+_:c14n81 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path prov:startedAtTime .
+_:c14n82 sh:datatype xsd:float ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path personinfo:duration .
+_:c14n83 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path prov:startedAtTime .
+_:c14n84 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 9 ;
+	sh:path schema1:name .
+_:c14n85 rdf:first personinfo:founding_location ;
+	rdf:rest _:c14n10 .
+_:c14n86 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path prov:startedAtTime .
+_:c14n87 rdf:first GSSO:009253 ;
+	rdf:rest _:c14n137 .
+_:c14n88 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path prov:startedAtTime .
+_:c14n89 rdf:first schema1:email ;
+	rdf:rest _:c14n127 .
+_:c14n9 sh:class schema1:PostalAddress ;
+	sh:description "The address at which a person currently lives" ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 4 ;
+	sh:path personinfo:current_address .
+_:c14n90 sh:class personinfo:MedicalEvent ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 9 ;
+	sh:path personinfo:has_medical_history .
+_:c14n91 sh:class personinfo:Place ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:founding_location .
+_:c14n92 sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path schema1:identifier .
+_:c14n93 rdf:first schema1:telephone ;
+	rdf:rest _:c14n150 .
+_:c14n94 rdf:first personinfo:diagnosis ;
+	rdf:rest _:c14n108 .
+_:c14n95 rdf:first _:c14n184 ;
+	rdf:rest rdf:nil .
+_:c14n96 sh:class personinfo:Place ;
+	sh:nodeKind sh:IRI ;
+	sh:order 2 ;
+	sh:path personinfo:places .
+_:c14n97 sh:datatype xsd:date ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path prov:endedAtTime .
+_:c14n98 sh:class personinfo:ProcedureConcept ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:IRI ;
+	sh:order 1 ;
+	sh:path personinfo:procedure .
+_:c14n99 sh:class personinfo:InterPersonalRelationship ;
+	sh:nodeKind sh:BlankNodeOrIRI ;
+	sh:order 8 ;
+	sh:path personinfo:has_interpersonal_relationships .
+
