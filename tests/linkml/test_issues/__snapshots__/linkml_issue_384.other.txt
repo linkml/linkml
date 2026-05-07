@@ -531,7 +531,7 @@ classes:
         name: value
         range: float
     class_uri: ex:GeoAge
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: linkml_issue_384.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1
@@ -925,7 +925,7 @@ generation_date: '2000-01-01T00:00:00'
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/generation_date> "2000-01-01T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/id> "https://w3id.org/linkml/examples/personinfo"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/imports> "linkml:types"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
-<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/metamodel_version> "1.7.0" .
+<https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/metamodel_version> "1.11.0" .
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Organization_full_name> .
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Organization_parent> .
 <https://w3id.org/linkml/examples/personinfo/personinfo> <https://w3id.org/linkml/slots> <https://w3id.org/linkml/examples/personinfo/Person_parent> .
@@ -1084,7 +1084,7 @@ from rdflib import (
 
 from linkml_runtime.linkml_model.types import Float, Integer, String
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

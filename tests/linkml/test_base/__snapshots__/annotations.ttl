@@ -246,7 +246,7 @@ linkml:annotations a linkml:SchemaDefinition,
         "linkml:types"^^xsd:anyURI ;
     linkml:inlined true ;
     linkml:is_a linkml:extensions ;
-    linkml:metamodel_version "1.7.0" ;
+    linkml:metamodel_version "1.11.0" ;
     linkml:multivalued true ;
     linkml:owner linkml:Annotation ;
     linkml:range linkml:Annotation ;
@@ -295,6 +295,9 @@ linkml:extension_tag a linkml:SlotDefinition ;
 linkml:extension_value a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
     skos:prefLabel "value" ;
+    linkml:annotations [ a linkml:Annotation ;
+            skos:example true ;
+            linkml:tag linkml:simple_dict_value ] ;
     linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
     linkml:description "the actual annotation" ;
     linkml:domain linkml:Extension ;
@@ -316,6 +319,16 @@ linkml:Annotatable a linkml:ClassDefinition ;
     linkml:slot_usage [ ] ;
     linkml:slots linkml:annotations .
 
+linkml:Extensible a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:description "mixin for classes that support extension" ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extensions .
+
 linkml:Annotation a linkml:ClassDefinition ;
     skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
     linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
@@ -328,16 +341,6 @@ linkml:Annotation a linkml:ClassDefinition ;
         linkml:extension_tag,
         linkml:extension_value,
         linkml:extensions .
-
-linkml:Extensible a linkml:ClassDefinition ;
-    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
-    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
-    linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
-    linkml:description "mixin for classes that support extension" ;
-    linkml:imported_from "linkml:extensions" ;
-    linkml:mixin true ;
-    linkml:slot_usage [ ] ;
-    linkml:slots linkml:extensions .
 
 linkml:extensions a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;

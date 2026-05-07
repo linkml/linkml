@@ -35988,7 +35988,7 @@
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.11.0",
   "source_file": "biolink-model.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

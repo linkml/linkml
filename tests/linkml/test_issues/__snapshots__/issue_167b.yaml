@@ -339,6 +339,10 @@ slots:
   extension_value:
     name: extension_value
     definition_uri: https://w3id.org/linkml/extension_value
+    annotations:
+      simple_dict_value:
+        tag: simple_dict_value
+        value: true
     description: the actual annotation
     from_schema: https://w3id.org/linkml/extensions
     imported_from: linkml:extensions
@@ -437,7 +441,7 @@ classes:
     slots:
     - extensions
     class_uri: linkml:Extensible
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: issue_167b.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1

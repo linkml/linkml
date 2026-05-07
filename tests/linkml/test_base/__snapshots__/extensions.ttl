@@ -214,6 +214,9 @@ linkml:extension_tag a linkml:SlotDefinition ;
 linkml:extension_value a linkml:SlotDefinition ;
     skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
     skos:prefLabel "value" ;
+    linkml:annotations [ a linkml:Annotation ;
+            skos:example true ;
+            linkml:tag "simple_dict_value"^^xsd:anyURI ] ;
     linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
     linkml:description "the actual annotation" ;
     linkml:domain linkml:Extension ;
@@ -268,7 +271,7 @@ linkml:extensions a linkml:SchemaDefinition,
     linkml:id "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
     linkml:imports "linkml:types"^^xsd:anyURI ;
     linkml:inlined true ;
-    linkml:metamodel_version "1.7.0" ;
+    linkml:metamodel_version "1.11.0" ;
     linkml:multivalued true ;
     linkml:owner linkml:Extensible ;
     linkml:range linkml:Extension ;

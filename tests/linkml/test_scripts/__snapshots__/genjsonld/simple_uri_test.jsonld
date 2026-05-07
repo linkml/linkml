@@ -386,6 +386,13 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
+      "annotations": [
+        {
+          "tag": "simple_dict_value",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
@@ -478,7 +485,7 @@
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.11.0",
   "source_file": "simple_uri_test.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,
