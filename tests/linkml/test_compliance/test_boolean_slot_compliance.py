@@ -645,7 +645,7 @@ def test_class_any_of_with_required(framework, nest, op, name, family_name, give
         data = {SLOT_S1: data}
     check_data(
         schema,
-        f"{op}_{name}_{family_name}_{given_name}",
+        f"{op}_{name}_{family_name}_{given_name}".replace(" ", "_"),
         framework,
         data,
         is_valid,
