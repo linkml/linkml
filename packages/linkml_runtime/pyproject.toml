@@ -30,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 requires-python = ">=3.10"
 dynamic = ["version"]
@@ -195,7 +196,7 @@ max-complexity = 15
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["lint", "py{310,311,312,313}"]
+env_list = ["lint", "py{310,311,312,313,314}"]
 
 [tool.tox.env_run_base]
 allowlist_externals = ["uv"]
