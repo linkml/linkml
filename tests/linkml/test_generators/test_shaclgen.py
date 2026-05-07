@@ -2784,3 +2784,124 @@ classes:
     has_boolean = any("BOUND" in q for q in queries)
     assert has_exclusive, "Expected one exclusive-value SPARQL constraint"
     assert has_boolean, "Expected one boolean-guard SPARQL constraint"
+
+
+# ---------------------------------------------------------------------------
+# pattern inside any_of branches
+# ---------------------------------------------------------------------------
+
+
+def test_any_of_with_pattern(input_path):
+    """Test that pattern constraints inside any_of branches emit sh:pattern.
+
+    Exercises three cases:
+    1. PatternOnlyBranch: any_of with a pattern-only branch (no range)
+    2. RangeWithPattern: any_of with range + pattern on the same branch
+    3. MixedBranches: combination of range-only, pattern-only, and range+pattern
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/any_of_pattern.yaml"), mergeimports=True).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    def get_or_branch_nodes(class_uri: str, slot_local: str) -> list[rdflib.BNode]:
+        """Return the list of BNodes inside sh:or for a given class property."""
+        class_ref = URIRef(class_uri)
+        for prop_node in g.objects(class_ref, SH.property):
+            paths = list(g.objects(prop_node, SH.path))
+            if any(slot_local in str(p) for p in paths):
+                for or_head in g.objects(prop_node, SH["or"]):
+                    return list(Collection(g, or_head))
+        return []
+
+    prefix = "https://w3id.org/linkml/examples/any_of_pattern/"
+
+    # Case 1: PatternOnlyBranch — license slot has 3 branches:
+    #   [enum sh:in], [sh:nodeKind sh:IRI], [sh:pattern "^LicenseRef-..."]
+    branches = get_or_branch_nodes(f"{prefix}PatternOnlyBranch", "license")
+    assert len(branches) == 3, f"Expected 3 branches, got {len(branches)}"
+    # Find the branch with sh:pattern
+    pattern_branches = [b for b in branches if list(g.objects(b, SH.pattern))]
+    assert len(pattern_branches) == 1, f"Expected 1 pattern branch, got {len(pattern_branches)}"
+    pattern_val = str(list(g.objects(pattern_branches[0], SH.pattern))[0])
+    assert pattern_val == "^LicenseRef-[a-zA-Z0-9\\-\\.]+$"
+    # The pattern-only branch should NOT have sh:datatype or sh:class
+    assert list(g.objects(pattern_branches[0], SH.datatype)) == []
+    assert list(g.objects(pattern_branches[0], SH["class"])) == []
+
+    # Case 2: RangeWithPattern — identifier slot has 2 branches:
+    #   [sh:datatype xsd:string + sh:pattern "^[A-Z]{2}-[0-9]{4}$"], [sh:datatype xsd:integer]
+    branches = get_or_branch_nodes(f"{prefix}RangeWithPattern", "identifier")
+    assert len(branches) == 2, f"Expected 2 branches, got {len(branches)}"
+    # Find branch with both datatype and pattern
+    combo_branches = [b for b in branches if list(g.objects(b, SH.datatype)) and list(g.objects(b, SH.pattern))]
+    assert len(combo_branches) == 1, f"Expected 1 combo branch, got {len(combo_branches)}"
+    assert str(list(g.objects(combo_branches[0], SH.pattern))[0]) == "^[A-Z]{2}-[0-9]{4}$"
+    # The other branch (integer) should NOT have sh:pattern
+    int_branches = [b for b in branches if b not in combo_branches]
+    assert list(g.objects(int_branches[0], SH.pattern)) == []
+
+    # Case 3: MixedBranches — code slot has 3 branches:
+    #   [sh:datatype xsd:integer], [sh:pattern "^CUSTOM-.*$"], [sh:datatype xsd:string + sh:pattern "^STD-[0-9]+$"]
+    branches = get_or_branch_nodes(f"{prefix}MixedBranches", "code")
+    assert len(branches) == 3, f"Expected 3 branches, got {len(branches)}"
+    # Exactly 2 branches should have sh:pattern
+    pattern_branches = [b for b in branches if list(g.objects(b, SH.pattern))]
+    assert len(pattern_branches) == 2, f"Expected 2 pattern branches, got {len(pattern_branches)}"
+    # Collect the patterns
+    patterns = sorted(str(list(g.objects(b, SH.pattern))[0]) for b in pattern_branches)
+    assert patterns == ["^CUSTOM-.*$", "^STD-[0-9]+$"]
+    # The integer-only branch should have no pattern
+    no_pattern = [b for b in branches if not list(g.objects(b, SH.pattern))]
+    assert len(no_pattern) == 1
+    assert list(g.objects(no_pattern[0], SH.datatype)) == [URIRef("http://www.w3.org/2001/XMLSchema#integer")]
+
+
+def test_any_of_with_pattern_pyshacl_end_to_end(input_path):
+    """End-to-end: pyshacl accepts values matching an ``any_of`` pattern branch and rejects others.
+
+    This is the behavioural regression guard for the fix. Without ``sh:pattern`` on the
+    branch node, a pattern-only branch serialises as an empty shape ``[ ]``, which every
+    value node trivially satisfies — so ``sh:or`` would accept *anything* and the
+    non-conforming assertions below would fail.
+    """
+    import pyshacl
+
+    shacl_ttl = ShaclGenerator(input_path("shaclgen/any_of_pattern.yaml"), mergeimports=True).serialize()
+
+    def conforms(data_ttl: str) -> tuple[bool, str]:
+        ok, _, text = pyshacl.validate(
+            data_graph=data_ttl,
+            shacl_graph=shacl_ttl,
+            data_graph_format="turtle",
+            shacl_graph_format="turtle",
+        )
+        return ok, text
+
+    prefixes = """
+    @prefix ex: <https://w3id.org/linkml/examples/any_of_pattern/> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+    """
+
+    # Case 1: pattern-only branch. "MIT" satisfies the enum branch, an IRI satisfies the
+    # uri branch, and "LicenseRef-..." may only satisfy the pattern-only branch.
+    for value in ('"MIT"', "<https://example.org/licenses/custom>", '"LicenseRef-My-Custom.1"'):
+        ok, text = conforms(f"{prefixes}\nex:l1 a ex:PatternOnlyBranch ; ex:license {value} .")
+        assert ok, f"license {value} should conform:\n{text}"
+    # No branch matches: not an enum member, not an IRI, and does not match the pattern.
+    ok, _ = conforms(f'{prefixes}\nex:l2 a ex:PatternOnlyBranch ; ex:license "NotALicenseRef" .')
+    assert not ok, "A value matching no any_of branch must be rejected"
+
+    # Case 2: range + pattern on the same branch — both must hold for that branch.
+    ok, text = conforms(f'{prefixes}\nex:i1 a ex:RangeWithPattern ; ex:identifier "AB-1234" .')
+    assert ok, f"identifier 'AB-1234' should conform:\n{text}"
+    ok, text = conforms(f'{prefixes}\nex:i2 a ex:RangeWithPattern ; ex:identifier "42"^^xsd:integer .')
+    assert ok, f"identifier 42 should conform via the integer branch:\n{text}"
+    ok, _ = conforms(f'{prefixes}\nex:i3 a ex:RangeWithPattern ; ex:identifier "ab-1234" .')
+    assert not ok, "A string violating the branch pattern must be rejected"
+
+    # Case 3: mixed branches — each branch accepts only its own values.
+    for value in ('"7"^^xsd:integer', '"CUSTOM-anything"', '"STD-42"'):
+        ok, text = conforms(f"{prefixes}\nex:c1 a ex:MixedBranches ; ex:code {value} .")
+        assert ok, f"code {value} should conform:\n{text}"
+    ok, _ = conforms(f'{prefixes}\nex:c2 a ex:MixedBranches ; ex:code "STD-xyz" .')
+    assert not ok, "A value matching no any_of branch must be rejected"
