@@ -1718,7 +1718,15 @@ class SchemaView:
                 setattr(induced_slot, metaslot_name, v)
         if induced_slot.inlined_as_list:
             induced_slot.inlined = True
-        if induced_slot.identifier or induced_slot.key:
+        # Check if current class explicitly overrides 'required' in slot_usage
+        has_explicit_required_override = False
+        if cls is not None and cls.slot_usage and slot_name in cls.slot_usage:
+            slot_usage_def = cls.slot_usage[slot_name]
+            # Check if 'required' is explicitly set in this slot_usage
+            if hasattr(slot_usage_def, "required") and slot_usage_def.required is not None:
+                has_explicit_required_override = True
+        # Only force required=True for identifiers if not explicitly overridden in slot_usage
+        if (induced_slot.identifier or induced_slot.key) and not has_explicit_required_override:
             induced_slot.required = True
         if mangle_name:
             mangled_name = f"{camelcase(class_name)}__{underscore(slot_name)}"

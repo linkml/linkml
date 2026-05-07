@@ -3472,3 +3472,93 @@ def test_induced_slot_domain_of_no_duplicates() -> None:
 
     induced = view.induced_slot("s1", "A")
     assert induced.domain_of.count("A") == 1
+
+
+@pytest.mark.parametrize(
+    ("class_name", "expected_required"),
+    [
+        ("NamedThing", True),  # parent: identifier always required
+        ("ChildNoOverride", True),  # no slot_usage override: still required
+        ("ChildRequiredFalse", False),  # required: false in slot_usage: optional
+        ("ChildRequiredTrue", True),  # required: true in slot_usage: still required
+    ],
+)
+def test_identifier_slot_required_override(class_name: str, expected_required: bool) -> None:
+    """Test that identifier slots respect required: false in slot_usage overrides.
+
+    A child class should be able to override required=true for an inherited
+    identifier slot by setting required: false in its slot_usage.
+    """
+    schema_str = """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  NamedThing:
+    abstract: true
+    slots:
+      - id
+  ChildNoOverride:
+    is_a: NamedThing
+  ChildRequiredFalse:
+    is_a: NamedThing
+    slot_usage:
+      id:
+        required: false
+  ChildRequiredTrue:
+    is_a: NamedThing
+    slot_usage:
+      id:
+        required: true
+slots:
+  id:
+    identifier: true
+    range: string
+"""
+    sv = SchemaView(schema_str)
+    induced = sv.induced_slot("id", class_name)
+    assert induced.required is expected_required
+    assert induced.identifier is True
+
+
+@pytest.mark.parametrize(
+    ("class_name", "expected_required"),
+    [
+        ("NamedThing", True),  # parent: key always required
+        ("ChildNoOverride", True),  # no slot_usage override: still required
+        ("ChildRequiredFalse", False),  # required: false in slot_usage: optional
+    ],
+)
+def test_key_slot_required_override(class_name: str, expected_required: bool) -> None:
+    """Test that key slots also respect required: false in slot_usage overrides."""
+    schema_str = """
+id: https://example.org/test
+name: test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  NamedThing:
+    abstract: true
+    slots:
+      - key_field
+  ChildNoOverride:
+    is_a: NamedThing
+  ChildRequiredFalse:
+    is_a: NamedThing
+    slot_usage:
+      key_field:
+        required: false
+slots:
+  key_field:
+    key: true
+    range: string
+"""
+    sv = SchemaView(schema_str)
+    induced = sv.induced_slot("key_field", class_name)
+    assert induced.required is expected_required
+    assert induced.key is True
