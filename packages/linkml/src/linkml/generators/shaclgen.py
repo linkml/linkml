@@ -343,6 +343,11 @@ class ShaclGenerator(Generator):
 
                             add_simple_data_type(st_node_pv, r)
                             range_list.append(st_node)
+                        # Propagate pattern constraint to the branch node.
+                        # A branch may combine range + pattern (e.g. range: string
+                        # with pattern: "^...") or specify pattern alone (no range).
+                        if any.pattern:
+                            g.add((range_list[-1], SH.pattern, Literal(any.pattern)))
                     Collection(g, or_node, range_list)
                 else:
                     prop_pv_literal(SH.hasValue, s.equals_number)
