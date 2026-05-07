@@ -57,6 +57,7 @@ message CodeSystem
  {
   string id = 1
   string name = 2
+  longEnum longId = 0
  }
 message Company
  {
