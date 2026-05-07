@@ -341,7 +341,7 @@ def _monkeypatch_pyshex():
     from types import ModuleType
     from typing import TextIO
 
-    if version("pyshexc") != "0.9.1":
+    if version("pyshexc") != "0.10.3.post1":
         raise RuntimeError(
             "Pyshex has been updated, remove this monkeypatch:\n"
             "- remove this function\n"
