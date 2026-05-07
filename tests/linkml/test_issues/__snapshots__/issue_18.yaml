@@ -114,7 +114,7 @@ classes:
     exact_mappings:
     - http://example.org/tests/issue18/C4
     class_uri: http://example.org/tests/issue18/C4
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: issue_18.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1

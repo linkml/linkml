@@ -524,7 +524,7 @@ classes:
         name: code_8
         range: mapped_evidence
     class_uri: evidence:AllEnums
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: alternatives.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1

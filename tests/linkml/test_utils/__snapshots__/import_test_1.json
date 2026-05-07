@@ -446,7 +446,7 @@
          "class_uri": "test4:Class4"
       }
    ],
-   "metamodel_version": "1.7.0",
+   "metamodel_version": "1.11.0",
    "source_file": "import_test_1.yaml",
    "source_file_date": "2000-01-01T00:00:00",
    "source_file_size": 1,

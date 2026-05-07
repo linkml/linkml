@@ -532,6 +532,65 @@
       ]
     },
     {
+      "name": "LongEnum",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/LongEnum",
+      "description": "An example enum whose joined values will exceed 255 characters.",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "permissible_values": [
+        {
+          "text": "AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "BetaSequenceIdentifier02_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "GammaSequenceIdentifier03_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "EtaSequenceIdentifier07_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "IotaSequenceIdentifier09_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "KappaSequenceIdentifier10_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "MuSequenceIdentifier12_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "NuSequenceIdentifier13_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "XiSequenceIdentifier14_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "PiSequenceIdentifier16_LongPatternLongPatternLongPattern"
+        },
+        {
+          "text": "RhoSequenceIdentifier17_LongPatternLongPatternLongPattern"
+        }
+      ]
+    },
+    {
       "name": "KitchenStatus",
       "definition_uri": "https://w3id.org/linkml/tests/core/KitchenStatus",
       "from_schema": "https://w3id.org/linkml/tests/core",
@@ -678,6 +737,17 @@
       ],
       "range": "DiagnosisConcept",
       "inlined": true
+    },
+    {
+      "name": "long_id",
+      "definition_uri": "https://w3id.org/linkml/tests/kitchen_sink/long_id",
+      "from_schema": "https://w3id.org/linkml/tests/kitchen_sink",
+      "slot_uri": "https://w3id.org/linkml/tests/kitchen_sink/long_id",
+      "owner": "CodeSystem",
+      "domain_of": [
+        "CodeSystem"
+      ],
+      "range": "LongEnum"
     },
     {
       "name": "procedure",
@@ -1970,7 +2040,8 @@
       ],
       "slots": [
         "id",
-        "name"
+        "name",
+        "long_id"
       ],
       "slot_usage": {}
     },
@@ -2153,7 +2224,7 @@
       "slot_usage": {}
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.11.0",
   "source_file": "kitchen_sink.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

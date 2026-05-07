@@ -54735,7 +54735,7 @@
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
     "description": "A collection of deprecated mappings.",
-    "metamodel_version": "1.7.0",
+    "metamodel_version": "1.11.0",
     "properties": {
         "predicate_mappings": {
             "description": "A collection of relationships that are not used in biolink, but have biolink patterns that can be used to replace them.  This is a temporary slot to help with the transition to the fully qualified predicate model in Biolink3.",
