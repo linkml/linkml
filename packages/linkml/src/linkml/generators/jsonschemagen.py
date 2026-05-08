@@ -47,6 +47,13 @@ json_schema_types: dict[str, tuple[str, str | None]] = {
     "xsddate": ("string", "date"),
     "xsddatetime": ("string", "date-time"),
     "xsdtime": ("string", "time"),
+    "uri": ("string", "uri"),
+}
+
+# Patterns implied by the Python base type in linkml-runtime.
+# These are used as fallbacks when the type definition itself has no ``pattern``.
+_base_implied_patterns: dict[str, str] = {
+    "ncname": r"^[a-zA-Z_][\w.-]*$",
 }
 
 
@@ -511,6 +518,30 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 class_subschema["allOf"] = []
             class_subschema["allOf"].extend(rule_subschemas)
 
+        if cls.any_of is not None and len(cls.any_of) > 0:
+            class_subschema["anyOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.any_of]
+
+        if cls.all_of is not None and len(cls.all_of) > 0:
+            if "allOf" not in class_subschema:
+                class_subschema["allOf"] = []
+            class_subschema["allOf"].extend([self.get_subschema_for_anonymous_class(c, False) for c in cls.all_of])
+
+        if cls.exactly_one_of is not None and len(cls.exactly_one_of) > 0:
+            class_subschema["oneOf"] = [self.get_subschema_for_anonymous_class(c, False) for c in cls.exactly_one_of]
+
+        if cls.none_of is not None and len(cls.none_of) > 0:
+            # properties_required=True so absent slots make their branch fail; otherwise
+            # properties is vacuously true and `not(anyOf)` rejects instances missing the slot.
+            new_not = {"anyOf": [self.get_subschema_for_anonymous_class(c, True) for c in cls.none_of]}
+            if "not" in class_subschema:
+                existing_not = class_subschema.pop("not")
+                if "allOf" not in class_subschema:
+                    class_subschema["allOf"] = []
+                class_subschema["allOf"].append({"not": existing_not})
+                class_subschema["allOf"].append({"not": new_not})
+            else:
+                class_subschema["not"] = new_not
+
         class_subschema = self.after_generate_class(
             ClassResult.model_construct(schema_=class_subschema, source=cls), self.schemaview
         ).schema_
@@ -547,6 +578,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         subschema = JsonSchema()
         for slot in cls.slot_conditions.values():
             prop = self.get_subschema_for_slot(slot, omit_type=True, include_null=False)
+            # Anonymous slot expressions don't carry the underlying slot's `multivalued` flag,
+            # so look it up on the schema's slot definition and wrap so item-level constraints apply.
+            base_slot = self.schemaview.get_slot(slot.name) if slot.name else None
+            if base_slot is not None and base_slot.multivalued and not prop.is_array:
+                prop = JsonSchema.array_of(prop, include_null=False, required=False)
             value_required = False
             value_disallowed = False
             if slot.value_presence:
@@ -671,7 +707,10 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if slot.range in self.schemaview.all_types().keys():
             # types take lower priority
             schema_type = self.schemaview.induced_type(slot.range)
-            constraints.add_keyword("pattern", schema_type.pattern)
+            pattern = schema_type.pattern
+            if pattern is None and schema_type.base:
+                pattern = _base_implied_patterns.get(schema_type.base.lower())
+            constraints.add_keyword("pattern", pattern)
             constraints.add_keyword("minimum", schema_type.minimum_value)
             constraints.add_keyword("maximum", schema_type.maximum_value)
             constraints.add_keyword("const", schema_type.equals_string)

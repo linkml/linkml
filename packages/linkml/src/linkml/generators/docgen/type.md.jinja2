@@ -87,7 +87,34 @@ URI: {{ gen.uri_link(element) }}
 {%- endif %}
 
 {%- if element.unit %}
-**Unit:** {{ gen.uri_link(element.unit) }}
+**Unit:**
+
+| Property | Value |
+| --- | --- |
+{%- if element.unit.symbol %}
+| symbol | {{ element.unit.symbol }} |
+{%- endif %}
+{%- if element.unit.abbreviation %}
+| abbreviation | {{ element.unit.abbreviation }} |
+{%- endif %}
+{%- if element.unit.descriptive_name %}
+| descriptive_name | {{ element.unit.descriptive_name }} |
+{%- endif %}
+{%- if element.unit.ucum_code %}
+| ucum_code | {{ element.unit.ucum_code }} |
+{%- endif %}
+{%- if element.unit.derivation %}
+| derivation | {{ element.unit.derivation }} |
+{%- endif %}
+{%- if element.unit.iec61360code %}
+| iec61360code | {{ element.unit.iec61360code }} |
+{%- endif %}
+{%- if element.unit.has_quantity_kind %}
+| has_quantity_kind | {{ gen.uri_link(element.unit.has_quantity_kind) }} |
+{%- endif %}
+{%- if element.unit.exact_mappings %}
+| exact_mappings | {% for m in element.unit.exact_mappings %}{{ gen.uri_link(m) }}{% if not loop.last %}, {% endif %}{% endfor %} |
+{%- endif %}
 {%- endif %}
 
 {%- if element.implicit_prefix %}
