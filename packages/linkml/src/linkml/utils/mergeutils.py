@@ -242,11 +242,7 @@ def merge_class_rules(
     target: ClassDefinition,
     source: ClassDefinition,
 ) -> None:
-    """Additively merge list-valued class fields from source into target.
-
-    Appends ``rules`` and ``classification_rules`` from source to target.
-    Dict-valued fields (``slot_usage``, ``attributes``) are not yet handled
-    and will require conflict-resolution policies — see #3402.
+    """Additively merge ``rules`` and ``classification_rules`` from source into target.
 
     :param target: The base class to merge into.
     :param source: The overlay class whose rules are appended.
@@ -267,6 +263,9 @@ def merge_includes(
     classification_rules) are appended from the include onto the target.
     Classes that exist only in the include are added to the target.
     New slots, types, enums, and subsets from the include are also added.
+
+    Dict-valued class fields (``slot_usage``, ``attributes``) are not yet
+    composed and will require conflict-resolution policies — see #3402.
 
     This function performs only the structural merge. It does not merge or
     resolve ``include.imports`` into ``target.imports``. Callers that need the
