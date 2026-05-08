@@ -1,0 +1,71 @@
+id: https://w3id.org/linkml/tests/issue_3182
+name: issue_3182
+description: >-
+  Minimal reproduction of unhashable type 'list' in yamlutils.order_up
+  for multivalued inlined slots. Mirrors the CreditAssociation pattern
+  from nmdc-schema where a multivalued required enum slot is used as the
+  fallback key_name in _normalize_inlined_as_list.
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+default_prefix: ex
+imports:
+  - linkml:types
+
+enums:
+  CreditEnum:
+    permissible_values:
+      Data curation:
+      Software:
+      Supervision:
+      Conceptualization:
+      Funding acquisition:
+
+classes:
+  PersonValue:
+    slots:
+      - orcid
+      - name
+
+  CreditAssociation:
+    description: >-
+      A class with no identifier whose first required non-class slot
+      (applied_roles) is multivalued. This triggers the fallback
+      key_name logic in pythongen, which can cause unhashable type
+      errors in _normalize_inlined_as_list.
+    class_uri: prov:Association
+    slots:
+      - applies_to_person
+      - applied_roles
+      - type
+
+  Study:
+    tree_root: true
+    slots:
+      - id
+      - has_credit_associations
+
+slots:
+  id:
+    identifier: true
+    range: uriorcurie
+  orcid:
+    range: string
+  name:
+    range: string
+  type:
+    range: string
+  applies_to_person:
+    range: PersonValue
+    required: true
+    inlined: true
+  applied_roles:
+    range: CreditEnum
+    multivalued: true
+    required: true
+  has_credit_associations:
+    range: CreditAssociation
+    multivalued: true
+    inlined_as_list: true
+    inlined: true

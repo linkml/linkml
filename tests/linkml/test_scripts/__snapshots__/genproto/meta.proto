@@ -1,6 +1,6 @@
  syntax="proto3";
  package
-// metamodel_version: 1.7.0
+// metamodel_version: 1.11.0
 // a provence-generating activity
 message Activity
  {
@@ -57,6 +57,7 @@ message CodeSystem
  {
   string id = 1
   string name = 2
+  longEnum longId = 0
  }
 message Company
  {

@@ -372,3 +372,150 @@ def test_normalize_inlined_list_of_lists_with_inheritance():
     """List-of-lists: first element must map to key, not first MRO field."""
     c = _ContainerList(items=[["n1", "t1"]])
     assert c.items == [_ChildClass(notation="n1", title="t1")]
+
+
+# ---------------------------------------------------------------------------
+# _normalize_inlined with values containing commas (issue #3367)
+#
+# Classes below model the reproducer from the issue:
+#
+# id: https://example.org/comma-bug
+# name: comma_bug
+# imports:
+#   - linkml:types
+# prefixes:
+#   linkml: https://w3id.org/linkml/
+#   ex: https://example.org/
+# default_prefix: ex
+# default_range: string
+# classes:
+#   CommaContainer:
+#     tree_root: true
+#     attributes:
+#       items:
+#         range: CommaItem
+#         multivalued: true
+#         inlined_as_list: true
+#   CommaItem:
+#     attributes:
+#       item_id:
+#         identifier: true
+#         range: string
+#       synonyms:
+#         range: CommaSynonym
+#         multivalued: true
+#         inlined_as_list: true
+#   CommaSynonym:
+#     attributes:
+#       synonym_text:
+#         required: true
+#       synonym_type:
+#         range: string
+#
+# CommaSynonym has no identifier — synonym_text is just required.
+# Values like "48,XXYY syndrome" must not be split or rejected.
+# ---------------------------------------------------------------------------
+
+
+class _CommaItemId(extended_str):
+    pass
+
+
+@dataclass(repr=False)
+class _CommaSynonym(YAMLRoot):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    synonym_text: str = None
+    synonym_type: Optional[str] = None
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self._is_empty(self.synonym_text):
+            self.MissingRequiredField("synonym_text")
+        if not isinstance(self.synonym_text, str):
+            self.synonym_text = str(self.synonym_text)
+
+        if self.synonym_type is not None and not isinstance(self.synonym_type, str):
+            self.synonym_type = str(self.synonym_type)
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class _CommaItem(YAMLRoot):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    item_id: Union[str, _CommaItemId] = None
+    synonyms: Optional[Union[Union[dict, _CommaSynonym], list[Union[dict, _CommaSynonym]]]] = empty_list()
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        if self._is_empty(self.item_id):
+            self.MissingRequiredField("item_id")
+        if not isinstance(self.item_id, _CommaItemId):
+            self.item_id = _CommaItemId(self.item_id)
+
+        self._normalize_inlined_as_list(
+            slot_name="synonyms", slot_type=_CommaSynonym, key_name="synonym_text", keyed=False
+        )
+
+        super().__post_init__(**kwargs)
+
+
+@dataclass(repr=False)
+class _CommaContainer(YAMLRoot):
+    _inherited_slots: ClassVar[list[str]] = []
+
+    items: Optional[Union[dict[Union[str, _CommaItemId], Union[dict, _CommaItem]], list[Union[dict, _CommaItem]]]] = (
+        empty_dict()
+    )
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+        self._normalize_inlined_as_list(slot_name="items", slot_type=_CommaItem, key_name="item_id", keyed=True)
+
+        super().__post_init__(**kwargs)
+
+
+@pytest.mark.parametrize(
+    "synonym_text",
+    [
+        "48,XXYY syndrome",
+        "a,b,c",
+        ",leading comma",
+        "trailing comma,",
+        "1,000",
+        "Smith, John",
+    ],
+)
+def test_normalize_inlined_comma_in_value(synonym_text: str):
+    """Values containing commas must survive _normalize_inlined (issue #3367)."""
+    c = _CommaContainer(
+        items=[{"item_id": "ex:001", "synonyms": [{"synonym_text": synonym_text}]}],
+    )
+    assert len(c.items) == 1
+    assert len(c.items[0].synonyms) == 1
+    assert c.items[0].synonyms[0].synonym_text == synonym_text
+
+
+def test_normalize_inlined_comma_in_value_from_yaml():
+    """Values with commas must round-trip through YAML loading (issue #3367)."""
+    yaml_str = """
+items:
+- item_id: ex:001
+  synonyms:
+  - synonym_text: '48,XXYY syndrome'
+  - synonym_text: simple synonym
+"""
+    result = from_yaml(yaml_str, _CommaContainer)
+    assert len(result.items) == 1
+    synonyms = result.items[0].synonyms
+    assert len(synonyms) == 2
+    assert synonyms[0].synonym_text == "48,XXYY syndrome"
+    assert synonyms[1].synonym_text == "simple synonym"
+
+
+def test_normalize_inlined_comma_in_identifier():
+    """Commas in identifier values must also be handled (issue #3367)."""
+    c = _CommaContainer(
+        items=[{"item_id": "48,XXYY", "synonyms": [{"synonym_text": "syn1"}]}],
+    )
+    assert len(c.items) == 1
+    assert str(c.items[0].item_id) == "48,XXYY"

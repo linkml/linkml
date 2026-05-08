@@ -280,12 +280,12 @@ linkml:mappings a linkml:SchemaDefinition,
     skos:mappingRelation "http://www.w3.org/2004/02/skos/core#mappingRelation"^^xsd:anyURI ;
     sh:declare [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
             sh:prefix "linkml" ],
+        [ sh:namespace "http://www.geneontology.org/formats/oboInOwl#"^^xsd:anyURI ;
+            sh:prefix "OIO" ],
         [ sh:namespace "http://purl.obolibrary.org/obo/IAO_"^^xsd:anyURI ;
             sh:prefix "IAO" ],
         [ sh:namespace "http://www.w3.org/2004/02/skos/core#"^^xsd:anyURI ;
-            sh:prefix "skos" ],
-        [ sh:namespace "http://www.geneontology.org/formats/oboInOwl#"^^xsd:anyURI ;
-            sh:prefix "OIO" ] ;
+            sh:prefix "skos" ] ;
     linkml:default_curi_maps "semweb_context" ;
     linkml:default_prefix "linkml" ;
     linkml:default_range linkml:string ;
@@ -302,7 +302,7 @@ linkml:mappings a linkml:SchemaDefinition,
     linkml:generation_date "2000-01-01T00:00:00"^^xsd:dateTime ;
     linkml:id "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
     linkml:imports "linkml:types"^^xsd:anyURI ;
-    linkml:metamodel_version "1.7.0" ;
+    linkml:metamodel_version "1.11.0" ;
     linkml:multivalued true ;
     linkml:range linkml:uriorcurie ;
     linkml:slot_uri "http://www.w3.org/2004/02/skos/core#mappingRelation"^^xsd:anyURI ;

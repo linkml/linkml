@@ -58,7 +58,7 @@ from rdflib import (
 
 from . python_complex_ranges import IdentifiedOneElementClass, IdentifiedOneElementClassName, IdentifiedThreeElementClass, IdentifiedThreeElementClassName, KeyedOneElementClass, KeyedOneElementClassName, KeyedThreeElementClass, KeyedThreeElementClassName, KeyedTwoElementClass, KeyedTwoElementClassName, OneElementClass, ThreeElementClass, TwoElementClass
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

@@ -1,88 +1,27 @@
-@prefix : <https://w3id.org/linkml/> .
 @prefix OIO: <http://www.geneontology.org/formats/oboInOwl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix linkml: <https://w3id.org/linkml/> .
 @prefix qudt: <http://qudt.org/schema/qudt/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema1: <http://schema.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-[] a linkml:SchemaDefinition ;
-    linkml:classes [ a linkml:ClassDefinition ;
-            linkml:class_uri "https://w3id.org/linkml/Annotation" ;
-            linkml:definition_uri "https://w3id.org/linkml/Annotation" ;
-            linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
-            linkml:from_schema "https://w3id.org/linkml/annotations" ;
-            linkml:imported_from "linkml:annotations" ;
-            linkml:is_a "Extension" ;
-            linkml:mixins "Annotatable" ;
-            linkml:name "Annotation" ;
-            linkml:slot_usage [ ] ;
-            linkml:slots "annotations",
-                "extension_tag",
-                "extension_value",
-                "extensions" ],
-        [ a linkml:ClassDefinition ;
-            skos:mappingRelation qudt:Unit ;
-            linkml:any_of [ a linkml:AnonymousClassExpression ;
-                    linkml:slot_conditions [ a linkml:SlotDefinition ;
-                            linkml:name "exact_mappings" ;
-                            linkml:required true ] ],
-                [ a linkml:AnonymousClassExpression ;
-                    linkml:slot_conditions [ a linkml:SlotDefinition ;
-                            linkml:name "symbol" ;
-                            linkml:required true ] ],
-                [ a linkml:AnonymousClassExpression ;
-                    linkml:slot_conditions [ a linkml:SlotDefinition ;
-                            linkml:name "iec61360code" ;
-                            linkml:required true ] ],
-                [ a linkml:AnonymousClassExpression ;
-                    linkml:slot_conditions [ a linkml:SlotDefinition ;
-                            linkml:name "ucum_code" ;
-                            linkml:required true ] ] ;
-            linkml:class_uri "http://qudt.org/schema/qudt/Unit" ;
-            linkml:definition_uri "https://w3id.org/linkml/UnitOfMeasure" ;
-            linkml:description "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:name "UnitOfMeasure" ;
-            linkml:slot_usage [ ] ;
-            linkml:slots "UnitOfMeasure_exact_mappings",
-                "derivation",
-                "has_quantity_kind",
-                "iec61360code",
-                "symbol",
-                "ucum_code" ],
-        [ a linkml:ClassDefinition ;
-            linkml:class_uri "https://w3id.org/linkml/Extensible" ;
-            linkml:definition_uri "https://w3id.org/linkml/Extensible" ;
-            linkml:description "mixin for classes that support extension" ;
-            linkml:from_schema "https://w3id.org/linkml/extensions" ;
-            linkml:imported_from "linkml:extensions" ;
-            linkml:mixin true ;
-            linkml:name "Extensible" ;
-            linkml:slot_usage [ ] ;
-            linkml:slots "extensions" ],
-        [ a linkml:ClassDefinition ;
-            linkml:class_uri "https://w3id.org/linkml/Annotatable" ;
-            linkml:definition_uri "https://w3id.org/linkml/Annotatable" ;
-            linkml:description "mixin for classes that support annotations" ;
-            linkml:from_schema "https://w3id.org/linkml/annotations" ;
-            linkml:imported_from "linkml:annotations" ;
-            linkml:mixin true ;
-            linkml:name "Annotatable" ;
-            linkml:slot_usage [ ] ;
-            linkml:slots "annotations" ],
-        [ a linkml:ClassDefinition ;
-            linkml:class_uri "https://w3id.org/linkml/Extension" ;
-            linkml:definition_uri "https://w3id.org/linkml/Extension" ;
-            linkml:description "a tag/value pair used to add non-model information to an entry" ;
-            linkml:from_schema "https://w3id.org/linkml/extensions" ;
-            linkml:imported_from "linkml:extensions" ;
-            linkml:name "Extension" ;
-            linkml:slot_usage [ ] ;
-            linkml:slots "extension_tag",
-                "extension_value",
-                "extensions" ] ;
+linkml:units a linkml:SchemaDefinition ;
+    dcterms:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    sh:declare [ sh:namespace "http://qudt.org/schema/qudt/"^^xsd:anyURI ;
+            sh:prefix "qudt" ],
+        [ sh:namespace "https://w3id.org/linkml/"^^xsd:anyURI ;
+            sh:prefix "linkml" ] ;
+    linkml:classes linkml:Annotatable,
+        linkml:Annotation,
+        linkml:AnyValue,
+        linkml:Extensible,
+        linkml:Extension,
+        linkml:UnitOfMeasure ;
     linkml:default_prefix "linkml" ;
-    linkml:default_range "string" ;
+    linkml:default_range linkml:string ;
     linkml:description "Units datamodel" ;
     linkml:emit_prefixes "IAO",
         "OIO",
@@ -91,375 +30,586 @@
         "rdfs",
         "skos",
         "xsd" ;
-    linkml:generation_date "2022-07-14T00:56:49" ;
-    linkml:id "https://w3id.org/linkml/units" ;
-    linkml:imports "linkml:annotations",
-        "linkml:extensions",
-        "linkml:mappings",
-        "linkml:types" ;
-    linkml:license "https://creativecommons.org/publicdomain/zero/1.0/" ;
+    linkml:generation_date "2026-05-05T18:49:43"^^xsd:dateTime ;
+    linkml:id "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    linkml:imports "linkml:annotations"^^xsd:anyURI,
+        "linkml:extensions"^^xsd:anyURI,
+        "linkml:mappings"^^xsd:anyURI,
+        "linkml:types"^^xsd:anyURI ;
     linkml:metamodel_version "1.7.0" ;
-    linkml:name "units" ;
-    linkml:prefixes [ linkml:prefix_prefix "qudt" ;
-            linkml:prefix_reference "http://qudt.org/schema/qudt/" ],
-        [ linkml:prefix_prefix "linkml" ;
-            linkml:prefix_reference "https://w3id.org/linkml/" ] ;
-    linkml:slots [ a linkml:SlotDefinition ;
-            linkml:alias "value" ;
-            linkml:definition_uri "https://w3id.org/linkml/extension_value" ;
-            linkml:description "the actual annotation" ;
-            linkml:domain "Extension" ;
-            linkml:domain_of "Extension" ;
-            linkml:from_schema "https://w3id.org/linkml/extensions" ;
-            linkml:imported_from "linkml:extensions" ;
-            linkml:name "extension_value" ;
-            linkml:owner "Extension" ;
-            linkml:range "string" ;
-            linkml:required true ;
-            linkml:slot_uri "https://w3id.org/linkml/value" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation qudt:ucumCode ;
-            linkml:definition_uri "https://w3id.org/linkml/ucum_code" ;
-            linkml:description "associates a QUDT unit with its UCUM code (case-sensitive)." ;
-            linkml:domain "UnitOfMeasure" ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:name "ucum_code" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "string" ;
-            linkml:recommended true ;
-            linkml:slot_uri "http://qudt.org/schema/qudt/ucumCode" ],
-        [ a linkml:SlotDefinition ;
-            linkml:definition_uri "https://w3id.org/linkml/derivation" ;
-            linkml:description "Expression for deriving this unit from other units" ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:name "derivation" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "string" ;
-            linkml:slot_uri "https://w3id.org/linkml/derivation" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation qudt:hasQuantityKind ;
-            linkml:comments "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind" ;
-            linkml:definition_uri "https://w3id.org/linkml/has_quantity_kind" ;
-            linkml:description "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length" ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:name "has_quantity_kind" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://qudt.org/schema/qudt/hasQuantityKind" ],
-        [ a linkml:SlotDefinition ;
-            linkml:definition_uri "https://w3id.org/linkml/extensions" ;
-            linkml:description "a tag/text tuple attached to an arbitrary element" ;
-            linkml:domain "Extensible" ;
-            linkml:domain_of "Extensible",
-                "Extension" ;
-            linkml:from_schema "https://w3id.org/linkml/extensions" ;
-            linkml:imported_from "linkml:extensions" ;
-            linkml:inlined true ;
-            linkml:multivalued true ;
-            linkml:name "extensions" ;
-            linkml:owner "Extensible" ;
-            linkml:range "Extension" ;
-            linkml:slot_uri "https://w3id.org/linkml/extensions" ],
-        [ a linkml:SlotDefinition ;
-            linkml:alias "tag" ;
-            linkml:definition_uri "https://w3id.org/linkml/extension_tag" ;
-            linkml:description "a tag associated with an extension" ;
-            linkml:domain "Extension" ;
-            linkml:domain_of "Extension" ;
-            linkml:from_schema "https://w3id.org/linkml/extensions" ;
-            linkml:imported_from "linkml:extensions" ;
-            linkml:key true ;
-            linkml:name "extension_tag" ;
-            linkml:owner "Extension" ;
-            linkml:range "uriorcurie" ;
-            linkml:required true ;
-            linkml:slot_uri "https://w3id.org/linkml/tag" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation qudt:iec61360Code ;
-            linkml:definition_uri "https://w3id.org/linkml/iec61360code" ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:name "iec61360code" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "string" ;
-            linkml:slot_uri "http://qudt.org/schema/qudt/iec61360Code" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:exactMatch ;
-            linkml:alias "exact mappings" ;
-            linkml:comments "Do not use this to encode mappings to systems for which a dedicated field exists" ;
-            linkml:definition_uri "https://w3id.org/linkml/exact_mappings" ;
-            linkml:description "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT" ;
-            linkml:domain "UnitOfMeasure" ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:is_a "exact_mappings" ;
-            linkml:is_usage_slot true ;
-            linkml:multivalued true ;
-            linkml:name "UnitOfMeasure_exact_mappings" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#exactMatch" ;
-            linkml:usage_slot_name "exact mappings" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation qudt:symbol ;
-            linkml:definition_uri "https://w3id.org/linkml/symbol" ;
-            linkml:description "name of the unit encoded as a symbol" ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:name "symbol" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "string" ;
-            linkml:slot_uri "http://qudt.org/schema/qudt/symbol" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation qudt:unit ;
-            linkml:definition_uri "https://w3id.org/linkml/unit" ;
-            linkml:description "an encoding of a unit" ;
-            linkml:from_schema "https://w3id.org/linkml/units" ;
-            linkml:inlined true ;
-            linkml:name "unit" ;
-            linkml:range "UnitOfMeasure" ;
-            linkml:slot_uri "http://qudt.org/schema/qudt/unit" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:mappingRelation ;
-            linkml:aliases "alternate identifiers",
-                "alternate ids",
-                "identifiers",
-                "xrefs" ;
-            linkml:definition_uri "https://w3id.org/linkml/mappings" ;
-            linkml:description "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective." ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:multivalued true ;
-            linkml:name "mappings" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#mappingRelation" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:narrowMatch ;
-            linkml:definition_uri "https://w3id.org/linkml/narrow_mappings" ;
-            linkml:description "A list of terms from different schemas or terminology systems that have narrower meaning." ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:is_a "mappings" ;
-            linkml:multivalued true ;
-            linkml:name "narrow_mappings" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#narrowMatch" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:closeMatch ;
-            linkml:definition_uri "https://w3id.org/linkml/close_mappings" ;
-            linkml:description "A list of terms from different schemas or terminology systems that have close meaning." ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:is_a "mappings" ;
-            linkml:multivalued true ;
-            linkml:name "close_mappings" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#closeMatch" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:exactMatch ;
-            linkml:definition_uri "https://w3id.org/linkml/exact_mappings" ;
-            linkml:description "A list of terms from different schemas or terminology systems that have identical meaning." ;
-            linkml:domain_of "UnitOfMeasure" ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:is_a "mappings" ;
-            linkml:multivalued true ;
-            linkml:name "exact_mappings" ;
-            linkml:owner "UnitOfMeasure" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#exactMatch" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:broadMatch ;
-            linkml:definition_uri "https://w3id.org/linkml/broad_mappings" ;
-            linkml:description "A list of terms from different schemas or terminology systems that have broader meaning." ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:is_a "mappings" ;
-            linkml:multivalued true ;
-            linkml:name "broad_mappings" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#broadMatch" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation OIO:consider ;
-            linkml:definition_uri "https://w3id.org/linkml/deprecated_element_has_possible_replacement" ;
-            linkml:description "When an element is deprecated, it can be potentially replaced by this uri or curie" ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:name "deprecated_element_has_possible_replacement" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "https://w3id.org/linkml/deprecated_element_has_possible_replacement" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation skos:relatedMatch ;
-            linkml:definition_uri "https://w3id.org/linkml/related_mappings" ;
-            linkml:description "A list of terms from different schemas or terminology systems that have related meaning." ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:is_a "mappings" ;
-            linkml:multivalued true ;
-            linkml:name "related_mappings" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "http://www.w3.org/2004/02/skos/core#relatedMatch" ],
-        [ a linkml:SlotDefinition ;
-            skos:mappingRelation <http://purl.obolibrary.org/obo/IAO_0100001> ;
-            linkml:definition_uri "https://w3id.org/linkml/deprecated_element_has_exact_replacement" ;
-            linkml:description "When an element is deprecated, it can be automatically replaced by this uri or curie" ;
-            linkml:from_schema "https://w3id.org/linkml/mappings" ;
-            linkml:imported_from "linkml:mappings" ;
-            linkml:name "deprecated_element_has_exact_replacement" ;
-            linkml:range "uriorcurie" ;
-            linkml:slot_uri "https://w3id.org/linkml/deprecated_element_has_exact_replacement" ],
-        [ a linkml:SlotDefinition ;
-            linkml:definition_uri "https://w3id.org/linkml/annotations" ;
-            linkml:description "a collection of tag/text tuples with the semantics of OWL Annotation" ;
-            linkml:domain "Annotatable" ;
-            linkml:domain_of "Annotatable",
-                "Annotation" ;
-            linkml:from_schema "https://w3id.org/linkml/annotations" ;
-            linkml:imported_from "linkml:annotations" ;
-            linkml:inlined true ;
-            linkml:is_a "extensions" ;
-            linkml:multivalued true ;
-            linkml:name "annotations" ;
-            linkml:owner "Annotation" ;
-            linkml:range "Annotation" ;
-            linkml:slot_uri "https://w3id.org/linkml/annotations" ] ;
+    linkml:slots linkml:UnitOfMeasure_exact_mappings,
+        linkml:abbreviation,
+        linkml:annotations,
+        linkml:broad_mappings,
+        linkml:close_mappings,
+        linkml:deprecated_element_has_exact_replacement,
+        linkml:deprecated_element_has_possible_replacement,
+        linkml:derivation,
+        linkml:descriptive_name,
+        linkml:exact_mappings,
+        linkml:extension_tag,
+        linkml:extension_value,
+        linkml:extensions,
+        linkml:has_quantity_kind,
+        linkml:iec61360code,
+        linkml:mappings,
+        linkml:narrow_mappings,
+        linkml:related_mappings,
+        linkml:symbol,
+        linkml:ucum_code,
+        linkml:unit ;
     linkml:source_file "units.yaml" ;
-    linkml:source_file_date "2022-07-14T00:55:10" ;
-    linkml:source_file_size 2178 ;
-    linkml:types [ a linkml:TypeDefinition ;
-            linkml:base "float" ;
-            linkml:definition_uri "https://w3id.org/linkml/Float" ;
-            linkml:description "A real number that conforms to the xsd:float specification" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "float" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#float" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "int" ;
-            linkml:definition_uri "https://w3id.org/linkml/Integer" ;
-            linkml:description "An integer" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "integer" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#integer" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "NCName" ;
-            linkml:definition_uri "https://w3id.org/linkml/Ncname" ;
-            linkml:description "Prefix part of CURIE" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "ncname" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "str" ;
-            linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime" ;
-            linkml:description "Either a date or a datetime" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "date_or_datetime" ;
-            linkml:repr "str" ;
-            linkml:uri "https://w3id.org/linkml/DateOrDatetime" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "XSDDateTime" ;
-            linkml:definition_uri "https://w3id.org/linkml/Datetime" ;
-            linkml:description "The combination of a date and time" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "datetime" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "float" ;
-            linkml:definition_uri "https://w3id.org/linkml/Double" ;
-            linkml:description "A real number that conforms to the xsd:double specification" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "double" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#double" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "URIorCURIE" ;
-            linkml:definition_uri "https://w3id.org/linkml/Uriorcurie" ;
-            linkml:description "a URI or a CURIE" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "uriorcurie" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "NodeIdentifier" ;
-            linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier" ;
-            linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "nodeidentifier" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/ns/shex#nonLiteral" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "URI" ;
-            linkml:definition_uri "https://w3id.org/linkml/Uri" ;
-            linkml:description "a complete URI" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "uri" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "ElementIdentifier" ;
-            linkml:comments "Used for inheritance and type checking" ;
-            linkml:definition_uri "https://w3id.org/linkml/Objectidentifier" ;
-            linkml:description "A URI or CURIE that represents an object in the model." ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "objectidentifier" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/ns/shex#iri" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "str" ;
-            linkml:definition_uri "https://w3id.org/linkml/String" ;
-            linkml:description "A character string" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "string" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#string" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "XSDDate" ;
-            linkml:definition_uri "https://w3id.org/linkml/Date" ;
-            linkml:description "a date (year, month and day) in an idealized calendar" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "date" ;
-            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#date" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "XSDTime" ;
-            linkml:definition_uri "https://w3id.org/linkml/Time" ;
-            linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "time" ;
-            linkml:notes "URI is dateTime because OWL reasoners don't work with straight date or time" ;
-            linkml:repr "str" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "Decimal" ;
-            linkml:definition_uri "https://w3id.org/linkml/Decimal" ;
-            linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "decimal" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#decimal" ],
-        [ a linkml:TypeDefinition ;
-            linkml:base "Bool" ;
-            linkml:definition_uri "https://w3id.org/linkml/Boolean" ;
-            linkml:description "A binary (true or false) value" ;
-            linkml:from_schema "https://w3id.org/linkml/types" ;
-            linkml:imported_from "linkml:types" ;
-            linkml:name "boolean" ;
-            linkml:repr "bool" ;
-            linkml:uri "http://www.w3.org/2001/XMLSchema#boolean" ] .
+    linkml:source_file_date "2026-05-05T18:16:00"^^xsd:dateTime ;
+    linkml:source_file_size 2801 ;
+    linkml:types linkml:boolean,
+        linkml:curie,
+        linkml:date,
+        linkml:date_or_datetime,
+        linkml:datetime,
+        linkml:decimal,
+        linkml:double,
+        linkml:float,
+        linkml:integer,
+        linkml:jsonpath,
+        linkml:jsonpointer,
+        linkml:ncname,
+        linkml:nodeidentifier,
+        linkml:objectidentifier,
+        linkml:sparqlpath,
+        linkml:string,
+        linkml:time,
+        linkml:uri,
+        linkml:uriorcurie .
+
+linkml:boolean a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"boolean\"." ;
+    skos:exactMatch schema1:Boolean ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "Bool" ;
+    linkml:definition_uri "https://w3id.org/linkml/Boolean"^^xsd:anyURI ;
+    linkml:description "A binary (true or false) value" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "bool" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI .
+
+linkml:broad_mappings a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:broadMatch ;
+    linkml:definition_uri "https://w3id.org/linkml/broad_mappings"^^xsd:anyURI ;
+    linkml:description "A list of terms from different schemas or terminology systems that have broader meaning." ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:is_a linkml:mappings ;
+    linkml:multivalued true ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#broadMatch"^^xsd:anyURI .
+
+linkml:close_mappings a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:closeMatch ;
+    linkml:definition_uri "https://w3id.org/linkml/close_mappings"^^xsd:anyURI ;
+    linkml:description "A list of terms from different schemas or terminology systems that have close meaning." ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:is_a linkml:mappings ;
+    linkml:multivalued true ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#closeMatch"^^xsd:anyURI .
+
+linkml:curie a linkml:TypeDefinition ;
+    dcterms:conformsTo "https://www.w3.org/TR/curie/" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"curie\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    skos:note "in RDF serializations this MUST be expanded to a URI",
+        "in non-RDF serializations MAY be serialized as the compact representation" ;
+    linkml:base "Curie" ;
+    linkml:definition_uri "https://w3id.org/linkml/Curie"^^xsd:anyURI ;
+    linkml:description "a compact URI" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+
+linkml:date a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date\".",
+        "URI is dateTime because OWL reasoners don't work with straight date or time" ;
+    skos:exactMatch schema1:Date ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "XSDDate" ;
+    linkml:definition_uri "https://w3id.org/linkml/Date"^^xsd:anyURI ;
+    linkml:description "a date (year, month and day) in an idealized calendar" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#date"^^xsd:anyURI .
+
+linkml:date_or_datetime a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"date_or_datetime\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "str" ;
+    linkml:definition_uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI ;
+    linkml:description "Either a date or a datetime" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "https://w3id.org/linkml/DateOrDatetime"^^xsd:anyURI .
+
+linkml:datetime a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"datetime\"." ;
+    skos:exactMatch schema1:DateTime ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "XSDDateTime" ;
+    linkml:definition_uri "https://w3id.org/linkml/Datetime"^^xsd:anyURI ;
+    linkml:description "The combination of a date and time" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#dateTime"^^xsd:anyURI .
+
+linkml:decimal a linkml:TypeDefinition ;
+    skos:broadMatch schema1:Number ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"decimal\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "Decimal" ;
+    linkml:definition_uri "https://w3id.org/linkml/Decimal"^^xsd:anyURI ;
+    linkml:description "A real number with arbitrary precision that conforms to the xsd:decimal specification" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#decimal"^^xsd:anyURI .
+
+linkml:deprecated_element_has_exact_replacement a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation <http://purl.obolibrary.org/obo/IAO_0100001> ;
+    linkml:definition_uri "https://w3id.org/linkml/deprecated_element_has_exact_replacement"^^xsd:anyURI ;
+    linkml:description "When an element is deprecated, it can be automatically replaced by this uri or curie" ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "https://w3id.org/linkml/deprecated_element_has_exact_replacement"^^xsd:anyURI .
+
+linkml:deprecated_element_has_possible_replacement a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation OIO:consider ;
+    linkml:definition_uri "https://w3id.org/linkml/deprecated_element_has_possible_replacement"^^xsd:anyURI ;
+    linkml:description "When an element is deprecated, it can be potentially replaced by this uri or curie" ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "https://w3id.org/linkml/deprecated_element_has_possible_replacement"^^xsd:anyURI .
+
+linkml:double a linkml:TypeDefinition ;
+    skos:closeMatch schema1:Float ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"double\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "float" ;
+    linkml:definition_uri "https://w3id.org/linkml/Double"^^xsd:anyURI ;
+    linkml:description "A real number that conforms to the xsd:double specification" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI .
+
+linkml:float a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"float\"." ;
+    skos:exactMatch schema1:Float ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "float" ;
+    linkml:definition_uri "https://w3id.org/linkml/Float"^^xsd:anyURI ;
+    linkml:description "A real number that conforms to the xsd:float specification" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#float"^^xsd:anyURI .
+
+linkml:integer a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"integer\"." ;
+    skos:exactMatch schema1:Integer ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "int" ;
+    linkml:definition_uri "https://w3id.org/linkml/Integer"^^xsd:anyURI ;
+    linkml:description "An integer" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI .
+
+linkml:jsonpath a linkml:TypeDefinition ;
+    dcterms:conformsTo "https://www.ietf.org/archive/id/draft-goessner-dispatch-jsonpath-00.html" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpath\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "str" ;
+    linkml:definition_uri "https://w3id.org/linkml/Jsonpath"^^xsd:anyURI ;
+    linkml:description "A string encoding a JSON Path. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded in tree form." ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+
+linkml:jsonpointer a linkml:TypeDefinition ;
+    dcterms:conformsTo "https://datatracker.ietf.org/doc/html/rfc6901" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"jsonpointer\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "str" ;
+    linkml:definition_uri "https://w3id.org/linkml/Jsonpointer"^^xsd:anyURI ;
+    linkml:description "A string encoding a JSON Pointer. The value of the string MUST conform to JSON Point syntax and SHOULD dereference to a valid object within the current instance document when encoded in tree form." ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+
+linkml:narrow_mappings a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:narrowMatch ;
+    linkml:definition_uri "https://w3id.org/linkml/narrow_mappings"^^xsd:anyURI ;
+    linkml:description "A list of terms from different schemas or terminology systems that have narrower meaning." ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:is_a linkml:mappings ;
+    linkml:multivalued true ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#narrowMatch"^^xsd:anyURI .
+
+linkml:ncname a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"ncname\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "NCName" ;
+    linkml:definition_uri "https://w3id.org/linkml/Ncname"^^xsd:anyURI ;
+    linkml:description "Prefix part of CURIE" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+
+linkml:nodeidentifier a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"nodeidentifier\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "NodeIdentifier" ;
+    linkml:definition_uri "https://w3id.org/linkml/Nodeidentifier"^^xsd:anyURI ;
+    linkml:description "A URI, CURIE or BNODE that represents a node in a model." ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/ns/shex#nonLiteral"^^xsd:anyURI .
+
+linkml:objectidentifier a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"objectidentifier\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    skos:note "Used for inheritance and type checking" ;
+    linkml:base "ElementIdentifier" ;
+    linkml:definition_uri "https://w3id.org/linkml/Objectidentifier"^^xsd:anyURI ;
+    linkml:description "A URI or CURIE that represents an object in the model." ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/ns/shex#iri"^^xsd:anyURI .
+
+linkml:related_mappings a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:relatedMatch ;
+    linkml:definition_uri "https://w3id.org/linkml/related_mappings"^^xsd:anyURI ;
+    linkml:description "A list of terms from different schemas or terminology systems that have related meaning." ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:is_a linkml:mappings ;
+    linkml:multivalued true ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#relatedMatch"^^xsd:anyURI .
+
+linkml:sparqlpath a linkml:TypeDefinition ;
+    dcterms:conformsTo "https://www.w3.org/TR/sparql11-query/#propertypaths" ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"sparqlpath\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "str" ;
+    linkml:definition_uri "https://w3id.org/linkml/Sparqlpath"^^xsd:anyURI ;
+    linkml:description "A string encoding a SPARQL Property Path. The value of the string MUST conform to SPARQL syntax and SHOULD dereference to zero or more valid objects within the current instance document when encoded as RDF." ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+
+linkml:time a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"time\".",
+        "URI is dateTime because OWL reasoners do not work with straight date or time" ;
+    skos:exactMatch schema1:Time ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "XSDTime" ;
+    linkml:definition_uri "https://w3id.org/linkml/Time"^^xsd:anyURI ;
+    linkml:description "A time object represents a (local) time of day, independent of any particular day" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#time"^^xsd:anyURI .
+
+linkml:unit a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:unit ;
+    linkml:definition_uri "https://w3id.org/linkml/unit"^^xsd:anyURI ;
+    linkml:description "an encoding of a unit" ;
+    linkml:inlined true ;
+    linkml:inlined_as_list true ;
+    linkml:range linkml:UnitOfMeasure ;
+    linkml:slot_uri "http://qudt.org/schema/qudt/unit"^^xsd:anyURI .
+
+linkml:uri a linkml:TypeDefinition ;
+    dcterms:conformsTo "https://www.ietf.org/rfc/rfc3987.txt" ;
+    skos:closeMatch schema1:URL ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uri\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    skos:note "in RDF serializations a slot with range of uri is treated as a literal or type xsd:anyURI unless it is an identifier or a reference to an identifier, in which case it is translated directly to a node" ;
+    linkml:base "URI" ;
+    linkml:definition_uri "https://w3id.org/linkml/Uri"^^xsd:anyURI ;
+    linkml:description "a complete URI" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
+
+linkml:AnyValue a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    skos:mappingRelation linkml:Any ;
+    linkml:class_uri "https://w3id.org/linkml/Any"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/AnyValue"^^xsd:anyURI ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:slot_usage [ ] .
+
+linkml:UnitOfMeasure_exact_mappings a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:exactMatch ;
+    skos:note "Do not use this to encode mappings to systems for which a dedicated field exists" ;
+    skos:prefLabel "exact mappings" ;
+    linkml:definition_uri "https://w3id.org/linkml/exact_mappings"^^xsd:anyURI ;
+    linkml:description "Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT" ;
+    linkml:domain linkml:UnitOfMeasure ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:is_a linkml:exact_mappings ;
+    linkml:is_usage_slot true ;
+    linkml:multivalued true ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#exactMatch"^^xsd:anyURI ;
+    linkml:usage_slot_name "exact mappings" .
+
+linkml:abbreviation a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:abbreviation ;
+    linkml:definition_uri "https://w3id.org/linkml/abbreviation"^^xsd:anyURI ;
+    linkml:description "An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)" ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:string ;
+    linkml:slot_uri "http://qudt.org/schema/qudt/abbreviation"^^xsd:anyURI .
+
+linkml:derivation a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/derivation"^^xsd:anyURI ;
+    linkml:description "Expression for deriving this unit from other units" ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:string ;
+    linkml:slot_uri "https://w3id.org/linkml/derivation"^^xsd:anyURI .
+
+linkml:descriptive_name a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation rdfs:label ;
+    linkml:definition_uri "https://w3id.org/linkml/descriptive_name"^^xsd:anyURI ;
+    linkml:description "the spelled out name of the unit, for example, meter" ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:string ;
+    linkml:slot_uri "http://www.w3.org/2000/01/rdf-schema#label"^^xsd:anyURI .
+
+linkml:has_quantity_kind a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:hasQuantityKind ;
+    skos:note "Potential ontologies include but are not limited to PATO, NCIT, OBOE, qudt.quantityKind" ;
+    linkml:definition_uri "https://w3id.org/linkml/has_quantity_kind"^^xsd:anyURI ;
+    linkml:description "Concept in a vocabulary or ontology that denotes the kind of quantity being measured, e.g. length" ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://qudt.org/schema/qudt/hasQuantityKind"^^xsd:anyURI .
+
+linkml:annotations a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:description "a collection of tag/text tuples with the semantics of OWL Annotation" ;
+    linkml:domain linkml:Annotatable ;
+    linkml:domain_of linkml:Annotatable,
+        linkml:Annotation ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:inlined true ;
+    linkml:is_a linkml:extensions ;
+    linkml:multivalued true ;
+    linkml:owner linkml:Annotation ;
+    linkml:range linkml:Annotation ;
+    linkml:slot_uri "https://w3id.org/linkml/annotations"^^xsd:anyURI .
+
+linkml:exact_mappings a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:exactMatch ;
+    linkml:definition_uri "https://w3id.org/linkml/exact_mappings"^^xsd:anyURI ;
+    linkml:description "A list of terms from different schemas or terminology systems that have identical meaning." ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:is_a linkml:mappings ;
+    linkml:multivalued true ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:uriorcurie ;
+    linkml:required true ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#exactMatch"^^xsd:anyURI .
+
+linkml:extension_tag a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    skos:prefLabel "tag" ;
+    linkml:definition_uri "https://w3id.org/linkml/extension_tag"^^xsd:anyURI ;
+    linkml:description "a tag associated with an extension" ;
+    linkml:domain linkml:Extension ;
+    linkml:domain_of linkml:Extension ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:key true ;
+    linkml:owner linkml:Extension ;
+    linkml:range linkml:uriorcurie ;
+    linkml:required true ;
+    linkml:slot_uri "https://w3id.org/linkml/tag"^^xsd:anyURI .
+
+linkml:extension_value a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    skos:prefLabel "value" ;
+    linkml:definition_uri "https://w3id.org/linkml/extension_value"^^xsd:anyURI ;
+    linkml:description "the actual annotation" ;
+    linkml:domain linkml:Extension ;
+    linkml:domain_of linkml:Extension ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:inlined true ;
+    linkml:inlined_as_list true ;
+    linkml:owner linkml:Extension ;
+    linkml:range linkml:AnyValue ;
+    linkml:required true ;
+    linkml:slot_uri "https://w3id.org/linkml/value"^^xsd:anyURI .
+
+linkml:iec61360code a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:iec61360Code ;
+    linkml:definition_uri "https://w3id.org/linkml/iec61360code"^^xsd:anyURI ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:string ;
+    linkml:required true ;
+    linkml:slot_uri "http://qudt.org/schema/qudt/iec61360Code"^^xsd:anyURI .
+
+linkml:symbol a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:symbol ;
+    linkml:definition_uri "https://w3id.org/linkml/symbol"^^xsd:anyURI ;
+    linkml:description "name of the unit encoded as a symbol" ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:string ;
+    linkml:required true ;
+    linkml:slot_uri "http://qudt.org/schema/qudt/symbol"^^xsd:anyURI .
+
+linkml:ucum_code a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:ucumCode ;
+    linkml:definition_uri "https://w3id.org/linkml/ucum_code"^^xsd:anyURI ;
+    linkml:description "associates a QUDT unit with its UCUM code (case-sensitive)." ;
+    linkml:domain linkml:UnitOfMeasure ;
+    linkml:domain_of linkml:UnitOfMeasure ;
+    linkml:owner linkml:UnitOfMeasure ;
+    linkml:range linkml:string ;
+    linkml:recommended true ;
+    linkml:required true ;
+    linkml:slot_uri "http://qudt.org/schema/qudt/ucumCode"^^xsd:anyURI .
+
+linkml:Annotatable a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Annotatable"^^xsd:anyURI ;
+    linkml:description "mixin for classes that support annotations" ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:annotations .
+
+linkml:Annotation a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/annotations"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Annotation"^^xsd:anyURI ;
+    linkml:description "a tag/value pair with the semantics of OWL Annotation" ;
+    linkml:imported_from "linkml:annotations" ;
+    linkml:is_a linkml:Extension ;
+    linkml:mixins linkml:Annotatable ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:annotations,
+        linkml:extension_tag,
+        linkml:extension_value,
+        linkml:extensions .
+
+linkml:Extensible a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Extensible"^^xsd:anyURI ;
+    linkml:description "mixin for classes that support extension" ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:mixin true ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extensions .
+
+linkml:extensions a linkml:SlotDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:description "a tag/text tuple attached to an arbitrary element" ;
+    linkml:domain linkml:Extensible ;
+    linkml:domain_of linkml:Extensible,
+        linkml:Extension ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:inlined true ;
+    linkml:multivalued true ;
+    linkml:owner linkml:Extensible ;
+    linkml:range linkml:Extension ;
+    linkml:slot_uri "https://w3id.org/linkml/extensions"^^xsd:anyURI .
+
+linkml:mappings a linkml:SlotDefinition ;
+    skos:altLabel "alternate identifiers",
+        "alternate ids",
+        "identifiers",
+        "xrefs" ;
+    skos:inScheme "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    skos:mappingRelation skos:mappingRelation ;
+    linkml:definition_uri "https://w3id.org/linkml/mappings"^^xsd:anyURI ;
+    linkml:description "A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective." ;
+    linkml:imported_from "linkml:mappings" ;
+    linkml:multivalued true ;
+    linkml:range linkml:uriorcurie ;
+    linkml:slot_uri "http://www.w3.org/2004/02/skos/core#mappingRelation"^^xsd:anyURI .
+
+linkml:string a linkml:TypeDefinition ;
+    skos:editorialNote "In RDF serializations, a slot with range of string is treated as a literal or type xsd:string. If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"string\"." ;
+    skos:exactMatch schema1:Text ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "str" ;
+    linkml:definition_uri "https://w3id.org/linkml/String"^^xsd:anyURI ;
+    linkml:description "A character string" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#string"^^xsd:anyURI .
+
+linkml:Extension a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/extensions"^^xsd:anyURI ;
+    linkml:class_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/Extension"^^xsd:anyURI ;
+    linkml:description "a tag/value pair used to add non-model information to an entry" ;
+    linkml:imported_from "linkml:extensions" ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:extension_tag,
+        linkml:extension_value,
+        linkml:extensions .
+
+linkml:uriorcurie a linkml:TypeDefinition ;
+    skos:editorialNote "If you are authoring schemas in LinkML YAML, the type is referenced with the lower case \"uriorcurie\"." ;
+    skos:inScheme "https://w3id.org/linkml/types"^^xsd:anyURI ;
+    linkml:base "URIorCURIE" ;
+    linkml:definition_uri "https://w3id.org/linkml/Uriorcurie"^^xsd:anyURI ;
+    linkml:description "a URI or a CURIE" ;
+    linkml:imported_from "linkml:types" ;
+    linkml:repr "str" ;
+    linkml:uri "http://www.w3.org/2001/XMLSchema#anyURI"^^xsd:anyURI .
+
+linkml:UnitOfMeasure a linkml:ClassDefinition ;
+    skos:inScheme "https://w3id.org/linkml/units"^^xsd:anyURI ;
+    skos:mappingRelation qudt:Unit ;
+    linkml:any_of [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:symbol ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:exact_mappings ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:iec61360code ],
+        [ a linkml:AnonymousClassExpression ;
+            linkml:slot_conditions linkml:ucum_code ] ;
+    linkml:class_uri "http://qudt.org/schema/qudt/Unit"^^xsd:anyURI ;
+    linkml:definition_uri "https://w3id.org/linkml/UnitOfMeasure"^^xsd:anyURI ;
+    linkml:description "A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension)." ;
+    linkml:slot_usage [ ] ;
+    linkml:slots linkml:UnitOfMeasure_exact_mappings,
+        linkml:abbreviation,
+        linkml:derivation,
+        linkml:descriptive_name,
+        linkml:has_quantity_kind,
+        linkml:iec61360code,
+        linkml:symbol,
+        linkml:ucum_code .

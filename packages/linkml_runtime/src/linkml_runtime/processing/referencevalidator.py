@@ -10,6 +10,7 @@ import datetime
 import decimal
 import re
 import sys
+import warnings
 from collections.abc import Iterator
 from copy import copy
 from dataclasses import dataclass, field
@@ -733,6 +734,9 @@ class ReferenceValidator:
     def normalize_object(self, input_object: dict, target: ClassDefinition, report: Report) -> dict:
         if not isinstance(input_object, dict):
             raise AssertionError(f"Cannot normalize: expected dict, got {type(input_object)} for {input_object}")
+        if target.class_uri == "linkml:Any":
+            # Nothing to normalize against, take the input as it is
+            return input_object
         output_object = {}
         # Induced slot
         for slot in target.attributes.values():
@@ -1008,25 +1012,19 @@ class ReferenceValidator:
 @click.option("--expand-all/--no-expand-all", help="If True, expand all Dicts to ExpandedDicts")
 @click.argument("input")
 def cli(schema: str, target: str, input: str, report_file: TextIO, output: TextIO, **kwargs) -> None:
+    """Normalize and validate a YAML document against a schema.
+
+    DEPRECATED: Use ``linkml validate --fix`` instead.
+
+    Normalization coerces types (e.g. "5" to 5) and restructures data between
+    LinkML collection forms (e.g. ExpandedDict to CompactDict).  Validation is
+    performed using a derived schema, as per Part 5 of the LinkML specification.
     """
-    Normalizes and validates a YAML document against a schema.
-
-    Normalization is a mix of casting types (e.g. "5" to 5), as well as
-    LinkML *collection forms*, e.g. ExpandedDict to CompactDict.
-
-    Validations is performed using a derived schema, as per part 5 of the specification.
-
-    Note that in future this will be folded into the main linkml-validate command.
-
-    Currently this CLI lacks features such as the ability to customize which
-    severity rules to fail on.
-
-    :param schema:
-    :param target:
-    :param input:
-    :param output:
-    :return:
-    """
+    warnings.warn(
+        "linkml-normalize is deprecated and will be removed in a future release. Use 'linkml validate --fix' instead.",
+        FutureWarning,
+        stacklevel=2,
+    )
     sv = SchemaView(schema)
     normalizer = ReferenceValidator(sv, **kwargs)
     with open(input) as f:

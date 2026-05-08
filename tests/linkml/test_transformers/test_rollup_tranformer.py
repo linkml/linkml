@@ -8,7 +8,7 @@ from linkml.transformers.rollup_transformer import (
     FlattenTransformerConfiguration,
     RollupTransformer,
 )
-from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 THIS_DIR = Path(__file__).parent
 OUTPUT_DIR = THIS_DIR / "output"
