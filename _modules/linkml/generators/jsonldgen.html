@@ -548,7 +548,8 @@
 <a class="viewcode-back" href="../../../generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.visit_class">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_visit</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">uri_for</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;class_uri&quot;</span><span class="p">):</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;class_uri&quot;</span><span class="p">)</span>
         <span class="c1"># Slot usage is a construction artifact</span>
         <span class="c1"># TODO: Figure out why this is here.  It isn&#39;t good form to alter a schema that may be used by other things</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">slot_usage</span> <span class="o">=</span> <span class="p">{}</span>

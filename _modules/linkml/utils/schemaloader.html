@@ -692,7 +692,7 @@
                     <span class="p">)</span>
             <span class="c1"># Class URI&#39;s also count as (trivial) mappings</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="n">mappings</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">exact_mappings</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">useuris</span><span class="p">:</span>
                 <span class="n">from_schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span>
                 <span class="k">if</span> <span class="n">from_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -704,6 +704,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">schema_defaults</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_schema</span><span class="p">,</span> <span class="n">suffixed_cls_schema</span><span class="p">),</span>
                     <span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
                 <span class="p">)</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">exact_mappings</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_uri</span><span class="p">)</span>
 
         <span class="c1"># Get the inverse ducks all in a row before we start filling other stuff in</span>
         <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
