@@ -8765,6 +8765,9 @@
       "definition_uri": "https://w3id.org/linkml/ExtraSlotsExpression",
       "description": "An expression that defines how to handle additional data in an instance of class\nbeyond the slots/attributes defined for that class.\nSee `extra_slots` for usage examples.\n",
       "from_schema": "https://w3id.org/linkml/meta",
+      "exact_mappings": [
+        "linkml:ExtraSlotsExpression"
+      ],
       "mixins": [
         "Expression"
       ],
@@ -8773,7 +8776,6 @@
         "extra_slots_expression_range_expression"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/ExtraSlotsExpression",
       "@type": "ClassDefinition"
     },
     {
