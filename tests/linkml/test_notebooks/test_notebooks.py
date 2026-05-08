@@ -32,11 +32,6 @@ def force_rewrite_comparator(expected: str, actual: str) -> str:
     sys.platform == "win32",
     reason="charset failure on windows in github actions. See https://github.com/linkml/linkml/issues/314",
 )
-@pytest.mark.skipif(
-    version("pyshexc") == "0.9.1",
-    reason="notebooks execute in their own environment, so we can't monkeypatch pyshexc's python3.13 incompatibility "
-    "without ruining the notebook",
-)
 @pytest.mark.parametrize(
     "nbname",
     [filename for filename in os.listdir(NBBASEDIR) if not filename.startswith(".") and filename.endswith(".ipynb")],
