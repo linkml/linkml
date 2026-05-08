@@ -826,6 +826,22 @@
         <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">schemas</span><span class="p">:</span>
             <span class="c1"># get the value of element name from the schema; if empty, return empty dictionary.</span>
             <span class="n">d1</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">element_name</span><span class="p">,</span> <span class="p">{})</span>
+            <span class="k">if</span> <span class="n">element_name</span> <span class="o">==</span> <span class="n">CLASSES</span><span class="p">:</span>
+                <span class="c1"># For classes that appear in multiple schemas, additively merge</span>
+                <span class="c1"># rules and classification_rules so that imported rules are not</span>
+                <span class="c1"># silently lost when a later schema redefines the same class.</span>
+                <span class="n">d1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d1</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                        <span class="n">prev</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="n">merged_v</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">prev</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">rule</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">merged_v</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+                                <span class="n">merged_v</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rule</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">cr</span> <span class="ow">in</span> <span class="n">prev</span><span class="o">.</span><span class="n">classification_rules</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">cr</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">merged_v</span><span class="o">.</span><span class="n">classification_rules</span><span class="p">:</span>
+                                <span class="n">merged_v</span><span class="o">.</span><span class="n">classification_rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cr</span><span class="p">))</span>
+                        <span class="n">d1</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">merged_v</span>
             <span class="c1"># {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.</span>
             <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">d</span><span class="p">,</span> <span class="o">**</span><span class="n">d1</span><span class="p">}</span>
 

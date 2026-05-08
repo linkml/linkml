@@ -1169,6 +1169,20 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.mergeutils.merge_class_rules">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_class_rules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/mergeutils.html#merge_class_rules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_class_rules" title="Link to this definition">¶</a></dt>
+<dd><p>Additively merge <code class="docutils literal notranslate"><span class="pre">rules</span></code> and <code class="docutils literal notranslate"><span class="pre">classification_rules</span></code> from source into target.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – The base class to merge into.</p></li>
+<li><p><strong>source</strong> – The overlay class whose rules are appended.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="linkml.utils.mergeutils.merge_classes">
 <span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.ClassDefinition" title="linkml_runtime.linkml_model.meta.ClassDefinition"><span class="pre">ClassDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/mergeutils.html#merge_classes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_classes" title="Link to this definition">¶</a></dt>
 <dd><p>Merge the slots in source into target</p>
@@ -1200,6 +1214,30 @@ for any class that is inherited (class itself, is_a, mixin, apply_to).  Otherwis
 <li><p><strong>target</strong> – mergee</p></li>
 <li><p><strong>source</strong> – enum to merge</p></li>
 <li><p><strong>at_end</strong> – True means add mergee to the end.  False to the front</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="linkml.utils.mergeutils.merge_includes">
+<span class="sig-prename descclassname"><span class="pre">linkml.utils.mergeutils.</span></span><span class="sig-name descname"><span class="pre">merge_includes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">include</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="metamodel.html#linkml_runtime.linkml_model.meta.SchemaDefinition" title="linkml_runtime.linkml_model.meta.SchemaDefinition"><span class="pre">SchemaDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/linkml/utils/mergeutils.html#merge_includes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.utils.mergeutils.merge_includes" title="Link to this definition">¶</a></dt>
+<dd><p>Merge an included schema into a target schema with additive class-level composition.</p>
+<p>For classes that exist in both schemas, list-valued fields (rules,
+classification_rules) are appended from the include onto the target.
+Classes that exist only in the include are added to the target.
+New slots, types, enums, and subsets from the include are also added.</p>
+<p>Dict-valued class fields (<code class="docutils literal notranslate"><span class="pre">slot_usage</span></code>, <code class="docutils literal notranslate"><span class="pre">attributes</span></code>) are not yet
+composed and will require conflict-resolution policies — see #3402.</p>
+<p>This function performs only the structural merge. It does not merge or
+resolve <code class="docutils literal notranslate"><span class="pre">include.imports</span></code> into <code class="docutils literal notranslate"><span class="pre">target.imports</span></code>. Callers that need the
+included schema’s import dependencies must invoke
+<a class="reference internal" href="#linkml.utils.mergeutils.resolve_merged_imports" title="linkml.utils.mergeutils.resolve_merged_imports"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_merged_imports()</span></code></a> separately before calling this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – The base schema to merge into (modified in place).</p></li>
+<li><p><strong>include</strong> – The schema to include.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1956,9 +1994,11 @@ content and load a SchemaSynopsis entry</p>
 </li>
 <li><a class="reference internal" href="#module-linkml.utils.mergeutils">linkml.utils.mergeutils module</a><ul>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.alias_root"><code class="docutils literal notranslate"><span class="pre">alias_root()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_class_rules"><code class="docutils literal notranslate"><span class="pre">merge_class_rules()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_classes"><code class="docutils literal notranslate"><span class="pre">merge_classes()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_dicts"><code class="docutils literal notranslate"><span class="pre">merge_dicts()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_enums"><code class="docutils literal notranslate"><span class="pre">merge_enums()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.utils.mergeutils.merge_includes"><code class="docutils literal notranslate"><span class="pre">merge_includes()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_namespaces"><code class="docutils literal notranslate"><span class="pre">merge_namespaces()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_schemas"><code class="docutils literal notranslate"><span class="pre">merge_schemas()</span></code></a></li>
 <li><a class="reference internal" href="#linkml.utils.mergeutils.merge_slots"><code class="docutils literal notranslate"><span class="pre">merge_slots()</span></code></a></li>

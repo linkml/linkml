@@ -666,6 +666,82 @@
 
 
 
+<div class="viewcode-block" id="merge_class_rules">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.mergeutils.merge_class_rules">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_class_rules</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Additively merge ``rules`` and ``classification_rules`` from source into target.</span>
+
+<span class="sd">    :param target: The base class to merge into.</span>
+<span class="sd">    :param source: The overlay class whose rules are appended.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">rules</span><span class="p">:</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rule</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">cr</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">classification_rules</span><span class="p">:</span>
+        <span class="n">target</span><span class="o">.</span><span class="n">classification_rules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cr</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="merge_includes">
+<a class="viewcode-back" href="../../../code/utils.html#linkml.utils.mergeutils.merge_includes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">merge_includes</span><span class="p">(</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span>
+    <span class="n">include</span><span class="p">:</span> <span class="n">SchemaDefinition</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge an included schema into a target schema with additive class-level composition.</span>
+
+<span class="sd">    For classes that exist in both schemas, list-valued fields (rules,</span>
+<span class="sd">    classification_rules) are appended from the include onto the target.</span>
+<span class="sd">    Classes that exist only in the include are added to the target.</span>
+<span class="sd">    New slots, types, enums, and subsets from the include are also added.</span>
+
+<span class="sd">    Dict-valued class fields (``slot_usage``, ``attributes``) are not yet</span>
+<span class="sd">    composed and will require conflict-resolution policies — see #3402.</span>
+
+<span class="sd">    This function performs only the structural merge. It does not merge or</span>
+<span class="sd">    resolve ``include.imports`` into ``target.imports``. Callers that need the</span>
+<span class="sd">    included schema&#39;s import dependencies must invoke</span>
+<span class="sd">    :func:`resolve_merged_imports` separately before calling this function.</span>
+
+<span class="sd">    :param target: The base schema to merge into (modified in place).</span>
+<span class="sd">    :param include: The schema to include.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">include_class</span> <span class="ow">in</span> <span class="n">include</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+            <span class="n">merge_class_rules</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">class_name</span><span class="p">],</span> <span class="n">include_class</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">include_class</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">slot_def</span> <span class="ow">in</span> <span class="n">include</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">slot_def</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">type_name</span><span class="p">,</span> <span class="n">type_def</span> <span class="ow">in</span> <span class="n">include</span><span class="o">.</span><span class="n">types</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">type_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">type_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">type_def</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">enum_name</span><span class="p">,</span> <span class="n">enum_def</span> <span class="ow">in</span> <span class="n">include</span><span class="o">.</span><span class="n">enums</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">enum_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">enum_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">enum_def</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">subset_name</span><span class="p">,</span> <span class="n">subset_def</span> <span class="ow">in</span> <span class="n">include</span><span class="o">.</span><span class="n">subsets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">subset_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">subsets</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">subsets</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">subset_def</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="n">include</span><span class="o">.</span><span class="n">prefixes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">:</span>
+            <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span> <span class="o">!=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Conflicting prefix &#39;</span><span class="si">{</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="si">}</span><span class="s2">&#39;: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;target has &#39;</span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">prefixes</span><span class="p">[</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_prefix</span><span class="p">]</span><span class="o">.</span><span class="n">prefix_reference</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but include has &#39;</span><span class="si">{</span><span class="n">prefix</span><span class="o">.</span><span class="n">prefix_reference</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="resolve_merged_imports">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.mergeutils.resolve_merged_imports">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_merged_imports</span><span class="p">(</span>

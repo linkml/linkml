@@ -794,6 +794,12 @@ and validated against the LinkML metamodel.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-validate-include">
+<span class="sig-name descname"><span class="pre">--include</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;include&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-validate-include" title="Link to this definition">¶</a></dt>
+<dd><p>Additional schema files to include. Rules and classification rules from these schemas are additively merged onto matching classes in the base schema. May be specified multiple times.</p>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-validate-fix">
 <span class="sig-name descname"><span class="pre">--fix</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-validate-fix" title="Link to this definition">¶</a></dt>
 <dd><p>Normalize a YAML/JSON data file to conform to the schema (type coercion, collection form restructuring) and write the corrected data to stdout. Diagnostics go to stderr. The normalized output is then validated to report any remaining issues.</p>
