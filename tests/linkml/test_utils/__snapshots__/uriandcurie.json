@@ -160,6 +160,9 @@
       "name": "C1",
       "definition_uri": "http://example.org/test/uriandcurieC1",
       "from_schema": "http://example.org/test/uriandcurie",
+      "exact_mappings": [
+        "m:C1"
+      ],
       "slots": [
         "id",
         "hasCurie",
@@ -168,11 +171,10 @@
         "id2"
       ],
       "slot_usage": {},
-      "class_uri": "http://example.org/test/uriandcurieC1",
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.11.0",
   "source_file": "uriandcurie.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

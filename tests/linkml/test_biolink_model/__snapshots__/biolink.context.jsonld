@@ -2552,7 +2552,21 @@
          "@id": "CellularOrganism"
       },
       "ChemicalAffectsGeneAssociation": {
-         "@id": "ChemicalAffectsGeneAssociation"
+         "@id": "ChemicalAffectsGeneAssociation",
+         "@context": {
+            "subject_context_qualifier": {
+               "@id": "subject_context_qualifier",
+               "@type": "@id"
+            },
+            "object_context_qualifier": {
+               "@id": "object_context_qualifier",
+               "@type": "@id"
+            },
+            "anatomical_context_qualifier": {
+               "@id": "anatomical_context_qualifier",
+               "@type": "@id"
+            }
+         }
       },
       "ChemicalEntity": {
          "@id": "ChemicalEntity"
@@ -2576,7 +2590,21 @@
          "@id": "ChemicalExposure"
       },
       "ChemicalGeneInteractionAssociation": {
-         "@id": "ChemicalGeneInteractionAssociation"
+         "@id": "ChemicalGeneInteractionAssociation",
+         "@context": {
+            "subject_context_qualifier": {
+               "@id": "subject_context_qualifier",
+               "@type": "@id"
+            },
+            "object_context_qualifier": {
+               "@id": "object_context_qualifier",
+               "@type": "@id"
+            },
+            "anatomical_context_qualifier": {
+               "@id": "anatomical_context_qualifier",
+               "@type": "@id"
+            }
+         }
       },
       "ChemicalMixture": {
          "@id": "ChemicalMixture"
@@ -2729,7 +2757,12 @@
          "@id": "DrugToGeneInteractionExposure"
       },
       "DruggableGeneToDiseaseAssociation": {
-         "@id": "DruggableGeneToDiseaseAssociation"
+         "@id": "DruggableGeneToDiseaseAssociation",
+         "@context": {
+            "has_evidence": {
+               "@id": "has_evidence"
+            }
+         }
       },
       "Entity": {
          "@id": "Entity"
@@ -2822,7 +2855,21 @@
          "@id": "Gene"
       },
       "GeneAffectsChemicalAssociation": {
-         "@id": "GeneAffectsChemicalAssociation"
+         "@id": "GeneAffectsChemicalAssociation",
+         "@context": {
+            "subject_context_qualifier": {
+               "@id": "subject_context_qualifier",
+               "@type": "@id"
+            },
+            "object_context_qualifier": {
+               "@id": "object_context_qualifier",
+               "@type": "@id"
+            },
+            "anatomical_context_qualifier": {
+               "@id": "anatomical_context_qualifier",
+               "@type": "@id"
+            }
+         }
       },
       "GeneAsAModelOfDiseaseAssociation": {
          "@id": "GeneAsAModelOfDiseaseAssociation"
@@ -3041,7 +3088,17 @@
          "@id": "NamedThing"
       },
       "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation": {
-         "@id": "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation"
+         "@id": "NamedThingAssociatedWithLikelihoodOfNamedThingAssociation",
+         "@context": {
+            "subject_context_qualifier": {
+               "@id": "subject_context_qualifier",
+               "@type": "@id"
+            },
+            "object_context_qualifier": {
+               "@id": "object_context_qualifier",
+               "@type": "@id"
+            }
+         }
       },
       "NoncodingRNAProduct": {
          "@id": "NoncodingRNAProduct"

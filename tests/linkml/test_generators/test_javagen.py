@@ -121,7 +121,7 @@ def test_create_documents_includes_enums(kitchen_sink_path):
     gen = JavaGenerator(kitchen_sink_path, true_enums=True)
     docs = gen.create_documents()
     enum_docs = [doc for doc in docs if doc.enums]
-    assert len(enum_docs) == 7  # 6 enums in kitchen sink + 1 in core
+    assert len(enum_docs) == 8  # 7 enums in kitchen sink + 1 in core
 
     # A document contains either a class or an enum, but not both
     assert not [doc for doc in docs if doc.classes and doc.enums]
