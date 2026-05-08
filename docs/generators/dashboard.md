@@ -45,18 +45,18 @@ Percentage of tests where the generator fully implements the feature (excluding 
 
 | Generator | Implements | Partial | Ignores | N/A | Total | Score |
 |-----------|:----------:|:-------:|:-------:|:---:|:-----:|:-----:|
-| Pydantic | 29 | 33 | 1 | 0 | 63 | 46% |
-| Python DC | 16 | 37 | 10 | 0 | 63 | 25% |
-| JSON Schema | 38 | 23 | 2 | 0 | 63 | 60% |
-| Java | 0 | 23 | 40 | 0 | 63 | 0% |
-| SHACL | 19 | 24 | 20 | 0 | 63 | 30% |
-| ShEx | 0 | 23 | 40 | 0 | 63 | 0% |
-| OWL | 0 | 25 | 38 | 0 | 63 | 0% |
-| JSON-LD Ctx | 34 | 23 | 6 | 0 | 63 | 54% |
-| SQLite DDL | 12 | 39 | 12 | 0 | 63 | 19% |
-| Postgres DDL | 0 | 22 | 41 | 0 | 63 | 0% |
-| Pandera | 14 | 27 | 22 | 0 | 63 | 22% |
-| Polars Schema | 28 | 22 | 13 | 0 | 63 | 44% |
+| Pydantic | 29 | 34 | 1 | 0 | 64 | 45% |
+| Python DC | 16 | 38 | 10 | 0 | 64 | 25% |
+| JSON Schema | 39 | 23 | 2 | 0 | 64 | 61% |
+| Java | 0 | 24 | 40 | 0 | 64 | 0% |
+| SHACL | 19 | 25 | 20 | 0 | 64 | 30% |
+| ShEx | 0 | 24 | 40 | 0 | 64 | 0% |
+| OWL | 0 | 26 | 38 | 0 | 64 | 0% |
+| JSON-LD Ctx | 34 | 24 | 6 | 0 | 64 | 53% |
+| SQLite DDL | 12 | 40 | 12 | 0 | 64 | 19% |
+| Postgres DDL | 0 | 23 | 41 | 0 | 64 | 0% |
+| Pandera | 14 | 28 | 22 | 0 | 64 | 22% |
+| Polars Schema | 28 | 23 | 13 | 0 | 64 | 44% |
 
 ## Details by Category
 
@@ -72,6 +72,7 @@ Percentage of tests where the generator fully implements the feature (excluding 
 |------| :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Cardinality in exactly_one_of | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Class any_of | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
+| Class boolean constraints with required | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Class boolean with expressions | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ |
 | Slot all_of | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | ⚠️ | ❓ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ |
 | Slot any_of | ✅ | ⚠️ | ⚠️ | ❓ | ❓ | ❓ | ❓ | ✅ | ⚠️ | ❓ | ❓ | ❓ |
