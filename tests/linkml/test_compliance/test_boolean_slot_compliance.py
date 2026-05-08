@@ -10,9 +10,12 @@ from tests.linkml.test_compliance.helper import (
     PYDANTIC,
     PYTHON_DATACLASSES,
     SHACL,
+    SHEX,
+    SQL_DDL_POSTGRES,
     SQL_DDL_SQLITE,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -21,6 +24,7 @@ from tests.linkml.test_compliance.test_compliance import (
     CLASS_D,
     CLASS_U1,
     CLASS_U2,
+    CLASS_X,
     CORE_FRAMEWORKS,
     ENUM_E,
     ENUM_F,
@@ -38,6 +42,7 @@ from tests.linkml.test_compliance.test_compliance import (
 )
 
 
+@feature_category("Boolean Expressions", "Slot any_of")
 @pytest.mark.parametrize("use_default_range", [False, True])
 @pytest.mark.parametrize("use_any_type", [False, True])
 @pytest.mark.parametrize(
@@ -114,7 +119,8 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
                     "_mappings": {
                         PYDANTIC: f"{SLOT_S1}: Optional[Union[D, int]]",
                         JSON_SCHEMA: expected_json_schema,
-                        JSONLD_CONTEXT: {SLOT_S1: {"@id": SLOT_S1, "@type": "@id"}},
+                        # mixed any_of: prefer literal coercion
+                        JSONLD_CONTEXT: {SLOT_S1: {"@id": SLOT_S1, "@type": "xsd:integer"}},
                     },
                 },
             },
@@ -129,7 +135,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
             "class_uri": "linkml:Any",
         }
         classes[CLASS_C]["attributes"][SLOT_S1]["range"] = CLASS_ANY
-        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "@id"
+        classes[CLASS_C]["attributes"][SLOT_S1]["_mappings"][JSONLD_CONTEXT][SLOT_S1]["@type"] = "xsd:integer"
     if framework == PANDERA_POLARS_CLASS:
         pytest.skip("PanderaGen does not implement class ranged slots.")
     schema = validated_schema(
@@ -161,6 +167,7 @@ def test_slot_any_of(framework, data_name, value, is_valid, use_any_type, use_de
     )
 
 
+@feature_category("Boolean Expressions", "Slot exactly_one_of")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -227,6 +234,7 @@ def test_slot_exactly_one_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Slot all_of")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -306,6 +314,7 @@ def test_slot_all_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Slot none_of")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -372,6 +381,7 @@ def test_slot_none_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Cardinality in exactly_one_of")
 @pytest.mark.parametrize(
     "data_name,instance,is_valid",
     [
@@ -439,6 +449,7 @@ def test_cardinality_in_exactly_one_of(framework, data_name, instance, is_valid)
     )
 
 
+@feature_category("Boolean Expressions", "Class any_of")
 @pytest.mark.parametrize(
     "data_name,s1value,s2value,is_valid",
     [
@@ -516,6 +527,137 @@ def test_class_any_of(framework, data_name, s1value, s2value, is_valid):
     )
 
 
+@feature_category("Boolean Expressions", "Class boolean constraints with required")
+@pytest.mark.parametrize(
+    "op,name,family_name,given_name,is_valid",
+    [
+        # --ANY_OF--
+        # reason for failure: None of the any_ofs succeed:
+        ("any_of", None, None, None, False),
+        ("any_of", None, "a", None, False),
+        ("any_of", None, None, "b", False),
+        # passes: at least one of the any_ofs succeed
+        ("any_of", "a b", None, None, True),
+        ("any_of", None, "a", "b", True),
+        # passes: all of the any_ofs succeed
+        ("any_of", "a b", "a", "b", True),
+        # reason for failure: range atomic type violation
+        ("any_of", 5, None, None, False),
+        ("any_of", "a", "b", 5, False),
+        # --ALL_OF--
+        # fails: all conditions fail
+        ("all_of", None, None, None, False),
+        # fails: at least one condition fails
+        ("all_of", None, "a", "b", False),
+        ("all_of", "a b", "a", None, False),
+        ("all_of", "a b", None, "b", False),
+        # passes: all conditions are satisfied
+        ("all_of", "a b", "a", "b", True),
+        # --EXACTLY_ONE_OF--
+        # fails: no conditions met
+        ("exactly_one_of", None, None, None, False),
+        ("exactly_one_of", None, "a", None, False),
+        ("exactly_one_of", None, None, "b", False),
+        # passes: exactly one condition met
+        ("exactly_one_of", "a b", None, None, True),
+        ("exactly_one_of", None, "a", "b", True),
+        # fails: both conditions met
+        ("exactly_one_of", "a b", "a", "b", False),
+        # fails: range atomic type violation
+        ("exactly_one_of", 5, None, None, False),
+        ("exactly_one_of", "a", "b", 5, False),
+        # --NONE_OF--
+        # passes: no conditions met
+        ("none_of", None, None, None, True),
+        ("none_of", None, "a", None, True),
+        ("none_of", None, None, "b", True),
+        # fails: at least one condition met
+        ("none_of", "a b", None, None, False),
+        ("none_of", None, "a", "b", False),
+        ("none_of", "a b", "a", "b", False),
+        # fails: range atomic type violation
+        ("none_of", 5, None, None, False),
+        ("none_of", "a", "b", 5, False),
+    ],
+)
+@pytest.mark.parametrize("nest", [True, False])
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_class_any_of_with_required(framework, nest, op, name, family_name, given_name, is_valid):
+    """
+    https://github.com/linkml/linkml/issues/2282
+    """
+    slots = {
+        SLOT_S1: {
+            "range": "string",
+        },
+        SLOT_S2: {
+            "range": "string",
+        },
+        SLOT_S3: {
+            "range": "string",
+        },
+    }
+    classes = {
+        CLASS_C: {
+            "slots": [SLOT_S1, SLOT_S2, SLOT_S3],
+            op: [
+                {
+                    "slot_conditions": {
+                        SLOT_S1: {
+                            "required": True,
+                        },
+                    },
+                },
+                {
+                    "slot_conditions": {
+                        SLOT_S2: {
+                            "required": True,
+                        },
+                        SLOT_S3: {
+                            "required": True,
+                        },
+                    },
+                },
+            ],
+        },
+    }
+    if nest:
+        classes[CLASS_D] = {
+            "slots": [SLOT_S1, SLOT_S2, SLOT_S3],
+            "slot_usage": {
+                SLOT_S1: {"inlined": True, "range": CLASS_C},
+            },
+        }
+    schema = validated_schema(
+        test_class_any_of_with_required,
+        f"{op}_nest{nest}",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=[op, "ClassDefinition"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA]:
+        expected_behavior = ValidationBehavior.INCOMPLETE
+
+    data = {SLOT_S1: name, SLOT_S2: family_name, SLOT_S3: given_name}
+    if nest:
+        data = {SLOT_S1: data}
+    check_data(
+        schema,
+        f"{op}_{name}_{family_name}_{given_name}".replace(" ", "_"),
+        framework,
+        data,
+        is_valid,
+        target_class=CLASS_D if nest else CLASS_C,
+        expected_behavior=expected_behavior,
+        description=(
+            f"validity {is_valid} check for {op} name={name}, family_name={family_name}, given_name={given_name}"
+        ),
+    )
+
+
+@feature_category("Value Constraints", "Equals string")
 @pytest.mark.parametrize("value", ("EQUALS_STRING", "NOT_EQUALS_STRING"))
 @pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
 @pytest.mark.parametrize("multivalued", (True, False))
@@ -622,6 +764,7 @@ def test_equals_string(framework, range, multivalued, value_is_multivalued, valu
     )
 
 
+@feature_category("Value Constraints", "Equals string in")
 @pytest.mark.parametrize("value", ("EQUALS_STRING_A", "NOT_EQUALS_STRING"))
 @pytest.mark.parametrize("value_is_multivalued", (True, False, "wrong"))
 @pytest.mark.parametrize("multivalued", (True, False))
@@ -756,6 +899,7 @@ def test_equals_string_in(framework, range, multivalued, value_is_multivalued, v
     )
 
 
+@feature_category("Boolean Expressions", "Class boolean with expressions")
 @pytest.mark.parametrize(
     "schema_name,s1_range,s2_range,op,s1_expression,s2_expression,data_name,s1value,s2value,is_valid",
     [
@@ -1387,6 +1531,7 @@ def test_class_boolean_with_expressions(
     )
 
 
+@feature_category("Boolean Expressions", "Slot boolean with expressions")
 @pytest.mark.parametrize(
     "schema_name,range,op,expression1,expression2,data_name,value,is_valid,unsatisfiable",
     [
@@ -1848,6 +1993,7 @@ def test_slot_boolean_with_expressions(
     )
 
 
+@feature_category("Boolean Expressions", "any_of with mixed cardinality")
 @pytest.mark.parametrize(
     "schema_name,slot1_expression,slot2_expression,data_name,value,is_valid",
     [
@@ -1903,6 +2049,7 @@ def test_any_of_mixed_cardinality(
     )
 
 
+@feature_category("Cardinality & Presence", "Min/max cardinality")
 @pytest.mark.parametrize(
     "value",
     [1, 10, 15, 20, 21],
@@ -1990,6 +2137,7 @@ def test_min_max(framework, min_val, max_val, equals_number: int | None, value):
     )
 
 
+@feature_category("Rules & Classification", "Precondition rules")
 @pytest.mark.parametrize(
     "s1,s2,is_valid",
     [
@@ -2092,6 +2240,7 @@ def test_preconditions(framework, s1, s2, is_valid):
     )
 
 
+@feature_category("Rules & Classification", "Precondition combos")
 @pytest.mark.parametrize(
     "schema_name,s1def,s2def,preconditions,postconditions,data_name,object,is_valid",
     [
@@ -2286,6 +2435,7 @@ def test_preconditions_combos(
     )
 
 
+@feature_category("Rules & Classification", "Classification rules")
 @pytest.mark.parametrize(
     "s1,s1a,s1b,is_valid",
     [
@@ -2385,6 +2535,7 @@ def test_classification_rules(framework, s1, s1a, s1b, is_valid):
     )
 
 
+@feature_category("Slot Typing & Ranges", "Union of types")
 @pytest.mark.parametrize(
     "data_name,value,is_valid",
     [
@@ -2459,6 +2610,7 @@ def test_union_of(framework, data_name, value, is_valid):
     )
 
 
+@feature_category("Rules & Classification", "Value presence in rules")
 @pytest.mark.parametrize(
     "data_name,instance,is_valid",
     [
@@ -2560,6 +2712,7 @@ def test_value_presence_in_rules(framework, multivalued, data_name, instance, is
     )
 
 
+@feature_category("Cardinality & Presence", "Membership constraints")
 @pytest.mark.parametrize(
     "name,quantification,expression,instance,is_valid",
     [
@@ -2670,6 +2823,158 @@ def test_membership(framework, name, quantification, expression, instance, is_va
         "_".join([str(x).replace(":", "_") for x in instance]),
         framework,
         {SLOT_S1: instance},
+        is_valid,
+        target_class=CLASS_C,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
+    )
+
+
+@pytest.mark.parametrize(
+    "data_name,instance,is_valid",
+    [
+        ("missing_outer_slot", {}, False),
+        ("incorrect_range", {SLOT_S1: "x"}, False),
+        ("valid nesting and within range", {SLOT_S1: {SLOT_S2: 5}}, True),
+        ("valid nesting and outside range", {SLOT_S1: {SLOT_S2: 15}}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_range_expression_nesting(framework, data_name, instance, is_valid):
+    """
+    Tests behavior of nested range expressions.
+
+    This test creates a test schema with a class C that restricts
+    C.s1.s2 to be an integer with maximum value of 10.
+
+    See
+    https://github.com/orgs/linkml/discussions/2791
+    """
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen inlining is not implemented")
+    slots = {
+        SLOT_S1: {
+            "range": CLASS_X,
+            "required": True,
+        },
+    }
+    classes = {
+        CLASS_C: {
+            "slots": [SLOT_S1],
+        },
+        CLASS_D: {
+            "is_a": CLASS_C,
+            "slot_usage": {
+                SLOT_S1: {
+                    "range": CLASS_X,
+                    "range_expression": {
+                        "slot_conditions": {
+                            SLOT_S2: {
+                                "maximum_value": 10,
+                            },
+                        }
+                    },
+                },
+            },
+        },
+        CLASS_X: {
+            "attributes": {
+                SLOT_S2: {
+                    "range": "integer",
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_range_expression_nesting,
+        "range_expression_test",
+        framework,
+        classes=classes,
+        slots=slots,
+        core_elements=["range_expression"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework not in [JSON_SCHEMA, OWL]:
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name.replace(" ", "_"),
+        framework,
+        instance,
+        is_valid,
+        target_class=CLASS_D,
+        expected_behavior=expected_behavior,
+        description=f"validity {is_valid} check for value {instance}",
+    )
+
+
+@pytest.mark.parametrize(
+    "data_name,instance,is_valid",
+    [
+        ("valid_flat_int", {SLOT_S1: 5}, True),
+        ("invalid_flat_str", {SLOT_S1: "a"}, False),
+        ("valid_nested_int", {SLOT_S1: {SLOT_S2: 5}}, True),
+        ("invalid_nested_str", {SLOT_S1: {SLOT_S2: "a"}}, False),
+    ],
+)
+@pytest.mark.parametrize("framework", CORE_FRAMEWORKS)
+def test_range_expression_booleans(framework, data_name, instance, is_valid):
+    """
+    Tests behavior of  range expression combined with boolean expressions.
+
+    class C is constrained such that C.s1 is either an integer or an instance of class X
+    """
+    if framework == PANDERA_POLARS_CLASS:
+        pytest.skip("PanderaGen inlining is not implemented")
+    if framework in [SQL_DDL_SQLITE, SQL_DDL_POSTGRES]:
+        pytest.skip("TODO: add Any support in sqlgen")
+    if framework in [PYTHON_DATACLASSES]:
+        pytest.skip("TODO")
+    classes = {
+        CLASS_ANY: {
+            "class_uri": "linkml:Any",
+        },
+        CLASS_C: {
+            "attributes": {
+                SLOT_S1: {
+                    "range": CLASS_ANY,
+                    "range_expression": {
+                        "any_of": [
+                            {"is_a": CLASS_X},
+                            {"is_a": "integer"},
+                        ],
+                    },
+                },
+            },
+        },
+        CLASS_X: {
+            "attributes": {
+                SLOT_S2: {
+                    "range": "integer",
+                },
+            },
+        },
+    }
+    schema = validated_schema(
+        test_range_expression_booleans,
+        "test_range_expression_booleans",
+        framework,
+        default_range=CLASS_ANY,
+        classes=classes,
+        core_elements=["range_expression"],
+    )
+    expected_behavior = ValidationBehavior.IMPLEMENTS
+    if framework in [OWL, SHACL, SHEX]:
+        pytest.skip("RDF serialization for ambiguous types not implemented")
+    if framework not in [JSON_SCHEMA]:
+        if not is_valid:
+            expected_behavior = ValidationBehavior.INCOMPLETE
+    check_data(
+        schema,
+        data_name.replace(" ", "_"),
+        framework,
+        instance,
         is_valid,
         target_class=CLASS_C,
         expected_behavior=expected_behavior,

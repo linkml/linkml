@@ -2,6 +2,7 @@ import csv
 import re
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
+from pathlib import Path
 
 from linkml.validator.loaders.loader import Loader
 
@@ -19,6 +20,34 @@ def _parse_numeric(value: str):
         return value
 
 
+_NUMERIC_TYPE_NAMES = frozenset({"integer", "float", "double", "decimal"})
+
+
+def _get_numeric_slots(schema_path: str | Path, target_class: str) -> set[str]:
+    """Return column names whose schema range is a numeric type.
+
+    Only these columns should be passed through ``_parse_numeric``. All others
+    (string, enum, uri, date, custom string-derived types, etc.) are returned
+    as-is to avoid breaking validation.
+
+    Uses ``SchemaView.type_ancestors()`` to walk ``typeof`` chains, so custom
+    types like ``typeof: string`` are handled correctly.
+    """
+    from linkml_runtime import SchemaView
+
+    sv = SchemaView(str(schema_path))
+    numeric_slots: set[str] = set()
+    all_types = sv.all_types()
+    for slot in sv.class_induced_slots(target_class):
+        if slot.range in all_types:
+            ancestors = sv.type_ancestors(slot.range)
+            if any(a in _NUMERIC_TYPE_NAMES for a in ancestors):
+                numeric_slots.add(slot.name)
+                if slot.alias:
+                    numeric_slots.add(slot.alias)
+    return numeric_slots
+
+
 class _DelimitedFileLoader(Loader, ABC):
     """Base class for TSV and CSV loaders"""
 
@@ -27,10 +56,37 @@ class _DelimitedFileLoader(Loader, ABC):
     def delimiter(self):
         pass
 
-    def __init__(self, source, *, skip_empty_rows: bool = False, index_slot_name: str | None = None) -> None:
+    def __init__(
+        self,
+        source,
+        *,
+        skip_empty_rows: bool = False,
+        index_slot_name: str | None = None,
+        schema_path: str | Path | None = None,
+        target_class: str | None = None,
+    ) -> None:
         super().__init__(source)
         self.skip_empty_rows = skip_empty_rows
         self.index_slot_name = index_slot_name
+        # None means "no schema provided" → coerce everything (backward compat)
+        # An empty set means "schema provided but no numeric slots" → coerce nothing
+        self._numeric_slots: set[str] | None = (
+            _get_numeric_slots(schema_path, target_class)
+            if schema_path is not None and target_class is not None
+            else None
+        )
+
+    def _coerce_value(self, key: str, value: str):
+        """Return *value* coerced to the appropriate Python type.
+
+        When schema info is available, only columns with numeric ranges go
+        through ``_parse_numeric``; everything else is returned as-is.
+        Without schema info (``_numeric_slots is None``), all columns are
+        coerced for backward compatibility.
+        """
+        if self._numeric_slots is not None and key not in self._numeric_slots:
+            return value
+        return _parse_numeric(value)
 
     def _rows(self) -> Iterator[dict]:
         with open(self.source) as file:
@@ -38,7 +94,7 @@ class _DelimitedFileLoader(Loader, ABC):
             for row in reader:
                 if self.skip_empty_rows and not any(row.values()):
                     continue
-                yield {k: _parse_numeric(v) for k, v in row.items() if k is not None and v != ""}
+                yield {k: self._coerce_value(k, v) for k, v in row.items() if k is not None and v != ""}
 
     def iter_instances(self) -> Iterator[dict]:
         if self.index_slot_name is not None:

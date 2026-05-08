@@ -21,4 +21,5 @@ Some of these guides are works in progress
    generate-ai-prompts
    deprecating-elements
    ontologies-as-values
+   implements-instantiates-guide
    skip-logic

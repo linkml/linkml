@@ -67,13 +67,14 @@ class SummaryGenerator(Generator):
         identifier = "I" if slot.identifier else ""
         readonly = "R" if slot.readonly else ""
         ref = "*" if slot.range in self.schema.classes and not slot.inlined else ""
+        range_name = camelcase(slot.range) if slot.range in self.schema.enums else self.class_or_type_name(slot.range)
         self.classtab.writerow(
             {
                 "Slot Name": aliased_slot_name,
                 "Flags": abstract + key + identifier + readonly,
                 "Card": f"{min_card}..{max_card}",
                 "YAML Slot Name": slot.name if slot.name != aliased_slot_name else "",
-                "Range": ref + self.class_or_type_name(slot.range),
+                "Range": ref + range_name,
                 "Slot Description": slot.description,
                 "URI": slot.slot_uri,
             }

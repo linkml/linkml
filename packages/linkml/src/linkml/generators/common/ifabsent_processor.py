@@ -73,7 +73,7 @@ class IfAbsentProcessor(ABC):
     URI_SPECIAL_CASES = ("class_uri", "slot_uri")
     CURIE_SPECIAL_CASES = ("class_curie", "slot_curie")
     DEFAULT_RANGE_SPECIAL_CASE = "default_range"
-    UNIMPLEMENTED_DEFAULT_VALUES = ("default_ns",)
+    UNIMPLEMENTED_DEFAULT_VALUES = ("bnode", "default_ns")
 
     def __init__(self, schema_view: SchemaView):
         self.schema_view = schema_view

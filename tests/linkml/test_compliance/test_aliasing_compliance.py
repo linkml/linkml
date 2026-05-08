@@ -19,6 +19,7 @@ from tests.linkml.test_compliance.helper import (
     PYTHON_DATACLASSES,
     ValidationBehavior,
     check_data,
+    feature_category,
     validated_schema,
 )
 from tests.linkml.test_compliance.test_compliance import (
@@ -43,6 +44,7 @@ SCHEMA = rdflib.Namespace("http://schema.org/")
 OWLNS = rdflib.Namespace("http://www.w3.org/2002/07/owl#")
 
 
+@feature_category("Metadata", "Aliasing")
 @pytest.mark.parametrize(
     "class_uri,slot_uri,slot_alias,type_uri,data_name,instance,is_valid",
     [
@@ -162,6 +164,7 @@ def test_alias(framework, class_uri, slot_uri, slot_alias, type_uri, data_name, 
     )
 
 
+@feature_category("Enumerations", "Enum aliases")
 @pytest.mark.parametrize(
     "enum_uri,pv_meaning,data_name,instance,is_valid",
     [
