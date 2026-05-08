@@ -401,6 +401,9 @@
          "name": "class_1",
          "definition_uri": "http://example.org/import_test_1#Class1",
          "from_schema": "http://example.org/import_test_1",
+         "exact_mappings": [
+            "test:Class1"
+         ],
          "slots": [
             "slot_1"
          ],
@@ -410,6 +413,9 @@
          "name": "class_2",
          "definition_uri": "http://example.org/import_test_2#Class2",
          "from_schema": "http://example.org/import_test_2",
+         "exact_mappings": [
+            "test2:Class2"
+         ],
          "slots": [
             "slot_2"
          ],
@@ -419,6 +425,9 @@
          "name": "class_3",
          "definition_uri": "http://example.org/import_test_3#Class3",
          "from_schema": "http://example.org/import_test_3",
+         "exact_mappings": [
+            "test3:Class3"
+         ],
          "slots": [
             "slot_3"
          ],
@@ -428,6 +437,9 @@
          "name": "class_4",
          "definition_uri": "http://example.org/import_test_4#Class4",
          "from_schema": "http://example.org/import_test_4",
+         "exact_mappings": [
+            "test4:Class4"
+         ],
          "slots": [
             "slot_4"
          ],

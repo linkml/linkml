@@ -430,17 +430,14 @@
       "name": "Model",
       "definition_uri": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/Model",
       "from_schema": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test",
-      "mappings": [
-        "foo:model"
-      ],
       "exact_mappings": [
+        "foo:model",
         "bar:whaoo"
       ],
       "slots": [
         "state"
       ],
       "slot_usage": {},
-      "class_uri": "http://samples.r.us/foo#model",
       "@type": "ClassDefinition"
     },
     {
@@ -448,11 +445,10 @@
       "definition_uri": "https://w3id.org/linkml/AnyValue",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
     },
     {
@@ -461,13 +457,15 @@
       "description": "a tag/value pair used to add non-model information to an entry",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
+      "exact_mappings": [
+        "linkml:Extension"
+      ],
       "slots": [
         "extension_tag",
         "extension_value",
         "extensions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
     {
@@ -476,12 +474,14 @@
       "description": "mixin for classes that support extension",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
+      "exact_mappings": [
+        "linkml:Extensible"
+      ],
       "mixin": true,
       "slots": [
         "extensions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     }
   ],
