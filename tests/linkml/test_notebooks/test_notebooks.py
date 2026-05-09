@@ -1,6 +1,5 @@
 import os
 import sys
-from importlib.metadata import version
 from io import StringIO
 
 import nbformat
