@@ -798,12 +798,35 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     post_inits.append(self.gen_postinit(cls, slot))
         else:
             pkeys = []
+
+        # De-duplicate domain_slots by Python field name to prevent emitting two
+        # cast blocks for the same attribute.  This can happen when an ancestor
+        # leaves an orphan bare slot in cls.slots alongside the class-scoped
+        # mangled slot (#3506).  Both resolve to the same Python field name via
+        # slot_name() / alias.  When two slots share a field name, the required
+        # one (i.e. the class-scoped slot_usage refinement) takes priority over
+        # the optional orphan so we keep the most-specific cast.
+        best_slot_for_field: dict[str, object] = {}
         for slot in self.domain_slots(cls):
+            field_name = self.slot_name(slot.name)
+            existing = best_slot_for_field.get(field_name)
+            if existing is None or (slot.required and not existing.required):
+                best_slot_for_field[field_name] = slot
+        # Preserve the original order (first occurrence of each field name).
+        seen_field_names: set[str] = set()
+        deduped_domain_slots: list = []
+        for slot in self.domain_slots(cls):
+            field_name = self.slot_name(slot.name)
+            if field_name not in seen_field_names and slot is best_slot_for_field[field_name]:
+                seen_field_names.add(field_name)
+                deduped_domain_slots.append(slot)
+
+        for slot in deduped_domain_slots:
             if slot.required:
                 # TODO: Remove the bypass whenever we get default_range fixed
                 if slot.name not in pkeys and (not slot.ifabsent or True):
                     post_inits.append(self.gen_postinit(cls, slot))
-        for slot in self.domain_slots(cls):
+        for slot in deduped_domain_slots:
             if not slot.required:
                 # TODO: Remove the bypass whenever we get default_range fixed
                 if slot.name not in pkeys and (not slot.ifabsent or True):

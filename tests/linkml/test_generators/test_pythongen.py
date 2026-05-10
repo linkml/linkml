@@ -405,3 +405,85 @@ def test_gen_references_cycle_safety_raises_value_error(monkeypatch):
 
     with pytest.raises(ValueError, match="Cyclic wrapper inheritance"):
         generator.gen_references()
+
+
+def test_gen_postinits_no_duplicate_cast_blocks():
+    """Regression test: a deep slot_usage chain must not emit two cast blocks for the same attribute.
+
+    When an orphan bare slot survives alongside the class-scoped mangled slot (#3507),
+    both map to the same Python field name via their alias.  Before the Bug B fix,
+    gen_postinits emitted one cast block per slot, so the same attribute received two
+    casts — the second of which could crash at runtime.
+
+    We use a 3-level chain (Animal -> Canine -> Dog) where Dog refines the ``sound``
+    slot via slot_usage.  We verify that the generated ``__post_init__`` contains
+    exactly one cast block referencing ``self.sound``.
+    """
+    schema = """
+id: https://example.org/test_no_dup_cast
+name: test_no_dup_cast
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+
+default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
+
+enums:
+  AnimalSoundEnum:
+    permissible_values:
+      WOOF:
+      MEOW:
+  DogSoundEnum:
+    permissible_values:
+      WOOF:
+      BARK:
+
+slots:
+  sound:
+    range: AnimalSoundEnum
+
+classes:
+  Animal:
+    slots:
+      - sound
+
+  Canine:
+    is_a: Animal
+    slot_usage:
+      sound:
+        range: AnimalSoundEnum
+
+  Dog:
+    is_a: Canine
+    slots:
+      - sound
+    slot_usage:
+      sound:
+        range: DogSoundEnum
+        required: true
+"""
+    python = PythonGenerator(schema, mergeimports=True).serialize()
+
+    # Extract only the Dog class body so we don't count Animal's and Canine's
+    # legitimate self.sound checks as duplicates.  Match the @dataclass decorator
+    # that is immediately followed by "class Dog" (no intervening lines).
+    dog_class_match = re.search(
+        r"^@dataclass[^\n]*\nclass Dog\b.*?(?=^@dataclass|\Z)", python, re.MULTILINE | re.DOTALL
+    )
+    assert dog_class_match, "Could not locate class Dog in generated Python"
+    dog_class_src = dog_class_match.group(0)
+
+    # Count isinstance checks for self.sound within Dog only.
+    cast_lines = [line.strip() for line in dog_class_src.splitlines() if "self.sound" in line and "isinstance" in line]
+    assert len(cast_lines) == 1, (
+        f"Expected exactly 1 isinstance check for self.sound in Dog.__post_init__, "
+        f"got {len(cast_lines)}:\n" + "\n".join(cast_lines)
+    )
+
+    # Also confirm the surviving cast uses the correct (most-specific) enum type
+    assert "DogSoundEnum" in cast_lines[0], f"Expected DogSoundEnum in the surviving cast, got: {cast_lines[0]}"
