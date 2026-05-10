@@ -126,9 +126,8 @@ def test_deep_slot_usage_no_orphan(input_path):
         "Canine_sound",  # mangled slot name
         "sound",  # alias (inherited from original slot)
         "Canine",  # owned by
-        "sound",  # is_a (inherited from original slot)
-        "Mammal_sound",  # original name of the slot being refined
-        "sound",  # original name of the slot being refined
+        "Mammal_sound",  # is_a: the parent mangled slot
+        "sound",  # usage_slot_name: original bare slot name
         "boolean",  # narrowed range
     )
     _eval_expected(
@@ -136,8 +135,7 @@ def test_deep_slot_usage_no_orphan(input_path):
         "Dog_sound",  # mangled slot name
         "sound",  # alias (inherited from original slot)
         "Dog",  # owned by
-        "sound",  # is_a (inherited from original slot)
-        "Canine_sound",  # original name of the slot being refined
-        "sound",  # original name of the slot being refined
+        "Canine_sound",  # is_a: the parent mangled slot
+        "sound",  # usage_slot_name: original bare slot name
         "string",  # narrowed range
     )

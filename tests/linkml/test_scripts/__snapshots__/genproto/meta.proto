@@ -118,7 +118,7 @@ message FamilialRelationship
  {
   date startedAtTime = 0
   date endedAtTime = 0
-  string cordialness = 0
+  cordialnessEnum cordialness = 0
   familialRelationshipType type = 0
   person relatedTo = 0
  }
