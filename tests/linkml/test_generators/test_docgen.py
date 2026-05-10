@@ -1675,3 +1675,127 @@ def test_core_element_properties(input_path, tmp_path):
     formatted_string_file = tmp_path / "FormattedString.md"
     assert_mdfile_contains(formatted_string_file, "| Base | `str` |", after="Type Properties")
     assert_mdfile_contains(formatted_string_file, "| Representation | `str` |", after="Base")
+
+
+def test_rules_postconditions_only(tmp_path):
+    """Regression test: a class rule with only postconditions (no preconditions) must
+    not crash with TypeError and must render the postcondition slot in the table.
+
+    See: https://github.com/linkml/linkml/issues/3496 (gen-doc crashes on
+    postconditions-only rules).
+    """
+    schema_yaml = """\
+id: https://example.org/test
+name: test
+default_prefix: test
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+
+classes:
+  MyClass:
+    attributes:
+      status:
+        range: string
+      label:
+        range: string
+    rules:
+      - postconditions:
+          slot_conditions:
+            label:
+              required: true
+"""
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    # Must not raise TypeError
+    gen.serialize(directory=str(tmp_path))
+
+    class_file = tmp_path / "MyClass.md"
+    assert class_file.exists()
+    assert_mdfile_contains(class_file, "## Rules")
+    # The postcondition slot must appear in the table even without preconditions
+    assert_mdfile_contains(class_file, "label", after="## Rules")
+
+
+def test_rules_elseconditions_only(tmp_path):
+    """Regression test: a class rule with only elseconditions (no preconditions or
+    postconditions) must not crash and must render the elsecondition slot in the table.
+    """
+    schema_yaml = """\
+id: https://example.org/test
+name: test
+default_prefix: test
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+
+classes:
+  MyClass:
+    attributes:
+      status:
+        range: string
+      fallback:
+        range: string
+    rules:
+      - elseconditions:
+          slot_conditions:
+            fallback:
+              required: true
+"""
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    class_file = tmp_path / "MyClass.md"
+    assert class_file.exists()
+    assert_mdfile_contains(class_file, "## Rules")
+    # The elsecondition slot must appear in the table even without preconditions
+    assert_mdfile_contains(class_file, "fallback", after="## Rules")
+
+
+def test_rules_all_conditions(tmp_path):
+    """A rule with preconditions, postconditions, AND elseconditions must render
+    all slots from all three dicts — including slots exclusive to post/else.
+    """
+    schema_yaml = """\
+id: https://example.org/test
+name: test
+default_prefix: test
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+
+classes:
+  MyClass:
+    attributes:
+      trigger:
+        range: string
+      consequence:
+        range: string
+      fallback:
+        range: string
+    rules:
+      - preconditions:
+          slot_conditions:
+            trigger:
+              equals_string: "active"
+        postconditions:
+          slot_conditions:
+            consequence:
+              required: true
+        elseconditions:
+          slot_conditions:
+            fallback:
+              required: true
+"""
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    class_file = tmp_path / "MyClass.md"
+    assert class_file.exists()
+    assert_mdfile_contains(class_file, "## Rules")
+    # All three condition slots must appear in the rendered table
+    assert_mdfile_contains(class_file, "trigger", after="## Rules")
+    assert_mdfile_contains(class_file, "consequence", after="## Rules")
+    assert_mdfile_contains(class_file, "fallback", after="## Rules")
