@@ -130,18 +130,34 @@ VENDORED_RUNTIME_FILES = [(source, fmt) for source in Source for fmt in (Format.
 """Source files resolved locally at runtime by generators (YAML for schema imports,
 JSONLD for context resolution). Drift here means generators silently use stale definitions."""
 
+LINKML_MODEL_MAIN_BASE = "https://raw.githubusercontent.com/linkml/linkml-model/main/linkml_model/"
+"""Base URL for the source-of-truth copies on linkml-model's main branch.
+
+We compare against main rather than the w3id.org redirect because the redirect lags behind:
+it points to gh-pages, which only updates after a successful PyPI/docs publish workflow.
+A pre-release vendored bump (where local is intentionally ahead of the latest published
+release) would otherwise false-alarm here. Comparing to main catches the actually-useful
+signal — vendored files out of sync with what was merged upstream — without coupling to
+the publish pipeline."""
+
+
+def _linkml_model_main_url(source: Source, fmt: Format) -> str:
+    """Build the raw.githubusercontent URL for the source/format pair on linkml-model main."""
+    rel = Path(LOCAL_PATH_FOR(source, fmt)).relative_to(_LOCAL_BASE).as_posix()
+    return f"{LINKML_MODEL_MAIN_BASE}{rel}"
+
 
 @pytest.mark.network
 @pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
 def test_vendored_files_match_upstream(source, fmt):
-    """Detect drift between vendored files and their upstream w3id.org versions.
+    """Detect drift between vendored files and their upstream linkml-model main version.
 
     Generators resolve these files locally instead of fetching from the network.
     If upstream changes without updating the vendored copies, generated output
     will silently diverge from what users expect.
     """
     local_path = Path(LOCAL_PATH_FOR(source, fmt))
-    url = URL_FOR(source, fmt)
+    url = _linkml_model_main_url(source, fmt)
 
     local_content = local_path.read_text()
     response = requests.get(url, timeout=10)
@@ -149,5 +165,5 @@ def test_vendored_files_match_upstream(source, fmt):
 
     assert local_content == response.text, (
         f"Vendored {local_path.name} differs from upstream {url}. "
-        "Update vendored files to match the current upstream release."
+        "Update vendored files to match the current upstream main."
     )

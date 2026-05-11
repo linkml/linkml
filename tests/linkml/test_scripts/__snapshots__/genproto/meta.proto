@@ -1,6 +1,6 @@
  syntax="proto3";
  package
-// metamodel_version: 1.7.0
+// metamodel_version: 1.11.0
 // a provence-generating activity
 message Activity
  {

@@ -7,6 +7,7 @@ from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.openapigen import OpenApiGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.panderagen import PanderaDataframeGenerator, PolarsSchemaDataframeGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -31,6 +32,7 @@ __all__ = [
     "jsonldgen",
     "jsonschemagen",
     "namespacegen",
+    "openapigen",
     "owlgen",
     "plantumlgen",
     "protogen",
@@ -43,6 +45,7 @@ __all__ = [
     "summarygen",
     "typedbgen",
     "yamlgen",
+    "OpenApiGenerator",
     "OwlSchemaGenerator",
     "PydanticGenerator",
     "PanderaDataframeGenerator",
