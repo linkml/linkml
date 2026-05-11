@@ -1,4 +1,3 @@
-import builtins
 import keyword
 import logging
 import os
@@ -34,26 +33,9 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import be, camelcase, sfx, split_col, underscore, wrapped_annotation
 from linkml_runtime.utils.metamodelcore import builtinnames
+from linkml_runtime.utils.namespaces import _prefix_to_python_var as _safe_python_identifier
 
 logger = logging.getLogger(__name__)
-
-
-def _safe_python_identifier(prefix: str) -> str:
-    """Return a safe module-level Python variable name for a CURIE prefix.
-    Uppercases and replaces ``.`` / ``-`` with ``_``, appends ``_NS`` on
-    keyword/builtin clashes, prepends ``NS_`` on leading-digit prefixes."""
-    name = prefix.upper().replace(".", "_").replace("-", "_")
-    lower = name.lower()
-    clashes = keyword.iskeyword(name) or keyword.iskeyword(lower)
-    if not clashes and hasattr(keyword, "issoftkeyword"):
-        clashes = keyword.issoftkeyword(name) or keyword.issoftkeyword(lower)
-    if not clashes:
-        clashes = hasattr(builtins, name) or hasattr(builtins, lower)
-    if clashes:
-        name = f"{name}_NS"
-    if name and not name[0].isalpha() and name[0] != "_":
-        name = f"NS_{name}"
-    return name
 
 
 @deprecated_fields({"head": "metadata", "emit_metadata": "metadata"})

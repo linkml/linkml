@@ -15,16 +15,17 @@ from linkml_runtime.utils.yamlutils import TypedNode
 
 def _prefix_to_python_var(prefix: str) -> str:
     """Return a safe module-level Python variable name for a CURIE prefix.
-    Mirrors ``linkml.generators.pythongen._safe_python_identifier`` so that
-    ``curie_for(pythonform=True)`` and ``gen_namespaces()`` always agree.
     Uppercases and replaces ``.`` / ``-`` with ``_``, appends ``_NS`` on
     keyword/builtin clashes, prepends ``NS_`` on leading-digit prefixes."""
 
     name = prefix.upper().replace(".", "_").replace("-", "_")
     lower = name.lower()
-    clashes = keyword.iskeyword(name) or keyword.iskeyword(lower)
-    if not clashes and hasattr(keyword, "issoftkeyword"):
-        clashes = keyword.issoftkeyword(name) or keyword.issoftkeyword(lower)
+    clashes = (
+        keyword.iskeyword(name)
+        or keyword.iskeyword(lower)
+        or keyword.issoftkeyword(name)
+        or keyword.issoftkeyword(lower)
+    )
     if not clashes:
         clashes = hasattr(builtins, name) or hasattr(builtins, lower)
     if clashes:
