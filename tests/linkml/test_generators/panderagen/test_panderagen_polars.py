@@ -242,9 +242,9 @@ _INPUT_DIR = Path(__file__).parent / "input"
 
 
 # type-mapping tests
-# date_or_datetime	linkml:DateOrDatetime   pl.Utf8 - Polars has no Date|Datetime union
-# objectidentifier	shex:iri	        pl.Utf8 - an IRI is a string
-# nodeidentifier	shex:nonLiteral         pl.Utf8 - a non-literal RDF node identifier
+# date_or_datetime  linkml:DateOrDatetime   pl.Utf8 - Polars has no Date|Datetime union
+# objectidentifier  shex:iri                pl.Utf8 - an IRI is a string
+# nodeidentifier    shex:nonLiteral         pl.Utf8 - a non-literal RDF node identifier
 
 
 @pytest.mark.parametrize(
@@ -262,17 +262,46 @@ def test_linkml_specific_type_mapping(field_name, expected_dtype):
     assert f'"{field_name}": {expected_dtype},' in code
 
 
-# cyclic-dependency regression test
+# cyclic-dependency regression tests
 
 
+@pytest.mark.parametrize(
+    "field_range, expected",
+    [
+        # single inlined struct reference
+        ("ChildStruct", "pl.Struct(ChildDict)"),
+        # multivalued inlined struct reference
+        ("pl.List(ChildStruct)", "pl.List(pl.Struct(ChildDict))"),
+        # primitive — must pass through unchanged
+        ("pl.Utf8", "pl.Utf8"),
+        # Any type — must pass through unchanged
+        ("pl.Object", "pl.Object"),
+        # enum name — must pass through unchanged (does not end in "Struct")
+        ("CordialnessEnum", "CordialnessEnum"),
+    ],
+)
+def test_dict_range(field_range, expected):
+    """dict_range converts *Struct references to pl.Struct(*Dict) and leaves everything else alone."""
+    assert PolarsSchemaDataframeGenerator.dict_range(field_range) == expected
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
 def test_parent_slot_range_child_no_cycle():
     """A parent class whose slot ranges over a child class must not raise a cyclic dependency error.
 
     Without the fix in ClassHandlerBase.add_dependencies_by_association the hierarchy edge
     Child→Parent and the association edge Parent→Child form a cycle in the dependency sorter.
+    The generated code must also be importable (no NameError from forward references).
+    Both single-valued (child_ref: ChildStruct) and multivalued (child_refs: pl.List(ChildStruct))
+    cross-references are covered.
     """
     generator = PolarsSchemaDataframeGenerator(str(_INPUT_DIR / "cyclic_model.yaml"), backing_form="serialized")
-    # Must not raise ValueError: Cyclic dependency detected
+    # Must not raise ValueError: Cyclic dependency detected, and the emitted code
+    # must compile without NameError (forward-refs resolved via the three-pass template).
+    mod = generator.compile_dataframe_model("cyclic_test_module")
+    assert hasattr(mod, "ParentDict")
+    assert hasattr(mod, "ChildDict")
+    # Verify that the three-pass template emitted pl.List(pl.Struct(ChildDict)) for the
+    # multivalued cross-reference (dict_range applied), not the bare XStruct name.
     code = generator.serialize()
-    assert "ParentDict" in code
-    assert "ChildDict" in code
+    assert "pl.List(pl.Struct(ChildDict))" in code

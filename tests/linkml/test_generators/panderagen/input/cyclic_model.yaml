@@ -17,6 +17,10 @@ classes:
     attributes:
       child_ref:
         range: Child
+      child_refs:
+        range: Child
+        multivalued: true
+        inlined: true
 
   Child:
     is_a: Parent
