@@ -27,7 +27,7 @@ This part of the LinkML specification only deals with 1-3. Future versions of th
 
 As the functional syntax is only intended for specification purposes, it is not expected that implementations use this as an intermediate. Instead, it is expected that an implementation will go via an internal programmatic representation.
 
-The reference implementation is the [linkml-runtime](https://pypi.org/project/linkml-runtime/) but other implementations that conform to this specification are valid.
+The reference implementation is the [linkml-runtime](https://github.com/linkml/linkml-runtime/) but other implementations that conform to this specification are valid.
 
 ## Mapping to JSON or YAML
 
