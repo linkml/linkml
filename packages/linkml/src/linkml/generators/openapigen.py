@@ -69,7 +69,7 @@ class OpenApiGenerator(Generator):
                         if isinstance(value, dict) or isinstance(value, list):
                             value = self._fix_openapi_spec(value, keys_to_remove)
                         elif isinstance(value, str) and value.startswith("#/$defs/"):
-                            value = value.replace("$defs", "components/schemas")
+                            value = value.replace("#/$defs/", "#/components/schemas/")
                         new_element[key] = value
         elif isinstance(element, list):
             new_element = []
