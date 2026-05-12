@@ -60,7 +60,7 @@ from linkml_runtime.linkml_model.extensions import AnyValue, Extension, Extensio
 from linkml_runtime.linkml_model.types import Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = "2.0.0"
 
 # Namespaces
