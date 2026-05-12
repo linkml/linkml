@@ -110,6 +110,15 @@ class OpenApiGenerator(Generator):
             raise ValueError("An OpenAPI template file is required")
         with open(template_file) as tf:
             self._template = yaml.safe_load(tf)
+            if not isinstance(self._template.get("paths"), dict):
+                raise ValueError("OpenAPI template is missing required 'paths' section")
+            if not isinstance(self._template.get("components"), dict):
+                raise ValueError("OpenAPI template is missing required 'components' section")
+            if self._template["components"].get("schemas"):
+                raise ValueError(
+                    "OpenAPI template must not contain pre-existing 'components/schemas' — "
+                    "they would be overwritten during generation"
+                )
             referenced_classes = self._find_referenced_classes()
             self._template["components"]["schemas"] = {}
             class_schemas = {}
