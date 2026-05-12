@@ -96,21 +96,22 @@ class OpenApiGenerator(Generator):
         return class_schemas
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
-        self._template = yaml.safe_load(open(template_file))
-        referenced_classes = self._find_referenced_classes()
-        self._template["components"]["schemas"] = {}
-        class_schemas = {}
-        for class_name in referenced_classes:
-            json_schema = JsonSchemaGenerator(self.schema, include_null=False, top_class=class_name).generate()
-            json_schema_classes = json.loads(json_schema.to_json())["$defs"]
-            class_schemas = class_schemas | json_schema_classes
-        class_schemas = self._sanitize_schemas(class_schemas, referenced_classes)
-        class_schemas = self._fix_openapi_spec(
-            class_schemas,
-            ["description", "title"],
-        )
-        self._template["components"]["schemas"] = class_schemas
-        return yaml.dump(self._template, sort_keys=False)
+        with open(template_file) as tf:
+            self._template = yaml.safe_load(tf)
+            referenced_classes = self._find_referenced_classes()
+            self._template["components"]["schemas"] = {}
+            class_schemas = {}
+            for class_name in referenced_classes:
+                json_schema = JsonSchemaGenerator(self.schema, include_null=False, top_class=class_name).generate()
+                json_schema_classes = json.loads(json_schema.to_json())["$defs"]
+                class_schemas = class_schemas | json_schema_classes
+            class_schemas = self._sanitize_schemas(class_schemas, referenced_classes)
+            class_schemas = self._fix_openapi_spec(
+                class_schemas,
+                ["description", "title"],
+            )
+            self._template["components"]["schemas"] = class_schemas
+            return yaml.dump(self._template, sort_keys=False)
 
 
 @shared_arguments(OpenApiGenerator)
