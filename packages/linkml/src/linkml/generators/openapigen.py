@@ -49,7 +49,7 @@ class OpenApiGenerator(Generator):
                                     result.add(class_name)
         return result
 
-    def _fix_openapi_spec(self, element, keys_to_remove):
+    def _fix_openapi_spec(self, element: dict | list, keys_to_remove: list[str]) -> dict | list | None:
         """
         When using the JSON schemas of the classes in the OpenAPI specification document,
         following things need to be fixed:
@@ -81,7 +81,7 @@ class OpenApiGenerator(Generator):
                 new_element.append(item)
         return new_element
 
-    def _find_references(self, element, referenced_classes):
+    def _find_references(self, element: dict | list, referenced_classes: set[str]) -> None:
         if isinstance(element, dict):
             if "$ref" in element:
                 referenced_classes.add(element["$ref"].replace("#/$defs/", ""))
@@ -91,7 +91,7 @@ class OpenApiGenerator(Generator):
             for item in element:
                 self._find_references(item, referenced_classes)
 
-    def _sanitize_schemas(self, class_schemas, endpoint_referenced_classes):
+    def _sanitize_schemas(self, class_schemas: dict, endpoint_referenced_classes: set[str]) -> dict:
         referenced_classes = endpoint_referenced_classes.copy()
         for class_schema in class_schemas.values():
             self._find_references(class_schema, referenced_classes)
