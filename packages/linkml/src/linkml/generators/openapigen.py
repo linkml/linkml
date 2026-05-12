@@ -8,13 +8,12 @@ import click
 import yaml
 
 from linkml._version import __version__
-from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 
 @dataclass
-class OpenApiGenerator(Generator, LifecycleMixin):
+class OpenApiGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["openapi303"]
