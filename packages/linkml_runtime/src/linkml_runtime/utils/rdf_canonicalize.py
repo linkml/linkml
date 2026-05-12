@@ -171,6 +171,11 @@ def canonicalize_rdf_graph(
     dataset.canonicalize(ox.CanonicalizationAlgorithm.RDFC_1_0)
 
     # 4. Sort triples for deterministic ordering.
+    # RDFC-1.0 stabilizes blank-node labels but pyoxigraph's Dataset
+    # iteration order is not sorted and varies across processes (verified
+    # empirically against pyoxigraph 0.5.8). The explicit string-key sort
+    # is load-bearing for byte-identical output across runs; see
+    # tests/linkml_runtime/test_utils/test_rdf_canonicalize.py::test_sort_is_load_bearing.
     quads = list(dataset)
     sorted_triples = sorted(
         (ox.Triple(q.subject, q.predicate, q.object) for q in quads),

@@ -1,5 +1,9 @@
 """Tests for deterministic RDF serialization via pyoxigraph RDFC-1.0."""
 
+import subprocess
+import sys
+import textwrap
+
 import rdflib
 from rdflib import BNode, Graph, Literal, URIRef
 from rdflib.namespace import RDF
@@ -139,6 +143,54 @@ def test_iri_with_trailing_dot_round_trips():
     g2 = Graph()
     g2.parse(data=ttl, format="turtle")
     assert rdflib.compare.isomorphic(g, g2)
+
+
+def test_sort_is_load_bearing():
+    """Output is byte-identical across subprocesses with different PYTHONHASHSEED values.
+
+    RDFC-1.0 stabilizes blank-node labels, but pyoxigraph's ``Dataset`` iteration
+    order is not lexicographic and varies across processes. Without the explicit
+    sort step in ``canonicalize_rdf_graph``, output would differ across runs in
+    ways that hash randomization can expose. This test runs the canonicalization
+    in two subprocesses with deliberately different hash seeds and asserts the
+    output is identical, guarding against accidental removal of the sort step or
+    introduction of ``id()``-keyed iteration anywhere in the path.
+    """
+    program = textwrap.dedent(
+        """
+        from rdflib import BNode, Graph, Literal, URIRef
+        from rdflib.namespace import RDF
+        from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
+        g = Graph()
+        g.bind("ex", "http://example.com/")
+        for letter in ["z", "y", "x", "m", "f", "a"]:
+            s = URIRef(f"http://example.com/{letter}")
+            g.add((s, RDF.type, URIRef("http://example.com/Thing")))
+            g.add((s, URIRef("http://example.com/p"), Literal(f"val_{letter}")))
+        for i in range(3):
+            bn = BNode()
+            g.add((URIRef("http://example.com/x"), URIRef("http://example.com/has"), bn))
+            g.add((bn, URIRef("http://example.com/q"), Literal(f"bn_{i}")))
+
+        print(canonicalize_rdf_graph(g, output_format="turtle"), end="")
+        """
+    )
+
+    def run(seed: str) -> str:
+        env = {"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"}
+        result = subprocess.run(
+            [sys.executable, "-c", program],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+        return result.stdout
+
+    out_a = run("0")
+    out_b = run("42")
+    assert out_a == out_b, "Canonical output differs across PYTHONHASHSEED values; sort step may be missing"
 
 
 def test_fallback_on_invalid_rdf():
