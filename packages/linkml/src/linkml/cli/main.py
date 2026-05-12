@@ -23,6 +23,7 @@ from linkml.generators.jsonldgen import cli as gen_jsonld
 from linkml.generators.jsonschemagen import cli as gen_json_schema
 from linkml.generators.linkmlgen import cli as gen_linkml
 from linkml.generators.namespacegen import cli as gen_namespaces
+from linkml.generators.openapigen import cli as gen_openapi
 from linkml.generators.owlgen import cli as gen_owl
 from linkml.generators.panderagen import cli as gen_pandera
 from linkml.generators.plantumlgen import cli as gen_plantuml
@@ -106,6 +107,7 @@ generate.add_command(gen_jsonld, name="jsonld")
 generate.add_command(gen_json_schema, name="json-schema")
 generate.add_command(gen_doc, name="doc")
 generate.add_command(gen_namespaces, name="namespaces")
+generate.add_command(gen_openapi, name="openapi")
 generate.add_command(gen_owl, name="owl")
 generate.add_command(gen_plantuml, name="plantuml")
 generate.add_command(gen_proto, name="proto")
