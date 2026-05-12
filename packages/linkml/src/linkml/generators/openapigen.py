@@ -14,6 +14,16 @@ from linkml.utils.generator import Generator, shared_arguments
 
 @dataclass
 class OpenApiGenerator(Generator):
+    """
+    Generates OpenAPI v3.0.3 specification YAML from a LinkML schema.
+
+    The generator composes a user-provided OpenAPI template (containing the API header,
+    paths/endpoints, and security schemes) with JSON Schema components generated from
+    the LinkML schema via :class:`.JsonSchemaGenerator`. Only classes referenced by the
+    template's endpoints (and their transitive dependencies) are included in the
+    ``components/schemas`` section.
+    """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["openapi303"]
