@@ -106,6 +106,8 @@ class OpenApiGenerator(Generator):
         return class_schemas
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
+        if not template_file:
+            raise ValueError("An OpenAPI template file is required")
         with open(template_file) as tf:
             self._template = yaml.safe_load(tf)
             referenced_classes = self._find_referenced_classes()
@@ -129,7 +131,8 @@ class OpenApiGenerator(Generator):
 @click.option(
     "--template",
     "-t",
-    help="OpenAPI v3.0.3 template - includes the header, the endpoints and the securityschemes",
+    required=True,
+    help="OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, template, **args):
