@@ -49,33 +49,33 @@ class OpenApiGenerator(Generator):
                                     result.add(class_name)
         return result
 
-    def _fix_openapi_spec(self, element: dict | list, keys_to_remove: list[str]) -> dict | list | None:
+    def _fix_openapi_spec(self, element: dict | list) -> dict | list | None:
         """
-        When using the JSON schemas of the classes in the OpenAPI specification document,
-        following things need to be fixed:
-        - some keys need to be removed
-        - references need to be changed from "$defs" to "components/schemas"
+        Transform JSON Schema constructs into OpenAPI v3.0.3 compatible forms:
+
+        - ``const`` becomes ``enum`` with a single value (OpenAPI 3.0 doesn't support ``const``)
+        - ``type`` as a list (e.g. nullable ``["string", "null"]``) becomes ``anyOf``
+        - ``$ref`` paths are rewritten from ``#/$defs/`` to ``#/components/schemas/``
         """
         new_element = None
         if isinstance(element, dict):
             new_element = {}
             for key, value in element.items():
-                if key not in keys_to_remove:
-                    if key == "const":
-                        new_element["enum"] = [value]
-                    elif key == "type" and isinstance(value, list):
-                        new_element["anyOf"] = [{"type": item} for item in value if item != "null"]
-                    else:
-                        if isinstance(value, dict) or isinstance(value, list):
-                            value = self._fix_openapi_spec(value, keys_to_remove)
-                        elif isinstance(value, str) and value.startswith("#/$defs/"):
-                            value = value.replace("#/$defs/", "#/components/schemas/")
-                        new_element[key] = value
+                if key == "const":
+                    new_element["enum"] = [value]
+                elif key == "type" and isinstance(value, list):
+                    new_element["anyOf"] = [{"type": item} for item in value if item != "null"]
+                else:
+                    if isinstance(value, dict) or isinstance(value, list):
+                        value = self._fix_openapi_spec(value)
+                    elif isinstance(value, str) and value.startswith("#/$defs/"):
+                        value = value.replace("#/$defs/", "#/components/schemas/")
+                    new_element[key] = value
         elif isinstance(element, list):
             new_element = []
             for item in element:
                 if isinstance(item, dict) or isinstance(item, list):
-                    item = self._fix_openapi_spec(item, keys_to_remove)
+                    item = self._fix_openapi_spec(item)
                 elif isinstance(item, str) and item.startswith("#/$defs/"):
                     item = item.replace("#/$defs/", "#/components/schemas/")
                 new_element.append(item)
@@ -127,10 +127,10 @@ class OpenApiGenerator(Generator):
                 json_schema_classes = json.loads(json_schema.to_json())["$defs"]
                 class_schemas = class_schemas | json_schema_classes
             class_schemas = self._sanitize_schemas(class_schemas, referenced_classes)
-            class_schemas = self._fix_openapi_spec(
-                class_schemas,
-                ["description", "title"],
-            )
+            # title always duplicates the schema dict key, so it is redundant in components/schemas
+            for class_schema in class_schemas.values():
+                class_schema.pop("title", None)
+            class_schemas = self._fix_openapi_spec(class_schemas)
             self._template["components"]["schemas"] = class_schemas
             return yaml.dump(self._template, sort_keys=False)
 
