@@ -92,6 +92,7 @@ class OpenApiGenerator(Generator):
         return new_element
 
     def _find_references(self, element: dict | list, referenced_classes: set[str]) -> None:
+        """Populate *referenced_classes* with all ``$ref`` targets found in *element*."""
         if isinstance(element, dict):
             if "$ref" in element:
                 referenced_classes.add(element["$ref"].replace("#/$defs/", ""))
@@ -102,6 +103,7 @@ class OpenApiGenerator(Generator):
                 self._find_references(item, referenced_classes)
 
     def _sanitize_schemas(self, class_schemas: dict, endpoint_referenced_classes: set[str]) -> dict:
+        """Remove class schemas not reachable from *endpoint_referenced_classes*."""
         referenced_classes = endpoint_referenced_classes.copy()
         for class_schema in class_schemas.values():
             self._find_references(class_schema, referenced_classes)
@@ -141,6 +143,12 @@ class OpenApiGenerator(Generator):
         return class_schemas
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
+        """
+        Generate an OpenAPI specification and return it as a YAML string.
+
+        :param template_file: Path to the OpenAPI template YAML file.
+        :raises ValueError: If *template_file* is empty or the template is invalid.
+        """
         if not template_file:
             raise ValueError("An OpenAPI template file is required")
         with open(template_file) as tf:
