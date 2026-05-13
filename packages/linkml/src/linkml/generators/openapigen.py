@@ -25,7 +25,7 @@ class OpenApiGenerator(Generator):
     """
 
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.0.1"
+    generatorversion = "0.1.0"
     valid_formats = ["openapi303"]
     file_extension = "yaml"
     uses_schemaloader = False
