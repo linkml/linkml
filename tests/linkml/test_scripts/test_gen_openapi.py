@@ -15,7 +15,7 @@ OPENAPI_TEMPLATE_PATH = str(
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
-    assert "Generate an OpenAPI v3.0.3 spec" in result.output
+    assert "Generate an OpenAPI spec" in result.output
 
 
 def test_valid_call():
