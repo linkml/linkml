@@ -7,12 +7,14 @@ from typing import Literal
 
 import click
 import yaml
+from pydantic import BaseModel
 
 from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
-_OPENAPI_VERSIONS = ("3.0.3",)
+_OPENAPI_VERSIONS = ("3.0.3", "3.1.0")
 
 
 @dataclass
@@ -25,11 +27,16 @@ class OpenApiGenerator(Generator):
     the LinkML schema. Only classes referenced by the template's endpoints (and their
     transitive dependencies) are included in the ``components/schemas`` section.
 
-    Currently only one generation path is supported (others might follow):
+    Two generation paths are supported:
 
     * **v3.0.3** — uses :class:`.JsonSchemaGenerator` and applies post-processing
       transforms (``const`` → ``enum``, nullable ``type`` lists → ``anyOf``,
       ``$defs`` → ``components/schemas``) required by OpenAPI 3.0.3.
+    * **v3.1.0** — uses :class:`.PydanticGenerator` to compile a Python module,
+      then calls :meth:`pydantic.BaseModel.model_json_schema` on each class.
+      Because OpenAPI 3.1.0 is fully aligned with JSON Schema 2020-12, no
+      post-processing transforms are needed beyond rewriting ``$defs`` references
+      and stripping ``linkml_meta`` annotations.
     """
 
     generatorname = os.path.basename(__file__)
@@ -38,7 +45,7 @@ class OpenApiGenerator(Generator):
     file_extension = "yaml"
     uses_schemaloader = False
 
-    openapi_version: Literal["3.0.3"] = field(default="3.0.3")
+    openapi_version: Literal["3.0.3", "3.1.0"] = field(default="3.0.3")
 
     def _find_referenced_classes(self) -> set[str]:
         """Return the set of class names referenced by the template's endpoints."""
@@ -117,6 +124,42 @@ class OpenApiGenerator(Generator):
                 self._find_references(class_schema, referenced_classes)
         return class_schemas
 
+    def _rewrite_defs_refs(self, element: dict | list) -> None:
+        """
+        Rewrite ``#/$defs/`` references to ``#/components/schemas/`` in-place.
+
+        This is the only structural transformation needed for OpenAPI 3.1.0,
+        since it is fully aligned with JSON Schema 2020-12.
+        """
+        if isinstance(element, dict):
+            keys_to_update = []
+            for key, value in element.items():
+                if isinstance(value, str) and value.startswith("#/$defs/"):
+                    keys_to_update.append((key, value.replace("#/$defs/", "#/components/schemas/")))
+                elif isinstance(value, dict) or isinstance(value, list):
+                    self._rewrite_defs_refs(value)
+            for key, new_value in keys_to_update:
+                element[key] = new_value
+        elif isinstance(element, list):
+            for i, item in enumerate(element):
+                if isinstance(item, str) and item.startswith("#/$defs/"):
+                    element[i] = item.replace("#/$defs/", "#/components/schemas/")
+                elif isinstance(item, dict) or isinstance(item, list):
+                    self._rewrite_defs_refs(item)
+
+    @staticmethod
+    def _strip_linkml_meta(element: dict | list) -> None:
+        """Remove ``linkml_meta`` annotations recursively from Pydantic JSON Schema output."""
+        if isinstance(element, dict):
+            element.pop("linkml_meta", None)
+            for value in element.values():
+                if isinstance(value, dict) or isinstance(value, list):
+                    OpenApiGenerator._strip_linkml_meta(value)
+        elif isinstance(element, list):
+            for item in element:
+                if isinstance(item, dict) or isinstance(item, list):
+                    OpenApiGenerator._strip_linkml_meta(item)
+
     def _validate_template(self) -> None:
         """Validate that the loaded template has the required structure."""
         if not isinstance(self._template.get("paths"), dict):
@@ -142,6 +185,37 @@ class OpenApiGenerator(Generator):
         class_schemas = self._fix_openapi_spec_v303(class_schemas)
         return class_schemas
 
+    def _generate_schemas_v310(self, referenced_classes: set[str]) -> dict:
+        """Generate component schemas for OpenAPI v3.1.0 via :class:`.PydanticGenerator`."""
+        if not referenced_classes:
+            return {}
+        module = PydanticGenerator(self.schema).compile_module()
+        pydantic_classes = {
+            name: obj
+            for name, obj in vars(module).items()
+            if isinstance(obj, type)
+            and issubclass(obj, BaseModel)
+            and obj is not BaseModel
+            and name in referenced_classes
+        }
+        top_class_name = next(iter(referenced_classes))
+        top_class = pydantic_classes[top_class_name]
+        full_schema = top_class.model_json_schema()
+        class_schemas = full_schema.get("$defs", {})
+        for name, cls in pydantic_classes.items():
+            if name not in class_schemas:
+                cls_schema = cls.model_json_schema()
+                if "$defs" in cls_schema:
+                    class_schemas.update(cls_schema["$defs"])
+                cls_schema.pop("$defs", None)
+                class_schemas[name] = cls_schema
+        class_schemas = self._sanitize_schemas(class_schemas, referenced_classes)
+        for class_schema in class_schemas.values():
+            class_schema.pop("title", None)
+        self._strip_linkml_meta(class_schemas)
+        self._rewrite_defs_refs(class_schemas)
+        return class_schemas
+
     def serialize(self, template_file: str = "", **kwargs) -> str:
         """
         Generate an OpenAPI specification and return it as a YAML string.
@@ -155,7 +229,10 @@ class OpenApiGenerator(Generator):
             self._template = yaml.safe_load(tf)
         self._validate_template()
         referenced_classes = self._find_referenced_classes()
-        if self.openapi_version == "3.0.3":
+        if self.openapi_version == "3.1.0":
+            self._template["openapi"] = "3.1.0"
+            class_schemas = self._generate_schemas_v310(referenced_classes)
+        else:
             class_schemas = self._generate_schemas_v303(referenced_classes)
         self._template["components"]["schemas"] = class_schemas
         return yaml.dump(self._template, sort_keys=False)
