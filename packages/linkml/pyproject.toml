@@ -79,7 +79,6 @@ tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "morph-kgc >= 2.9.0; python_version >= '3.10'",
   "duckdb>=1.5.2",
 ]
 dev = [
