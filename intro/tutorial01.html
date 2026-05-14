@@ -574,12 +574,43 @@ to this example and show how we could model this more naturally as a number.</p>
 <p>This will produce RDF/turtle output as follows</p>
 <!-- MATCHES data.ttl -->
 <div class="highlight-turtle notranslate"><div class="highlight"><pre><span></span><span class="k">@prefix</span><span class="w"> </span><span class="nn">personinfo:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/examples/personinfo&gt;</span><span class="w"> </span><span class="p">.</span>
-
-<span class="p">[]</span> <span class="kt">a</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
-    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">age</span> <span class="s">&quot;32&quot;</span> <span class="p">;</span>
-    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">full_name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
-    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">id</span> <span class="s">&quot;ORCID:1234&quot;</span> <span class="p">;</span>
-    <span class="nn">personinfo</span><span class="p">:</span><span class="nt">phone</span> <span class="s">&quot;555-555-5555&quot;</span> <span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdf:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">wgs:</span><span class="w"> </span><span class="nv">&lt;https://www.w3.org/2003/01/geo/wgs84_pos#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">geo:</span><span class="w"> </span><span class="nv">&lt;http://www.opengis.net/ont/geosparql#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">rdfs:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2000/01/rdf-schema#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">brick:</span><span class="w"> </span><span class="nv">&lt;https://brickschema.org/schema/Brick#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">skos:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2004/02/skos/core#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xml:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/XML/1998/namespace&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">xsd:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">qb:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/linked-data/cube#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">dc:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/dc/elements/1.1/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">owl:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2002/07/owl#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">doap:</span><span class="w"> </span><span class="nv">&lt;http://usefulinc.com/ns/doap#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">prof:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/dx/prof/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">dcmitype:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/dc/dcmitype/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">odrl:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/odrl/2/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">time:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/2006/time#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">vann:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/vocab/vann/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">sh:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/shacl#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">csvw:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/csvw#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">shex:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/shex#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">dcat:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/dcat#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">sosa:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/sosa/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">foaf:</span><span class="w"> </span><span class="nv">&lt;http://xmlns.com/foaf/0.1/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">prov:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/prov#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">org:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/org#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">ssn:</span><span class="w"> </span><span class="nv">&lt;http://www.w3.org/ns/ssn/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">dcterms:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/dc/terms/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">dcam:</span><span class="w"> </span><span class="nv">&lt;http://purl.org/dc/dcam/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">void:</span><span class="w"> </span><span class="nv">&lt;http://rdfs.org/ns/void#&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">linkml:</span><span class="w"> </span><span class="nv">&lt;https://w3id.org/linkml/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">schema:</span><span class="w"> </span><span class="nv">&lt;https://schema.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="k">@prefix</span><span class="w"> </span><span class="nn">schema1:</span><span class="w"> </span><span class="nv">&lt;http://schema.org/&gt;</span><span class="w"> </span><span class="p">.</span>
+<span class="nn">_</span><span class="p">:</span><span class="nt">c14n0</span> <span class="kt">a</span> <span class="nn">personinfo</span><span class="p">:</span><span class="nt">Person</span> <span class="p">;</span>
+	<span class="nn">personinfo</span><span class="p">:</span><span class="nt">age</span> <span class="s">&quot;32&quot;</span> <span class="p">;</span>
+	<span class="nn">personinfo</span><span class="p">:</span><span class="nt">full_name</span> <span class="s">&quot;Clark Kent&quot;</span> <span class="p">;</span>
+	<span class="nn">personinfo</span><span class="p">:</span><span class="nt">id</span> <span class="s">&quot;ORCID:1234&quot;</span> <span class="p">;</span>
+	<span class="nn">personinfo</span><span class="p">:</span><span class="nt">phone</span> <span class="s">&quot;555-555-5555&quot;</span> <span class="p">.</span>
 </pre></div>
 </div>
 <p>To write the RDF/turtle output directly to a file use</p>
