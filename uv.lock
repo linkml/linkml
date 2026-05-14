@@ -1995,6 +1995,7 @@ dev = [
     { name = "openapi-spec-validator" },
     { name = "pandas" },
     { name = "pandera" },
+    { name = "pip" },
     { name = "polars-lts-cpu" },
     { name = "pyshacl" },
     { name = "pytest" },
@@ -2023,6 +2024,14 @@ docs = [
 lint = [
     { name = "black" },
 ]
+notebooks = [
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
+    { name = "pip" },
+]
 pandera = [
     { name = "pandas" },
     { name = "pandera" },
@@ -2034,7 +2043,13 @@ shacl = [
 tests = [
     { name = "black" },
     { name = "duckdb" },
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
     { name = "numpydantic" },
+    { name = "pip" },
     { name = "pyshacl" },
 ]
 tests-extra = [
@@ -2110,6 +2125,7 @@ dev = [
     { name = "openapi-spec-validator", specifier = ">=0.8.4" },
     { name = "pandas" },
     { name = "pandera", specifier = ">=0.19.0" },
+    { name = "pip" },
     { name = "polars-lts-cpu", specifier = ">=1.0.0" },
     { name = "pyshacl", specifier = ">=0.25.0" },
     { name = "pytest", specifier = ">=7.4.0" },
@@ -2135,6 +2151,14 @@ docs = [
     { name = "sphinxcontrib-programoutput", specifier = ">=0.17" },
 ]
 lint = [{ name = "black", specifier = ">=24.0.0" }]
+notebooks = [
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
+    { name = "pip" },
+]
 pandera = [
     { name = "pandas" },
     { name = "pandera", specifier = ">=0.19.0" },
@@ -2144,7 +2168,13 @@ shacl = [{ name = "pyshacl", specifier = ">=0.25.0" }]
 tests = [
     { name = "black", specifier = ">=24.0.0" },
     { name = "duckdb", specifier = ">=1.5.2" },
+    { name = "ipykernel" },
+    { name = "ipython-genutils" },
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "nbformat" },
     { name = "numpydantic", specifier = ">=1.6.1" },
+    { name = "pip" },
     { name = "pyshacl", specifier = ">=0.25.0" },
 ]
 tests-extra = [
@@ -3225,6 +3255,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/20/2e/3434380e8110b76cd9eb00a363c484b050f949b4bbe84ba770bb8508a02c/pillow-12.0.0-pp311-pypy311_pp73-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:09f2d0abef9e4e2f349305a4f8cc784a8a6c2f58a8c4892eea13b10a943bd26e", size = 5313505, upload-time = "2025-10-15T18:24:07.137Z" },
     { url = "https://files.pythonhosted.org/packages/57/ca/5a9d38900d9d74785141d6580950fe705de68af735ff6e727cb911b64740/pillow-12.0.0-pp311-pypy311_pp73-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bdee52571a343d721fb2eb3b090a82d959ff37fc631e3f70422e0c2e029f3e76", size = 5963654, upload-time = "2025-10-15T18:24:09.579Z" },
     { url = "https://files.pythonhosted.org/packages/95/7e/f896623c3c635a90537ac093c6a618ebe1a90d87206e42309cb5d98a1b9e/pillow-12.0.0-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:b290fd8aa38422444d4b50d579de197557f182ef1068b75f5aa8558638b8d0a5", size = 6997850, upload-time = "2025-10-15T18:24:11.495Z" },
+]
+
+[[package]]
+name = "pip"
+version = "26.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b6/48/cb9b7a682f6fe01a4221e1728941dd4ac3cd9090a17db3779d6ff490b602/pip-26.1.1.tar.gz", hash = "sha256:d36762751d156a4ee895de8af39aa0abeeeb577f93a2eca6ab62467bbf0f8a78", size = 1840400, upload-time = "2026-05-04T19:02:21.248Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3a/eb/fea4d1d51c49832120f7f285d07306db3960f423a2612c6057caf3e8196f/pip-26.1.1-py3-none-any.whl", hash = "sha256:99cb1c2899893b075ff56e4ed0af55669a955b49ad7fb8d8603ecdaf4ed653fb", size = 1812777, upload-time = "2026-05-04T19:02:18.9Z" },
 ]
 
 [[package]]
