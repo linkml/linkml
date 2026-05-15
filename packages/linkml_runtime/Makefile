@@ -5,7 +5,7 @@
 # (see https://github.com/linkml/linkml-model/releases). Bump manually
 # when pulling in a new linkml-model release.
 
-LINKML_MODEL_RELEASE = v1.11.0-rc2
+LINKML_MODEL_RELEASE = v1.11.0
 
 all: update_model update_validation_model
 
