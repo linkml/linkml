@@ -316,6 +316,8 @@ classes:
     name: geographic location
     definition_uri: http://example.org/tests/cleanyaml/GeographicLocation
     from_schema: http://example.org/tests/cleanyaml
+    exact_mappings:
+    - http://example.org/tests/cleanyaml/GeographicLocation
     slots:
     - k
     class_uri: http://example.org/tests/cleanyaml/GeographicLocation
@@ -323,12 +325,14 @@ classes:
     name: geographic location at time
     definition_uri: http://example.org/tests/cleanyaml/GeographicLocationAtTime
     from_schema: http://example.org/tests/cleanyaml
+    exact_mappings:
+    - http://example.org/tests/cleanyaml/GeographicLocationAtTime
     is_a: geographic location
     slots:
     - k
     - timepoint
     class_uri: http://example.org/tests/cleanyaml/GeographicLocationAtTime
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: yaml_validate_clean.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1

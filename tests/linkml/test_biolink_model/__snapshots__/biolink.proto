@@ -1,6 +1,6 @@
  syntax="proto3";
  package
-// metamodel_version: 1.7.0
+// metamodel_version: 1.11.0
 // version: 4.2.5
 // A region (or regions) of a chromatinized genome that has been measured to be more accessible to an enzyme such as DNase-I or Tn5 Transpose
 message AccessibleDnaRegion
