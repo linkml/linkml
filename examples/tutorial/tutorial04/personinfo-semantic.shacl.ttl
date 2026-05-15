@@ -1,39 +1,81 @@
 @prefix personinfo: <https://w3id.org/linkml/examples/personinfo/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix schema1: <http://schema.org/> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix wgs: <https://www.w3.org/2003/01/geo/wgs84_pos#> .
+@prefix brick: <https://brickschema.org/schema/Brick#> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix qb: <http://purl.org/linked-data/cube#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-personinfo:Container a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:class schema1:Person ;
-            sh:nodeKind sh:IRI ;
-            sh:order 0 ;
-            sh:path personinfo:persons ] ;
-    sh:targetClass personinfo:Container .
-
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix prof: <http://www.w3.org/ns/dx/prof/> .
+@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix csvw: <http://www.w3.org/ns/csvw#> .
+@prefix sosa: <http://www.w3.org/ns/sosa/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix org: <http://www.w3.org/ns/org#> .
+@prefix ssn: <http://www.w3.org/ns/ssn/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix linkml: <https://w3id.org/linkml/> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix dcam: <http://purl.org/dc/dcam/> .
+@prefix schema: <https://schema.org/> .
+@prefix schema1: <http://schema.org/> .
+@prefix ORCID: <https://orcid.org/> .
 schema1:Person a sh:NodeShape ;
-    sh:closed true ;
-    sh:ignoredProperties ( rdf:type ) ;
-    sh:property [ sh:maxCount 1 ;
-            sh:maxInclusive 200 ;
-            sh:minInclusive 0 ;
-            sh:order 4 ;
-            sh:path personinfo:age ],
-        [ sh:description "name of the person" ;
-            sh:maxCount 1 ;
-            sh:minCount 1 ;
-            sh:order 1 ;
-            sh:path schema1:name ],
-        [ sh:maxCount 1 ;
-            sh:order 0 ;
-            sh:path personinfo:id ],
-        [ sh:description "other names for the person" ;
-            sh:order 2 ;
-            sh:path personinfo:aliases ],
-        [ sh:maxCount 1 ;
-            sh:order 3 ;
-            sh:path schema1:telephone ;
-            sh:pattern "^[\\d\\(\\)\\-]+$" ] ;
-    sh:targetClass schema1:Person .
+	sh:closed true ;
+	sh:ignoredProperties _:c14n7 ;
+	sh:property _:c14n0 , _:c14n2 , _:c14n3 , _:c14n4 , _:c14n6 ;
+	sh:targetClass schema1:Person .
+personinfo:Container a sh:NodeShape ;
+	sh:closed true ;
+	sh:ignoredProperties _:c14n1 ;
+	sh:property _:c14n5 ;
+	sh:targetClass personinfo:Container .
+_:c14n0 sh:datatype xsd:string ;
+	sh:description "name of the person" ;
+	sh:maxCount 1 ;
+	sh:minCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 1 ;
+	sh:path schema1:name .
+_:c14n1 rdf:first rdf:type ;
+	rdf:rest rdf:nil .
+_:c14n2 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 0 ;
+	sh:path personinfo:id .
+_:c14n3 sh:datatype xsd:integer ;
+	sh:maxCount 1 ;
+	sh:maxInclusive 200 ;
+	sh:minInclusive 0 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 4 ;
+	sh:path personinfo:age .
+_:c14n4 sh:datatype xsd:string ;
+	sh:maxCount 1 ;
+	sh:nodeKind sh:Literal ;
+	sh:order 3 ;
+	sh:path schema1:telephone ;
+	sh:pattern "^[\\d\\(\\)\\-]+$" .
+_:c14n5 sh:class schema1:Person ;
+	sh:nodeKind sh:IRI ;
+	sh:order 0 ;
+	sh:path personinfo:persons .
+_:c14n6 sh:datatype xsd:string ;
+	sh:description "other names for the person" ;
+	sh:nodeKind sh:Literal ;
+	sh:order 2 ;
+	sh:path personinfo:aliases .
+_:c14n7 rdf:first rdf:type ;
+	rdf:rest rdf:nil .

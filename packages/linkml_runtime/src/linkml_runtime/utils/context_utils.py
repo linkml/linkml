@@ -87,10 +87,14 @@ def map_import(importmap: dict[str, str], namespaces: Callable[[], "Namespaces"]
     return importmap.get(sname, sname)  # It may also use URI or other forms
 
 
-def parse_import_map(map_: str | dict[str, str] | TextIOWrapper | None, base: str | None = None) -> dict[str, str]:
+def parse_import_map(
+    map_: "str | dict[str, str | dict[str, Any]] | TextIOWrapper | None",
+    base: str | None = None,
+) -> "dict[str, str | dict[str, Any]]":
     """
     Process the import map
-    :param map_: A map location, the JSON for a map, YAML for a map or an existing dictionary
+    :param map_: A map location, the JSON for a map, YAML for a map or an existing dictionary.
+        Dictionary values may be file-path strings or in-memory schema dicts.
     :param base: Base location to turn relative locations into absolute
     :return: Import map
     """
@@ -112,7 +116,8 @@ def parse_import_map(map_: str | dict[str, str] | TextIOWrapper | None, base: st
     if base:
         outmap = dict()
         for k, v in rval.items():
-            if ":" not in v or ":\\" in v:  # Don't interpret Windows paths as CURIEs
+            if isinstance(v, str) and (":" not in v or ":\\" in v):
+                # Don't interpret Windows paths as CURIEs; only rebase string paths.
                 v = os.path.join(os.path.abspath(base), v)
             outmap[k] = v
         rval = outmap
