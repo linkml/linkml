@@ -343,6 +343,159 @@ classes:
     assert "requires --output" in result.output
 
 
+def test_scoped_context_for_attribute_range_override(tmp_path):
+    """When a class attribute overrides a global slot's range, the class should
+    get a scoped @context with the correct @type for that slot (issue #2970)."""
+    schema = tmp_path / "type_conflict.yaml"
+    schema.write_text(
+        """
+id: example_schema
+name: ExampleSchema
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Attribute:
+    slots:
+      - name
+      - value
+
+  Measurement:
+    slots:
+      - unit
+    attributes:
+      value:
+        required: true
+        range: double
+
+slots:
+  name:
+    required: true
+    range: string
+
+  value:
+    required: true
+    range: integer
+
+  unit:
+    required: true
+    range: string
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    # Global slot "value" should have @type xsd:integer
+    assert ctx["value"]["@type"] == "xsd:integer"
+
+    # Measurement class should have a scoped @context overriding value's type
+    assert "@context" in ctx["Measurement"]
+    assert ctx["Measurement"]["@context"]["value"]["@type"] == "xsd:double"
+
+    # Attribute class should NOT have a scoped context (it uses the global range)
+    assert "@context" not in ctx.get("Attribute", {})
+
+
+def test_scoped_context_for_slot_usage_range_override(tmp_path):
+    """When a class overrides a slot's range via slot_usage, the class should
+    get a scoped @context (issue #2970)."""
+    schema = tmp_path / "slot_usage_override.yaml"
+    schema.write_text(
+        """
+id: example_schema
+name: ExampleSchema
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Base:
+    slots:
+      - score
+
+  Extended:
+    slots:
+      - score
+    slot_usage:
+      score:
+        range: double
+
+slots:
+  score:
+    range: integer
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    assert ctx["score"]["@type"] == "xsd:integer"
+    assert "@context" in ctx["Extended"]
+    assert ctx["Extended"]["@context"]["score"]["@type"] == "xsd:double"
+    assert "@context" not in ctx.get("Base", {})
+
+
+def test_scoped_context_class_range_override(tmp_path):
+    """When a slot's range is overridden from a type to a class, the scoped
+    context should use @id as the @type."""
+    schema = tmp_path / "class_range_override.yaml"
+    schema.write_text(
+        """
+id: example_schema
+name: ExampleSchema
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  Thing:
+    attributes:
+      id: {identifier: true, range: string}
+
+  Container:
+    slots:
+      - ref
+
+  TypedContainer:
+    slots:
+      - ref
+    slot_usage:
+      ref:
+        range: Thing
+
+slots:
+  ref:
+    range: string
+""",
+        encoding="utf-8",
+    )
+
+    context = json.loads(ContextGenerator(str(schema)).serialize())
+    ctx = context["@context"]
+
+    # Global ref should have no @type (string range)
+    assert "@type" not in ctx.get("ref", {}) or ctx["ref"] == {"@id": "ref"}
+
+    # TypedContainer should have scoped context with @id type
+    assert ctx["TypedContainer"]["@context"]["ref"]["@type"] == "@id"
+
+
 @pytest.mark.parametrize(
     "fix_container,attribute,container_type",
     [
@@ -862,3 +1015,625 @@ def test_exclude_external_imports_works_with_mergeimports_false(tmp_path):
     # External vocabulary terms must be excluded
     assert "issuer" not in ctx, "External slot 'issuer' should be excluded with mergeimports=False"
     assert "ExternalCredential" not in ctx, "External class should be excluded with mergeimports=False"
+
+
+def test_xsd_anyuri_as_iri_flag():
+    """Test that --xsd-anyuri-as-iri maps uri ranges to @type: @id.
+
+    By default, ``range: uri`` (type_uri ``xsd:anyURI``) produces
+    ``@type: xsd:anyURI`` (typed literal). With ``xsd_anyuri_as_iri=True``,
+    it produces ``@type: @id`` (IRI node reference), aligning the JSON-LD
+    context with the SHACL generator which already emits ``sh:nodeKind sh:IRI``
+    for the same type.
+
+    See:
+      - W3C SHACL §4.8.1 sh:nodeKind (https://www.w3.org/TR/shacl/#NodeKindConstraintComponent)
+      - JSON-LD 1.1 §4.2.2 Type Coercion (https://www.w3.org/TR/json-ld11/#type-coercion)
+      - RDF 1.1 §3.3 Literals vs §3.2 IRIs (https://www.w3.org/TR/rdf11-concepts/)
+    """
+    schema_yaml = """
+id: https://example.org/test-uri-context
+name: test_uri_context
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+  node_ref:
+    range: nodeidentifier
+    slot_uri: ex:nodeRef
+  name:
+    range: string
+    slot_uri: ex:name
+
+classes:
+  Thing:
+    slots:
+      - homepage
+      - node_ref
+      - name
+"""
+    # Default behaviour: uri → xsd:anyURI (backward compatible)
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+    # Opt-in: uri → @id (aligned with SHACL sh:nodeKind sh:IRI)
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["homepage"]["@type"] == "@id", (
+        f"Expected @type: @id for uri range with xsd_anyuri_as_iri=True, got {ctx_iri['homepage'].get('@type')}"
+    )
+
+    # nodeidentifier is unaffected by the flag (not xsd:anyURI-typed)
+    # Its default @type depends on URI_RANGES matching shex:nonLiteral;
+    # we only verify the flag doesn't change its behaviour.
+    assert ctx_default["node_ref"]["@type"] == ctx_iri["node_ref"]["@type"]
+
+    # string → no @type regardless of flag
+    assert "@type" not in ctx_default.get("name", {})
+    assert "@type" not in ctx_iri.get("name", {})
+
+
+def test_xsd_anyuri_as_iri_with_any_of():
+    """The --xsd-anyuri-as-iri flag must also apply to ``any_of`` slots
+    whose type branches include ``uri`` mixed with class ranges.
+
+    ``_literal_coercion_for_ranges`` resolves mixed any_of type branches
+    and must use the extended URI_RANGES when the flag is active.
+    """
+    schema_yaml = """
+id: https://example.org/test-anyof-uri
+name: test_anyof_uri
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+classes:
+  Container:
+    slots:
+      - mixed_slot
+  Target:
+    class_uri: ex:Target
+
+slots:
+  mixed_slot:
+    slot_uri: ex:mixed
+    any_of:
+      - range: Target
+      - range: uri
+"""
+    # Default: mixed class+uri any_of — uri resolves to xsd:anyURI literal,
+    # which disagrees with @id from the class branch → no coercion emitted
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    default_type = ctx_default.get("mixed_slot", {}).get("@type")
+    assert default_type != "@id", f"Without flag, mixed any_of should not resolve to @id, got {default_type}"
+
+    # With flag: uri branch now also resolves to @id, matching the class branch
+    # → all branches agree → @id is emitted
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["mixed_slot"]["@type"] == "@id", (
+        f"Expected @id for mixed any_of with flag, got {ctx_iri.get('mixed_slot', {}).get('@type')}"
+    )
+
+
+def test_xsd_anyuri_as_iri_owl():
+    """OWL generator must produce owl:ObjectProperty for uri ranges when flag is set.
+
+    Without the flag, ``range: uri`` produces ``owl:DatatypeProperty`` with
+    ``rdfs:range xsd:anyURI``. With ``xsd_anyuri_as_iri=True``, it should
+    produce ``owl:ObjectProperty`` (no rdfs:range restriction), aligning
+    with the SHACL generator's ``sh:nodeKind sh:IRI``.
+    """
+    from rdflib import OWL, RDF, URIRef
+
+    from linkml.generators.owlgen import OwlSchemaGenerator
+
+    schema_yaml = """
+id: https://example.org/test-owl-uri
+name: test_owl_uri
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+  name:
+    range: string
+    slot_uri: ex:name
+classes:
+  Thing:
+    slots:
+      - homepage
+      - name
+"""
+    # Default: uri → DatatypeProperty (must disable type_objects which
+    # unconditionally returns ObjectProperty for all type-ranged slots)
+    gen_default = OwlSchemaGenerator(schema_yaml, type_objects=False)
+    g_default = gen_default.as_graph()
+    homepage_uri = URIRef("https://example.org/homepage")
+    default_rdf_type = set(g_default.objects(homepage_uri, RDF.type))
+    assert OWL.DatatypeProperty in default_rdf_type, (
+        f"Without flag, homepage should be DatatypeProperty, got {default_rdf_type}"
+    )
+
+    # With flag: uri → ObjectProperty
+    gen_iri = OwlSchemaGenerator(schema_yaml, xsd_anyuri_as_iri=True, type_objects=False)
+    g_iri = gen_iri.as_graph()
+    iri_rdf_type = set(g_iri.objects(homepage_uri, RDF.type))
+    assert OWL.ObjectProperty in iri_rdf_type, f"With flag, homepage should be ObjectProperty, got {iri_rdf_type}"
+    assert OWL.DatatypeProperty not in iri_rdf_type, (
+        f"With flag, homepage should NOT be DatatypeProperty, got {iri_rdf_type}"
+    )
+
+    # String slot must remain DatatypeProperty regardless of flag
+    name_uri = URIRef("https://example.org/name")
+    name_rdf_type = set(g_iri.objects(name_uri, RDF.type))
+    assert OWL.DatatypeProperty in name_rdf_type, f"String slot should remain DatatypeProperty, got {name_rdf_type}"
+
+
+def test_xsd_anyuri_as_iri_uriorcurie_range():
+    """``uriorcurie`` also maps to ``xsd:anyURI`` and must behave identically
+    to ``uri`` when the ``--xsd-anyuri-as-iri`` flag is active.
+
+    This is a high-priority coverage gap: ``uriorcurie`` is distinct from
+    ``uri`` at the LinkML level but shares the same XSD type.
+    """
+    schema_yaml = """
+id: https://example.org/test-uriorcurie
+name: test_uriorcurie
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  reference:
+    range: uriorcurie
+    slot_uri: ex:reference
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+
+classes:
+  Thing:
+    slots:
+      - reference
+      - homepage
+"""
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    assert ctx_default["reference"]["@type"] == "xsd:anyURI"
+    assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+    assert ctx_iri["reference"]["@type"] == "@id", "uriorcurie should map to @id with xsd_anyuri_as_iri=True"
+    assert ctx_iri["homepage"]["@type"] == "@id", "uri should map to @id with xsd_anyuri_as_iri=True"
+
+
+def test_xsd_anyuri_as_iri_curie_range_unchanged():
+    """``curie`` maps to ``xsd:string`` (not ``xsd:anyURI``), so the flag
+    must NOT affect its coercion.
+
+    This documents the cross-type boundary: ``uri`` and ``uriorcurie``
+    share ``xsd:anyURI``, but ``curie`` uses ``xsd:string``.
+    """
+    schema_yaml = """
+id: https://example.org/test-curie
+name: test_curie
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  curie_slot:
+    range: curie
+    slot_uri: ex:curieSlot
+  uri_slot:
+    range: uri
+    slot_uri: ex:uriSlot
+
+classes:
+  Thing:
+    slots:
+      - curie_slot
+      - uri_slot
+"""
+    ctx_default = json.loads(ContextGenerator(schema_yaml).serialize())["@context"]
+    ctx_iri = json.loads(ContextGenerator(schema_yaml, xsd_anyuri_as_iri=True).serialize())["@context"]
+
+    # curie (xsd:string) must be unaffected by the flag
+    curie_default = ctx_default.get("curie_slot", {}).get("@type")
+    curie_iri = ctx_iri.get("curie_slot", {}).get("@type")
+    assert curie_default == curie_iri, f"curie coercion should not change with flag: {curie_default} vs {curie_iri}"
+
+    # uri (xsd:anyURI) must change — sanity check
+    assert ctx_iri["uri_slot"]["@type"] == "@id"
+
+
+def test_xsd_anyuri_as_iri_owl_curie_unchanged():
+    """OWL generator must keep ``range: curie`` as DatatypeProperty even with flag.
+
+    ``curie`` maps to ``xsd:string`` (not ``xsd:anyURI``), so the
+    ``--xsd-anyuri-as-iri`` flag must not promote it to ObjectProperty.
+    This verifies cross-generator consistency: the JSON-LD context generator
+    already correctly excludes ``curie`` via ``URI_RANGES_WITH_XSD``; the
+    OWL generator must match via ``is_xsd_anyuri_range()``.
+    """
+    from rdflib import OWL, RDF, URIRef
+
+    from linkml.generators.owlgen import OwlSchemaGenerator
+
+    schema_yaml = """
+id: https://example.org/test-owl-curie
+name: test_owl_curie
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  compact_id:
+    range: curie
+    slot_uri: ex:compactId
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+classes:
+  Thing:
+    slots:
+      - compact_id
+      - homepage
+"""
+    compact_id_uri = URIRef("https://example.org/compact_id")
+    homepage_uri = URIRef("https://example.org/homepage")
+
+    # With flag: curie must stay DatatypeProperty, uri must become ObjectProperty
+    gen = OwlSchemaGenerator(schema_yaml, xsd_anyuri_as_iri=True, type_objects=False)
+    g = gen.as_graph()
+
+    curie_types = set(g.objects(compact_id_uri, RDF.type))
+    assert OWL.DatatypeProperty in curie_types, f"curie slot must remain DatatypeProperty with flag, got {curie_types}"
+    assert OWL.ObjectProperty not in curie_types, (
+        f"curie slot must NOT become ObjectProperty with flag, got {curie_types}"
+    )
+
+    # Sanity: uri must become ObjectProperty
+    uri_types = set(g.objects(homepage_uri, RDF.type))
+    assert OWL.ObjectProperty in uri_types, f"uri slot should be ObjectProperty with flag, got {uri_types}"
+
+
+def test_xsd_anyuri_as_iri_cli_flag():
+    """Verify the ``--xsd-anyuri-as-iri`` flag is wired through Click."""
+    import tempfile
+    from pathlib import Path
+
+    from click.testing import CliRunner
+
+    from linkml.generators.jsonldcontextgen import cli
+
+    schema_yaml = """
+id: https://example.org/test-cli
+name: test_cli
+
+prefixes:
+  ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
+imports:
+  - linkml:types
+
+default_prefix: ex
+default_range: string
+
+slots:
+  homepage:
+    range: uri
+    slot_uri: ex:homepage
+
+classes:
+  Thing:
+    slots:
+      - homepage
+"""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        schema_path = Path(tmpdir) / "test.yaml"
+        schema_path.write_text(schema_yaml)
+
+        runner = CliRunner()
+
+        # Without flag
+        result_default = runner.invoke(cli, [str(schema_path)])
+        assert result_default.exit_code == 0, result_default.output
+        ctx_default = json.loads(result_default.output)["@context"]
+        assert ctx_default["homepage"]["@type"] == "xsd:anyURI"
+
+        # With flag
+        result_iri = runner.invoke(cli, [str(schema_path), "--xsd-anyuri-as-iri"])
+        assert result_iri.exit_code == 0, result_iri.output
+        ctx_iri = json.loads(result_iri.output)["@context"]
+        assert ctx_iri["homepage"]["@type"] == "@id"
+
+
+# Enum @type: @vocab context generation (JSON-LD 1.1 §4.2.3 + §4.1.8)
+# ---------------------------------------------------------------------------
+
+
+def _ctx_for_yaml(yaml_text: str, tmp_path, **kwargs) -> dict:
+    """Generate a context from inline YAML and return the @context dict."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(textwrap.dedent(yaml_text), encoding="utf-8")
+    ctx_text = ContextGenerator(str(schema_path), **kwargs).serialize()
+    return json.loads(ctx_text)["@context"]
+
+
+ELIGIBLE_ENUM_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+      myns: https://example.org/myns/
+    imports:
+      - linkml:types
+    enums:
+      ColorEnum:
+        enum_uri: myns:Color
+        permissible_values:
+          Red:
+            meaning: myns:Red
+          Green:
+            meaning: myns:Green
+          Blue:
+            meaning: myns:Blue
+    slots:
+      favorite_color:
+        slot_uri: test:favoriteColor
+        range: ColorEnum
+    classes:
+      Thing:
+        class_uri: test:Thing
+        slots:
+          - favorite_color
+"""
+
+
+def test_eligible_enum_gets_vocab_coercion(tmp_path):
+    """Enum where all values have meanings with matching text gets @type: @vocab."""
+    ctx = _ctx_for_yaml(ELIGIBLE_ENUM_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["favorite_color"]
+    assert slot_ctx["@type"] == "@vocab", "Eligible enum slot should have @type: @vocab"
+    assert "@context" in slot_ctx
+    scoped = slot_ctx["@context"]
+    assert scoped["@vocab"] == "https://example.org/myns/"
+    # SKOS mappings preserved for backward compat with structured values
+    assert scoped["meaning"] == "@id"
+    assert scoped["text"] == "skos:notation"
+    assert scoped["description"] == "skos:prefLabel"
+
+
+INELIGIBLE_TEXT_MISMATCH_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+      codes: https://example.org/codes/
+    imports:
+      - linkml:types
+    enums:
+      EventType:
+        permissible_values:
+          HIRE:
+            meaning: codes:001
+          FIRE:
+            meaning: codes:002
+    slots:
+      event_type:
+        slot_uri: test:eventType
+        range: EventType
+    classes:
+      Event:
+        class_uri: test:Event
+        slots:
+          - event_type
+"""
+
+
+def test_text_mismatch_falls_back_to_enum_context(tmp_path):
+    """Enum where text != meaning local name falls back to ENUM_CONTEXT only."""
+    ctx = _ctx_for_yaml(INELIGIBLE_TEXT_MISMATCH_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["event_type"]
+    assert "@type" not in slot_ctx, "Ineligible enum should not get @type"
+    scoped = slot_ctx["@context"]
+    assert "@vocab" not in scoped, "Ineligible enum should not get scoped @vocab"
+    assert scoped["meaning"] == "@id"
+
+
+INELIGIBLE_NO_MEANING_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+    imports:
+      - linkml:types
+    enums:
+      MoodEnum:
+        permissible_values:
+          happy:
+            description: feeling happy
+          sad:
+            description: feeling sad
+    slots:
+      mood:
+        slot_uri: test:mood
+        range: MoodEnum
+    classes:
+      Person:
+        class_uri: test:Person
+        slots:
+          - mood
+"""
+
+
+def test_no_meaning_falls_back_to_enum_context(tmp_path):
+    """Enum where some values lack meaning falls back to ENUM_CONTEXT."""
+    ctx = _ctx_for_yaml(INELIGIBLE_NO_MEANING_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["mood"]
+    assert "@type" not in slot_ctx
+    scoped = slot_ctx["@context"]
+    assert "@vocab" not in scoped
+
+
+INELIGIBLE_MIXED_NS_SCHEMA = """\
+    id: https://example.org/test
+    name: test
+    default_prefix: test
+    prefixes:
+      linkml: https://w3id.org/linkml/
+      test: https://example.org/test/
+      ns1: https://example.org/ns1/
+      ns2: https://example.org/ns2/
+    imports:
+      - linkml:types
+    enums:
+      MixedEnum:
+        permissible_values:
+          Foo:
+            meaning: ns1:Foo
+          Bar:
+            meaning: ns2:Bar
+    slots:
+      mixed:
+        slot_uri: test:mixed
+        range: MixedEnum
+    classes:
+      Container:
+        class_uri: test:Container
+        slots:
+          - mixed
+"""
+
+
+def test_mixed_namespaces_falls_back_to_enum_context(tmp_path):
+    """Enum with values from different namespaces falls back to ENUM_CONTEXT."""
+    ctx = _ctx_for_yaml(INELIGIBLE_MIXED_NS_SCHEMA, tmp_path)
+
+    slot_ctx = ctx["mixed"]
+    assert "@type" not in slot_ctx
+    scoped = slot_ctx["@context"]
+    assert "@vocab" not in scoped
+
+
+def test_eligible_enum_bare_string_expands_to_iri(tmp_path):
+    """End-to-end: bare string enum value expands to the correct IRI.
+
+    Verifies the generated context enables the JSON-LD 1.1 expansion
+    described in §4.2.3 (type coercion via @vocab).
+
+    Uses rdflib's JSON-LD parser for expansion verification.
+    """
+    from rdflib import Graph, URIRef
+
+    ctx = _ctx_for_yaml(ELIGIBLE_ENUM_SCHEMA, tmp_path)
+
+    doc = {
+        "@context": ctx,
+        "@id": "urn:test:instance",
+        "favorite_color": "Red",
+    }
+
+    g = Graph()
+    g.parse(data=json.dumps(doc), format="json-ld")
+
+    pred = URIRef("https://example.org/test/favoriteColor")
+    objects = list(g.objects(URIRef("urn:test:instance"), pred))
+    assert len(objects) == 1
+    assert isinstance(objects[0], URIRef), f"Expected URIRef, got {type(objects[0]).__name__}: {objects[0]}"
+    assert str(objects[0]) == "https://example.org/myns/Red"
+
+
+def test_eligible_enum_structured_value_still_works(tmp_path):
+    """Structured enum value {text, meaning} still expands correctly.
+
+    The combined context (@type: @vocab + SKOS mappings) supports both
+    bare strings and structured objects simultaneously.
+
+    Uses rdflib's JSON-LD parser for expansion verification.
+    """
+    from rdflib import Graph, URIRef
+
+    ctx = _ctx_for_yaml(ELIGIBLE_ENUM_SCHEMA, tmp_path)
+
+    doc = {
+        "@context": ctx,
+        "@id": "urn:test:instance",
+        "favorite_color": {
+            "text": "Red",
+            "meaning": "https://example.org/myns/Red",
+        },
+    }
+
+    g = Graph()
+    g.parse(data=json.dumps(doc), format="json-ld")
+
+    pred = URIRef("https://example.org/test/favoriteColor")
+    subjects = list(g.objects(URIRef("urn:test:instance"), pred))
+    assert len(subjects) == 1
+    # The meaning → @id mapping makes the structured value a node with @id
+    assert isinstance(subjects[0], URIRef), f"Expected URIRef, got {type(subjects[0]).__name__}: {subjects[0]}"
+    assert str(subjects[0]) == "https://example.org/myns/Red"
+
+
+def test_kitchen_sink_employment_event_type_falls_back(kitchen_sink_path):
+    """Kitchen sink EmploymentEventType (HIRE→bizcodes:001) must fall back."""
+    ctx_text = ContextGenerator(kitchen_sink_path).serialize()
+    ctx = json.loads(ctx_text)["@context"]
+
+    # EmploymentEventType has text!=local (HIRE vs 001)
+    # Slots using this enum should not get @type: @vocab
+    if "employed_at" in ctx:
+        slot_def = ctx["employed_at"]
+        if isinstance(slot_def, dict) and "@context" in slot_def:
+            assert "@vocab" not in slot_def.get("@context", {})

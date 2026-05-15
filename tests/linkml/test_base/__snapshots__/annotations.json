@@ -387,6 +387,13 @@
     {
       "name": "extension_value",
       "definition_uri": "https://w3id.org/linkml/extension_value",
+      "annotations": [
+        {
+          "tag": "simple_dict_value",
+          "value": true,
+          "@type": "Annotation"
+        }
+      ],
       "description": "the actual annotation",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
@@ -410,12 +417,14 @@
       "definition_uri": "https://w3id.org/linkml/Annotatable",
       "description": "mixin for classes that support annotations",
       "from_schema": "https://w3id.org/linkml/annotations",
+      "exact_mappings": [
+        "linkml:Annotatable"
+      ],
       "mixin": true,
       "slots": [
         "annotations"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Annotatable",
       "@type": "ClassDefinition"
     },
     {
@@ -423,6 +432,9 @@
       "definition_uri": "https://w3id.org/linkml/Annotation",
       "description": "a tag/value pair with the semantics of OWL Annotation",
       "from_schema": "https://w3id.org/linkml/annotations",
+      "exact_mappings": [
+        "linkml:Annotation"
+      ],
       "is_a": "Extension",
       "mixins": [
         "Annotatable"
@@ -434,7 +446,6 @@
         "annotations"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Annotation",
       "@type": "ClassDefinition"
     },
     {
@@ -442,11 +453,10 @@
       "definition_uri": "https://w3id.org/linkml/AnyValue",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
-      "mappings": [
+      "exact_mappings": [
         "linkml:Any"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Any",
       "@type": "ClassDefinition"
     },
     {
@@ -455,13 +465,15 @@
       "description": "a tag/value pair used to add non-model information to an entry",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
+      "exact_mappings": [
+        "linkml:Extension"
+      ],
       "slots": [
         "extension_tag",
         "extension_value",
         "extensions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Extension",
       "@type": "ClassDefinition"
     },
     {
@@ -470,16 +482,18 @@
       "description": "mixin for classes that support extension",
       "from_schema": "https://w3id.org/linkml/extensions",
       "imported_from": "linkml:extensions",
+      "exact_mappings": [
+        "linkml:Extensible"
+      ],
       "mixin": true,
       "slots": [
         "extensions"
       ],
       "slot_usage": {},
-      "class_uri": "https://w3id.org/linkml/Extensible",
       "@type": "ClassDefinition"
     }
   ],
-  "metamodel_version": "1.7.0",
+  "metamodel_version": "1.11.0",
   "source_file": "annotations.yaml",
   "source_file_date": "2000-01-01T00:00:00",
   "source_file_size": 1,

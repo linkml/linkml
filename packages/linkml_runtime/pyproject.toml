@@ -30,11 +30,12 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
-    "click",
+    "click >= 8.2",
     "deprecated",
     "hbreader",
     "json-flattener >=0.1.9",
@@ -46,6 +47,7 @@ dependencies = [
     "requests",
     "prefixmaps >=0.1.4",
     "curies >=0.5.4",
+    "pyoxigraph >=0.5.6",
     "pydantic >=1.10.2, <3.0.0",
     "isodate >=0.7.2, <1.0.0; python_version < '3.11'",
 ]
@@ -195,7 +197,7 @@ max-complexity = 15
 
 [tool.tox]
 requires = ["tox>=4"]
-env_list = ["lint", "py{310,311,312,313}"]
+env_list = ["lint", "py{310,311,312,313,314}"]
 
 [tool.tox.env_run_base]
 allowlist_externals = ["uv"]
