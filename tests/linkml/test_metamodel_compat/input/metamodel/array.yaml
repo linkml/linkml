@@ -89,7 +89,7 @@ classes:
       - array_linearization_order
     slot_usage:
       array_linearization_order:
-        equals_string: COLUMN_MAJOR_ARRAY_ORDER
+        ifabsent: "string(COLUMN_MAJOR_ARRAY_ORDER)"
 
   RowOrderedArray:
     mixin: true
@@ -100,7 +100,7 @@ classes:
       - array_linearization_order
     slot_usage:
       array_linearization_order:
-        equals_string: ROW_MAJOR_ARRAY_ORDER
+        ifabsent: "string(ROW_MAJOR_ARRAY_ORDER)"
 
 slots:
   dimensions:
