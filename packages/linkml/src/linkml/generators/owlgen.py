@@ -2,7 +2,6 @@
 
 import logging
 import os
-import re
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from copy import copy
@@ -23,6 +22,7 @@ from linkml._version import __version__
 from linkml.generators.common.subproperty import is_xsd_anyuri_range
 from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -249,51 +249,27 @@ class OwlSchemaGenerator(Generator):
     """
 
     # Metaslot ranges that represent human-readable text (eligible for language tags).
-    # Everything else (uri, uriorcurie, datetime, boolean, integer, classes, …) is technical.
+    # Everything else (uri, uriorcurie, datetime, boolean, integer, classes, enums, …)
+    # is technical and must never be language-tagged.
     _LANGUAGE_TAGGABLE_RANGES: ClassVar[frozenset[str]] = frozenset({"string", "ncname"})
 
-    # Syntactic validator for BCP 47 language tags (RFC 5646 §2.1 ABNF).
-    # Each group maps 1:1 to an ABNF production: language, script, region,
-    # variant, extension, privateuse, and grandfathered (irregular + regular).
-    _BCP47_RE: ClassVar[re.Pattern[str]] = re.compile(
-        r"^(?:"
-        r"(?:(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3})|[A-Za-z]{4}|[A-Za-z]{5,8})"
-        r"(?:-[A-Za-z]{4})?"
-        r"(?:-(?:[A-Za-z]{2}|\d{3}))?"
-        r"(?:-(?:[A-Za-z\d]{5,8}|\d[A-Za-z\d]{3}))*"
-        r"(?:-[0-9A-WY-Za-wy-z](?:-[A-Za-z\d]{2,8})+)*"
-        r"(?:-x(?:-[A-Za-z\d]{1,8})+)?"
-        r"|x(?:-[A-Za-z\d]{1,8})+"
-        r"|en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon"
-        r"|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu"
-        r"|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE"
-        r"|art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu"
-        r"|zh-hakka|zh-min|zh-min-nan|zh-xiang"
-        r")$",
-        re.ASCII,
-    )
+    def __post_init__(self) -> None:
+        # Resolver must be assigned before ``super().__post_init__()`` so that
+        # any hook the parent invokes during initialisation can safely call
+        # ``_resolve_language``. The resolver also validates the default tag
+        # once here; per-element tags are validated lazily, with at most one
+        # warning per distinct malformed tag.
+        self._language_resolver = LanguageTagResolver(self.default_language)
+        super().__post_init__()
 
     def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
         """Return the BCP 47 language tag for *element*, or ``None``.
 
-        Resolution order:
-        1. ``element.in_language`` (element-level override)
-        2. ``self.default_language`` (generator-level default)
-
-        Empty or whitespace-only strings are normalised to ``None``.
-        Tags that do not conform to RFC 5646 §2.1 syntax produce a warning.
+        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.
+        Resolution order is element-level ``in_language`` first, then the
+        generator-level default.
         """
-        if element is not None:
-            element_lang = getattr(element, "in_language", None)
-            if element_lang and element_lang.strip():
-                tag = element_lang.strip()
-                if not self._BCP47_RE.match(tag):
-                    logger.warning("in_language value %r is not a well-formed BCP 47 tag (RFC 5646 §2.1)", tag)
-                return tag
-        tag = (self.default_language or "").strip() or None
-        if tag is not None and not self._BCP47_RE.match(tag):
-            logger.warning("--default-language value %r is not a well-formed BCP 47 tag (RFC 5646 §2.1)", tag)
-        return tag
+        return self._language_resolver.resolve(element)
 
     def _literal(self, value: str, element: "Definition | PermissibleValue | None" = None) -> Literal:
         """Create a language-tagged ``Literal`` for a human-readable string.
@@ -424,7 +400,16 @@ class OwlSchemaGenerator(Generator):
                     # else:
                     #    logger.debug(f"Skipping {uri} {metaslot_uri} => {v}")
                 else:
-                    obj = Literal(v, lang=lang) if lang else Literal(v)
+                    # Catch-all for ranges that are not types, subsets, or
+                    # classes -- in practice these are enum-ranged metaslots
+                    # such as ``pv_formula`` (range ``pv_formula_options``) on
+                    # a PermissibleValue or ``obligation_level`` (range
+                    # ``obligation_level_enum``) on a SlotDefinition. Their
+                    # values are permissible-value identifiers, i.e. constraint
+                    # data, not labels: tagging them would shift the datatype
+                    # from ``xsd:string`` to ``rdf:langString`` and break
+                    # downstream string equality / SHACL ``sh:in`` matching.
+                    obj = Literal(v)
                 self.graph.add((uri, metaslot_uri, obj))
 
         for k, v in e.annotations.items():

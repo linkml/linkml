@@ -1389,3 +1389,36 @@ def test_shacl_default_language_in_language_bcp47_warning(caplog):
     labels = list(g.objects(EX.Vehicle, RDFS.label))
     assert any(lit.language == "toolongtag" for lit in labels)
     assert any("in_language" in rec.message and "toolongtag" in rec.message for rec in caplog.records)
+
+
+def test_shacl_default_language_bcp47_warning_is_deduplicated(caplog):
+    """Each distinct malformed tag warns at most once across the whole SHACL run.
+
+    Mirrors the owlgen regression test (see PR #3449 review comment): the
+    original implementation emitted one warning per element. The shared
+    :class:`linkml.utils.language_tags.LanguageTagResolver` collapses these
+    to one warning per distinct malformed tag.
+    """
+    import logging
+
+    schema = _build_shacl_lang_schema()
+    schema.classes["Vehicle"].in_language = "toolongtag"
+    schema.slots["vehicle_name"].in_language = "toolongtag"
+
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.language_tags"):
+        ShaclGenerator(
+            schema,
+            mergeimports=False,
+            default_language="anothertoolongone",
+        ).serialize()
+
+    in_language_warnings = [
+        rec for rec in caplog.records if "in_language" in rec.message and "toolongtag" in rec.message
+    ]
+    default_warnings = [
+        rec for rec in caplog.records if "default language" in rec.message and "anothertoolongone" in rec.message
+    ]
+    assert len(in_language_warnings) == 1, (
+        f"expected exactly 1 in_language warning for 'toolongtag', got {len(in_language_warnings)}"
+    )
+    assert len(default_warnings) == 1, f"expected exactly 1 default-language warning, got {len(default_warnings)}"
