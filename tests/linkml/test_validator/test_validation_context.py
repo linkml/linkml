@@ -59,7 +59,7 @@ def test_json_schema_validator_cache_miss_populates_module_cache():
 
 def test_json_schema_validator_cache_hit_reroots_to_new_class():
     """Second ValidationContext sharing the same schema object hits the module-level
-    cache and builds a minimal JsonSchema wrapper re-rooted to the new target class.
+    cache and builds a JsonSchema root inlined to the new target class.
     """
     schema = _two_class_schema()
     cache_key = (id(schema), False, False)
@@ -78,9 +78,13 @@ def test_json_schema_validator_cache_hit_reroots_to_new_class():
     errors = list(validator.iter_errors({"name": "Rex", "breed": "Labrador"}))
     assert errors == [], errors
 
-    # Confirm the validator is rooted at Dog (not Animal): it should have a schema with a $ref
-    assert "$ref" in validator.schema
-    assert "Dog" in validator.schema["$ref"]
+    # The validator is rooted at Dog: Dog's properties inlined, additionalProperties
+    # reflects closed=False, and $defs is preserved for nested $ref resolution.
+    assert "properties" in validator.schema
+    assert "breed" in validator.schema["properties"]
+    assert validator.schema["additionalProperties"] is True
+    assert "$defs" in validator.schema
+    assert "$schema" in validator.schema
 
 
 @pytest.mark.parametrize("closed", [True, False])
@@ -186,13 +190,13 @@ def test_cache_miss_generates_schema_with_not_closed_flag(monkeypatch):
     assert cache_key in _json_schema_cache, "result stored in module cache (line 65)"
 
 
-# cache-hit path constructs a JsonSchema wrapper with the correct $ref
+# cache-hit path inlines the target class and shares $defs by reference
 
 
-def test_cache_hit_wrapper_contains_correct_ref_and_defs():
+def test_cache_hit_wrapper_inlines_class_and_shares_defs():
     """When the module-level cache is warm, a second ValidationContext for a different
-    target class must produce a minimal JsonSchema with $ref pointing to that class
-    and the original $defs — covering lines 71-72."""
+    target class must inline that class's keywords at the root, share the cached $defs
+    dict by reference (no deep copy), and re-apply additionalProperties = not_closed."""
     schema = _two_class_schema()
     cache_key = (id(schema), False, False)
     _json_schema_cache.pop(cache_key, None)
@@ -201,13 +205,59 @@ def test_cache_hit_wrapper_contains_correct_ref_and_defs():
     ctx_animal = ValidationContext(schema, "Animal")
     ctx_animal.json_schema_validator(closed=False, include_range_class_descendants=False)
     assert cache_key in _json_schema_cache
-    original_defs = _json_schema_cache[cache_key]["$defs"]
+    cached_root = _json_schema_cache[cache_key]
+    original_defs = cached_root["$defs"]
 
-    # Trigger the cache-hit path for a different target class (line 71: cached = ...)
+    # Trigger the cache-hit path for a different target class
     ctx_dog = ValidationContext(schema, "Dog")
     validator = ctx_dog.json_schema_validator(closed=False, include_range_class_descendants=False)
 
-    # The validator schema must be the lightweight wrapper (line 72)
-    assert validator.schema.get("$ref") == "#/$defs/Dog"  # line 77
-    assert validator.schema["$defs"] is original_defs  # line 76: same dict object (no re-gen)
-    assert "$schema" in validator.schema  # line 74
+    # $defs shared by reference (no deep copy) — preserves O(1) cache-hit cost
+    assert validator.schema["$defs"] is original_defs
+    # additionalProperties re-applied from not_closed (closed=False → True)
+    assert validator.schema["additionalProperties"] is True
+    # Metadata inherited from the cached root (belt-and-braces parity)
+    assert validator.schema["$schema"] == cached_root["$schema"]
+    assert validator.schema["$id"] == cached_root["$id"]
+    # Dog's keywords inlined at root
+    assert "properties" in validator.schema
+    assert set(validator.schema["properties"]) == {"name", "breed"}
+
+
+# Regression: cache-hit validator must behave identically to a cold-cache one
+
+
+@pytest.mark.parametrize("closed", [True, False])
+def test_cache_hit_validator_matches_cold_cache(closed):
+    """A cache-hit validator must produce the same errors as a cold-cache one
+    for the same target_class on every instance. Guards against the
+    additionalProperties divergence caused by the old $ref-wrapping approach,
+    plus any sibling cases (extra props, missing fields, etc)."""
+    schema = _two_class_schema()
+    cache_key = (id(schema), closed, False)
+
+    # Cold-cache validator for Dog
+    _json_schema_cache.pop(cache_key, None)
+    cold = ValidationContext(schema, "Dog").json_schema_validator(
+        closed=closed, include_range_class_descendants=False
+    )
+
+    # Warm the cache via Animal, then build a hit-path validator for Dog
+    _json_schema_cache.pop(cache_key, None)
+    ValidationContext(schema, "Animal").json_schema_validator(
+        closed=closed, include_range_class_descendants=False
+    )
+    warm = ValidationContext(schema, "Dog").json_schema_validator(
+        closed=closed, include_range_class_descendants=False
+    )
+
+    instances = [
+        {"name": "Rex", "breed": "Lab"},
+        {"name": "Rex", "breed": "Lab", "extra_prop": "hi"},
+        {"breed": "Lab"},
+        {},
+    ]
+    for inst in instances:
+        cold_msgs = sorted(e.message for e in cold.iter_errors(inst))
+        warm_msgs = sorted(e.message for e in warm.iter_errors(inst))
+        assert cold_msgs == warm_msgs, (inst, cold_msgs, warm_msgs)

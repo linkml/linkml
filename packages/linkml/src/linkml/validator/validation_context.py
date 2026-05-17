@@ -10,6 +10,7 @@ from linkml.generators.jsonschemagen import JsonSchema
 from linkml.utils.datautils import infer_root_class
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.formatutils import camelcase
 
 # Module-level cache:
 ## Stores full JsonSchema dict (including $defs) from the first generation.
@@ -64,19 +65,32 @@ class ValidationContext:
                 json_schema = jsonschema_gen.generate()
                 _json_schema_cache[cache_key] = json_schema
             else:
-                # Subsequent calls: reuse cached $defs, re-root to new class.
-                # Uses a minimal wrapper with a $ref pointing to cached $defs.
-                # Each $defs entry has their own 'properties', 'required', etc,
-                # so delegating via `$ref` preserves the validation behaviour.
+                # Subsequent calls: reuse cached $defs, rebuild the root by re-doing
+                # JsonSchemaGenerator's "merge top class into root" step for a new target.
+                # Wrapping with $ref would inherit the hardcoded additionalProperties=False
+                # from $defs[X] (see jsonschemagen.py handle_class) and diverge from a
+                # freshly-generated validator when closed=False.
                 cached = _json_schema_cache[cache_key]
-                json_schema = JsonSchema(
+                # $defs keys are camelCased by JsonSchemaGenerator when preserve_names=False
+                # (the mode used here), so look up under the canonical name.
+                defs_key = camelcase(self._target_class)
+                defs_class = cached["$defs"].get(defs_key, {})
+                # Inherit metadata ($schema, $id, metamodel_version, version, etc)
+                # from the cached root, then let defs_class win for keys it defines
+                # (type, properties, required, title, description, if/then/else, allOf).
+                # $defs is set separately to share refs.
+                root = {k: v for k, v in cached.items() if k not in defs_class and k != "$defs"}
+                root["$defs"] = cached["$defs"]
+                root.update(
                     {
-                        "$schema": cached.get("$schema"),
-                        "$id": cached.get("$id"),
-                        "$defs": cached["$defs"],
-                        "$ref": f"#/$defs/{self._target_class}",
+                        k: v
+                        for k, v in defs_class.items()
+                        if k not in ("$schema", "$id", "$defs", "additionalProperties")
                     }
                 )
+                # Always re-set: the cached root's value reflects whichever class warmed it.
+                root["additionalProperties"] = not_closed
+                json_schema = JsonSchema(root)
 
         validator_cls = jsonschema.validators.validator_for(json_schema, default=jsonschema.Draft7Validator)
         return validator_cls(json_schema, format_checker=validator_cls.FORMAT_CHECKER)
