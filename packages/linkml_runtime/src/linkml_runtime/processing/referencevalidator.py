@@ -590,6 +590,57 @@ class ReferenceValidator:
             return [_obj_from_item(k, v) for k, v in list(input_object.items())]
         return input_object
 
+    def _try_hoist_compact_key_item(
+        self,
+        v: Any,
+        parent_slot: SlotDefinition,
+        pk_slot_name: SlotDefinitionName,
+    ) -> dict | None:
+        """Hoist a compact-key list item ``{key: {...}}`` to expanded form.
+
+        The shape ``[{key: {...}}]`` is semantically equivalent to
+        ``[{<pk>: key, ...}]`` (and to ``{key: {...}}``) when the conversion is
+        unambiguous. To avoid silently rescuing typos that would otherwise be
+        valid expanded items (per the project's no-footgun policy), only hoist
+        when the key is not a slot of the range class and the value is a dict.
+        Returns ``None`` if the item is not eligible for hoisting.
+        """
+        if pk_slot_name is None:
+            return None
+        if not isinstance(v, dict) or len(v) != 1:
+            return None
+        ((key, value),) = v.items()
+        if not isinstance(value, dict):
+            return None
+        range_element = self._slot_range_element(parent_slot)
+        if isinstance(range_element, ClassDefinition) and key in range_element.attributes:
+            return None
+        return {pk_slot_name: key, **value}
+
+    def _list_to_dict_items(
+        self,
+        input_object: list,
+        parent_slot: SlotDefinition,
+        pk_slot_name: SlotDefinitionName,
+        report: Report,
+    ) -> Iterator[tuple[Any, dict]]:
+        """Yield (pk_value, expanded_item) pairs from a list, hoisting compact-key
+        items where unambiguous and reporting items that still lack a pk."""
+        for v in input_object:
+            hoisted = self._try_hoist_compact_key_item(v, parent_slot, pk_slot_name)
+            if hoisted is not None:
+                v = hoisted
+            pk = v.get(pk_slot_name) if isinstance(v, dict) and pk_slot_name else None
+            if pk is None:
+                report.add_problem(
+                    ConstraintType.DictCollectionFormConstraint,
+                    parent_slot.name,
+                    v,
+                    pk_slot_name,
+                )
+                continue
+            yield pk, v
+
     def ensure_expanded_dict(
         self,
         input_object: Any,
@@ -604,7 +655,7 @@ class ReferenceValidator:
                 CollectionForm.List,
                 CollectionForm.ExpandedDict,
             )
-            return {v.get(pk_slot_name): v for v in input_object}
+            return {pk: v for pk, v in self._list_to_dict_items(input_object, parent_slot, pk_slot_name, report)}
         if isinstance(input_object, dict):
             simple_dict_value_slot = self._slot_as_simple_dict_value_slot(parent_slot)
             if simple_dict_value_slot and any(
@@ -638,7 +689,10 @@ class ReferenceValidator:
                 CollectionForm.List,
                 CollectionForm.CompactDict,
             )
-            return {v.get(pk_slot_name): _remove_pk(v, pk_slot_name) for v in input_object}
+            return {
+                pk: _remove_pk(v, pk_slot_name)
+                for pk, v in self._list_to_dict_items(input_object, parent_slot, pk_slot_name, report)
+            }
         elif isinstance(input_object, dict):
             if pk_slot_name and any(
                 v for k, v in input_object.items() if isinstance(v, dict) and v.get(pk_slot_name, None) is not None

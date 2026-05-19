@@ -1158,3 +1158,139 @@ class ReferenceValidatorTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# --- Compact-key list hoist (issue #3529) -----------------------------------
+
+_COMPACT_KEY_SCHEMA_YAML = """
+id: https://example.org/test
+name: test_compact_key_list
+prefixes: {linkml: 'https://w3id.org/linkml/'}
+default_prefix: test
+imports: [linkml:types]
+
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      items: {range: Item, multivalued: true, inlined: true}
+  Item:
+    attributes:
+      name: {identifier: true}
+      sources: {multivalued: true}
+      label: {}
+"""
+
+
+_COLLIDING_SLOT_SCHEMA_YAML = """
+id: https://example.org/test
+name: test_colliding_slot
+prefixes: {linkml: 'https://w3id.org/linkml/'}
+default_prefix: test
+imports: [linkml:types]
+
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      items: {range: Item, multivalued: true, inlined: true}
+  Item:
+    attributes:
+      name: {identifier: true}
+      red: {range: integer}
+      sources: {multivalued: true}
+"""
+
+
+def _normalizer(schema_yaml: str, *, expand_all: bool = True) -> ReferenceValidator:
+    rv = ReferenceValidator(SchemaView(schema_yaml))
+    rv.expand_all = expand_all
+    return rv
+
+
+@pytest.mark.parametrize(
+    "input_items,expected_items",
+    [
+        # Issue #3529 reproducer: compact-key list hoists to expanded dict.
+        (
+            [{"red": {"sources": ["a"]}}],
+            {"red": {"name": "red", "sources": ["a"]}},
+        ),
+        # Multiple compact-key items.
+        (
+            [{"red": {"sources": ["a"]}}, {"blue": {"sources": ["b"]}}],
+            {
+                "red": {"name": "red", "sources": ["a"]},
+                "blue": {"name": "blue", "sources": ["b"]},
+            },
+        ),
+        # Mixed: expanded item alongside compact-key item.
+        (
+            [{"name": "green", "sources": ["g"]}, {"red": {"sources": ["a"]}}],
+            {
+                "green": {"name": "green", "sources": ["g"]},
+                "red": {"name": "red", "sources": ["a"]},
+            },
+        ),
+    ],
+)
+def test_compact_key_list_hoists_to_expanded_dict(input_items, expected_items):
+    """`[{key: {...}}]` is semantically `{key: {...}}` when unambiguous; hoist it."""
+    rv = _normalizer(_COMPACT_KEY_SCHEMA_YAML)
+    report = Report()
+    out = rv.normalize({"items": input_items}, report=report)
+    assert out["items"] == expected_items
+    assert report.errors() == []
+
+
+def test_compact_key_list_hoists_to_compact_dict_when_not_expanding():
+    """The same input also normalizes correctly when the canonical form is CompactDict."""
+    rv = _normalizer(_COMPACT_KEY_SCHEMA_YAML, expand_all=False)
+    report = Report()
+    out = rv.normalize({"items": [{"red": {"sources": ["a"]}}]}, report=report)
+    # CompactDict form: pk is the key, not duplicated inside the value.
+    assert out["items"] == {"red": {"sources": ["a"]}}
+    assert report.errors() == []
+
+
+@pytest.mark.parametrize(
+    "input_items,reason",
+    [
+        # Missing-pk expanded item (was producing `{None: ...}` before fix).
+        ([{"sources": ["a"]}], "expanded item without identifier"),
+        # Multi-key list item is not a compact-key shape; treated as expanded, missing pk.
+        ([{"red": {"x": 1}, "blue": {"y": 2}}], "multi-key list item with no pk"),
+        # Value is a scalar — not a compact-key shape; expanded read also missing pk.
+        ([{"some_label": "scalar"}], "scalar value, no pk"),
+        # Value is null — same.
+        ([{"some_label": None}], "null value, no pk"),
+    ],
+)
+def test_list_items_without_pk_emit_error_not_none_key(input_items, reason):
+    """Items the heuristic can't safely hoist must error, never produce `{None: ...}`."""
+    rv = _normalizer(_COMPACT_KEY_SCHEMA_YAML)
+    report = Report()
+    out = rv.normalize({"items": input_items}, report=report)
+    assert out["items"] == {}, f"unexpected output for case: {reason}"
+    assert None not in out["items"], f"None key leaked for case: {reason}"
+    assert len(report.errors()) == 1, f"expected one error for case: {reason}"
+
+
+def test_compact_key_refused_when_key_collides_with_slot_name():
+    """No-footgun: if the key matches a slot of the range class, refuse to hoist —
+    the user may have indented incorrectly and meant the key as an attribute."""
+    rv = _normalizer(_COLLIDING_SLOT_SCHEMA_YAML)
+    report = Report()
+    out = rv.normalize({"items": [{"red": {"sources": ["a"]}}]}, report=report)
+    # Heuristic refuses hoist; expanded read of {red: {...}} has no pk → error.
+    assert out["items"] == {}
+    assert len(report.errors()) == 1
+
+
+def test_non_colliding_key_still_hoists_under_colliding_schema():
+    """The collision check is per-key, not per-schema: keys that aren't slots still hoist."""
+    rv = _normalizer(_COLLIDING_SLOT_SCHEMA_YAML)
+    report = Report()
+    out = rv.normalize({"items": [{"purple": {"sources": ["a"]}}]}, report=report)
+    assert out["items"] == {"purple": {"name": "purple", "sources": ["a"]}}
+    assert report.errors() == []
