@@ -1,5 +1,7 @@
 """Tests for the TypeDB TypeQL generator."""
 
+import re
+
 import pytest
 from click.testing import CliRunner
 
@@ -468,6 +470,97 @@ slots:
     # Parent is class-ranged (relation), child is scalar — no sub, just a normal attribute
     assert "attribute name-of-related, value string;" in output
     assert "sub related-to" not in output
+
+
+def test_mixin_slots_appear_on_consuming_class(tmp_path):
+    """Mixin-contributed slots are emitted as owns on the consuming class."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        range: string
+        multivalued: true
+  Person:
+    mixins:
+      - HasAliases
+    slots:
+      - name
+slots:
+  name:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Mixin class should NOT appear as a TypeDB entity
+    assert "entity hasaliases" not in output
+    # Mixin slot should appear as owns on the consuming class
+    person_block = re.search(r"^\s*entity person\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert person_block, f"person entity block not found:\n{output}"
+    assert "owns aliases" in person_block.group(0)
+    assert "owns name" in person_block.group(0)
+
+
+def test_mixin_with_object_ranged_slot(tmp_path):
+    """Mixin-contributed object-ranged slots produce plays on the consuming class."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Place:
+    slots:
+      - name
+  WithLocation:
+    mixin: true
+    slots:
+      - in_location
+  Event:
+    slots:
+      - description
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married_to
+  Person:
+    slots:
+      - name
+slots:
+  name:
+    range: string
+  in_location:
+    range: Place
+  description:
+    range: string
+  married_to:
+    range: Person
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Mixin class should NOT appear as a TypeDB entity
+    assert "entity withlocation" not in output
+    # MarriageEvent should have plays for in_location (from mixin)
+    marriage_block = re.search(r"^\s*entity marriageevent\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert marriage_block, f"marriageevent entity block not found:\n{output}"
+    assert "plays in-location:" in marriage_block.group(0) or "plays in-location-rel:" in marriage_block.group(0), (
+        f"mixin object-ranged slot missing from marriageevent:\n{marriage_block.group(0)}"
+    )
 
 
 @pytest.mark.parametrize(
