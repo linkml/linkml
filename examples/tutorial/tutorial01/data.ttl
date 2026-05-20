@@ -7,4 +7,3 @@ _:c14n0 a personinfo:Person ;
 	personinfo:full_name "Clark Kent" ;
 	personinfo:id "ORCID:1234" ;
 	personinfo:phone "555-555-5555" .
-

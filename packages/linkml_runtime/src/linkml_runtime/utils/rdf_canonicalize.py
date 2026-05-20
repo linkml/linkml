@@ -50,6 +50,7 @@ class RDFCanonicalizationWarning(UserWarning):
     ``warnings.filterwarnings("ignore", category=RDFCanonicalizationWarning)``.
     """
 
+
 # Mapping from rdflib/LinkML format strings to pyoxigraph RdfFormat objects.
 _FORMAT_MAP: dict[str, ox.RdfFormat] = {
     "turtle": ox.RdfFormat.TURTLE,
@@ -202,9 +203,7 @@ def _iri_terms(triples: list["ox.Triple"]) -> set[str]:
     return iris
 
 
-def _filter_prefixes_to_used(
-    prefixes: dict[str, str], used_iris: set[str]
-) -> dict[str, str]:
+def _filter_prefixes_to_used(prefixes: dict[str, str], used_iris: set[str]) -> dict[str, str]:
     """Drop prefix bindings whose namespace is not a prefix of any used IRI.
 
     A prefix is kept if at least one IRI in ``used_iris`` starts with its
@@ -212,11 +211,7 @@ def _filter_prefixes_to_used(
     bound to ``http://schema.org/`` is kept when ``http://schema.org/Person``
     appears in the graph).
     """
-    return {
-        prefix: ns
-        for prefix, ns in prefixes.items()
-        if any(iri.startswith(ns) for iri in used_iris)
-    }
+    return {prefix: ns for prefix, ns in prefixes.items() if any(iri.startswith(ns) for iri in used_iris)}
 
 
 def _is_safe_prefix_iri(iri: str) -> bool:
