@@ -207,7 +207,7 @@ class SQLValidationGenerator(Generator):
             # Check unique_keys constraints (multi-column uniqueness)
             if self.check_unique_keys and class_def.unique_keys:
                 slot_names = {s.name for s in induced_slots}
-                for _, uk in class_def.unique_keys._items():
+                for _, uk in class_def.unique_keys.items():
                     query = self._generate_unique_key_violations(class_name, slot_names, uk, identifier_slot_name)
                     if query is not None:
                         query_objects.append(query)
