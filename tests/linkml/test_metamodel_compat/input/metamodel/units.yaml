@@ -36,7 +36,7 @@ slots:
   derivation:
     range: string
     description: Expression for deriving this unit from other units
-    
+
   has_quantity_kind:
     range: uriorcurie
     slot_uri: qudt:hasQuantityKind
@@ -54,20 +54,20 @@ slots:
   abbreviation:
     slot_uri: qudt:abbreviation
     description: >-
-      An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in 
-      contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance 
-      readability. When a power of a base unit needs to be expressed, such as squares this can be done using 
+      An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in
+      contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance
+      readability. When a power of a base unit needs to be expressed, such as squares this can be done using
       abbreviations rather than symbols (source: qudt)
 
   descriptive_name:
     slot_uri: rdfs:label
     description: the spelled out name of the unit, for example, meter
-    
+
 classes:
   UnitOfMeasure:
     class_uri: qudt:Unit
     description: >-
-      A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for 
+      A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for
       measuring other quantities the same kind (more generally of equivalent dimension).
     slots:
       - symbol

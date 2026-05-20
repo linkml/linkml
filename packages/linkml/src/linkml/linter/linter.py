@@ -92,8 +92,22 @@ class Linter:
 
     @staticmethod
     def validate_schema(schema_path: str):
-        with open(schema_path) as schema_file:
-            schema = yaml.safe_load(schema_file)
+        """Validate a schema file against the LinkML metamodel JSON Schema.
+
+        Yields :class:`LinterProblem` for each validation error found,
+        including YAML parse errors and file I/O errors.
+        """
+        try:
+            with open(schema_path) as schema_file:
+                schema = yaml.safe_load(schema_file)
+        except (yaml.YAMLError, OSError) as e:
+            yield LinterProblem(
+                rule_name="valid-schema",
+                message=str(e),
+                level=RuleLevel(RuleLevel.error),
+                schema_source=schema_path,
+            )
+            return
 
         validator = get_metamodel_validator()
         for err in validator.iter_errors(schema):
@@ -115,22 +129,52 @@ class Linter:
         validate_schema: bool = False,
         validate_only: bool = False,
     ) -> Iterable[LinterProblem]:
-        if (validate_schema or validate_only) and isinstance(schema, str):
-            yield from self.validate_schema(schema)
+        # Always validate against the metamodel when given a file path.
+        # The validate_schema parameter is deprecated — validation now always runs.
+        has_metamodel_errors = False
+        if isinstance(schema, str):
+            for problem in self.validate_schema(schema):
+                has_metamodel_errors = True
+                yield problem
 
         if validate_only:
             return
 
+        if has_metamodel_errors:
+            # Don't attempt to load a schema that failed metamodel validation —
+            # SchemaView may crash or produce misleading results.
+            return
+
         try:
             schema_view = SchemaView(schema)
-        except Exception:
-            if not validate_schema:
-                yield LinterProblem(
-                    message="File is not a valid LinkML schema. Use --validate for more details.",
-                    level=RuleLevel(RuleLevel.error),
-                    schema_source=(schema if isinstance(schema, str) else None),
-                )
+        except Exception as e:
+            yield LinterProblem(
+                message=str(e),
+                level=RuleLevel(RuleLevel.error),
+                schema_source=(schema if isinstance(schema, str) else None),
+            )
             return
+
+        # Validate imported schemas against the metamodel.
+        # Force import resolution by accessing all elements, then check each
+        # non-built-in imported schema.
+        if isinstance(schema, str):
+            schema_view.all_classes(imports=True)
+            main_name = schema_view.schema.name
+            for import_name, import_schema in schema_view.schema_map.items():
+                if import_name == main_name:
+                    continue
+                # Skip built-in imports (prefixed names like "linkml:types")
+                if ":" in import_name:
+                    continue
+                source_file = getattr(import_schema, "source_file", None)
+                if source_file:
+                    source_path = Path(source_file)
+                    if not source_path.is_absolute():
+                        source_path = Path(schema).parent / source_path
+                    if source_path.exists():
+                        for problem in self.validate_schema(str(source_path)):
+                            yield problem
 
         for rule_id, rule_config in self.config.rules.__dict__.items():
             rule_cls = self._rules_map.get(rule_id, None)

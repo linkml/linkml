@@ -15,3 +15,4 @@ If you are looking for documentation on how to use LinkML to build schemas, see 
    organization
    deprecation
    code-of-conduct
+   generator-governance

@@ -121,7 +121,7 @@ def test_create_documents_includes_enums(kitchen_sink_path):
     gen = JavaGenerator(kitchen_sink_path, true_enums=True)
     docs = gen.create_documents()
     enum_docs = [doc for doc in docs if doc.enums]
-    assert len(enum_docs) == 7  # 6 enums in kitchen sink + 1 in core
+    assert len(enum_docs) == 8  # 7 enums in kitchen sink + 1 in core
 
     # A document contains either a class or an enum, but not both
     assert not [doc for doc in docs if doc.classes and doc.enums]
@@ -145,6 +145,13 @@ def test_oo_objects_have_uris(kitchen_sink_path):
     assert witness.classes[0].fields[0].slot_uri == "http://schema.org/ceo"
 
 
+def test_slot_aliases_used_when_required(input_path, tmp_path):
+    """Check that field names are based on slot aliases when present."""
+    gen = JavaGenerator(input_path("personinfo.yaml"), use_aliases=True)
+    gen.serialize(directory=str(tmp_path))
+    assert_file_contains(tmp_path / "Person.java", "private Integer age;")
+
+
 def test_visitor_generation(kitchen_sink_path, tmp_path):
     """Check that we can generator a visitor interface."""
     gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
@@ -159,7 +166,7 @@ def test_generation_for_org_incenp_linkml_runtime(kitchen_sink_path, tmp_path):
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/kitchen_sink/Concept")')
     assert_file_contains(tmp_path / "Concept.java", '@LinkURI("https://w3id.org/linkml/tests/core/id")')
-    assert_file_contains(tmp_path / "Concept.java", '@SlotName("in code system")')
+    assert_file_contains(tmp_path / "Concept.java", '@SlotName("in_code_system")')
 
 
 def test_org_incenp_linkml_primitive_equals(input_path, tmp_path):
@@ -167,3 +174,10 @@ def test_org_incenp_linkml_primitive_equals(input_path, tmp_path):
     gen = JavaGenerator(input_path("primitive_types.yaml"))
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "SimpleClass.java", "this$requiredBoolean != other$requiredBoolean")
+
+
+def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
+    """Uriorcurie-typed slots in org.incenp.linkml templates should be rendered as String fields."""
+    gen = JavaGenerator(input_path("personinfo.yaml"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "NamedThing.java", "private String id")

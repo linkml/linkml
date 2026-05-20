@@ -109,6 +109,13 @@ class OOCodeGenerator(Generator):
     true_enums: bool = False
     """If true, represent enum-typed slots using their dedicated enum types"""
 
+    use_aliases: bool = False
+    """Use slots alias when available.
+
+    If true and a slot is defined as having an alias, use the alias rather than
+    the slot name to construct the name of the corresponding field.
+    """
+
     package: PACKAGE = "example"
 
     def __post_init__(self):
@@ -261,7 +268,7 @@ class OOCodeGenerator(Generator):
         sv: SchemaView
         sv = self.schemaview
         docs = []
-        for cn in sv.all_classes(imports=False):
+        for cn in sv.all_classes(imports=self.mergeimports):
             c = sv.get_class(cn)
             if self.map_class(c) is not None:
                 continue
@@ -291,8 +298,9 @@ class OOCodeGenerator(Generator):
             else:
                 parent_slots = []
             for sn in sv.class_slots(cn):
-                safe_sn = self.map_name(self.get_slot_name(sn))
                 slot = sv.induced_slot(sn, cn)
+                source_sn = slot.alias if slot.alias and self.use_aliases else slot.name
+                safe_sn = self.map_name(self.get_slot_name(source_sn))
                 range = slot.range
                 default_value = "null"
 

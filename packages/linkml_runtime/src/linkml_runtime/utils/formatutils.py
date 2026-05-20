@@ -2,7 +2,7 @@ import re
 from decimal import Decimal
 from typing import Any
 
-from jsonasobj2 import JsonObj, as_dict, is_dict, is_list, items
+from jsonasobj2 import JsonObj, is_dict, is_list, items
 
 ws_pattern = re.compile(r"\s+")
 us_pattern = re.compile(r"_+")
@@ -118,7 +118,7 @@ def is_empty(v: Any) -> bool:
     3) It is an empty list
     4) It is an empty JsonObj
     """
-    return v is None or (isinstance(v, dict | list) and not v) or (isinstance(v, JsonObj) and not as_dict(v))
+    return v is None or (isinstance(v, dict | list | JsonObj) and not v)
 
 
 def remove_empty_items(obj: Any, hide_protected_keys: bool = False, inside: bool = False) -> Any:
