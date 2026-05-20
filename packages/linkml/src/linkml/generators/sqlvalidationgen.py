@@ -14,6 +14,7 @@ from sqlalchemy.sql.selectable import TableClause
 from sqlalchemy.types import Float, Integer, Text
 
 from linkml._version import __version__
+from linkml.transformers.relmodel_transformer import ForeignKeyPolicy, RelationalModelTransformer
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.formatutils import underscore
@@ -140,7 +141,12 @@ class SQLValidationGenerator(Generator):
         """
         query_objects = []
 
-        sv = SchemaView(self.schema)
+        # Transform schema to relational model
+        sqltr = RelationalModelTransformer(SchemaView(self.schema))
+        sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
+        tr_result = sqltr.transform(tgt_schema_name=kwargs.get("tgt_schema_name"), top_class=kwargs.get("top_class"))
+        schema = tr_result.schema
+        sv = SchemaView(schema)
 
         # Iterate through all classes
         for class_name in sv.all_classes():
@@ -206,8 +212,22 @@ class SQLValidationGenerator(Generator):
                     if query is not None:
                         query_objects.append(query)
 
-            # Check rules (precondition/postcondition constraints)
-            if self.check_rules and class_def.rules:
+        # Check rules (precondition/postcondition constraints)
+        if self.check_rules:
+            # We need to iterate over the untransformed schema, since the
+            # RelationalModelTransformer removes rules
+            untransformed_sv = SchemaView(self.schema)
+            for class_name in untransformed_sv.all_classes():
+                class_def = untransformed_sv.get_class(class_name)
+                if not class_def.rules:
+                    continue
+                if class_def.abstract or class_def.mixin:
+                    continue
+                identifier_slot_name = "id"  # default fallback
+                for induced in induced_slots:
+                    if induced.identifier:
+                        identifier_slot_name = induced.name
+                        break
                 for rule in class_def.rules:
                     if rule.deactivated:
                         continue

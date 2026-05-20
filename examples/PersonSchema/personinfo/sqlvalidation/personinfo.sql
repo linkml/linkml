@@ -102,12 +102,6 @@ WHERE "Organization".name IS NULL
 
 UNION ALL
 
-SELECT 'Organization' AS table_name, 'score' AS column_name, 'rule' AS constraint_type, id AS record_id, score AS invalid_value
-FROM "Organization"
-WHERE "Organization".min_salary <= 80000.0 AND "Organization".score > 0
-
-UNION ALL
-
 SELECT 'Place' AS table_name, 'id' AS column_name, 'required' AS constraint_type, id AS record_id, NULL AS invalid_value
 FROM "Place"
 WHERE "Place".id IS NULL
@@ -276,4 +270,10 @@ UNION ALL
 
 SELECT 'InterPersonalRelationship' AS table_name, 'type' AS column_name, 'required' AS constraint_type, id AS record_id, NULL AS invalid_value
 FROM "InterPersonalRelationship"
-WHERE "InterPersonalRelationship".type IS NULL;
+WHERE "InterPersonalRelationship".type IS NULL
+
+UNION ALL
+
+SELECT 'Organization' AS table_name, 'score' AS column_name, 'rule' AS constraint_type, id AS record_id, score AS invalid_value
+FROM "Organization"
+WHERE "Organization".min_salary <= 80000.0 AND "Organization".score > 0;
