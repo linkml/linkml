@@ -97,6 +97,7 @@ class OOEnum:
 @dataclass
 class OOCodeGenerator(Generator):
     # ClassVars
+    # Identifier casing: True -> camelCase, False -> snake_case.
     java_style = True
     visit_all_class_slots = False
     uses_schemaloader = False
@@ -261,9 +262,12 @@ class OOCodeGenerator(Generator):
         return enums
 
     def create_documents(self) -> list[OODocument]:
-        """
-        Currently hardcoded for java-style
-        :return:
+        """Emit one ``OODocument`` per LinkML class.
+
+        This file-granularity assumption (one class -> one document -> one
+        output file) is required by ``JavaGenerator`` and also fits the other
+        current OO generators. Generators that need to bundle multiple classes
+        into a single output file should use their own rendering pipeline.
         """
         sv: SchemaView
         sv = self.schemaview
@@ -284,7 +288,7 @@ class OOCodeGenerator(Generator):
                 source_class=c,
                 class_uri=sv.get_uri(cn, expand=True),
             )
-            # currently hardcoded for java style, one class per doc
+            # File granularity: one LinkML class -> one OODocument.
             oodoc.classes = [ooclass]
             if c.mixin:
                 ooclass.mixin = c.mixin
