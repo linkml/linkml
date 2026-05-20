@@ -315,6 +315,41 @@ slots:
     assert "owns person-attr" in output
 
 
+@pytest.mark.parametrize(
+    "slot_extra,expected_card",
+    [
+        ("minimum_cardinality: 1\n    maximum_cardinality: 5", "@card(1..5)"),
+        ("minimum_cardinality: 2", "@card(2..)"),
+        ("maximum_cardinality: 3", "@card(0..3)"),
+        ("exact_cardinality: 1", "@card(1..1)"),
+    ],
+)
+def test_precise_cardinality_annotation(slot_extra, expected_card, tmp_path):
+    """Precise cardinality fields produce exact @card(min..max) annotations."""
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - tags
+slots:
+  tags:
+    range: string
+    multivalued: true
+    {slot_extra}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert f"owns tags {expected_card}" in output
+
+
 def test_represents_relationship_class_becomes_relation(tmp_path):
     """A class with represents_relationship: true becomes a TypeDB relation type."""
     schema_yaml = """

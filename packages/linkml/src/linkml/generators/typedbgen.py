@@ -361,6 +361,10 @@ class TypeDBGenerator(Generator):
     def _build_owns_stmt(self, slot_tname: str, induced: SlotDefinition) -> str:
         """Return a TypeQL ``owns`` statement with the appropriate cardinality annotation.
 
+        Uses ``minimum_cardinality`` / ``maximum_cardinality`` / ``exact_cardinality``
+        when set, falling back to the boolean flags (``required``, ``multivalued``,
+        ``identifier``) for backwards compatibility.
+
         :param slot_tname: the safe TypeDB attribute name for the slot
         :param induced: the induced SlotDefinition carrying cardinality/identity metadata
         :return: a TypeQL ``owns`` clause string (without trailing punctuation)
@@ -368,6 +372,12 @@ class TypeDBGenerator(Generator):
         owns = f"owns {slot_tname}"
         if induced.identifier:
             owns += " @key"
+        elif induced.exact_cardinality is not None:
+            owns += f" @card({induced.exact_cardinality}..{induced.exact_cardinality})"
+        elif induced.minimum_cardinality is not None or induced.maximum_cardinality is not None:
+            lo = induced.minimum_cardinality if induced.minimum_cardinality is not None else 0
+            hi = str(induced.maximum_cardinality) if induced.maximum_cardinality is not None else ""
+            owns += f" @card({lo}..{hi})"
         elif induced.required and not induced.multivalued:
             owns += " @card(1..1)"
         elif induced.multivalued:
