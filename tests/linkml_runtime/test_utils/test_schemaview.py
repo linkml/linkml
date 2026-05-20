@@ -53,6 +53,7 @@ SCHEMA_WITH_IMPORTS = INPUT_DIR_PATH / "kitchen_sink.yaml"
 SCHEMA_CORE = INPUT_DIR_PATH / "core.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
+SCHEMA_RULES_IMPORT = INPUT_DIR_PATH / "rules_import" / "base.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
 CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
@@ -475,6 +476,21 @@ def test_imports_overrides(sv_import_tree: SchemaView) -> None:
         defaults[name] = cls.attributes["value"].ifabsent
 
     assert defaults == target
+
+
+def test_imports_rules_merge() -> None:
+    """Rules from imported schemas should be additively merged onto same-named classes.
+
+    When a base schema imports a rules-only schema that defines rules on a class
+    also defined in the base, the rules should accumulate rather than being silently
+    dropped by the import merge.
+    """
+    sv = SchemaView(SCHEMA_RULES_IMPORT)
+    org = sv.get_class("Organization")
+    descriptions = {r.description for r in org.rules}
+    assert "base rule" in descriptions, "Base schema's own rules should be preserved"
+    assert "imported rule" in descriptions, "Imported schema's rules should be merged in"
+    assert len(org.rules) == 2
 
 
 def test_imports_relative() -> None:

@@ -10,10 +10,13 @@ import yaml
 from pydantic import BaseModel, Field
 
 from linkml._version import __version__
+from linkml.utils.mergeutils import merge_includes, resolve_merged_imports
 from linkml.validator import Validator
 from linkml.validator.loaders import Loader, default_loader_for_file
 from linkml.validator.plugins import ValidationPlugin
 from linkml.validator.report import Severity
+from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.loaders import yaml_loader
 
 
 class Config(BaseModel):
@@ -86,7 +89,7 @@ _FIX_SUPPORTED_EXTENSIONS = {".yaml", ".yml", ".json"}
 
 def _normalize_and_validate(
     data_path: str,
-    schema_path: str | Path,
+    schema: SchemaDefinition,
     target_class: str | None,
     plugins: list[ValidationPlugin],
     exit_on_first_failure: bool,
@@ -109,7 +112,7 @@ def _normalize_and_validate(
             f"Use 'linkml validate -s schema.yaml {data_path}' without --fix for other formats."
         )
 
-    sv = SchemaView(str(schema_path))
+    sv = SchemaView(schema)
     normalizer = ReferenceValidator(sv)
 
     with open(data_path) as f:
@@ -188,6 +191,14 @@ def _normalize_and_validate(
     "enum slots.",
 )
 @click.option(
+    "--include",
+    multiple=True,
+    type=click.Path(exists=True, dir_okay=False, file_okay=True, resolve_path=True, path_type=Path),
+    help="Additional schema files to include. Rules and classification rules "
+    "from these schemas are additively merged onto matching classes in the "
+    "base schema. May be specified multiple times.",
+)
+@click.option(
     "--fix",
     is_flag=True,
     default=False,
@@ -202,7 +213,8 @@ def cli(
     schema: Path | None,
     target_class: str | None,
     config: str | None,
-    data_sources: tuple[str],
+    include: tuple[Path, ...],
+    data_sources: tuple[str, ...],
     exit_on_first_failure: bool,
     include_context: bool,
     allow_null_for_optional_enums: bool,
@@ -257,6 +269,22 @@ def cli(
         )
 
     plugins = _resolve_plugins(cfg.plugins) if cfg.plugins else []
+
+    # Load schema and merge any --include overlays
+    schema_def = yaml_loader.load(str(cfg.schema_path), SchemaDefinition)
+    schema_source = str(cfg.schema_path)
+    if "\n" not in schema_source:
+        schema_def.source_file = schema_source
+    for include_path in include:
+        include_source = str(include_path)
+        include_schema = yaml_loader.load(include_source, SchemaDefinition)
+        include_schema.source_file = include_source
+        try:
+            resolve_merged_imports(schema_def, include_schema, imported_from=include_source)
+            merge_includes(schema_def, include_schema)
+        except ValueError as e:
+            raise click.ClickException(str(e)) from e
+
     severity_counter = Counter()
 
     if fix:
@@ -264,7 +292,7 @@ def cli(
             raise click.ClickException("--fix supports a single data file at a time.")
         severity_counter += _normalize_and_validate(
             data_sources[0],
-            cfg.schema_path,
+            schema_def,
             cfg.target_class,
             plugins,
             exit_on_first_failure,
@@ -272,7 +300,7 @@ def cli(
         )
     else:
         loaders = _resolve_loaders(cfg.data_sources, schema_path=cfg.schema_path, target_class=cfg.target_class)
-        validator = Validator(cfg.schema_path, validation_plugins=plugins, strict=exit_on_first_failure)
+        validator = Validator(schema_def, validation_plugins=plugins, strict=exit_on_first_failure)
 
         for loader in loaders:
             for result in validator.iter_results_from_source(loader, cfg.target_class):

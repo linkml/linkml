@@ -9,6 +9,55 @@ search:
     {%- set title = gen.name(element) -%}
 {%- endif -%}
 
+{# Render an EnumExpression / AnonymousEnumExpression as a Markdown sub-list.
+   Walks the selector slots defined on `enum_expression` in the LinkML metamodel
+   (reachable_from, concepts, code_set, matches, pv_formula, inherits) and
+   formats each as a top-level bullet with any modifier fields nested below. #}
+{% macro render_enum_expression(expr) -%}
+{%- if expr.reachable_from %}
+- **Reachable from**{% if expr.reachable_from.source_ontology %} {{ gen.uri_link(expr.reachable_from.source_ontology) }}{% endif %}
+{%- if expr.reachable_from.source_nodes %}
+    - Source nodes: {{ expr.reachable_from.source_nodes | join(', ') }}
+{%- endif %}
+{%- if expr.reachable_from.relationship_types %}
+    - Via relationships: {{ expr.reachable_from.relationship_types | join(', ') }}
+{%- endif %}
+{%- if expr.reachable_from.is_direct %}
+    - Direct descendants only
+{%- endif %}
+{%- if expr.reachable_from.include_self %}
+    - Includes the source node itself
+{%- endif %}
+{%- if expr.reachable_from.traverse_up %}
+    - Traverses upward (ancestors)
+{%- endif %}
+{%- endif %}
+{%- if expr.concepts %}
+- **Concepts:** {{ expr.concepts | join(', ') }}
+{%- endif %}
+{%- if expr.code_set %}
+- **Code set:** {{ gen.uri_link(expr.code_set) }}
+{%- if expr.code_set_tag %}
+    - Tag: {{ expr.code_set_tag }}
+{%- endif %}
+{%- if expr.code_set_version %}
+    - Version: {{ expr.code_set_version }}
+{%- endif %}
+{%- endif %}
+{%- if expr.matches %}
+- **Matches identifier pattern** `{{ expr.matches.identifier_pattern }}`
+{%- if expr.matches.source_ontology %}
+    - Source ontology: {{ gen.uri_link(expr.matches.source_ontology) }}
+{%- endif %}
+{%- endif %}
+{%- if expr.pv_formula %}
+- **Permissible value formula:** {{ expr.pv_formula }}
+{%- endif %}
+{%- if expr.inherits %}
+- **Inherits from:** {{ gen.links(expr.inherits) | join(', ') }}
+{%- endif %}
+{% endmacro %}
+
 # Enum: {{ title }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
 
 {% if element.description %}
@@ -115,11 +164,17 @@ _This is a dynamic enum_
 {%- endif %}
 
 {%- if element.include %}
-**Includes:** {{ gen.links(element.include) | join(', ') }}
+**Includes:**
+{% for expr in element.include -%}
+{{ render_enum_expression(expr) }}
+{%- endfor %}
 {%- endif %}
 
 {%- if element.minus %}
-**Excludes:** {{ gen.links(element.minus) | join(', ') }}
+**Excludes:**
+{% for expr in element.minus -%}
+{{ render_enum_expression(expr) }}
+{%- endfor %}
 {%- endif %}
 
 {% endif %}
