@@ -149,8 +149,8 @@ slots:
     assert f"attribute my-attr, value {expected_typedb_type}" in output
 
 
-def test_enum_produces_string_attribute_with_comment(tmp_path):
-    """Enums produce string attributes with a comment listing permitted values."""
+def test_enum_produces_values_annotation(tmp_path):
+    """Enums produce string attributes with a @values(...) annotation."""
     schema_yaml = """
 id: http://example.org/test
 name: test-schema
@@ -179,10 +179,47 @@ enums:
     gen = TypeDBGenerator(str(schema_file))
     output = gen.serialize()
     assert "attribute status, value string" in output
-    # enum values should be mentioned in a comment
-    assert "employed" in output
-    assert "unemployed" in output
-    assert "student" in output
+    assert '@values("employed", "unemployed", "student")' in output
+
+
+def test_multiple_enums_each_get_values_annotation(tmp_path):
+    """Each enum-ranged slot gets its own @values annotation on its attribute declaration."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+types:
+  string:
+    base: str
+    uri: xsd:string
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  Person:
+    slots:
+      - status
+      - role
+slots:
+  status:
+    range: EmploymentStatus
+  role:
+    range: RoleType
+enums:
+  EmploymentStatus:
+    permissible_values:
+      employed: {}
+      unemployed: {}
+  RoleType:
+    permissible_values:
+      admin: {}
+      user: {}
+      guest: {}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert 'attribute status, value string @values("employed", "unemployed");' in output
+    assert 'attribute role-attr, value string @values("admin", "user", "guest");' in output
 
 
 def test_abstract_class_produces_annotation(tmp_path):

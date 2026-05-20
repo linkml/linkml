@@ -330,7 +330,7 @@ class TypeDBGenerator(Generator):
                     continue  # object range → relation, not attribute
                 seen[slot_name] = f"attribute {slot_name}, value {value_type};"
 
-        # Enums used in slot ranges also need attribute declarations with comments
+        # Enums used in slot ranges get @values(...) annotations to enforce permitted values.
         enum_attr_lines: list[str] = []
         enum_slots_seen: set[str] = set()
         for class_name in sv.all_classes():
@@ -340,10 +340,11 @@ class TypeDBGenerator(Generator):
                     enum_slots_seen.add(slot_name)
                     enum_def = sv.get_enum(induced_slot.range)
                     permitted = list(enum_def.permissible_values.keys()) if enum_def else []
-                    comment = f"# Enum: {_typedb_name(induced_slot.range)} (permitted values: {', '.join(permitted)})"
+                    comment = f"# Enum: {_typedb_name(induced_slot.range)}"
                     enum_attr_lines.append(comment)
                     seen.pop(slot_name, None)
-                    enum_attr_lines.append(f"attribute {slot_name}, value string;")
+                    values_str = ", ".join(f'"{v}"' for v in permitted)
+                    enum_attr_lines.append(f"attribute {slot_name}, value string @values({values_str});")
 
         result = list(seen.values()) + enum_attr_lines
         return result
