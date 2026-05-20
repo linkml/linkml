@@ -10,6 +10,7 @@ from click.testing import CliRunner
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlvalidationgen import SQLValidationGenerator, cli
 from linkml.utils.schema_builder import SchemaBuilder
+from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     ClassRule,
@@ -563,7 +564,11 @@ def test_validation_interop_with_invalid_data(input_path, tmp_path):
     conn.close()
 
 
-def _schema_with_rules(rules, slots=None, class_name="LivingThings"):
+def _schema_with_rules(
+    rules: list[ClassRule],
+    slots: list[SlotDefinition] | None = None,
+    class_name: str = "LivingThings",
+) -> SchemaDefinition:
     """Helper to build a schema with rules on a class.
 
     :param rules: list of ClassRule objects
