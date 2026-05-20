@@ -9,7 +9,6 @@ from click.testing import CliRunner
 
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlvalidationgen import SQLValidationGenerator, cli
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SchemaDefinition
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -17,6 +16,7 @@ from linkml_runtime.linkml_model.meta import (
     SlotDefinition,
     UniqueKey,
 )
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
 @pytest.fixture
