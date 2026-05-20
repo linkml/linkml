@@ -373,6 +373,103 @@ slots:
     assert "@range" not in output
 
 
+def test_attribute_subtyping_basic(tmp_path):
+    """A slot with is_a pointing to another scalar slot emits 'sub' instead of 'value'."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - contact_info
+      - email
+slots:
+  contact_info:
+    range: string
+  email:
+    is_a: contact_info
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute contact-info, value string;" in output
+    assert "attribute email, sub contact-info;" in output
+    # Child should NOT have a value declaration
+    assert "attribute email, value string;" not in output
+
+
+def test_attribute_subtyping_chain(tmp_path):
+    """A chain of slot is_a relationships produces a chain of sub declarations."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - base_field
+      - mid_field
+      - leaf_field
+slots:
+  base_field:
+    range: string
+  mid_field:
+    is_a: base_field
+    range: string
+  leaf_field:
+    is_a: mid_field
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute base-field, value string;" in output
+    assert "attribute mid-field, sub base-field;" in output
+    assert "attribute leaf-field, sub mid-field;" in output
+
+
+def test_attribute_subtyping_skipped_for_class_ranged_parent(tmp_path):
+    """A slot with is_a pointing to a class-ranged slot does NOT emit sub."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Person:
+    slots:
+      - related_to
+      - name_of_related
+  OtherPerson:
+    slots: []
+slots:
+  related_to:
+    range: OtherPerson
+  name_of_related:
+    is_a: related_to
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Parent is class-ranged (relation), child is scalar — no sub, just a normal attribute
+    assert "attribute name-of-related, value string;" in output
+    assert "sub related-to" not in output
+
+
 @pytest.mark.parametrize(
     "slot_extra,expected_card",
     [

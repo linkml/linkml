@@ -368,6 +368,19 @@ class TypeDBGenerator(Generator):
                     values_str = ", ".join(f'"{v}"' for v in permitted)
                     enum_attr_lines.append(f"attribute {slot_name}, value string @values({values_str});")
 
+        # Attribute subtyping: slots with is_a pointing to another scalar slot
+        # emit "attribute <child>, sub <parent>;" instead of a flat value declaration.
+        # TypeDB inherits the value type from the parent, so no value clause is needed.
+        all_slots = sv.all_slots()
+        for slot_name_orig, safe_name in attr_names.items():
+            if safe_name not in seen:
+                continue
+            slot_def = all_slots.get(slot_name_orig)
+            if slot_def and slot_def.is_a:
+                parent_safe = attr_names.get(slot_def.is_a)
+                if parent_safe and parent_safe in seen:
+                    seen[safe_name] = f"attribute {safe_name}, sub {parent_safe};"
+
         result = list(seen.values()) + enum_attr_lines
         return result
 
