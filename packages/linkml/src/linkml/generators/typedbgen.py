@@ -198,6 +198,24 @@ def _resolve_typedb_value_type(sv: SchemaView, range_name: str | None) -> str | 
     return _TYPEDB_PRIMITIVE.get(range_name.lower(), "string")
 
 
+def _build_range_annotation(induced: SlotDefinition) -> str | None:
+    """Return a ``@range(min..max)`` annotation string, or ``None`` if no range constraints are set.
+
+    Reads ``minimum_value`` and ``maximum_value`` from the induced slot definition.
+    Supports open-ended ranges (``@range(N..)`` or ``@range(..M)``).
+
+    :param induced: the induced SlotDefinition carrying value range metadata
+    :return: annotation string like ``@range(0..150)`` or ``None``
+    """
+    lo = induced.minimum_value
+    hi = induced.maximum_value
+    if lo is None and hi is None:
+        return None
+    lo_str = str(lo) if lo is not None else ""
+    hi_str = str(hi) if hi is not None else ""
+    return f"@range({lo_str}..{hi_str})"
+
+
 def _build_name_maps(sv: SchemaView) -> tuple[dict[str, str], dict[str, str]]:
     """Build safe TypeDB name mappings for attributes and relations.
 
@@ -328,7 +346,11 @@ class TypeDBGenerator(Generator):
                 value_type = _resolve_typedb_value_type(sv, induced_slot.range)
                 if value_type is None:
                     continue  # object range → relation, not attribute
-                seen[slot_name] = f"attribute {slot_name}, value {value_type};"
+                range_ann = _build_range_annotation(induced_slot)
+                if range_ann:
+                    seen[slot_name] = f"attribute {slot_name}, value {value_type} {range_ann};"
+                else:
+                    seen[slot_name] = f"attribute {slot_name}, value {value_type};"
 
         # Enums used in slot ranges get @values(...) annotations to enforce permitted values.
         enum_attr_lines: list[str] = []

@@ -316,6 +316,64 @@ slots:
 
 
 @pytest.mark.parametrize(
+    "slot_extra,expected_range",
+    [
+        ("minimum_value: 0\n    maximum_value: 150", "@range(0..150)"),
+        ("minimum_value: 0", "@range(0..)"),
+        ("maximum_value: 100", "@range(..100)"),
+    ],
+)
+def test_range_annotation(slot_extra, expected_range, tmp_path):
+    """minimum_value / maximum_value produce @range annotations on attribute declarations."""
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - score
+slots:
+  score:
+    range: integer
+    {slot_extra}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert f"attribute score, value integer {expected_range};" in output
+
+
+def test_no_range_annotation_when_unset(tmp_path):
+    """No @range annotation when minimum_value and maximum_value are both unset."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - score
+slots:
+  score:
+    range: integer
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute score, value integer;" in output
+    assert "@range" not in output
+
+
+@pytest.mark.parametrize(
     "slot_extra,expected_card",
     [
         ("minimum_cardinality: 1\n    maximum_cardinality: 5", "@card(1..5)"),
