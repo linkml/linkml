@@ -389,13 +389,13 @@ class TypeDBGenerator(Generator):
 
         Mixin ancestors are skipped because TypeDB has single ``sub`` inheritance
         only — there is no mixin/trait mechanism.  Mixin-contributed slots must be
-        re-declared on each consuming class as ``owns`` / ``plays``.
+        redeclared on each consuming class as ``owns`` / ``plays``.
         """
         result: set[str] = set()
         for ancestor in sv.class_ancestors(class_name)[1:]:  # skip self
             ancestor_def = sv.get_class(ancestor)
             if ancestor_def and ancestor_def.mixin:
-                continue  # mixin slots must be re-declared; TypeDB has no mixin inheritance
+                continue  # mixin slots must be redeclared; TypeDB has no mixin inheritance
             for slot in sv.class_induced_slots(ancestor):
                 result.add(slot.name)
         return result
