@@ -618,10 +618,20 @@ class RustGenerator(Generator, LifecycleMixin):
                     or not bool(getattr(value_attr, "inlined", False))
                 )
             )
+            key_property_name = get_name(key_attr)
+            # The generated struct field for the key slot accepts its canonical name
+            # plus the slot's `alias` (via serde(alias = "...")). When building the
+            # deserialization map from an inlined-as-dict entry we must not inject
+            # the canonical key if the inner map already carries the alias for it,
+            # or serde will reject the duplicate field.
+            key_property_aliases: list[str] = []
+            if key_attr.alias and key_attr.alias != key_property_name:
+                key_property_aliases.append(key_attr.alias)
             return AsKeyValue(
                 name=get_name(cls),
-                key_property_name=get_name(key_attr),
+                key_property_name=key_property_name,
                 key_property_type=get_rust_type(key_attr.range, self.schemaview, self.pyo3),
+                key_property_aliases=key_property_aliases,
                 value_property_name=get_name(value_attr),
                 value_property_type=get_rust_type(value_attr.range, self.schemaview, self.pyo3),
                 can_convert_from_primitive=simple_dict_possible,

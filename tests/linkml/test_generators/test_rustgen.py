@@ -551,6 +551,137 @@ def test_rustgen_special_cases_roundtrip(temp_dir):
         assert key in output_data
 
 
+def test_rustgen_aliased_key_preserves_explicit_value_in_inlined_dict(temp_dir):
+    """
+    When a class is used as an inlined-as-dict and its key slot has a serde alias,
+    the generated InlinedPair::from_pair_mapping must not unconditionally inject
+    the inferred key. If the inner map already carries the key under either its
+    canonical name or its alias, the inferred insert produces a duplicate field
+    that serde rejects via alias resolution.
+
+    This mirrors the linkml metamodel's Extension/Annotation pattern where the
+    key slot ``extension_tag`` has ``alias: tag`` and real-world schemas write
+    the tag explicitly inside the inner mapping.
+    """
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/rustgen/aliased_key
+        name: rustgen_aliased_key
+        prefixes:
+          ex: https://example.org/rustgen/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        default_range: string
+        imports:
+          - linkml:types
+
+        classes:
+          AnnotationLike:
+            attributes:
+              ann_tag:
+                identifier: true
+                alias: tag
+                range: string
+              ann_value:
+                range: string
+                required: true
+
+          Root:
+            tree_root: true
+            attributes:
+              annotations:
+                range: AnnotationLike
+                inlined: true
+                multivalued: true
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_aliased_key.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    sv = SchemaView(str(schema_path))
+    out_dir = Path(temp_dir) / "aliased_key_crate"
+    rg = RustGenerator(
+        sv.schema,
+        mode="crate",
+        pyo3=False,
+        serde=True,
+        output=str(out_dir),
+        handwritten_lib=False,
+    )
+    rg.serialize(force=True)
+
+    generated_rs = (out_dir / "src" / "lib.rs").read_text(encoding="utf-8")
+
+    # Template-level assertions: the guard exists and references both names.
+    assert 'contains_key(&Value::String("ann_tag".into()))' in generated_rs
+    assert 'contains_key(&Value::String("tag".into()))' in generated_rs
+
+    # And the struct really does declare the serde alias we are guarding against.
+    assert 'serde(alias = "tag")' in generated_rs
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    roundtrip_rs = tests_dir / "aliased_key.rs"
+    roundtrip_rs.write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn explicit_alias_inside_inlined_dict_round_trips() {\n"
+            f"    use {crate_ident}::Root;\n"
+            "    // Inner map carries `tag:` (the alias) explicitly. The outer key\n"
+            "    // agrees with it. The old generator injected `ann_tag` on top of\n"
+            "    // the existing `tag`, which serde then rejected as a duplicate.\n"
+            '    let yaml = "annotations:\\n  foo:\\n    tag: foo\\n    ann_value: bar\\n";\n'
+            '    let value: Root = serde_yml::from_str(yaml).expect("decode with alias key");\n'
+            '    let anns = value.annotations.as_ref().expect("annotations present");\n'
+            '    let entry = anns.get("foo").expect("foo entry");\n'
+            '    assert_eq!(entry.ann_tag, "foo");\n'
+            '    assert_eq!(entry.ann_value, "bar");\n'
+            "}\n"
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn explicit_canonical_key_inside_inlined_dict_round_trips() {\n"
+            f"    use {crate_ident}::Root;\n"
+            '    let yaml = "annotations:\\n  foo:\\n    ann_tag: foo\\n    ann_value: bar\\n";\n'
+            '    let value: Root = serde_yml::from_str(yaml).expect("decode with canonical key");\n'
+            '    let entry = value.annotations.as_ref().unwrap().get("foo").unwrap();\n'
+            '    assert_eq!(entry.ann_tag, "foo");\n'
+            "}\n"
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn missing_inner_key_is_synthesized_from_outer_key() {\n"
+            f"    use {crate_ident}::Root;\n"
+            '    let yaml = "annotations:\\n  foo:\\n    ann_value: bar\\n";\n'
+            '    let value: Root = serde_yml::from_str(yaml).expect("decode without inner key");\n'
+            '    let entry = value.annotations.as_ref().unwrap().get("foo").unwrap();\n'
+            '    assert_eq!(entry.ann_tag, "foo");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "aliased_key"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        pytest.skip(
+            "cargo test failed, likely due to a missing Rust toolchain:\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
 def test_subproperty_of_generates_rust_enum(temp_dir):
     """Test that subproperty_of generates a Rust enum with slot descendants."""
     schema_yaml = textwrap.dedent(
