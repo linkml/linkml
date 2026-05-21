@@ -50,6 +50,7 @@ from linkml.generators.rustgen.template import (
     StubUtilsFile,
 )
 from linkml.utils.generator import Generator
+from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     EnumDefinition,
@@ -609,14 +610,28 @@ class RustGenerator(Generator, LifecycleMixin):
             # attribute to serve as the value, do not treat this as a key/value class.
             if len(value_attrs) == 0:
                 return None
-            value_attr = value_attrs[0]
+            # Defer to linkml's documented `SimpleDict` rules (see
+            # `linkml.utils.helpers.get_range_associated_slots` and linkml/linkml#1250):
+            #   1. The class has exactly one non-key slot, or
+            #   2. Exactly one non-key slot is annotated with `simple_dict_value: true`, or
+            #   3. Exactly one non-key slot is required.
+            # When one of those conditions selects a value slot, the inlined-dict
+            # entry `key: <primitive>` may collapse into that slot.
+            # `get_range_associated_slots` is `lru_cache`d and unhashable on
+            # ClassDefinition; pass the class name (it normalizes internally).
+            _, simple_dict_value_slot, _ = get_range_associated_slots(self.schemaview, cls.name)
+            value_attr = simple_dict_value_slot or value_attrs[0]
+            # Additional Rust-specific guard: a primitive scalar can only deserialize
+            # into a value slot whose Rust type is a primitive or a linkml:Any
+            # wildcard (`Anything`/`AnyValue`, which wraps `serde_value::Value`).
+            # Other class ranges either store an inlined struct (which can't accept a
+            # primitive) or a reference string (which would mismatch `Self::Value`).
+            value_range_is_primitive_friendly = (
+                value_attr.range not in self.schemaview.all_classes()
+                or self.schemaview.get_class(value_attr.range).class_uri == "linkml:Any"
+            )
             simple_dict_possible = (
-                len(non_key_attrs) == 1
-                and not value_attr.multivalued
-                and (
-                    value_attr.range not in self.schemaview.all_classes()
-                    or not bool(getattr(value_attr, "inlined", False))
-                )
+                simple_dict_value_slot is not None and not value_attr.multivalued and value_range_is_primitive_friendly
             )
             key_property_name = get_name(key_attr)
             # The generated struct field for the key slot accepts its canonical name

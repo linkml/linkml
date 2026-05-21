@@ -682,6 +682,138 @@ def test_rustgen_aliased_key_preserves_explicit_value_in_inlined_dict(temp_dir):
         )
 
 
+def test_rustgen_simple_dict_with_recursive_multivalued_sibling(temp_dir):
+    """
+    When a class has a key slot, a primitive-typed required value slot, and a
+    recursive multivalued sibling slot (the linkml metamodel
+    ``Annotation``/``Extension`` shape), the inlined-as-dict form must still
+    accept the ``key: <primitive>`` simple-dict shorthand. The required value
+    slot is selected via the ``simple_dict_value: true`` annotation per the
+    rules in ``linkml.utils.helpers.get_range_associated_slots`` (the same
+    ladder linkml/linkml#1250 documents).
+
+    Earlier versions of rustgen disqualified this shape because they counted
+    *all* non-key slots (including the multivalued recursive ones) when
+    deciding whether ``can_convert_from_primitive`` should hold, which caused
+    every consumer schema using annotations in their simple form to fail
+    deserialization with "Cannot create a … from a primitive value!".
+    """
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/rustgen/simple_dict_recursive
+        name: rustgen_simple_dict_recursive
+        prefixes:
+          ex: https://example.org/rustgen/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        default_range: string
+        imports:
+          - linkml:types
+
+        classes:
+          # ``Anything`` is the canonical wildcard class linkml gen-rust
+          # special-cases (`class_uri: linkml:Any`). It's emitted as
+          # `struct Anything(serde_value::Value)`, accepting any primitive.
+          Anything:
+            class_uri: linkml:Any
+
+          AnnotationLike:
+            attributes:
+              tag:
+                identifier: true
+                range: string
+              value:
+                required: true
+                range: Anything
+                annotations:
+                  simple_dict_value: true
+              annotations:
+                range: AnnotationLike
+                multivalued: true
+                inlined: true
+
+          Root:
+            tree_root: true
+            attributes:
+              annotations:
+                range: AnnotationLike
+                inlined: true
+                multivalued: true
+        """
+    )
+
+    schema_path = Path(temp_dir) / "rustgen_simple_dict_recursive.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    sv = SchemaView(str(schema_path))
+    out_dir = Path(temp_dir) / "simple_dict_recursive_crate"
+    RustGenerator(
+        sv.schema,
+        mode="crate",
+        pyo3=False,
+        serde=True,
+        output=str(out_dir),
+        handwritten_lib=False,
+    ).serialize(force=True)
+
+    lib_rs = (out_dir / "src" / "lib.rs").read_text(encoding="utf-8")
+
+    # The shape qualifies for primitive-form deserialization: from_pair_simple
+    # should be a real synthesizer, not the "Cannot create …" stub.
+    assert "Cannot create a AnnotationLike from a primitive value!" not in lib_rs
+    # And `simple_value` should be emitted, exposing the chosen value slot.
+    assert "fn simple_value(&self)" in lib_rs
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    test_rs = tests_dir / "simple_dict_recursive.rs"
+    test_rs.write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn simple_dict_with_recursive_sibling_round_trips() {\n"
+            f"    use {crate_ident}::Root;\n"
+            '    // The classic linkml "annotations: {tag: value}" shorthand.\n'
+            '    let yaml = "annotations:\\n  color: blue\\n  weight: 42\\n";\n'
+            '    let value: Root = serde_yml::from_str(yaml).expect("decode simple-dict");\n'
+            '    let anns = value.annotations.as_ref().expect("annotations present");\n'
+            "    assert_eq!(anns.len(), 2);\n"
+            "}\n"
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn nested_simple_dict_round_trips() {\n"
+            f"    use {crate_ident}::Root;\n"
+            "    // Recursive use of the multivalued sibling slot.\n"
+            '    let yaml = "annotations:\\n  outer:\\n    value: top\\n    annotations:\\n      inner: bottom\\n";\n'
+            '    let value: Root = serde_yml::from_str(yaml).expect("decode nested");\n'
+            '    let outer = value.annotations.as_ref().unwrap().get("outer").unwrap();\n'
+            '    assert!(outer.annotations.is_some(), "inner annotations populated");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "simple_dict_recursive"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        pytest.skip(
+            "cargo test failed, likely due to a missing Rust toolchain:\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
 def test_subproperty_of_generates_rust_enum(temp_dir):
     """Test that subproperty_of generates a Rust enum with slot descendants."""
     schema_yaml = textwrap.dedent(
