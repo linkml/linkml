@@ -326,15 +326,15 @@ def _generate_framework_output(
         gen_args["base_dir"] = str(_schema_out_path(schema))
         gen = gen_class(schema=SchemaDefinition(**schema), **gen_args)
         if framework == JAVA:
-            temp_dir = tempfile.TemporaryDirectory()
-            gen.serialize(temp_dir.name)
-            # walk all files in temp_dir and concatenate them
-            output = ""
-            for root, _dirs, files in os.walk(temp_dir.name):
-                for file in files:
-                    path = os.path.join(root, file)
-                    with open(path) as stream:
-                        output += stream.read()
+            with tempfile.TemporaryDirectory() as temp_dir:
+                gen.serialize(temp_dir)
+                # walk all files in temp_dir and concatenate them
+                output = ""
+                for root, _dirs, files in os.walk(temp_dir):
+                    for file in files:
+                        path = os.path.join(root, file)
+                        with open(path) as stream:
+                            output += stream.read()
         else:
             output = gen.serialize()
 
@@ -903,15 +903,19 @@ def check_data(
             except Exception as e:
                 if not valid:
                     raise e
-            endpoint.db_exists(force=True)
-            py_cls = endpoint.native_module.__dict__[target_class]
-            if valid:
-                py_obj = py_cls(**object_to_validate)
-                endpoint.dump(py_obj)
-            else:
-                with pytest.raises(Exception):
+
+            try:
+                endpoint.db_exists(force=True)
+                py_cls = endpoint.native_module.__dict__[target_class]
+                if valid:
                     py_obj = py_cls(**object_to_validate)
                     endpoint.dump(py_obj)
+                else:
+                    with pytest.raises(Exception):
+                        py_obj = py_cls(**object_to_validate)
+                        endpoint.dump(py_obj)
+            finally:
+                endpoint.engine.dispose()
         else:
             logger.warning(f"Unsupported generator {gen}")
             expected_behavior = ValidationBehavior.UNTESTED
