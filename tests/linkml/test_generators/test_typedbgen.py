@@ -297,21 +297,16 @@ def test_inline_attributes_produce_owns(input_path):
     assert "attribute inline-description" in output
 
     # The `slots:`-based class works (control).
-    slots_block = re.search(
-        r"^\s*entity classwithslots\b[^;]*;", output, re.MULTILINE | re.DOTALL
-    )
+    slots_block = re.search(r"^\s*entity classwithslots\b[^;]*;", output, re.MULTILINE | re.DOTALL)
     assert slots_block, f"classwithslots entity block not found:\n{output}"
     assert "owns shared-name" in slots_block.group(0)
     assert "owns shared-description" in slots_block.group(0)
 
     # The `attributes:`-based class must also own its inline attributes.
-    attrs_block = re.search(
-        r"^\s*entity classwithattributes\b[^;]*;", output, re.MULTILINE | re.DOTALL
-    )
+    attrs_block = re.search(r"^\s*entity classwithattributes\b[^;]*;", output, re.MULTILINE | re.DOTALL)
     assert attrs_block, f"classwithattributes entity block not found:\n{output}"
     assert "owns inline-name" in attrs_block.group(0), (
-        "inline `attributes:` were declared but not owned by the entity:\n"
-        f"{attrs_block.group(0)}"
+        f"inline `attributes:` were declared but not owned by the entity:\n{attrs_block.group(0)}"
     )
     assert "owns inline-description" in attrs_block.group(0)
 
