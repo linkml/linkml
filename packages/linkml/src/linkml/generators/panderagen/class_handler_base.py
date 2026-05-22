@@ -22,7 +22,14 @@ class ClassHandlerBase:
         raise Exception(f"Unknown class or enum {cn}")
 
     def ordered_classes(self):
-        sorter = DependencySorter()
+        # Tolerate cycles: even with the parent/child association cycle skip
+        # in `add_dependencies_by_association`, the LinkML metamodel imports
+        # still contain peer cycles between mutually-recursive classes (e.g.
+        # path_expression ↔ schema_definition ↔ slot_definition ↔
+        # anonymous_class_expression). The three-pass polars template lets us
+        # emit those classes in arbitrary order, so we silently break any
+        # remaining cycles instead of raising.
+        sorter = DependencySorter(allow_cycles=True)
 
         self.add_dependencies_by_association(sorter)
         self.add_dependencies_for_hierarchy(sorter)

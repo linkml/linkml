@@ -305,3 +305,38 @@ def test_parent_slot_range_child_no_cycle():
     # multivalued cross-reference (dict_range applied), not the bare XStruct name.
     code = generator.serialize()
     assert "pl.List(pl.Struct(ChildDict))" in code
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="typing.Optional error with structs in python < 3.11")
+def test_peer_cycle_three_mutually_recursive_classes():
+    """Three peer classes that form a cycle (no parent/child hierarchy) must
+    still be generated cleanly.
+
+    The PR #3467 ancestor-skip in ``add_dependencies_by_association`` only
+    breaks parent/child association cycles. Peer cycles between
+    mutually-recursive classes are common in real-world metamodels
+    (``schema_definition`` ↔ ``slot_definition`` ↔ ``path_expression`` in the
+    LinkML metamodel itself) and require ``DependencySorter(allow_cycles=True)``
+    to handle. This test pins that behaviour down.
+
+    The schema also includes a self-loop on Alpha to verify both fixes apply
+    together — self-loops never raise, peer cycles broken under allow_cycles,
+    and the three-pass polars template handles all forward references.
+    """
+    generator = PolarsSchemaDataframeGenerator(str(_INPUT_DIR / "peer_cycle_model.yaml"), backing_form="serialized")
+    # Generation must not raise on the cycle, and the compiled module must
+    # import cleanly with all three structs available.
+    mod = generator.compile_dataframe_model("peer_cycle_test_module")
+    assert hasattr(mod, "AlphaDict")
+    assert hasattr(mod, "BetaDict")
+    assert hasattr(mod, "GammaDict")
+    assert hasattr(mod, "AlphaStruct")
+    assert hasattr(mod, "BetaStruct")
+    assert hasattr(mod, "GammaStruct")
+    # The cross-references must be lifted to pl.Struct(XDict) form by the
+    # three-pass template — bare XStruct would NameError because there's no
+    # ordering that defines every Struct before it's referenced.
+    code = generator.serialize()
+    assert "pl.Struct(BetaDict)" in code
+    assert "pl.Struct(GammaDict)" in code
+    assert "pl.Struct(AlphaDict)" in code
