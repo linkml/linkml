@@ -85,36 +85,38 @@ def test_csv_limit(tmp_outputs, diff, size):
     csv.field_size_limit(size)
     name = "N" * (size + diff)
     endpoint = SQLStore(schema, database_path=tmp_outputs["db"])
-    endpoint.db_exists(force=True)
-    mod = endpoint.compile_native()
+    try:
+        endpoint.db_exists(force=True)
+        mod = endpoint.compile_native()
 
-    with open(tmp_outputs["tsv"], "w", encoding="UTF-8") as file:
-        file.write("name\n")
-        file.write(name)
-        file.write("\n")
+        with open(tmp_outputs["tsv"], "w", encoding="UTF-8") as file:
+            file.write("name\n")
+            file.write(name)
+            file.write("\n")
 
-    if diff == -1:
-        obj = csv_loader.load(
-            str(tmp_outputs["tsv"]),
-            target_class=mod.Container,
-            index_slot="Person_index",
-            schema=schema,
-        )
-        endpoint.dump(obj)
-        obj2 = endpoint.load(target_class=mod.Container)
-        person = getattr(obj2, "Person_index")[0]
-        name2 = getattr(person, "name")
-        assert name == name2
-    else:
-        with pytest.raises(Exception):
-            csv_loader.load(
-                tmp_outputs["tsv"],
+        if diff == -1:
+            obj = csv_loader.load(
+                str(tmp_outputs["tsv"]),
                 target_class=mod.Container,
                 index_slot="Person_index",
                 schema=schema,
             )
+            endpoint.dump(obj)
+            obj2 = endpoint.load(target_class=mod.Container)
+            person = getattr(obj2, "Person_index")[0]
+            name2 = getattr(person, "name")
+            assert name == name2
+        else:
+            with pytest.raises(Exception):
+                csv_loader.load(
+                    tmp_outputs["tsv"],
+                    target_class=mod.Container,
+                    index_slot="Person_index",
+                    schema=schema,
+                )
 
-    # mod holds a reference to sqlite that prevents file closing
-    del mod
-    # dispose engine to allow creating of a new engine of same name
-    endpoint.engine.dispose()
+        # mod holds a reference to sqlite that prevents file closing
+        del mod
+    finally:
+        # dispose engine to allow creating of a new engine of same name
+        endpoint.engine.dispose()
