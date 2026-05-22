@@ -156,6 +156,9 @@ class SQLTableGenerator(Generator):
     inject_primary_keys: bool = True
     use_foreign_keys: bool = True
     rename_foreign_keys: bool = False
+    """If true, rename every class-range slot to ``<slot>_<target_pk>`` so the
+    emitted DDL column names match the SQLAlchemy 2.x declarative ORM output.
+    Off by default for backward compatibility."""
     direct_mapping: bool = False
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
@@ -185,6 +188,12 @@ class SQLTableGenerator(Generator):
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
+        elif self.rename_foreign_keys:
+            # Rename every class-range slot to <slot>_<target_pk> so DDL column
+            # names match the SQLAlchemy 2.x declarative ORM output. Off by
+            # default to preserve backward compatibility with existing
+            # gen-sqltables consumers.
+            sqltr.foreign_key_policy = ForeignKeyPolicy.INJECT_FK_FOR_ALL_REFS
         tr_result = sqltr.transform(tgt_schema_name=kwargs.get("tgt_schema_name"), top_class=kwargs.get("top_class"))
         schema = tr_result.schema
 
@@ -370,13 +379,7 @@ class SQLTableGenerator(Generator):
             # class_induced_slots — masking a real identifier declared on the
             # subclass. Fall back to the inherited identifier for the common
             # case where the subclass legitimately inherits its PK.
-            target_class = sv.get_class(slot_range)
-            fk = None
-            if target_class is not None:
-                for a in target_class.attributes.values():
-                    if a.identifier or a.key:
-                        fk = a
-                        break
+            fk = RelationalModelTransformer.get_direct_identifier_attribute(sv, slot_range)
             if fk is None:
                 fk = sv.get_identifier_slot(slot_range)
             if fk:
@@ -460,6 +463,16 @@ class SQLTableGenerator(Generator):
     default=True,
     show_default=True,
     help="A manual override to omit the abstract classes, set to true as a default for testing sake",
+)
+@click.option(
+    "--rename-foreign-keys/--no-rename-foreign-keys",
+    default=False,
+    show_default=True,
+    help=(
+        "Rename every class-range slot to <slot>_<target_pk> in the emitted DDL "
+        "so column names match SQLAlchemy 2.x declarative ORM output "
+        "(gen-sqlalchemy --template declarative_2x)."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(

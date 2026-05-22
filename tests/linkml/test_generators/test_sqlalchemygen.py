@@ -586,6 +586,36 @@ def test_sqla_2x_non_inlined_fk_orm_join_works(tmp_path):
     engine.dispose()
 
 
+def test_sqla_2x_non_inlined_fk_orm_join_works_with_aligned_ddl(tmp_path):
+    """Cross-generator integration: SQLTableGenerator with rename_foreign_keys=True
+    must emit DDL whose column names match the SQLA 2.x ORM, so the two
+    generators can be used together for the same schema."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+
+    ddl = SQLTableGenerator(str(schema_file), rename_foreign_keys=True).generate_ddl()
+    engine = create_engine("sqlite://")
+    with engine.connect() as connection:
+        connection.connection.cursor().executescript(ddl)
+
+    gen = SQLAlchemyGenerator(str(schema_file))
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    session = sessionmaker(bind=engine)()
+
+    term = mod.Term(uri="GO:0001234")
+    event = mod.Event(id=1, term=term)
+    session.add(term)
+    session.add(event)
+    session.commit()
+
+    fetched = session.query(mod.Event).where(mod.Event.id == 1).one()
+    assert fetched.term_uri == "GO:0001234"
+    assert fetched.term.uri == "GO:0001234"
+
+    session.close()
+    engine.dispose()
+
+
 GOLDEN_FILE = Path(__file__).parent / "golden" / "personinfo_sqla_2x.py"
 
 
