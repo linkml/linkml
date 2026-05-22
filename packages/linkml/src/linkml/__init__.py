@@ -1,10 +1,6 @@
 import os
 import sys
 
-from linkml.monkeypatch import monkeypatch_classdef
-
-monkeypatch_classdef()
-
 from rdflib.plugins.serializers.turtle import TurtleSerializer  # noqa: E402
 
 from linkml_runtime.linkml_model import linkml_files  # noqa: E402
