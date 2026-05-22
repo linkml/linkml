@@ -536,10 +536,9 @@ def test_slot_names_emitted_as_snake_case(slot_name, expected_field, tmp_path):
 
 
 def test_slot_with_digit_segment_sanitised(tmp_path):
-    """A slot name like ``slot with space 1`` produces ``slot_with_space_N1`` —
-    ``_to_proto_ident`` inserts an ``N`` after an underscore-before-digit (the
-    proto3 style guide discourages ``_<digit>``) rather than dropping it, which
-    keeps ``foo_2bar`` distinct from ``foo2bar``."""
+    """A slot name like ``slot with space 1`` produces ``slot_with_space1`` —
+    ``_to_proto_ident`` drops the underscore-before-digit per the proto3 style
+    guide (no ``_<digit>``)."""
     yaml_text = _schema(
         name="digit_schema",
         body=textwrap.dedent(
@@ -553,7 +552,7 @@ def test_slot_with_digit_segment_sanitised(tmp_path):
         ).strip(),
     )
     out = _gen(yaml_text, tmp_path)
-    assert "string slot_with_space_N1 =" in out
+    assert "string slot_with_space1 =" in out
 
 
 # ---------------------------------------------------------------------------

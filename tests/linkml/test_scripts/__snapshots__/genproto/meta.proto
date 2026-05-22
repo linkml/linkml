@@ -46,7 +46,7 @@ message BirthEvent {
   Place in_location = 5;
 }
 message ClassWithSpaces {
-  string slot_with_space_N1 = 1;
+  string slot_with_space1 = 1;
 }
 message CodeSystem {
   string id = 1;
@@ -105,7 +105,7 @@ message FakeClass {
 message FamilialRelationship {
   string started_at_time = 1;
   string ended_at_time = 2;
-  CordialnessEnum cordialness = 3;
+  string cordialness = 3;
   FamilialRelationshipType type = 4;
   Person related_to = 5;
 }
@@ -183,17 +183,17 @@ message Relationship {
   CordialnessEnum cordialness = 5;
 }
 message SubSubClass2 {
-  string slot_with_space_N1 = 1;
-  ClassWithSpaces slot_with_space_N2 = 2;
+  string slot_with_space1 = 1;
+  ClassWithSpaces slot_with_space2 = 2;
 }
 message SubclassTest {
-  string slot_with_space_N1 = 1;
-  ClassWithSpaces slot_with_space_N2 = 2;
+  string slot_with_space1 = 1;
+  ClassWithSpaces slot_with_space2 = 2;
 }
 // Same depth as Sub sub class 1
 message TubSubClass1 {
-  string slot_with_space_N1 = 1;
-  ClassWithSpaces slot_with_space_N2 = 2;
+  string slot_with_space1 = 1;
+  ClassWithSpaces slot_with_space2 = 2;
 }
 message WithLocation {
   Place in_location = 1;
