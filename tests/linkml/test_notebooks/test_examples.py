@@ -12,6 +12,8 @@ from tests.linkml.test_notebooks import output_directory
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.notebooks
+
 
 def eval_test(target: str, import_module: str) -> None:
     output = StringIO()
