@@ -3,11 +3,13 @@ package kitchen_sink;
 // metamodel_version: 1.11.0
 // a provence-generating activity
 message Activity {
+  // identifier
+  // required
   string id = 1;
   string started_at_time = 2;
   string ended_at_time = 3;
-  Activity was_informed_by = 4;
-  Agent was_associated_with = 5;
+  string was_informed_by = 4;
+  string was_associated_with = 5;
   string used = 6;
   string description = 7;
 }
@@ -18,9 +20,11 @@ message Address {
 }
 // a provence-generating agent
 message Agent {
+  // identifier
+  // required
   string id = 1;
-  Agent acted_on_behalf_of = 2;
-  Activity was_informed_by = 3;
+  string acted_on_behalf_of = 2;
+  string was_informed_by = 3;
 }
 // Example of unconstrained class
 message AnyObject {
@@ -43,26 +47,32 @@ message BirthEvent {
   bool is_current = 3;
   // Example of a slot that has an unconstrained range
   AnyObject metadata = 4;
-  Place in_location = 5;
+  string in_location = 5;
 }
 message ClassWithSpaces {
-  string slot_with_space1 = 1;
+  string slot_with_space_N1 = 1;
 }
 message CodeSystem {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
   LongEnum long_id = 3;
 }
 message Company {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
   repeated string aliases = 3;
-  Person ceo = 4;
+  string ceo = 4;
 }
 message Concept {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
-  CodeSystem in_code_system = 3;
+  string in_code_system = 3;
 }
 message Dataset {
   // Example of a slot that has an unconstrained range
@@ -73,9 +83,11 @@ message Dataset {
   repeated CodeSystem code_systems = 5;
 }
 message DiagnosisConcept {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
-  CodeSystem in_code_system = 3;
+  string in_code_system = 3;
 }
 message EmploymentEvent {
   string started_at_time = 1;
@@ -83,7 +95,7 @@ message EmploymentEvent {
   bool is_current = 3;
   // Example of a slot that has an unconstrained range
   AnyObject metadata = 4;
-  Company employed_at = 5;
+  string employed_at = 5;
   string type = 6;
 }
 message EqualsString {
@@ -105,9 +117,11 @@ message FakeClass {
 message FamilialRelationship {
   string started_at_time = 1;
   string ended_at_time = 2;
-  string cordialness = 3;
+  CordialnessEnum cordialness = 3;
+  // required
   FamilialRelationshipType type = 4;
-  Person related_to = 5;
+  // required
+  string related_to = 5;
 }
 message Friend {
   string name = 2;
@@ -121,8 +135,8 @@ message MarriageEvent {
   bool is_current = 3;
   // Example of a slot that has an unconstrained range
   AnyObject metadata = 4;
-  Person married_to = 5;
-  Place in_location = 6;
+  string married_to = 5;
+  string in_location = 6;
 }
 message MedicalEvent {
   string started_at_time = 1;
@@ -130,7 +144,7 @@ message MedicalEvent {
   bool is_current = 3;
   // Example of a slot that has an unconstrained range
   AnyObject metadata = 4;
-  Place in_location = 5;
+  string in_location = 5;
   DiagnosisConcept diagnosis = 6;
   ProcedureConcept procedure = 7;
 }
@@ -145,12 +159,16 @@ message MedicalEvent {
 //  * a
 //  * list
 message Organization {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
   repeated string aliases = 3;
 }
 // A person, living or dead
 message Person {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
   repeated EmploymentEvent has_employment_history = 7;
@@ -166,14 +184,18 @@ message Person {
   repeated string aliases = 12;
 }
 message Place {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
   repeated string aliases = 3;
 }
 message ProcedureConcept {
+  // identifier
+  // required
   string id = 1;
   string name = 2;
-  CodeSystem in_code_system = 3;
+  string in_code_system = 3;
 }
 message Relationship {
   string started_at_time = 1;
@@ -183,20 +205,20 @@ message Relationship {
   CordialnessEnum cordialness = 5;
 }
 message SubSubClass2 {
-  string slot_with_space1 = 1;
-  ClassWithSpaces slot_with_space2 = 2;
+  string slot_with_space_N1 = 1;
+  ClassWithSpaces slot_with_space_N2 = 2;
 }
 message SubclassTest {
-  string slot_with_space1 = 1;
-  ClassWithSpaces slot_with_space2 = 2;
+  string slot_with_space_N1 = 1;
+  ClassWithSpaces slot_with_space_N2 = 2;
 }
 // Same depth as Sub sub class 1
 message TubSubClass1 {
-  string slot_with_space1 = 1;
-  ClassWithSpaces slot_with_space2 = 2;
+  string slot_with_space_N1 = 1;
+  ClassWithSpaces slot_with_space_N2 = 2;
 }
 message WithLocation {
-  Place in_location = 1;
+  string in_location = 1;
 }
 
 enum CordialnessEnum {

@@ -1,7 +1,7 @@
 """Tests for ``gen-proto`` / ``ProtoGenerator``.
 
-Covers the helpers in isolation plus end-to-end assertions for the eleven
-defects fixed in the proto generator overhaul (see ``ISSUE.md``):
+Covers the helpers in isolation plus end-to-end assertions for eleven
+defects fixed in the proto generator overhaul:
 
   1.  Bare ``package`` line
   2.  Field number 0 / schema mutation via ``slot.rank = 0``
@@ -393,7 +393,13 @@ def test_mixin_class_emitted_so_references_resolve(tmp_path):
 
 
 def test_abstract_class_emitted_so_references_resolve(tmp_path):
-    """Defect #9: abstract classes must also be emitted (proto3 has no abstract)."""
+    """Defect #9: abstract classes must also be emitted (proto3 has no abstract).
+
+    The reference itself is resolved per W2 (non-inlined class range with an
+    identifier becomes the identifier scalar, not the class name), so we check
+    only that ``message NamedThing {}`` is declared. The W2 behaviour is
+    asserted in its own test below.
+    """
     yaml_text = _schema(
         name="abs_schema",
         body=textwrap.dedent(
@@ -408,11 +414,13 @@ def test_abstract_class_emitted_so_references_resolve(tmp_path):
                 attributes:
                   item:
                     range: NamedThing
+                    inlined: true
             """
         ).strip(),
     )
     out = _gen(yaml_text, tmp_path)
     assert "message NamedThing {" in out
+    # `inlined: true` -> reference is the nested message
     assert "NamedThing item =" in out
 
 
@@ -536,9 +544,10 @@ def test_slot_names_emitted_as_snake_case(slot_name, expected_field, tmp_path):
 
 
 def test_slot_with_digit_segment_sanitised(tmp_path):
-    """A slot name like ``slot with space 1`` produces ``slot_with_space1`` —
-    ``_to_proto_ident`` drops the underscore-before-digit per the proto3 style
-    guide (no ``_<digit>``)."""
+    """A slot name like ``slot with space 1`` produces ``slot_with_space_N1`` —
+    ``_to_proto_ident`` inserts an ``N`` after any underscore that precedes a
+    digit (proto3 disallows ``_<digit>``), keeping the underscore rather than
+    dropping it so distinct source names stay distinct."""
     yaml_text = _schema(
         name="digit_schema",
         body=textwrap.dedent(
@@ -552,7 +561,7 @@ def test_slot_with_digit_segment_sanitised(tmp_path):
         ).strip(),
     )
     out = _gen(yaml_text, tmp_path)
-    assert "string slot_with_space1 =" in out
+    assert "string slot_with_space_N1 =" in out
 
 
 # ---------------------------------------------------------------------------
@@ -620,6 +629,311 @@ def test_slot_without_description_emits_no_comment(tmp_path):
     # The Person message body should be exactly the one field line, no `//`.
     body = re.search(r"message Person \{(.*?)\}", out, re.DOTALL).group(1)
     assert "//" not in body
+
+
+# ---------------------------------------------------------------------------
+# W2 — inlined vs reference (WIRE.md phase 1)
+# Non-inlined class refs must resolve to the identifier scalar of the range,
+# not the class name. Inlined refs keep the class name (nested message).
+# ---------------------------------------------------------------------------
+
+
+def test_w2_non_inlined_class_ref_uses_identifier_scalar(tmp_path):
+    """Slot with class range + no ``inlined`` -> identifier scalar (string).
+
+    A non-inlined reference carries only the identifier on the wire, so the
+    proto field type must match the range class's identifier type.
+    """
+    yaml_text = _schema(
+        name="w2_ref_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  person:
+                    range: Person
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # Reference resolves to `string` (Person.id is string), not `Person`
+    assert "string person =" in out
+    assert "Person person =" not in out
+
+
+def test_w2_inlined_true_keeps_class_reference(tmp_path):
+    """``inlined: true`` -> the field carries the nested message, not a ref."""
+    yaml_text = _schema(
+        name="w2_inlined_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  person:
+                    range: Person
+                    inlined: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "Person person =" in out
+
+
+def test_w2_inlined_as_list_keeps_class_reference(tmp_path):
+    """``inlined_as_list: true`` also keeps the class name (with ``repeated``)."""
+    yaml_text = _schema(
+        name="w2_inlined_list_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+              Container:
+                attributes:
+                  people:
+                    range: Person
+                    multivalued: true
+                    inlined_as_list: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "repeated Person people =" in out
+
+
+def test_w2_range_without_identifier_forces_inline(tmp_path):
+    """A class with no identifier cannot be referenced -> forced inline.
+
+    The proto field keeps the class name even without explicit ``inlined: true``
+    because no identifier exists to dereference against.
+    """
+    yaml_text = _schema(
+        name="w2_no_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Address:
+                attributes:
+                  street:
+                    range: string
+              Container:
+                attributes:
+                  address:
+                    range: Address
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "Address address =" in out
+
+
+def test_w2_identifier_scalar_matches_range_identifier_type(tmp_path):
+    """When the identifier is e.g. ``integer``, the proto ref is ``int32``."""
+    yaml_text = _schema(
+        name="w2_int_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+                    range: integer
+              Container:
+                attributes:
+                  person:
+                    range: Person
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "int32 person =" in out
+
+
+def test_w2_identifier_inherited_from_parent(tmp_path):
+    """A non-inlined ref to a subclass uses the *parent's* identifier slot.
+
+    Exercises the ``is_a`` walk in ``_identifier_slot_for``.
+    """
+    yaml_text = _schema(
+        name="w2_inherited_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              NamedThing:
+                attributes:
+                  id:
+                    identifier: true
+              Person:
+                is_a: NamedThing
+              Container:
+                attributes:
+                  person:
+                    range: Person
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "string person =" in out
+
+
+# ---------------------------------------------------------------------------
+# W6 — identifier slot pinned to field number 1
+# ---------------------------------------------------------------------------
+
+
+def test_w6_identifier_slot_pinned_to_field_1(tmp_path):
+    """When no slot has an explicit ``rank``, the identifier slot becomes field 1.
+
+    Even when the identifier is declared *after* other slots in the source,
+    proto3 convention (and phenopackets/FHIR-on-proto practice) puts it first.
+    """
+    yaml_text = _schema(
+        name="w6_id_first_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                  id:
+                    identifier: true
+                  age:
+                    range: integer
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # id is the identifier -> field 1 regardless of source order
+    assert "string id = 1;" in out
+    # Other slots get 2 and 3 in source order, skipping the pinned 1
+    assert "string name = 2;" in out
+    assert "int32 age = 3;" in out
+
+
+def test_w6_identifier_emits_comment(tmp_path):
+    """A ``// identifier`` comment is emitted above the identifier field.
+
+    The LinkML schema-loader treats identifier slots as implicitly required,
+    so the field also carries a ``// required`` comment (W8) - both should be
+    present, in that order.
+    """
+    yaml_text = _schema(
+        name="w6_id_comment_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  id:
+                    identifier: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "  // identifier\n" in out
+    # identifier comes before required (visit_class_slot emits W6 before W8)
+    assert out.index("// identifier") < out.index("string id = 1;")
+
+
+def test_w6_explicit_rank_takes_precedence_over_identifier_pin(tmp_path):
+    """When *any* slot has an explicit ``rank``, identifier auto-pinning is
+    suppressed - explicit author choice wins."""
+    yaml_text = _schema(
+        name="w6_rank_wins_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                    rank: 1
+                  id:
+                    identifier: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # rank=1 honoured for `name`, identifier `id` gets the next auto slot
+    assert "string name = 1;" in out
+    assert "string id = 2;" in out
+
+
+def test_w6_no_identifier_no_pin(tmp_path):
+    """A class without an identifier uses pure source-order auto-assignment."""
+    yaml_text = _schema(
+        name="w6_no_id_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Holder:
+                attributes:
+                  a:
+                    range: string
+                  b:
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "string a = 1;" in out
+    assert "string b = 2;" in out
+
+
+# ---------------------------------------------------------------------------
+# W8 — `// required` comment for required slots
+# ---------------------------------------------------------------------------
+
+
+def test_w8_required_slot_gets_required_comment(tmp_path):
+    """``slot.required: true`` -> ``// required`` line above the field."""
+    yaml_text = _schema(
+        name="w8_required_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+                    required: true
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "  // required\n  string name =" in out
+
+
+def test_w8_unrequired_slot_emits_no_required_comment(tmp_path):
+    """A non-required slot must NOT carry a stray ``// required`` comment."""
+    yaml_text = _schema(
+        name="w8_unrequired_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "// required" not in out
 
 
 # ---------------------------------------------------------------------------
