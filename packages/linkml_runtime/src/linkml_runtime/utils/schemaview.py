@@ -216,7 +216,14 @@ def load_schema_wrap(path: str, **kwargs: dict[str, Any]) -> SchemaDefinition:
         # Setting the source path is necessary for relative imports;
         # while initializing a schema with a yaml string is possible, there
         # should be no expectation of relative imports working.
-        schema.source_file = path
+        base_dir = kwargs.get("base_dir")
+        if isinstance(base_dir, str) and base_dir and not os.path.isabs(path):
+            # When base_dir is provided and path is relative, store the full resolved path
+            # so that imports within this schema are resolved relative to the schema's directory,
+            # not the current working directory.
+            schema.source_file = os.path.normpath(os.path.join(base_dir, path))
+        else:
+            schema.source_file = path
     return schema
 
 
