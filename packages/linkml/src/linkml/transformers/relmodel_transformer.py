@@ -159,9 +159,9 @@ class RelationalModelTransformer:
         :return:
         """
         join_sep = self.join_table_separator
-        links = self.get_reference_map()
         source_sv = self.schemaview
-        source_sv.merge_imports()
+        source_sv.merge_imports()  # do before get_reference_map, avoid busting lru_cache
+        links = self.get_reference_map()
         source = source_sv.schema
         src_schema_name = source.name
         mappings = []
@@ -216,10 +216,12 @@ class RelationalModelTransformer:
         target_sv = SchemaView(target)
         # create surrogate/autoincrement primary keys for any class (originally: that is referenced)
         # for link in links:
-        for cn in target_sv.all_classes():
+        all_target_classes = target_sv.all_classes()
+        all_target_class_names = list(all_target_classes)
+        for i, cn in enumerate(all_target_class_names, start=1):
             pk = self.get_direct_identifier_attribute(target_sv, cn)
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
-                logger.info(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
+                logger.debug(f"Will not inject any PKs, and policy == {self.foreign_key_policy}")
             else:
                 if pk is None:
                     pk = self.add_primary_key(cn, target_sv)
@@ -232,7 +234,9 @@ class RelationalModelTransformer:
         target_sv.set_modified()
         multivalued_slots_original = []
         # post-process target schema
-        for cn, c in target_sv.all_classes().items():
+        # for each class, for each slot with a range of object,
+        # we have a reference to another class.
+        for class_index, (cn, c) in enumerate(all_target_classes.items(), start=1):
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
             pk_slot = self.get_direct_identifier_attribute(target_sv, cn)
@@ -243,6 +247,8 @@ class RelationalModelTransformer:
             for src_slot in list(c.attributes.values()):
                 slot = copy(src_slot)
                 slot_range = slot.range
+                # We call target_sv.all_classes() inside loop because we need to
+                # detect newly-added classes while modifying.
                 slot_range_is_class = slot_range in target_sv.all_classes()
                 is_shared = slot_range_is_class and (
                     slot.inlined or slot.inlined_as_list or "shared" in slot.annotations
@@ -350,7 +356,7 @@ class RelationalModelTransformer:
         target_sv.set_modified()
         fk_policy = self.foreign_key_policy
         forward_map = {}
-        for c in target.classes.values():
+        for class_index, c in enumerate(target.classes.values(), start=1):
             if self.foreign_key_policy == ForeignKeyPolicy.NO_FOREIGN_KEYS:
                 continue
             pk_slot = target_sv.get_identifier_slot(c.name)
@@ -455,6 +461,10 @@ class RelationalModelTransformer:
         """
         Adds a surrogate/autoincrement primary key to a class
 
+        Note: do NOT call sv.set_modified() here (once per class), because it kills
+        performance due to lru_cache invalidation in bulk loops. The caller
+        is responsible for calling it once after all PKs are injected.
+
         :param cn:
         :param sv:
         :return:
@@ -476,5 +486,4 @@ class RelationalModelTransformer:
         c.attributes.clear()  # See https://github.com/linkml/linkml/issues/370
         add_attribute(c.attributes, pk)  # add to start
         c.attributes.update(atts)
-        sv.set_modified()
         return pk
