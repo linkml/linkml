@@ -62,8 +62,12 @@ metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
+COMPLEX_RANGES = CurieNamespace('complex_ranges', 'http://examples.org/linkml/test/complex_ranges')
 LINKML = CurieNamespace('linkml', 'https://w3id.org/linkml/')
 LISTS_AND_KEYS = CurieNamespace('lists_and_keys', 'http://examples.org/linkml/test/lists_and_keys')
+SCHEMA = CurieNamespace('schema', 'http://schema.org/')
+SHEX = CurieNamespace('shex', 'http://www.w3.org/ns/shex#')
+XSD = CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#')
 DEFAULT_ = LISTS_AND_KEYS
 
 

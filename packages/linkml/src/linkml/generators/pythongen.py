@@ -140,6 +140,27 @@ class PythonGenerator(Generator):
             if type_prefix:
                 self.emit_prefixes.add(type_prefix)
 
+    def visit_enum(self, enum: EnumDefinition) -> None:
+        # Enums emitted by this generator may be merged in from imported
+        # sub-schemas. Their permissible values can reference prefixes
+        # declared only in those sub-schemas, so collect those prefixes
+        # explicitly to ensure the corresponding ``CurieNamespace`` bindings
+        # are emitted. See https://github.com/linkml/linkml/issues/3574.
+        if enum.imported_from:
+            return
+        enum_prefix = self.namespaces.prefix_for(enum.enum_uri)
+        if enum_prefix:
+            self.emit_prefixes.add(enum_prefix)
+        if enum.code_set:
+            cs_prefix = self.namespaces.prefix_for(self.namespaces.uri_for(enum.code_set))
+            if cs_prefix:
+                self.emit_prefixes.add(cs_prefix)
+        for pv in enum.permissible_values.values():
+            if pv.meaning:
+                m_prefix = self.namespaces.prefix_for(self.namespaces.uri_for(pv.meaning))
+                if m_prefix:
+                    self.emit_prefixes.add(m_prefix)
+
     def gen_schema(self) -> str:
         all_imports = Imports()
         # generic imports
