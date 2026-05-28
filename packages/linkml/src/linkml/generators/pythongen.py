@@ -82,6 +82,13 @@ class PythonGenerator(Generator):
             logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
+        # Merge prefixes from imported schemas into schema.prefixes
+        for imp in self.schema.imports:
+            if imp in self.schemaview.schema_map:
+                imported_schema = self.schemaview.schema_map[imp]
+                for prefix in imported_schema.prefixes.values():
+                    if prefix.prefix_prefix not in self.schema.prefixes:
+                        self.schema.prefixes[prefix.prefix_prefix] = prefix
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
