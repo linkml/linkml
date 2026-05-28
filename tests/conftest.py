@@ -323,8 +323,6 @@ def pytest_sessionstart(session: pytest.Session):
     if session.config.getoption("--generate-snapshots"):
         tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
 
-    _monkeypatch_pyshex()
-
     # Clear all warning registries at session start
     for module in list(sys.modules.values()):
         if hasattr(module, "__warningregistry__"):
@@ -332,26 +330,6 @@ def pytest_sessionstart(session: pytest.Session):
 
     warnings.resetwarnings()
     warnings.simplefilter("always")
-
-
-def _monkeypatch_pyshex():
-    import sys
-    import typing
-    from importlib.metadata import version
-    from types import ModuleType
-    from typing import TextIO
-
-    if version("pyshexc") != "0.9.1":
-        raise RuntimeError(
-            "Pyshex has been updated, remove this monkeypatch:\n"
-            "- remove this function\n"
-            "- remove the call to `_monkeypatch_pyshex in `pytest_sessionstart`\n"
-            "- remove the skipif mark on test_notebooks/test_nodebooks.py:test_redo_notebook\n"
-        )
-    typing_io = ModuleType("io")
-    typing_io.TextIO = TextIO
-    typing.io = typing_io
-    sys.modules["typing.io"] = typing_io
 
 
 def pytest_runtest_setup(item):

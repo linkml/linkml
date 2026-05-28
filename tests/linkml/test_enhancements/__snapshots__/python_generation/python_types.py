@@ -59,7 +59,7 @@ from rdflib import (
 from linkml_runtime.linkml_model.types import Boolean, Date, Datetime, Double, Float, Integer, Ncname, Nodeidentifier, Objectidentifier, String, Time, Uri, Uriorcurie
 from linkml_runtime.utils.metamodelcore import Bool, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE, XSDDate, XSDDateTime, XSDTime
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
