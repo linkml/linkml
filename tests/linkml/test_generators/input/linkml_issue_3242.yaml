@@ -1,0 +1,37 @@
+id: https://w3id.org/linkml/tests/linkml_issue_3242
+name: linkml_issue_3242
+title: Regression fixture for linkml/linkml#3242
+description: |-
+  Schema with a dynamic enum (include + minus with AnonymousEnumExpression
+  values) that previously caused DocGenerator to raise
+  ``TypeError: unhashable type: 'AnonymousEnumExpression'``.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  bioregistry: https://bioregistry.io/
+  LOINC: https://loinc.org/
+imports:
+  - linkml:types
+default_range: string
+
+enums:
+  LeukocyteLoincCodes:
+    description: |-
+      Dynamic enum: LOINC codes reachable from the LP43571-6 leukocyte panel,
+      minus a specific manual-count code.
+    enum_uri: http://hl7.org/fhir/ValueSet/example-intensional
+    include:
+      - reachable_from:
+          source_ontology: bioregistry:loinc
+          source_nodes:
+            - LOINC:LP43571-6
+          is_direct: true
+    minus:
+      - concepts:
+          - LOINC:5932-9
+
+classes:
+  Test:
+    attributes:
+      test_enum:
+        range: LeukocyteLoincCodes

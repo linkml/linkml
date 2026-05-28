@@ -58,7 +58,7 @@ from rdflib import (
 
 from linkml_runtime.utils.metamodelcore import Curie, ElementIdentifier, NCName, NodeIdentifier, URI, URIorCURIE
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

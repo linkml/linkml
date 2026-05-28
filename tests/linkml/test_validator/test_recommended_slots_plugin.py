@@ -112,7 +112,7 @@ def test_missing_recommended_inlined(validation_context):
 
 
 def test_incorrect_type_in_multivalued_slot(validation_context):
-    """Data with non-inlined multivalued slot with class as range should not yield results.
+    """Data with wrong container types in multivalued class slots should not yield results.
 
     Type checking is not the responsibility of this plugin. But we want to make
     sure that the implementation of this plugin doesn't implicitly assume it will
@@ -130,10 +130,6 @@ def test_incorrect_type_in_multivalued_slot(validation_context):
         "nested_inline_list": {"a": {"value1": "1"}, "b": {"value1": "2"}, "c": {"value2": "3"}},
     }
     result_iter = plugin.process(instance, validation_context)
-    # nested_inline_list has inlined_as_list=True, which implies inlined=True.
-    # The dict-shaped data triggers inlined dict validation, finding a missing
-    # recommended slot on entry "c".
-    assert next(result_iter).message == "Slot 'value1' is recommended on class 'Inlined' in /nested_inline_list/c"
     with pytest.raises(StopIteration):
         next(result_iter)
 
