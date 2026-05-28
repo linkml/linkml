@@ -1,8 +1,10 @@
+import os as _os
+
 import pytest
-from linkml_runtime.linkml_model.meta import SlotDefinition
-from sqlalchemy.types import Boolean, Date, DateTime, Float, Numeric, String, Time
+from sqlalchemy.types import DateTime, Numeric, String
 
 from linkml.generators.bigquerygen import BigQueryGenerator
+from linkml_runtime.linkml_model.meta import SlotDefinition
 from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 
@@ -19,6 +21,7 @@ def test_decimal_maps_to_numeric():
 def test_enum_range_maps_to_string():
     """BQ has no ENUM type; enum-ranged slots must compile as STRING"""
     from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
+
     b = SchemaBuilder()
     b.schema.enums["Status"] = EnumDefinition(
         name="Status",
@@ -44,7 +47,9 @@ def test_datetime_maps_to_datetime():
 def test_bigquery_type_annotation_overrides_mapping():
     """bigquery_type slot annotation takes precedence over automatic type resolution"""
     from sqlalchemy_bigquery import TIMESTAMP
+
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_class("Thing", slots=["ts"])
     b.add_defaults()
@@ -70,6 +75,7 @@ def test_multivalued_scalar_produces_array():
 def test_inlined_object_produces_struct():
     """inlined class-range slot → STRUCT<street STRING, city STRING>"""
     from linkml_runtime.linkml_model.meta import SlotDefinition as SD
+
     b = SchemaBuilder()
     b.add_slot(SD("street", range="string"))
     b.add_slot(SD("city", range="string"))
@@ -87,6 +93,7 @@ def test_inlined_object_produces_struct():
 def test_nested_struct_recursion():
     """a STRUCT whose fields include another inlined class → nested STRUCT<...>"""
     from linkml_runtime.linkml_model.meta import SlotDefinition as SD
+
     b = SchemaBuilder()
     b.add_slot(SD("lat", range="float"))
     b.add_slot(SD("lon", range="float"))
@@ -105,6 +112,7 @@ def test_nested_struct_recursion():
 def _make_partitioned_schema(partition_type="DAY", field_range="datetime"):
     """Helper: schema with a class annotated for time partitioning."""
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("id", range="string", identifier=True))
     b.add_slot(SlotDefinition("created_at", range=field_range))
@@ -133,6 +141,7 @@ def test_time_partition_by_month():
 def test_range_partition():
     """bigquery_partition_type=RANGE on an integer slot produces RANGE_BUCKET(...)"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("id", range="string", identifier=True))
     b.add_slot(SlotDefinition("user_id", range="integer"))
@@ -150,6 +159,7 @@ def test_range_partition():
 def test_cluster_by():
     """bigquery_cluster_by annotation produces CLUSTER BY clause"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("id", range="string", identifier=True))
     b.add_slot(SlotDefinition("region", range="string"))
@@ -165,6 +175,7 @@ def test_cluster_by():
 def test_partition_and_cluster_combined():
     """PARTITION BY and CLUSTER BY can appear together on the same table"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     schema = _make_partitioned_schema("DAY")
     c = schema.classes["Event"]
     c.annotations["bigquery_cluster_by"] = Annotation("bigquery_cluster_by", "id")
@@ -177,14 +188,11 @@ def test_partition_and_cluster_combined():
 def test_partition_expiration_and_filter():
     """partition_expiration_days and require_partition_filter appear in OPTIONS(...)"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     schema = _make_partitioned_schema("DAY")
     c = schema.classes["Event"]
-    c.annotations["bigquery_partition_expiration_days"] = Annotation(
-        "bigquery_partition_expiration_days", "90"
-    )
-    c.annotations["bigquery_require_partition_filter"] = Annotation(
-        "bigquery_require_partition_filter", "true"
-    )
+    c.annotations["bigquery_partition_expiration_days"] = Annotation("bigquery_partition_expiration_days", "90")
+    c.annotations["bigquery_require_partition_filter"] = Annotation("bigquery_require_partition_filter", "true")
     gen = BigQueryGenerator(schema)
     ddl = gen.generate_ddl()
     assert "OPTIONS(" in ddl
@@ -194,6 +202,7 @@ def test_partition_expiration_and_filter():
 def test_partition_on_nonexistent_field_raises():
     """bigquery_partition_by naming a field not in the class must raise ValueError"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("id", range="string", identifier=True))
     b.add_class("Event", slots=["id"])
@@ -208,6 +217,7 @@ def test_partition_on_nonexistent_field_raises():
 def test_time_partition_on_string_field_raises():
     """time partitioning on a STRING field must raise ValueError mentioning 'date'"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("id", range="string", identifier=True))
     b.add_slot(SlotDefinition("name", range="string"))
@@ -224,6 +234,7 @@ def test_time_partition_on_string_field_raises():
 def test_range_partition_on_non_integer_field_raises():
     """range partitioning on a non-integer field must raise ValueError mentioning 'integer'"""
     from linkml_runtime.linkml_model.meta import Annotation
+
     b = SchemaBuilder()
     b.add_slot(SlotDefinition("id", range="string", identifier=True))
     b.add_slot(SlotDefinition("label", range="string"))
@@ -241,6 +252,7 @@ def test_range_partition_on_non_integer_field_raises():
 # ---------------------------------------------------------------------------
 # Task 6 — Schema traversal: inheritance, abstract classes, mixins
 # ---------------------------------------------------------------------------
+
 
 def test_inherited_slots_appear_in_child_ddl():
     """A child class must include slots defined on its parent in the generated DDL."""
@@ -294,12 +306,14 @@ def test_mixin_slots_appear_in_class_ddl():
 # Task 8 — Integration test with personinfo.yaml
 # ---------------------------------------------------------------------------
 
-import os as _os
-
 _PERSONINFO_YAML = _os.path.join(
     _os.path.dirname(__file__),
-    "..", "..", "..",
-    "examples", "PersonSchema", "personinfo.yaml",
+    "..",
+    "..",
+    "..",
+    "examples",
+    "PersonSchema",
+    "personinfo.yaml",
 )
 
 
@@ -323,6 +337,7 @@ def test_personinfo_generates_valid_ddl():
 # ---------------------------------------------------------------------------
 # Task 7 — Generator defaults and --dataset flag
 # ---------------------------------------------------------------------------
+
 
 def test_use_foreign_keys_is_false_by_default():
     """BigQueryGenerator must default use_foreign_keys=False (BQ doesn't enforce FKs)."""

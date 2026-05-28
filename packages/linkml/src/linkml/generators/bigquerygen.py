@@ -1,16 +1,28 @@
 import logging
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 import click
-
 from sqlalchemy import Column, MetaData, Table  # noqa: F401 — used in generate_ddl and get_sql_range
 from sqlalchemy.schema import CreateTable  # noqa: F401 — used in generate_ddl and get_sql_range
-from sqlalchemy.types import Boolean, Date, DateTime, Float, INTEGER, Integer, LargeBinary, Numeric, String, Time  # noqa: F401 — used in generate_ddl and get_sql_range
+from sqlalchemy.types import (  # noqa: F401 — used in generate_ddl and get_sql_range
+    INTEGER,
+    Boolean,
+    Date,
+    DateTime,
+    Float,
+    Integer,
+    LargeBinary,
+    Numeric,
+    String,
+    Time,
+)
 
 from linkml._version import __version__
-from linkml.generators.sqltablegen import SQLTableGenerator, METAMODEL_TYPE_TO_BASE  # noqa: F401 — used in generate_ddl and get_sql_range
+from linkml.generators.sqltablegen import (  # noqa: F401 — used in generate_ddl and get_sql_range
+    METAMODEL_TYPE_TO_BASE,
+    SQLTableGenerator,
+)
 from linkml.utils.generator import shared_arguments
 
 logger = logging.getLogger(__name__)
@@ -25,14 +37,12 @@ def _require_bq():
     global _BQ_AVAILABLE, ARRAY, STRUCT, BigQueryDialect, TIMESTAMP, bigquery
     if not _BQ_AVAILABLE:
         try:
-            from sqlalchemy_bigquery import ARRAY, STRUCT, BigQueryDialect
-            from sqlalchemy_bigquery import TIMESTAMP
             import google.cloud.bigquery as bigquery
+            from sqlalchemy_bigquery import ARRAY, STRUCT, TIMESTAMP, BigQueryDialect
+
             _BQ_AVAILABLE = True
         except ImportError as exc:
-            raise ImportError(
-                "sqlalchemy-bigquery is required. Install with: pip install 'linkml[bigquery]'"
-            ) from exc
+            raise ImportError("sqlalchemy-bigquery is required. Install with: pip install 'linkml[bigquery]'") from exc
 
 
 # Maps LinkML type bases to BigQuery SQLAlchemy types.
@@ -43,7 +53,7 @@ BQ_TYPEMAP = {
     "int": INTEGER(),
     "float": Float(),
     "double": Float(),
-    "Decimal": Numeric(),        # parent maps this to Integer() — incorrect for BQ
+    "Decimal": Numeric(),  # parent maps this to Integer() — incorrect for BQ
     "Bool": Boolean(),
     "URI": String(),
     "URIorCURIE": String(),
@@ -52,7 +62,7 @@ BQ_TYPEMAP = {
     "NodeIdentifier": String(),
     "XSDDate": Date(),
     "XSDTime": Time(),
-    "XSDDateTime": DateTime(),   # → DATETIME in BQ; use bigquery_type: TIMESTAMP to override
+    "XSDDateTime": DateTime(),  # → DATETIME in BQ; use bigquery_type: TIMESTAMP to override
 }
 
 
@@ -83,7 +93,7 @@ class BigQueryGenerator(SQLTableGenerator):
 
     # Optional dataset prefix: when set, table names are emitted as
     # `dataset.TableName` for fully-qualified DDL.
-    dataset: Optional[str] = None
+    dataset: str | None = None
 
     def serialize(self, **kwargs) -> str:
         return self.generate_ddl(**kwargs)
@@ -123,9 +133,7 @@ class BigQueryGenerator(SQLTableGenerator):
                 ddl = str(CreateTable(table).compile(dialect=dialect))
                 ddl_parts.append(ddl.rstrip() + ";")
             except Exception as exc:
-                raise ValueError(
-                    f"Failed to generate DDL for class {cn!r}: {exc}"
-                ) from exc
+                raise ValueError(f"Failed to generate DDL for class {cn!r}: {exc}") from exc
 
         return "\n\n".join(ddl_parts)
 
@@ -155,7 +163,7 @@ class BigQueryGenerator(SQLTableGenerator):
 
         if partition_type == "RANGE":
             # Range partitioning requires an integer column (INT64 in BQ).
-            if not isinstance(bq_type, (INTEGER, Integer)):
+            if not isinstance(bq_type, INTEGER | Integer):
                 raise ValueError(
                     f"Class {cn!r}: bigquery_partition_type=RANGE requires an integer field, "
                     f"but {field_name!r} resolves to {type(bq_type).__name__}. "
@@ -164,7 +172,7 @@ class BigQueryGenerator(SQLTableGenerator):
         else:
             # Time partitioning requires DATE, DATETIME, or TIMESTAMP.
             # sqlalchemy_bigquery.TIMESTAMP inherits from DateTime, so isinstance covers all three.
-            if not isinstance(bq_type, (Date, DateTime)):
+            if not isinstance(bq_type, Date | DateTime):
                 raise ValueError(
                     f"Class {cn!r}: time partitioning requires a date/datetime/timestamp field, "
                     f"but {field_name!r} resolves to {type(bq_type).__name__}. "
@@ -182,9 +190,7 @@ class BigQueryGenerator(SQLTableGenerator):
         cluster_by_ann = ann.get("bigquery_cluster_by")
 
         if cluster_by_ann:
-            kwargs["bigquery_clustering_fields"] = [
-                f.strip() for f in cluster_by_ann.value.split(",")
-            ]
+            kwargs["bigquery_clustering_fields"] = [f.strip() for f in cluster_by_ann.value.split(",")]
 
         if "bigquery_description" in ann:
             kwargs["bigquery_description"] = ann["bigquery_description"].value
@@ -287,10 +293,7 @@ class BigQueryGenerator(SQLTableGenerator):
         }
         factory = overrides.get(type_str.upper())
         if factory is None:
-            raise ValueError(
-                f"Unknown bigquery_type annotation value {type_str!r}. "
-                f"Valid values: {sorted(overrides)}"
-            )
+            raise ValueError(f"Unknown bigquery_type annotation value {type_str!r}. Valid values: {sorted(overrides)}")
         return factory()
 
 
