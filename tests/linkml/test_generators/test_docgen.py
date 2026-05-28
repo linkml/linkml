@@ -1644,6 +1644,10 @@ def test_core_element_properties(input_path, tmp_path):
     # Test inherited slot
     base_property_file = tmp_path / "base_property.md"
     assert_mdfile_contains(base_property_file, "| Inherited | Yes |", after="Slot Characteristics")
+    # Issue #3569: empty Cardinality table swallowed the next heading. The "Cardinality and
+    # Requirements" section must be omitted entirely when the slot has no cardinality data,
+    # otherwise an empty Markdown table consumes the following ### heading as a table row.
+    assert_mdfile_does_not_contain(base_property_file, "### Cardinality and Requirements")
 
     # Test designates_type slot
     type_designator_file = tmp_path / "type_designator.md"

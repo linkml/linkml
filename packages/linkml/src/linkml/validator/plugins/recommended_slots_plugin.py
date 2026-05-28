@@ -31,7 +31,9 @@ class RecommendedSlotsPlugin(ValidationPlugin):
                 if slot_range_class is not None and slot_value is not None:
                     slot_location = location + [slot_def.name]
                     if slot_def.multivalued:
-                        if slot_def.inlined and isinstance(slot_value, dict):
+                        # only if the slot is not inlined as a list, otherwise we are checking the
+                        # range class for the list itself, which is not what we want.
+                        if slot_def.inlined and not slot_def.inlined_as_list and isinstance(slot_value, dict):
                             for k, v in slot_value.items():
                                 yield from _do_process(v, slot_range_class.name, slot_location + [k])
                         elif slot_def.inlined_as_list and isinstance(slot_value, list):
