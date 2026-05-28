@@ -7,7 +7,7 @@ import click
 
 from sqlalchemy import Column, MetaData, Table  # noqa: F401 — used in generate_ddl and get_sql_range
 from sqlalchemy.schema import CreateTable  # noqa: F401 — used in generate_ddl and get_sql_range
-from sqlalchemy.types import Boolean, Date, DateTime, Float, Integer, LargeBinary, Numeric, String, Time  # noqa: F401 — used in generate_ddl and get_sql_range
+from sqlalchemy.types import Boolean, Date, DateTime, Float, INTEGER, Integer, LargeBinary, Numeric, String, Time  # noqa: F401 — used in generate_ddl and get_sql_range
 
 from linkml._version import __version__
 from linkml.generators.sqltablegen import SQLTableGenerator, METAMODEL_TYPE_TO_BASE  # noqa: F401 — used in generate_ddl and get_sql_range
@@ -40,7 +40,7 @@ def _require_bq():
 BQ_TYPEMAP = {
     "str": String(),
     "string": String(),
-    "int": Integer(),
+    "int": INTEGER(),
     "float": Float(),
     "double": Float(),
     "Decimal": Numeric(),        # parent maps this to Integer() — incorrect for BQ
@@ -130,12 +130,91 @@ class BigQueryGenerator(SQLTableGenerator):
         return "\n\n".join(ddl_parts)
 
     def _validate_partition(self, class_def, sv) -> None:
-        """Pre-flight check for partition annotations. Raises ValueError on misconfiguration."""
-        pass  # implemented in Task 5
+        """Raise ValueError with a clear message if partition annotations are misconfigured.
 
-    def _bq_table_kwargs(self, class_def, sv) -> dict:
-        """Build BigQuery dialect kwargs (partitioning, clustering) from class annotations."""
-        return {}  # implemented in Task 4
+        Called before CreateTable.compile() so errors surface cleanly, not as crashes.
+        """
+        ann = class_def.annotations
+        partition_field_ann = ann.get("bigquery_partition_by")
+        if partition_field_ann is None:
+            return
+
+        cn = class_def.name
+        field_name = partition_field_ann.value
+        induced_slot_names = {s.name for s in sv.class_induced_slots(cn)}
+
+        if field_name not in induced_slot_names:
+            raise ValueError(
+                f"Class {cn!r}: bigquery_partition_by field {field_name!r} "
+                f"is not a slot of this class. Available slots: {sorted(induced_slot_names)}"
+            )
+
+        slot = next(s for s in sv.class_induced_slots(cn) if s.name == field_name)
+        bq_type = self.get_sql_range(slot, sv=sv)
+        partition_type = ann["bigquery_partition_type"].value if "bigquery_partition_type" in ann else "DAY"
+
+        if partition_type == "RANGE":
+            # Range partitioning requires an integer column (INT64 in BQ).
+            if not isinstance(bq_type, (INTEGER, Integer)):
+                raise ValueError(
+                    f"Class {cn!r}: bigquery_partition_type=RANGE requires an integer field, "
+                    f"but {field_name!r} resolves to {type(bq_type).__name__}. "
+                    f"Set the slot range to 'integer'."
+                )
+        else:
+            # Time partitioning requires DATE, DATETIME, or TIMESTAMP.
+            # sqlalchemy_bigquery.TIMESTAMP inherits from DateTime, so isinstance covers all three.
+            if not isinstance(bq_type, (Date, DateTime)):
+                raise ValueError(
+                    f"Class {cn!r}: time partitioning requires a date/datetime/timestamp field, "
+                    f"but {field_name!r} resolves to {type(bq_type).__name__}. "
+                    f"Set the slot range to 'date' or 'datetime', or add a "
+                    f"'bigquery_type: TIMESTAMP' annotation."
+                )
+
+    def _bq_table_kwargs(self, class_def, _sv) -> dict:
+        """Build BigQuery dialect kwargs from bigquery_* class annotations."""
+        _require_bq()
+        ann = class_def.annotations
+        kwargs = {}
+
+        partition_field_ann = ann.get("bigquery_partition_by")
+        cluster_by_ann = ann.get("bigquery_cluster_by")
+
+        if cluster_by_ann:
+            kwargs["bigquery_clustering_fields"] = [
+                f.strip() for f in cluster_by_ann.value.split(",")
+            ]
+
+        if "bigquery_description" in ann:
+            kwargs["bigquery_description"] = ann["bigquery_description"].value
+
+        if partition_field_ann is None:
+            return kwargs
+
+        field_name = partition_field_ann.value
+        partition_type = ann["bigquery_partition_type"].value if "bigquery_partition_type" in ann else "DAY"
+        expiration_days_ann = ann.get("bigquery_partition_expiration_days")
+        require_filter_ann = ann.get("bigquery_require_partition_filter")
+
+        if partition_type == "RANGE":
+            raw = ann["bigquery_partition_range"].value
+            start, end, interval = [int(x.strip()) for x in raw.split(",")]
+            kwargs["bigquery_range_partitioning"] = bigquery.RangePartitioning(
+                field=field_name,
+                range_=bigquery.PartitionRange(start=start, end=end, interval=interval),
+            )
+        else:
+            tp_kwargs = {"field": field_name, "type_": partition_type}
+            if expiration_days_ann:
+                days = float(expiration_days_ann.value)
+                tp_kwargs["expiration_ms"] = int(days * 24 * 60 * 60 * 1000)
+            kwargs["bigquery_time_partitioning"] = bigquery.TimePartitioning(**tp_kwargs)
+
+        if require_filter_ann and require_filter_ann.value.lower() == "true":
+            kwargs["bigquery_require_partition_filter"] = True
+
+        return kwargs
 
     def get_sql_range(self, slot, schema=None, sv=None):
         """Returns the BigQuery SQLAlchemy column type for the given slot."""
@@ -199,7 +278,7 @@ class BigQueryGenerator(SQLTableGenerator):
             "DATE": lambda: Date(),
             "DATETIME": lambda: DateTime(),
             "STRING": lambda: String(),
-            "INT64": lambda: Integer(),
+            "INT64": lambda: INTEGER(),
             "FLOAT64": lambda: Float(),
             "NUMERIC": lambda: Numeric(),
             "BOOL": lambda: Boolean(),
