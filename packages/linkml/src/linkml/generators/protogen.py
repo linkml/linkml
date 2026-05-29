@@ -73,16 +73,17 @@ def _to_proto_ident(value: str) -> str:
 
     - Non-identifier characters become ``_``.
     - Runs of underscores collapse to one (no ``__``).
-    - Any underscore immediately followed by a digit is dropped (``foo_2bar``
-      becomes "foo2bar") since digits aren't allowed after ``_``.
+    - Any underscore immediately followed by a digit has an ``N`` inserted
+      (``foo_2bar`` becomes "foo_N2bar") since digits aren't allowed after
+      ``_``. Inserting rather than dropping keeps ``foo_2bar`` distinct from
+      ``foo2bar`` (reusing the same leading-digit prefix rule below).
     - Leading and trailing underscores are stripped.
     - An empty result, or one starting with a digit, is prefixed with ``N`` so
-      the identifier matches ``[A-Za-z][A-Za-z0-9_]*`` and never starts with
-      ``_``.
+      identifier matches ``[A-Za-z][A-Za-z0-9_]*`` and never starts with ``_``.
     """
     cleaned = re.sub(r"[^A-Za-z0-9_]", "_", (value or "").strip())
     cleaned = re.sub(r"_+", "_", cleaned)
-    cleaned = re.sub(r"_(\d)", r"\1", cleaned)
+    cleaned = re.sub(r"_(\d)", r"_N\1", cleaned)
     cleaned = cleaned.strip("_")
     if not cleaned:
         return "N"
@@ -108,7 +109,7 @@ class ProtoGenerator(Generator):
 
     # ClassVars
     generatorname = os.path.basename(__file__)
-    generatorversion = "0.1.2"
+    generatorversion = "0.2.0"
     valid_formats = ["proto"]
     visit_all_class_slots = True
     uses_schemaloader = True
@@ -131,15 +132,19 @@ class ProtoGenerator(Generator):
         Proto3 package identifiers may be dot-separated; each segment must
         match ``[A-Za-z_][A-Za-z0-9_]*``. We additionally follow the proto3
         style guide: no leading/trailing underscores, no consecutive
-        underscores, and no underscore immediately followed by a digit.
+        underscores, and no underscore immediately followed by a digit. An
+        ``_`` before a digit gets an ``N`` inserted (``foo_2bar`` becomes
+        "foo_n2bar") rather than dropped, so ``foo_2bar`` stays distinct from
+        ``foo2bar``.
 
         Returns None when no usable identifier can be derived - the caller
         then omits the ``package`` line (it's optional in proto3).
         """
         candidate = re.sub(r"[^A-Za-z0-9_.]", "_", (value or "").strip())
-        # Collapse runs of underscores and drop any `_` that precedes a digit.
+        # Collapse runs of underscores; insert `N` after any `_` that precedes
+        # a digit (non-destructive, keeps `foo_2bar` distinct from `foo2bar`).
         candidate = re.sub(r"_+", "_", candidate)
-        candidate = re.sub(r"_(\d)", r"\1", candidate)
+        candidate = re.sub(r"_(\d)", r"_N\1", candidate)
         candidate = candidate.strip("._").lower()
         if not candidate or candidate[0].isdigit():
             return None

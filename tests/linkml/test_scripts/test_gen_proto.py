@@ -67,9 +67,11 @@ def test_metamodel(snapshot):
         # collapse consecutive underscores (no `__`)
         ("foo__bar", "foo_bar"),
         ("foo___bar", "foo_bar"),
-        # drop `_` immediately before a digit (no `_<digit>`)
-        ("foo_2bar", "foo2bar"),
-        ("foo___2bar", "foo2bar"),
+        # `_` immediately before a digit gets an `N` inserted (no `_<digit>`),
+        # non-destructively so `foo_2bar` stays distinct from `foo2bar`
+        ("foo_2bar", "foo_N2bar"),
+        ("foo___2bar", "foo_N2bar"),
+        ("foo2bar", "foo2bar"),
         # strip leading/trailing underscores
         ("_foo", "foo"),
         ("foo_", "foo"),
@@ -110,7 +112,8 @@ def test_to_upper_snake_for_enum_values(raw, expected):
         ("biolink-model", "biolink_model"),
         ("FooBar", "foobar"),  # lower-cased
         ("foo__bar", "foo_bar"),  # consecutive `_` collapsed
-        ("foo_2bar", "foo2bar"),  # `_` before digit dropped
+        ("foo_2bar", "foo_n2bar"),  # `_` before digit gets `N` inserted (lower-cased)
+        ("foo2bar", "foo2bar"),  # stays distinct from foo_2bar
         ("foo.bar", "foo.bar"),  # dotted package preserved
         ("2foo", None),  # leading digit -> None
         ("", None),
