@@ -523,3 +523,125 @@ def test_semver_from_package_unknown_returns_zero():
     assert v.major == 0
     assert v.minor == 0
     assert v.patch == 0
+
+
+# ---------------------------------------------------------------------------
+# Full-features integration test using bigquery_features.yaml
+# ---------------------------------------------------------------------------
+
+_FEATURES_YAML = _os.path.join(
+    _os.path.dirname(__file__),
+    "input",
+    "bigquery_features.yaml",
+)
+
+
+@pytest.mark.integration
+def test_bigquery_features_schema():
+    """Full integration test against tests/linkml/test_generators/input/bigquery_features.yaml.
+
+    Expected DDL (abbreviated):
+
+        CREATE TABLE `GeoPoint` (
+            `lat` FLOAT64,
+            `lon` FLOAT64
+        );
+
+        CREATE TABLE `Address` (
+            `street` STRING,
+            `city` STRING,
+            `location` STRUCT<lat FLOAT64, lon FLOAT64>   -- inlined GeoPoint
+        );
+
+        CREATE TABLE `Event` (
+            `name` STRING,
+            `status` STRING,                              -- enum EventStatus → STRING
+            `tags` ARRAY<STRING>,                         -- multivalued scalar
+            `home_address` STRUCT<street STRING,          -- inlined Address with nested STRUCT
+                                  city STRING,
+                                  location STRUCT<lat FLOAT64, lon FLOAT64>>,
+            `score` NUMERIC,                              -- decimal → NUMERIC
+            `recorded_at` TIMESTAMP,                      -- bigquery_type: TIMESTAMP override
+            `created_at` DATETIME,                        -- partition field
+            `updated_at` DATETIME,                        -- from HasTimestamps mixin
+            `id` STRING NOT NULL                          -- from Identifiable base class
+        ) PARTITION BY DATETIME_TRUNC(created_at, DAY)
+        CLUSTER BY name, status
+        OPTIONS(partition_expiration_days=90.0, require_partition_filter=true);
+
+        CREATE TABLE `MetricSnapshot` (
+            `id` STRING NOT NULL,
+            `bucket_id` INT64,                            -- integer range partition field
+            `value` FLOAT64
+        ) PARTITION BY RANGE_BUCKET(bucket_id, GENERATE_ARRAY(0, 1000, 100));
+
+    Classes NOT expected in output:
+        - Identifiable  (abstract=true)
+        - HasTimestamps (mixin=true)
+    """
+    gen = BigQueryGenerator(_FEATURES_YAML)
+    ddl = gen.generate_ddl()
+
+    # Helpers: extract per-table DDL blocks for targeted assertions
+    def get_block(table: str) -> str:
+        return next(
+            b
+            for b in ddl.split("\n\n")
+            if f"`{table}`" in b or f" {table} " in b or b.startswith(f"CREATE TABLE `{table}`")
+        )
+
+    event = get_block("Event")
+    metric = get_block("MetricSnapshot")
+    address = get_block("Address")
+
+    # ── Abstract and mixin classes produce no table ──────────────────────────
+    assert "Identifiable" not in ddl
+    assert "HasTimestamps" not in ddl
+
+    # ── GeoPoint and Address exist as standalone tables ──────────────────────
+    assert "GeoPoint" in ddl
+    assert "Address" in ddl
+
+    # ── Event: inherited slot from abstract Identifiable ─────────────────────
+    assert "`id` STRING NOT NULL" in event
+
+    # ── Event: mixin slots from HasTimestamps ────────────────────────────────
+    assert "`created_at` DATETIME" in event
+    assert "`updated_at` DATETIME" in event
+
+    # ── Event: enum-ranged slot → STRING ─────────────────────────────────────
+    assert "`status` STRING" in event
+
+    # ── Event: multivalued scalar slot → ARRAY<STRING> ───────────────────────
+    assert "`tags` ARRAY<STRING>" in event
+
+    # ── Event: inlined Address → STRUCT with nested GeoPoint STRUCT ──────────
+    assert "STRUCT<street STRING, city STRING, location STRUCT<lat FLOAT64, lon FLOAT64>>" in event
+
+    # ── Event: decimal slot → NUMERIC ────────────────────────────────────────
+    assert "`score` NUMERIC" in event
+
+    # ── Event: bigquery_type:TIMESTAMP annotation overrides DATETIME ─────────
+    assert "`recorded_at` TIMESTAMP" in event
+
+    # ── Event: PARTITION BY DATETIME_TRUNC (time partition, DAY) ────────────
+    assert "PARTITION BY DATETIME_TRUNC(created_at, DAY)" in event
+
+    # ── Event: CLUSTER BY ────────────────────────────────────────────────────
+    assert "CLUSTER BY name, status" in event
+
+    # ── Event: OPTIONS with partition expiration and required filter ─────────
+    assert "OPTIONS(" in event
+    assert "partition_expiration_days=90.0" in event
+    assert "require_partition_filter=true" in event
+
+    # ── Address: nested STRUCT for inlined GeoPoint ──────────────────────────
+    assert "`location` STRUCT<lat FLOAT64, lon FLOAT64>" in address
+
+    # ── MetricSnapshot: integer RANGE partition ───────────────────────────────
+    assert "PARTITION BY RANGE_BUCKET(bucket_id, GENERATE_ARRAY(0, 1000, 100))" in metric
+
+    # ── Every statement ends with a semicolon ────────────────────────────────
+    for block in ddl.split("\n\n"):
+        if block.strip():
+            assert block.rstrip().endswith(";"), f"Missing semicolon:\n{block}"
