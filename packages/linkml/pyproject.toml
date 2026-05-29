@@ -33,6 +33,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 requires-python = ">=3.10"
 dynamic = ["version"]
@@ -51,9 +52,9 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "prefixcommons >= 0.1.7",
     "prefixmaps >= 0.2.2",
     "pydantic >= 2.0.0, < 3.0.0",
-    "pyjsg >= 0.11.6",
-    "pyshex >= 0.7.20",
-    "pyshexc >= 0.8.3",
+    "pyjsg >= 0.12.3",
+    "pyshex >= 0.9.0",
+    "pyshexc >= 0.10.3",
     "python-dateutil",
     "pyyaml",
     "rdflib >=6.0.0",
@@ -78,7 +79,7 @@ tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "morph-kgc >= 2.9.0; python_version >= '3.10'"
+  "duckdb>=1.5.2",
 ]
 dev = [
   {include-group = "tests" },
