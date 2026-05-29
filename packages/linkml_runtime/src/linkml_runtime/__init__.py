@@ -3,7 +3,16 @@ from pathlib import Path
 from rdflib import OWL, RDF, RDFS, SKOS, XSD
 
 from linkml_runtime.utils.curienamespace import CurieNamespace
+
+# Install equality / hashing / string patches on the metamodel's
+# ``PermissibleValue`` dataclass so that enums behave intuitively at runtime
+# (see linkml/linkml#1203).  Done here because both ``enumerations`` and
+# ``linkml_model.meta`` are guaranteed to be fully loaded by this point.
+from linkml_runtime.utils.enumerations import _patch_permissible_value
 from linkml_runtime.utils.schemaview import SchemaView
+
+_patch_permissible_value()
+del _patch_permissible_value
 
 __all__ = [
     "SchemaView",

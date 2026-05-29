@@ -11,22 +11,31 @@ class EnumDefinitionMeta(type):
         cls._addvals()
 
     def __getitem__(cls, item):
-        return cls.__dict__[item]
+        # Walk the MRO so that empty wrapper subclasses (e.g. identifier
+        # wrappers emitted by ``pythongen``) can inherit permissible values
+        # from their parent enum class.
+        for klass in cls.__mro__:
+            if item in klass.__dict__:
+                return klass.__dict__[item]
+        raise KeyError(item)
 
     def __setitem__(cls, key, value):
         if key in cls.__dict__:
             raise ValueError(f"{cls.__name__} - {key} already assigned")
         cls.__dict__[key] = value
 
-    def __setattr__(cls, key, value):
-        from linkml_runtime.linkml_model.meta import PermissibleValue
-
-        if cls._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
-            print(f"Validating {value.meaning} against {cls._defn.code_set}")
-        super().__setattr__(key, value)
-
     def __contains__(cls, item) -> bool:
-        return item in cls.__dict__
+        # Accept strings, ``PermissibleValue`` instances, and ``EnumDefinitionImpl``
+        # instances as membership tests against the class's permissible value names.
+        # Walk the MRO so that empty wrapper subclasses inherit their parent
+        # enum's permissible values.
+        if isinstance_dt(item, "EnumDefinitionImpl"):
+            code = getattr(item, "_code", None)
+            if code is not None:
+                item = code.text
+        elif isinstance_dt(item, "PermissibleValue"):
+            item = item.text
+        return any(item in klass.__dict__ for klass in cls.__mro__)
 
 
 def isinstance_dt(cls: type, inst: str) -> bool:
@@ -117,3 +126,93 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     def __repr__(self) -> str:
         rlist = [(f.name, getattr(self._code, f.name)) for f in fields(self._code)]
         return self.__class__.__name__ + "(" + ", ".join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ")"
+
+    def __eq__(self, other) -> bool:
+        """Equality against another enum instance, a ``PermissibleValue``, or a ``str``.
+
+        Two enumerated values are considered equal when they share the same
+        underlying permissible value text.  Comparison with a bare ``str`` (or
+        ``PermissibleValue``) is supported so that user code can write
+        ``MyEnum.A == "A"`` in the same way as stdlib ``StrEnum``.
+        """
+        if isinstance(other, EnumDefinitionImpl):
+            return self._code.text == other._code.text
+        if isinstance_dt(other, "PermissibleValue"):
+            return self._code.text == other.text
+        if isinstance(other, str):
+            return self._code.text == other
+        return NotImplemented
+
+    def __ne__(self, other) -> bool:
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+    def __hash__(self) -> int:
+        return hash(self._code.text)
+
+
+def _patch_permissible_value() -> None:
+    """Temporary runtime back-fill for issue #1203 — to be removed once #723 lands.
+
+    The metamodel's ``PermissibleValue`` is a generated ``@dataclass``. It lacks
+    string-aware equality capability, is unhashable, and ``__str__`` is noisy.
+
+    Since pythongen emits enum members as bare ``PermissibleValue`` class attrs,
+    (``VitalStatus.ALIVE = PermissibleValue(text="ALIVE")``) instead of real
+    ``EnumDefinitionImpl`` instances, user code that does ``p.status == "ALIVE"``,
+    ``hash(VitalStatus.ALIVE)``, or ``VitalStatus.ALIVE in {...}`` would fail or
+    behave non-intuitively.
+
+    This function monkey-patches ``__eq__``, ``__ne__``, ``__hash__`` and ``__str__``
+    onto ``PermissibleValue`` so those operations work idempotently for strings,
+    other ``PermissibleValue`` instances, and ``EnumDefinitionImpl`` instances.
+
+    .. deprecated::
+        This patch is a temporary workaround, not the intended design.
+        ``PermissibleValue`` is conceptually a clean metamodel descriptor and
+        should retain that default dataclass equality semantics.
+
+        The proper fix lives in pythongen + the runtime metaclass: enum
+        members should be promoted to real ``EnumDefinitionImpl`` instances
+        at class-creation time (see ``EnumDefinitionMeta``), at which point
+        this patch will no longer be necessary.
+
+    See also:
+        * https://github.com/linkml/linkml/issues/1203 (the bug patch addresses)
+        * https://github.com/linkml/linkml/issues/723  (the structural fix)
+        * https://github.com/linkml/linkml/pull/3596   (tracking PR)
+    """
+    from linkml_runtime.linkml_model.meta import PermissibleValue
+
+    if getattr(PermissibleValue, "_linkml_enum_patches_applied", False):
+        return
+
+    def _pv_eq(self, other) -> bool:
+        if isinstance(other, EnumDefinitionImpl):
+            code = getattr(other, "_code", None)
+            return code is not None and self.text == code.text
+        if isinstance(other, PermissibleValue):
+            return self.text == other.text
+        if isinstance(other, str):
+            return self.text == other
+        return NotImplemented
+
+    def _pv_ne(self, other) -> bool:
+        result = _pv_eq(self, other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+    def _pv_hash(self) -> int:
+        return hash(self.text)
+
+    def _pv_str(self) -> str:
+        return str(self.text)
+
+    PermissibleValue.__eq__ = _pv_eq
+    PermissibleValue.__ne__ = _pv_ne
+    PermissibleValue.__hash__ = _pv_hash
+    PermissibleValue.__str__ = _pv_str
+    PermissibleValue._linkml_enum_patches_applied = True
