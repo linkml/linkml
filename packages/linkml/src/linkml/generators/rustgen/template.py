@@ -356,6 +356,23 @@ class RustProperty(RustTemplateModel):
     def hasdefault(self) -> bool:
         return self.multivalued or not self.required
 
+    @computed_field
+    def skip_serializing_if(self) -> str | None:
+        """Serde predicate for omitting this field on serialization.
+
+        Optional (``Option<...>``) fields are skipped when ``None``; list and
+        mapping fields are skipped when empty. This keeps generated JSON/YAML
+        compact without changing the data model. Returns ``None`` for required
+        scalars, which must always serialize.
+        """
+        if self.type_.optional:
+            return "Option::is_none"
+        if self.type_.containerType == ContainerType.LIST:
+            return "Vec::is_empty"
+        if self.type_.containerType == ContainerType.MAPPING:
+            return "HashMap::is_empty"
+        return None
+
 
 class AsKeyValue(RustTemplateModel):
     """
