@@ -515,6 +515,33 @@ def test_cli_dataset_flag():
     assert "my_ds." in result.output
 
 
+def test_class_with_no_slots_skipped_in_ddl():
+    """A concrete class that induces no slots must produce no CREATE TABLE statement."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", range="string", identifier=True))
+    b.add_class("Empty")  # no slots
+    b.add_class("HasId", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    ddl = gen.generate_ddl()
+    assert "Empty" not in ddl
+    assert "HasId" in ddl
+
+
+def test_custom_type_with_unmapped_base_defaults_to_string():
+    """A custom type whose base is not in BQ_TYPEMAP must fall back to STRING."""
+    from linkml_runtime.linkml_model.meta import TypeDefinition
+
+    b = SchemaBuilder()
+    b.schema.types["MyBytes"] = TypeDefinition(name="MyBytes", base="bytes", uri="xsd:base64Binary")
+    b.add_slot(SlotDefinition("payload", range="MyBytes"))
+    b.add_class("Thing", slots=["id", "payload"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    result = gen.get_sql_range(SlotDefinition("payload", range="MyBytes"), b.schema)
+    assert isinstance(result, String)
+
+
 def test_none_range_defaults_to_string():
     """A slot with no range set must resolve to STRING without error."""
     b = SchemaBuilder()
