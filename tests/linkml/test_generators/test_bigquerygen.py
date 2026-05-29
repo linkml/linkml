@@ -1,7 +1,7 @@
 import os as _os
 
 import pytest
-from sqlalchemy.types import DateTime, Numeric, String
+from sqlalchemy.types import Boolean, Date, DateTime, Float, LargeBinary, Numeric, String, Time
 
 from linkml.generators.bigquerygen import BigQueryGenerator
 from linkml_runtime.linkml_model.meta import SlotDefinition
@@ -367,3 +367,147 @@ def test_dataset_prefix_applied_to_table_names():
     gen.dataset = "my_dataset"
     ddl = gen.generate_ddl()
     assert "my_dataset.Person" in ddl
+
+
+def test_serialize_delegates_to_generate_ddl():
+    """serialize() must return the same output as generate_ddl()."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", range="string", identifier=True))
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    assert gen.serialize() == gen.generate_ddl()
+
+
+def test_get_sql_range_without_sv_argument():
+    """get_sql_range() must build SchemaView internally when sv is not supplied."""
+    b = SchemaBuilder()
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    result = gen.get_sql_range(SlotDefinition("id", range="string"))
+    assert isinstance(result, String)
+
+
+def test_inlined_as_list_produces_array_of_struct():
+    """inlined_as_list slot → ARRAY<STRUCT<...>> (list of embedded objects)."""
+    from linkml_runtime.linkml_model.meta import SlotDefinition as SD
+
+    b = SchemaBuilder()
+    b.add_slot(SD("street", range="string"))
+    b.add_class("Address", slots=["street"])
+    b.add_slot(SD("addresses", range="Address", inlined_as_list=True, multivalued=True))
+    b.add_class("Person", slots=["id", "addresses"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    ddl = gen.generate_ddl()
+    assert "ARRAY<" in ddl
+
+
+def test_unknown_range_defaults_to_string(caplog):
+    """An unrecognised range name must log a warning and map to STRING."""
+    import logging
+
+    b = SchemaBuilder()
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.bigquerygen"):
+        result = gen.get_sql_range(SlotDefinition("x", range="NonExistentType"), b.schema)
+    assert isinstance(result, String)
+    assert "NonExistentType" in caplog.text
+
+
+def test_class_range_without_identifier_defaults_to_string():
+    """A slot whose range is a class with no identifier slot must resolve to STRING."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("zip_code", range="string"))
+    b.add_class("PostalAddress", slots=["zip_code"])
+    b.add_slot(SlotDefinition("mailing_address", range="PostalAddress"))
+    b.add_class("Person", slots=["id", "mailing_address"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    result = gen.get_sql_range(SlotDefinition("mailing_address", range="PostalAddress"), b.schema)
+    assert isinstance(result, String)
+
+
+@pytest.mark.parametrize(
+    "type_str, expected_class",
+    [
+        ("DATE", Date),
+        ("DATETIME", DateTime),
+        ("STRING", String),
+        ("FLOAT64", Float),
+        ("NUMERIC", Numeric),
+        ("BOOL", Boolean),
+        ("TIME", Time),
+        ("BYTES", LargeBinary),
+    ],
+)
+def test_resolve_type_override_all_types(type_str, expected_class):
+    """Every valid bigquery_type annotation value must resolve without error."""
+    b = SchemaBuilder()
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    result = gen._resolve_type_override(type_str)
+    assert isinstance(result, expected_class)
+
+
+def test_resolve_type_override_int64():
+    """INT64 bigquery_type annotation must resolve to INTEGER."""
+    from sqlalchemy.types import INTEGER
+
+    b = SchemaBuilder()
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    assert isinstance(gen._resolve_type_override("INT64"), INTEGER)
+
+
+def test_resolve_type_override_invalid_raises():
+    """An unrecognised bigquery_type annotation value must raise ValueError."""
+    b = SchemaBuilder()
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    with pytest.raises(ValueError, match="NOTATYPE"):
+        gen._resolve_type_override("NOTATYPE")
+
+
+def test_bigquery_description_in_options():
+    """bigquery_description annotation must appear in the generated OPTIONS clause."""
+    from linkml_runtime.linkml_model.meta import Annotation
+
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", range="string", identifier=True))
+    b.add_class("Event", slots=["id"])
+    b.add_defaults()
+    b.schema.classes["Event"].annotations["bigquery_description"] = Annotation(
+        "bigquery_description", "Tracks user events"
+    )
+    gen = BigQueryGenerator(b.schema)
+    ddl = gen.generate_ddl()
+    assert "Tracks user events" in ddl
+
+
+def test_cli_produces_ddl(tmp_path):
+    """The gen-bigquery CLI entry point must print valid DDL to stdout."""
+    from click.testing import CliRunner
+
+    from linkml.generators.bigquerygen import cli
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(_PERSONINFO_YAML)])
+    assert result.exit_code == 0, result.output
+    assert "CREATE TABLE" in result.output
+
+
+def test_semver_from_package_unknown_returns_zero():
+    """SemVer.from_package() must return 0.0.0 for an uninstalled package."""
+    from linkml.utils.deprecation import SemVer
+
+    v = SemVer.from_package("linkml-nonexistent-package-xyzzy")
+    assert v.major == 0
+    assert v.minor == 0
+    assert v.patch == 0

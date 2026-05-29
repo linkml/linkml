@@ -41,7 +41,7 @@ def _require_bq():
             from sqlalchemy_bigquery import ARRAY, STRUCT, TIMESTAMP, BigQueryDialect
 
             _BQ_AVAILABLE = True
-        except ImportError as exc:
+        except ImportError as exc:  # pragma: no cover
             raise ImportError("sqlalchemy-bigquery is required. Install with: pip install 'linkml[bigquery]'") from exc
 
 
@@ -132,7 +132,7 @@ class BigQueryGenerator(SQLTableGenerator):
                 table = Table(table_name, MetaData(), *cols, **table_kwargs)
                 ddl = str(CreateTable(table).compile(dialect=dialect))
                 ddl_parts.append(ddl.rstrip() + ";")
-            except Exception as exc:
+            except Exception as exc:  # pragma: no cover
                 raise ValueError(f"Failed to generate DDL for class {cn!r}: {exc}") from exc
 
         return "\n\n".join(ddl_parts)
