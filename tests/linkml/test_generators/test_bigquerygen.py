@@ -503,6 +503,18 @@ def test_cli_produces_ddl(tmp_path):
     assert "CREATE TABLE" in result.output
 
 
+def test_cli_dataset_flag():
+    """--dataset flag must prefix table names in CLI output."""
+    from click.testing import CliRunner
+
+    from linkml.generators.bigquerygen import cli
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [str(_PERSONINFO_YAML), "--dataset", "my_ds"])
+    assert result.exit_code == 0, result.output
+    assert "my_ds." in result.output
+
+
 def test_semver_from_package_unknown_returns_zero():
     """SemVer.from_package() must return 0.0.0 for an uninstalled package."""
     from linkml.utils.deprecation import SemVer

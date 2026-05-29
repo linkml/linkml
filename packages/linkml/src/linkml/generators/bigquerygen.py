@@ -309,5 +309,5 @@ def cli(yamlfile, dataset=None, **args):
     print(gen.serialize())
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     cli()
