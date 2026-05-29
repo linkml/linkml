@@ -515,6 +515,47 @@ def test_cli_dataset_flag():
     assert "my_ds." in result.output
 
 
+def test_none_range_defaults_to_string():
+    """A slot with no range set must resolve to STRING without error."""
+    b = SchemaBuilder()
+    b.add_class("Thing", slots=["id"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    from linkml_runtime.utils.schemaview import SchemaView
+
+    sv = SchemaView(b.schema)
+    result = gen._get_scalar_type(None, sv)
+    assert isinstance(result, String)
+
+
+def test_require_partition_filter_false_omitted_from_options():
+    """bigquery_require_partition_filter=false must not add require_partition_filter to OPTIONS."""
+    from linkml_runtime.linkml_model.meta import Annotation
+
+    schema = _make_partitioned_schema("DAY")
+    c = schema.classes["Event"]
+    c.annotations["bigquery_require_partition_filter"] = Annotation("bigquery_require_partition_filter", "false")
+    gen = BigQueryGenerator(schema)
+    ddl = gen.generate_ddl()
+    assert "require_partition_filter" not in ddl
+
+
+def test_inlined_as_list_non_multivalued_produces_struct():
+    """inlined_as_list=True on a non-multivalued slot must produce STRUCT, not ARRAY."""
+    from linkml_runtime.linkml_model.meta import SlotDefinition as SD
+
+    b = SchemaBuilder()
+    b.add_slot(SD("label", range="string"))
+    b.add_class("Tag", slots=["label"])
+    b.add_slot(SD("primary_tag", range="Tag", inlined_as_list=True))
+    b.add_class("Article", slots=["id", "primary_tag"])
+    b.add_defaults()
+    gen = BigQueryGenerator(b.schema)
+    ddl = gen.generate_ddl()
+    assert "STRUCT<" in ddl
+    assert "ARRAY<" not in ddl.split("Article")[1].split(";")[0]
+
+
 def test_semver_from_package_unknown_returns_zero():
     """SemVer.from_package() must return 0.0.0 for an uninstalled package."""
     from linkml.utils.deprecation import SemVer
