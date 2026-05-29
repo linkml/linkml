@@ -52,6 +52,21 @@ fn overwrite_except_none<T>(left: &mut Option<T>, right: Option<T>) {
 }
 {% endif %}
 
+{% if needs_option_map_overwrite %}
+/// Merge two `Option<HashMap<K, V>>`s per-key: `right` wins on a key conflict,
+/// keys only present on `left` are preserved, and `None` on `right` is a no-op.
+fn option_map_overwrite<K: std::cmp::Eq + std::hash::Hash, V>(
+    left: &mut Option<std::collections::HashMap<K, V>>,
+    right: Option<std::collections::HashMap<K, V>>,
+) {
+    match (left.as_mut(), right) {
+        (Some(l), Some(r)) => l.extend(r),
+        (None, r @ Some(_)) => *left = r,
+        _ => {}
+    }
+}
+{% endif %}
+
 {% if stubgen %}
 #[cfg(feature = "stubgen")]
 define_stub_info_gatherer!(stub_info);
