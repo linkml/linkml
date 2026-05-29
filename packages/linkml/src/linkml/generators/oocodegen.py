@@ -6,10 +6,12 @@ from dataclasses import dataclass, field
 from linkml.utils.generator import Generator
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
+    ClassDefinitionName,
     EnumDefinition,
     EnumDefinitionName,
     SchemaDefinition,
     SlotDefinition,
+    SlotDefinitionName,
     TypeDefinition,
 )
 from linkml_runtime.utils.formatutils import camelcase, lcamelcase, underscore
@@ -47,6 +49,7 @@ class OOField:
     annotations: list[ANNOTATION] = field(default_factory=lambda: [])
     source_slot: SlotDefinition = field(default_factory=lambda: [])
     slot_uri: str | None = None
+    refined_ranges: list[TYPE_EXPRESSION] = field(default_factory=lambda: [])
 
 
 @dataclass
@@ -301,33 +304,8 @@ class OOCodeGenerator(Generator):
                 slot = sv.induced_slot(sn, cn)
                 source_sn = slot.alias if slot.alias and self.use_aliases else slot.name
                 safe_sn = self.map_name(self.get_slot_name(source_sn))
-                range = slot.range
+                range = self._get_range(slot)
                 default_value = "null"
-
-                if range is None:
-                    # TODO: schemaview should infer this
-                    range = sv.schema.default_range
-
-                if range is None:
-                    range = "string"
-
-                if range in sv.all_classes():
-                    c = sv.get_class(range)
-                    mapped = self.map_class(c)
-                    range = mapped if mapped is not None else self.get_class_name(c.name)
-                    default_value = "null"
-                elif range in sv.all_types():
-                    t = sv.get_type(range)
-                    range = self.map_type(t, slot.required)
-                    if range is None:  # If mapping fails,
-                        range = self.map_type(sv.all_types().get("string"))
-                elif range in sv.all_enums():
-                    if self.true_enums:
-                        range = camelcase(range)
-                    else:
-                        range = self.map_type(sv.all_types().get("string"))
-                else:
-                    raise Exception(f"Unknown range {range}")
 
                 # Set default values for
                 if range == "boolean":
@@ -341,7 +319,6 @@ class OOCodeGenerator(Generator):
                 #  default_value = default_value_for_type(range)
 
                 if slot.multivalued:
-                    range = self.make_multivalued(range)
                     default_value = "List.of()"
                 oofield = OOField(
                     name=safe_sn,
@@ -350,8 +327,11 @@ class OOCodeGenerator(Generator):
                     default_value=default_value,
                     slot_uri=sv.get_uri(slot.name, expand=True),
                 )
+
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
+                else:
+                    oofield.refined_ranges = self._get_refined_ranges(sn, cn)
                 ooclass.all_fields.append(oofield)
 
         if self.true_enums:
@@ -361,3 +341,71 @@ class OOCodeGenerator(Generator):
                 docs.append(oodoc)
 
         return docs
+
+    def _get_range(self, slot: SlotDefinition) -> TYPE_EXPRESSION:
+        """Gets the appropriate type expression for the range of the given slot."""
+        sv = self.schemaview
+        range = slot.range
+
+        if range is None:
+            # TODO: schemaview should infer this
+            range = sv.schema.default_range
+
+        if range is None:
+            range = "string"
+
+        if range in sv.all_classes():
+            c = sv.get_class(range)
+            mapped = self.map_class(c)
+            range = mapped if mapped is not None else self.get_class_name(c.name)
+        elif range in sv.all_types():
+            t = sv.get_type(range)
+            range = self.map_type(t, slot.required)
+            if range is None:  # If mapping fails,
+                range = self.map_type(sv.all_types().get("string"))
+        elif range in sv.all_enums():
+            if self.true_enums:
+                range = camelcase(range)
+            else:
+                range = self.map_type(sv.all_types().get("string"))
+        else:
+            raise Exception(f"Unknown range {range}")
+        if slot.multivalued:
+            range = self.make_multivalued(range)
+        return range
+
+    def _get_refined_ranges(self, sn: SlotDefinitionName, cn: ClassDefinitionName) -> list[TYPE_EXPRESSION]:
+        """Gets the refined ranges, if any, for a given slot.
+
+        Given a slot and the class the slot belongs to, this method
+        returns a list of ranges representing the successive
+        "refinements" of the slot’s range along the inheritance
+        hierarchy, starting with the range in the immediate parent class
+        and all the way to the initial range of the slot.
+
+        The list is empty if (1) the slot is not an inherited slot, or
+        (2) the slot range is not refined in the given class compared to
+        its immediate parent.
+        """
+        sv = self.schemaview
+        ranges = []
+
+        klass = sv.get_class(cn)
+        parent_class_name = klass.is_a
+        range = sv.induced_slot(sn, cn).range
+        first = True
+        while parent_class_name is not None:
+            if sn in sv.class_slots(parent_class_name):
+                parent_slot = sv.induced_slot(sn, parent_class_name)
+                if parent_slot.range != range:
+                    ranges.append(self._get_range(parent_slot))
+                    range = parent_slot.range
+                elif first:
+                    # The leaf class does not refine the slot
+                    break
+                parent_class = sv.get_class(parent_class_name)
+                parent_class_name = parent_class.is_a
+            else:
+                parent_class_name = None
+            first = False
+        return ranges
