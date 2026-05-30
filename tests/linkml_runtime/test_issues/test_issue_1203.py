@@ -68,8 +68,7 @@ def test_base_class_setattr_with_no_defn() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 (#723): PermissibleValue → EnumDefinitionImpl promotion
-# ---------------------------------------------------------------------------
+# Phase 1 (#723): PermissibleValue -> EnumDefinitionImpl promotion
 
 
 def test_member_is_enum_instance_not_permissible_value() -> None:
@@ -111,7 +110,6 @@ def test_permissible_value_remains_clean_dataclass() -> None:
         hash(pv)
 
 
-# ---------------------------------------------------------------------------
 # 1. Equality comparison
 # ---------------------------------------------------------------------------
 
