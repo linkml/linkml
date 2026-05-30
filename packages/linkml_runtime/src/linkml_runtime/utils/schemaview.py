@@ -901,12 +901,24 @@ class SchemaView:
     def enum_member_for(self, pv, enum_name: ENUM_NAME):
         """Wrap a ``PermissibleValue`` in its generated enum class.
 
-        Returns an ``EnumDefinitionImpl`` instance, or ``None`` if the
-        generated enum class is not available (see ``enum_class_for``).
+        Returns an enum instance, or ``None`` if the generated enum class
+        is not available (see ``enum_class_for``).  Supports both
+        ``EnumDefinitionImpl`` subclasses (from ``pythongen``), which
+        accept a ``PermissibleValue`` directly, and stdlib ``enum.Enum``
+        subclasses (from ``pydanticgen``), which are constructed from the
+        permissible value's text.
         """
+        from enum import Enum
+
+        from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+
         enum_cls = self.enum_class_for(enum_name)
         if enum_cls is None:
             return None
+        if isinstance(enum_cls, type) and issubclass(enum_cls, EnumDefinitionImpl):
+            return enum_cls(pv)
+        if isinstance(enum_cls, type) and issubclass(enum_cls, Enum):
+            return enum_cls(pv.text)
         return enum_cls(pv)
 
     @lru_cache(None)

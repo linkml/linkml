@@ -81,10 +81,13 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
 
     # Registry of generated enum classes keyed by (schema_id, enum_name).
     # Populated as a side effect of importing a generated module that calls
-    # ``EnumClass._register(schema_id, enum_name)``.  Used by
-    # ``SchemaView.enum_class_for`` to resolve an ``EnumDefinition`` back to
-    # the concrete Python class (see linkml/linkml#723, phase 3).
-    _registry: ClassVar[dict[tuple[str, str], type["EnumDefinitionImpl"]]] = {}
+    # ``register_enum_class(schema_id, enum_name, cls)`` (or, equivalently for
+    # ``pythongen`` output, ``EnumClass._register(schema_id, enum_name)``).
+    # Values may be either ``EnumDefinitionImpl`` subclasses (from
+    # ``pythongen``) or stdlib ``enum.Enum`` subclasses (from ``pydanticgen``).
+    # Used by ``SchemaView.enum_class_for`` to resolve an ``EnumDefinition``
+    # back to the concrete Python class (see linkml/linkml#723, phases 3-4).
+    _registry: ClassVar[dict[tuple[str, str], type]] = {}
 
     @classmethod
     def _register(cls, schema_id: str, enum_name: str) -> None:
@@ -95,16 +98,18 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         overwrites the previous entry (this happens naturally when a module
         is reloaded).
         """
-        EnumDefinitionImpl._registry[(schema_id, enum_name)] = cls
+        register_enum_class(schema_id, enum_name, cls)
 
     @classmethod
     def for_schema_element(
         cls, schema_id: str, enum_name: str
-    ) -> Optional[type["EnumDefinitionImpl"]]:
+    ) -> Optional[type]:
         """Look up a registered enum class.
 
         Returns ``None`` if the generated module has not been imported yet
-        (registration is a module-import side effect).
+        (registration is a module-import side effect).  The returned class
+        may be an ``EnumDefinitionImpl`` subclass (from ``pythongen``) or a
+        stdlib ``enum.Enum`` subclass (from ``pydanticgen``).
         """
         return EnumDefinitionImpl._registry.get((schema_id, enum_name))
 
@@ -233,3 +238,16 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
 
     def __hash__(self) -> int:
         return hash(self._code.text)
+
+
+def register_enum_class(schema_id: str, enum_name: str, cls: type) -> None:
+    """Register a generated enum class under ``(schema_id, enum_name)``.
+
+    This is the canonical entry point used by generated modules to populate
+    :attr:`EnumDefinitionImpl._registry`.  It accepts any class object — an
+    ``EnumDefinitionImpl`` subclass emitted by ``pythongen`` or a stdlib
+    ``enum.Enum`` subclass emitted by ``pydanticgen`` — so the registry
+    works uniformly across generators (see linkml/linkml#723, phase 4).
+    Re-registration with the same key overwrites the previous entry.
+    """
+    EnumDefinitionImpl._registry[(schema_id, enum_name)] = cls
