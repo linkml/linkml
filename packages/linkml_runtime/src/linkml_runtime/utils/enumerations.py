@@ -1,5 +1,5 @@
 from dataclasses import fields
-from typing import Optional
+from typing import ClassVar, Optional
 
 from linkml_runtime.utils.metamodelcore import Curie
 from linkml_runtime.utils.yamlutils import YAMLRoot
@@ -78,6 +78,35 @@ def isinstance_dt(cls: type, inst: str) -> bool:
 
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     _defn: "EnumDefinition" = None  # Overridden by implementation
+
+    # Registry of generated enum classes keyed by (schema_id, enum_name).
+    # Populated as a side effect of importing a generated module that calls
+    # ``EnumClass._register(schema_id, enum_name)``.  Used by
+    # ``SchemaView.enum_class_for`` to resolve an ``EnumDefinition`` back to
+    # the concrete Python class (see linkml/linkml#723, phase 3).
+    _registry: ClassVar[dict[tuple[str, str], type["EnumDefinitionImpl"]]] = {}
+
+    @classmethod
+    def _register(cls, schema_id: str, enum_name: str) -> None:
+        """Register this enum class under ``(schema_id, enum_name)``.
+
+        Called from generated modules immediately after each enum class
+        definition.  Re-registration with the same key is allowed and
+        overwrites the previous entry (this happens naturally when a module
+        is reloaded).
+        """
+        EnumDefinitionImpl._registry[(schema_id, enum_name)] = cls
+
+    @classmethod
+    def for_schema_element(
+        cls, schema_id: str, enum_name: str
+    ) -> Optional[type["EnumDefinitionImpl"]]:
+        """Look up a registered enum class.
+
+        Returns ``None`` if the generated module has not been imported yet
+        (registration is a module-import side effect).
+        """
+        return EnumDefinitionImpl._registry.get((schema_id, enum_name))
 
     def __init__(self, code: str | Curie) -> None:
         if isinstance_dt(code, "PermissibleValue"):

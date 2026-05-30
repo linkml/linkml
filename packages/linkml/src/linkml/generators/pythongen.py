@@ -1210,7 +1210,37 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                    model_uri={slot_model_uri}, domain={domain}, range={rnge}{mappings}{pattern})"""
 
     def gen_enumerations(self) -> str:
-        return "\n\n".join([self.gen_enum(enum) for enum in self.schema.enums.values() if not enum.imported_from])
+        owned_enums = [enum for enum in self.schema.enums.values() if not enum.imported_from]
+        blocks = [self.gen_enum(enum) for enum in owned_enums]
+        registrations = self.gen_enum_registry(owned_enums)
+        if registrations:
+            blocks.append(registrations)
+        return "\n\n".join(blocks)
+
+    def gen_enum_registry(self, enums: list[EnumDefinition]) -> str:
+        """Emit ``EnumClass._register(schema_id, enum_name)`` calls.
+
+        These populate the ``EnumDefinitionImpl._registry`` so that
+        ``SchemaView.enum_class_for`` can resolve an ``EnumDefinition`` to
+        the concrete generated class (see linkml/linkml#723, phase 3).
+        The ``schema_id`` used is the enum's ``from_schema`` if set
+        (preserving provenance under ``mergeimports``) or the current
+        schema's id otherwise.
+        """
+        if not enums:
+            return ""
+        default_schema_id = self.schema.id or ""
+        lines = ["# Enum registry (see EnumDefinitionImpl.for_schema_element)"]
+        for enum in enums:
+            schema_id = enum.from_schema or default_schema_id
+            if not schema_id:
+                continue
+            lines.append(
+                f'{camelcase(enum.name)}._register({schema_id!r}, "{enum.name}")'
+            )
+        if len(lines) == 1:
+            return ""
+        return "\n".join(lines)
 
     def gen_enum(self, enum: EnumDefinition) -> str:
         """
