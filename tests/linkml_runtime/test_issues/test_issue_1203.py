@@ -3,13 +3,14 @@
 Verifies that generated dataclass enumerations support intuitive equality,
 hashing, stringification, and membership checks against strings, other
 ``EnumDefinitionImpl`` instances, and ``PermissibleValue`` objects.
+
+Also verifies the Phase-1 structural fix (#723): bare ``PermissibleValue``
+class attributes emitted by ``pythongen`` are promoted to real
+``EnumDefinitionImpl`` instances at class-creation time.
 """
 
 import pytest
 
-# Ensure the patches on ``PermissibleValue`` from
-# ``linkml_runtime/__init__.py`` are applied before the test module loads
-# the metamodel directly.
 import linkml_runtime  # noqa: F401
 from linkml_runtime.linkml_model.meta import EnumDefinition, PermissibleValue
 from linkml_runtime.utils.enumerations import EnumDefinitionImpl, EnumDefinitionMeta
@@ -108,6 +109,7 @@ def test_permissible_value_remains_clean_dataclass() -> None:
         hash(pv)
 
 
+# ---------------------------------------------------------------------------
 # 1. Equality comparison
 # ---------------------------------------------------------------------------
 
@@ -228,3 +230,19 @@ def test_pattern_match_workaround_no_longer_needed() -> None:
     elif value == EnumValues.B:
         matched = "B"
     assert matched == "A"
+
+
+# ---------------------------------------------------------------------------
+# Only permissible-value entries resolve as codes
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("name", ["text", "code", "meaning", "_defn", "_addvals", "__init__"])
+def test_enum_class_attribute_names_are_not_codes(name: str) -> None:
+    """The metaclass walks the MRO; properties, methods and ``_defn`` must not match."""
+    assert name not in EnumValues
+    assert name not in EnumValuesWrapper
+    with pytest.raises(KeyError):
+        EnumValues[name]
+    with pytest.raises(ValueError, match="Unknown EnumValues enumeration code"):
+        EnumValues(name)
