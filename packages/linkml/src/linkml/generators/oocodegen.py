@@ -262,12 +262,14 @@ class OOCodeGenerator(Generator):
         return enums
 
     def create_documents(self) -> list[OODocument]:
-        """Emit one ``OODocument`` per LinkML class.
+        """Emit one ``OODocument`` per LinkML class or enum.
 
         This file-granularity assumption (one class -> one document -> one
-        output file) is required by ``JavaGenerator`` and also fits the other
-        current OO generators. Generators that need to bundle multiple classes
-        into a single output file should use their own rendering pipeline.
+        output file, or one enum -> one document -> one output file when
+        ``true_enums`` is enabled) is required by ``JavaGenerator`` and also
+        fits the other current OO generators. Generators that need to bundle
+        multiple classes into a single output file should use their own
+        rendering pipeline.
         """
         sv: SchemaView
         sv = self.schemaview
