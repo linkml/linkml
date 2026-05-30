@@ -531,6 +531,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         slotdefs = self.gen_class_variables(cls)
         postinits = self.gen_postinits(cls)
         constructor = self.gen_constructor(cls)
+        enum_coercion = self.gen_enum_slot_coercion(cls)
 
         wrapped_description = (
             f'\n\t"""\n\t{wrapped_annotation(be(cls.description))}\n\t"""' if be(cls.description) else ""
@@ -547,6 +548,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             + (f"\n\t{slotdefs}" if slotdefs else "")
             + (f"\n{postinits}" if postinits else "")
             + (f"\n{constructor}" if constructor else "")
+            + (f"\n{enum_coercion}" if enum_coercion else "")
         )
 
         return cd_str
@@ -818,6 +820,55 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             )
             if post_inits_line or post_inits_post_super_line
             else ""
+        )
+
+    def gen_enum_slot_coercion(self, cls: ClassDefinition) -> str:
+        """Emit ``_enum_slots`` mapping plus ``__setattr__`` so that
+        post-init assignment to an enum-ranged slot coerces strings (and
+        bare ``PermissibleValue`` objects) into the proper enum instance.
+
+        The dataclass-generated ``__init__`` and the emitted ``__post_init__``
+        already wrap raw values into enum instances at construction time, but
+        a later ``p.status = "ALIVE"`` would leave ``p.status`` as a plain
+        ``str`` without this hook.  See linkml/linkml#723 phase 2.
+
+        The mapping stores the enum class name as a string and resolves it
+        lazily via ``globals()`` because pythongen emits class definitions
+        before enum definitions, so the enum class is not yet bound when the
+        class body executes.  Lookup at assignment time is safe because the
+        module is fully loaded by then.
+        """
+        if cls.mixin or cls.abstract:
+            return ""
+        enum_slots: list[tuple[str, str, bool]] = []
+        for slot in self.schemaview.class_induced_slots(cls.name):
+            if not slot.range or slot.range not in self.schema.enums:
+                continue
+            enum = self.schema.enums[slot.range]
+            if not enum.permissible_values:
+                # Open enum: no enum class to coerce into.
+                continue
+            aliased = underscore(slot.alias if slot.alias else slot.name)
+            enum_slots.append((aliased, camelcase(enum.name), bool(slot.multivalued)))
+        if not enum_slots:
+            return ""
+        mapping = ", ".join(f'"{name}": ("{cls_name}", {mv})' for name, cls_name, mv in enum_slots)
+        return (
+            f'    _enum_slots: ClassVar[dict[str, tuple[str, bool]]] = {{{mapping}}}\n'
+            "\n"
+            "    def __setattr__(self, name: str, value: Any) -> None:\n"
+            "        spec = type(self)._enum_slots.get(name)\n"
+            "        if spec is not None and value is not None:\n"
+            "            enum_name, multivalued = spec\n"
+            "            enum_cls = globals().get(enum_name)\n"
+            "            if enum_cls is not None:\n"
+            "                if multivalued:\n"
+            "                    if not isinstance(value, list):\n"
+            "                        value = [value] if value is not None else []\n"
+            "                    value = [v if isinstance(v, enum_cls) else enum_cls(v) for v in value]\n"
+            "                elif not isinstance(value, enum_cls):\n"
+            "                    value = enum_cls(value)\n"
+            "        object.__setattr__(self, name, value)\n"
         )
 
     # sort classes such that if C is a child of P then C appears after P in the list

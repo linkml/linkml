@@ -48,7 +48,7 @@ def test_pythongen(kitchen_sink_path):
         str(f)
         == """FamilialRelationship({
   'related_to': 'me',
-  'type': 'SIBLING_OF',
+  'type': FamilialRelationshipType(text='SIBLING_OF'),
   'cordialness': CordialnessEnum(text='heartfelt', description='warm and hearty friendliness')
 })"""
     )
