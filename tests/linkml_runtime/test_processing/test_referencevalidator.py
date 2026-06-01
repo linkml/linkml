@@ -1294,3 +1294,89 @@ def test_non_colliding_key_still_hoists_under_colliding_schema():
     out = rv.normalize({"items": [{"purple": {"sources": ["a"]}}]}, report=report)
     assert out["items"] == {"purple": {"name": "purple", "sources": ["a"]}}
     assert report.errors() == []
+
+
+# --- SimpleDict list-input hoist (issue #3578) ------------------------------
+
+# Range class has exactly one non-pk slot → canonical form is SimpleDict.
+_SIMPLE_DICT_SCHEMA_YAML = """
+id: https://example.org/test
+name: test_simple_dict_list
+prefixes: {linkml: 'https://w3id.org/linkml/'}
+default_prefix: test
+imports: [linkml:types]
+
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      items: {range: Item, multivalued: true, inlined: true}
+  Item:
+    attributes:
+      name: {identifier: true}
+      sources: {multivalued: true}
+"""
+
+
+@pytest.mark.parametrize(
+    "input_items,expected_items",
+    [
+        # Compact-simple: [{key: <simple_value>}] where value is the
+        # simple-dict value type directly.
+        ([{"red": ["a"]}], {"red": ["a"]}),
+        # Compact-expanded: [{key: {<inner_slot>: <value>}}] where the value
+        # is the expanded inner-class form.
+        ([{"red": {"sources": ["a"]}}], {"red": ["a"]}),
+        # Multiple compact items.
+        (
+            [{"red": ["a"]}, {"blue": ["b"]}],
+            {"red": ["a"], "blue": ["b"]},
+        ),
+        # Mixed list: expanded + compact-simple + compact-expanded.
+        (
+            [
+                {"name": "green", "sources": ["g"]},
+                {"red": ["r"]},
+                {"blue": {"sources": ["b"]}},
+            ],
+            {"green": ["g"], "red": ["r"], "blue": ["b"]},
+        ),
+    ],
+)
+def test_simple_dict_list_input_normalizes(input_items, expected_items):
+    """List input to a SimpleDict-form slot normalizes correctly via hoist + simplification."""
+    rv = ReferenceValidator(SchemaView(_SIMPLE_DICT_SCHEMA_YAML))
+    report = Report()
+    out = rv.normalize({"items": input_items}, report=report)
+    assert out["items"] == expected_items
+    assert report.errors() == []
+
+
+@pytest.mark.parametrize(
+    "input_items,reason",
+    [
+        # Was crashing with KeyError before the fix.
+        ([{"sources": ["a"]}], "expanded item without identifier"),
+        # Multi-key list item, neither key is a pk.
+        ([{"red": ["a"], "blue": ["b"]}], "multi-key list item with no pk"),
+    ],
+)
+def test_simple_dict_list_items_without_pk_emit_error_not_crash(input_items, reason):
+    """Items the heuristic can't safely hoist must error, never crash with KeyError."""
+    rv = ReferenceValidator(SchemaView(_SIMPLE_DICT_SCHEMA_YAML))
+    report = Report()
+    out = rv.normalize({"items": input_items}, report=report)
+    assert out["items"] == {}, f"unexpected output for case: {reason}"
+    assert None not in out["items"], f"None key leaked for case: {reason}"
+    assert len(report.errors()) == 1, f"expected one error for case: {reason}"
+
+
+def test_simple_dict_compact_key_refused_when_key_collides_with_slot_name():
+    """No-footgun: if the key matches a slot of the range class (e.g. the simple
+    value slot itself), refuse to hoist."""
+    rv = ReferenceValidator(SchemaView(_SIMPLE_DICT_SCHEMA_YAML))
+    report = Report()
+    # `sources` IS a slot — heuristic refuses to hoist; expanded read has no pk → error.
+    out = rv.normalize({"items": [{"sources": ["a"]}]}, report=report)
+    assert out["items"] == {}
+    assert len(report.errors()) == 1

@@ -595,14 +595,25 @@ class ReferenceValidator:
         v: Any,
         parent_slot: SlotDefinition,
         pk_slot_name: SlotDefinitionName,
+        simple_value_slot_name: str | None = None,
     ) -> dict | None:
-        """Hoist a compact-key list item ``{key: {...}}`` to expanded form.
+        """Hoist a compact-key list item ``{key: value}`` to expanded form.
 
-        The shape ``[{key: {...}}]`` is semantically equivalent to
-        ``[{<pk>: key, ...}]`` (and to ``{key: {...}}``) when the conversion is
+        The shape ``[{key: ...}]`` is semantically equivalent to
+        ``[{<pk>: key, ...}]`` (and to ``{key: ...}``) when the conversion is
         unambiguous. To avoid silently rescuing typos that would otherwise be
         valid expanded items (per the project's no-footgun policy), only hoist
-        when the key is not a slot of the range class and the value is a dict.
+        when the key is not a slot of the range class.
+
+        Value handling:
+
+        * If ``value`` is a dict, it's the compact-expanded inner form; merge
+          it into the hoisted item.
+        * If ``value`` is not a dict and ``simple_value_slot_name`` is set
+          (caller is normalizing to SimpleDict), wrap the value under that slot
+          so the simplification step can reduce it.
+        * Otherwise the item isn't a compact-key shape this caller accepts.
+
         Returns ``None`` if the item is not eligible for hoisting.
         """
         if pk_slot_name is None:
@@ -610,12 +621,14 @@ class ReferenceValidator:
         if not isinstance(v, dict) or len(v) != 1:
             return None
         ((key, value),) = v.items()
-        if not isinstance(value, dict):
-            return None
         range_element = self._slot_range_element(parent_slot)
         if isinstance(range_element, ClassDefinition) and key in range_element.attributes:
             return None
-        return {pk_slot_name: key, **value}
+        if isinstance(value, dict):
+            return {pk_slot_name: key, **value}
+        if simple_value_slot_name is not None:
+            return {pk_slot_name: key, simple_value_slot_name: value}
+        return None
 
     def _list_to_dict_items(
         self,
@@ -623,17 +636,24 @@ class ReferenceValidator:
         parent_slot: SlotDefinition,
         pk_slot_name: SlotDefinitionName,
         report: Report,
+        simple_value_slot_name: str | None = None,
+        constraint_type: ConstraintType = ConstraintType.DictCollectionFormConstraint,
     ) -> Iterator[tuple[Any, dict]]:
         """Yield (pk_value, expanded_item) pairs from a list, hoisting compact-key
-        items where unambiguous and reporting items that still lack a pk."""
+        items where unambiguous and reporting items that still lack a pk.
+
+        Pass ``simple_value_slot_name`` and
+        ``ConstraintType.SimpleDictCollectionFormConstraint`` when the caller
+        is normalizing to SimpleDict form.
+        """
         for v in input_object:
-            hoisted = self._try_hoist_compact_key_item(v, parent_slot, pk_slot_name)
+            hoisted = self._try_hoist_compact_key_item(v, parent_slot, pk_slot_name, simple_value_slot_name)
             if hoisted is not None:
                 v = hoisted
             pk = v.get(pk_slot_name) if isinstance(v, dict) and pk_slot_name else None
             if pk is None:
                 report.add_problem(
-                    ConstraintType.DictCollectionFormConstraint,
+                    constraint_type,
                     parent_slot.name,
                     v,
                     pk_slot_name,
@@ -725,7 +745,16 @@ class ReferenceValidator:
             raise AssertionError(f"Should have simple dict slot value: {parent_slot.name}")
         normalized_object = input_object
         if isinstance(input_object, list):
-            normalized_object = {v[pk_slot_name]: v for v in input_object}
+            normalized_object = dict(
+                self._list_to_dict_items(
+                    input_object,
+                    parent_slot,
+                    pk_slot_name,
+                    report,
+                    simple_value_slot_name=simple_dict_value_slot.name,
+                    constraint_type=ConstraintType.SimpleDictCollectionFormConstraint,
+                )
+            )
             original_form = CollectionForm.List
         else:
             original_form = CollectionForm.ExpandedDict
