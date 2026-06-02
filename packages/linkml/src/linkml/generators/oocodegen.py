@@ -331,7 +331,7 @@ class OOCodeGenerator(Generator):
                 if sn not in parent_slots:
                     ooclass.fields.append(oofield)
                 else:
-                    oofield.refined_ranges = self._get_refined_ranges(sn, cn)
+                    oofield.refined_ranges = self.get_refined_ranges(sn, cn, upwards=True)
                 ooclass.all_fields.append(oofield)
 
         if self.true_enums:
@@ -374,38 +374,47 @@ class OOCodeGenerator(Generator):
             range = self.make_multivalued(range)
         return range
 
-    def _get_refined_ranges(self, sn: SlotDefinitionName, cn: ClassDefinitionName) -> list[TYPE_EXPRESSION]:
-        """Gets the refined ranges, if any, for a given slot.
+    def get_refined_ranges(
+        self, slot: SlotDefinitionName, klass: ClassDefinitionName, upwards: bool = False
+    ) -> list[TYPE_EXPRESSION]:
+        """Gets the refined ranges for a given slot.
 
-        Given a slot and the class the slot belongs to, this method
-        returns a list of ranges representing the successive
-        "refinements" of the slot’s range along the inheritance
-        hierarchy, starting with the range in the immediate parent class
-        and all the way to the initial range of the slot.
+        Given a slot name, this method returns a list of ranges
+        representing the successive "refinements" of the slot’s range
+        along the inheritance hierarchy, starting from (and excluding)
+        the specified class.
 
-        The list is empty if (1) the slot is not an inherited slot, or
-        (2) the slot range is not refined in the given class compared to
-        its immediate parent.
+        :param slot: The name of the slot to query.
+        :param klass: The class from where to start walking up or down
+            the inheritance tree.
+        :param upwards: If True, walk _up_ the inheritance tree to find
+            the range(s) of the slot in the ancestor classes (figuring
+            out if the slot has been refined compared to the
+            corresponding slot in the parent class).
+            The default is to walk _down_ the inheritance tree to find
+            the range(s) of the slot in the descendant classes
+            (figuring out if the slot is being refined in a subclass,
+            compared to its range in the specified class).
+        :return: A list of the all the effective ranges that the slot
+            has in all the ancestor or descendant classes, that are
+            different from the range in the originating class.
         """
         sv = self.schemaview
-        ranges = []
-
-        klass = sv.get_class(cn)
-        parent_class_name = klass.is_a
-        range = sv.induced_slot(sn, cn).range
-        first = True
-        while parent_class_name is not None:
-            if sn in sv.class_slots(parent_class_name):
-                parent_slot = sv.induced_slot(sn, parent_class_name)
-                if parent_slot.range != range:
-                    ranges.append(self._get_range(parent_slot))
-                    range = parent_slot.range
-                elif first:
-                    # The leaf class does not refine the slot
-                    break
-                parent_class = sv.get_class(parent_class_name)
-                parent_class_name = parent_class.is_a
-            else:
-                parent_class_name = None
-            first = False
-        return ranges
+        real_range = self._get_range(sv.induced_slot(slot, klass))
+        refined_ranges = []
+        relatives = (
+            sv.class_ancestors(klass, mixins=False, reflexive=False)
+            if upwards
+            else sv.class_descendants(klass, mixins=False, reflexive=False)
+        )
+        for index, relative in enumerate(relatives):
+            if upwards and slot not in sv.class_slots(relative):
+                break
+            induced_relative_slot = sv.induced_slot(slot, relative)
+            relative_real_range = self._get_range(induced_relative_slot)
+            if relative_real_range != real_range:
+                refined_ranges.append(relative_real_range)
+                real_range = relative_real_range
+            elif index == 0 and upwards:
+                break
+        return refined_ranges
