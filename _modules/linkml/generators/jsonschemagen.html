@@ -853,15 +853,13 @@
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
 
         <span class="n">subschema_type</span> <span class="o">=</span> <span class="s2">&quot;object&quot;</span>
-        <span class="n">additional_properties</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="n">subschema_type</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">]</span>
-            <span class="n">additional_properties</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">class_subschema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">subschema_type</span><span class="p">,</span>
-                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="n">additional_properties</span><span class="p">,</span>
+                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_additional_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
                 <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">be</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">),</span>
             <span class="p">}</span>
         <span class="p">)</span>
@@ -1314,6 +1312,24 @@
         <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">designates_type</span><span class="p">:</span>
             <span class="n">type_value</span> <span class="o">=</span> <span class="n">get_type_designator_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span>
             <span class="n">prop</span><span class="p">[</span><span class="s2">&quot;enum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">type_value</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_additional_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="n">JsonSchema</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implements the `extra_slots` metamodel slot.</span>
+
+<span class="sd">        References:</span>
+<span class="sd">            https://github.com/linkml/linkml-model/pull/205</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">allowed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">allowed</span>
+        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">range_expression</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_subschema_for_slot</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">range_expression</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonSchema</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before_generate_schema</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
