@@ -827,6 +827,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         prop.add_keyword("description", slot.description)
         if self.title_from == "title" and slot.title:
             prop.add_keyword("title", slot.title)
+        if getattr(slot, "readonly", None):
+            prop.add_keyword("readOnly", True)
 
         own_constraints = self.get_value_constraints_for_slot(slot)
 

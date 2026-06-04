@@ -332,6 +332,27 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
+def test_slot_readonly_emits_read_only(input_path):
+    """A slot with a non-empty ``readonly`` value should emit ``readOnly: true`` on
+    the JSON Schema property; absent or empty ``readonly`` should omit the keyword.
+    Inherited slots must also carry ``readOnly: true`` on every subclass, because
+    JSON Schema has no class inheritance.
+
+    See: https://github.com/linkml/linkml/issues/3528
+    """
+    generated = json.loads(JsonSchemaGenerator(input_path("jsonschema_slot_readonly.yaml")).serialize())
+
+    # ``Sub`` inherits all three slots from ``Base`` via ``is_a``; JSON Schema has no
+    # class inheritance, so both classes must independently carry ``readOnly: true``
+    # on ``managed`` and omit it on the others.
+    for cls_name in ("Base", "Sub"):
+        props = generated["$defs"][cls_name]["properties"]
+        assert "readOnly" in props["managed"]
+        assert props["managed"]["readOnly"] is True
+        assert "readOnly" not in props["empty_reason"]
+        assert "readOnly" not in props["plain"]
+
+
 @pytest.mark.parametrize("not_closed", [True, False])
 def test_slot_identifier_non_nullability(input_path, not_closed):
     """
