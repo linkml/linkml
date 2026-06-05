@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Course": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "name": {
@@ -12,7 +12,7 @@
             "type": "object"
         },
         "Student": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "courses": {
