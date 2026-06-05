@@ -80,6 +80,7 @@ tests = [
   { include-group = "typing" },
   { include-group = "shacl" },
   "duckdb>=1.5.2",
+  "sqlalchemy-bigquery >= 1.9.0",
 ]
 dev = [
   {include-group = "tests" },
