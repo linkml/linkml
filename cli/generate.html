@@ -4993,6 +4993,17 @@ is conformant to the same LinkML schema.</p>
 </dd></dl>
 
 <dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-linkml-generate-full-sqltables-rename-foreign-keys">
+<span id="cmdoption-linkml-generate-full-sqltables-no-rename-foreign-keys"></span><span class="sig-name descname"><span class="pre">--rename-foreign-keys</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-rename-foreign-keys</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-sqltables-rename-foreign-keys" title="Link to this definition">¶</a></dt>
+<dd><p>Rename every class-range slot to &lt;slot&gt;_&lt;target_pk&gt; in the emitted DDL so column names match SQLAlchemy 2.x declarative ORM output (gen-sqlalchemy –template declarative_2x).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-sqltables-V">
 <span id="cmdoption-linkml-generate-full-sqltables-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-linkml-generate-full-sqltables-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>

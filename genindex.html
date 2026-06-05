@@ -2873,8 +2873,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-include-range-class-descendants">linkml-generate-(full)-json-schema command line option</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-raw
 
@@ -2882,11 +2880,22 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-yaml-raw">linkml-generate-(full)-yaml command line option</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-refuse-delimiter-in-data
 
         <ul>
           <li><a href="data/conversion.html#cmdoption-linkml-convert-refuse-delimiter-in-data">linkml-convert command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --no-rename-foreign-keys
+
+        <ul>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-rename-foreign-keys">gen-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-rename-foreign-keys">linkml-generate-(full)-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -3415,6 +3424,15 @@
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-relmodel-output">gen-sqltables command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-relmodel-output">linkml-generate-(full)-sqltables command line option</a>
+</li>
+        </ul></li>
+        <li>
+    --rename-foreign-keys
+
+        <ul>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-rename-foreign-keys">gen-sqltables command line option</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-rename-foreign-keys">linkml-generate-(full)-sqltables command line option</a>
 </li>
         </ul></li>
         <li>
@@ -7358,6 +7376,8 @@
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-metadata">--no-metadata</a>
 </li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-rename-foreign-keys">--no-rename-foreign-keys</a>
+</li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-stacktrace">--no-stacktrace</a>
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-use-foreign-keys">--no-use-foreign-keys</a>
@@ -7365,6 +7385,8 @@
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-python-import">--python-import</a>
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-relmodel-output">--relmodel-output</a>
+</li>
+          <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-rename-foreign-keys">--rename-foreign-keys</a>
 </li>
           <li><a href="generators/sqltable.html#cmdoption-gen-sqltables-sqla-file">--sqla-file</a>
 </li>
@@ -9892,6 +9914,8 @@
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-metadata">--no-metadata</a>
 </li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-rename-foreign-keys">--no-rename-foreign-keys</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-stacktrace">--no-stacktrace</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-use-foreign-keys">--no-use-foreign-keys</a>
@@ -9899,6 +9923,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-python-import">--python-import</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-relmodel-output">--relmodel-output</a>
+</li>
+          <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-rename-foreign-keys">--rename-foreign-keys</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqltables-sqla-file">--sqla-file</a>
 </li>

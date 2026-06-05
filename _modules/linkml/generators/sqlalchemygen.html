@@ -474,6 +474,11 @@
         <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">foreign_key_policy</span><span class="p">:</span>
             <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">foreign_key_policy</span>
+        <span class="k">elif</span> <span class="n">template</span> <span class="o">==</span> <span class="n">TemplateEnum</span><span class="o">.</span><span class="n">DECLARATIVE_2X</span><span class="p">:</span>
+            <span class="c1"># In 2.x declarative mode we want a relationship() attribute alongside</span>
+            <span class="c1"># every FK column, which requires the transformer to rename the source</span>
+            <span class="c1"># slot (adding `original_slot`) even when the slot is not inlined.</span>
+            <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">INJECT_FK_FOR_ALL_REFS</span>
         <span class="n">tgen</span> <span class="o">=</span> <span class="n">SQLTableGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">tr_schema</span> <span class="o">=</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">schema</span>

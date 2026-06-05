@@ -561,6 +561,9 @@
     <span class="n">inject_primary_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">use_foreign_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">rename_foreign_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;If true, rename every class-range slot to ``&lt;slot&gt;_&lt;target_pk&gt;`` so the</span>
+<span class="sd">    emitted DDL column names match the SQLAlchemy 2.x declarative ORM output.</span>
+<span class="sd">    Off by default for backward compatibility.&quot;&quot;&quot;</span>
     <span class="n">direct_mapping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">relative_slot_num</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">default_length_oracle</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">ORACLE_MAX_VARCHAR_LENGTH</span>
@@ -593,6 +596,12 @@
         <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_foreign_keys</span><span class="p">:</span>
             <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">NO_FOREIGN_KEYS</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rename_foreign_keys</span><span class="p">:</span>
+            <span class="c1"># Rename every class-range slot to &lt;slot&gt;_&lt;target_pk&gt; so DDL column</span>
+            <span class="c1"># names match the SQLAlchemy 2.x declarative ORM output. Off by</span>
+            <span class="c1"># default to preserve backward compatibility with existing</span>
+            <span class="c1"># gen-sqltables consumers.</span>
+            <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">INJECT_FK_FOR_ALL_REFS</span>
         <span class="n">tr_result</span> <span class="o">=</span> <span class="n">sqltr</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tgt_schema_name</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tgt_schema_name&quot;</span><span class="p">),</span> <span class="n">top_class</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;top_class&quot;</span><span class="p">))</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">tr_result</span><span class="o">.</span><span class="n">schema</span>
 
@@ -772,8 +781,16 @@
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># if no SchemaView arg is provided, then create one</span>
             <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-            <span class="c1"># FK type should be the same as the identifier of the foreign key</span>
-            <span class="n">fk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
+            <span class="c1"># FK type should be the same as the identifier of the foreign key.</span>
+            <span class="c1"># Prefer the target&#39;s *direct* identifier: an abstract parent without</span>
+            <span class="c1"># an identifier gets an auto-injected integer PK from the relational</span>
+            <span class="c1"># transformer, and that injection leaks into subclasses via</span>
+            <span class="c1"># class_induced_slots — masking a real identifier declared on the</span>
+            <span class="c1"># subclass. Fall back to the inherited identifier for the common</span>
+            <span class="c1"># case where the subclass legitimately inherits its PK.</span>
+            <span class="n">fk</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="o">.</span><span class="n">get_direct_identifier_attribute</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">fk</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">fk</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_sql_range</span><span class="p">(</span><span class="n">fk</span><span class="p">,</span> <span class="n">sv</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">sv</span><span class="o">=</span><span class="n">sv</span><span class="p">)</span>  <span class="c1"># reuse the Schemaview</span>
             <span class="k">return</span> <span class="n">Text</span><span class="p">()</span>
@@ -856,6 +873,16 @@
     <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;A manual override to omit the abstract classes, set to true as a default for testing sake&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--rename-foreign-keys/--no-rename-foreign-keys&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Rename every class-range slot to &lt;slot&gt;_&lt;target_pk&gt; in the emitted DDL &quot;</span>
+        <span class="s2">&quot;so column names match SQLAlchemy 2.x declarative ORM output &quot;</span>
+        <span class="s2">&quot;(gen-sqlalchemy --template declarative_2x).&quot;</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span>
