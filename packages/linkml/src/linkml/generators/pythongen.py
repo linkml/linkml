@@ -33,6 +33,7 @@ from linkml_runtime.linkml_model.meta import (
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import be, camelcase, sfx, split_col, underscore, wrapped_annotation
 from linkml_runtime.utils.metamodelcore import builtinnames
+from linkml_runtime.utils.namespaces import _prefix_to_python_var as _safe_python_identifier
 
 logger = logging.getLogger(__name__)
 
@@ -387,7 +388,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         dflt = f"CurieNamespace('', '{sfx(dflt_prefix)}')" if ":/" in dflt_prefix else dflt_prefix.upper()
         curienamespace_defs = [
             {
-                "variable": f"{pfx.upper().replace('.', '_').replace('-', '_')}",
+                "variable": _safe_python_identifier(pfx),
                 "value": f"CurieNamespace('{pfx.replace('.', '_')}', '{self.namespaces[pfx]}')",
             }
             for pfx in sorted(self.emit_prefixes)
@@ -582,7 +583,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             class_model_uri = f'URIRef("{class_model_uri}")'
         else:
             ns, ln = class_model_uri.split(":", 1)
-            class_model_uri = f"{ns.upper()}.{ln}"
+            class_model_uri = f"{_safe_python_identifier(ns)}.{ln}"
 
         vars = [
             f"class_class_uri: ClassVar[URIRef] = {class_class_uri}",
@@ -609,7 +610,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         else:
             ns, ln = type_model_uri.split(":", 1)
             ln_suffix = f".{ln}" if ln.isidentifier() else f'["{ln}"]'
-            type_model_uri = f"{ns.upper()}{ln_suffix}"
+            type_model_uri = f"{_safe_python_identifier(ns)}{ln_suffix}"
         type_meta = [
             f"type_class_uri = {type_class_uri}",
             f"type_class_curie = {type_class_curie}",
@@ -1117,9 +1118,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             ns = "DEFAULT_"
         if ns is None:
             return '"str(uriorcurie)"', None
+        safe_ns = _safe_python_identifier(ns)
         return (
-            ns.upper() + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
-            ns.upper() + f".curie('{ln}')",
+            safe_ns + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
+            safe_ns + f".curie('{ln}')",
         )
 
     def gen_slotdefs(self) -> str:
