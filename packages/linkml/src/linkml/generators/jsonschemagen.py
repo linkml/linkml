@@ -451,15 +451,13 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         cls = self.before_generate_class(cls, self.schemaview)
 
         subschema_type = "object"
-        additional_properties = False
         if self.is_class_unconstrained(cls):
             subschema_type = ["null", "boolean", "object", "number", "string"]
-            additional_properties = True
 
         class_subschema = JsonSchema(
             {
                 "type": subschema_type,
-                "additionalProperties": additional_properties,
+                "additionalProperties": self.get_additional_properties(cls),
                 "description": be(cls.description),
             }
         )
@@ -830,6 +828,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         prop.add_keyword("description", slot.description)
         if self.title_from == "title" and slot.title:
             prop.add_keyword("title", slot.title)
+        if getattr(slot, "readonly", None):
+            prop.add_keyword("readOnly", True)
 
         own_constraints = self.get_value_constraints_for_slot(slot)
 
@@ -910,6 +910,24 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if slot.designates_type:
             type_value = get_type_designator_value(self.schemaview, slot, cls)
             prop["enum"] = [type_value]
+
+    def get_additional_properties(self, cls: ClassDefinition) -> bool | JsonSchema:
+        """
+        Implements the `extra_slots` metamodel slot.
+
+        References:
+            https://github.com/linkml/linkml-model/pull/205
+        """
+        if self.is_class_unconstrained(cls):
+            return True
+        elif not cls.extra_slots:
+            return False
+        elif cls.extra_slots.allowed is not None:
+            return cls.extra_slots.allowed
+        elif cls.extra_slots.range_expression:
+            return self.get_subschema_for_slot(cls.extra_slots.range_expression)
+        else:
+            return False
 
     def generate(self) -> JsonSchema:
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
