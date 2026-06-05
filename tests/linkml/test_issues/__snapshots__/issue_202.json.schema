@@ -1,7 +1,7 @@
 {
     "$defs": {
         "GeospatialDDCoordLocation": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "latitude": {

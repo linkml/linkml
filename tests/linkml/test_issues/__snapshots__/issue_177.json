@@ -1,7 +1,7 @@
 {
     "$defs": {
         "C1": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "sa": {
@@ -21,7 +21,7 @@
             "type": "object"
         },
         "C2": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "sb": {
