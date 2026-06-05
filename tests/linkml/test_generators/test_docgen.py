@@ -80,6 +80,22 @@ def test_docgen_includes(kitchen_sink_path, input_path, tmp_path):
     assert_mdfile_contains(tmp_path / "index.md", "C1", after="## Classes")
 
 
+def test_docgen_dynamic_enum_include_minus(input_path, tmp_path):
+    """Regression for linkml/linkml#3242: a dynamic enum whose ``include`` and
+    ``minus`` are lists of ``AnonymousEnumExpression`` objects must render
+    without raising ``TypeError: unhashable type: 'AnonymousEnumExpression'``.
+    """
+    schema = str(input_path("linkml_issue_3242.yaml"))
+    gen = DocGenerator(schema, mergeimports=True, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+    assert_mdfile_contains(
+        tmp_path / "LeukocyteLoincCodes.md",
+        "## Enumeration Operations",
+        after="Enum: LeukocyteLoincCodes",
+        followed_by=["**Includes:**", "**Excludes:**"],
+    )
+
+
 def test_docgen(kitchen_sink_path, input_path, tmp_path):
     """Tests basic document generator functionality"""
     example_dir = str(input_path("examples"))
@@ -1624,6 +1640,10 @@ def test_core_element_properties(input_path, tmp_path):
     # Test inherited slot
     base_property_file = tmp_path / "base_property.md"
     assert_mdfile_contains(base_property_file, "| Inherited | Yes |", after="Slot Characteristics")
+    # Issue #3569: empty Cardinality table swallowed the next heading. The "Cardinality and
+    # Requirements" section must be omitted entirely when the slot has no cardinality data,
+    # otherwise an empty Markdown table consumes the following ### heading as a table row.
+    assert_mdfile_does_not_contain(base_property_file, "### Cardinality and Requirements")
 
     # Test designates_type slot
     type_designator_file = tmp_path / "type_designator.md"

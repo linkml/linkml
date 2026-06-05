@@ -166,6 +166,14 @@
          },
          "@id": "life_status"
       },
+      "long_id": {
+         "@context": {
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         },
+         "@id": "long_id"
+      },
       "married_to": {
          "@type": "@id",
          "@id": "married_to"
@@ -301,7 +309,13 @@
          "@id": "FakeClass"
       },
       "FamilialRelationship": {
-         "@id": "FamilialRelationship"
+         "@id": "FamilialRelationship",
+         "@context": {
+            "related_to": {
+               "@id": "related_to",
+               "@type": "@id"
+            }
+         }
       },
       "Friend": {
          "@id": "Friend"

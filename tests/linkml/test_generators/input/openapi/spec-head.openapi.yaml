@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: LinkML tests
+  version: 1.0.0
+servers:
+  - url: https://example.org/
+security:
+  - PayloadSignature: []
+paths:
+  /api/endpoint1:
+    post:
+      security:
+        - PayloadSignature: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicalEvent'
+      responses:
+        '200':
+          description: Success
+    get:
+      security:
+        - PayloadSignature: []
+      responses:
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MarriageEvent'
+  /api/endpoint2:
+    get:
+      security:
+        - PayloadSignature: []
+      responses:
+        '200':
+          description: Success
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Person'
+
+components:
+  schemas:
