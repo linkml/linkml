@@ -1,4 +1,5 @@
 import json
+import keyword
 import re
 from types import ModuleType, SimpleNamespace
 
@@ -248,6 +249,33 @@ class ParentClass:
     kitchen_module = compile_python(pstr)
     friend = kitchen_module.Friend(name="bestie")
     assert repr(friend) != "overridden"
+
+
+def test_keyword_named_slots_and_attributes(input_path):
+    """
+    Slots and attributes whose name is a Python reserved keyword must be emitted
+    with trailing underscore (PEP 8 trailing-underscore convention) everywhere
+    they appear as a Python identifier: in the ``slots`` registry, in dataclass
+    fields, and in ``__post_init__`` self-references. The generated module must
+    also be valid Python.
+    """
+    output = PythonGenerator(input_path("unmasked_python_keywords_example.yaml"), mergeimports=False).serialize()
+
+    # PythonGenerator calls underscore() on slot names before checking iskeyword().
+    # underscore() lowercases the name, so only already-lowercase keywords (e.g. 'and',
+    # 'from') remain keywords after transformation and receive the trailing-underscore.
+    # Capitalised keywords ('False', 'None', 'True') become 'false', 'none', 'true'
+    # after underscore(), so are no longer keywords and are not mangled.
+    for kw in keyword.kwlist:
+        if kw.islower():
+            # Check slots registry
+            assert f"slots.{kw}_" in output, f"Expected 'slots.{kw}_' in slots registry but got no match"
+            # Check dataclass fields (both inline attributes and slot references)
+            assert f"{kw}_:" in output, f"Expected dataclass field '{kw}_:' in generated output but got no match"
+
+    # The generated module must be valid Python (catches dataclass fields,
+    # __post_init__ self-refs, and CurieNamespace attribute access).
+    compile(output, "<generated>", "exec")
 
 
 def test_permissible_values():
