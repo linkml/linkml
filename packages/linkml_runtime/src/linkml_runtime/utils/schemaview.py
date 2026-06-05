@@ -875,6 +875,40 @@ class SchemaView:
             raise ValueError(msg)
         return e
 
+    def enum_class_for(self, enum_name: ENUM_NAME) -> type | None:
+        """Resolve an enum name to the generated Python enum class.
+
+        Returns the registered ``EnumDefinitionImpl`` subclass that the
+        ``pythongen`` output emits for this enum, or ``None`` if no such
+        class has been imported in the current interpreter.  Registration
+        is a side effect of importing the generated module, so callers
+        must ensure the corresponding generated module is loaded first.
+
+        Lookup honours the enum's ``from_schema`` (its originating schema
+        id) so imported enums resolve to the class emitted by the schema
+        that actually owns them.
+        """
+        from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+
+        enum = self.get_enum(enum_name)
+        if enum is None:
+            return None
+        schema_id = enum.from_schema or self.schema.id
+        if not schema_id:
+            return None
+        return EnumDefinitionImpl.for_schema_element(schema_id, str(enum.name))
+
+    def enum_member_for(self, pv, enum_name: ENUM_NAME):
+        """Wrap a ``PermissibleValue`` in its generated enum class.
+
+        Returns an ``EnumDefinitionImpl`` instance, or ``None`` if the
+        generated enum class is not available (see ``enum_class_for``).
+        """
+        enum_cls = self.enum_class_for(enum_name)
+        if enum_cls is None:
+            return None
+        return enum_cls(pv)
+
     @lru_cache(None)
     def get_type(self, type_name: TYPE_NAME, imports: bool = True, strict: bool = False) -> TypeDefinition | None:
         """Retrieve a type from the schema.
