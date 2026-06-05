@@ -332,6 +332,27 @@ def test_slot_title_from_title_slot(subtests, input_path):
     external_file_test(subtests, input_path("jsonschema_slot_title_from_title.yaml"), {"title_from": "title"})
 
 
+def test_slot_readonly_emits_read_only(input_path):
+    """A slot with a non-empty ``readonly`` value should emit ``readOnly: true`` on
+    the JSON Schema property; absent or empty ``readonly`` should omit the keyword.
+    Inherited slots must also carry ``readOnly: true`` on every subclass, because
+    JSON Schema has no class inheritance.
+
+    See: https://github.com/linkml/linkml/issues/3528
+    """
+    generated = json.loads(JsonSchemaGenerator(input_path("jsonschema_slot_readonly.yaml")).serialize())
+
+    # ``Sub`` inherits all three slots from ``Base`` via ``is_a``; JSON Schema has no
+    # class inheritance, so both classes must independently carry ``readOnly: true``
+    # on ``managed`` and omit it on the others.
+    for cls_name in ("Base", "Sub"):
+        props = generated["$defs"][cls_name]["properties"]
+        assert "readOnly" in props["managed"]
+        assert props["managed"]["readOnly"] is True
+        assert "readOnly" not in props["empty_reason"]
+        assert "readOnly" not in props["plain"]
+
+
 @pytest.mark.parametrize("not_closed", [True, False])
 def test_slot_identifier_non_nullability(input_path, not_closed):
     """
@@ -441,6 +462,124 @@ def test_lifecycle_slots(kitchen_sink_path):
         for prop in cls["properties"].values():
             assert prop["description"] == "TEST MODIFYING SLOTS"
             assert "faketype" in prop["type"]
+
+
+def test_extra_slots_false(input_path):
+    """
+    No extra slots allowed
+    """
+    valid_data = {"not_allowed": {"x": 1}}
+    invalid_data = {
+        "not_allowed": {
+            "x": 1,
+            "y": 2,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+@pytest.mark.parametrize("test_model", ["allowed", "any_class"])
+def test_extra_slots_true(input_path, test_model: str):
+    """
+    Extra slots allowed
+    """
+    valid_data = {
+        test_model: {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}},
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+
+
+def test_extra_slots_string(input_path):
+    """
+    Extra slots allowed if they are strings
+    """
+    valid_data = {
+        "extra_string": {"x": 1, "y": "string"},
+    }
+    invalid_data = {
+        "extra_string": {
+            "x": 1,
+            "y": 2,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_class(input_path):
+    """
+    Extra slots allowed if they match some classdef
+    """
+    valid_data = {
+        "extra_class": {"x": 1, "another": {"y": "string"}, "third": {"y": "some string"}},
+    }
+    invalid_data = {
+        "extra_class": {
+            "x": 1,
+            "another": {"y": 1},
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_anyof(input_path):
+    """
+    Extra slots allowed if they match a union of types
+    """
+    valid_data = {
+        "extra_anyof": {"x": 1, "another": "hey", "third": 2},
+    }
+    invalid_data = {
+        "extra_anyof": {
+            "x": 1,
+            "another": True,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_cardinality(input_path):
+    """
+    Extra slots allowed if they match some extended slot expression like `AnyOf`
+    """
+    valid_data = {
+        "extra_cardinality": {"x": 1, "another": [1, 2, 3, 4, 5]},
+    }
+    invalid_data = {"extra_cardinality": {"x": 1, "another": [1, 2, 3, 4, 5, 6]}}
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
 
 
 # **********************************************************
