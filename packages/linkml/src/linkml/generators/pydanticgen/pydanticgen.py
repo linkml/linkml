@@ -1124,7 +1124,22 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         # enums
         enums = self.before_generate_enums(list(sv.all_enums().values()), sv)
-        enums = self.generate_enums({e.name: e for e in enums})
+        enum_defs = {e.name: e for e in enums}
+        enums = self.generate_enums(enum_defs)
+        # Tag each generated enum with the originating schema id so the
+        # template can emit a ``register_enum_class`` call.  Honour
+        # ``from_schema`` (preserves provenance under ``mergeimports``);
+        # fall back to the current schema id for enums defined locally.
+        # See linkml/linkml#723, phase 4.
+        for enum_name, enum in enums.items():
+            schema_id = enum_defs[enum_name].from_schema or self.schema.id
+            if schema_id:
+                enum["schema_id"] = schema_id
+        if any(e.get("schema_id") for e in enums.values()):
+            imports += Import(
+                module="linkml_runtime.utils.enumerations",
+                objects=[ObjectImport(name="register_enum_class")],
+            )
 
         base_model = PydanticBaseModel(
             extra_fields=self.extra_fields,

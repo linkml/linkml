@@ -22,6 +22,13 @@ linkml_meta = None
 
 {{ e }}
     {% endfor %}
+{% if enum_registrations %}
+
+# Enum registry (see EnumDefinitionImpl.for_schema_element)
+    {% for r in enum_registrations %}
+register_enum_class({{ r.schema_id | tojson }}, {{ r.name | tojson }}, {{ r.name }})
+    {% endfor %}
+{% endif %}
 {% endif %}
 
 {% for c in classes.values() %}

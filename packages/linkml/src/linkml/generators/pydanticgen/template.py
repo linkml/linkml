@@ -143,6 +143,13 @@ class PydanticEnum(PydanticTemplateModel):
     name: str
     description: str | None = None
     values: dict[str, EnumValue] = Field(default_factory=dict)
+    schema_id: str | None = None
+    """
+    Originating schema id, used to register the generated class in
+    :attr:`linkml_runtime.utils.enumerations.EnumDefinitionImpl._registry`
+    so that :meth:`SchemaView.enum_class_for` can resolve this enum back to
+    the concrete Python class (see linkml/linkml#723, phase 4).
+    """
 
 
 class PydanticBaseModel(PydanticTemplateModel):
@@ -486,3 +493,16 @@ class PydanticModule(PydanticTemplateModel):
     @computed_field
     def class_names(self) -> list[str]:
         return [c.name for c in self.classes.values() if not getattr(c, "is_type_alias", False)]
+
+    @computed_field
+    def enum_registrations(self) -> list[dict[str, str]]:
+        """Schema-id / name pairs for each enum that should register itself.
+
+        Drives the ``register_enum_class`` calls emitted at the bottom of the
+        enum block in ``module.py.jinja``; see linkml/linkml#723 (phase 4).
+        """
+        return [
+            {"name": e.name, "schema_id": e.schema_id}
+            for e in self.enums.values()
+            if e.schema_id
+        ]
