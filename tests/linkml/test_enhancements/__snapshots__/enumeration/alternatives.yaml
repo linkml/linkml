@@ -480,6 +480,8 @@ classes:
     definition_uri: http://example.org/test/evidence/AllEnums
     description: A class that incorporates all of the enumeration examples above
     from_schema: http://example.org/test/alternatives
+    exact_mappings:
+    - evidence:AllEnums
     slots:
     - allEnums__entry_name
     - allEnums__code_1
@@ -522,7 +524,7 @@ classes:
         name: code_8
         range: mapped_evidence
     class_uri: evidence:AllEnums
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: alternatives.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1
