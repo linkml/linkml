@@ -2110,12 +2110,128 @@ classes:
 
 
 def test_rule_with_elseconditions_emitted():
-    """Rules with elseconditions now emit the forward (if/then) branch as sh:sparql."""
+    """Rules with elseconditions emit the forward (if/then) branch and warn."""
+
     g = _parse_shacl(_ELSE_COND_SCHEMA_YAML)
 
     shape = URIRef("https://example.org/else-test/TestClass")
     sparql_nodes = list(g.objects(shape, SH.sparql))
     assert len(sparql_nodes) >= 1, "Rule with elseconditions should emit sh:sparql for the forward branch"
+
+
+def test_rule_with_elseconditions_warns(caplog):
+    """Rules with elseconditions emit a warning about the dropped else branch."""
+    import logging
+
+    with caplog.at_level(logging.WARNING):
+        _parse_shacl(_ELSE_COND_SCHEMA_YAML)
+
+    assert any("elseconditions" in rec.message for rec in caplog.records), (
+        "Expected a warning about elseconditions being dropped"
+    )
+
+
+_BIDIRECTIONAL_RULE_SCHEMA_YAML = """
+id: https://example.org/bidir-test
+name: bidir_rule_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/bidir-test/
+imports:
+  - linkml:types
+default_prefix: ex
+default_range: string
+slots:
+  Flag:
+    range: boolean
+    slot_uri: ex:Flag
+  flagValue:
+    range: decimal
+    slot_uri: ex:flagValue
+classes:
+  TestClass:
+    class_uri: ex:TestClass
+    slots:
+      - Flag
+      - flagValue
+    rules:
+      - description: Bidirectional rule should be skipped.
+        bidirectional: true
+        preconditions:
+          slot_conditions:
+            flagValue:
+              value_presence: PRESENT
+        postconditions:
+          slot_conditions:
+            Flag:
+              equals_string: "true"
+"""
+
+
+def test_rule_bidirectional_skipped(caplog):
+    """Rules with bidirectional=true are skipped entirely with a warning."""
+    import logging
+
+    with caplog.at_level(logging.WARNING):
+        g = _parse_shacl(_BIDIRECTIONAL_RULE_SCHEMA_YAML)
+
+    shape = URIRef("https://example.org/bidir-test/TestClass")
+    sparql_nodes = list(g.objects(shape, SH.sparql))
+    assert len(sparql_nodes) == 0, "Bidirectional rules should NOT emit sh:sparql"
+    assert any("bidirectional" in rec.message for rec in caplog.records), (
+        "Expected a warning about bidirectional rules being skipped"
+    )
+
+
+# ---------------------------------------------------------------------------
+# End-to-end pyshacl validation test
+# ---------------------------------------------------------------------------
+
+
+def test_rule_boolean_guard_pyshacl_end_to_end():
+    """End-to-end: pyshacl flags a violation and passes a conforming instance."""
+    import pyshacl
+
+    shacl_ttl = ShaclGenerator(_RULES_SCHEMA_YAML, mergeimports=False, emit_rules=True).serialize()
+
+    # Build a conforming RDF instance: weatherWindValue present AND WeatherWind = true
+    conforming_data = """
+    @prefix ex: <https://example.org/boolean-guards/> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    ex:env1 a ex:Environment ;
+        ex:WeatherWind "true"^^xsd:boolean ;
+        ex:weatherWindValue "12.5"^^xsd:decimal .
+    """
+
+    # Build a violating RDF instance: weatherWindValue present but WeatherWind missing
+    violating_data = """
+    @prefix ex: <https://example.org/boolean-guards/> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    ex:env2 a ex:Environment ;
+        ex:weatherWindValue "8.0"^^xsd:decimal .
+    """
+
+    # Conforming instance should pass
+    conforms, _, _ = pyshacl.validate(
+        data_graph=conforming_data,
+        shacl_graph=shacl_ttl,
+        data_graph_format="turtle",
+        shacl_graph_format="turtle",
+        advanced=True,
+    )
+    assert conforms, "Conforming instance should pass SHACL validation"
+
+    # Violating instance should fail
+    conforms, results_graph, results_text = pyshacl.validate(
+        data_graph=violating_data,
+        shacl_graph=shacl_ttl,
+        data_graph_format="turtle",
+        shacl_graph_format="turtle",
+        advanced=True,
+    )
+    assert not conforms, f"Violating instance should fail SHACL validation:\n{results_text}"
 
 
 # ---------------------------------------------------------------------------

@@ -448,16 +448,25 @@ class ShaclGenerator(Generator):
             if getattr(rule, "bidirectional", False):
                 logger.warning(
                     "Rule in class %r has bidirectional=true; "
-                    "SHACL-SPARQL generation does not yet support bidirectional rules. "
-                    "Only the forward direction is emitted.",
+                    "SHACL-SPARQL generation does not support bidirectional rules. "
+                    "Skipping this rule entirely.",
                     cls.name,
                 )
+                continue
 
             if getattr(rule, "open_world", False):
                 logger.warning(
                     "Rule in class %r has open_world=true; "
                     "SHACL operates under closed-world assumption. "
                     "The constraint is emitted but may not match open-world semantics.",
+                    cls.name,
+                )
+
+            if getattr(rule, "elseconditions", None):
+                logger.warning(
+                    "Rule in class %r has elseconditions; "
+                    "only the forward (if/then) branch is emitted as sh:sparql. "
+                    "The else branch cannot be represented in SHACL-SPARQL.",
                     cls.name,
                 )
 
@@ -503,6 +512,8 @@ class ShaclGenerator(Generator):
             pre_cond = pre_slots[pre_slot_name]
             post_cond = post_slots[post_slot_name]
 
+            # Note: PresenceEnum.PRESENT is a PermissibleValue, but parsed schemas
+            # return PresenceEnum instances — wrapping ensures type-compatible comparison.
             is_value_present = getattr(pre_cond, "value_presence", None) == PresenceEnum(PresenceEnum.PRESENT)
             is_flag_true = getattr(post_cond, "equals_string", None) == "true"
 
@@ -539,7 +550,7 @@ class ShaclGenerator(Generator):
             f"    OPTIONAL {{ $this <{flag_uri}> ?flag . }}\n"
             f"    OPTIONAL {{ $this <{value_uri}> ?value . }}\n"
             f"    FILTER (\n"
-            f"        ( !BOUND(?flag) || ?flag != true ) &&\n"
+            f'        ( !BOUND(?flag) || str(?flag) != "true" ) &&\n'
             f"        BOUND(?value)\n"
             f"    )\n"
             f"}}"
