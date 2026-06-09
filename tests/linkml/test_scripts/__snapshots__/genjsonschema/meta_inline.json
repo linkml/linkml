@@ -131,8 +131,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfClasses",
@@ -153,8 +152,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfEnums",
@@ -178,8 +176,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfMix",
@@ -200,8 +197,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "AnyOfSimpleType",
@@ -501,8 +497,7 @@
                         {
                             "type": "null"
                         }
-                    ],
-                    "type": "string"
+                    ]
                 }
             },
             "title": "EmploymentEvent",
