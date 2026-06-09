@@ -453,6 +453,7 @@
     <span class="n">StubUtilsFile</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_range_associated_slots</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ClassDefinition</span><span class="p">,</span>
     <span class="n">EnumDefinition</span><span class="p">,</span>
@@ -1020,19 +1021,43 @@
             <span class="c1"># attribute to serve as the value, do not treat this as a key/value class.</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value_attrs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="n">value_attr</span> <span class="o">=</span> <span class="n">value_attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">simple_dict_possible</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">len</span><span class="p">(</span><span class="n">non_key_attrs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-                <span class="ow">and</span> <span class="ow">not</span> <span class="n">value_attr</span><span class="o">.</span><span class="n">multivalued</span>
-                <span class="ow">and</span> <span class="p">(</span>
-                    <span class="n">value_attr</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
-                    <span class="ow">or</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">value_attr</span><span class="p">,</span> <span class="s2">&quot;inlined&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
-                <span class="p">)</span>
+            <span class="c1"># Defer to linkml&#39;s documented `SimpleDict` rules (see</span>
+            <span class="c1"># `linkml.utils.helpers.get_range_associated_slots` and linkml/linkml#1250):</span>
+            <span class="c1">#   1. The class has exactly one non-key slot, or</span>
+            <span class="c1">#   2. Exactly one non-key slot is annotated with `simple_dict_value: true`, or</span>
+            <span class="c1">#   3. Exactly one non-key slot is required.</span>
+            <span class="c1"># When one of those conditions selects a value slot, the inlined-dict</span>
+            <span class="c1"># entry `key: &lt;primitive&gt;` may collapse into that slot.</span>
+            <span class="c1"># `get_range_associated_slots` is `lru_cache`d and unhashable on</span>
+            <span class="c1"># ClassDefinition; pass the class name (it normalizes internally).</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">simple_dict_value_slot</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_range_associated_slots</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">value_attr</span> <span class="o">=</span> <span class="n">simple_dict_value_slot</span> <span class="ow">or</span> <span class="n">value_attrs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Additional Rust-specific guard: a primitive scalar can only deserialize</span>
+            <span class="c1"># into a value slot whose Rust type is a primitive or a linkml:Any</span>
+            <span class="c1"># wildcard (`Anything`/`AnyValue`, which wraps `serde_value::Value`).</span>
+            <span class="c1"># Other class ranges either store an inlined struct (which can&#39;t accept a</span>
+            <span class="c1"># primitive) or a reference string (which would mismatch `Self::Value`).</span>
+            <span class="n">value_range_is_primitive_friendly</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">value_attr</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">value_attr</span><span class="o">.</span><span class="n">range</span><span class="p">)</span><span class="o">.</span><span class="n">class_uri</span> <span class="o">==</span> <span class="s2">&quot;linkml:Any&quot;</span>
             <span class="p">)</span>
+            <span class="n">simple_dict_possible</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">simple_dict_value_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value_attr</span><span class="o">.</span><span class="n">multivalued</span> <span class="ow">and</span> <span class="n">value_range_is_primitive_friendly</span>
+            <span class="p">)</span>
+            <span class="n">key_property_name</span> <span class="o">=</span> <span class="n">get_name</span><span class="p">(</span><span class="n">key_attr</span><span class="p">)</span>
+            <span class="c1"># The generated struct field for the key slot accepts its canonical name</span>
+            <span class="c1"># plus the slot&#39;s `alias` (via serde(alias = &quot;...&quot;)). When building the</span>
+            <span class="c1"># deserialization map from an inlined-as-dict entry we must not inject</span>
+            <span class="c1"># the canonical key if the inner map already carries the alias for it,</span>
+            <span class="c1"># or serde will reject the duplicate field.</span>
+            <span class="n">key_property_aliases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">key_attr</span><span class="o">.</span><span class="n">alias</span> <span class="ow">and</span> <span class="n">key_attr</span><span class="o">.</span><span class="n">alias</span> <span class="o">!=</span> <span class="n">key_property_name</span><span class="p">:</span>
+                <span class="n">key_property_aliases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key_attr</span><span class="o">.</span><span class="n">alias</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">AsKeyValue</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
-                <span class="n">key_property_name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">key_attr</span><span class="p">),</span>
+                <span class="n">key_property_name</span><span class="o">=</span><span class="n">key_property_name</span><span class="p">,</span>
                 <span class="n">key_property_type</span><span class="o">=</span><span class="n">get_rust_type</span><span class="p">(</span><span class="n">key_attr</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">),</span>
+                <span class="n">key_property_aliases</span><span class="o">=</span><span class="n">key_property_aliases</span><span class="p">,</span>
                 <span class="n">value_property_name</span><span class="o">=</span><span class="n">get_name</span><span class="p">(</span><span class="n">value_attr</span><span class="p">),</span>
                 <span class="n">value_property_type</span><span class="o">=</span><span class="n">get_rust_type</span><span class="p">(</span><span class="n">value_attr</span><span class="o">.</span><span class="n">range</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pyo3</span><span class="p">),</span>
                 <span class="n">can_convert_from_primitive</span><span class="o">=</span><span class="n">simple_dict_possible</span><span class="p">,</span>
