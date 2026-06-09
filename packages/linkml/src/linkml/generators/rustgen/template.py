@@ -383,6 +383,7 @@ class AsKeyValue(RustTemplateModel):
     name: str
     key_property_name: str
     key_property_type: str
+    key_property_aliases: list[str] = []
     value_property_name: str
     value_property_type: str
     can_convert_from_primitive: bool = False
