@@ -179,6 +179,11 @@ class JSONLDGenerator(Generator):
             # TODO: The _visit function above alters the schema in situ
             # force some context_kwargs
             context_kwargs["metadata"] = False
+            # Forward importmap/base_dir so the spawned ContextGenerator can
+            # re-resolve any URI-style imports in ``self.original_schema``
+            # through the same ``--importmap`` the caller supplied.
+            context_kwargs.setdefault("importmap", self.importmap)
+            context_kwargs.setdefault("base_dir", self.base_dir)
             add_prefixes = ContextGenerator(self.original_schema, **context_kwargs).serialize()
             add_prefixes_json = loads(add_prefixes)
             metamodel_ctx = self.metamodel_context or METAMODEL_CONTEXT_URI

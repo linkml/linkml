@@ -73,7 +73,10 @@ class PythonGenerator(Generator):
         if isinstance(self.schema, Path):
             self.schema = str(self.schema)
         self.sourcefile = self.schema
-        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir)
+        # Forward importmap so URI-style imports (e.g. ``ex:schema/core`` backed
+        # by ``--importmap``) resolve to local files instead of falling through
+        # to HTTP on the first lazy access via ``PythonIfAbsentProcessor``.
+        self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
         self.ifabsent_processor = PythonIfAbsentProcessor(self.schemaview)
         super().__post_init__()
         if self.format is None:
