@@ -1,3 +1,5 @@
+.. _jsonschemagen:
+
 JSON Schema
 ===========
 
