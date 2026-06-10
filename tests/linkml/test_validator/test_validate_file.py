@@ -123,3 +123,48 @@ age: 25
     assert len(report.results) == 2
     assert "uh-oh" in report.results[0].message
     assert "id" in report.results[1].message
+
+
+def test_validate_file_resolves_schema_relative_imports_from_schema_dir(tmp_path, monkeypatch):
+    schema_dir = tmp_path / "schemas"
+    schema_dir.mkdir()
+
+    base_schema = schema_dir / "base.yaml"
+    base_schema.write_text(
+        """id: https://example.org/base
+name: base
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Thing:
+    attributes:
+      id:
+        identifier: true
+""",
+        encoding="utf-8",
+    )
+
+    main_schema = schema_dir / "main.yaml"
+    main_schema.write_text(
+        """id: https://example.org/main
+name: main
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+  - ./base
+""",
+        encoding="utf-8",
+    )
+
+    data_path = tmp_path / "data.yaml"
+    data_path.write_text("id: x\n", encoding="utf-8")
+
+    monkeypatch.chdir(tmp_path)
+
+    report = validate_file(str(data_path), str(main_schema), target_class="Thing")
+
+    assert report.results == []

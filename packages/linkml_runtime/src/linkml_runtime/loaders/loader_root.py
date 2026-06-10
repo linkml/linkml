@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from abc import ABC, abstractmethod
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, TextIO
@@ -174,6 +175,12 @@ class Loader(ABC):
 
         if isinstance(source, dict):
             return source
+
+        # A ``Path`` (or other ``os.PathLike``) is a file location, but ``hbread`` would mistake it
+        # for stringable data and read its text as the source. Coerce to ``str`` so it is detected
+        # and resolved as a filename.
+        if isinstance(source, os.PathLike):
+            source = str(source)
 
         # Try to get local version of schema, if one is known to exist
         try:

@@ -209,14 +209,10 @@ def load_schema_wrap(path: str, **kwargs: dict[str, Any]) -> SchemaDefinition:
     from linkml_runtime.loaders.yaml_loader import YAMLLoader
 
     yaml_loader = YAMLLoader()
+    # When ``path`` is a file or URL the loader records it on ``schema.source_file``, which is
+    # necessary for resolving relative imports. A yaml string leaves ``source_file`` unset, so there
+    # should be no expectation of relative imports working for inline schema text.
     schema: SchemaDefinition = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
-    if "\n" not in path:
-        # if "\n" not in path and "://" not in path:
-        # only set path if the input is not a yaml string or URL.
-        # Setting the source path is necessary for relative imports;
-        # while initializing a schema with a yaml string is possible, there
-        # should be no expectation of relative imports working.
-        schema.source_file = path
     return schema
 
 
