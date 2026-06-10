@@ -403,14 +403,105 @@
         <article role="main" id="furo-main-content">
           <h1>Source code for linkml.generators.protogen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">,</span> <span class="n">SlotDefinition</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">camelcase</span><span class="p">,</span> <span class="n">lcamelcase</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># LinkML built-in type -&gt; proto3 scalar</span>
+<span class="c1"># https://linkml.io/linkml-model/linkml_model/model/schema/types.yaml</span>
+<span class="c1"># https://protobuf.dev/programming-guides/proto3/#scalar</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Proto scalar, keyed by LinkML types-&gt;base.</span>
+<span class="n">_PROTO_SCALAR_BY_LINKML_BASE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>  <span class="c1"># str, jsonpointer, jsonpath, sqarqlpath</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="s2">&quot;int32&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Bool&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>  <span class="c1"># base: Bool</span>
+    <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>  <span class="c1"># repr: bool</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>  <span class="c1"># proto =IEEE 754 single-precision</span>
+    <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span>  <span class="c1"># proto =IEEE 754 double-precision</span>
+    <span class="s2">&quot;Decimal&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>  <span class="c1"># linkml =Capitalized.</span>
+    <span class="c1">## Linkml - repr: str</span>
+    <span class="s2">&quot;XSDTime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;XSDDate&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;XSDDateTime&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>  <span class="c1"># (datetime/date_or_datetime)</span>
+    <span class="s2">&quot;URIorCURIE&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Curie&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;URI&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NCName&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;NodeIdentifier&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ElementIdentifier&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Bytes&quot;</span><span class="p">:</span> <span class="s2">&quot;bytes&quot;</span><span class="p">,</span>
+    <span class="c1"># XSD-flavoured aliases, defensive</span>
+    <span class="s2">&quot;XSDString&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;XSDInteger&quot;</span><span class="p">:</span> <span class="s2">&quot;int32&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;XSDBoolean&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;XSDFloat&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;XSDDouble&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Name-keyed override for LinkML types whose ``base`` is ambiguous.</span>
+<span class="c1">#</span>
+<span class="c1"># LinkML&#39;s standard library defines both &quot;float&quot; and &quot;double&quot; with</span>
+<span class="c1"># &quot;base: float&quot; (both Python floats), so a base-only lookup would</span>
+<span class="c1"># collapse the proto-side distinction between 32-bit and 64-bit IEEE 754.</span>
+<span class="c1"># So special-case the canonical type names here.</span>
+<span class="n">_PROTO_SCALAR_BY_LINKML_NAME</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;double&quot;</span><span class="p">:</span> <span class="s2">&quot;double&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># https://protobuf.dev/programming-guides/proto3/#assigning</span>
+<span class="c1"># proto3 reserves field numbers 19000-19999 for internal use.</span>
+<span class="n">_RESERVED_FIELD_LO</span> <span class="o">=</span> <span class="mi">19000</span>
+<span class="n">_RESERVED_FIELD_HI</span> <span class="o">=</span> <span class="mi">19999</span>
+
+<span class="c1"># Fallback when we can&#39;t resolve a slot range (e.g. unknown reference).</span>
+<span class="c1"># &quot;string&quot; is safest choice - (see _PROTO_SCALAR_BY_LINKML_BASE)</span>
+<span class="n">_PROTO_DEFAULT_SCALAR</span> <span class="o">=</span> <span class="s2">&quot;string&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_proto_ident</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sanitise *value* into a proto3 identifier that follows Google&#39;s style guide.</span>
+
+<span class="sd">    See https://protobuf.dev/programming-guides/style/#identifier</span>
+
+<span class="sd">    The rule we enforce: identifiers must not start or end with an underscore,</span>
+<span class="sd">    and every underscore must be followed by a letter (never a digit or another</span>
+<span class="sd">    underscore). Concretely:</span>
+
+<span class="sd">    - Non-identifier characters become ``_``.</span>
+<span class="sd">    - Runs of underscores collapse to one (no ``__``).</span>
+<span class="sd">    - Any underscore immediately followed by a digit has an ``N`` inserted</span>
+<span class="sd">      (``foo_2bar`` becomes &quot;foo_N2bar&quot;) since digits aren&#39;t allowed after</span>
+<span class="sd">      ``_``. Inserting rather than dropping keeps ``foo_2bar`` distinct from</span>
+<span class="sd">      ``foo2bar`` (reusing the same leading-digit prefix rule below).</span>
+<span class="sd">    - Leading and trailing underscores are stripped.</span>
+<span class="sd">    - An empty result, or one starting with a digit, is prefixed with ``N`` so</span>
+<span class="sd">      identifier matches ``[A-Za-z][A-Za-z0-9_]*`` and never starts with ``_``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^A-Za-z0-9_]&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">value</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">cleaned</span><span class="p">)</span>
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_(\d)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;_N\1&quot;</span><span class="p">,</span> <span class="n">cleaned</span><span class="p">)</span>
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="n">cleaned</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cleaned</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;N&quot;</span>
+    <span class="k">if</span> <span class="n">cleaned</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="n">cleaned</span> <span class="o">=</span> <span class="s2">&quot;N&quot;</span> <span class="o">+</span> <span class="n">cleaned</span>
+    <span class="k">return</span> <span class="n">cleaned</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_to_upper_snake</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert *value* to UPPER_SNAKE_CASE for use as a proto3 enum value name.&quot;&quot;&quot;</span>
+    <span class="c1"># Break CamelCase into CAMEL_CASE before sanitising - this preserves word</span>
+    <span class="c1"># boundaries that would otherwise be merged together by _to_proto_ident.</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([a-z0-9])([A-Z])&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\1_\2&quot;</span><span class="p">,</span> <span class="n">value</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_to_proto_ident</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="ProtoGenerator">
@@ -424,52 +515,253 @@
 
     <span class="c1"># ClassVars</span>
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.1.1&quot;</span>
+    <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.2.0&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;proto&quot;</span><span class="p">]</span>
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="c1"># ObjectVars</span>
-    <span class="n">relative_slot_num</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Per-class map of slot name -&gt; proto field number. Populated in visit_class</span>
+    <span class="c1"># so visit_class_slot can look up the pre-computed number without having to</span>
+    <span class="c1"># repeat the collision-avoidance logic for every slot.</span>
+    <span class="n">_field_numbers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------ header</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_header</span><span class="p">()</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sanitise_proto_package</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce *value* into a valid proto3 package identifier, or return None.</span>
+
+<span class="sd">        Proto3 package identifiers may be dot-separated; each segment must</span>
+<span class="sd">        match ``[A-Za-z_][A-Za-z0-9_]*``. We additionally follow the proto3</span>
+<span class="sd">        style guide: no leading/trailing underscores, no consecutive</span>
+<span class="sd">        underscores, and no underscore immediately followed by a digit. An</span>
+<span class="sd">        ``_`` before a digit gets an ``N`` inserted (``foo_2bar`` becomes</span>
+<span class="sd">        &quot;foo_n2bar&quot;) rather than dropped, so ``foo_2bar`` stays distinct from</span>
+<span class="sd">        ``foo2bar``.</span>
+
+<span class="sd">        Returns None when no usable identifier can be derived - the caller</span>
+<span class="sd">        then omits the ``package`` line (it&#39;s optional in proto3).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^A-Za-z0-9_.]&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">value</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+        <span class="c1"># Collapse runs of underscores; insert `N` after any `_` that precedes</span>
+        <span class="c1"># a digit (non-destructive, keeps `foo_2bar` distinct from `foo2bar`).</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">candidate</span><span class="p">)</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;_(\d)&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;_N\1&quot;</span><span class="p">,</span> <span class="n">candidate</span><span class="p">)</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">candidate</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;._&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidate</span> <span class="ow">or</span> <span class="n">candidate</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">candidate</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_proto_package</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Derive a proto3 package name from the schema&#39;s ``name`` attribute.</span>
+
+<span class="sd">        The schema id is a URI and rarely converts cleanly to a proto</span>
+<span class="sd">        identifier, so we use &quot;schema.name&quot; as the source. If that name can&#39;t</span>
+<span class="sd">        be sanitised into a valid identifier, return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sanitise_proto_package</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; syntax=&quot;proto3&quot;;&#39;</span><span class="p">)</span>
-        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; package&quot;</span><span class="p">)</span>
+        <span class="c1"># https://protobuf.dev/reference/protobuf/proto3-spec/#syntax</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;syntax = &quot;proto3&quot;;&#39;</span><span class="p">]</span>
+        <span class="c1"># https://protobuf.dev/reference/protobuf/proto3-spec/#package</span>
+        <span class="n">pkg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_package</span><span class="p">()</span>
+        <span class="c1"># &#39;package&#39; is optional in proto3 - only emit when non-bare (valued).</span>
+        <span class="k">if</span> <span class="n">pkg</span><span class="p">:</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;package </span><span class="si">{</span><span class="n">pkg</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
         <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;// metamodel_version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">metamodel_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">:</span>
             <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;// version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">return</span> <span class="n">out</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="c1"># ------------------------------------------------ range / type resolution</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_proto_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_range</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve a slot range to a proto3 type reference.</span>
+
+<span class="sd">        Order of resolution:</span>
+<span class="sd">          1. LinkML type   -&gt; mapped proto3 scalar (via its ``base``).</span>
+<span class="sd">          2. Schema class  -&gt; CamelCase message reference.</span>
+<span class="sd">          3. Schema enum   -&gt; CamelCase enum reference.</span>
+<span class="sd">          4. Unknown / missing -&gt; ``string`` (safe fallback).</span>
+
+<span class="sd">        References to messages and enums must be CamelCase to match the</span>
+<span class="sd">        declared names - earlier versions of this generator used lcamelcase</span>
+<span class="sd">        here, producing references that didn&#39;t resolve.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">slot_range</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_PROTO_DEFAULT_SCALAR</span>
+        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_scalar_for_type</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">classes</span> <span class="ow">or</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_PROTO_DEFAULT_SCALAR</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_proto_scalar_for_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map a LinkML type to a proto3 scalar by walking its ``typeof`` chain.</span>
+
+<span class="sd">        Some schemas define derived types like ``age_in_years_type`` with</span>
+<span class="sd">        ``typeof: integer``. We resolve with the following precedence:</span>
+
+<span class="sd">        1. **Name override anywhere in the chain.** Handles e.g. ``double``,</span>
+<span class="sd">           whose ``base`` ambiguously equals ``float`` in LinkML&#39;s stdlib —</span>
+<span class="sd">           and which the schema-loader propagates down to derived types like</span>
+<span class="sd">           ``Coordinate64: typeof: double``, so the name match needs to win</span>
+<span class="sd">           regardless of where in the chain it appears.</span>
+<span class="sd">        2. **Base mapping**, taking the first match while walking up.</span>
+<span class="sd">        3. Otherwise, fall back to ``string``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Pass 1: name override anywhere in the typeof chain.</span>
+        <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">current</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">type_name</span>
+        <span class="k">while</span> <span class="n">current</span> <span class="ow">and</span> <span class="n">current</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span> <span class="ow">and</span> <span class="n">current</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current</span> <span class="ow">in</span> <span class="n">_PROTO_SCALAR_BY_LINKML_NAME</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_PROTO_SCALAR_BY_LINKML_NAME</span><span class="p">[</span><span class="n">current</span><span class="p">]</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">current</span><span class="p">]</span><span class="o">.</span><span class="n">typeof</span>
+
+        <span class="c1"># Pass 2: base lookup walking the chain top-down.</span>
+        <span class="n">seen</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">type_name</span>
+        <span class="k">while</span> <span class="n">current</span> <span class="ow">and</span> <span class="n">current</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span> <span class="ow">and</span> <span class="n">current</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">types</span><span class="p">[</span><span class="n">current</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">base</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">base</span> <span class="ow">in</span> <span class="n">_PROTO_SCALAR_BY_LINKML_BASE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_PROTO_SCALAR_BY_LINKML_BASE</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">base</span><span class="p">]</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">typeof</span>
+        <span class="k">return</span> <span class="n">_PROTO_DEFAULT_SCALAR</span>
+
+    <span class="c1"># ----------------------------------------------- field number assignment</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_next_field_number</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">used</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the next available field number &gt;= *n*.</span>
+
+<span class="sd">        Skips numbers already claimed, and reserved range 19000-19999.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">used</span> <span class="ow">or</span> <span class="n">_RESERVED_FIELD_LO</span> <span class="o">&lt;=</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">_RESERVED_FIELD_HI</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">n</span>
+
+    <span class="c1"># ---------------------------------------------- class &amp; slot emission</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">mixin</span> <span class="ow">or</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># Every class is emitted as a proto3 message - including mixins,</span>
+        <span class="c1"># abstracts, and slot-less concrete classes:</span>
+        <span class="c1"># https://protobuf.dev/reference/protobuf/proto3-spec/#message_definition</span>
+        <span class="c1">#   - proto3 has no concept of &quot;mixin&quot; or &quot;abstract&quot;; the only way to</span>
+        <span class="c1">#     keep a reference to such a class valid is to declare it.</span>
+        <span class="c1">#   - Slot-less classes become empty messages (`message X {}`), which</span>
+        <span class="c1">#     proto3 allows. https://protobuf.dev/reference/protobuf/google.protobuf/#empty</span>
+        <span class="c1">#     Otherwise, any field whose range is such a class would point at a non-existent</span>
+        <span class="c1">#     type and protoc would fail.</span>
+        <span class="c1"># The trade-off is that LinkML&#39;s mixin/abstract semantics are not</span>
+        <span class="c1"># carried over to proto3, but the resulting file is always compilable and every</span>
+        <span class="c1"># range reference resolves to a declared message.</span>
+
+        <span class="c1"># Pre-compute proto field numbers for every slot in this class.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Pre-pass: proto3 forbids field number 0, requires uniqueness within a</span>
+        <span class="c1"># message, and reserves 19000-19999. Honor LinkML&#39;s `rank` slot (allow</span>
+        <span class="c1"># pinning numbers for wire compatibility) and auto-assign the rest (starting</span>
+        <span class="c1"># at 1), skipping numbers already claimed by rank, and reserved range.</span>
+
+        <span class="c1"># Doing this once up front keeps visit_class_slot a simple lookup.</span>
+        <span class="n">used_ranks</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">rank</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">rank</span><span class="p">}</span>
+        <span class="n">next_auto</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">rank</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">rank</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">next_auto</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_field_number</span><span class="p">(</span><span class="n">next_auto</span><span class="p">,</span> <span class="n">used_ranks</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">next_auto</span>
+                <span class="n">next_auto</span> <span class="o">+=</span> <span class="mi">1</span>
+
         <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">dline</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
                 <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;// </span><span class="si">{</span><span class="n">dline</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;message </span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; {&quot;</span><span class="p">)</span>
-        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">relative_slot_num</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="n">out</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;message </span><span class="si">{</span><span class="n">camelcase</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="se">{{</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">end_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> }</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">}</span><span class="se">\n</span><span class="s2">&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">visit_class_slot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">aliased_slot_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">qual</span> <span class="o">=</span> <span class="s2">&quot;repeated &quot;</span> <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
         <span class="n">slotname</span> <span class="o">=</span> <span class="n">lcamelcase</span><span class="p">(</span><span class="n">aliased_slot_name</span><span class="p">)</span>
-        <span class="n">slot_range</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># numbering of slots is important in the proto implementation</span>
-            <span class="c1"># and should be determined by the rank param.</span>
-            <span class="n">slot</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">qual</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">lcamelcase</span><span class="p">(</span><span class="n">slot_range</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="p">(</span><span class="n">slotname</span><span class="p">)</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">slot</span><span class="o">.</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="n">slot_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proto_range</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
+        <span class="c1"># Every proto3 field statement must end with `;` - without it `protoc`</span>
+        <span class="c1"># rejects the file. The field number comes from the pre-computed map</span>
+        <span class="c1"># built in visit_class so we never emit forbidden &quot;&quot;= 0&quot;.</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  </span><span class="si">{</span><span class="n">qual</span><span class="si">}{</span><span class="n">slot_range</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">slotname</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_field_numbers</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s2">;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------- enum emission</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Emit an ``enum { ... }`` block for every LinkML enum.</span>
+
+<span class="sd">        https://protobuf.dev/programming-guides/proto3/#enum</span>
+<span class="sd">        https://protobuf.dev/programming-guides/proto3/#enum-default</span>
+
+<span class="sd">        proto3 enum constraints honoured here:</span>
+<span class="sd">          - The first enum declared value must be numeric &quot;0&quot; and should have</span>
+<span class="sd">          . the name ENUM_TYPE_NAME_UNSPECIFIED or ENUM_TYPE_NAME_UNKNOWN.</span>
+<span class="sd">            we can use 0 as a numeric default value, for proto2 compatibility.</span>
+<span class="sd">            So real permissible values start at &quot;1&quot;, preserving semantics.</span>
+<span class="sd">          - All enum value names share a namespace at the enclosing scope.</span>
+<span class="sd">            To avoid collisions across multiple enums in the same proto file</span>
+<span class="sd">            we prefix every value with the enum name in UPPER_SNAKE_CASE</span>
+<span class="sd">            (e.g. ``FAMILIAL_RELATIONSHIP_TYPE_SIBLING_OF``).</span>
+<span class="sd">          - All identifiers must match ``[A-Za-z_][A-Za-z0-9_]*``; permissible</span>
+<span class="sd">            values with spaces or other punctuation are sanitised.</span>
+
+<span class="sd">        Enums are emitted after the messages. Order is purely cosmetic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ename</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">):</span>
+            <span class="n">enum</span><span class="p">:</span> <span class="n">EnumDefinition</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">enums</span><span class="p">[</span><span class="n">ename</span><span class="p">]</span>
+            <span class="n">proto_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">ename</span><span class="p">)</span>
+            <span class="n">value_prefix</span> <span class="o">=</span> <span class="n">_to_upper_snake</span><span class="p">(</span><span class="n">ename</span><span class="p">)</span>
+            <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">enum</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">dline</span> <span class="ow">in</span> <span class="n">enum</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+                    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;// </span><span class="si">{</span><span class="n">dline</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;enum </span><span class="si">{</span><span class="n">proto_name</span><span class="si">}</span><span class="s2"> </span><span class="se">{{</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Synthetic zero-value sentinel - added first so its identifier</span>
+            <span class="c1"># is also in `seen_values` for the dedupe loop below (in case a</span>
+            <span class="c1"># real permissible value happens to be named &quot;UNSPECIFIED&quot;).</span>
+            <span class="n">unspecified_ident</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value_prefix</span><span class="si">}</span><span class="s2">_UNSPECIFIED&quot;</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">unspecified_ident</span><span class="si">}</span><span class="s2"> = 0;&quot;</span><span class="p">)</span>
+            <span class="n">seen_values</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">unspecified_ident</span><span class="p">}</span>
+
+            <span class="c1"># Real permissible values start at 1; 0 is reserved for the</span>
+            <span class="c1"># UNSPECIFIED sentinel emitted above.</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pv_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">permissible_values</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">value_ident</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value_prefix</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">_to_upper_snake</span><span class="p">(</span><span class="n">pv_name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+                <span class="c1"># Defensive dedupe - two permissible values that sanitise to</span>
+                <span class="c1"># the same identifier would otherwise produce a proto3 error.</span>
+                <span class="c1"># Suffix is `_V&lt;n&gt;` (not `_&lt;n&gt;`) so the underscore is followed</span>
+                <span class="c1"># by a letter, per the proto3 style guide.</span>
+                <span class="n">base_ident</span> <span class="o">=</span> <span class="n">value_ident</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="mi">2</span>
+                <span class="k">while</span> <span class="n">value_ident</span> <span class="ow">in</span> <span class="n">seen_values</span><span class="p">:</span>
+                    <span class="n">value_ident</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_ident</span><span class="si">}</span><span class="s2">_V</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="n">suffix</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">seen_values</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">value_ident</span><span class="p">)</span>
+                <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">value_ident</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;}&quot;</span><span class="p">)</span>
+            <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span></div>
 
 
 
