@@ -1354,12 +1354,49 @@
             <span class="k">if</span> <span class="n">parent_slot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">new_slot</span><span class="o">.</span><span class="n">is_a</span> <span class="o">=</span> <span class="n">parent_slot</span><span class="o">.</span><span class="n">name</span>
                 <span class="n">merge_slots</span><span class="p">(</span><span class="n">new_slot</span><span class="p">,</span> <span class="n">parent_slot</span><span class="p">)</span>
-                <span class="c1"># This situation occurs when we are doing chained overrides.  Kludgy, but it works...</span>
+                <span class="c1"># Each class keeps an ordered list of slot *names* in cls.slots.</span>
+                <span class="c1"># Replace the inherited slot name with the new mangled name.</span>
+                <span class="c1"># Support multiple levels of inheritance for slot usage.</span>
+                <span class="c1">#</span>
+                <span class="c1"># Example: Mammal defines slot &quot;sound&quot;, Canine refines it via</span>
+                <span class="c1">#   slot_usage, and Dog refines it again via slot_usage. By the</span>
+                <span class="c1">#   time we reach Dog (whose slots contain *bare* name &quot;sound&quot;),</span>
+                <span class="c1">#   the parent_slot is already mangled to &quot;Canine_sound&quot;, so</span>
+                <span class="c1">#   looking at parent_slot.name is not enough - we need to walk!</span>
+                <span class="c1">#</span>
+                <span class="c1"># Logic: if parent_slot.name is not in cls.slots, walk up parent_slot&#39;s</span>
+                <span class="c1"># own is_a chain until we find a name that IS in cls.slots, then swap</span>
+                <span class="c1"># that one.  Fall back to the bare slot name as a last resort.</span>
+
+                <span class="n">ancestor_in_cls</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">parent_slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                    <span class="c1"># Happy path: the proximal parent name is already in the list.</span>
+                    <span class="n">ancestor_in_cls</span> <span class="o">=</span> <span class="n">parent_slot</span><span class="o">.</span><span class="n">name</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Walk up the is_a chain of the parent slot, looking for any</span>
+                    <span class="c1"># ancestor whose name is present in cls.slots.</span>
+                    <span class="n">probe</span> <span class="o">=</span> <span class="n">parent_slot</span>
+                    <span class="k">while</span> <span class="n">probe</span><span class="o">.</span><span class="n">is_a</span> <span class="ow">and</span> <span class="n">ancestor_in_cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">probe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">probe</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">probe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">break</span>  <span class="c1"># give up and fall through to append</span>
+                        <span class="k">if</span> <span class="n">probe</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                            <span class="n">ancestor_in_cls</span> <span class="o">=</span> <span class="n">probe</span><span class="o">.</span><span class="n">name</span>
+                    <span class="c1"># Last resort: try the original bare slot name (e.g. &quot;sound&quot;).</span>
+                    <span class="c1"># This handles the case where the class listed the slot explicitly</span>
+                    <span class="c1"># in its schema-level slots: list rather than inheriting it.</span>
+                    <span class="k">if</span> <span class="n">ancestor_in_cls</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slotname</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                        <span class="n">ancestor_in_cls</span> <span class="o">=</span> <span class="n">slotname</span>
+
+                <span class="k">if</span> <span class="n">ancestor_in_cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Swap: remove any pre-existing entry for child_name first to</span>
+                    <span class="c1"># avoid duplicates, then replace the ancestor entry in-place so</span>
+                    <span class="c1"># slot ordering is preserved.</span>
                     <span class="k">if</span> <span class="n">child_name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
                         <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">child_name</span><span class="p">)]</span>
-                    <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">parent_slot</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">child_name</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ancestor_in_cls</span><span class="p">)]</span> <span class="o">=</span> <span class="n">child_name</span>
                 <span class="k">elif</span> <span class="n">child_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
+                    <span class="c1"># No ancestor found in the list at all — just append.</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">slots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_name</span><span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">new_slot</span><span class="o">.</span><span class="n">range</span><span class="p">:</span>
                 <span class="n">new_slot</span><span class="o">.</span><span class="n">range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">default_range</span>
