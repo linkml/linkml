@@ -20,7 +20,7 @@ template = """
 PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
 {% endfor %}
 
-{% for cn, c in schema.classes.items() if not c.mixin and not c.abstract %}
+{% for cn, c in schema_view.all_classes(imports=imports).items() if not c.mixin and not c.abstract %}
 
 ## --
 ## Checks for {{ cn }}
@@ -141,9 +141,13 @@ class SparqlGenerator(Generator):
     sparql: str | None = None
 
     def __post_init__(self):
-        self.schemaview = SchemaView(self.schema)
-        materialize_schema(self.schemaview)
+        # Defer schema/schemaview construction to the base class so that
+        # ``importmap``, ``base_dir``, and ``include`` are honoured. Running
+        # ``materialize_schema`` after ``super().__post_init__()`` ensures the
+        # mutations land on the canonical schemaview (the previous ordering
+        # built a throwaway view that was immediately replaced).
         super().__post_init__()
+        materialize_schema(self.schemaview)
         self.queries = self.generate_sparql(named_graphs=self.named_graphs, limit=self.limit)
 
     def generate_sparql(self, named_graphs=None, limit: int = None):
@@ -156,7 +160,13 @@ class SparqlGenerator(Generator):
             limit = f"LIMIT {limit}"
         else:
             limit = ""
-        sparql = template_obj.render(schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra)
+        sparql = template_obj.render(
+            schema_view=self.schemaview,
+            schema=self.schema,
+            limit=limit,
+            extra=extra,
+            imports=bool(self.mergeimports),
+        )
         self.sparql = sparql
         queries = self.split_sparql(sparql)
         return queries
