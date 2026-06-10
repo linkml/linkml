@@ -1,3 +1,5 @@
+import json
+
 import pytest
 import rdflib
 from rdflib import Graph, URIRef
@@ -104,3 +106,116 @@ def test_rdf_type_in_jsonld(self):
     graph.parse(data=JSONLD, format="json-ld", prefix=True)
     ttl_str = graph.serialize(format="turtle")
     graph.parse(data=ttl_str, format="turtle")
+
+
+# ----------------------------------------------------------------------------
+# Regression: gen-rdf must not 404 on per-module @context refs
+# ----------------------------------------------------------------------------
+
+_RDFGEN_RELATIVE_IMPORT_BASE = """\
+id: https://example.org/rdfbase
+name: rdfbase
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Base:
+    attributes:
+      id:
+        identifier: true
+"""
+
+_RDFGEN_RELATIVE_IMPORT_MAIN = """\
+id: https://example.org/rdfmain
+name: rdfmain
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+  - ./base
+classes:
+  Thing:
+    is_a: Base
+    attributes:
+      label:
+"""
+
+
+def test_rdfgen_strips_unresolvable_per_module_context_refs(tmp_path):
+    """``gen-rdf`` must not 404 on per-module ``@context`` refs.
+
+    Regression: ``JSONLDGenerator.end_schema`` appends one
+    ``<import>.context.jsonld`` string per loaded import. For a sibling
+    import such as ``./base`` the resulting entry is ``./base.context.jsonld``
+    - a relative path that rdflib resolves against ``@base`` (the schema's
+    ``https://`` URI) and then fetches via HTTP. The file is not published
+    anywhere, so the call returns 404 and ``RDFGenerator.serialize`` raises
+    ``urllib.error.HTTPError``.
+
+    The fix in ``rdfgen._strip_relative_context_refs`` drops string entries
+    from the ``@context`` array that have no resolvable URI scheme before
+    handing the JSON-LD to rdflib. The merged inline ``@context`` (and the
+    fully merged schema body) cover everything the per-module refs would
+    have contributed, so the filtering is non-destructive.
+    """
+    schemas_dir = tmp_path / "schemas"
+    schemas_dir.mkdir()
+    (schemas_dir / "base.yaml").write_text(_RDFGEN_RELATIVE_IMPORT_BASE)
+    (schemas_dir / "main.yaml").write_text(_RDFGEN_RELATIVE_IMPORT_MAIN)
+
+    turtle = RDFGenerator(str(schemas_dir / "main.yaml")).serialize()
+
+    # Parse back through rdflib to confirm the output is well-formed and
+    # contains classes from both the main and the sibling-imported schema.
+    g = Graph()
+    g.parse(data=turtle, format="turtle")
+    subjects = {str(s) for s in g.subjects()}
+    assert "https://example.org/Thing" in subjects
+    assert "https://example.org/Base" in subjects
+
+
+def test_strip_relative_context_refs_preserves_absolute_uris_and_dicts():
+    """Unit-test the ``@context`` filter directly.
+
+    The helper must keep:
+      * inline ``@context`` dicts (carry prefix bindings and the ``@base``
+        directive),
+      * absolute ``http(s)://`` URIs (published context documents like
+        ``https://w3id.org/linkml/types.context.jsonld``),
+      * ``file://`` URIs (the vendored metamodel context, absolutized by
+        ``JSONLDGenerator.end_schema``),
+
+    and drop only scheme-less string entries that rdflib would dereference
+    against ``@base``.
+    """
+    from linkml.generators.rdfgen import _strip_relative_context_refs
+
+    payload = {
+        "@context": [
+            "file:///vendored/meta.context.jsonld",
+            "https://w3id.org/linkml/types.context.jsonld",
+            "./base.context.jsonld",
+            "base.context.jsonld",
+            "../other.context.jsonld",
+            {"ex": "https://example.org/"},
+            {"@base": "https://example.org/"},
+        ],
+        "@id": "https://example.org/x",
+    }
+    filtered = json.loads(_strip_relative_context_refs(json.dumps(payload)))
+
+    assert filtered["@context"] == [
+        "file:///vendored/meta.context.jsonld",
+        "https://w3id.org/linkml/types.context.jsonld",
+        {"ex": "https://example.org/"},
+        {"@base": "https://example.org/"},
+    ]
+    # Untouched siblings round-trip.
+    assert filtered["@id"] == "https://example.org/x"
