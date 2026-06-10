@@ -59,12 +59,46 @@ def test_namespaces():
     assert "https://w3id.org/biolink/metamodel/Schema" == str(ns.uri_for(":Schema"))
     assert URIRef("http://example.org/wrong/Base") == ns.uri_for("Base")
     del ns._base
-    with pytest.raises(ValueError, match="Unknown CURIE prefix: @base"):
+    with pytest.raises(ValueError, match="no base IRI is registered"):
         ns.uri_for("Base")
 
     assert ns.curie_for("http://google.com/test") is None
     with pytest.raises(ValueError):
         ns.uri_for("1abc:junk")
+
+
+def test_uri_for_plain_identifier_without_base():
+    """A plain (non-URI, non-CURIE) identifier with no base IRI raises an actionable error.
+
+    The error must name the offending identifier and explain how to register a base, not
+    leaking the internal ``@base`` as if it were a CURIE prefix or useful info (its not).
+    """
+    ns = Namespaces()
+    ns["ex"] = "http://example.org/"
+
+    with pytest.raises(ValueError) as exc_info:
+        ns.uri_for("CVE-2023-12345")
+
+    message = str(exc_info.value)
+    assert "no base IRI is registered" in message
+    assert "CVE-2023-12345" in message
+
+    # Must not expose the internal sentinel as if it were a missing CURIE prefix.
+    assert "Unknown CURIE prefix" not in message
+    assert "@base" in message  # only as part of the remediation hint
+
+    # Once a base is registered the same identifier resolves cleanly.
+    ns._base = "http://example.org/base/"
+    assert ns.uri_for("CVE-2023-12345") == URIRef("http://example.org/base/CVE-2023-12345")
+
+
+def test_uri_for_unknown_curie_prefix():
+    """A genuine unknown CURIE prefix still raises the CURIE-specific message."""
+    ns = Namespaces()
+    ns["ex"] = "http://example.org/"
+
+    with pytest.raises(ValueError, match="Unknown CURIE prefix: nope"):
+        ns.uri_for("nope:foo")
 
 
 def test_prefixmaps_integration():
