@@ -283,3 +283,24 @@ def test_linkml_subcommand_cli_simple(cli_runner, test_inputs_dir, target_class,
 
     assert result.exit_code == 0
     assert f"class {target_class}(" in result.output
+
+
+@pytest.mark.parametrize("flag", ["--mergeimports", "--no-mergeimports"])
+def test_cli_accepts_mergeimports_flag(cli_runner, test_inputs_dir, flag):
+    """``gen-pandera`` must accept the standard ``--mergeimports/--no-mergeimports`` flag.
+
+    Regression: every other LinkML generator CLI declares this option via
+    ``shared_arguments``, but ``gen-pandera`` rolls its own decorator stack
+    and used to omit it. A user passing ``--mergeimports`` would hit
+    ``Error: No such option: --mergeimports`` even though the underlying
+    ``DataframeGenerator`` (via the ``Generator`` dataclass field) accepts
+    the kwarg perfectly well. Both polarities of the flag are exercised so
+    a future refactor that drops one side is caught.
+    """
+    schema_path = str(test_inputs_dir / "organization.yaml")
+    result = cli_runner.invoke(cli, [flag, schema_path])
+
+    assert result.exit_code == 0, result.output
+    # Sanity-check that the run produced real output, not just a clean
+    # parse-and-exit. ``Organization`` is the canonical class in this fixture.
+    assert "class Organization(" in result.output
