@@ -419,7 +419,7 @@ class MarkdownDataDictGen(Generator):
             items.extend(self._generate_component_erd_diagrams())
         else:
             # Original single ERD diagram
-            erd_gen = ERDiagramGenerator(self.schema_location, exclude_abstract_classes=True, exclude_attributes=False)
+            erd_gen = self._get_full_erd_generator()
             items.append(self.header(2, "ERD Diagram"))
             items.append(self._diagram_renderer.render(erd_gen.serialize(), diagram_name="erd_diagram"))
 
@@ -447,9 +447,7 @@ class MarkdownDataDictGen(Generator):
                     )
                     items.append(self.header(3, component_name))
 
-                erd_gen = ERDiagramGenerator(
-                    self.schema_location, exclude_abstract_classes=True, exclude_attributes=False
-                )
+                erd_gen = self._get_full_erd_generator()
                 component_diagram = erd_gen.serialize_classes(list(component), follow_references=False, max_hops=0)
 
                 # Use "erd_diagram" for single component (main ERD), otherwise use component-specific names
@@ -1029,7 +1027,7 @@ class MarkdownDataDictGen(Generator):
         children = relationships["children"]
 
         if erd_classes:
-            erd_gen = ERDiagramGenerator(self.schema_location, exclude_attributes=True, structural=False)
+            erd_gen = self._get_per_class_erd_generator()
             erd_classes.append(cls.name)
             diagram = erd_gen.serialize_classes(erd_classes, follow_references=False, max_hops=0)
             diagram_name = f"class_{cls.name.lower()}_erd"
@@ -1128,6 +1126,33 @@ class MarkdownDataDictGen(Generator):
             del attr["_slot_name"]
 
         return MarkdownTable(attributes).get_markdown()
+
+    def _get_full_erd_generator(self) -> ERDiagramGenerator:
+        """Return a cached ``ERDiagramGenerator`` configured for the top-level
+        schema-wide ERD (and per-component ERDs).
+
+        ``ERDiagramGenerator.__post_init__`` re-parses the schema YAML and
+        builds a fresh ``SchemaView`` on every instantiation, so creating a
+        new instance per call scales as O(classes * schema_size). Caching a
+        single instance per configuration is safe because
+        ``serialize`` / ``serialize_classes`` build a brand-new ``ERDiagram``
+        on each invocation and do not mutate instance state.
+        """
+        if not hasattr(self, "_full_erd_generator"):
+            self._full_erd_generator = ERDiagramGenerator(
+                self.schema_location, exclude_abstract_classes=True, exclude_attributes=False
+            )
+        return self._full_erd_generator
+
+    def _get_per_class_erd_generator(self) -> ERDiagramGenerator:
+        """Return a cached ``ERDiagramGenerator`` configured for per-class
+        diagrams (no attributes, non-structural). See ``_get_full_erd_generator``
+        for the caching rationale."""
+        if not hasattr(self, "_per_class_erd_generator"):
+            self._per_class_erd_generator = ERDiagramGenerator(
+                self.schema_location, exclude_attributes=True, structural=False
+            )
+        return self._per_class_erd_generator
 
     def _collect_all_class_slots(self, cls: ClassDefinition) -> list[SlotDefinition]:
         """Collect all slots for a class using SchemaView, handling inheritance and slot_usage."""

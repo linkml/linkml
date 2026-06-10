@@ -1,10 +1,12 @@
 """Tests for the markdown data dictionary generator."""
 
 import os
+from textwrap import dedent
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+from linkml.generators import markdowndatadictgen as mdd_module
 from linkml.generators.markdowndatadictgen import DiagramRenderer, MarkdownDataDictGen, MarkdownTable, SvgCache
 
 
@@ -270,3 +272,77 @@ def test_enum_values_table(input_path):
     assert "StatusEnum" in output, "Should have StatusEnum section"
     assert "active" in output, "Should have 'active' enum value"
     assert "inactive" in output, "Should have 'inactive' enum value"
+
+
+_ERD_CACHE_SCHEMA = dedent(
+    """\
+    id: https://example.org/erd-cache
+    name: erd_cache
+    prefixes:
+      linkml: https://w3id.org/linkml/
+    imports:
+      - linkml:types
+    default_range: string
+    classes:
+      Base:
+        attributes:
+          id:
+            identifier: true
+      Alpha:
+        is_a: Base
+        attributes:
+          ref:
+            range: Beta
+      Beta:
+        is_a: Base
+        attributes:
+          ref:
+            range: Gamma
+      Gamma:
+        is_a: Base
+        attributes:
+          ref:
+            range: Alpha
+    """
+)
+
+
+def test_erdiagram_generator_is_cached_across_classes(tmp_path):
+    """``MarkdownDataDictGen`` used to instantiate a fresh ``ERDiagramGenerator``
+    (and therefore re-parse the entire schema YAML) once per class and once per
+    connected ERD component. On non-trivial schemas this dominated runtime.
+
+    Regression: serializing a schema with several classes must construct at
+    most one ``ERDiagramGenerator`` per distinct configuration (full vs.
+    per-class) for the whole ``serialize`` call.
+    """
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_ERD_CACHE_SCHEMA)
+
+    call_count = 0
+    real_cls = mdd_module.ERDiagramGenerator
+
+    def counting_factory(*args, **kwargs):
+        nonlocal call_count
+        call_count += 1
+        return real_cls(*args, **kwargs)
+
+    with patch.object(mdd_module, "ERDiagramGenerator", side_effect=counting_factory) as patched:
+        patched.__name__ = "ERDiagramGenerator"
+        gen = MarkdownDataDictGen(str(schema_path))
+        output = gen.serialize()
+
+    # 3 non-abstract classes (Alpha, Beta, Gamma) plus per-component ERD;
+    # without caching this would be roughly len(non-abstract classes) + len(components)
+    # constructions. The cached implementation tops out at one full-config
+    # instance and one per-class-config instance, regardless of schema size.
+    assert call_count <= 2, (
+        f"ERDiagramGenerator was instantiated {call_count} times; "
+        "expected at most 2 (one full-ERD config, one per-class-ERD config)."
+    )
+    # Sanity: cached helpers expose the constructed generators
+    assert hasattr(gen, "_full_erd_generator")
+    assert hasattr(gen, "_per_class_erd_generator")
+    # Sanity: the produced markdown still contains the expected ERD/class sections
+    assert "## Class Diagram" in output
+    assert "Alpha" in output and "Beta" in output and "Gamma" in output
