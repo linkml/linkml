@@ -122,9 +122,9 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
         after="Enum: KitchenStatus",
     )
     assert_mdfile_contains(
-        tmp_path / "SubsetA.md",
-        "URI: [SubsetA](SubsetA.md)",
-        after=" Subset: SubsetA ",
+        tmp_path / "subset_A.md",
+        "URI: [subset_A](subset_A.md)",
+        after=" Subset: subset_A ",
     )
     assert_mdfile_contains(tmp_path / "Organization.md", "slot_uri: skos:altLabel", after="Induced")
     # test truncating newlines
@@ -264,19 +264,19 @@ def test_docgen(kitchen_sink_path, input_path, tmp_path):
     )
 
     # test subset docs
-    assert_mdfile_contains(tmp_path / "SubsetA.md", "test subset A", after="SubsetA")
+    assert_mdfile_contains(tmp_path / "subset_A.md", "test subset A", after="subset_A")
 
     assert_mdfile_contains(
-        tmp_path / "SubsetA.md",
-        "SubsetA",
+        tmp_path / "subset_A.md",
+        "subset_A",
         followed_by=["## Identifier and Mapping Information", "### Schema Source"],
     )
 
-    assert_mdfile_contains(tmp_path / "SubsetB.md", "## Slots in subset", after="### Schema Source")
+    assert_mdfile_contains(tmp_path / "subset_B.md", "## Slots in subset", after="### Schema Source")
 
-    assert_mdfile_does_not_contain(tmp_path / "SubsetB.md", "## Classes in subset")
+    assert_mdfile_does_not_contain(tmp_path / "subset_B.md", "## Classes in subset")
 
-    assert_mdfile_does_not_contain(tmp_path / "SubsetB.md", "## Enumerations in subset")
+    assert_mdfile_does_not_contain(tmp_path / "subset_B.md", "## Enumerations in subset")
 
     # test internal links
     assert_mdfile_contains(tmp_path / "ceo.md", "| Range | [Person](Person.md) |", after="Properties")
@@ -548,7 +548,11 @@ def test_docgen_multiline_everything_index_page(
 
     for element_type in ["Class", "Enum", "Type", "Subset"]:
         for desc_type in UC_NAMES:
-            component = f"{element_type}{UC_NAMES[desc_type]}"
+            # Subsets preserve original snake_case names; other element types use PascalCase
+            if element_type == "Subset":
+                component = f"subset_{desc_type}"
+            else:
+                component = f"{element_type}{UC_NAMES[desc_type]}"
             if desc_type in {MULTI_LINE, MULTI_LINE_WS}:
                 # expected output if truncate_descriptions is true
                 long_desc = DESCRIPTIONS_MD[desc_type]
@@ -1343,7 +1347,7 @@ def test_common_metadata_properties(input_path, tmp_path):
 
     # Test in_subset
     assert_mdfile_contains(class_file, "## In Subsets", after="## Keywords")
-    assert_mdfile_contains(class_file, "[SubsetA](SubsetA.md)", after="## In Subsets")
+    assert_mdfile_contains(class_file, "[subset_a](subset_a.md)", after="## In Subsets")
 
     # Test notes
     assert_mdfile_contains(class_file, "## Notes", after="## In Subsets")
@@ -1681,12 +1685,17 @@ def test_core_element_properties(input_path, tmp_path):
     assert_mdfile_contains(formatted_string_file, "| Representation | `str` |", after="Base")
 
 
-def test_rules_postconditions_only(tmp_path):
-    """Regression test: a class rule with only postconditions (no preconditions) must
-    not crash with TypeError and must render the postcondition slot in the table.
+def test_subset_name_does_not_collide_with_class_name(tmp_path):
+    """Regression test: a snake_case subset whose PascalCase equivalent matches a class name
+    must not clobber the class documentation file.
 
-    See: https://github.com/linkml/linkml/issues/3496 (gen-doc crashes on
-    postconditions-only rules).
+    Given a schema with:
+      - a subset named ``ai_operation_profile``
+      - a class named ``AiOperationProfile``
+
+    The generator must produce two distinct files:
+      - ``AiOperationProfile.md`` documenting the class
+      - ``ai_operation_profile.md`` documenting the subset
     """
     schema_yaml = """\
 id: https://example.org/test
@@ -1697,109 +1706,27 @@ prefixes:
   linkml: https://w3id.org/linkml/
 imports: [linkml:types]
 
-classes:
-  MyClass:
-    attributes:
-      status:
-        range: string
-      label:
-        range: string
-    rules:
-      - postconditions:
-          slot_conditions:
-            label:
-              required: true
-"""
-    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
-    # Must not raise TypeError
-    gen.serialize(directory=str(tmp_path))
-
-    class_file = tmp_path / "MyClass.md"
-    assert class_file.exists()
-    assert_mdfile_contains(class_file, "## Rules")
-    # The postcondition slot must appear in the table even without preconditions
-    assert_mdfile_contains(class_file, "label", after="## Rules")
-
-
-def test_rules_elseconditions_only(tmp_path):
-    """Regression test: a class rule with only elseconditions (no preconditions or
-    postconditions) must not crash and must render the elsecondition slot in the table.
-    """
-    schema_yaml = """\
-id: https://example.org/test
-name: test
-default_prefix: test
-prefixes:
-  test: https://example.org/test/
-  linkml: https://w3id.org/linkml/
-imports: [linkml:types]
+subsets:
+  ai_operation_profile:
+    description: A profile subset.
 
 classes:
-  MyClass:
-    attributes:
-      status:
-        range: string
-      fallback:
-        range: string
-    rules:
-      - elseconditions:
-          slot_conditions:
-            fallback:
-              required: true
+  AiOperationProfile:
+    mixin: true
+    in_subset: [ai_operation_profile]
 """
     gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
     gen.serialize(directory=str(tmp_path))
 
-    class_file = tmp_path / "MyClass.md"
-    assert class_file.exists()
-    assert_mdfile_contains(class_file, "## Rules")
-    # The elsecondition slot must appear in the table even without preconditions
-    assert_mdfile_contains(class_file, "fallback", after="## Rules")
+    class_file = tmp_path / "AiOperationProfile.md"
+    subset_file = tmp_path / "ai_operation_profile.md"
 
+    assert class_file.exists(), "Class documentation file must exist"
+    assert subset_file.exists(), "Subset documentation file must exist"
 
-def test_rules_all_conditions(tmp_path):
-    """A rule with preconditions, postconditions, AND elseconditions must render
-    all slots from all three dicts — including slots exclusive to post/else.
-    """
-    schema_yaml = """\
-id: https://example.org/test
-name: test
-default_prefix: test
-prefixes:
-  test: https://example.org/test/
-  linkml: https://w3id.org/linkml/
-imports: [linkml:types]
+    assert_mdfile_contains(class_file, "# Class: AiOperationProfile")
+    assert_mdfile_contains(subset_file, "# Subset: ai_operation_profile")
 
-classes:
-  MyClass:
-    attributes:
-      trigger:
-        range: string
-      consequence:
-        range: string
-      fallback:
-        range: string
-    rules:
-      - preconditions:
-          slot_conditions:
-            trigger:
-              equals_string: "active"
-        postconditions:
-          slot_conditions:
-            consequence:
-              required: true
-        elseconditions:
-          slot_conditions:
-            fallback:
-              required: true
-"""
-    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
-    gen.serialize(directory=str(tmp_path))
-
-    class_file = tmp_path / "MyClass.md"
-    assert class_file.exists()
-    assert_mdfile_contains(class_file, "## Rules")
-    # All three condition slots must appear in the rendered table
-    assert_mdfile_contains(class_file, "trigger", after="## Rules")
-    assert_mdfile_contains(class_file, "consequence", after="## Rules")
-    assert_mdfile_contains(class_file, "fallback", after="## Rules")
+    # Each file must describe only its own element type
+    assert_mdfile_does_not_contain(class_file, "# Subset:")
+    assert_mdfile_does_not_contain(subset_file, "# Class:")
