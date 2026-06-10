@@ -11,9 +11,6 @@ class EnumDefinitionMeta(type):
         cls._addvals()
 
     def __getitem__(cls, item):
-        # Walk the MRO so that empty wrapper subclasses (e.g. identifier
-        # wrappers emitted by ``pythongen``) can inherit permissible values
-        # from their parent enum class.
         for klass in cls.__mro__:
             if item in klass.__dict__:
                 return klass.__dict__[item]
@@ -25,16 +22,6 @@ class EnumDefinitionMeta(type):
         cls.__dict__[key] = value
 
     def __contains__(cls, item) -> bool:
-        # Accept strings, ``PermissibleValue`` instances, and ``EnumDefinitionImpl``
-        # instances as membership tests against the class's permissible value names.
-        # Walk the MRO so that empty wrapper subclasses inherit their parent
-        # enum's permissible values.
-        if isinstance_dt(item, "EnumDefinitionImpl"):
-            code = getattr(item, "_code", None)
-            if code is not None:
-                item = code.text
-        elif isinstance_dt(item, "PermissibleValue"):
-            item = item.text
         return any(item in klass.__dict__ for klass in cls.__mro__)
 
 

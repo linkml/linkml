@@ -604,7 +604,7 @@ class FamilialRelationship(Relationship):
 
     type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
-    cordialness: Optional[str] = None
+    cordialness: Optional[Union[str, "CordialnessEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
@@ -616,9 +616,6 @@ class FamilialRelationship(Relationship):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
-
-        if self.cordialness is not None and not isinstance(self.cordialness, str):
-            self.cordialness = str(self.cordialness)
 
         if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
             self.cordialness = CordialnessEnum(self.cordialness)
