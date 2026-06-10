@@ -961,7 +961,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         ).schema_
         return self.top_level_schema
 
-    def serialize(self, as_json: bool = True, **kwargs) -> str | JsonSchema:
+    def serialize(self, **kwargs) -> str:
         if self.materialize_patterns:
             logger.info("Materializing patterns in the schema before serialization")
             self.schemaview.materialize_patterns()
