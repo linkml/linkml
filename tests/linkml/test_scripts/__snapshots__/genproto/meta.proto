@@ -17,117 +17,128 @@ message Address {
   string altitude = 3;
 }
 // a provence-generating agent
-message Agent {
-  string id = 1;
-  Agent actedOnBehalfOf = 2;
-  Activity wasInformedBy = 3;
-}
-// Example of unconstrained class
-message AnyObject {
-}
-message AnyOfClasses {
-  string attribute2 = 1;
-}
-message AnyOfEnums {
-  string attribute3 = 1;
-}
-message AnyOfMix {
-  string attribute4 = 1;
-}
-message AnyOfSimpleType {
-  string attribute1 = 1;
-}
-message BirthEvent {
-  string startedAtTime = 1;
-  string endedAtTime = 2;
-  bool isCurrent = 3;
-  AnyObject metadata = 4;
-  Place inLocation = 5;
-}
-message ClassWithSpaces {
-  string slotWithSpace1 = 1;
-}
-message CodeSystem {
-  string id = 1;
-  string name = 2;
-  LongEnum longId = 3;
-}
-message Company {
-  string id = 1;
-  string name = 2;
-  repeated string aliases = 3;
-  Person ceo = 4;
-}
-message Concept {
-  string id = 1;
-  string name = 2;
-  CodeSystem inCodeSystem = 3;
-}
-message Dataset {
-  AnyObject metadata = 1;
-  repeated Person persons = 2;
-  repeated Company companies = 3;
-  repeated Activity activities = 4;
-  repeated CodeSystem codeSystems = 5;
-}
-message DiagnosisConcept {
-  string id = 1;
-  string name = 2;
-  CodeSystem inCodeSystem = 3;
-}
-message EmploymentEvent {
-  string startedAtTime = 1;
-  string endedAtTime = 2;
-  bool isCurrent = 3;
-  AnyObject metadata = 4;
-  Company employedAt = 5;
-  string type = 6;
-}
-message EqualsString {
-  string attribute5 = 1;
-}
-message EqualsStringIn {
-  string attribute6 = 1;
-}
-message Event {
-  string startedAtTime = 1;
-  string endedAtTime = 2;
-  bool isCurrent = 3;
-  AnyObject metadata = 4;
-}
-message FakeClass {
-  string testAttribute = 1;
-}
-message FamilialRelationship {
-  string startedAtTime = 1;
-  string endedAtTime = 2;
-  string cordialness = 3;
-  FamilialRelationshipType type = 4;
-  Person relatedTo = 5;
-}
-message Friend {
-  string name = 2;
-}
-message HasAliases {
-  repeated string aliases = 1;
-}
-message MarriageEvent {
-  string startedAtTime = 1;
-  string endedAtTime = 2;
-  bool isCurrent = 3;
-  AnyObject metadata = 4;
-  Person marriedTo = 5;
-  Place inLocation = 6;
-}
-message MedicalEvent {
-  string startedAtTime = 1;
-  string endedAtTime = 2;
-  bool isCurrent = 3;
-  AnyObject metadata = 4;
-  Place inLocation = 5;
-  DiagnosisConcept diagnosis = 6;
-  ProcedureConcept procedure = 7;
-}
+message Agent
+ {
+  string id = 1
+  agent actedOnBehalfOf = 0
+  activity wasInformedBy = 0
+ }
+message AnyOfClasses
+ {
+  string attribute2 = 0
+ }
+message AnyOfEnums
+ {
+  string attribute3 = 0
+ }
+message AnyOfMix
+ {
+  string attribute4 = 0
+ }
+message AnyOfSimpleType
+ {
+  string attribute1 = 0
+ }
+message BirthEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  place inLocation = 0
+ }
+message ClassWithSpaces
+ {
+  string slotWithSpace1 = 0
+ }
+message CodeSystem
+ {
+  string id = 1
+  string name = 2
+  longEnum longId = 0
+ }
+message Company
+ {
+  string id = 1
+  string name = 2
+ repeated  string aliases = 0
+  person ceo = 0
+ }
+message Concept
+ {
+  string id = 1
+  string name = 2
+  codeSystem inCodeSystem = 0
+ }
+message Dataset
+ {
+  anyObject metadata = 0
+ repeated  person persons = 0
+ repeated  company companies = 0
+ repeated  activity activities = 0
+ repeated  codeSystem codeSystems = 0
+ }
+message DiagnosisConcept
+ {
+  string id = 1
+  string name = 2
+  codeSystem inCodeSystem = 0
+ }
+message EmploymentEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  company employedAt = 0
+  string type = 0
+ }
+message EqualsString
+ {
+  string attribute5 = 0
+ }
+message EqualsStringIn
+ {
+  string attribute6 = 0
+ }
+message Event
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+ }
+message FakeClass
+ {
+  string testAttribute = 0
+ }
+message FamilialRelationship
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  cordialnessEnum cordialness = 0
+  familialRelationshipType type = 0
+  person relatedTo = 0
+ }
+message MarriageEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  person marriedTo = 0
+  place inLocation = 0
+ }
+message MedicalEvent
+ {
+  date startedAtTime = 0
+  date endedAtTime = 0
+  boolean isCurrent = 0
+  anyObject metadata = 0
+  place inLocation = 0
+  diagnosisConcept diagnosis = 0
+  procedureConcept procedure = 0
+ }
 // An organization.
 // 
 // This description
