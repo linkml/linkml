@@ -1391,7 +1391,7 @@ message ChemicalToDiseaseOrPhenotypicFeatureAssociation {
 }
 // An interaction between a chemical entity and another entity
 message ChemicalToEntityAssociationMixin {
-  NamedThing subject = 1;
+  ChemicalEntityOrGeneOrGeneProduct subject = 1;
   string predicate = 2;
   NamedThing object = 3;
 }
@@ -2251,7 +2251,7 @@ message DrugLabel {
 }
 // An interaction between a drug and another entity
 message DrugToEntityAssociationMixin {
-  NamedThing subject = 1;
+  Drug subject = 1;
   string predicate = 2;
   NamedThing object = 3;
 }
