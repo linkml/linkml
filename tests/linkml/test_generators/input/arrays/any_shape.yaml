@@ -5,10 +5,10 @@ imports:
   - linkml:types
 
 classes:
-  AnyType:
+  AnyType_:
     attributes:
       array:
-        range: AnyType
+        range: Any
         array: {}
 
   Typed:
@@ -20,7 +20,7 @@ classes:
   AnyTypeUnset:
     attributes:
       array:
-        range: AnyType
+        range: Any
         array:
 
   TypedUnset:

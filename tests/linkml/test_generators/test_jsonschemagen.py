@@ -1,9 +1,13 @@
 import json
 import logging
 from collections.abc import Iterable
+from contextlib import nullcontext as does_not_raise
+from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 
 import jsonschema
+import numpy as np
 import pytest
 import yaml
 
@@ -1090,3 +1094,501 @@ def test_add_lax_def_missing_required():
     schema["$defs"]["NormalClass"] = {"type": "object", "properties": {"id": {}}, "required": ["id", "name"]}
     schema.add_lax_def("NormalClass", "id")
     assert schema["$defs"]["NormalClass__identifier_optional"]["required"] == ["name"]
+
+
+# --------------------------------------------------
+# Arrays!!!
+# --------------------------------------------------
+
+
+@dataclass
+class TestCase:
+    __test__ = False
+    type: Literal["pass", "fail-shape", "fail-dtype", "fail-scalar"]
+    array: np.ndarray
+
+    # def __post_init__(self):
+    #     self.array = self.array.tolist()
+
+    def expectation(self):
+        if self.type == "pass":
+            return does_not_raise()
+        else:
+            return pytest.raises(jsonschema.exceptions.ValidationError)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
+    + [TestCase(type="fail-scalar", array=a) for a in (4, 3.0, "three")],
+)
+def test_generate_array_anyshape(case, array_anyshape):
+    """
+    Any array shape, any dtype!
+    """
+
+    generated = JsonSchemaGenerator(array_anyshape, top_class="AnyType").generate()
+
+    if isinstance(case.array, np.ndarray):
+        array = case.array.tolist()
+    else:
+        array = case.array
+
+    with case.expectation():
+        jsonschema.validate({"array": array}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="fail-dtype", array=np.random.default_rng().random((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+    ],
+)
+def test_generate_array_anyshape_typed(case, array_anyshape):
+    """
+    Same as above, except dtype mismatches should cause a failure
+    """
+
+    generated = JsonSchemaGenerator(array_anyshape, top_class="Typed").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=float)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+    ],
+)
+def test_generate_array_dtype_union(case, array_dtype):
+    """
+    Array representations can validate union dtypes
+    """
+
+    generated = JsonSchemaGenerator(array_dtype, top_class="UnionDtype").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+def test_generate_array_dtype_class(array_dtype):
+    """
+    Array representations can use classes as ranges
+    """
+
+    generated = JsonSchemaGenerator(array_dtype, top_class="ClassDtype").generate()
+
+    array = np.full(shape=(2, 3, 4), fill_value={"x": 1, "y": 2})
+
+    # validates
+    jsonschema.validate({"array": array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((6, 3, 1, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2,), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2,), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_min(case, array_bounded):
+    """
+    Any integer array with greater than 2 dimensions.
+    """
+    generated = JsonSchemaGenerator(array_bounded, top_class="MinDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 6, 7, 2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_max(case, array_bounded):
+    """
+    Any integer array with less or equal dimensions than 5
+    """
+
+    generated = JsonSchemaGenerator(array_bounded, top_class="MaxDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((6, 3, 1, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2,), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2,), dtype=str)),
+        TestCase(type="pass", array=np.zeros((2, 6, 7, 2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 7, 2, 3, 6), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_range(case, array_bounded):
+    """
+    Any integer array equal to or between 2 and 5 dimensions
+    """
+    generated = JsonSchemaGenerator(array_bounded, top_class="RangeDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 3, 4), dtype=int)),
+        TestCase(type="pass", array=np.zeros((6, 3, 1), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((2, 3), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 3, 4, 5), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 2), dtype=str)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 3, 4, 5), dtype=str)),
+    ],
+)
+def test_generate_array_bounded_exact(case, array_bounded):
+    """
+    Any integer array with exactly 3 dimensions
+    """
+
+    generated = JsonSchemaGenerator(array_bounded, top_class="ExactDimensions").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((3, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((1, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 5, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 5, 4, 6, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((3, 5, 4, 6), dtype=str)),
+        # FIXME: Add a float testcase back in here when https://github.com/linkml/linkml/issues/1955 is resolved
+    ],
+)
+def test_generate_array_parameterized_min(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the first dimension is equal to or greater than cardinality 2
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 4, 4, 6), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((2, 6, 4, 6), dtype=int)),
+        # this is the same field, so dtype failures only need to be tested in one case
+    ],
+)
+def test_generate_array_parameterized_max(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the second dimension is equal to or less than cardinality 5
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 2, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((2, 5, 5, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 6, 6), dtype=int)),
+        # this is the same field, so dtype failures only need to be tested in one case
+    ],
+)
+def test_generate_array_parameterized_range(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the third dimension has a cardinality between 2 and 5, inclusive
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((2, 5, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 4, 4), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((2, 5, 4, 7), dtype=int)),
+        # this is the same field, so dtype failures only need to be tested in one case
+    ],
+)
+def test_generate_array_parameterized_exact(case, array_parameterized):
+    """
+    Any 4 dimensional integer array, the fourch dimension has a cardinality of exactly 6
+    """
+
+    generated = JsonSchemaGenerator(array_parameterized, top_class="ParameterizedArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((5, 2, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4), dtype=int)),
+    ],
+)
+def test_generate_array_complex_any(case, array_complex):
+    """
+    An array with at least four dimensions,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexAnyShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7), dtype=int)),
+        TestCase(type="fail-dtype", array=np.zeros((5, 2, 4, 6), dtype=str)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4), dtype=int)),
+    ],
+)
+def test_generate_array_complex_max(case, array_complex):
+    """
+    An array with at most, or equal to 6 dimensions,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexMaxShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 7, 1, 1), dtype=int)),
+    ],
+)
+def test_generate_array_complex_min(case, array_complex):
+    """
+    An array with at least 5 dimensions (with the rest of the usual requirements for complex shape test)
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexMinShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
+    ],
+)
+def test_generate_array_complex_range(case, array_complex):
+    """
+    An array with between 5 and 7 dimensions, inclusive,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexRangeShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+@pytest.mark.parametrize(
+    "case",
+    [
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="pass", array=np.zeros((5, 2, 4, 6, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1, 1, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((6, 2, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 1, 4, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 1, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 6, 6, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 5, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 7, 1), dtype=int)),
+        TestCase(type="fail-shape", array=np.zeros((5, 2, 4, 6, 1), dtype=str)),
+    ],
+)
+def test_generate_array_complex_exact(case, array_complex):
+    """
+    An array with exactly 6 dimensions,
+    - the first of which has a maximum cardinality of 5, and
+    - the second of which has a minimum cardinality of 2
+    - the third of which has a cardinality between 2 and 5, inclusive, and
+    - the fourth of which has an exact cardinality of 6
+    """
+
+    generated = JsonSchemaGenerator(array_complex, top_class="ComplexExactShapeArray").generate()
+
+    with case.expectation():
+        jsonschema.validate({"array": case.array.tolist()}, generated)
+
+
+@pytest.mark.arrays
+def test_generate_array_bounded_implicit_exact(array_bounded):
+    """
+    The representation of an bounded array with min and max dimensions that are equal should be the same as
+    setting an exact dimensionality.
+    """
+
+    generated = JsonSchemaGenerator(
+        array_bounded,
+    ).generate()
+
+    explicit = generated["$defs"]["ExactDimensions"]["properties"]["array"]
+    implicit = generated["$defs"]["ImplicitExact"]["properties"]["array"]
+    assert explicit == implicit
+
+
+@pytest.mark.arrays
+def test_generate_array_complex_implicit_exact(array_complex):
+    """
+    The representation of an complex array with min and max dimensions that are equal should be the same as
+    setting an exact dimensionality.
+    """
+
+    generated = JsonSchemaGenerator(
+        array_complex,
+    ).generate()
+    explicit = generated["$defs"]["ComplexExactShapeArray"]["properties"]["array"]
+    implicit = generated["$defs"]["ComplexImplicitExactShapeArray"]["properties"]["array"]
+    assert explicit == implicit
+
+
+@pytest.mark.arrays
+def test_generate_array_complex_noop_exact(array_complex, array_parameterized):
+    """
+    When the exact number of dimensions is equal to the number of parameterized dimensions,
+    the representation should be equivalent to if it hadn't been specified
+    """
+
+    generated_complex = JsonSchemaGenerator(
+        array_complex,
+    ).generate()
+    generated_parameterized = JsonSchemaGenerator(
+        array_parameterized,
+    ).generate()
+    complex = generated_complex["$defs"]["ComplexNoOpExactShapeArray"]["properties"]["array"]
+    parameterized = generated_parameterized["$defs"]["ParameterizedArray"]["properties"]["array"]
+    assert complex == parameterized
+
+
+@pytest.mark.arrays
+def test_generate_array_error_complex_exact_shape(array_error_complex_dimensions):
+    """
+    When we try and make a complex array where the exact number of dimensions are lower than the parameterized
+    dimensions, we should throw an error
+    """
+
+    with pytest.raises(ValueError, match=".*must be greater than the parameterized dimensions.*"):
+        _ = JsonSchemaGenerator(array_error_complex_dimensions).generate()
+
+
+@pytest.mark.arrays
+def test_generate_array_error_complex_unbounded_shape(array_error_complex_unbounded):
+    """
+    When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
+    we should throw an error - min without a max is undefined behavior, to set unbounded we need the max to be
+    explicitly false.
+    """
+
+    with pytest.raises(ValueError, match=".*Cannot specify a minimum_number_dimensions while maximum is None.*"):
+        _ = JsonSchemaGenerator(
+            array_error_complex_unbounded,
+        ).generate()
