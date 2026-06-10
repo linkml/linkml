@@ -239,6 +239,10 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     the default templates will be used.
     """
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    """
+    How to handle extra fields in Pydantic models. Sets the default for all classes;
+    individual classes can override this via their ``extra_slots`` metadata.
+    """
     gen_mixin_inheritance: bool = True
     injected_classes: list[type | str] | None = None
     """
@@ -406,9 +410,6 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     _predefined_slot_values: dict[str, dict[str, str]] | None = None
     _class_bases: dict[str, list[str]] | None = None
 
-    def __post_init__(self):
-        super().__post_init__()
-
     def compile_module(self, **kwargs) -> ModuleType:
         """
         Compiles generated python code to a module
@@ -475,6 +476,18 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
+    def _get_extra_for_class(self, cls: ClassDefinition) -> Literal["allow", "forbid", "ignore"] | None:
+        """
+        Determine the per-class ``extra`` value for the Pydantic ``ConfigDict``
+        based on the class's ``extra_slots`` metadata.
+
+        Returns ``None`` if the class does not override the generator-wide default,
+        so the inherited base-model configuration is used.
+        """
+        if not cls.extra_slots or cls.extra_slots.allowed is None:
+            return None
+        return "allow" if cls.extra_slots.allowed else "forbid"
+
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
         # Handle union_of classes by creating a type alias instead of a class
         if cls.union_of:
@@ -485,6 +498,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             name=class_python_name,
             bases=self.class_bases.get(class_python_name, PydanticBaseModel.default_name),
             description=cls.description.replace('"', '\\"') if cls.description is not None else None,
+            extra=self._get_extra_for_class(cls),
         )
 
         imports = self._get_imports(cls) if self.split else None
@@ -1360,7 +1374,7 @@ Available templates to override:
     "--extra-fields",
     type=click.Choice(["allow", "ignore", "forbid"], case_sensitive=False),
     default="forbid",
-    help="How to handle extra fields in BaseModel.",
+    help="How to handle extra fields in BaseModel (default for all classes; per-class overrides via extra_slots).",
 )
 @click.option(
     "--black",

@@ -267,6 +267,14 @@ class PydanticClass(PydanticTemplateModel):
     """
     Metadata for the class to be included in a linkml_meta class attribute
     """
+    extra: Literal["allow", "forbid", "ignore"] | None = None
+    """
+    Per-class override for the ``extra`` argument of pydantic's ``ConfigDict``.
+
+    When set, emits ``model_config = ConfigDict(extra="...")`` in the generated
+    class body so the class overrides the base model's ``extra`` configuration.
+    Derived from the LinkML ``extra_slots`` metadata on the source class.
+    """
     is_type_alias: bool = False
     """
     If True, generate a type alias instead of a class
