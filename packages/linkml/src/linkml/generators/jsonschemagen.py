@@ -938,7 +938,6 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         Generate a constrained array schema.
         Treat the `prop` as the inner type of the array
         """
-        # TODO: clear conflicting outer declarations
         arraygen = JsonSchemaArrayGenerator(slot.array, prop, slot, cls_name=cls.name if cls else None)
         result = arraygen.make()
         for name, top_def in result.defs.items():
@@ -1001,7 +1000,6 @@ class JsonSchemaArrayGenerator(ArrayRangeGenerator):
         schema = JsonSchema(items={"$ref": f"#/$defs/{fullname}"}, type="array")
         if with_inner_union:
             schema = JsonSchema(anyOf=[schema, self.dtype])
-        # dtype = self.dtype['anyOf'] if 'anyOf' in self.dtype else [self.dtype]
 
         defs = {fullname: JsonSchema(anyOf=[{"items": {"$ref": f"#/$defs/{fullname}"}, "type": "array"}, self.dtype])}
         return ArrayRangeResult(schema_=schema, defs=defs)
@@ -1077,17 +1075,6 @@ class JsonSchemaArrayGenerator(ArrayRangeGenerator):
             raise ValueError("Unsupported array specification! this is almost certainly a bug!")  # pragma: no cover
 
         # Wrap inner dimension with labeled dimension
-        # e.g., if dimensions = [{min_card: 3}, {min_card: 2}]
-        # and res.range = list[Union[AnyShapeArray[dtype], dtype]]
-        # (min 3 dims, no max dims)
-        # then the final range = conlist(
-        #     min_length=3,
-        #     item_type=conlist(
-        #         min_length=2,
-        #         item_type=list[Union[AnyShapeArray[dtype], dtype]]
-        #     )
-        # )
-
         for dim in reversed(array.dimensions):
             res.schema_ = self._parameterized_dimension(dim, dtype=res.schema_)
 
