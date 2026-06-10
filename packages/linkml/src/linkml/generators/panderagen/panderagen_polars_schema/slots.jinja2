@@ -26,3 +26,12 @@
     {{- field.range -}}
     {{- slot_optional_end(field) -}},
 {%- endmacro -%}
+
+{#- Like render_slot, but converts *Struct references to pl.Struct(*Dict) so that
+    dict population (pass 2) does not require *Struct names to be in scope yet. -#}
+{%- macro render_slot_dict_range(field, generator) -%}
+    "{{ field.name }}":{{ ' ' }}
+    {{- slot_optional_start(field) -}}
+    {{- generator.dict_range(field.range) -}}
+    {{- slot_optional_end(field) -}},
+{%- endmacro -%}
