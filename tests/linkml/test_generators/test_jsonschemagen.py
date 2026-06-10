@@ -464,6 +464,124 @@ def test_lifecycle_slots(kitchen_sink_path):
             assert "faketype" in prop["type"]
 
 
+def test_extra_slots_false(input_path):
+    """
+    No extra slots allowed
+    """
+    valid_data = {"not_allowed": {"x": 1}}
+    invalid_data = {
+        "not_allowed": {
+            "x": 1,
+            "y": 2,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+@pytest.mark.parametrize("test_model", ["allowed", "any_class"])
+def test_extra_slots_true(input_path, test_model: str):
+    """
+    Extra slots allowed
+    """
+    valid_data = {
+        test_model: {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}},
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+
+
+def test_extra_slots_string(input_path):
+    """
+    Extra slots allowed if they are strings
+    """
+    valid_data = {
+        "extra_string": {"x": 1, "y": "string"},
+    }
+    invalid_data = {
+        "extra_string": {
+            "x": 1,
+            "y": 2,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_class(input_path):
+    """
+    Extra slots allowed if they match some classdef
+    """
+    valid_data = {
+        "extra_class": {"x": 1, "another": {"y": "string"}, "third": {"y": "some string"}},
+    }
+    invalid_data = {
+        "extra_class": {
+            "x": 1,
+            "another": {"y": 1},
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_anyof(input_path):
+    """
+    Extra slots allowed if they match a union of types
+    """
+    valid_data = {
+        "extra_anyof": {"x": 1, "another": "hey", "third": 2},
+    }
+    invalid_data = {
+        "extra_anyof": {
+            "x": 1,
+            "another": True,
+        }
+    }
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
+def test_extra_slots_cardinality(input_path):
+    """
+    Extra slots allowed if they match some extended slot expression like `AnyOf`
+    """
+    valid_data = {
+        "extra_cardinality": {"x": 1, "another": [1, 2, 3, 4, 5]},
+    }
+    invalid_data = {"extra_cardinality": {"x": 1, "another": [1, 2, 3, 4, 5, 6]}}
+    schema = input_path("extra_slots.yaml")
+    generator = JsonSchemaGenerator(schema, top_class="Container", mergeimports=True)
+    generated = json.loads(generator.serialize())
+
+    jsonschema.validate(valid_data, generated)
+    with pytest.raises(jsonschema.exceptions.ValidationError):
+        jsonschema.validate(invalid_data, generated)
+
+
 # **********************************************************
 #
 #    Utility functions
@@ -940,3 +1058,35 @@ classes:
     # InteractionAssociation should have narrowed constraint
     interaction_predicate = json_schema["$defs"]["InteractionAssociation"]["properties"]["predicate"]
     assert interaction_predicate["enum"] == ["interacts_with", "physically_interacts_with"]
+
+
+def test_add_lax_def_missing_required():
+    """add_lax_def must not crash when a class def has no ``required`` field.
+
+    Regression test for https://github.com/linkml/linkml/issues/3366.
+    The ``add_lax_def`` method deepcopies a class's JSON Schema ``$def`` and
+    removes the identifier from ``required``.  If the ``$def`` has no
+    ``required`` key (e.g. because the class inherited its identifier but
+    has no directly required slots), the unguarded dict access crashes with
+    ``KeyError: 'required'``.
+    """
+    from linkml.generators.jsonschemagen import JsonSchema
+
+    schema = JsonSchema({"$defs": {}})
+    # A class def without a "required" field
+    schema["$defs"]["MyClass"] = {"type": "object", "properties": {"id": {}}}
+    # Must not raise KeyError
+    schema.add_lax_def("MyClass", "id")
+    assert "MyClass__identifier_optional" in schema["$defs"]
+    assert "required" not in schema["$defs"]["MyClass__identifier_optional"]
+
+    # A class def where "required" exists but doesn't contain the identifier
+    schema["$defs"]["OtherClass"] = {"type": "object", "properties": {"id": {}}, "required": ["name"]}
+    schema.add_lax_def("OtherClass", "id")
+    assert "OtherClass__identifier_optional" in schema["$defs"]
+    assert schema["$defs"]["OtherClass__identifier_optional"]["required"] == ["name"]
+
+    # The normal case: "required" contains the identifier
+    schema["$defs"]["NormalClass"] = {"type": "object", "properties": {"id": {}}, "required": ["id", "name"]}
+    schema.add_lax_def("NormalClass", "id")
+    assert schema["$defs"]["NormalClass__identifier_optional"]["required"] == ["name"]
