@@ -21,7 +21,7 @@ template = """
 PREFIX {{pfxn}}: <{{pfx.prefix_reference}}>
 {% endfor %}
 
-{% for cn, c in schema.classes.items() if not c.mixin and not c.abstract %}
+{% for cn, c in schema_view.all_classes(imports=imports).items() if not c.mixin and not c.abstract %}
 
 ## --
 ## Checks for {{ cn }}
@@ -161,7 +161,13 @@ class SparqlGenerator(Generator):
             limit = f"LIMIT {limit}"
         else:
             limit = ""
-        sparql = template_obj.render(schema_view=self.schemaview, schema=self.schema, limit=limit, extra=extra)
+        sparql = template_obj.render(
+            schema_view=self.schemaview,
+            schema=self.schema,
+            limit=limit,
+            extra=extra,
+            imports=bool(self.mergeimports),
+        )
         self.sparql = sparql
         queries = self.split_sparql(sparql)
         return queries
