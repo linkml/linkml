@@ -1169,3 +1169,68 @@ classes:
     uri_ref = props["https://example.org/uriRef"]
     uri_kinds = list(g.objects(uri_ref, SH.nodeKind))
     assert SH.IRI in uri_kinds, f"Expected sh:IRI for uri, got {uri_kinds}"
+
+
+def test_any_of_with_pattern(input_path):
+    """Test that pattern constraints inside any_of branches emit sh:pattern.
+
+    Exercises three cases:
+    1. PatternOnlyBranch: any_of with a pattern-only branch (no range)
+    2. RangeWithPattern: any_of with range + pattern on the same branch
+    3. MixedBranches: combination of range-only, pattern-only, and range+pattern
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/any_of_pattern.yaml"), mergeimports=True).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    def get_or_branch_nodes(class_uri: str, slot_local: str) -> list[rdflib.BNode]:
+        """Return the list of BNodes inside sh:or for a given class property."""
+        class_ref = URIRef(class_uri)
+        for prop_node in g.objects(class_ref, SH.property):
+            paths = list(g.objects(prop_node, SH.path))
+            if any(slot_local in str(p) for p in paths):
+                for or_head in g.objects(prop_node, SH["or"]):
+                    return list(Collection(g, or_head))
+        return []
+
+    prefix = "https://w3id.org/linkml/examples/any_of_pattern/"
+
+    # Case 1: PatternOnlyBranch — license slot has 3 branches:
+    #   [enum sh:in], [sh:nodeKind sh:IRI], [sh:pattern "^LicenseRef-..."]
+    branches = get_or_branch_nodes(f"{prefix}PatternOnlyBranch", "license")
+    assert len(branches) == 3, f"Expected 3 branches, got {len(branches)}"
+    # Find the branch with sh:pattern
+    pattern_branches = [b for b in branches if list(g.objects(b, SH.pattern))]
+    assert len(pattern_branches) == 1, f"Expected 1 pattern branch, got {len(pattern_branches)}"
+    pattern_val = str(list(g.objects(pattern_branches[0], SH.pattern))[0])
+    assert pattern_val == "^LicenseRef-[a-zA-Z0-9\\-\\.]+$"
+    # The pattern-only branch should NOT have sh:datatype or sh:class
+    assert list(g.objects(pattern_branches[0], SH.datatype)) == []
+    assert list(g.objects(pattern_branches[0], SH["class"])) == []
+
+    # Case 2: RangeWithPattern — identifier slot has 2 branches:
+    #   [sh:datatype xsd:string + sh:pattern "^[A-Z]{2}-[0-9]{4}$"], [sh:datatype xsd:integer]
+    branches = get_or_branch_nodes(f"{prefix}RangeWithPattern", "identifier")
+    assert len(branches) == 2, f"Expected 2 branches, got {len(branches)}"
+    # Find branch with both datatype and pattern
+    combo_branches = [b for b in branches if list(g.objects(b, SH.datatype)) and list(g.objects(b, SH.pattern))]
+    assert len(combo_branches) == 1, f"Expected 1 combo branch, got {len(combo_branches)}"
+    assert str(list(g.objects(combo_branches[0], SH.pattern))[0]) == "^[A-Z]{2}-[0-9]{4}$"
+    # The other branch (integer) should NOT have sh:pattern
+    int_branches = [b for b in branches if b not in combo_branches]
+    assert list(g.objects(int_branches[0], SH.pattern)) == []
+
+    # Case 3: MixedBranches — code slot has 3 branches:
+    #   [sh:datatype xsd:integer], [sh:pattern "^CUSTOM-.*$"], [sh:datatype xsd:string + sh:pattern "^STD-[0-9]+$"]
+    branches = get_or_branch_nodes(f"{prefix}MixedBranches", "code")
+    assert len(branches) == 3, f"Expected 3 branches, got {len(branches)}"
+    # Exactly 2 branches should have sh:pattern
+    pattern_branches = [b for b in branches if list(g.objects(b, SH.pattern))]
+    assert len(pattern_branches) == 2, f"Expected 2 pattern branches, got {len(pattern_branches)}"
+    # Collect the patterns
+    patterns = sorted(str(list(g.objects(b, SH.pattern))[0]) for b in pattern_branches)
+    assert patterns == ["^CUSTOM-.*$", "^STD-[0-9]+$"]
+    # The integer-only branch should have no pattern
+    no_pattern = [b for b in branches if not list(g.objects(b, SH.pattern))]
+    assert len(no_pattern) == 1
+    assert list(g.objects(no_pattern[0], SH.datatype)) == [URIRef("http://www.w3.org/2001/XMLSchema#integer")]
