@@ -93,6 +93,7 @@ Generators specific to database frameworks, including SQL and graph databases.
    sqltable
    sqlalchemy
    sqlvalidation
+   bigquery
    typedb
 
 Others
