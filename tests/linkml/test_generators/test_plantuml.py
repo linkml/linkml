@@ -59,7 +59,7 @@ DATASET2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kLEKwjAQhvc-xZGxWNHVQRB1
 
 PERSON2MEDICALEVENT_URL = "https://kroki.io/plantuml/svg/eNqNUctuwjAQvOcrVj61qEHtlUMl1HLs445otNgLbOWsI9tBRVH-vRYhkQj04Zt3ZjyeWW0xBFDv3mkytacnJ5qqqGC5bF6dULtaQZNlbaZPRIuafkRfyLBGu9iTjJ-AdJoNkzUthIg-kikwFpFLuuFbmIHBSABnPBLzDxaHQtfeJ8uOsnbOEkpiDf96ZtyKCxz-jEc-ODnCc6iOlzuwvGfZgvNgCM1Yci1sQkddTPL8EdT9dPqgrrU9A1X1Q_Wr9jJK0pp-eKE9s-12l_gsYJ3GyClrNoQefCZqvMqk2WGAshvCjkN0_pC0J_wjz0eSvp65HN7Wn6S7ihZfWFaWwG2gFu0kRI8sZODI7sv7BsIk1Pk="
 
-FAMILIALRELATIONSHIP2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kMEKwjAMhu99itCTihO9ehC8eBQRb6IS1qiB2o42CDL27nZT1Ikzt-b7_h-a3GKMoNdkUdi7eOZCw3ZbLr2jareDUqlK5Q9pRSF61-A5FM1jCJav7E7gAxhC8x1Z4IUto_3TD2nKI5M1FeQ-mGQ7StkpRAl1NbQUuRWU2K_iTY3adhQMQuaAchC-UI_7KWtQvj1ypsOqVMcnsmwGeqLfZ5mCDrVBBsRr9doPGnM8Gg1010FS9IwRjk8I4YPGVNW291nWUXQHmaCZ4w=="
+FAMILIALRELATIONSHIP2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kEFrAjEQhe_5FY-cqrhSrx4KIu2xlNKbWBk2ow5kkyVJC7LsfzduRbviOreZ9703zJSWYoT-ZEtJvIt7qTVWq-bdO27XazRKtar8gz44RO86eYG6ayaw8ituBx9gmMyt5Y0qsUL2QT5yNVtha1qUPphMO87eOZbX7tX9VECPTYeaM3Rvw9dJ6tMxUUhsNpQ2SSp-klH2Gkq3HDszQLVq4JqieIGe6et_5tDhRLBB8lpd5uOOfJ5Ox3roM9m6p4jtWUT4p8Yc1ae_i2Ig6Aix-J1Y"
 
 
 @pytest.fixture(scope="module")
@@ -172,38 +172,29 @@ def test_generate_svg(tmp_path, kitchen_sink_path, kroki_url):
         kitchen_sink_path,
         kroki_server=kroki_url,
     )
+
+    # Verify structure via PlantUML text (no Kroki container call). Checking
+    # text output is more stable because Kronki SVG structure could change
+    # again: i.e. SVG group IDs (elem_ -> entity_ -> ent####) per #2728, #3463
+    puml_text = generator.serialize()
+    assert 'class "Person"' in puml_text
+    assert 'class "Dataset"' in puml_text
+    assert 'class "FamilialRelationship"' in puml_text
+    assert 'class "MedicalEvent"' in puml_text
+    assert '"Person" *--> "0..*" "MedicalEvent"' in puml_text
+    assert '"FamilialRelationship" --> "1" "Person"' in puml_text
+    assert '"Dataset" *--> "0..*" "Person"' in puml_text
+    assert not any(
+        '"Dataset"' in ln and '"MarriageEvent"' in ln for ln in puml_text.splitlines() if "-->" in ln or "<--" in ln
+    )
+
+    # Generate SVG via Kroki and verify the file is produced and parses as valid XML.
+    # The relationship strings ("Person" --> <cardinality> "MedicalEvent", etc.)
+    # are covered by test_serialize_selected() method below so this is enough.
     generator.serialize(directory=tmp_path)
-
-    # name of SVG file will be inferred from schema name because
-    # we are passing a value to the directory argument
     svg_file = tmp_path / "KitchenSink.svg"
-
-    # check that SVG file is generated correctly
     assert svg_file.is_file()
-
-    svg_dom = minidom.parse(os.fspath(tmp_path / "KitchenSink.svg"))
-
-    classes_list = []  # list of all classes in schema
-    relationships_list = []  # list of all links/relationships in schema
-    groups = svg_dom.getElementsByTagName("g")
-    for group in groups:
-        id = group.getAttribute("id")
-        if id.startswith("entity_"):
-            class_name = id[len("entity_") :]
-            classes_list.append(class_name)
-        if id.startswith("link_"):
-            link_name = id[len("link_") :]
-            relationships_list.append(link_name)
-
-    assert "Person" in classes_list
-    assert "Dataset" in classes_list
-    assert "FamilialRelationship" in classes_list
-    assert "MedicalEvent" in classes_list
-
-    assert "Person_MedicalEvent" in relationships_list
-    assert "FamilialRelationship_Person" in relationships_list
-    assert "Dataset_Person" in relationships_list
-    assert "Dataset_MarriageEvent" not in relationships_list
+    minidom.parse(os.fspath(svg_file))
 
 
 def test_preserve_names():

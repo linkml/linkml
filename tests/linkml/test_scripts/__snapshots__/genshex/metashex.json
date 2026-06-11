@@ -982,7 +982,14 @@
                      {
                         "type": "TripleConstraint",
                         "predicate": "https://w3id.org/linkml/tests/kitchen_sink/cordialness",
-                        "valueExpr": "https://w3id.org/linkml/String",
+                        "valueExpr": {
+                           "type": "NodeConstraint",
+                           "values": [
+                              "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt",
+                              "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful",
+                              "https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent"
+                           ]
+                        },
                         "min": 0,
                         "max": 1
                      },
