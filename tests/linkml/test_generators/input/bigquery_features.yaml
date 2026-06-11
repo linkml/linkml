@@ -1,0 +1,201 @@
+id: https://example.org/bigquery-features
+name: bigquery-features
+description: >-
+  Test schema exercising every BigQuery DDL generator feature:
+  ARRAY, STRUCT (nested), PARTITION BY (time + range), CLUSTER BY,
+  OPTIONS (expiration, require_partition_filter), bigquery_type override,
+  abstract class exclusion, mixin flattening, enum → STRING, decimal → NUMERIC.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+  bqtest: https://example.org/bigquery-features/
+
+default_prefix: bqtest
+default_range: string
+
+imports:
+  - linkml:types
+
+# ---------------------------------------------------------------------------
+# Enums — must compile to STRING in BigQuery (no native ENUM type)
+# ---------------------------------------------------------------------------
+enums:
+  EventStatus:
+    permissible_values:
+      active:
+      archived:
+      pending:
+
+# ---------------------------------------------------------------------------
+# Abstract base — must NOT produce a CREATE TABLE
+# ---------------------------------------------------------------------------
+classes:
+  Identifiable:
+    abstract: true
+    description: Abstract base providing a string identifier key
+    slots:
+      - id
+
+# ---------------------------------------------------------------------------
+# Mixin — must NOT produce a CREATE TABLE; slots must appear in mixing classes
+# ---------------------------------------------------------------------------
+  HasTimestamps:
+    mixin: true
+    description: Provides created_at / updated_at audit columns
+    slots:
+      - created_at
+      - updated_at
+
+# ---------------------------------------------------------------------------
+# GeoPoint — concrete nested class; inlined as STRUCT inside Address
+# ---------------------------------------------------------------------------
+  GeoPoint:
+    description: WGS-84 coordinate pair
+    slots:
+      - lat
+      - lon
+
+# ---------------------------------------------------------------------------
+# Address — concrete nested class; inlined as STRUCT inside Event
+#   Its `location` slot is itself an inlined GeoPoint → nested STRUCT
+# ---------------------------------------------------------------------------
+  Address:
+    description: Postal address with optional geo coordinate
+    slots:
+      - street
+      - city
+      - location
+
+# ---------------------------------------------------------------------------
+# Event — main analytics table demonstrating:
+#   • Inherited slots from Identifiable (id)
+#   • Mixin slots from HasTimestamps (created_at, updated_at)
+#   • tags: multivalued scalar → ARRAY<STRING>
+#   • home_address: inlined Address → STRUCT (with nested STRUCT for GeoPoint)
+#   • score: decimal → NUMERIC
+#   • status: enum → STRING
+#   • recorded_at: datetime with bigquery_type:TIMESTAMP → TIMESTAMP column
+#   • PARTITION BY DATETIME_TRUNC(created_at, DAY)
+#   • CLUSTER BY name, status
+#   • OPTIONS(partition_expiration_ms=..., require_partition_filter=true)
+# ---------------------------------------------------------------------------
+  Event:
+    is_a: Identifiable
+    mixins:
+      - HasTimestamps
+    description: User event log
+    slots:
+      - name
+      - status
+      - tags
+      - home_address
+      - score
+      - recorded_at
+    annotations:
+      bigquery_partition_by:
+        tag: bigquery_partition_by
+        value: created_at
+      bigquery_partition_type:
+        tag: bigquery_partition_type
+        value: DAY
+      bigquery_partition_expiration_days:
+        tag: bigquery_partition_expiration_days
+        value: "90"
+      bigquery_require_partition_filter:
+        tag: bigquery_require_partition_filter
+        value: "true"
+      bigquery_cluster_by:
+        tag: bigquery_cluster_by
+        value: "name, status"
+
+# ---------------------------------------------------------------------------
+# MetricSnapshot — demonstrates integer RANGE partitioning
+#   • bucket_id: integer → RANGE_BUCKET(bucket_id, GENERATE_ARRAY(0, 1000, 100))
+# ---------------------------------------------------------------------------
+  MetricSnapshot:
+    description: Aggregated metric bucketed by integer range partition
+    slots:
+      - id
+      - bucket_id
+      - value
+    annotations:
+      bigquery_partition_by:
+        tag: bigquery_partition_by
+        value: bucket_id
+      bigquery_partition_type:
+        tag: bigquery_partition_type
+        value: RANGE
+      bigquery_partition_range:
+        tag: bigquery_partition_range
+        value: "0,1000,100"
+
+# ---------------------------------------------------------------------------
+# Slots
+# ---------------------------------------------------------------------------
+slots:
+  id:
+    identifier: true
+    range: string
+    description: Primary key (string identifier)
+
+  name:
+    range: string
+
+  status:
+    range: EventStatus
+    description: Enum-ranged slot — must compile to STRING in BQ
+
+  tags:
+    range: string
+    multivalued: true
+    description: Repeated scalar — must compile to ARRAY<STRING>
+
+  home_address:
+    range: Address
+    inlined: true
+    description: Inlined object — must compile to STRUCT<street STRING, city STRING, location STRUCT<...>>
+
+  score:
+    range: decimal
+    description: Decimal value — must compile to NUMERIC (not INTEGER)
+
+  recorded_at:
+    range: datetime
+    description: Datetime with bigquery_type override — must compile to TIMESTAMP
+    annotations:
+      bigquery_type:
+        tag: bigquery_type
+        value: TIMESTAMP
+
+  created_at:
+    range: datetime
+    description: Partition field — datetime compiles to DATETIME; used in PARTITION BY clause
+
+  updated_at:
+    range: datetime
+
+  street:
+    range: string
+
+  city:
+    range: string
+
+  lat:
+    range: float
+    description: Latitude coordinate — compiles to FLOAT64
+
+  lon:
+    range: float
+    description: Longitude coordinate — compiles to FLOAT64
+
+  location:
+    range: GeoPoint
+    inlined: true
+    description: Inlined GeoPoint — produces nested STRUCT inside Address STRUCT
+
+  bucket_id:
+    range: integer
+    description: Integer partition field — used in RANGE_BUCKET clause
+
+  value:
+    range: float
