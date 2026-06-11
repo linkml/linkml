@@ -514,7 +514,7 @@ class SQLValidationGenerator(Generator):
         concat_parts = []
         # Build concatenation: CAST(col1 AS TEXT) || '|' || CAST(col2 AS TEXT) || ...
         for i, col_name in enumerate(col_names):
-            concat_parts.append(func.cast(column(col_name), Text))
+            concat_parts.append(cast(column(col_name), Text()))
             if i < len(col_names) - 1:
                 concat_parts.append(literal("|", type_=Text()))
         expr = concat_parts[0]
