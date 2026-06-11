@@ -290,7 +290,7 @@ class SQLValidationGenerator(Generator):
         :param identifier_slot_name: Name of the identifier slot
         :param invalid_value: Expression for invalid_value column (literal or column)
         :param where_condition: SQLAlchemy WHERE condition
-        :param tbl: Optional SQLAlchemy table object (created if not provided)
+        :param tbl: SQLAlchemy table object
         :return: SQLAlchemy select object
         """
         # for postgres, all values in a column need to be of same type so we need to CAST them to text
