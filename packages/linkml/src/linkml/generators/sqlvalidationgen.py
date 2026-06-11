@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import click
-from sqlalchemy import and_, cast, column, func, literal, null, or_, select, table, union_all
+from sqlalchemy import and_, cast, column, func, literal, null, or_, select, table, tuple_, union_all
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects import sqlite as sqlite_dialect
 from sqlalchemy.sql.selectable import TableClause
@@ -564,8 +564,6 @@ class SQLValidationGenerator(Generator):
         else:
             # For multiple columns, use tuple IN syntax
             # SQLAlchemy's tuple_() function handles this properly across dialects
-            from sqlalchemy import tuple_
-
             where_clause = tuple_(*[tbl.c[col] for col in columns]).in_(duplicate_subquery)
 
         return self._build_violation_query(
