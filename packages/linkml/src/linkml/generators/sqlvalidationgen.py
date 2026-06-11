@@ -224,9 +224,9 @@ class SQLValidationGenerator(Generator):
                 if class_def.abstract or class_def.mixin:
                     continue
                 identifier_slot_name = "id"  # default fallback
-                for induced in induced_slots:
-                    if induced.identifier:
-                        identifier_slot_name = induced.name
+                for slot in untransformed_sv.class_induced_slots(class_name):
+                    if slot.identifier:
+                        identifier_slot_name = underscore(slot.alias or slot.name)
                         break
                 for rule in class_def.rules:
                     if rule.deactivated:
