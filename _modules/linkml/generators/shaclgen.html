@@ -418,6 +418,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_data_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclDataType</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.shacl.shacl_ifabsent_processor</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShaclIfAbsentProcessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.language_tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanguageTagResolver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassDefinition</span><span class="p">,</span> <span class="n">ElementName</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.formatutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">underscore</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.rdf_canonicalize</span><span class="w"> </span><span class="kn">import</span> <span class="n">canonicalize_rdf_graph</span>
@@ -481,6 +482,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">expand_subproperty_of</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;If True, expand subproperty_of to sh:in constraints with slot descendants&quot;&quot;&quot;</span>
+
+    <span class="n">default_language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default BCP 47 language tag for human-readable string literals.</span>
+
+<span class="sd">    When set, ``sh:name``, ``sh:description``, ``rdfs:label``, and</span>
+<span class="sd">    ``rdfs:comment`` literals are emitted with the specified language tag.</span>
+<span class="sd">    Conforms to :rfc:`5646` (BCP 47).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ttl&quot;</span><span class="p">]</span>
@@ -488,7 +498,22 @@
     <span class="n">visit_all_class_slots</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">uses_schemaloader</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the BCP 47 language tag for *element*, or ``None``.</span>
+
+<span class="sd">        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.</span>
+<span class="sd">        Resolution order is element-level ``in_language`` first, then the</span>
+<span class="sd">        generator-level default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_language_resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Resolver must be assigned before ``super().__post_init__()`` so that</span>
+        <span class="c1"># any hook the parent invokes during initialisation can safely call</span>
+        <span class="c1"># ``_resolve_language``. The resolver also validates the default tag</span>
+        <span class="c1"># once here; per-element tags are validated lazily, with at most one</span>
+        <span class="c1"># warning per distinct malformed tag.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_language_resolver</span> <span class="o">=</span> <span class="n">LanguageTagResolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_language</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_header</span><span class="p">()</span>
 
@@ -542,13 +567,13 @@
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Use rdfs:label for NodeShape titles per SHACL spec.</span>
                 <span class="c1"># sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.</span>
-                <span class="n">shape_pv</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">title</span><span class="p">))</span>
+                <span class="n">shape_pv</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span>
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">description</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Use rdfs:comment for NodeShape descriptions per SHACL spec.</span>
                 <span class="c1"># sh:description has rdfs:domain of sh:PropertyShape, so using it</span>
                 <span class="c1"># on NodeShapes causes RDFS-aware validators to incorrectly infer</span>
                 <span class="c1"># the NodeShape is also a PropertyShape. See issue #3059.</span>
-                <span class="n">shape_pv</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">))</span>
+                <span class="n">shape_pv</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">comment</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span>
 
             <span class="n">shape_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">ignoredProperties</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_ignored_properties</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
 
@@ -573,11 +598,15 @@
                     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pnode</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
 
+                <span class="k">def</span><span class="w"> </span><span class="nf">prop_pv_text</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pnode</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">s</span><span class="p">))))</span>
+
                 <span class="n">prop_pv</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">slot_uri</span><span class="p">)</span>
                 <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
                 <span class="n">order</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
-                <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+                <span class="n">prop_pv_text</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+                <span class="n">prop_pv_text</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
                 <span class="c1"># minCount</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
@@ -839,9 +868,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">N_predicate</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;tag&quot;</span><span class="p">],</span> <span class="n">datatype</span><span class="o">=</span><span class="n">XSD</span><span class="o">.</span><span class="n">string</span><span class="p">)</span>
             <span class="c1"># If the value is a string and &#39;:&#39; is in the value, treat it as a CURIE,</span>
-            <span class="c1"># otherwise treat as Literal with derived XSD datatype</span>
+            <span class="c1"># otherwise treat as Literal with derived XSD datatype.</span>
+            <span class="c1"># String annotations are language-tagged when default_language is set;</span>
+            <span class="c1"># non-string types (bool, int, float) keep their XSD datatype.</span>
+            <span class="n">lang</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="ow">is</span> <span class="n">extended_str</span> <span class="ow">and</span> <span class="s2">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]:</span>
                 <span class="n">N_object</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lang</span><span class="p">:</span>
+                <span class="n">N_object</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">N_object</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">],</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_getXSDtype</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]))</span>
 
@@ -936,6 +970,17 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="s2">&quot;If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints &quot;</span>
     <span class="s2">&quot;containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--default-language&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Default BCP 47 language tag for human-readable string literals &quot;</span>
+        <span class="s2">&quot;(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, &quot;</span>
+        <span class="s2">&quot;rdfs:label and rdfs:comment are emitted with the specified &quot;</span>
+        <span class="s2">&quot;language tag.&quot;</span>
+    <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">):</span>

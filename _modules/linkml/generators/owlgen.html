@@ -411,7 +411,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">copy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">unique</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">TypeAlias</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">rdflib</span>
@@ -426,6 +426,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.generators.common.subproperty</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_xsd_anyuri_range</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.deprecation</span><span class="w"> </span><span class="kn">import</span> <span class="n">deprecation_warning</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">shared_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">linkml.utils.language_tags</span><span class="w"> </span><span class="kn">import</span> <span class="n">LanguageTagResolver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaView</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.linkml_model.meta</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AnonymousClassExpression</span><span class="p">,</span>
@@ -641,6 +642,49 @@
 <span class="sd">    - have no ``rdfs:range`` restriction (any IRI is valid)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">default_language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default BCP 47 language tag for human-readable string literals.</span>
+
+<span class="sd">    When set, ``rdfs:label``, ``rdfs:comment``, ``skos:definition``,</span>
+<span class="sd">    ``dcterms:title``, and other annotation literals are emitted with the</span>
+<span class="sd">    specified language tag (e.g. ``&quot;Person&quot;@en``).  An element-level</span>
+<span class="sd">    ``in_language`` value overrides this default for that element.</span>
+
+<span class="sd">    Technical literals (URIs, numeric constraints, XSD facets) are never</span>
+<span class="sd">    language-tagged.  Conforms to :rfc:`5646` (BCP 47).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Metaslot ranges that represent human-readable text (eligible for language tags).</span>
+    <span class="c1"># Everything else (uri, uriorcurie, datetime, boolean, integer, classes, enums, …)</span>
+    <span class="c1"># is technical and must never be language-tagged.</span>
+    <span class="n">_LANGUAGE_TAGGABLE_RANGES</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;ncname&quot;</span><span class="p">})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Resolver must be assigned before ``super().__post_init__()`` so that</span>
+        <span class="c1"># any hook the parent invokes during initialisation can safely call</span>
+        <span class="c1"># ``_resolve_language``. The resolver also validates the default tag</span>
+        <span class="c1"># once here; per-element tags are validated lazily, with at most one</span>
+        <span class="c1"># warning per distinct malformed tag.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_language_resolver</span> <span class="o">=</span> <span class="n">LanguageTagResolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_language</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_language</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="s2">&quot;Definition | PermissibleValue | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the BCP 47 language tag for *element*, or ``None``.</span>
+
+<span class="sd">        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.</span>
+<span class="sd">        Resolution order is element-level ``in_language`` first, then the</span>
+<span class="sd">        generator-level default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_language_resolver</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_literal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="s2">&quot;Definition | PermissibleValue | None&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a language-tagged ``Literal`` for a human-readable string.</span>
+
+<span class="sd">        If no language tag is resolved, falls back to a plain literal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Literal</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span> <span class="k">if</span> <span class="n">lang</span> <span class="k">else</span> <span class="n">Literal</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">as_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Graph</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate an rdflib Graph from the LinkML schema.</span>
@@ -716,6 +760,8 @@
 <span class="sd">        Add annotation properties.</span>
 
 <span class="sd">        Set the profile attribute to the appropriate OWL profile.</span>
+<span class="sd">        Human-readable string literals are language-tagged when</span>
+<span class="sd">        ``default_language`` is set or the element has ``in_language``.</span>
 
 <span class="sd">        :param e: schema element</span>
 <span class="sd">        :param uri: URI representation of schema element</span>
@@ -725,6 +771,7 @@
         <span class="n">msv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_schemaview</span>
         <span class="n">this_sv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span>
         <span class="n">sn_mappings</span> <span class="o">=</span> <span class="n">msv</span><span class="o">.</span><span class="n">slot_name_mappings</span><span class="p">()</span>
+        <span class="n">lang</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
         <span class="c1"># iterate through all the assigned metamodel slots</span>
         <span class="k">for</span> <span class="n">metaslot_name</span><span class="p">,</span> <span class="n">metaslot_value</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -749,6 +796,8 @@
                         <span class="n">obj</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                     <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="o">==</span> <span class="s2">&quot;uriorcurie&quot;</span><span class="p">:</span>
                         <span class="n">obj</span> <span class="o">=</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">this_sv</span><span class="o">.</span><span class="n">expand_curie</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_LANGUAGE_TAGGABLE_RANGES</span> <span class="ow">and</span> <span class="n">lang</span><span class="p">:</span>
+                        <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="n">lang</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">metaslot_range</span> <span class="ow">in</span> <span class="n">msv</span><span class="o">.</span><span class="n">all_subsets</span><span class="p">():</span>
@@ -760,6 +809,15 @@
                     <span class="c1"># else:</span>
                     <span class="c1">#    logger.debug(f&quot;Skipping {uri} {metaslot_uri} =&gt; {v}&quot;)</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Catch-all for ranges that are not types, subsets, or</span>
+                    <span class="c1"># classes -- in practice these are enum-ranged metaslots</span>
+                    <span class="c1"># such as ``pv_formula`` (range ``pv_formula_options``) on</span>
+                    <span class="c1"># a PermissibleValue or ``obligation_level`` (range</span>
+                    <span class="c1"># ``obligation_level_enum``) on a SlotDefinition. Their</span>
+                    <span class="c1"># values are permissible-value identifiers, i.e. constraint</span>
+                    <span class="c1"># data, not labels: tagging them would shift the datatype</span>
+                    <span class="c1"># from ``xsd:string`` to ``rdf:langString`` and break</span>
+                    <span class="c1"># downstream string equality / SHACL ``sh:in`` matching.</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span> <span class="n">metaslot_uri</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
 
@@ -777,7 +835,11 @@
                 <span class="k">if</span> <span class="n">k_uri</span> <span class="o">==</span> <span class="n">k</span><span class="p">:</span>
                     <span class="n">k_uri</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">k_uri</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">k_uri</span><span class="p">),</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)))</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_literal</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">obj</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">uri</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">k_uri</span><span class="p">),</span> <span class="n">obj</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">ClassDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1488,7 +1550,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">Literal</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_metadata</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">pv_node</span><span class="p">)</span>
                 <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">pv_owl_type</span><span class="p">))</span>
-                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">)))</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pv_node</span><span class="p">,</span> <span class="n">RDFS</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_literal</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">pv</span><span class="p">)))</span>
                 <span class="c1"># TODO: make this configurable</span>
                 <span class="c1"># self._add_element_properties(pv_uri, pv)</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metaclasses</span><span class="p">:</span>
@@ -2076,6 +2138,17 @@
         <span class="s2">&quot;instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). &quot;</span>
         <span class="s2">&quot;Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and &quot;</span>
         <span class="s2">&quot;the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id).&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--default-language&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Default BCP 47 language tag for human-readable string literals &quot;</span>
+        <span class="s2">&quot;(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, &quot;</span>
+        <span class="s2">&quot;skos:definition and other text annotations are emitted with the &quot;</span>
+        <span class="s2">&quot;specified language tag.  Element-level in_language overrides this.&quot;</span>
     <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
