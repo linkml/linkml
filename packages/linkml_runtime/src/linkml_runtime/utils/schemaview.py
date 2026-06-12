@@ -41,6 +41,13 @@ from linkml_runtime.linkml_model.meta import (
 )
 from linkml_runtime.utils.context_utils import map_import, parse_import_map
 from linkml_runtime.utils.formatutils import camelcase, is_empty, sfx, underscore
+from linkml_runtime.utils.metamodel_compat import (
+    MetamodelFlavor,
+    element_type_name,
+    flavor_of,
+    metamodel_module,
+    metamodel_types,
+)
 from linkml_runtime.utils.namespaces import Namespaces
 from linkml_runtime.utils.pattern import PatternResolver
 
@@ -203,13 +210,17 @@ def _closure(
     return rv
 
 
-def load_schema_wrap(path: str, **kwargs: dict[str, Any]) -> SchemaDefinition:
-    """Load a schema."""
+def load_schema_wrap(path: str, target_class: type | None = None, **kwargs: dict[str, Any]) -> SchemaDefinition:
+    """Load a schema.
+
+    :param target_class: the SchemaDefinition class (of either metamodel flavor)
+        to load into; defaults to the dataclass metamodel's SchemaDefinition
+    """
     # import here to avoid circular imports
     from linkml_runtime.loaders.yaml_loader import YAMLLoader
 
     yaml_loader = YAMLLoader()
-    schema: SchemaDefinition = yaml_loader.load(path, target_class=SchemaDefinition, **kwargs)
+    schema: SchemaDefinition = yaml_loader.load(path, target_class=target_class or SchemaDefinition, **kwargs)
     if "\n" not in path:
         # if "\n" not in path and "://" not in path:
         # only set path if the input is not a yaml string or URL.
@@ -277,6 +288,8 @@ class SchemaView:
     """Optional mapping between schema names and local paths/URLs"""
     modifications: int = 0
     uuid: str | None = None
+    metamodel_flavor: MetamodelFlavor = "dataclass"
+    """Which metamodel flavor (dataclass or pydantic) backs this view's schema objects."""
 
     ## private vars --------
     # cached hash
@@ -288,6 +301,7 @@ class SchemaView:
         importmap: dict[str, str] | None = None,
         merge_imports: bool = False,
         base_dir: str | None = None,
+        metamodel: MetamodelFlavor = "dataclass",
     ) -> None:
         """Initialize a SchemaView instance.
 
@@ -299,11 +313,18 @@ class SchemaView:
         :type merge_imports: bool, optional
         :param base_dir: base directory for import map, defaults to None
         :type base_dir: str | None, optional
+        :param metamodel: metamodel flavor ("dataclass" or "pydantic") to load
+            schemas into; ignored (inferred instead) when a SchemaDefinition
+            instance is passed. Defaults to "dataclass".
+        :type metamodel: MetamodelFlavor, optional
         """
         if isinstance(schema, Path):
             schema = str(schema)
         if isinstance(schema, str):
-            schema = load_schema_wrap(schema)
+            schema = load_schema_wrap(schema, target_class=metamodel_module(metamodel).SchemaDefinition)
+        else:
+            metamodel = flavor_of(schema)
+        self.metamodel_flavor = metamodel
         self.schema = schema
         self.schema_map = {schema.name: schema}
         self.importmap = parse_import_map(importmap, base_dir) if importmap is not None else {}
@@ -374,7 +395,11 @@ class SchemaView:
             base_dir = None
         msg = f"Importing {imp} as {sname} from source {from_schema.source_file}; base_dir={base_dir}"
         logger.info(msg)
-        return load_schema_wrap(sname + ".yaml", base_dir=base_dir)
+        return load_schema_wrap(
+            sname + ".yaml",
+            base_dir=base_dir,
+            target_class=metamodel_module(self.metamodel_flavor).SchemaDefinition,
+        )
 
     def merge_imports(self) -> None:
         """Merge the full imports closure."""
@@ -836,7 +861,7 @@ class SchemaView:
                 if slot_name in c.attributes:
                     if slot is not None:
                         # slot name is ambiguous: return a stub slot
-                        return SlotDefinition(slot_name)
+                        return metamodel_module(self.metamodel_flavor).SlotDefinition(name=slot_name)
                     slot = copy(c.attributes[slot_name])
                     slot.from_schema = c.from_schema
                     slot.owner = c.name
@@ -899,7 +924,7 @@ class SchemaView:
         """
         children = []
         for el in self.all_elements().values():
-            if isinstance(el, ClassDefinition | SlotDefinition | EnumDefinition):
+            if isinstance(el, metamodel_types("ClassDefinition", "SlotDefinition", "EnumDefinition")):
                 if el.is_a and el.is_a == name:
                     children.append(el.name)
                 if mixin and el.mixins and name in el.mixins:
@@ -1357,7 +1382,7 @@ class SchemaView:
         :param imports: include imports closure
         :return:
         """
-        if isinstance(element, Element):
+        if isinstance(element, metamodel_types("Element")):
             return element
 
         return (
@@ -1389,16 +1414,16 @@ class SchemaView:
         """
         e = self.get_element(element, imports=imports)
         e_name = e.name
-        if isinstance(e, ClassDefinition):
+        if isinstance(e, metamodel_types("ClassDefinition")):
             uri = e.class_uri
             e_name = camelcase(e.name)
-        elif isinstance(e, SlotDefinition):
+        elif isinstance(e, metamodel_types("SlotDefinition")):
             uri = e.slot_uri
             e_name = underscore(e.name)
-        elif isinstance(e, EnumDefinition):
+        elif isinstance(e, metamodel_types("EnumDefinition")):
             uri = e.enum_uri
             e_name = e.name
-        elif isinstance(e, TypeDefinition):
+        elif isinstance(e, metamodel_types("TypeDefinition")):
             uri = e.uri
             e_name = underscore(e.name)
         else:
@@ -1415,7 +1440,7 @@ class SchemaView:
             else:
                 schema = self.schema_map[self.in_schema(e.name)]
             if use_element_type:
-                e_type = e.class_name.split("_", 1)[0]  # for example "class_definition"
+                e_type = element_type_name(e).split("_", 1)[0]  # for example "class_definition"
                 e_type_path = f"{e_type}/"
             else:
                 e_type_path = ""
@@ -1519,7 +1544,7 @@ class SchemaView:
         e = self.get_element(element_name, imports=imports)
         m_dict = {}
 
-        if isinstance(e, ClassDefinition | SlotDefinition | TypeDefinition):
+        if isinstance(e, metamodel_types("ClassDefinition", "SlotDefinition", "TypeDefinition")):
             m_dict = {
                 "self": [self.get_uri(element_name, imports=imports, expand=False)],
                 "native": [self.get_uri(element_name, imports=imports, expand=False, native=True)],
@@ -1546,7 +1571,7 @@ class SchemaView:
         :return: boolean
         """
         element = self.get_element(element_name)
-        return element.mixin if isinstance(element, Definition) else False
+        return element.mixin if isinstance(element, metamodel_types("Definition")) else False
 
     @lru_cache(None)
     def inverse(self, slot_name: SlotDefinition):
@@ -1559,7 +1584,7 @@ class SchemaView:
 
         """
         element = self.get_element(slot_name)
-        inverse = element.inverse if isinstance(element, SlotDefinition) else False
+        inverse = element.inverse if isinstance(element, metamodel_types("SlotDefinition")) else False
         if not inverse:
             for slot_definition in self.all_slots().values():
                 if slot_definition.inverse == element.name:
@@ -1754,6 +1779,8 @@ class SchemaView:
 
     @lru_cache(None)
     def _metaslots_for_slot(self):
+        if self.metamodel_flavor == "pydantic":
+            return list(metamodel_module("pydantic").SlotDefinition.model_fields.keys())
         fake_slot = SlotDefinition("__FAKE")
         return vars(fake_slot).keys()
 
@@ -1956,7 +1983,7 @@ class SchemaView:
         :param slot:
         :return: list of element types
         """
-        if not slot or not isinstance(slot, SlotDefinition):
+        if not slot or not isinstance(slot, metamodel_types("SlotDefinition")):
             err_msg = "A SlotDefinition must be provided to generate the slot applicable range elements."
             raise ValueError(err_msg)
 
@@ -1986,7 +2013,7 @@ class SchemaView:
         :param slot:
         :return: list of ranges
         """
-        if not slot or not isinstance(slot, SlotDefinition):
+        if not slot or not isinstance(slot, metamodel_types("SlotDefinition")):
             err_msg = "A SlotDefinition must be provided to generate the slot range as union."
             raise ValueError(err_msg)
 
@@ -2010,7 +2037,7 @@ class SchemaView:
         :return: set of ranges
         :rtype: set[str | ElementName]
         """
-        if not slot or not isinstance(slot, SlotDefinition):
+        if not slot or not isinstance(slot, metamodel_types("SlotDefinition")):
             err_msg = "A SlotDefinition must be provided to generate the induced slot range."
             raise ValueError(err_msg)
 
@@ -2144,7 +2171,7 @@ class SchemaView:
                         if a_value is not None:
                             attr_name = attr
                             real_a_value = a_value
-                            if isinstance(a_value, AnonymousSlotExpression):
+                            if isinstance(a_value, metamodel_types("AnonymousSlotExpression")):
                                 real_a_value = a_value.range
                                 attr_name = f"{attr_name}[range]"
                             if "[range]" in attr_name:
@@ -2311,13 +2338,13 @@ class SchemaView:
         for cls in [deepcopy(c) for c in self.all_classes().values()]:
             for slot in self.class_induced_slots(cls.name):
                 slot_range_element = self.get_element(slot.range)
-                if isinstance(slot_range_element, TypeDefinition):
+                if isinstance(slot_range_element, metamodel_types("TypeDefinition")):
                     for metaslot in ["pattern", "maximum_value", "minimum_value"]:
                         metaslot_val = getattr(slot_range_element, metaslot, None)
                         if metaslot_val is not None:
                             setattr(slot, metaslot, metaslot_val)
                 slot_range_pk_slot_name = None
-                if isinstance(slot_range_element, ClassDefinition):
+                if isinstance(slot_range_element, metamodel_types("ClassDefinition")):
                     slot_range_pk_slot_name = self.get_identifier_slot(slot_range_element.name, use_key=True)
                 if not slot_range_pk_slot_name:
                     slot.inlined = True
