@@ -83,6 +83,32 @@ def test_query_parity(dataclass_view: SchemaView, pydantic_view: SchemaView, que
     assert query(dataclass_view) == query(pydantic_view)
 
 
+def test_merge_imports_parity() -> None:
+    """merge_imports folds the closure into the root schema identically in both flavors."""
+    merged_dataclass = SchemaView(KITCHEN_SINK, merge_imports=True)
+    merged_pydantic = SchemaView(KITCHEN_SINK, merge_imports=True, metamodel="pydantic")
+    assert sorted(merged_dataclass.all_classes(imports=False)) == sorted(merged_pydantic.all_classes(imports=False))
+    assert sorted(merged_dataclass.all_slots(imports=False)) == sorted(merged_pydantic.all_slots(imports=False))
+    assert sorted(str(k) for k in merged_dataclass.schema.prefixes) == sorted(merged_pydantic.schema.prefixes)
+
+
+def test_annotations_attribute_access(pydantic_view: SchemaView) -> None:
+    """Annotations on pydantic metamodel elements are objects with attribute access."""
+    annotations = pydantic_view.get_slot("is current").annotations
+    assert annotations["ks:foo"].value == "bar"
+
+
+def test_metamodel_schemaview_pydantic_flavor() -> None:
+    """SchemaView over the metamodel itself in pydantic flavor (the core-linkml use case)."""
+    from linkml_runtime import SCHEMA_DIRECTORY
+
+    view = SchemaView(str(SCHEMA_DIRECTORY / "meta.yaml"), metamodel="pydantic")
+    assert "class_definition" in view.all_classes()
+    induced = view.induced_slot("classes", "schema_definition")
+    assert induced.multivalued is True
+    assert induced.inlined is True
+
+
 def test_induced_slot_metaslot_parity(dataclass_view: SchemaView, pydantic_view: SchemaView) -> None:
     """induced_slot agrees on every metaslot value (the mutation-heavy hot path)."""
     for class_name in sorted(dataclass_view.all_classes()):
