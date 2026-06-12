@@ -7,7 +7,9 @@
 
 LINKML_MODEL_RELEASE = v1.11.0
 
-all: update_model update_validation_model
+# NB: update_model wipes src/linkml_runtime/linkml_model (including the
+# generated pydantic/ subdir), so update_pydantic_model must follow it.
+all: update_model update_pydantic_model update_validation_model
 
 update_model:
 	# Clean up
@@ -24,6 +26,10 @@ update_model:
 	# Clean up some files that are not needed at the moment, https://github.com/linkml/linkml/issues/3129
 	rm src/linkml_runtime/linkml_model/model/schema/extended_types.yaml
 	cd ../../ && pre-commit run --all-files || pre-commit run --all-files
+
+update_pydantic_model:
+	uv sync
+	cd ../../ && uv run python scripts/generate_pydantic_metamodel.py
 
 update_validation_model: src/linkml_runtime/processing/validation_datamodel.py
 	cd ../../ && pre-commit run --all-files || pre-commit run --all-files

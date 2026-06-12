@@ -97,6 +97,20 @@ def _diff_paths(a: Any, b: Any, path: str = "", diffs: list[str] | None = None) 
     return diffs
 
 
+def test_vendored_pydantic_metamodel_in_sync() -> None:
+    """The committed linkml_runtime.linkml_model.pydantic artifact matches regeneration.
+
+    Regenerate with: uv run python scripts/generate_pydantic_metamodel.py
+    """
+    import linkml_runtime.linkml_model.pydantic as vendored
+
+    committed = (Path(vendored.__file__).parent / "meta.py").read_text()
+    regenerated = PydanticGenerator(LOCAL_METAMODEL_YAML_FILE).serialize()
+    assert committed.endswith(regenerated), (
+        "vendored pydantic metamodel is stale; run scripts/generate_pydantic_metamodel.py"
+    )
+
+
 def test_metamodel_validates(metamodel_module, metamodel_data: dict[str, Any]) -> None:
     """The generated pydantic SchemaDefinition accepts the raw metamodel YAML."""
     schema = metamodel_module.SchemaDefinition.model_validate(metamodel_data)
