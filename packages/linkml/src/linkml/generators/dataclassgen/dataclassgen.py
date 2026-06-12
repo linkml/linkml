@@ -16,6 +16,7 @@ from datetime import datetime
 import click
 
 from linkml._version import __version__
+from linkml.generators.python.python_ifabsent_processor import PythonIfAbsentProcessor
 from linkml.generators.dataclassgen.template import (
     DataclassClass,
     DataclassModule,
@@ -68,6 +69,10 @@ class DataclassGenerator(Generator):
 
     def _slot_alias(self, slot: SlotDefinition) -> str:
         return _python_safe(slot.alias if slot.alias else slot.name)
+
+    def _is_any_class(self, class_name: str) -> bool:
+        cls = self.schemaview.get_class(class_name)
+        return cls is not None and str(cls.class_uri) == "linkml:Any"
 
     def _quoted(self, class_py_name: str) -> str:
         """Quote forward references to classes not yet emitted."""
@@ -141,6 +146,16 @@ class DataclassGenerator(Generator):
             range_ref = self._quoted(range_py)
             id_slot = sv.get_identifier_slot(slot.range, use_key=True)
             inlined = sv.is_inlined(slot)
+
+            if self._is_any_class(slot.range):
+                # linkml:Any classes alias typing.Any - no coercion possible
+                annotation = f"Union[dict, {range_py}]"
+                if slot.multivalued:
+                    annotation = f"Optional[Union[{annotation}, list[{annotation}]]]"
+                    return f"{alias}: {annotation} = empty_list()", post
+                if not required:
+                    annotation = f"Optional[{annotation}]"
+                return f"{alias}: {annotation} = None", post
 
             if not slot.multivalued:
                 if inlined or id_slot is None:
@@ -257,13 +272,18 @@ class DataclassGenerator(Generator):
             if n in parent_names and n not in cls.slot_usage and (id_slot is None or n != id_slot.name)
         ]
         ordered += [(s, False) for s in inherited if s.required]
-        ordered += [(s, True) for s in own if s.required]
+        ordered += [(s, True) for s in own if s.required and not s.ifabsent]
+        ordered += [(s, True) for s in own if s.required and s.ifabsent]
         ordered += [(s, True) for s in own if not s.required]
 
         attributes: list[str] = []
         post_lines: list[str] = []
         for slot, emit_post in ordered:
             field_line, post = self._field_for_slot(cls, slot)
+            if slot.ifabsent is not None:
+                ifabsent_text = self.ifabsent_processor.process_slot(slot, cls)
+                if ifabsent_text is not None:
+                    field_line = field_line.rsplit(" = ", 1)[0] + f" = {ifabsent_text}"
             attributes.append(field_line)
             if emit_post and post:
                 if post_lines:
@@ -335,21 +355,36 @@ class DataclassGenerator(Generator):
             )
         return out
 
+    def _meaning_expr(self, meaning: str) -> str:
+        """Render a permissible value meaning as a CurieNamespace member, as pythongen does."""
+        prefix, _, local = str(meaning).partition(":")
+        if local and "://" not in str(meaning) and prefix in self._ns_prefixes:
+            return f'{self._ns_var(prefix)}["{local}"]'
+        return f'"{meaning}"'
+
     def _build_enums(self) -> list[EnumClass]:
         out: list[EnumClass] = []
         for enum in self.schemaview.all_enums().values():
             pvs: list[str] = []
+            addvals: list[str] = []
             for text, pv in (enum.permissible_values or {}).items():
-                if not str(text).isidentifier() or keyword.iskeyword(str(text)):
-                    self.logger.warning(f"dataclassgen: skipping non-identifier permissible value {text!r}")
-                    continue
                 args = [f'text="{text}"']
                 if pv.description:
                     args.append(f'description="""{pv.description}"""')
                 if pv.meaning:
-                    args.append(f'meaning="{pv.meaning}"')
-                pvs.append(f"{text} = PermissibleValue({', '.join(args)})")
-            out.append(EnumClass(name=camelcase(enum.name), description=enum.description, permissible_values=pvs))
+                    args.append(f"meaning={self._meaning_expr(pv.meaning)}")
+                if not str(text).isidentifier() or keyword.iskeyword(str(text)):
+                    addvals.append(f'setattr(cls, "{text}", PermissibleValue({", ".join(args)}))')
+                else:
+                    pvs.append(f"{text} = PermissibleValue({', '.join(args)})")
+            out.append(
+                EnumClass(
+                    name=camelcase(enum.name),
+                    description=enum.description,
+                    permissible_values=pvs,
+                    addvals=addvals,
+                )
+            )
         return out
 
     def _ns_var(self, prefix: str) -> str:
@@ -408,10 +443,19 @@ class DataclassGenerator(Generator):
         if self.mergeimports:
             sv.merge_imports()
         self._emitted_classes = set()
+        self.ifabsent_processor = PythonIfAbsentProcessor(sv)
         namespaces, default_ns = self._build_namespaces()
+        self._ns_prefixes = {line.split(" = ")[1].split("'")[1] for line in namespaces}
         types = self._build_types()
         name_classes = self._build_name_classes()
-        classes = [self._build_class(cls) for cls in self._class_order()]
+        classes: list = []
+        for cls in self._class_order():
+            if self._is_any_class(cls.name):
+                name = self._class_py_name(cls.name)
+                self._emitted_classes.add(name)
+                classes.append(f"{name} = Any")
+            else:
+                classes.append(self._build_class(cls))
         return DataclassModule(
             source_file=os.path.basename(str(self.schema.source_file)) if self.schema.source_file else self.schema.name,
             generator_version=self.generatorversion,

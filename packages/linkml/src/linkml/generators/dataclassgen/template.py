@@ -69,6 +69,8 @@ class EnumClass(DataclassTemplateModel):
     name: str
     description: str | None = None
     permissible_values: list[str] = []
+    addvals: list[str] = []
+    """setattr lines for permissible values whose text is not a python identifier"""
 
 
 class SlotEntry(DataclassTemplateModel):
@@ -103,6 +105,7 @@ class DataclassModule(DataclassTemplateModel):
     default_namespace: str
     types: list[TypeClass] = []
     name_classes: list[NameClass] = []
-    classes: list[DataclassClass] = []
+    classes: list[DataclassClass | str] = []
+    """DataclassClass models, or raw lines for linkml:Any alias classes"""
     enums: list[EnumClass] = []
     slot_entries: list[SlotEntry] = []

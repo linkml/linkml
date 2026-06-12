@@ -88,6 +88,28 @@ def test_coercion_behaviors(modules):
     assert type(alice.has_medical_history[0].diagnosis).__name__ == "DiagnosisConcept"
 
 
+def test_enum_addvals_and_meanings(modules):
+    """Non-identifier permissible values land via _addvals; meanings resolve as namespace members."""
+    dc_mod, py_mod = modules["kitchen_sink"]
+    assert dc_mod.OtherCodes["a b"].text == py_mod.OtherCodes["a b"].text == "a b"
+    assert str(dc_mod.EmploymentEventType.FIRE.meaning) == str(py_mod.EmploymentEventType.FIRE.meaning)
+
+
+def test_metamodel_self_generation_gate():
+    """The Phase 4 parity gate: dataclassgen(meta.yaml) compiles, loads meta.yaml,
+    and is schema_as_dict-equal to the vendored pythongen metamodel."""
+    import linkml_runtime.linkml_model.meta as vendored
+    from linkml_runtime.loaders import yaml_loader
+    from linkml_runtime.utils.schema_as_dict import schema_as_dict
+
+    from linkml import LOCAL_METAMODEL_YAML_FILE
+
+    module = compile_python(DataclassGenerator(LOCAL_METAMODEL_YAML_FILE).serialize(), "dcgen_meta")
+    generated = yaml_loader.load(str(LOCAL_METAMODEL_YAML_FILE), module.SchemaDefinition)
+    reference = yaml_loader.load(str(LOCAL_METAMODEL_YAML_FILE), vendored.SchemaDefinition)
+    assert schema_as_dict(generated) == schema_as_dict(reference)
+
+
 def test_required_field_enforced(modules):
     """Missing required fields raise like pythongen modules do."""
     dc_mod, _ = modules["organization"]

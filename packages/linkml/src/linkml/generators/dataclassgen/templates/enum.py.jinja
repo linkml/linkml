@@ -14,3 +14,11 @@ class {{ name }}(EnumDefinitionImpl):
         description="""{{ description }}""",
 {% endif %}
     )
+{% if addvals %}
+
+    @classmethod
+    def _addvals(cls):
+{% for line in addvals %}
+        {{ line }}
+{% endfor %}
+{% endif %}
