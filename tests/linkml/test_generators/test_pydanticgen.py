@@ -347,6 +347,103 @@ slots:
     assert "not_inlined_things: Optional[list[str]] = Field(default=None" in code
 
 
+KEYED_DICT_SCHEMA = """
+id: https://example.org/keyed
+name: keyed
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+classes:
+  Container:
+    attributes:
+      items:
+        range: Item
+        multivalued: true
+        inlined: true
+      prefixes:
+        range: PrefixLike
+        multivalued: true
+        inlined: true
+  Item:
+    attributes:
+      name:
+        key: true
+      value: {}
+      flag:
+        range: boolean
+  PrefixLike:
+    attributes:
+      pfx:
+        key: true
+      ref:
+        required: true
+"""
+
+
+@pytest.fixture(scope="module")
+def keyed_dict_module():
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
+    return compile_python(code, PACKAGE)
+
+
+def test_keyed_dict_generated_code():
+    """Inlined-as-dict slots get a before-validator injecting the dict key into the key slot."""
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
+    assert "def _coerce_keyed_collection(" in code
+    assert "@field_validator('items', mode='before')" in code
+    assert '_coerce_keyed_collection(v, "name")' in code
+    # simple-dict union form is coerced via the value class's key slot
+    assert "@field_validator('prefixes', mode='before')" in code
+    assert '_coerce_keyed_collection(v, "pfx")' in code
+
+
+@pytest.mark.parametrize(
+    "items,expected_names",
+    [
+        ({"a": {"value": "1"}, "b": {"value": "2"}}, ["a", "b"]),
+        ({"a": None, "b": None}, ["a", "b"]),
+        ({"a": {"name": "a", "value": "1"}}, ["a"]),
+        ([{"name": "a", "value": "1"}, {"name": "b"}], ["a", "b"]),
+        (["a", "b"], ["a", "b"]),
+        ("a", ["a"]),
+    ],
+    ids=["dict-no-key", "dict-null-body", "dict-explicit-key", "list-of-dicts", "list-of-keys", "bare-key"],
+)
+def test_keyed_dict_coercion_forms(keyed_dict_module, items, expected_names):
+    """All YAML input forms of an inlined-as-dict slot normalize to a keyed dict of objects."""
+    container = keyed_dict_module.Container.model_validate({"items": items})
+    assert list(container.items.keys()) == expected_names
+    for name, item in container.items.items():
+        assert item.name == name
+
+
+def test_keyed_dict_coercion_key_mismatch(keyed_dict_module):
+    """A dict key conflicting with the value's explicit key slot fails fast."""
+    with pytest.raises(ValidationError, match="mismatch"):
+        keyed_dict_module.Container.model_validate({"items": {"a": {"name": "b"}}})
+
+
+@pytest.mark.parametrize(
+    "prefixes,expected",
+    [
+        ({"linkml": "https://w3id.org/linkml/"}, "https://w3id.org/linkml/"),
+        ({"linkml": {"ref": "https://w3id.org/linkml/"}}, None),
+    ],
+    ids=["simple-string-value", "object-value-key-injected"],
+)
+def test_keyed_dict_simple_dict_union(keyed_dict_module, prefixes, expected):
+    """Simple-dict slots keep scalar values as-is and key-inject object values."""
+    container = keyed_dict_module.Container.model_validate({"prefixes": prefixes})
+    value = container.prefixes["linkml"]
+    if expected is not None:
+        assert value == expected
+    else:
+        assert value.pfx == "linkml"
+        assert value.ref == "https://w3id.org/linkml/"
+
+
 @pytest.mark.parametrize(
     "range,multivalued,inlined,inlined_as_list,B_has_identifier,expected,notes",
     [

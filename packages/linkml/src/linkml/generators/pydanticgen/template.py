@@ -210,6 +210,12 @@ class PydanticAttribute(PydanticTemplateModel):
     multivalued: bool | None = None
     pattern: str | None = None
     empty_list_for_multivalued_slots: bool = False
+    keyed_dict_key: str | None = None
+    """
+    Name of the key/identifier field of the range class for a multivalued slot
+    rendered as an inlined dict. When set, a ``mode="before"`` validator is
+    generated that injects each dict key into this field of its value.
+    """
     meta: dict[str, Any] | None = None
     """
     Metadata for the slot to be included in a Field annotation
@@ -243,6 +249,16 @@ class PydanticValidator(PydanticAttribute):
     """
 
     template: ClassVar[str] = "validator.py.jinja"
+
+
+class PydanticKeyedDictValidator(PydanticValidator):
+    """
+    Subclass of :class:`.PydanticValidator` rendering a ``mode="before"`` validator
+    that normalizes the input forms of an inlined-as-dict slot (key injection,
+    list-of-objects, bare keys) via the injected ``_coerce_keyed_collection`` helper.
+    """
+
+    template: ClassVar[str] = "keyed_dict_validator.py.jinja"
 
 
 class PydanticClass(PydanticTemplateModel):
@@ -280,7 +296,17 @@ class PydanticClass(PydanticTemplateModel):
         if self.attributes is None:
             return None
 
-        return {k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None}
+        validators: dict[str, PydanticValidator] = {
+            k: PydanticValidator(**v.model_dump()) for k, v in self.attributes.items() if v.pattern is not None
+        }
+        validators.update(
+            {
+                f"{k}__keyed": PydanticKeyedDictValidator(**v.model_dump())
+                for k, v in self.attributes.items()
+                if v.keyed_dict_key is not None
+            }
+        )
+        return validators
 
     @computed_field
     def validators(self) -> dict[str, PydanticValidator] | None:

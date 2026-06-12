@@ -66,6 +66,49 @@ class LinkMLMeta(RootModel):
         return key in self.root
 
 
+
+
+def _coerce_keyed_collection(value: Any, key_name: str) -> Any:
+    """
+    Normalize the input forms of a multivalued, inlined-as-dict slot to a dict
+    of dicts, injecting the dict key into each value's key/identifier slot
+    (``key_name``). Mirrors the normalization YAMLRoot performs for the
+    equivalent dataclass models.
+    """
+    if isinstance(value, str):
+        return {value: {key_name: value}}
+    if isinstance(value, dict):
+        out = {}
+        for key, item in value.items():
+            if item is None:
+                out[key] = {key_name: key}
+            elif isinstance(item, dict):
+                if key_name not in item:
+                    out[key] = {key_name: key, **item}
+                elif item[key_name] != key:
+                    raise ValueError(f"{key_name} mismatch: dict key {key!r} != {item[key_name]!r}")
+                else:
+                    out[key] = item
+            else:
+                out[key] = item
+        return out
+    if isinstance(value, list):
+        out = {}
+        for item in value:
+            if isinstance(item, dict):
+                if key_name not in item:
+                    raise ValueError(f"Missing {key_name} in list item {item!r}")
+                out[item[key_name]] = item
+            elif isinstance(item, (str, int, float)):
+                out[item] = {key_name: item}
+            elif hasattr(item, key_name):
+                out[getattr(item, key_name)] = item
+            else:
+                raise ValueError(f"Cannot key list item {item!r} by {key_name}")
+        return out
+    return value
+
+
 linkml_meta = LinkMLMeta({'default_curi_maps': ['semweb_context'],
      'default_prefix': 'linkml',
      'default_range': 'string',
@@ -371,6 +414,10 @@ class Extension(ConfiguredBaseModel):
          'domain_of': ['extension']} })
     extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
 
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
 
 class Extensible(ConfiguredBaseModel):
     """
@@ -379,6 +426,10 @@ class Extensible(ConfiguredBaseModel):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://w3id.org/linkml/extensions', 'mixin': True})
 
     extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
 
 
 class Annotatable(ConfiguredBaseModel):
@@ -390,6 +441,10 @@ class Annotatable(ConfiguredBaseModel):
     annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
 
 
 class Annotation(Annotatable, Extension):
@@ -408,6 +463,14 @@ class Annotation(Annotatable, Extension):
          'domain': 'extension',
          'domain_of': ['extension']} })
     extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
 
 
 class UnitOfMeasure(ConfiguredBaseModel):
@@ -621,6 +684,10 @@ class CommonMetadata(ConfiguredBaseModel):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class Element(CommonMetadata, Annotatable, Extensible):
@@ -839,6 +906,22 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class SchemaDefinition(Element):
@@ -1181,6 +1264,50 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('prefixes', mode='before')
+    def coerce_keyed_prefixes(cls, v):
+        return _coerce_keyed_collection(v, "prefix_prefix")
+
+    @field_validator('subsets', mode='before')
+    def coerce_keyed_subsets(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('types', mode='before')
+    def coerce_keyed_types(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('enums', mode='before')
+    def coerce_keyed_enums(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('slots', mode='before')
+    def coerce_keyed_slots(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('classes', mode='before')
+    def coerce_keyed_classes(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('settings', mode='before')
+    def coerce_keyed_settings(cls, v):
+        return _coerce_keyed_collection(v, "setting_key")
+
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class SubsetDefinition(Element):
     """
@@ -1395,6 +1522,22 @@ class SubsetDefinition(Element):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class Definition(Element):
@@ -1648,6 +1791,22 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class EnumBinding(CommonMetadata, Annotatable, Extensible):
     """
@@ -1853,6 +2012,18 @@ implicitly asserts Y is an instance of C2
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class MatchQuery(ConfiguredBaseModel):
@@ -2429,6 +2600,22 @@ class TypeDefinition(TypeExpression, Element):
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class EnumExpression(Expression):
     """
@@ -2480,6 +2667,10 @@ class EnumExpression(Expression):
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
 
+    @field_validator('permissible_values', mode='before')
+    def coerce_keyed_permissible_values(cls, v):
+        return _coerce_keyed_collection(v, "text")
+
 
 class AnonymousEnumExpression(EnumExpression):
     """
@@ -2530,6 +2721,10 @@ class AnonymousEnumExpression(EnumExpression):
     concepts: Optional[list[str]] = Field(default=None, description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
+
+    @field_validator('permissible_values', mode='before')
+    def coerce_keyed_permissible_values(cls, v):
+        return _coerce_keyed_collection(v, "text")
 
 
 class EnumDefinition(EnumExpression, Definition):
@@ -2849,6 +3044,26 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('permissible_values', mode='before')
+    def coerce_keyed_permissible_values(cls, v):
+        return _coerce_keyed_collection(v, "text")
+
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
     """
@@ -3039,6 +3254,18 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
     """
@@ -3214,6 +3441,18 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
@@ -3438,6 +3677,18 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class SlotExpression(Expression):
@@ -4049,6 +4300,18 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class SlotDefinition(SlotExpression, Definition):
@@ -4766,6 +5029,22 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class ClassExpression(ConfiguredBaseModel):
     """
@@ -4821,6 +5100,10 @@ class ClassExpression(ConfiguredBaseModel):
     slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
          'domain_of': ['class_expression'],
          'in_subset': ['SpecificationSubset']} })
+
+    @field_validator('slot_conditions', mode='before')
+    def coerce_keyed_slot_conditions(cls, v):
+        return _coerce_keyed_collection(v, "name")
 
 
 class AnonymousClassExpression(ClassExpression, AnonymousExpression):
@@ -5035,6 +5318,22 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('slot_conditions', mode='before')
+    def coerce_keyed_slot_conditions(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class ClassDefinition(ClassExpression, Definition):
@@ -5493,6 +5792,38 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('slot_usage', mode='before')
+    def coerce_keyed_slot_usage(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('attributes', mode='before')
+    def coerce_keyed_attributes(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('unique_keys', mode='before')
+    def coerce_keyed_unique_keys(cls, v):
+        return _coerce_keyed_collection(v, "unique_key_name")
+
+    @field_validator('slot_conditions', mode='before')
+    def coerce_keyed_slot_conditions(cls, v):
+        return _coerce_keyed_collection(v, "name")
+
+    @field_validator('local_names', mode='before')
+    def coerce_keyed_local_names(cls, v):
+        return _coerce_keyed_collection(v, "local_name_source")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class ClassLevelRule(ConfiguredBaseModel):
     """
@@ -5700,6 +6031,18 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class ArrayExpression(CommonMetadata, Annotatable, Extensible):
     """
@@ -5893,6 +6236,18 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class DimensionExpression(CommonMetadata, Annotatable, Extensible):
@@ -6092,6 +6447,18 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class PatternExpression(CommonMetadata, Annotatable, Extensible):
     """
@@ -6274,6 +6641,18 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class ImportExpression(CommonMetadata, Annotatable, Extensible):
     """
@@ -6455,6 +6834,22 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('import_map', mode='before')
+    def coerce_keyed_import_map(cls, v):
+        return _coerce_keyed_collection(v, "setting_key")
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class Setting(ConfiguredBaseModel):
@@ -6750,6 +7145,18 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
 
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
+
 
 class UniqueKey(CommonMetadata, Annotatable, Extensible):
     """
@@ -6930,6 +7337,18 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class TypeMapping(CommonMetadata, Annotatable, Extensible):
@@ -7114,6 +7533,18 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
          'slot_uri': 'schema:keywords'} })
+
+    @field_validator('extensions', mode='before')
+    def coerce_keyed_extensions(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('annotations', mode='before')
+    def coerce_keyed_annotations(cls, v):
+        return _coerce_keyed_collection(v, "tag")
+
+    @field_validator('alt_descriptions', mode='before')
+    def coerce_keyed_alt_descriptions(cls, v):
+        return _coerce_keyed_collection(v, "source")
 
 
 class ExtraSlotsExpression(Expression):

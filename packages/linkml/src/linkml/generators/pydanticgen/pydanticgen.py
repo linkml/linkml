@@ -642,14 +642,25 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
                     simple_dict_value = self._inline_as_simple_dict_with_value(slot)
+                coerce_keyed = False
                 if simple_dict_value:
                     # simple_dict_value might be the range of the identifier of a class when range is a class,
                     # so we specify either that identifier or the range itself
                     if simple_dict_value != result.attribute.range:
                         simple_dict_value = f"Union[{simple_dict_value}, {result.attribute.range}]"
+                        coerce_keyed = True
                     result.attribute.range = f"dict[str, {simple_dict_value}]"
                 else:
                     result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
+                    coerce_keyed = True
+                if coerce_keyed:
+                    key_name = self.generate_collection_key_name(slot_ranges)
+                    if key_name is not None:
+                        result.attribute.keyed_dict_key = key_name
+                        if result.injected_classes is None:
+                            result.injected_classes = [includes.KeyedCollectionCoercion]
+                        else:
+                            result.injected_classes.append(includes.KeyedCollectionCoercion)
         if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
         return result
@@ -868,6 +879,28 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             raise Exception(f"Slot with any_of range has multiple identifier slot range types: {collection_keys}")
         if len(collection_keys) == 1:
             return list(collection_keys)[0]
+        return None
+
+    def generate_collection_key_name(self, slot_ranges: list[str]) -> str | None:
+        """
+        Find the generated field name of the identifier/key slot shared by the
+        class ranges of an inlined-as-dict slot, used to inject dict keys into
+        values at validation time. Returns None when the ranges do not agree on
+        a single key field.
+
+        :param slot_ranges: list of python range values
+        """
+        key_names: set[str] = set()
+
+        for slot_range in slot_ranges or []:
+            if slot_range is None or slot_range not in self.schemaview.all_classes():
+                continue
+            identifier_slot = self.schemaview.get_identifier_slot(slot_range, use_key=True)
+            if identifier_slot is not None:
+                alias = identifier_slot.alias if identifier_slot.alias else identifier_slot.name
+                key_names.add(make_valid_python_identifier(underscore(alias)))
+        if len(key_names) == 1:
+            return key_names.pop()
         return None
 
     def _generate_subproperty_constraint(self, slot_def: SlotDefinition) -> str:

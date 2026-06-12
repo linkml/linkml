@@ -1,0 +1,3 @@
+@field_validator('{{name}}', mode='before')
+    def coerce_keyed_{{name}}(cls, v):
+        return _coerce_keyed_collection(v, "{{keyed_dict_key}}")
