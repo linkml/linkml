@@ -30,7 +30,7 @@ class CsvGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["csv", "tsv"]
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     # ObjectVars
     sep: str | None = None
@@ -45,53 +45,34 @@ class CsvGenerator(Generator):
     _str_io: StringIO | None = None
     """String that the writer outputs to"""
 
-    def __post_init__(self):
-        super().__post_init__()
-        self._str_io = None
+    def serialize(self, classes: list[ClassDefinitionName] | None = None, **kwargs) -> str:
+        """Generate a CSV/TSV summary of the schema's classes.
 
-        self.generate_header()  # TODO: don't do this in initialization
-
-    def generate_header(self) -> str:
-        out = f"# metamodel_version: {self.schema.metamodel_version}"
-        if self.schema.version:
-            out = "\n".join([out, f"# version: {self.schema.version}"])
-        return out
-
-    def visit_schema(self, classes: list[ClassDefinitionName] = None, **_) -> None:
-        # Note: classes comes from the "root" argument
+        :param classes: only include these classes and their is_a ancestors
+        """
+        sv = self.schemaview
         self.closure = set()
-
-        if classes is None:
-            classes = []
-
-        # Validate the supplied list of classes
-        for clsname in classes:
-            if clsname not in self.schema.classes:
-                raise ValueError(f"Unrecognized class: {clsname}")
-            else:
-                self.closure.update(self.ancestors(self.schema.classes[clsname]))
+        for clsname in classes or []:
+            if clsname not in sv.all_classes():
+                msg = f"Unrecognized class: {clsname}"
+                raise ValueError(msg)
+            self.closure.update(sv.class_ancestors(clsname, mixins=False))
 
         self._str_io = StringIO()
         dialect: str = "excel" if self.format == "csv" else "excel-tab"
         self.writer = DictWriter(self._str_io, ["id", "mappings", "description"], dialect=dialect)
         self.writer.writeheader()
-
-    def visit_class(self, cls: ClassDefinition) -> bool:
         # TODO: find out what to do with mappings
-        if not self.closure or cls.name in self.closure:
-            self.writer.writerow(
-                {
-                    "id": underscore(cls.name),
-                    # 'mappings': "|".join(cls.mappings),
-                    "mappings": "",
-                    "description": be(cls.description),
-                }
-            )
-            return True
-        return False
-
-    def end_schema(self, **kwargs) -> str:
-        return self._str_io.getvalue()
+        for cls in sorted(sv.all_classes().values(), key=lambda c: c.name.casefold()):
+            if not self.closure or cls.name in self.closure:
+                self.writer.writerow(
+                    {
+                        "id": underscore(cls.name),
+                        "mappings": "",
+                        "description": be(cls.description),
+                    }
+                )
+        return self._str_io.getvalue().rstrip() + "\n"
 
 
 @shared_arguments(CsvGenerator)

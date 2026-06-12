@@ -461,6 +461,35 @@ class Generator(metaclass=abc.ABCMeta):
     def own_slot_names(self, cls: ClassDefinitionName | ClassDefinition) -> list[SlotDefinitionName]:
         return [slot.name for slot in self.own_slots(cls)]
 
+    def induced_slots_legacy_order(self, class_name: ClassDefinitionName) -> list[SlotDefinition]:
+        """Return induced slots ordered like SchemaLoader's resolved class slots.
+
+        Recursive is_a slots come first, then mixins, then the class's own
+        slots/attributes - the order ``all_slots`` produced for visitor-based
+        generators. Lets generators migrated to SchemaView keep byte-identical
+        output ordering.
+        """
+        induced = {slot.name: slot for slot in self.schemaview.class_induced_slots(class_name)}
+        ordered: list[SlotDefinition] = []
+        seen: set[str] = set()
+
+        def visit(cn: ClassDefinitionName) -> None:
+            cls = self.schemaview.get_class(cn)
+            if cls is None:
+                return
+            if cls.is_a:
+                visit(cls.is_a)
+            for slot_name in list(cls.slots) + list(cls.attributes.keys()):
+                if slot_name not in seen:
+                    seen.add(slot_name)
+                    if slot_name in induced:
+                        ordered.append(induced[slot_name])
+            for mixin in cls.mixins:
+                visit(mixin)
+
+        visit(class_name)
+        return ordered
+
     def all_slots(
         self,
         cls: ClassDefinitionName | ClassDefinition,

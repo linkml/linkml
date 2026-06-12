@@ -90,10 +90,10 @@ fields:
 - id: name
   display_name: name
 - id: aliases
-  display_name: hasAliases__aliases
+  display_name: aliases
   cardinality: multi
 - id: ceo
-  display_name: company__ceo
+  display_name: ceo
 # --- Concept_config.yaml ---
 # metamodel_version: 1.11.0id: Concept
 schema_generating: true
@@ -118,16 +118,16 @@ fields:
   description: Example of a slot that has an unconstrained range
   display_name: metadata
 - id: persons
-  display_name: dataset__persons
+  display_name: persons
   cardinality: multi
 - id: companies
-  display_name: dataset__companies
+  display_name: companies
   cardinality: multi
 - id: activities
-  display_name: dataset__activities
+  display_name: activities
   cardinality: multi
 - id: code_systems
-  display_name: dataset__code_systems
+  display_name: code systems
   cardinality: multi
 # --- DiagnosisConcept_config.yaml ---
 # metamodel_version: 1.11.0id: DiagnosisConcept
@@ -161,7 +161,7 @@ fields:
 - id: employed_at
   display_name: employed at
 - id: type
-  display_name: EmploymentEvent_type
+  display_name: type
 # --- Event_config.yaml ---
 # metamodel_version: 1.11.0id: Event
 schema_generating: true
@@ -189,12 +189,12 @@ fields:
   display_name: started at time
 - id: ended_at_time
   display_name: ended at time
-- id: cordialness
-  display_name: FamilialRelationship_cordialness
-- id: type
-  display_name: FamilialRelationship_type
 - id: related_to
-  display_name: FamilialRelationship_related to
+  display_name: related to
+- id: type
+  display_name: type
+- id: cordialness
+  display_name: cordialness
 # --- MarriageEvent_config.yaml ---
 # metamodel_version: 1.11.0id: MarriageEvent
 schema_generating: true
@@ -251,7 +251,7 @@ fields:
 - id: name
   display_name: name
 - id: aliases
-  display_name: hasAliases__aliases
+  display_name: aliases
   cardinality: multi
 # --- Person_config.yaml ---
 # metamodel_version: 1.11.0id: Person
@@ -264,7 +264,7 @@ fields:
 - id: id
   display_name: id
 - id: name
-  display_name: Person_name
+  display_name: name
 - id: has_employment_history
   display_name: has employment history
   cardinality: multi
@@ -283,13 +283,13 @@ fields:
 - id: has_birth_event
   display_name: has birth event
 - id: species_name
-  display_name: Person_species name
+  display_name: species name
 - id: stomach_count
-  display_name: Person_stomach count
+  display_name: stomach count
 - id: is_living
-  display_name: person__is_living
+  display_name: is_living
 - id: aliases
-  display_name: hasAliases__aliases
+  display_name: aliases
   cardinality: multi
 # --- Place_config.yaml ---
 # metamodel_version: 1.11.0id: Place
@@ -303,7 +303,7 @@ fields:
 - id: name
   display_name: name
 - id: aliases
-  display_name: hasAliases__aliases
+  display_name: aliases
   cardinality: multi
 # --- ProcedureConcept_config.yaml ---
 # metamodel_version: 1.11.0id: ProcedureConcept
@@ -334,7 +334,7 @@ fields:
 - id: type
   display_name: type
 - id: cordialness
-  display_name: Relationship_cordialness
+  display_name: cordialness
 # --- Sub_sub_class_2_config.yaml ---
 # metamodel_version: 1.11.0id: Sub_sub_class_2
 schema_generating: true
@@ -343,9 +343,9 @@ document_category: Sub sub class 2
 weight: 20
 fields:
 - id: slot_with_space_1
-  display_name: classWithSpaces__slot_with_space_1
+  display_name: slot with space 1
 - id: slot_with_space_2
-  display_name: subclassTest__slot_with_space_2
+  display_name: slot with space 2
 # --- subclass_test_config.yaml ---
 # metamodel_version: 1.11.0id: subclass_test
 schema_generating: true
@@ -354,9 +354,9 @@ document_category: subclass test
 weight: 20
 fields:
 - id: slot_with_space_1
-  display_name: classWithSpaces__slot_with_space_1
+  display_name: slot with space 1
 - id: slot_with_space_2
-  display_name: subclassTest__slot_with_space_2
+  display_name: slot with space 2
 # --- tub_sub_class_1_config.yaml ---
 # metamodel_version: 1.11.0id: tub_sub_class_1
 schema_generating: true
@@ -366,6 +366,6 @@ document_category: tub sub class 1
 weight: 20
 fields:
 - id: slot_with_space_1
-  display_name: classWithSpaces__slot_with_space_1
+  display_name: slot with space 1
 - id: slot_with_space_2
-  display_name: subclassTest__slot_with_space_2
+  display_name: slot with space 2

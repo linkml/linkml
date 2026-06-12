@@ -47,8 +47,7 @@ class GolrSchemaGenerator(Generator):
     generatorversion = "0.1.1"
     directory_output = True
     valid_formats = ["golr"]
-    visit_all_class_slots = True
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     # ObjectVars
     directory: str = None
@@ -60,42 +59,42 @@ class GolrSchemaGenerator(Generator):
             headers.append(f"# version: {self.schema.version}")
         return headers
 
-    def visit_schema(self, directory: str, **_) -> None:
+    def _golr_class(self, cls: ClassDefinition) -> GOLRClass:
+        class_obj = GOLRClass(
+            id=underscore(cls.name),
+            schema_generating=True,
+            description=cls.description,
+            display_name=cls.name,
+            document_category=cls.name,
+            weight=20,
+        )
+        for slot in self.induced_slots_legacy_order(cls.name):
+            field = GOLRField(
+                id=underscore(slot.alias if slot.alias else slot.name),
+                description=slot.description,
+                display_name=slot.name,
+            )
+            if slot.multivalued:
+                field.cardinality = "multi"
+            class_obj.fields.append(field)
+        return class_obj
+
+    def serialize(self, directory: str | None = None, **kwargs) -> str:
+        """Write one GOlr YAML config per concrete class into ``directory``."""
+        directory = directory or self.directory
         self.directory = directory
         if directory:
             os.makedirs(directory, exist_ok=True)
-        # write_golr_yaml_to_dir(schema, dir)
-
-    def visit_class(self, cls: ClassDefinition) -> bool:
-        if not (cls.mixin or cls.abstract):
-            self.class_obj = GOLRClass(
-                id=underscore(cls.name),
-                schema_generating=True,
-                description=cls.description,
-                display_name=cls.name,
-                document_category=cls.name,
-                weight=20,
-            )
-            return True
-        else:
-            return False
-
-    def end_class(self, cls: ClassDefinition) -> None:
-        fn = os.path.join(self.directory, underscore(cls.name + "-config.yaml"))
-        if len(self.class_obj.fields) > 1:
-            with open(fn, "w", encoding="UTF-8") as f:
-                f.write("".join(self.generate_header()))
-                f.write(as_yaml(self.class_obj))
-
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        field = GOLRField(
-            id=underscore(aliased_slot_name),
-            description=slot.description,
-            display_name=slot.name,
-        )
-        if slot.multivalued:
-            field.cardinality = "multi"
-        self.class_obj.fields.append(field)
+        for cls in sorted(self.schemaview.all_classes().values(), key=lambda c: c.name.casefold()):
+            if cls.mixin or cls.abstract:
+                continue
+            class_obj = self._golr_class(cls)
+            if len(class_obj.fields) > 1:
+                fn = os.path.join(directory, underscore(cls.name + "-config.yaml"))
+                with open(fn, "w", encoding="UTF-8") as f:
+                    f.write("".join(self.generate_header()))
+                    f.write(as_yaml(class_obj))
+        return "\n"
 
 
 @shared_arguments(GolrSchemaGenerator)
