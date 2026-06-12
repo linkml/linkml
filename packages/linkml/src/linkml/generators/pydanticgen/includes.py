@@ -32,6 +32,9 @@ def _coerce_keyed_collection(value: Any, key_name: str) -> Any:
     if isinstance(value, str):
         return {value: {key_name: value}}
     if isinstance(value, dict):
+        if key_name in value and not isinstance(value[key_name], (dict, list)):
+            # flat single-object form, e.g. annotations: {tag: t, value: v}
+            return {value[key_name]: dict(value)}
         out = {}
         for key, item in value.items():
             if item is None:

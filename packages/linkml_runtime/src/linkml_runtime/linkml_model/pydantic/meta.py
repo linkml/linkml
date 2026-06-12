@@ -48,6 +48,19 @@ class ConfiguredBaseModel(BaseModel):
         strict = False,
     )
 
+    @model_serializer(mode='wrap', when_used='unless-none')
+    def treat_empty_lists_as_none(
+            self, handler: SerializerFunctionWrapHandler,
+            info: SerializationInfo) -> dict[str, Any]:
+        if info.exclude_none:
+            _instance = self.model_copy()
+            for field, field_info in type(_instance).model_fields.items():
+                if getattr(_instance, field) in ([], {}) and not(
+                        field_info.is_required()):
+                    setattr(_instance, field, None)
+        else:
+            _instance = self
+        return handler(_instance, info)
 
 
 
@@ -81,6 +94,9 @@ def _coerce_keyed_collection(value: Any, key_name: str) -> Any:
     if isinstance(value, str):
         return {value: {key_name: value}}
     if isinstance(value, dict):
+        if key_name in value and not isinstance(value[key_name], (dict, list)):
+            # flat single-object form, e.g. annotations: {tag: t, value: v}
+            return {value[key_name]: dict(value)}
         out = {}
         for key, item in value.items():
             if item is None:
@@ -412,7 +428,7 @@ class Extension(ConfiguredBaseModel):
                                                'value': True}},
          'domain': 'extension',
          'domain_of': ['extension']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
@@ -425,7 +441,7 @@ class Extensible(ConfiguredBaseModel):
     """
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://w3id.org/linkml/extensions', 'mixin': True})
 
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
@@ -438,7 +454,7 @@ class Annotatable(ConfiguredBaseModel):
     """
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://w3id.org/linkml/annotations', 'mixin': True})
 
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
 
@@ -454,7 +470,7 @@ class Annotation(Annotatable, Extension):
     linkml_meta: ClassVar[LinkMLMeta] = LinkMLMeta({'from_schema': 'https://w3id.org/linkml/annotations',
          'mixins': ['annotatable']})
 
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     tag: str = Field(default=..., description="""a tag associated with an extension""", json_schema_extra = { "linkml_meta": {'domain': 'extension', 'domain_of': ['extension']} })
@@ -462,7 +478,7 @@ class Annotation(Annotatable, Extension):
                                                'value': True}},
          'domain': 'extension',
          'domain_of': ['extension']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
@@ -499,7 +515,7 @@ class UnitOfMeasure(ConfiguredBaseModel):
     symbol: Optional[str] = Field(default=None, description="""name of the unit encoded as a symbol""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure'], 'slot_uri': 'qudt:symbol'} })
     abbreviation: Optional[str] = Field(default=None, description="""An abbreviation for a unit is a short ASCII string that is used in place of the full name for the unit in contexts where non-ASCII characters would be problematic, or where using the abbreviation will enhance readability. When a power of a base unit needs to be expressed, such as squares this can be done using abbreviations rather than symbols (source: qudt)""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure'], 'slot_uri': 'qudt:abbreviation'} })
     descriptive_name: Optional[str] = Field(default=None, description="""the spelled out name of the unit, for example, meter""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure'], 'slot_uri': 'rdfs:label'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT""", json_schema_extra = { "linkml_meta": {'comments': ['Do not use this to encode mappings to systems for which a '
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""Used to link a unit to equivalent concepts in ontologies such as UO, SNOMED, OEM, OBOE, NCIT""", json_schema_extra = { "linkml_meta": {'comments': ['Do not use this to encode mappings to systems for which a '
                       'dedicated field exists'],
          'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
@@ -515,6 +531,12 @@ class UnitOfMeasure(ConfiguredBaseModel):
          'domain_of': ['UnitOfMeasure'],
          'slot_uri': 'qudt:hasQuantityKind'} })
     iec61360code: Optional[str] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure'], 'slot_uri': 'qudt:iec61360Code'} })
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class CommonMetadata(ConfiguredBaseModel):
@@ -533,7 +555,7 @@ class CommonMetadata(ConfiguredBaseModel):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -550,24 +572,24 @@ class CommonMetadata(ConfiguredBaseModel):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -596,13 +618,13 @@ class CommonMetadata(ConfiguredBaseModel):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -612,29 +634,29 @@ class CommonMetadata(ConfiguredBaseModel):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -642,7 +664,7 @@ class CommonMetadata(ConfiguredBaseModel):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -673,13 +695,13 @@ class CommonMetadata(ConfiguredBaseModel):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -688,6 +710,108 @@ class CommonMetadata(ConfiguredBaseModel):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class Element(CommonMetadata, Annotatable, Extensible):
@@ -715,7 +839,7 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -735,16 +859,16 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -755,7 +879,7 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -772,24 +896,24 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -818,13 +942,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -834,29 +958,29 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -864,7 +988,7 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -895,13 +1019,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -922,6 +1046,126 @@ class Element(CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class SchemaDefinition(Element):
@@ -963,7 +1207,7 @@ class SchemaDefinition(Element):
          'exact_mappings': ['schema:schemaVersion'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:version'} })
-    imports: Optional[list[str]] = Field(default=None, description="""A list of schemas that are to be included in this schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    imports: Optional[list[str]] = Field(default=[], description="""A list of schemas that are to be included in this schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'OwlProfile'],
          'rank': 21} })
@@ -972,13 +1216,13 @@ class SchemaDefinition(Element):
          'in_subset': ['BasicSubset'],
          'rank': 31,
          'slot_uri': 'dcterms:license'} })
-    prefixes: Optional[dict[str, Union[str, Prefix]]] = Field(default=None, description="""A collection of prefix expansions that specify how CURIEs can be expanded to URIs""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    prefixes: Optional[dict[str, Union[str, Prefix]]] = Field(default={}, description="""A collection of prefix expansions that specify how CURIEs can be expanded to URIs""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 10,
          'slot_uri': 'sh:declare'} })
-    emit_prefixes: Optional[list[str]] = Field(default=None, description="""a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models.""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition', 'domain_of': ['schema_definition']} })
-    default_curi_maps: Optional[list[str]] = Field(default=None, description="""ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    emit_prefixes: Optional[list[str]] = Field(default=[], description="""a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in this list are added to the prefix sections of the target models.""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition', 'domain_of': ['schema_definition']} })
+    default_curi_maps: Optional[list[str]] = Field(default=[], description="""ordered list of prefixcommon biocontexts to be fetched to resolve id prefixes and inline prefix variables""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['BasicSubset']} })
     default_prefix: Optional[str] = Field(default=None, description="""The prefix that is used for all elements within a schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
@@ -990,30 +1234,30 @@ class SchemaDefinition(Element):
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset', 'MinimalSubset', 'BasicSubset'],
          'rank': 13} })
-    subsets: Optional[dict[str, SubsetDefinition]] = Field(default=None, description="""An index to the collection of all subset definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    subsets: Optional[dict[str, SubsetDefinition]] = Field(default={}, description="""An index to the collection of all subset definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'exact_mappings': ['OIO:hasSubset'],
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 8} })
-    types: Optional[dict[str, TypeDefinition]] = Field(default=None, description="""An index to the collection of all type definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    types: Optional[dict[str, TypeDefinition]] = Field(default={}, description="""An index to the collection of all type definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['BasicSubset', 'ObjectOrientedProfile', 'OwlProfile'],
          'rank': 6} })
-    enums: Optional[dict[str, EnumDefinition]] = Field(default=None, description="""An index to the collection of all enum definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    enums: Optional[dict[str, EnumDefinition]] = Field(default={}, description="""An index to the collection of all enum definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset',
                        'BasicSubset',
                        'ObjectOrientedProfile',
                        'OwlProfile'],
          'rank': 5} })
-    slots: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""An index to the collection of all slot definitions in the schema""", json_schema_extra = { "linkml_meta": {'comments': ['note the formal name of this element is slot_definitions, but '
+    slots: Optional[dict[str, SlotDefinition]] = Field(default={}, description="""An index to the collection of all slot definitions in the schema""", json_schema_extra = { "linkml_meta": {'comments': ['note the formal name of this element is slot_definitions, but '
                       'it has alias slots, which is the canonical form used in '
                       'yaml/json serializes of schemas.'],
          'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'OwlProfile'],
          'rank': 4} })
-    classes: Optional[dict[str, ClassDefinition]] = Field(default=None, description="""An index to the collection of all class definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
+    classes: Optional[dict[str, ClassDefinition]] = Field(default={}, description="""An index to the collection of all class definitions in the schema""", json_schema_extra = { "linkml_meta": {'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset',
                        'MinimalSubset',
@@ -1045,14 +1289,14 @@ class SchemaDefinition(Element):
     slot_names_unique: Optional[bool] = Field(default=None, description="""if true then induced/mangled slot names are not created for class_usage and attributes""", json_schema_extra = { "linkml_meta": {'domain': 'definition',
          'domain_of': ['schema_definition', 'class_definition'],
          'status': 'testing'} })
-    settings: Optional[dict[str, Union[str, Setting]]] = Field(default=None, description="""A collection of global variable settings""", json_schema_extra = { "linkml_meta": {'aliases': ['constants'],
+    settings: Optional[dict[str, Union[str, Setting]]] = Field(default={}, description="""A collection of global variable settings""", json_schema_extra = { "linkml_meta": {'aliases': ['constants'],
          'comments': ['global variables are used in string interpolation in structured '
                       'patterns'],
          'domain': 'schema_definition',
          'domain_of': ['schema_definition'],
          'in_subset': ['SpecificationSubset'],
          'rank': 20} })
-    bindings: Optional[list[EnumBinding]] = Field(default=None, description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
+    bindings: Optional[list[EnumBinding]] = Field(default=[], description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
 LinkML provides enums to allow string values to be restricted to one of a set of permissible values (specified statically or dynamically).
 Enum bindings allow enums to be bound to any object, including complex nested objects. For example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the values the id takes on in a given context. For example, a HumanSample class may have a slot for representing sample site, with a range of concept, but the values of that slot may be restricted to concepts from a particular branch of an anatomy ontology.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['schema_definition', 'slot_expression'],
@@ -1072,7 +1316,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -1092,16 +1336,16 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -1112,7 +1356,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -1129,24 +1373,24 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -1175,13 +1419,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -1191,29 +1435,29 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -1221,7 +1465,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -1252,13 +1496,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -1308,6 +1552,150 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
 
+    @field_validator('imports', mode='before')
+    def coerce_list_imports(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('emit_prefixes', mode='before')
+    def coerce_list_emit_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('default_curi_maps', mode='before')
+    def coerce_list_default_curi_maps(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('bindings', mode='before')
+    def coerce_list_bindings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
 
 class SubsetDefinition(Element):
     """
@@ -1331,7 +1719,7 @@ class SubsetDefinition(Element):
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -1351,16 +1739,16 @@ class SubsetDefinition(Element):
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -1371,7 +1759,7 @@ class SubsetDefinition(Element):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -1388,24 +1776,24 @@ class SubsetDefinition(Element):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -1434,13 +1822,13 @@ class SubsetDefinition(Element):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -1450,29 +1838,29 @@ class SubsetDefinition(Element):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -1480,7 +1868,7 @@ class SubsetDefinition(Element):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -1511,13 +1899,13 @@ class SubsetDefinition(Element):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -1538,6 +1926,126 @@ class SubsetDefinition(Element):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class Definition(Element):
@@ -1564,7 +2072,7 @@ class Definition(Element):
          'domain_of': ['definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'ObjectOrientedProfile'],
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    mixins: Optional[list[str]] = Field(default=None, description="""A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
+    mixins: Optional[list[str]] = Field(default=[], description="""A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
          'comments': ['mixins act in the same way as parents (is_a). They allow a '
                       'model to have a primary strict hierarchy, while keeping the '
                       'benefits of multiple inheritance'],
@@ -1575,8 +2083,8 @@ class Definition(Element):
                        'OwlProfile'],
          'rank': 13,
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    apply_to: Optional[list[str]] = Field(default=None, description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
-    values_from: Optional[list[str]] = Field(default=None, description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    apply_to: Optional[list[str]] = Field(default=[], description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    values_from: Optional[list[str]] = Field(default=[], description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
     string_serialization: Optional[str] = Field(default=None, description="""Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
 We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of complex objects
@@ -1599,7 +2107,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -1619,16 +2127,16 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -1639,7 +2147,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -1656,24 +2164,24 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -1702,13 +2210,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -1718,29 +2226,29 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -1748,7 +2256,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -1779,13 +2287,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -1806,6 +2314,144 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('mixins', mode='before')
+    def coerce_list_mixins(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('apply_to', mode='before')
+    def coerce_list_apply_to(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('values_from', mode='before')
+    def coerce_list_values_from(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class EnumBinding(CommonMetadata, Annotatable, Extensible):
@@ -1849,8 +2495,8 @@ implicitly asserts Y is an instance of C2
                       'code_set must be supplied for this to be valid'],
          'domain_of': ['enum_expression', 'enum_binding'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -1861,7 +2507,7 @@ implicitly asserts Y is an instance of C2
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -1878,24 +2524,24 @@ implicitly asserts Y is an instance of C2
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -1924,13 +2570,13 @@ implicitly asserts Y is an instance of C2
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -1940,29 +2586,29 @@ implicitly asserts Y is an instance of C2
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -1970,7 +2616,7 @@ implicitly asserts Y is an instance of C2
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -2001,13 +2647,13 @@ implicitly asserts Y is an instance of C2
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -2024,6 +2670,108 @@ implicitly asserts Y is an instance of C2
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class MatchQuery(ConfiguredBaseModel):
@@ -2057,10 +2805,10 @@ class ReachabilityQuery(ConfiguredBaseModel):
                       'obo:envo, etc'],
          'domain_of': ['match_query', 'reachability_query'],
          'in_subset': ['SpecificationSubset']} })
-    source_nodes: Optional[list[str]] = Field(default=None, description="""A list of nodes that are used in the reachability query""", json_schema_extra = { "linkml_meta": {'domain': 'reachability_query',
+    source_nodes: Optional[list[str]] = Field(default=[], description="""A list of nodes that are used in the reachability query""", json_schema_extra = { "linkml_meta": {'domain': 'reachability_query',
          'domain_of': ['reachability_query'],
          'in_subset': ['SpecificationSubset']} })
-    relationship_types: Optional[list[str]] = Field(default=None, description="""A list of relationship types (properties) that are used in a reachability query""", json_schema_extra = { "linkml_meta": {'aliases': ['predicates', 'properties'],
+    relationship_types: Optional[list[str]] = Field(default=[], description="""A list of relationship types (properties) that are used in a reachability query""", json_schema_extra = { "linkml_meta": {'aliases': ['predicates', 'properties'],
          'domain': 'reachability_query',
          'domain_of': ['reachability_query'],
          'in_subset': ['SpecificationSubset']} })
@@ -2076,6 +2824,18 @@ class ReachabilityQuery(ConfiguredBaseModel):
          'domain': 'reachability_query',
          'domain_of': ['reachability_query'],
          'in_subset': ['SpecificationSubset']} })
+
+    @field_validator('source_nodes', mode='before')
+    def coerce_list_source_nodes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('relationship_types', mode='before')
+    def coerce_list_relationship_types(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class Expression(ConfiguredBaseModel):
@@ -2122,7 +2882,7 @@ class TypeExpression(Expression):
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    equals_string_in: Optional[list[str]] = Field(default=None, description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
+    equals_string_in: Optional[list[str]] = Field(default=[], description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant',
@@ -2145,7 +2905,7 @@ class TypeExpression(Expression):
          'inherited': True,
          'notes': ['Range to be refined to an "Ordinal" metaclass - see '
                    'https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142']} })
-    none_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2154,7 +2914,7 @@ class TypeExpression(Expression):
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2163,7 +2923,7 @@ class TypeExpression(Expression):
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2172,7 +2932,7 @@ class TypeExpression(Expression):
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2181,6 +2941,36 @@ class TypeExpression(Expression):
          'is_a': 'boolean_slot',
          'rank': 107,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
+
+    @field_validator('equals_string_in', mode='before')
+    def coerce_list_equals_string_in(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class AnonymousTypeExpression(TypeExpression):
@@ -2209,7 +2999,7 @@ class AnonymousTypeExpression(TypeExpression):
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    equals_string_in: Optional[list[str]] = Field(default=None, description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
+    equals_string_in: Optional[list[str]] = Field(default=[], description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant',
@@ -2232,7 +3022,7 @@ class AnonymousTypeExpression(TypeExpression):
          'inherited': True,
          'notes': ['Range to be refined to an "Ordinal" metaclass - see '
                    'https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142']} })
-    none_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2241,7 +3031,7 @@ class AnonymousTypeExpression(TypeExpression):
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2250,7 +3040,7 @@ class AnonymousTypeExpression(TypeExpression):
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2259,7 +3049,7 @@ class AnonymousTypeExpression(TypeExpression):
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2268,6 +3058,36 @@ class AnonymousTypeExpression(TypeExpression):
          'is_a': 'boolean_slot',
          'rank': 107,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
+
+    @field_validator('equals_string_in', mode='before')
+    def coerce_list_equals_string_in(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class TypeDefinition(TypeExpression, Element):
@@ -2311,7 +3131,7 @@ class TypeDefinition(TypeExpression, Element):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'inherited': True,
          'rank': 10} })
-    union_of: Optional[list[str]] = Field(default=None, description="""indicates that the domain element consists exactly of the members of the element in the range.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    union_of: Optional[list[str]] = Field(default=[], description="""indicates that the domain element consists exactly of the members of the element in the range.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['type_definition', 'slot_definition', 'class_definition'],
          'in_subset': ['SpecificationSubset', 'OwlProfile'],
          'notes': ['this only applies in the OWL generation']} })
@@ -2335,7 +3155,7 @@ class TypeDefinition(TypeExpression, Element):
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    equals_string_in: Optional[list[str]] = Field(default=None, description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
+    equals_string_in: Optional[list[str]] = Field(default=[], description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant',
@@ -2358,7 +3178,7 @@ class TypeDefinition(TypeExpression, Element):
          'inherited': True,
          'notes': ['Range to be refined to an "Ordinal" metaclass - see '
                    'https://github.com/linkml/linkml/issues/1384#issuecomment-1892721142']} })
-    none_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2367,7 +3187,7 @@ class TypeDefinition(TypeExpression, Element):
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2376,7 +3196,7 @@ class TypeDefinition(TypeExpression, Element):
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2385,7 +3205,7 @@ class TypeDefinition(TypeExpression, Element):
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousTypeExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousTypeExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -2408,7 +3228,7 @@ class TypeDefinition(TypeExpression, Element):
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -2428,16 +3248,16 @@ class TypeDefinition(TypeExpression, Element):
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -2448,7 +3268,7 @@ class TypeDefinition(TypeExpression, Element):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -2465,24 +3285,24 @@ class TypeDefinition(TypeExpression, Element):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -2511,13 +3331,13 @@ class TypeDefinition(TypeExpression, Element):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -2527,29 +3347,29 @@ class TypeDefinition(TypeExpression, Element):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -2557,7 +3377,7 @@ class TypeDefinition(TypeExpression, Element):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -2588,13 +3408,13 @@ class TypeDefinition(TypeExpression, Element):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -2615,6 +3435,162 @@ class TypeDefinition(TypeExpression, Element):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('union_of', mode='before')
+    def coerce_list_union_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('equals_string_in', mode='before')
+    def coerce_list_equals_string_in(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class EnumExpression(Expression):
@@ -2641,18 +3617,18 @@ class EnumExpression(Expression):
                       'code_set must be supplied for this to be valid'],
          'domain_of': ['enum_expression', 'enum_binding'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    permissible_values: Optional[dict[str, PermissibleValue]] = Field(default=None, description="""A list of possible values for a slot range""", json_schema_extra = { "linkml_meta": {'aliases': ['coded values'],
+    permissible_values: Optional[dict[str, PermissibleValue]] = Field(default={}, description="""A list of possible values for a slot range""", json_schema_extra = { "linkml_meta": {'aliases': ['coded values'],
          'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'exact_mappings': ['cdisc:PermissibleValue'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    include: Optional[list[AnonymousEnumExpression]] = Field(default=None, description="""An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    include: Optional[list[AnonymousEnumExpression]] = Field(default=[], description="""An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    minus: Optional[list[AnonymousEnumExpression]] = Field(default=None, description="""An enum expression that yields a list of permissible values that are to be subtracted from the enum""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    minus: Optional[list[AnonymousEnumExpression]] = Field(default=[], description="""An enum expression that yields a list of permissible values that are to be subtracted from the enum""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    inherits: Optional[list[str]] = Field(default=None, description="""An enum definition that is used as the basis to create a new enum""", json_schema_extra = { "linkml_meta": {'comments': ['All permissible values for all inherited enums are copied to '
+    inherits: Optional[list[str]] = Field(default=[], description="""An enum definition that is used as the basis to create a new enum""", json_schema_extra = { "linkml_meta": {'comments': ['All permissible values for all inherited enums are copied to '
                       'form the initial seed set'],
          'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
@@ -2663,13 +3639,37 @@ class EnumExpression(Expression):
     matches: Optional[MatchQuery] = Field(default=None, description="""Specifies a match query that is used to calculate the list of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    concepts: Optional[list[str]] = Field(default=None, description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    concepts: Optional[list[str]] = Field(default=[], description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
 
     @field_validator('permissible_values', mode='before')
     def coerce_keyed_permissible_values(cls, v):
         return _coerce_keyed_collection(v, "text")
+
+    @field_validator('include', mode='before')
+    def coerce_list_include(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('minus', mode='before')
+    def coerce_list_minus(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('inherits', mode='before')
+    def coerce_list_inherits(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('concepts', mode='before')
+    def coerce_list_concepts(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class AnonymousEnumExpression(EnumExpression):
@@ -2696,18 +3696,18 @@ class AnonymousEnumExpression(EnumExpression):
                       'code_set must be supplied for this to be valid'],
          'domain_of': ['enum_expression', 'enum_binding'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    permissible_values: Optional[dict[str, PermissibleValue]] = Field(default=None, description="""A list of possible values for a slot range""", json_schema_extra = { "linkml_meta": {'aliases': ['coded values'],
+    permissible_values: Optional[dict[str, PermissibleValue]] = Field(default={}, description="""A list of possible values for a slot range""", json_schema_extra = { "linkml_meta": {'aliases': ['coded values'],
          'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'exact_mappings': ['cdisc:PermissibleValue'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    include: Optional[list[AnonymousEnumExpression]] = Field(default=None, description="""An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    include: Optional[list[AnonymousEnumExpression]] = Field(default=[], description="""An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    minus: Optional[list[AnonymousEnumExpression]] = Field(default=None, description="""An enum expression that yields a list of permissible values that are to be subtracted from the enum""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    minus: Optional[list[AnonymousEnumExpression]] = Field(default=[], description="""An enum expression that yields a list of permissible values that are to be subtracted from the enum""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    inherits: Optional[list[str]] = Field(default=None, description="""An enum definition that is used as the basis to create a new enum""", json_schema_extra = { "linkml_meta": {'comments': ['All permissible values for all inherited enums are copied to '
+    inherits: Optional[list[str]] = Field(default=[], description="""An enum definition that is used as the basis to create a new enum""", json_schema_extra = { "linkml_meta": {'comments': ['All permissible values for all inherited enums are copied to '
                       'form the initial seed set'],
          'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
@@ -2718,13 +3718,37 @@ class AnonymousEnumExpression(EnumExpression):
     matches: Optional[MatchQuery] = Field(default=None, description="""Specifies a match query that is used to calculate the list of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    concepts: Optional[list[str]] = Field(default=None, description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    concepts: Optional[list[str]] = Field(default=[], description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
 
     @field_validator('permissible_values', mode='before')
     def coerce_keyed_permissible_values(cls, v):
         return _coerce_keyed_collection(v, "text")
+
+    @field_validator('include', mode='before')
+    def coerce_list_include(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('minus', mode='before')
+    def coerce_list_minus(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('inherits', mode='before')
+    def coerce_list_inherits(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('concepts', mode='before')
+    def coerce_list_concepts(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class EnumDefinition(EnumExpression, Definition):
@@ -2777,18 +3801,18 @@ class EnumDefinition(EnumExpression, Definition):
                       'code_set must be supplied for this to be valid'],
          'domain_of': ['enum_expression', 'enum_binding'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    permissible_values: Optional[dict[str, PermissibleValue]] = Field(default=None, description="""A list of possible values for a slot range""", json_schema_extra = { "linkml_meta": {'aliases': ['coded values'],
+    permissible_values: Optional[dict[str, PermissibleValue]] = Field(default={}, description="""A list of possible values for a slot range""", json_schema_extra = { "linkml_meta": {'aliases': ['coded values'],
          'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'exact_mappings': ['cdisc:PermissibleValue'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
-    include: Optional[list[AnonymousEnumExpression]] = Field(default=None, description="""An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    include: Optional[list[AnonymousEnumExpression]] = Field(default=[], description="""An enum expression that yields a list of permissible values that are to be included, after subtracting the minus set""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    minus: Optional[list[AnonymousEnumExpression]] = Field(default=None, description="""An enum expression that yields a list of permissible values that are to be subtracted from the enum""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    minus: Optional[list[AnonymousEnumExpression]] = Field(default=[], description="""An enum expression that yields a list of permissible values that are to be subtracted from the enum""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    inherits: Optional[list[str]] = Field(default=None, description="""An enum definition that is used as the basis to create a new enum""", json_schema_extra = { "linkml_meta": {'comments': ['All permissible values for all inherited enums are copied to '
+    inherits: Optional[list[str]] = Field(default=[], description="""An enum definition that is used as the basis to create a new enum""", json_schema_extra = { "linkml_meta": {'comments': ['All permissible values for all inherited enums are copied to '
                       'form the initial seed set'],
          'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
@@ -2799,7 +3823,7 @@ class EnumDefinition(EnumExpression, Definition):
     matches: Optional[MatchQuery] = Field(default=None, description="""Specifies a match query that is used to calculate the list of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
-    concepts: Optional[list[str]] = Field(default=None, description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
+    concepts: Optional[list[str]] = Field(default=[], description="""A list of identifiers that are used to construct a set of permissible values""", json_schema_extra = { "linkml_meta": {'domain': 'enum_expression',
          'domain_of': ['enum_expression'],
          'in_subset': ['SpecificationSubset']} })
     is_a: Optional[str] = Field(default=None, description="""A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded""", json_schema_extra = { "linkml_meta": {'abstract': True,
@@ -2817,7 +3841,7 @@ class EnumDefinition(EnumExpression, Definition):
          'domain_of': ['definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'ObjectOrientedProfile'],
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    mixins: Optional[list[str]] = Field(default=None, description="""A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
+    mixins: Optional[list[str]] = Field(default=[], description="""A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
          'comments': ['mixins act in the same way as parents (is_a). They allow a '
                       'model to have a primary strict hierarchy, while keeping the '
                       'benefits of multiple inheritance'],
@@ -2828,8 +3852,8 @@ class EnumDefinition(EnumExpression, Definition):
                        'OwlProfile'],
          'rank': 13,
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    apply_to: Optional[list[str]] = Field(default=None, description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
-    values_from: Optional[list[str]] = Field(default=None, description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    apply_to: Optional[list[str]] = Field(default=[], description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    values_from: Optional[list[str]] = Field(default=[], description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
     string_serialization: Optional[str] = Field(default=None, description="""Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
 We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of complex objects
@@ -2852,7 +3876,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -2872,16 +3896,16 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -2892,7 +3916,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -2909,24 +3933,24 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -2955,13 +3979,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -2971,29 +3995,29 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -3001,7 +4025,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -3032,13 +4056,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -3064,6 +4088,168 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
 
+    @field_validator('include', mode='before')
+    def coerce_list_include(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('minus', mode='before')
+    def coerce_list_minus(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('inherits', mode='before')
+    def coerce_list_inherits(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('concepts', mode='before')
+    def coerce_list_concepts(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mixins', mode='before')
+    def coerce_list_mixins(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('apply_to', mode='before')
+    def coerce_list_apply_to(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('values_from', mode='before')
+    def coerce_list_values_from(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
 
 class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
     """
@@ -3087,7 +4273,7 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'domain_of': ['structured_alias'],
          'recommended': True,
          'slot_uri': 'rdf:predicate'} })
-    categories: Optional[list[str]] = Field(default=None, description="""The category or categories of an alias. This can be drawn from any relevant vocabulary""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""The category or categories of an alias. This can be drawn from any relevant vocabulary""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'examples': [{'description': 'An acronym',
@@ -3095,9 +4281,9 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    contexts: Optional[list[str]] = Field(default=None, description="""The context in which an alias should be applied""", json_schema_extra = { "linkml_meta": {'domain': 'structured_alias', 'domain_of': ['structured_alias']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    contexts: Optional[list[str]] = Field(default=[], description="""The context in which an alias should be applied""", json_schema_extra = { "linkml_meta": {'domain': 'structured_alias', 'domain_of': ['structured_alias']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -3108,7 +4294,7 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -3125,24 +4311,24 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -3171,13 +4357,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -3187,29 +4373,29 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -3217,7 +4403,7 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -3248,7 +4434,7 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -3265,6 +4451,114 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contexts', mode='before')
+    def coerce_list_contexts(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
@@ -3278,8 +4572,8 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'from_schema': 'https://w3id.org/linkml/meta',
          'mixins': ['expression', 'extensible', 'annotatable', 'common_metadata']})
 
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -3290,7 +4584,7 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -3307,24 +4601,24 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -3353,13 +4647,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -3369,29 +4663,29 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -3399,7 +4693,7 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -3430,13 +4724,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -3453,6 +4747,108 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
@@ -3470,7 +4866,7 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
                         'none_of': {'name': 'none_of', 'range': 'path_expression'}}})
 
     followed_by: Optional[PathExpression] = Field(default=None, description="""in a sequential list, this indicates the next member""", json_schema_extra = { "linkml_meta": {'domain_of': ['path_expression']} })
-    none_of: Optional[list[PathExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[PathExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3479,7 +4875,7 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[PathExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[PathExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3488,7 +4884,7 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[PathExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[PathExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3497,7 +4893,7 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'is_a': 'boolean_slot',
          'rank': 107,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[PathExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[PathExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3514,8 +4910,8 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'domain_of': ['path_expression', 'slot_expression', 'extra_slots_expression'],
          'in_subset': ['SpecificationSubset'],
          'status': 'testing'} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -3526,7 +4922,7 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -3543,24 +4939,24 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -3589,13 +4985,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -3605,29 +5001,29 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -3635,7 +5031,7 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -3666,13 +5062,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -3689,6 +5085,132 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class SlotExpression(Expression):
@@ -3738,7 +5260,7 @@ implicitly asserts Y is an instance of C2
     enum_range: Optional[EnumExpression] = Field(default=None, description="""An inlined enumeration""", json_schema_extra = { "linkml_meta": {'domain_of': ['slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'status': 'testing'} })
-    bindings: Optional[list[EnumBinding]] = Field(default=None, description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
+    bindings: Optional[list[EnumBinding]] = Field(default=[], description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
 LinkML provides enums to allow string values to be restricted to one of a set of permissible values (specified statically or dynamically).
 Enum bindings allow enums to be bound to any object, including complex nested objects. For example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the values the id takes on in a given context. For example, a HumanSample class may have a slot for representing sample site, with a range of concept, but the values of that slot may be restricted to concepts from a particular branch of an anatomy ontology.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['schema_definition', 'slot_expression'],
@@ -3838,7 +5360,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    equals_string_in: Optional[list[str]] = Field(default=None, description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
+    equals_string_in: Optional[list[str]] = Field(default=[], description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant',
@@ -3879,7 +5401,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset'],
          'is_a': 'list_value_specification_constant',
          'status': 'testing'} })
-    none_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3888,7 +5410,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3897,7 +5419,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3906,7 +5428,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -3919,6 +5441,42 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain_of': ['slot_expression'],
          'inherited': True,
          'status': 'testing'} })
+
+    @field_validator('bindings', mode='before')
+    def coerce_list_bindings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('equals_string_in', mode='before')
+    def coerce_list_equals_string_in(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class AnonymousSlotExpression(SlotExpression, AnonymousExpression):
@@ -3956,7 +5514,7 @@ implicitly asserts Y is an instance of C2
     enum_range: Optional[EnumExpression] = Field(default=None, description="""An inlined enumeration""", json_schema_extra = { "linkml_meta": {'domain_of': ['slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'status': 'testing'} })
-    bindings: Optional[list[EnumBinding]] = Field(default=None, description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
+    bindings: Optional[list[EnumBinding]] = Field(default=[], description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
 LinkML provides enums to allow string values to be restricted to one of a set of permissible values (specified statically or dynamically).
 Enum bindings allow enums to be bound to any object, including complex nested objects. For example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the values the id takes on in a given context. For example, a HumanSample class may have a slot for representing sample site, with a range of concept, but the values of that slot may be restricted to concepts from a particular branch of an anatomy ontology.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['schema_definition', 'slot_expression'],
@@ -4056,7 +5614,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    equals_string_in: Optional[list[str]] = Field(default=None, description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
+    equals_string_in: Optional[list[str]] = Field(default=[], description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant',
@@ -4097,7 +5655,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset'],
          'is_a': 'list_value_specification_constant',
          'status': 'testing'} })
-    none_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4106,7 +5664,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4115,7 +5673,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4124,7 +5682,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4137,8 +5695,8 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain_of': ['slot_expression'],
          'inherited': True,
          'status': 'testing'} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -4149,7 +5707,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -4166,24 +5724,24 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -4212,13 +5770,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -4228,29 +5786,29 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -4258,7 +5816,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -4289,13 +5847,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -4312,6 +5870,144 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('bindings', mode='before')
+    def coerce_list_bindings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('equals_string_in', mode='before')
+    def coerce_list_equals_string_in(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class SlotDefinition(SlotExpression, Definition):
@@ -4463,7 +6159,7 @@ implicitly asserts that X is an instance of C1
          'domain': 'slot_definition',
          'domain_of': ['slot_definition'],
          'readonly': 'filled in by loader -- either class domain or slot domain'} })
-    domain_of: Optional[list[str]] = Field(default=None, description="""the class(es) that reference the slot in a \"slots\" or \"slot_usage\" context""", json_schema_extra = { "linkml_meta": {'domain': 'slot_definition',
+    domain_of: Optional[list[str]] = Field(default=[], description="""the class(es) that reference the slot in a \"slots\" or \"slot_usage\" context""", json_schema_extra = { "linkml_meta": {'domain': 'slot_definition',
          'domain_of': ['slot_definition'],
          'exact_mappings': ['schema:domainIncludes', 'SIO:000011'],
          'readonly': 'filled in by the loader'} })
@@ -4565,15 +6261,15 @@ implicitly asserts that X is an instance of C1
          'domain_of': ['slot_definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset']} })
     path_rule: Optional[PathExpression] = Field(default=None, description="""a rule for inferring a slot assignment based on evaluating a path through a sequence of slot assignments""", json_schema_extra = { "linkml_meta": {'domain': 'slot_definition', 'domain_of': ['slot_definition']} })
-    disjoint_with: Optional[list[str]] = Field(default=None, description="""Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances""", json_schema_extra = { "linkml_meta": {'domain': 'definition',
+    disjoint_with: Optional[list[str]] = Field(default=[], description="""Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances""", json_schema_extra = { "linkml_meta": {'domain': 'definition',
          'domain_of': ['slot_definition', 'class_definition'],
          'in_subset': ['SpecificationSubset']} })
     children_are_mutually_disjoint: Optional[bool] = Field(default=None, description="""If true then all direct is_a children are mutually disjoint and share no instances in common""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['slot_definition', 'class_definition']} })
-    union_of: Optional[list[str]] = Field(default=None, description="""indicates that the domain element consists exactly of the members of the element in the range.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    union_of: Optional[list[str]] = Field(default=[], description="""indicates that the domain element consists exactly of the members of the element in the range.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['type_definition', 'slot_definition', 'class_definition'],
          'in_subset': ['SpecificationSubset', 'OwlProfile'],
          'notes': ['this only applies in the OWL generation']} })
-    type_mappings: Optional[list[str]] = Field(default=None, description="""A collection of type mappings that specify how a slot's range should be mapped or serialized in different frameworks""", json_schema_extra = { "linkml_meta": {'domain_of': ['slot_definition']} })
+    type_mappings: Optional[list[str]] = Field(default=[], description="""A collection of type mappings that specify how a slot's range should be mapped or serialized in different frameworks""", json_schema_extra = { "linkml_meta": {'domain_of': ['slot_definition']} })
     range: Optional[str] = Field(default=None, description="""defines the type of the object of the slot.  Given the following slot definition
   S1:
     domain: C1
@@ -4606,7 +6302,7 @@ implicitly asserts Y is an instance of C2
     enum_range: Optional[EnumExpression] = Field(default=None, description="""An inlined enumeration""", json_schema_extra = { "linkml_meta": {'domain_of': ['slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'status': 'testing'} })
-    bindings: Optional[list[EnumBinding]] = Field(default=None, description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
+    bindings: Optional[list[EnumBinding]] = Field(default=[], description="""A collection of enum bindings that specify how a slot can be bound to a permissible value from an enumeration.
 LinkML provides enums to allow string values to be restricted to one of a set of permissible values (specified statically or dynamically).
 Enum bindings allow enums to be bound to any object, including complex nested objects. For example, given a (generic) class Concept with slots id and label, it may be desirable to restrict the values the id takes on in a given context. For example, a HumanSample class may have a slot for representing sample site, with a range of concept, but the values of that slot may be restricted to concepts from a particular branch of an anatomy ontology.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['schema_definition', 'slot_expression'],
@@ -4706,7 +6402,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    equals_string_in: Optional[list[str]] = Field(default=None, description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
+    equals_string_in: Optional[list[str]] = Field(default=[], description="""the slot must have range string and the value of the slot must equal one of the specified values""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression'],
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant',
@@ -4747,7 +6443,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'in_subset': ['SpecificationSubset'],
          'is_a': 'list_value_specification_constant',
          'status': 'testing'} })
-    none_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4756,7 +6452,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4765,7 +6461,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    any_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4774,7 +6470,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousSlotExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousSlotExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -4802,7 +6498,7 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
          'domain_of': ['definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'ObjectOrientedProfile'],
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    mixins: Optional[list[str]] = Field(default=None, description="""A collection of secondary parent mixin slots from which inheritable metaslots are propagated""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
+    mixins: Optional[list[str]] = Field(default=[], description="""A collection of secondary parent mixin slots from which inheritable metaslots are propagated""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
          'comments': ['mixins act in the same way as parents (is_a). They allow a '
                       'model to have a primary strict hierarchy, while keeping the '
                       'benefits of multiple inheritance'],
@@ -4813,8 +6509,8 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
                        'OwlProfile'],
          'rank': 13,
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    apply_to: Optional[list[str]] = Field(default=None, description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
-    values_from: Optional[list[str]] = Field(default=None, description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    apply_to: Optional[list[str]] = Field(default=[], description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    values_from: Optional[list[str]] = Field(default=[], description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
     string_serialization: Optional[str] = Field(default=None, description="""Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
 We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of complex objects
@@ -4837,7 +6533,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -4857,16 +6553,16 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -4877,7 +6573,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -4894,24 +6590,24 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -4940,13 +6636,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -4956,29 +6652,29 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -4986,7 +6682,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -5017,13 +6713,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -5045,6 +6741,204 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
 
+    @field_validator('domain_of', mode='before')
+    def coerce_list_domain_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('disjoint_with', mode='before')
+    def coerce_list_disjoint_with(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('union_of', mode='before')
+    def coerce_list_union_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('type_mappings', mode='before')
+    def coerce_list_type_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('bindings', mode='before')
+    def coerce_list_bindings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('equals_string_in', mode='before')
+    def coerce_list_equals_string_in(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mixins', mode='before')
+    def coerce_list_mixins(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('apply_to', mode='before')
+    def coerce_list_apply_to(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('values_from', mode='before')
+    def coerce_list_values_from(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
 
 class ClassExpression(ConfiguredBaseModel):
     """
@@ -5061,7 +6955,7 @@ class ClassExpression(ConfiguredBaseModel):
                         'none_of': {'name': 'none_of',
                                     'range': 'anonymous_class_expression'}}})
 
-    any_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5070,7 +6964,7 @@ class ClassExpression(ConfiguredBaseModel):
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5079,7 +6973,7 @@ class ClassExpression(ConfiguredBaseModel):
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    none_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5088,7 +6982,7 @@ class ClassExpression(ConfiguredBaseModel):
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5097,13 +6991,37 @@ class ClassExpression(ConfiguredBaseModel):
          'is_a': 'boolean_slot',
          'rank': 107,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
+    slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default={}, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
          'domain_of': ['class_expression'],
          'in_subset': ['SpecificationSubset']} })
 
     @field_validator('slot_conditions', mode='before')
     def coerce_keyed_slot_conditions(cls, v):
         return _coerce_keyed_collection(v, "name")
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class AnonymousClassExpression(ClassExpression, AnonymousExpression):
@@ -5116,7 +7034,7 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
                        'ObjectOrientedProfile',
                        'OwlProfile'],
          'rank': 11} })
-    any_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5125,7 +7043,7 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5134,7 +7052,7 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    none_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5143,7 +7061,7 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5152,11 +7070,11 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'is_a': 'boolean_slot',
          'rank': 107,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
+    slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default={}, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
          'domain_of': ['class_expression'],
          'in_subset': ['SpecificationSubset']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -5167,7 +7085,7 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -5184,24 +7102,24 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -5230,13 +7148,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -5246,29 +7164,29 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -5276,7 +7194,7 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -5307,13 +7225,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -5334,6 +7252,132 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class ClassDefinition(ClassExpression, Definition):
@@ -5367,7 +7411,7 @@ class ClassDefinition(ClassExpression, Definition):
                         'rules': {'name': 'rules', 'range': 'class_rule'},
                         'union_of': {'name': 'union_of', 'range': 'class_definition'}}})
 
-    slots: Optional[list[str]] = Field(default=None, description="""collection of slot names that are applicable to a class""", json_schema_extra = { "linkml_meta": {'comments': ['the list of applicable slots is inherited from parent classes',
+    slots: Optional[list[str]] = Field(default=[], description="""collection of slot names that are applicable to a class""", json_schema_extra = { "linkml_meta": {'comments': ['the list of applicable slots is inherited from parent classes',
                       'This defines the set of slots that are allowed to be used for a '
                       'given class. The final list of slots for a class is the '
                       'combination of the parent (is a) slots, mixins slots, apply to '
@@ -5376,7 +7420,7 @@ class ClassDefinition(ClassExpression, Definition):
          'domain_of': ['class_definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 19} })
-    slot_usage: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""the refinement of a slot in the context of the containing class definition.""", json_schema_extra = { "linkml_meta": {'comments': ['Many slots may be reused across different classes, but the '
+    slot_usage: Optional[dict[str, SlotDefinition]] = Field(default={}, description="""the refinement of a slot in the context of the containing class definition.""", json_schema_extra = { "linkml_meta": {'comments': ['Many slots may be reused across different classes, but the '
                       'meaning of the slot may be refined by context. For example, a '
                       'generic association model may use slots '
                       'subject/predicate/object with generic semantics and minimal '
@@ -5387,7 +7431,7 @@ class ClassDefinition(ClassExpression, Definition):
          'domain_of': ['class_definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 23} })
-    attributes: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""Inline definition of slots""", json_schema_extra = { "linkml_meta": {'comments': ['attributes are an alternative way of defining new slots.  An '
+    attributes: Optional[dict[str, SlotDefinition]] = Field(default={}, description="""Inline definition of slots""", json_schema_extra = { "linkml_meta": {'comments': ['attributes are an alternative way of defining new slots.  An '
                       'attribute adds a slot to the global space in the form '
                       '<class_name>__<slot_name> (lower case, double underscores).  '
                       'Attributes can be specialized via slot_usage.'],
@@ -5414,11 +7458,11 @@ class ClassDefinition(ClassExpression, Definition):
          'deprecated': 'Use is_a instead',
          'domain': 'class_definition',
          'domain_of': ['class_definition']} })
-    union_of: Optional[list[str]] = Field(default=None, description="""indicates that the domain element consists exactly of the members of the element in the range.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    union_of: Optional[list[str]] = Field(default=[], description="""indicates that the domain element consists exactly of the members of the element in the range.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['type_definition', 'slot_definition', 'class_definition'],
          'in_subset': ['SpecificationSubset', 'OwlProfile'],
          'notes': ['this only applies in the OWL generation']} })
-    defining_slots: Optional[list[str]] = Field(default=None, description="""The combination of is a plus defining slots form a genus-differentia definition, or the set of necessary and sufficient conditions that can be transformed into an OWL equivalence axiom""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
+    defining_slots: Optional[list[str]] = Field(default=[], description="""The combination of is a plus defining slots form a genus-differentia definition, or the set of necessary and sufficient conditions that can be transformed into an OWL equivalence axiom""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
          'domain_of': ['class_definition'],
          'inherited': True} })
     tree_root: Optional[bool] = Field(default=None, description="""Indicates that this is the Container class which forms the root of the serialized document structure in tree serializations""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
@@ -5427,16 +7471,16 @@ class ClassDefinition(ClassExpression, Definition):
          'notes': ['each schema should have at most one tree root'],
          'rank': 31,
          'see_also': ['https://linkml.io/linkml/intro/tutorial02.html']} })
-    unique_keys: Optional[dict[str, UniqueKey]] = Field(default=None, description="""A collection of named unique keys for this class. Unique keys may be singular or compound.""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
+    unique_keys: Optional[dict[str, UniqueKey]] = Field(default={}, description="""A collection of named unique keys for this class. Unique keys may be singular or compound.""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
          'domain_of': ['class_definition'],
          'exact_mappings': ['owl:hasKey'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'RelationalModelProfile'],
          'see_also': ['https://linkml.io/linkml/schemas/constraints.html#unique-key']} })
-    rules: Optional[list[ClassRule]] = Field(default=None, description="""the collection of rules that apply to all members of this class""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
+    rules: Optional[list[ClassRule]] = Field(default=[], description="""the collection of rules that apply to all members of this class""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
          'domain_of': ['class_definition'],
          'in_subset': ['SpecificationSubset'],
          'slot_uri': 'sh:rule'} })
-    classification_rules: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""The collection of classification rules that apply to all members of this class. Classification rules allow for automatically assigning the instantiated type of an instance.""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
+    classification_rules: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""The collection of classification rules that apply to all members of this class. Classification rules allow for automatically assigning the instantiated type of an instance.""", json_schema_extra = { "linkml_meta": {'domain': 'class_definition',
          'domain_of': ['class_definition'],
          'in_subset': ['SpecificationSubset']} })
     slot_names_unique: Optional[bool] = Field(default=None, description="""if true then induced/mangled slot names are not created for class_usage and attributes""", json_schema_extra = { "linkml_meta": {'domain': 'definition',
@@ -5456,7 +7500,7 @@ class ClassDefinition(ClassExpression, Definition):
          'see_also': ['rdf:Statement',
                       'https://patterns.dataincubator.org/book/qualified-relation.html'],
          'status': 'testing'} })
-    disjoint_with: Optional[list[str]] = Field(default=None, description="""Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances""", json_schema_extra = { "linkml_meta": {'domain': 'definition',
+    disjoint_with: Optional[list[str]] = Field(default=[], description="""Two classes are disjoint if they have no instances in common, two slots are disjoint if they can never hold between the same two instances""", json_schema_extra = { "linkml_meta": {'domain': 'definition',
          'domain_of': ['slot_definition', 'class_definition'],
          'in_subset': ['SpecificationSubset']} })
     children_are_mutually_disjoint: Optional[bool] = Field(default=None, description="""If true then all direct is_a children are mutually disjoint and share no instances in common""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['slot_definition', 'class_definition']} })
@@ -5511,7 +7555,7 @@ Possible values:
          'in_subset': ['SpecificationSubset'],
          'rank': 6,
          'slot_uri': 'skos:prefLabel'} })
-    any_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    any_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if at least one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5520,7 +7564,7 @@ Possible values:
          'is_a': 'boolean_slot',
          'rank': 101,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    exactly_one_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    exactly_one_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if only one of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5529,7 +7573,7 @@ Possible values:
          'is_a': 'boolean_slot',
          'rank': 103,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    none_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    none_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if none of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5538,7 +7582,7 @@ Possible values:
          'is_a': 'boolean_slot',
          'rank': 105,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    all_of: Optional[list[AnonymousClassExpression]] = Field(default=None, description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
+    all_of: Optional[list[AnonymousClassExpression]] = Field(default=[], description="""holds if all of the expressions hold""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression',
                        'path_expression',
                        'slot_expression',
                        'class_expression'],
@@ -5547,7 +7591,7 @@ Possible values:
          'is_a': 'boolean_slot',
          'rank': 107,
          'see_also': ['https://w3id.org/linkml/docs/specification/05validation/#rules']} })
-    slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default=None, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
+    slot_conditions: Optional[dict[str, SlotDefinition]] = Field(default={}, description="""expresses constraints on a group of slots for a class expression""", json_schema_extra = { "linkml_meta": {'domain': 'class_expression',
          'domain_of': ['class_expression'],
          'in_subset': ['SpecificationSubset']} })
     is_a: Optional[str] = Field(default=None, description="""A primary parent class from which inheritable metaslots are propagated""", json_schema_extra = { "linkml_meta": {'abstract': True,
@@ -5565,7 +7609,7 @@ Possible values:
          'domain_of': ['definition'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'ObjectOrientedProfile'],
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    mixins: Optional[list[str]] = Field(default=None, description="""A collection of secondary parent mixin classes from which inheritable metaslots are propagated""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
+    mixins: Optional[list[str]] = Field(default=[], description="""A collection of secondary parent mixin classes from which inheritable metaslots are propagated""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
          'comments': ['mixins act in the same way as parents (is_a). They allow a '
                       'model to have a primary strict hierarchy, while keeping the '
                       'benefits of multiple inheritance'],
@@ -5576,8 +7620,8 @@ Possible values:
                        'OwlProfile'],
          'rank': 13,
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    apply_to: Optional[list[str]] = Field(default=None, description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
-    values_from: Optional[list[str]] = Field(default=None, description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    apply_to: Optional[list[str]] = Field(default=[], description="""Used to extend class or slot definitions. For example, if we have a core schema where a gene has two slots for identifier and symbol, and we have a specialized schema for my_organism where we wish to add a slot systematic_name, we can avoid subclassing by defining a class gene_my_organism, adding the slot to this class, and then adding an apply_to pointing to the gene class. The new slot will be 'injected into' the gene class.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
+    values_from: Optional[list[str]] = Field(default=[], description="""The identifier of a \"value set\" -- a set of identifiers that form the possible values for the range of a slot. Note: this is different than 'subproperty_of' in that 'subproperty_of' is intended to be a single ontology term while 'values_from' is the identifier of an entire value set.  Additionally, this is different than an enumeration in that in an enumeration, the values of the enumeration are listed directly in the model itself. Setting this property on a slot does not guarantee an expansion of the ontological hierarchy into an enumerated list of possible values in every serialization of the model.""", json_schema_extra = { "linkml_meta": {'domain': 'definition', 'domain_of': ['definition'], 'status': 'testing'} })
     string_serialization: Optional[str] = Field(default=None, description="""Used on a slot that stores the string serialization of the containing object. The syntax follows python formatted strings, with slot names enclosed in {}s. These are expanded using the values of those slots.
 We call the slot with the serialization the s-slot, the slots used in the {}s are v-slots. If both s-slots and v-slots are populated on an object then the value of the s-slot should correspond to the expansion.
 Implementations of frameworks may choose to use this property to either (a) PARSE: implement automated normalizations by parsing denormalized strings into complex objects (b) GENERATE: implement automated to_string labeling of complex objects
@@ -5600,7 +7644,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'see_also': ['https://en.wikipedia.org/wiki/Data_element_name',
                       'https://linkml.io/linkml/faq/modeling.html#why-are-my-class-names-translated-to-camelcase'],
          'slot_uri': 'rdfs:label'} })
-    id_prefixes: Optional[list[str]] = Field(default=None, description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
+    id_prefixes: Optional[list[str]] = Field(default=[], description="""An allowed list of prefixes for which identifiers must conform. The identifier of this class or slot must begin with the URIs referenced by this prefix""", json_schema_extra = { "linkml_meta": {'comments': ['Order of elements may be used to indicate priority order',
                       'If identifiers are treated as CURIEs, then the CURIE must start '
                       'with one of the indicated prefixes followed by `:` (_should_ '
                       'start if the list is open)',
@@ -5620,16 +7664,16 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['element'],
          'readonly': 'filled in by the schema loader or schema view',
          'see_also': ['linkml:class_uri', 'linkml:slot_uri']} })
-    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
+    local_names: Optional[dict[str, Union[str, LocalName]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element']} })
     conforms_to: Optional[str] = Field(default=None, description="""An established standard to which the element conforms.""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['element'],
          'in_subset': ['BasicSubset'],
          'see_also': ['linkml:implements'],
          'slot_uri': 'dcterms:conformsTo'} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -5640,7 +7684,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -5657,24 +7701,24 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -5703,13 +7747,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -5719,29 +7763,29 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -5749,7 +7793,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -5780,13 +7824,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -5823,6 +7867,204 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('slots', mode='before')
+    def coerce_list_slots(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('union_of', mode='before')
+    def coerce_list_union_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('defining_slots', mode='before')
+    def coerce_list_defining_slots(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('rules', mode='before')
+    def coerce_list_rules(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('classification_rules', mode='before')
+    def coerce_list_classification_rules(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('disjoint_with', mode='before')
+    def coerce_list_disjoint_with(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('any_of', mode='before')
+    def coerce_list_any_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exactly_one_of', mode='before')
+    def coerce_list_exactly_one_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('none_of', mode='before')
+    def coerce_list_none_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('all_of', mode='before')
+    def coerce_list_all_of(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mixins', mode='before')
+    def coerce_list_mixins(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('apply_to', mode='before')
+    def coerce_list_apply_to(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('values_from', mode='before')
+    def coerce_list_values_from(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('id_prefixes', mode='before')
+    def coerce_list_id_prefixes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class ClassLevelRule(ConfiguredBaseModel):
@@ -5874,8 +8116,8 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'rank': 51,
          'slot_uri': 'sh:order'} })
     deactivated: Optional[bool] = Field(default=None, description="""a deactivated rule is not executed by the rules engine""", json_schema_extra = { "linkml_meta": {'domain_of': ['class_rule'], 'slot_uri': 'sh:deactivated'} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -5886,7 +8128,7 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -5903,24 +8145,24 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -5949,13 +8191,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -5965,29 +8207,29 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -5995,7 +8237,7 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -6019,13 +8261,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
          'see_also': ['https://www.hl7.org/fhir/valueset-publication-status.html',
                       'https://www.hl7.org/fhir/versions.html#std-process'],
          'slot_uri': 'bibo:status'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -6042,6 +8284,108 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class ArrayExpression(CommonMetadata, Annotatable, Extensible):
@@ -6068,13 +8412,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'domain': 'array_expression',
          'domain_of': ['array_expression'],
          'status': 'testing'} })
-    dimensions: Optional[list[DimensionExpression]] = Field(default=None, description="""definitions of each axis in the array""", json_schema_extra = { "linkml_meta": {'aliases': ['axes'],
+    dimensions: Optional[list[DimensionExpression]] = Field(default=[], description="""definitions of each axis in the array""", json_schema_extra = { "linkml_meta": {'aliases': ['axes'],
          'domain': 'array_expression',
          'domain_of': ['array_expression'],
          'list_elements_ordered': True,
          'status': 'testing'} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -6085,7 +8429,7 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -6102,24 +8446,24 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -6148,13 +8492,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -6164,29 +8508,29 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -6194,7 +8538,7 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -6225,13 +8569,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -6248,6 +8592,114 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('dimensions', mode='before')
+    def coerce_list_dimensions(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class DimensionExpression(CommonMetadata, Annotatable, Extensible):
@@ -6283,8 +8735,8 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset'],
          'inherited': True,
          'is_a': 'list_value_specification_constant'} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -6295,7 +8747,7 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -6312,24 +8764,24 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -6358,13 +8810,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -6374,29 +8826,29 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -6404,7 +8856,7 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -6435,13 +8887,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -6458,6 +8910,108 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class PatternExpression(CommonMetadata, Annotatable, Extensible):
@@ -6477,8 +9031,8 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
     partial_match: Optional[bool] = Field(default=None, description="""if not true then the pattern must match the whole string, as if enclosed in ^...$""", json_schema_extra = { "linkml_meta": {'domain': 'pattern_expression',
          'domain_of': ['pattern_expression'],
          'in_subset': ['SpecificationSubset']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -6489,7 +9043,7 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -6506,24 +9060,24 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -6552,13 +9106,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -6568,29 +9122,29 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -6598,7 +9152,7 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -6629,13 +9183,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -6653,6 +9207,108 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
 
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
 
 class ImportExpression(CommonMetadata, Annotatable, Extensible):
     """
@@ -6668,11 +9324,11 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
     import_as: Optional[str] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'import_expression',
          'domain_of': ['import_expression'],
          'status': 'testing'} })
-    import_map: Optional[dict[str, Union[str, Setting]]] = Field(default=None, json_schema_extra = { "linkml_meta": {'domain': 'import_expression',
+    import_map: Optional[dict[str, Union[str, Setting]]] = Field(default={}, json_schema_extra = { "linkml_meta": {'domain': 'import_expression',
          'domain_of': ['import_expression'],
          'status': 'testing'} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -6683,7 +9339,7 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -6700,24 +9356,24 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -6746,13 +9402,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -6762,29 +9418,29 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -6792,7 +9448,7 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -6823,13 +9479,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -6850,6 +9506,108 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class Setting(ConfiguredBaseModel):
@@ -6969,8 +9727,8 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'see_also': ['https://en.wikipedia.org/wiki/ISO/IEC_11179']} })
     unit: Optional[UnitOfMeasure] = Field(default=None, description="""an encoding of a unit""", json_schema_extra = { "linkml_meta": {'domain_of': ['type_expression', 'slot_expression', 'permissible_value'],
          'slot_uri': 'qudt:unit'} })
-    instantiates: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
-    implements: Optional[list[str]] = Field(default=None, description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    instantiates: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element instantiates.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
+    implements: Optional[list[str]] = Field(default=[], description="""An element in another schema which this element conforms to. The referenced element is not imported into the schema for the implementing element. However, the referenced schema may be used to check conformance of the implementing element.""", json_schema_extra = { "linkml_meta": {'domain': 'element', 'domain_of': ['element', 'permissible_value']} })
     is_a: Optional[str] = Field(default=None, description="""A primary parent class or slot from which inheritable metaslots are propagated from. While multiple inheritance is not allowed, mixins can be provided effectively providing the same thing. The semantics are the same when translated to formalisms that allow MI (e.g. RDFS/OWL). When translating to a SI framework (e.g. java classes, python classes) then is a is used. When translating a framework without polymorphism (e.g. json-schema, solr document schema) then is a and mixins are recursively unfolded""", json_schema_extra = { "linkml_meta": {'abstract': True,
          'domain_of': ['definition', 'anonymous_class_expression', 'permissible_value'],
          'in_subset': ['SpecificationSubset',
@@ -6978,7 +9736,7 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
                        'ObjectOrientedProfile',
                        'OwlProfile'],
          'rank': 11} })
-    mixins: Optional[list[str]] = Field(default=None, description="""A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
+    mixins: Optional[list[str]] = Field(default=[], description="""A collection of secondary parent classes or slots from which inheritable metaslots are propagated from.""", json_schema_extra = { "linkml_meta": {'aliases': ['traits'],
          'comments': ['mixins act in the same way as parents (is_a). They allow a '
                       'model to have a primary strict hierarchy, while keeping the '
                       'benefits of multiple inheritance'],
@@ -6989,11 +9747,11 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
                        'OwlProfile'],
          'rank': 13,
          'see_also': ['https://en.wikipedia.org/wiki/Mixin']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -7010,24 +9768,24 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -7056,13 +9814,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -7072,29 +9830,29 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -7102,7 +9860,7 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -7133,13 +9891,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -7156,6 +9914,126 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('instantiates', mode='before')
+    def coerce_list_instantiates(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('implements', mode='before')
+    def coerce_list_implements(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mixins', mode='before')
+    def coerce_list_mixins(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class UniqueKey(CommonMetadata, Annotatable, Extensible):
@@ -7174,8 +10052,8 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['unique_key'],
          'in_subset': ['SpecificationSubset', 'BasicSubset', 'RelationalModelProfile']} })
     consider_nulls_inequal: Optional[bool] = Field(default=None, description="""By default, None values are considered equal for the purposes of comparisons in determining uniqueness. Set this to true to treat missing values as per ANSI-SQL NULLs, i.e NULL=NULL is always False.""", json_schema_extra = { "linkml_meta": {'domain': 'unique_key', 'domain_of': ['unique_key']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -7186,7 +10064,7 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -7203,24 +10081,24 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -7249,13 +10127,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -7265,29 +10143,29 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -7295,7 +10173,7 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -7326,13 +10204,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -7349,6 +10227,114 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('unique_key_slots', mode='before')
+    def coerce_list_unique_key_slots(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class TypeMapping(CommonMetadata, Annotatable, Extensible):
@@ -7370,8 +10356,8 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['SpecificationSubset'],
          'inherited': False,
          'see_also': ['https://github.com/linkml/issues/128']} })
-    extensions: Optional[dict[str, Extension]] = Field(default=None, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
-    annotations: Optional[dict[str, Annotation]] = Field(default=None, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
+    extensions: Optional[dict[str, Extension]] = Field(default={}, description="""a tag/text tuple attached to an arbitrary element""", json_schema_extra = { "linkml_meta": {'domain': 'extensible', 'domain_of': ['extension', 'extensible']} })
+    annotations: Optional[dict[str, Annotation]] = Field(default={}, description="""a collection of tag/text tuples with the semantics of OWL Annotation""", json_schema_extra = { "linkml_meta": {'domain': 'annotatable',
          'domain_of': ['annotatable', 'annotation'],
          'is_a': 'extensions'} })
     description: Optional[str] = Field(default=None, description="""a textual description of the element's purpose and use""", json_schema_extra = { "linkml_meta": {'aliases': ['definition'],
@@ -7382,7 +10368,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'rank': 5,
          'recommended': True,
          'slot_uri': 'skos:definition'} })
-    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default=None, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
+    alt_descriptions: Optional[dict[str, Union[str, AltDescription]]] = Field(default={}, description="""A sourced alternative description for an element""", json_schema_extra = { "linkml_meta": {'aliases': ['alternate definitions'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
@@ -7399,24 +10385,24 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    todos: Optional[list[str]] = Field(default=None, description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    todos: Optional[list[str]] = Field(default=[], description="""Outstanding issues that needs resolution""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset']} })
-    notes: Optional[list[str]] = Field(default=None, description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    notes: Optional[list[str]] = Field(default=[], description="""editorial notes about an element intended primarily for internal consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:editorialNote'} })
-    comments: Optional[list[str]] = Field(default=None, description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    comments: Optional[list[str]] = Field(default=[], description="""notes and comments about an element intended primarily for external consumption""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'exact_mappings': ['rdfs:comment'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:note'} })
-    examples: Optional[list[Example]] = Field(default=None, description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
+    examples: Optional[list[Example]] = Field(default=[], description="""example usages of an element""", json_schema_extra = { "linkml_meta": {'close_mappings': ['vann:example'],
          'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'example'} })
-    in_subset: Optional[list[str]] = Field(default=None, description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
+    in_subset: Optional[list[str]] = Field(default=[], description="""used to indicate membership of a term in a defined subset of terms used for a particular domain or application.""", json_schema_extra = { "linkml_meta": {'comments': ['an example of use in the translator_minimal subset in the '
                       'biolink model, holding the minimal set of predicates used in a '
                       'translator knowledge graph'],
          'domain': 'element',
@@ -7445,13 +10431,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'conforms_to': 'https://www.rfc-editor.org/rfc/bcp/bcp47.txt',
          'domain_of': ['common_metadata'],
          'slot_uri': 'schema:inLanguage'} })
-    see_also: Optional[list[str]] = Field(default=None, description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    see_also: Optional[list[str]] = Field(default=[], description="""A list of related entities or URLs that may be of relevance""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'rdfs:seeAlso'} })
     deprecated_element_has_exact_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be automatically replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['IAO:0100001']} })
     deprecated_element_has_possible_replacement: Optional[str] = Field(default=None, description="""When an element is deprecated, it can be potentially replaced by this uri or curie""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'], 'mappings': ['OIO:consider']} })
-    aliases: Optional[list[str]] = Field(default=None, description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
+    aliases: Optional[list[str]] = Field(default=[], description="""Alternate names/labels for the element. These do not alter the semantics of the schema, but may be useful to support search and alignment.""", json_schema_extra = { "linkml_meta": {'aliases': ['synonyms',
                      'alternate names',
                      'alternative labels',
                      'designations'],
@@ -7461,29 +10447,29 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'exact_mappings': ['schema:alternateName'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'skos:altLabel'} })
-    structured_aliases: Optional[list[StructuredAlias]] = Field(default=None, description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    structured_aliases: Optional[list[StructuredAlias]] = Field(default=[], description="""A list of structured_alias objects, used to provide aliases in conjunction with additional metadata.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'see_also': ['linkml:aliases'],
          'slot_uri': 'skosxl:altLabel'} })
-    mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
+    mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have comparable meaning. These may include terms that are precisely equivalent, broader or narrower in meaning, or otherwise semantically related but not equivalent from a strict ontological perspective.""", json_schema_extra = { "linkml_meta": {'aliases': ['xrefs', 'identifiers', 'alternate identifiers', 'alternate ids'],
          'domain_of': ['common_metadata'],
          'slot_uri': 'skos:mappingRelation'} })
-    exact_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
+    exact_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have identical meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['UnitOfMeasure', 'common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:exactMatch'} })
-    close_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    close_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have close meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:closeMatch'} })
-    related_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    related_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have related meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:relatedMatch'} })
-    narrow_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    narrow_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have narrower meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:narrowMatch'} })
-    broad_mappings: Optional[list[str]] = Field(default=None, description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
+    broad_mappings: Optional[list[str]] = Field(default=[], description="""A list of terms from different schemas or terminology systems that have broader meaning.""", json_schema_extra = { "linkml_meta": {'domain_of': ['common_metadata'],
          'inherited': False,
          'is_a': 'mappings',
          'slot_uri': 'skos:broadMatch'} })
@@ -7491,7 +10477,7 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'pav:createdBy'} })
-    contributors: Optional[list[str]] = Field(default=None, description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    contributors: Optional[list[str]] = Field(default=[], description="""agent that contributed to the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'slot_uri': 'dcterms:contributor'} })
@@ -7522,13 +10508,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
          'in_subset': ['SpecificationSubset', 'BasicSubset'],
          'rank': 51,
          'slot_uri': 'sh:order'} })
-    categories: Optional[list[str]] = Field(default=None, description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
+    categories: Optional[list[str]] = Field(default=[], description="""Controlled terms used to categorize an element.""", json_schema_extra = { "linkml_meta": {'comments': ['if you wish to use uncontrolled terms or terms that lack '
                       'identifiers then use the keywords element'],
          'domain_of': ['common_metadata', 'structured_alias'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'category',
          'slot_uri': 'dcterms:subject'} })
-    keywords: Optional[list[str]] = Field(default=None, description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
+    keywords: Optional[list[str]] = Field(default=[], description="""Keywords or tags used to describe the element""", json_schema_extra = { "linkml_meta": {'domain': 'element',
          'domain_of': ['common_metadata'],
          'in_subset': ['BasicSubset'],
          'singular_name': 'keyword',
@@ -7545,6 +10531,108 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
         return _coerce_keyed_collection(v, "source")
+
+    @field_validator('todos', mode='before')
+    def coerce_list_todos(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('notes', mode='before')
+    def coerce_list_notes(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('comments', mode='before')
+    def coerce_list_comments(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('examples', mode='before')
+    def coerce_list_examples(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('in_subset', mode='before')
+    def coerce_list_in_subset(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('see_also', mode='before')
+    def coerce_list_see_also(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('aliases', mode='before')
+    def coerce_list_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('structured_aliases', mode='before')
+    def coerce_list_structured_aliases(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('mappings', mode='before')
+    def coerce_list_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('exact_mappings', mode='before')
+    def coerce_list_exact_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('close_mappings', mode='before')
+    def coerce_list_close_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('related_mappings', mode='before')
+    def coerce_list_related_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('narrow_mappings', mode='before')
+    def coerce_list_narrow_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('broad_mappings', mode='before')
+    def coerce_list_broad_mappings(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('contributors', mode='before')
+    def coerce_list_contributors(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('categories', mode='before')
+    def coerce_list_categories(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
+
+    @field_validator('keywords', mode='before')
+    def coerce_list_keywords(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]
 
 
 class ExtraSlotsExpression(Expression):

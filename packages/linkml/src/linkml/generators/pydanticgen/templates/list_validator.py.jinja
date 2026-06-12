@@ -1,0 +1,5 @@
+@field_validator('{{name}}', mode='before')
+    def coerce_list_{{name}}(cls, v):
+        if v is None or isinstance(v, list):
+            return v
+        return [v]

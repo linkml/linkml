@@ -97,6 +97,17 @@ def _diff_paths(a: Any, b: Any, path: str = "", diffs: list[str] | None = None) 
     return diffs
 
 
+def _generation_script_kwargs() -> dict[str, Any]:
+    """Canonical generator options from scripts/generate_pydantic_metamodel.py."""
+    import importlib.util
+
+    script = Path(__file__).parents[3] / "scripts" / "generate_pydantic_metamodel.py"
+    spec = importlib.util.spec_from_file_location("generate_pydantic_metamodel", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.METAMODEL_GENERATOR_KWARGS
+
+
 def test_vendored_pydantic_metamodel_in_sync() -> None:
     """The committed linkml_runtime.linkml_model.pydantic artifact matches regeneration.
 
@@ -105,7 +116,7 @@ def test_vendored_pydantic_metamodel_in_sync() -> None:
     import linkml_runtime.linkml_model.pydantic as vendored
 
     committed = (Path(vendored.__file__).parent / "meta.py").read_text()
-    regenerated = PydanticGenerator(LOCAL_METAMODEL_YAML_FILE).serialize()
+    regenerated = PydanticGenerator(LOCAL_METAMODEL_YAML_FILE, **_generation_script_kwargs()).serialize()
     assert committed.endswith(regenerated), (
         "vendored pydantic metamodel is stale; run scripts/generate_pydantic_metamodel.py"
     )

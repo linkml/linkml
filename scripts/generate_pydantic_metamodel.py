@@ -19,6 +19,16 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 META_YAML = REPO_ROOT / "packages/linkml_runtime/src/linkml_runtime/linkml_model/model/schema/meta.yaml"
 TARGET_DIR = REPO_ROOT / "packages/linkml_runtime/src/linkml_runtime/linkml_model/pydantic"
 
+#: Canonical generator options for the vendored metamodel artifact. The
+#: drift-guard test (tests/linkml/test_generators/test_pydanticgen_metamodel.py)
+#: regenerates with these same options.
+METAMODEL_GENERATOR_KWARGS: dict = {
+    # SchemaView and other core consumers iterate container slots without
+    # None-guards, matching the dataclass metamodel's empty_list/empty_dict
+    # defaults; the base-model serializer omits empty containers on dump.
+    "empty_list_for_multivalued_slots": True,
+}
+
 HEADER = """\
 # Vendored, generated file -- do not edit.
 # Regenerate with: uv run python scripts/generate_pydantic_metamodel.py
@@ -41,7 +51,7 @@ from linkml_runtime.linkml_model.pydantic.meta import *  # noqa: F401,F403
 
 def main() -> None:
     """Generate meta.py and __init__.py for the vendored pydantic metamodel."""
-    source = PydanticGenerator(str(META_YAML)).serialize()
+    source = PydanticGenerator(str(META_YAML), **METAMODEL_GENERATOR_KWARGS).serialize()
     TARGET_DIR.mkdir(parents=True, exist_ok=True)
     (TARGET_DIR / "meta.py").write_text(HEADER + source)
     (TARGET_DIR / "__init__.py").write_text(INIT)

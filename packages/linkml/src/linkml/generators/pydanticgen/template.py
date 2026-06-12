@@ -216,6 +216,11 @@ class PydanticAttribute(PydanticTemplateModel):
     rendered as an inlined dict. When set, a ``mode="before"`` validator is
     generated that injects each dict key into this field of its value.
     """
+    coerce_to_list: bool = False
+    """
+    When True (multivalued slots rendered as lists), a ``mode="before"``
+    validator is generated that wraps a single value into a singleton list.
+    """
     meta: dict[str, Any] | None = None
     """
     Metadata for the slot to be included in a Field annotation
@@ -229,8 +234,11 @@ class PydanticAttribute(PydanticTemplateModel):
         elif self.required or self.identifier or self.key:
             return "..."
         else:
-            if self.empty_list_for_multivalued_slots and self.range and self.range.startswith("Optional[list"):
-                return "[]"
+            if self.empty_list_for_multivalued_slots and self.range:
+                if self.range.startswith("Optional[list"):
+                    return "[]"
+                if self.range.startswith("Optional[dict"):
+                    return "{}"
             return "None"
 
     @model_validator(mode="after")
@@ -259,6 +267,16 @@ class PydanticKeyedDictValidator(PydanticValidator):
     """
 
     template: ClassVar[str] = "keyed_dict_validator.py.jinja"
+
+
+class PydanticListValidator(PydanticValidator):
+    """
+    Subclass of :class:`.PydanticValidator` rendering a ``mode="before"`` validator
+    that wraps a single value into a singleton list for multivalued slots
+    rendered as lists.
+    """
+
+    template: ClassVar[str] = "list_validator.py.jinja"
 
 
 class PydanticClass(PydanticTemplateModel):
@@ -304,6 +322,13 @@ class PydanticClass(PydanticTemplateModel):
                 f"{k}__keyed": PydanticKeyedDictValidator(**v.model_dump())
                 for k, v in self.attributes.items()
                 if v.keyed_dict_key is not None
+            }
+        )
+        validators.update(
+            {
+                f"{k}__list": PydanticListValidator(**v.model_dump())
+                for k, v in self.attributes.items()
+                if v.coerce_to_list
             }
         )
         return validators

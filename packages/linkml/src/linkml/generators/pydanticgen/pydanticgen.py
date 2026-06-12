@@ -638,6 +638,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
                 result.attribute.range = f"list[{result.attribute.range}]"
+                result.attribute.coerce_to_list = True
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:

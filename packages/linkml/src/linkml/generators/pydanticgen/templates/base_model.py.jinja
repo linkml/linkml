@@ -23,7 +23,7 @@ class {{ name }}(BaseModel):
         if info.exclude_none:
             _instance = self.model_copy()
             for field, field_info in type(_instance).model_fields.items():
-                if getattr(_instance, field) == [] and not(
+                if getattr(_instance, field) in ([], {}) and not(
                         field_info.is_required()):
                     setattr(_instance, field, None)
         else:

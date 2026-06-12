@@ -373,6 +373,8 @@ classes:
       value: {}
       flag:
         range: boolean
+      tags:
+        multivalued: true
   PrefixLike:
     attributes:
       pfx:
@@ -423,6 +425,24 @@ def test_keyed_dict_coercion_key_mismatch(keyed_dict_module):
     """A dict key conflicting with the value's explicit key slot fails fast."""
     with pytest.raises(ValidationError, match="mismatch"):
         keyed_dict_module.Container.model_validate({"items": {"a": {"name": "b"}}})
+
+
+def test_keyed_dict_flat_single_object(keyed_dict_module):
+    """A flat single-object body (key slot among the dict keys) wraps to one entry."""
+    container = keyed_dict_module.Container.model_validate({"items": {"name": "a", "value": "1"}})
+    assert list(container.items.keys()) == ["a"]
+    assert container.items["a"].value == "1"
+
+
+@pytest.mark.parametrize(
+    "tags,expected",
+    [("solo", ["solo"]), (["a", "b"], ["a", "b"]), (None, None)],
+    ids=["scalar-wrapped", "list-passthrough", "none-passthrough"],
+)
+def test_multivalued_list_scalar_coercion(keyed_dict_module, tags, expected):
+    """A single value for a multivalued list slot wraps into a singleton list."""
+    item = keyed_dict_module.Item.model_validate({"name": "x", "tags": tags})
+    assert item.tags == expected
 
 
 @pytest.mark.parametrize(
