@@ -164,6 +164,11 @@ class PydanticBaseModel(PydanticTemplateModel):
     (e.g. a metamodel used with SchemaView, whose induced_slot hot path
     assigns to copies in a loop).
     """
+    coerce_numbers_to_str: bool = False
+    """
+    Coerce numeric values to str for string-typed fields (part of YAMLRoot
+    input-form compatibility; see PydanticGenerator.coerce_input).
+    """
     fields: list[str] | None = None
     """
     Extra fields that are typically injected into the base model via

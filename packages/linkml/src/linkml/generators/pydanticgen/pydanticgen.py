@@ -241,6 +241,15 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
     validate_assignment: bool = True
     """Re-validate fields on assignment in generated models (see PydanticBaseModel.validate_assignment)"""
+    coerce_input: bool = False
+    """
+    Generate ``mode="before"`` validators reproducing YAMLRoot's permissive
+    input normalization: dict-key injection for inlined-as-dict slots, dict
+    and scalar forms for inlined lists, simple-dict scalar values, and
+    number-to-string coercion. Off by default - it loosens validation - and
+    enabled for the vendored pydantic metamodel, whose consumers rely on
+    dataclass-metamodel input semantics.
+    """
     gen_mixin_inheritance: bool = True
     injected_classes: list[type | str] | None = None
     """
@@ -640,15 +649,16 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 collection_key = None
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
                 result.attribute.range = f"list[{result.attribute.range}]"
-                result.attribute.coerce_to_list = True
-                if slot.range in self.schemaview.all_classes() and self.schemaview.is_inlined(slot):
-                    inlined_key = self.generate_inlined_list_key_name(slot)
-                    if inlined_key is not None:
-                        result.attribute.inlined_list_key = inlined_key
-                        if result.injected_classes is None:
-                            result.injected_classes = [includes.InlinedListCoercion]
-                        else:
-                            result.injected_classes.append(includes.InlinedListCoercion)
+                if self.coerce_input:
+                    result.attribute.coerce_to_list = True
+                    if slot.range in self.schemaview.all_classes() and self.schemaview.is_inlined(slot):
+                        inlined_key = self.generate_inlined_list_key_name(slot)
+                        if inlined_key is not None:
+                            result.attribute.inlined_list_key = inlined_key
+                            if result.injected_classes is None:
+                                result.injected_classes = [includes.InlinedListCoercion]
+                            else:
+                                result.injected_classes.append(includes.InlinedListCoercion)
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
@@ -664,7 +674,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 else:
                     result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
                     coerce_keyed = True
-                if coerce_keyed:
+                if coerce_keyed and self.coerce_input:
                     key_name = self.generate_collection_key_name(slot_ranges)
                     if key_name is not None:
                         result.attribute.keyed_dict_key = key_name
@@ -1221,6 +1231,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         base_model = PydanticBaseModel(
             extra_fields=self.extra_fields,
             validate_assignment=self.validate_assignment,
+            coerce_numbers_to_str=self.coerce_input,
             fields=self.injected_fields,
             empty_list_for_multivalued_slots=self.empty_list_for_multivalued_slots,
         )

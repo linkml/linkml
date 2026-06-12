@@ -30,6 +30,10 @@ METAMODEL_GENERATOR_KWARGS: dict = {
     # SchemaView.induced_slot assigns to slot copies in a tight loop;
     # re-validating every assignment costs ~4x on that hot path.
     "validate_assignment": False,
+    # Reproduce YAMLRoot's permissive input normalization (key injection,
+    # scalar wrapping, simple-dict forms) so schema YAML that loads under
+    # the dataclass metamodel loads here too.
+    "coerce_input": True,
 }
 
 HEADER = """\

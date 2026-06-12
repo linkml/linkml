@@ -8,7 +8,9 @@ class {{ name }}(BaseModel):
         arbitrary_types_allowed = True,
         use_enum_values = True,
         strict = {{ strict }},
+{% if coerce_numbers_to_str %}
         coerce_numbers_to_str = True,
+{% endif %}
     )
 {% if fields is not none %}
     {% for field in fields %}

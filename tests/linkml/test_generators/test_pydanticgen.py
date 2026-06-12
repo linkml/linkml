@@ -395,13 +395,22 @@ classes:
 
 @pytest.fixture(scope="module")
 def keyed_dict_module():
-    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE, coerce_input=True).serialize()
     return compile_python(code, PACKAGE)
+
+
+def test_coerce_input_off_by_default():
+    """Without coerce_input, no YAMLRoot-style input normalization is generated."""
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
+    assert "_coerce_keyed_collection" not in code
+    assert "_coerce_inlined_list" not in code
+    assert "coerce_list_" not in code
+    assert "coerce_numbers_to_str" not in code
 
 
 def test_keyed_dict_generated_code():
     """Inlined-as-dict slots get a before-validator injecting the dict key into the key slot."""
-    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
+    code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE, coerce_input=True).serialize()
     assert "def _coerce_keyed_collection(" in code
     assert "@field_validator('items', mode='before')" in code
     assert '_coerce_keyed_collection(v, "name", value_name="value")' in code
