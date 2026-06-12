@@ -43,7 +43,7 @@ def test_validate_keyed_collections() -> None:
     assert isinstance(schema.slots["id"], SlotDefinition)
     assert schema.slots["id"].name == "id"
     assert schema.slots["id"].identifier is True
-    assert schema.prefixes["linkml"] == "https://w3id.org/linkml/"
+    assert schema.prefixes["linkml"].prefix_reference == "https://w3id.org/linkml/"
 
 
 def test_validate_vendored_metamodel_yaml() -> None:

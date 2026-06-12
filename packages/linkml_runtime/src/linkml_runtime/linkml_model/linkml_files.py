@@ -46,6 +46,7 @@ class Format(_AutoName):
     OWL = auto()
     PREFIXMAP = auto()
     PROTOBUF = auto()
+    PYDANTIC = auto()
     PYTHON = auto()
     RDF = auto()
     SHACL = auto()
@@ -73,6 +74,7 @@ class _Path:
     OWL = _PathInfo("owl", "owl.ttl")
     PREFIXMAP = _PathInfo("prefixmap", "yaml")
     PROTOBUF = _PathInfo("protobuf", "proto")
+    PYDANTIC = _PathInfo("pydantic", "py")
     PYTHON = _PathInfo("", "py")
     RDF = _PathInfo("rdf", "ttl")
     SHACL = _PathInfo("shacl", "shacl.ttl")
@@ -99,6 +101,7 @@ META_ONLY = (
     Format.OWL,
     Format.PREFIXMAP,
     Format.PROTOBUF,
+    Format.PYDANTIC,
     Format.SHACL,
     Format.SQLDDL,
     Format.SQLSCHEMA,

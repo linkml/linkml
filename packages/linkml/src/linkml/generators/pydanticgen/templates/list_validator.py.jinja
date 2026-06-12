@@ -1,5 +1,9 @@
 @field_validator('{{name}}', mode='before')
     def coerce_list_{{name}}(cls, v):
+{% if inlined_list_key %}
+        return _coerce_inlined_list(v, "{{inlined_list_key}}")
+{% else %}
         if v is None or isinstance(v, list):
             return v
         return [v]
+{% endif %}

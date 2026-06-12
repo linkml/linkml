@@ -40,12 +40,13 @@ class ConfiguredBaseModel(BaseModel):
     model_config = ConfigDict(
         serialize_by_alias = True,
         validate_by_name = True,
-        validate_assignment = True,
+        validate_assignment = False,
         validate_default = True,
         extra = "forbid",
         arbitrary_types_allowed = True,
         use_enum_values = True,
         strict = False,
+        coerce_numbers_to_str = True,
     )
 
     @model_serializer(mode='wrap', when_used='unless-none')
@@ -84,21 +85,27 @@ class LinkMLMeta(RootModel):
 
 
 
-def _coerce_keyed_collection(value: Any, key_name: str) -> Any:
+def _coerce_keyed_collection(value: Any, key_name: str, value_name: str | None = None) -> Any:
     """
     Normalize the input forms of a multivalued, inlined-as-dict slot to a dict
     of dicts, injecting the dict key into each value's key/identifier slot
-    (``key_name``). Mirrors the normalization YAMLRoot performs for the
-    equivalent dataclass models.
+    (``key_name``). A scalar entry value is assigned to ``value_name`` when
+    given (the positional second-slot semantics of the dataclass metamodel,
+    e.g. ``annotations: {tag: v}`` or ``prefixes: {pfx: url}``). Mirrors the
+    normalization YAMLRoot performs for the equivalent dataclass models.
     """
     if isinstance(value, str):
         return {value: {key_name: value}}
     if isinstance(value, dict):
-        if key_name in value and not isinstance(value[key_name], (dict, list)):
-            # flat single-object form, e.g. annotations: {tag: t, value: v}
+        if key_name in value and isinstance(value[key_name], (str, int, float)) and not isinstance(value[key_name], bool):
+            # flat single-object form, e.g. annotations: {tag: t, value: v} --
+            # only when the key field holds a scalar (a None/dict body means an
+            # entry whose dict key happens to equal the key slot's name)
             return {value[key_name]: dict(value)}
         out = {}
         for key, item in value.items():
+            if not isinstance(key, str):
+                key = str(key)
             if item is None:
                 out[key] = {key_name: key}
             elif isinstance(item, dict):
@@ -108,6 +115,9 @@ def _coerce_keyed_collection(value: Any, key_name: str) -> Any:
                     raise ValueError(f"{key_name} mismatch: dict key {key!r} != {item[key_name]!r}")
                 else:
                     out[key] = item
+            elif value_name is not None and isinstance(item, (str, int, float, bool)):
+                # simple form: dict key + scalar value, e.g. prefixes: {pfx: url}
+                out[key] = {key_name: key, value_name: item}
             else:
                 out[key] = item
         return out
@@ -126,6 +136,34 @@ def _coerce_keyed_collection(value: Any, key_name: str) -> Any:
                 raise ValueError(f"Cannot key list item {item!r} by {key_name}")
         return out
     return value
+
+
+
+
+def _coerce_inlined_list(value: Any, key_name: str) -> Any:
+    """
+    Normalize the input forms of a multivalued slot inlined as a list of
+    objects: a dict keyed by ``key_name`` (the identifier/key slot of the
+    range class, or its first required slot) becomes a list with the keys
+    injected, and a single object is wrapped into a singleton list. Mirrors
+    the normalization YAMLRoot performs for the equivalent dataclass models.
+    """
+    if value is None or isinstance(value, list):
+        return value
+    if isinstance(value, dict):
+        if key_name in value and isinstance(value[key_name], (str, int, float)) and not isinstance(value[key_name], bool):
+            # flat single-object form, e.g. structured_aliases: {literal_form: x, ...}
+            return [value]
+        out = []
+        for key, item in value.items():
+            if item is None:
+                out.append({key_name: key})
+            elif isinstance(item, dict) and key_name not in item:
+                out.append({key_name: key, **item})
+            else:
+                out.append(item)
+        return out
+    return [value]
 
 
 linkml_meta = LinkMLMeta({'default_curi_maps': ['semweb_context'],
@@ -432,7 +470,7 @@ class Extension(ConfiguredBaseModel):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
 
 class Extensible(ConfiguredBaseModel):
@@ -445,7 +483,7 @@ class Extensible(ConfiguredBaseModel):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
 
 class Annotatable(ConfiguredBaseModel):
@@ -460,7 +498,7 @@ class Annotatable(ConfiguredBaseModel):
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
 
 class Annotation(Annotatable, Extension):
@@ -482,11 +520,11 @@ class Annotation(Annotatable, Extension):
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
 
 class UnitOfMeasure(ConfiguredBaseModel):
@@ -537,6 +575,7 @@ class UnitOfMeasure(ConfiguredBaseModel):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class CommonMetadata(ConfiguredBaseModel):
@@ -709,7 +748,7 @@ class CommonMetadata(ConfiguredBaseModel):
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -717,11 +756,13 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -729,11 +770,13 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -741,11 +784,13 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -753,11 +798,11 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -765,11 +810,13 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -777,11 +824,13 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -789,11 +838,13 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -801,17 +852,20 @@ class CommonMetadata(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class Element(CommonMetadata, Annotatable, Extensible):
@@ -1033,19 +1087,19 @@ class Element(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
@@ -1053,11 +1107,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
@@ -1065,11 +1121,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -1077,11 +1135,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -1089,11 +1149,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -1101,17 +1163,18 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -1119,11 +1182,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -1131,11 +1196,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -1143,11 +1210,13 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -1155,17 +1224,20 @@ class Element(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class SchemaDefinition(Element):
@@ -1510,47 +1582,47 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
 
     @field_validator('prefixes', mode='before')
     def coerce_keyed_prefixes(cls, v):
-        return _coerce_keyed_collection(v, "prefix_prefix")
+        return _coerce_keyed_collection(v, "prefix_prefix", value_name="prefix_reference")
 
     @field_validator('subsets', mode='before')
     def coerce_keyed_subsets(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('types', mode='before')
     def coerce_keyed_types(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('enums', mode='before')
     def coerce_keyed_enums(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('slots', mode='before')
     def coerce_keyed_slots(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('classes', mode='before')
     def coerce_keyed_classes(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('settings', mode='before')
     def coerce_keyed_settings(cls, v):
-        return _coerce_keyed_collection(v, "setting_key")
+        return _coerce_keyed_collection(v, "setting_key", value_name="setting_value")
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('imports', mode='before')
     def coerce_list_imports(cls, v):
@@ -1558,11 +1630,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('emit_prefixes', mode='before')
     def coerce_list_emit_prefixes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('default_curi_maps', mode='before')
     def coerce_list_default_curi_maps(cls, v):
@@ -1570,11 +1644,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('bindings', mode='before')
     def coerce_list_bindings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
@@ -1582,11 +1658,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
@@ -1594,11 +1672,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -1606,11 +1686,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -1618,11 +1700,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -1630,17 +1714,18 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -1648,11 +1733,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -1660,11 +1747,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -1672,11 +1761,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -1684,17 +1775,20 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class SubsetDefinition(Element):
@@ -1913,19 +2007,19 @@ class SubsetDefinition(Element):
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
@@ -1933,11 +2027,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
@@ -1945,11 +2041,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -1957,11 +2055,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -1969,11 +2069,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -1981,17 +2083,18 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -1999,11 +2102,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -2011,11 +2116,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -2023,11 +2130,13 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -2035,17 +2144,20 @@ class SubsetDefinition(Element):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class Definition(Element):
@@ -2301,19 +2413,19 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('mixins', mode='before')
     def coerce_list_mixins(cls, v):
@@ -2321,11 +2433,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('apply_to', mode='before')
     def coerce_list_apply_to(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('values_from', mode='before')
     def coerce_list_values_from(cls, v):
@@ -2333,11 +2447,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
@@ -2345,11 +2461,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -2357,11 +2475,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -2369,11 +2489,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -2381,11 +2503,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -2393,11 +2517,11 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -2405,11 +2529,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -2417,11 +2543,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -2429,11 +2557,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -2441,17 +2571,20 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class EnumBinding(CommonMetadata, Annotatable, Extensible):
@@ -2661,15 +2794,15 @@ implicitly asserts Y is an instance of C2
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -2677,11 +2810,13 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -2689,11 +2824,13 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -2701,11 +2838,13 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -2713,11 +2852,11 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -2725,11 +2864,13 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -2737,11 +2878,13 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -2749,11 +2892,13 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -2761,17 +2906,20 @@ implicitly asserts Y is an instance of C2
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class MatchQuery(ConfiguredBaseModel):
@@ -2831,11 +2979,13 @@ class ReachabilityQuery(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('relationship_types', mode='before')
     def coerce_list_relationship_types(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class Expression(ConfiguredBaseModel):
@@ -2948,11 +3098,13 @@ class TypeExpression(Expression):
             return v
         return [v]
 
+
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
@@ -2960,17 +3112,20 @@ class TypeExpression(Expression):
             return v
         return [v]
 
+
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class AnonymousTypeExpression(TypeExpression):
@@ -3065,11 +3220,13 @@ class AnonymousTypeExpression(TypeExpression):
             return v
         return [v]
 
+
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
@@ -3077,17 +3234,20 @@ class AnonymousTypeExpression(TypeExpression):
             return v
         return [v]
 
+
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class TypeDefinition(TypeExpression, Element):
@@ -3422,19 +3582,19 @@ class TypeDefinition(TypeExpression, Element):
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('union_of', mode='before')
     def coerce_list_union_of(cls, v):
@@ -3442,11 +3602,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('equals_string_in', mode='before')
     def coerce_list_equals_string_in(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -3454,11 +3616,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -3466,11 +3630,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
@@ -3478,11 +3644,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
@@ -3490,11 +3658,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -3502,11 +3672,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -3514,11 +3686,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -3526,17 +3700,18 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -3544,11 +3719,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -3556,11 +3733,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -3568,11 +3747,13 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -3580,17 +3761,20 @@ class TypeDefinition(TypeExpression, Element):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class EnumExpression(Expression):
@@ -3645,7 +3829,7 @@ class EnumExpression(Expression):
 
     @field_validator('permissible_values', mode='before')
     def coerce_keyed_permissible_values(cls, v):
-        return _coerce_keyed_collection(v, "text")
+        return _coerce_keyed_collection(v, "text", value_name="description")
 
     @field_validator('include', mode='before')
     def coerce_list_include(cls, v):
@@ -3653,11 +3837,13 @@ class EnumExpression(Expression):
             return v
         return [v]
 
+
     @field_validator('minus', mode='before')
     def coerce_list_minus(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('inherits', mode='before')
     def coerce_list_inherits(cls, v):
@@ -3665,11 +3851,13 @@ class EnumExpression(Expression):
             return v
         return [v]
 
+
     @field_validator('concepts', mode='before')
     def coerce_list_concepts(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class AnonymousEnumExpression(EnumExpression):
@@ -3724,7 +3912,7 @@ class AnonymousEnumExpression(EnumExpression):
 
     @field_validator('permissible_values', mode='before')
     def coerce_keyed_permissible_values(cls, v):
-        return _coerce_keyed_collection(v, "text")
+        return _coerce_keyed_collection(v, "text", value_name="description")
 
     @field_validator('include', mode='before')
     def coerce_list_include(cls, v):
@@ -3732,11 +3920,13 @@ class AnonymousEnumExpression(EnumExpression):
             return v
         return [v]
 
+
     @field_validator('minus', mode='before')
     def coerce_list_minus(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('inherits', mode='before')
     def coerce_list_inherits(cls, v):
@@ -3744,11 +3934,13 @@ class AnonymousEnumExpression(EnumExpression):
             return v
         return [v]
 
+
     @field_validator('concepts', mode='before')
     def coerce_list_concepts(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class EnumDefinition(EnumExpression, Definition):
@@ -4070,23 +4262,23 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
     @field_validator('permissible_values', mode='before')
     def coerce_keyed_permissible_values(cls, v):
-        return _coerce_keyed_collection(v, "text")
+        return _coerce_keyed_collection(v, "text", value_name="description")
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('include', mode='before')
     def coerce_list_include(cls, v):
@@ -4094,11 +4286,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('minus', mode='before')
     def coerce_list_minus(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('inherits', mode='before')
     def coerce_list_inherits(cls, v):
@@ -4106,11 +4300,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('concepts', mode='before')
     def coerce_list_concepts(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('mixins', mode='before')
     def coerce_list_mixins(cls, v):
@@ -4118,11 +4314,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('apply_to', mode='before')
     def coerce_list_apply_to(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('values_from', mode='before')
     def coerce_list_values_from(cls, v):
@@ -4130,11 +4328,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
@@ -4142,11 +4342,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -4154,11 +4356,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -4166,11 +4370,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -4178,11 +4384,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -4190,11 +4398,11 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -4202,11 +4410,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -4214,11 +4424,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -4226,11 +4438,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -4238,17 +4452,20 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
@@ -4442,15 +4659,15 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
@@ -4458,11 +4675,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('contexts', mode='before')
     def coerce_list_contexts(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -4470,11 +4689,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -4482,11 +4703,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -4494,11 +4717,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -4506,11 +4731,11 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -4518,11 +4743,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -4530,11 +4757,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -4542,11 +4771,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -4554,11 +4785,13 @@ class StructuredAlias(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
@@ -4738,15 +4971,15 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -4754,11 +4987,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -4766,11 +5001,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -4778,11 +5015,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -4790,11 +5029,11 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -4802,11 +5041,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -4814,11 +5055,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -4826,11 +5069,13 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -4838,17 +5083,20 @@ class AnonymousExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
@@ -5076,15 +5324,15 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -5092,11 +5340,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
@@ -5104,11 +5354,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -5116,11 +5368,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -5128,11 +5382,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -5140,11 +5396,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -5152,11 +5410,11 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -5164,11 +5422,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -5176,11 +5436,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -5188,11 +5450,13 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -5200,17 +5464,20 @@ class PathExpression(Expression, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class SlotExpression(Expression):
@@ -5448,11 +5715,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('equals_string_in', mode='before')
     def coerce_list_equals_string_in(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -5460,11 +5729,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -5472,11 +5743,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class AnonymousSlotExpression(SlotExpression, AnonymousExpression):
@@ -5861,15 +6134,15 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('bindings', mode='before')
     def coerce_list_bindings(cls, v):
@@ -5877,11 +6150,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('equals_string_in', mode='before')
     def coerce_list_equals_string_in(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -5889,11 +6164,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -5901,11 +6178,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -5913,11 +6192,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -5925,11 +6206,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -5937,11 +6220,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -5949,11 +6234,11 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -5961,11 +6246,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -5973,11 +6260,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -5985,11 +6274,13 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -5997,17 +6288,20 @@ Enum bindings allow enums to be bound to any object, including complex nested ob
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class SlotDefinition(SlotExpression, Definition):
@@ -6727,19 +7021,19 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('domain_of', mode='before')
     def coerce_list_domain_of(cls, v):
@@ -6747,11 +7041,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('disjoint_with', mode='before')
     def coerce_list_disjoint_with(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('union_of', mode='before')
     def coerce_list_union_of(cls, v):
@@ -6759,11 +7055,11 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('type_mappings', mode='before')
     def coerce_list_type_mappings(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "framework")
+
 
     @field_validator('bindings', mode='before')
     def coerce_list_bindings(cls, v):
@@ -6771,11 +7067,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('equals_string_in', mode='before')
     def coerce_list_equals_string_in(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -6783,11 +7081,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -6795,11 +7095,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('mixins', mode='before')
     def coerce_list_mixins(cls, v):
@@ -6807,11 +7109,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('apply_to', mode='before')
     def coerce_list_apply_to(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('values_from', mode='before')
     def coerce_list_values_from(cls, v):
@@ -6819,11 +7123,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
@@ -6831,11 +7137,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -6843,11 +7151,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -6855,11 +7165,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -6867,11 +7179,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -6879,11 +7193,11 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -6891,11 +7205,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -6903,11 +7219,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -6915,11 +7233,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -6927,17 +7247,20 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class ClassExpression(ConfiguredBaseModel):
@@ -6997,7 +7320,7 @@ class ClassExpression(ConfiguredBaseModel):
 
     @field_validator('slot_conditions', mode='before')
     def coerce_keyed_slot_conditions(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -7005,11 +7328,13 @@ class ClassExpression(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -7017,11 +7342,13 @@ class ClassExpression(ConfiguredBaseModel):
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class AnonymousClassExpression(ClassExpression, AnonymousExpression):
@@ -7239,19 +7566,19 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
 
     @field_validator('slot_conditions', mode='before')
     def coerce_keyed_slot_conditions(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -7259,11 +7586,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -7271,11 +7600,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -7283,11 +7614,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -7295,11 +7628,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -7307,11 +7642,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -7319,11 +7656,11 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -7331,11 +7668,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -7343,11 +7682,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -7355,11 +7696,13 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -7367,17 +7710,20 @@ class AnonymousClassExpression(ClassExpression, AnonymousExpression):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class ClassDefinition(ClassExpression, Definition):
@@ -7838,35 +8184,35 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
     @field_validator('slot_usage', mode='before')
     def coerce_keyed_slot_usage(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('attributes', mode='before')
     def coerce_keyed_attributes(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('unique_keys', mode='before')
     def coerce_keyed_unique_keys(cls, v):
-        return _coerce_keyed_collection(v, "unique_key_name")
+        return _coerce_keyed_collection(v, "unique_key_name", value_name="unique_key_slots")
 
     @field_validator('slot_conditions', mode='before')
     def coerce_keyed_slot_conditions(cls, v):
-        return _coerce_keyed_collection(v, "name")
+        return _coerce_keyed_collection(v, "name", value_name="id_prefixes")
 
     @field_validator('local_names', mode='before')
     def coerce_keyed_local_names(cls, v):
-        return _coerce_keyed_collection(v, "local_name_source")
+        return _coerce_keyed_collection(v, "local_name_source", value_name="local_name_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('slots', mode='before')
     def coerce_list_slots(cls, v):
@@ -7874,11 +8220,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('union_of', mode='before')
     def coerce_list_union_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('defining_slots', mode='before')
     def coerce_list_defining_slots(cls, v):
@@ -7886,11 +8234,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('rules', mode='before')
     def coerce_list_rules(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('classification_rules', mode='before')
     def coerce_list_classification_rules(cls, v):
@@ -7898,11 +8248,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('disjoint_with', mode='before')
     def coerce_list_disjoint_with(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('any_of', mode='before')
     def coerce_list_any_of(cls, v):
@@ -7910,11 +8262,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exactly_one_of', mode='before')
     def coerce_list_exactly_one_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('none_of', mode='before')
     def coerce_list_none_of(cls, v):
@@ -7922,11 +8276,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('all_of', mode='before')
     def coerce_list_all_of(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('mixins', mode='before')
     def coerce_list_mixins(cls, v):
@@ -7934,11 +8290,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('apply_to', mode='before')
     def coerce_list_apply_to(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('values_from', mode='before')
     def coerce_list_values_from(cls, v):
@@ -7946,11 +8304,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('id_prefixes', mode='before')
     def coerce_list_id_prefixes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
@@ -7958,11 +8318,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -7970,11 +8332,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -7982,11 +8346,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -7994,11 +8360,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -8006,11 +8374,11 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -8018,11 +8386,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -8030,11 +8400,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -8042,11 +8414,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -8054,17 +8428,20 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class ClassLevelRule(ConfiguredBaseModel):
@@ -8275,15 +8652,15 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -8291,11 +8668,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -8303,11 +8682,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -8315,11 +8696,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -8327,11 +8710,11 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -8339,11 +8722,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -8351,11 +8736,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -8363,11 +8750,13 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -8375,17 +8764,20 @@ class ClassRule(ClassLevelRule, CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class ArrayExpression(CommonMetadata, Annotatable, Extensible):
@@ -8583,15 +8975,15 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('dimensions', mode='before')
     def coerce_list_dimensions(cls, v):
@@ -8599,11 +8991,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -8611,11 +9005,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -8623,11 +9019,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -8635,17 +9033,18 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -8653,11 +9052,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -8665,11 +9066,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -8677,11 +9080,13 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -8689,17 +9094,20 @@ class ArrayExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class DimensionExpression(CommonMetadata, Annotatable, Extensible):
@@ -8901,15 +9309,15 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -8917,11 +9325,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -8929,11 +9339,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -8941,11 +9353,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -8953,11 +9367,11 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -8965,11 +9379,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -8977,11 +9393,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -8989,11 +9407,13 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -9001,17 +9421,20 @@ class DimensionExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class PatternExpression(CommonMetadata, Annotatable, Extensible):
@@ -9197,15 +9620,15 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -9213,11 +9636,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -9225,11 +9650,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -9237,11 +9664,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -9249,11 +9678,11 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -9261,11 +9690,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -9273,11 +9704,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -9285,11 +9718,13 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -9297,17 +9732,20 @@ class PatternExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class ImportExpression(CommonMetadata, Annotatable, Extensible):
@@ -9493,19 +9931,19 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('import_map', mode='before')
     def coerce_keyed_import_map(cls, v):
-        return _coerce_keyed_collection(v, "setting_key")
+        return _coerce_keyed_collection(v, "setting_key", value_name="setting_value")
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -9513,11 +9951,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -9525,11 +9965,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -9537,11 +9979,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -9549,11 +9993,11 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -9561,11 +10005,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -9573,11 +10019,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -9585,11 +10033,13 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -9597,17 +10047,20 @@ class ImportExpression(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class Setting(ConfiguredBaseModel):
@@ -9905,15 +10358,15 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('instantiates', mode='before')
     def coerce_list_instantiates(cls, v):
@@ -9921,11 +10374,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('implements', mode='before')
     def coerce_list_implements(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('mixins', mode='before')
     def coerce_list_mixins(cls, v):
@@ -9933,11 +10388,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -9945,11 +10402,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -9957,11 +10416,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -9969,17 +10430,18 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -9987,11 +10449,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -9999,11 +10463,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -10011,11 +10477,13 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -10023,17 +10491,20 @@ class PermissibleValue(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class UniqueKey(CommonMetadata, Annotatable, Extensible):
@@ -10218,15 +10689,15 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('unique_key_slots', mode='before')
     def coerce_list_unique_key_slots(cls, v):
@@ -10234,11 +10705,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
@@ -10246,11 +10719,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
@@ -10258,11 +10733,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
@@ -10270,17 +10747,18 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -10288,11 +10766,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -10300,11 +10780,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -10312,11 +10794,13 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -10324,17 +10808,20 @@ class UniqueKey(CommonMetadata, Annotatable, Extensible):
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class TypeMapping(CommonMetadata, Annotatable, Extensible):
@@ -10522,15 +11009,15 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
 
     @field_validator('extensions', mode='before')
     def coerce_keyed_extensions(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('annotations', mode='before')
     def coerce_keyed_annotations(cls, v):
-        return _coerce_keyed_collection(v, "tag")
+        return _coerce_keyed_collection(v, "tag", value_name="value")
 
     @field_validator('alt_descriptions', mode='before')
     def coerce_keyed_alt_descriptions(cls, v):
-        return _coerce_keyed_collection(v, "source")
+        return _coerce_keyed_collection(v, "source", value_name="description")
 
     @field_validator('todos', mode='before')
     def coerce_list_todos(cls, v):
@@ -10538,11 +11025,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('notes', mode='before')
     def coerce_list_notes(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('comments', mode='before')
     def coerce_list_comments(cls, v):
@@ -10550,11 +11039,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('examples', mode='before')
     def coerce_list_examples(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('in_subset', mode='before')
     def coerce_list_in_subset(cls, v):
@@ -10562,11 +11053,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('see_also', mode='before')
     def coerce_list_see_also(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('aliases', mode='before')
     def coerce_list_aliases(cls, v):
@@ -10574,11 +11067,11 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('structured_aliases', mode='before')
     def coerce_list_structured_aliases(cls, v):
-        if v is None or isinstance(v, list):
-            return v
-        return [v]
+        return _coerce_inlined_list(v, "literal_form")
+
 
     @field_validator('mappings', mode='before')
     def coerce_list_mappings(cls, v):
@@ -10586,11 +11079,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('exact_mappings', mode='before')
     def coerce_list_exact_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('close_mappings', mode='before')
     def coerce_list_close_mappings(cls, v):
@@ -10598,11 +11093,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('related_mappings', mode='before')
     def coerce_list_related_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('narrow_mappings', mode='before')
     def coerce_list_narrow_mappings(cls, v):
@@ -10610,11 +11107,13 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('broad_mappings', mode='before')
     def coerce_list_broad_mappings(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
     @field_validator('contributors', mode='before')
     def coerce_list_contributors(cls, v):
@@ -10622,17 +11121,20 @@ For example, a Measurement class may have 3 fields: unit, value, and string_valu
             return v
         return [v]
 
+
     @field_validator('categories', mode='before')
     def coerce_list_categories(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
 
+
     @field_validator('keywords', mode='before')
     def coerce_list_keywords(cls, v):
         if v is None or isinstance(v, list):
             return v
         return [v]
+
 
 
 class ExtraSlotsExpression(Expression):

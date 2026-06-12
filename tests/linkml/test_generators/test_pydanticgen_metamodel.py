@@ -92,6 +92,10 @@ def _diff_paths(a: Any, b: Any, path: str = "", diffs: list[str] | None = None) 
         else:
             for i, (x, y) in enumerate(zip(a, b)):
                 _diff_paths(x, y, f"{path}[{i}]", diffs)
+    elif isinstance(b, dict) and len(b) == 1 and next(iter(b.values())) == a:
+        pass  # simple-dict form (e.g. prefixes) compacted to a scalar by schema_as_dict
+    elif isinstance(a, dict) and len(a) == 1 and next(iter(a.values())) == b:
+        pass
     elif a != b:
         diffs.append(f"{path}: dataclass={str(a)[:60]!r} pydantic={str(b)[:60]!r}")
     return diffs
@@ -120,6 +124,55 @@ def test_vendored_pydantic_metamodel_in_sync() -> None:
     assert committed.endswith(regenerated), (
         "vendored pydantic metamodel is stale; run scripts/generate_pydantic_metamodel.py"
     )
+
+
+#: Schemas the dataclass metamodel loads but the pydantic metamodel rejects:
+#: YAML unquoted booleans for string-typed metaslots (``readonly: true``,
+#: ``ifabsent: True``). YAMLRoot silently str()-coerces these; whether the
+#: pydantic metamodel should reproduce that permissiveness is an open question.
+CORPUS_KNOWN_GAPS = frozenset(
+    {
+        "core_element_properties_coverage.yaml",
+        "kitchen_sink_ifabsent.yaml",
+    }
+)
+
+
+def test_schema_corpus_loads_under_pydantic_metamodel() -> None:
+    """Every schema the dataclass metamodel loads also loads under the vendored pydantic metamodel."""
+    from linkml_runtime.linkml_model.meta import SchemaDefinition as DataclassSchemaDefinition
+    from linkml_runtime.linkml_model.pydantic import SchemaDefinition as PydanticSchemaDefinition
+    from linkml_runtime.loaders import yaml_loader
+
+    corpus_dirs = [
+        Path(__file__).parent / "input",
+        Path(__file__).parents[2] / "linkml_runtime" / "test_utils" / "input",
+    ]
+    checked = 0
+    failures: list[str] = []
+    for corpus_dir in corpus_dirs:
+        for schema_path in sorted(corpus_dir.glob("*.yaml")):
+            raw = yaml.safe_load(schema_path.read_text())
+            if not isinstance(raw, dict) or "name" not in raw:
+                # schemas without an explicit name only load because rawloader
+                # patches SchemaDefinition.MissingRequiredField at import time
+                # to derive name from id - loader leniency, not metamodel
+                # semantics; revisit at SchemaLoader retirement (phase 3)
+                continue
+            try:
+                dataclass_schema = yaml_loader.load(str(schema_path), DataclassSchemaDefinition)
+                if not getattr(dataclass_schema, "name", None):
+                    continue
+            except Exception:  # noqa: BLE001 - not a loadable schema; out of scope
+                continue
+            checked += 1
+            try:
+                PydanticSchemaDefinition.model_validate(raw)
+            except Exception as e:  # noqa: BLE001 - collected and asserted below
+                if schema_path.name not in CORPUS_KNOWN_GAPS:
+                    failures.append(f"{schema_path.name}: {str(e)[:200]}")
+    assert checked > 30, f"corpus unexpectedly small ({checked} schemas) - did the input dirs move?"
+    assert failures == [], "schemas loadable by the dataclass metamodel failed under pydantic:\n" + "\n".join(failures)
 
 
 def test_metamodel_validates(metamodel_module, metamodel_data: dict[str, Any]) -> None:

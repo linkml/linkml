@@ -158,6 +158,12 @@ class PydanticBaseModel(PydanticTemplateModel):
     """
     Sets the ``extra`` model for pydantic models
     """
+    validate_assignment: bool = True
+    """
+    Re-validate fields on assignment. Disable for mutation-heavy consumers
+    (e.g. a metamodel used with SchemaView, whose induced_slot hot path
+    assigns to copies in a loop).
+    """
     fields: list[str] | None = None
     """
     Extra fields that are typically injected into the base model via
@@ -216,10 +222,21 @@ class PydanticAttribute(PydanticTemplateModel):
     rendered as an inlined dict. When set, a ``mode="before"`` validator is
     generated that injects each dict key into this field of its value.
     """
+    keyed_dict_value: str | None = None
+    """
+    Name of the field a scalar entry value maps to for an inlined-as-dict slot
+    (positional second-slot semantics, e.g. ``prefixes: {pfx: url}``).
+    """
     coerce_to_list: bool = False
     """
     When True (multivalued slots rendered as lists), a ``mode="before"``
     validator is generated that wraps a single value into a singleton list.
+    """
+    inlined_list_key: str | None = None
+    """
+    For multivalued slots inlined as a list of objects: the identifier/key
+    slot (or first required slot) of the range class, allowing dict-keyed
+    input forms to normalize to a list with keys injected.
     """
     meta: dict[str, Any] | None = None
     """

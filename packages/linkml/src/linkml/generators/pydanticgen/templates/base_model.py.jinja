@@ -2,12 +2,13 @@ class {{ name }}(BaseModel):
     model_config = ConfigDict(
         serialize_by_alias = True,
         validate_by_name = True,
-        validate_assignment = True,
+        validate_assignment = {{ validate_assignment }},
         validate_default = True,
         extra = "{{ extra_fields }}",
         arbitrary_types_allowed = True,
         use_enum_values = True,
         strict = {{ strict }},
+        coerce_numbers_to_str = True,
     )
 {% if fields is not none %}
     {% for field in fields %}

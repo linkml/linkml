@@ -27,6 +27,9 @@ METAMODEL_GENERATOR_KWARGS: dict = {
     # None-guards, matching the dataclass metamodel's empty_list/empty_dict
     # defaults; the base-model serializer omits empty containers on dump.
     "empty_list_for_multivalued_slots": True,
+    # SchemaView.induced_slot assigns to slot copies in a tight loop;
+    # re-validating every assignment costs ~4x on that hot path.
+    "validate_assignment": False,
 }
 
 HEADER = """\

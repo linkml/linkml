@@ -239,6 +239,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     the default templates will be used.
     """
     extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    validate_assignment: bool = True
+    """Re-validate fields on assignment in generated models (see PydanticBaseModel.validate_assignment)"""
     gen_mixin_inheritance: bool = True
     injected_classes: list[type | str] | None = None
     """
@@ -639,6 +641,14 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             if slot.inlined is False or collection_key is None or slot.inlined_as_list is True:
                 result.attribute.range = f"list[{result.attribute.range}]"
                 result.attribute.coerce_to_list = True
+                if slot.range in self.schemaview.all_classes() and self.schemaview.is_inlined(slot):
+                    inlined_key = self.generate_inlined_list_key_name(slot)
+                    if inlined_key is not None:
+                        result.attribute.inlined_list_key = inlined_key
+                        if result.injected_classes is None:
+                            result.injected_classes = [includes.InlinedListCoercion]
+                        else:
+                            result.injected_classes.append(includes.InlinedListCoercion)
             else:
                 simple_dict_value = None
                 if len(slot_ranges) == 1:
@@ -658,6 +668,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     key_name = self.generate_collection_key_name(slot_ranges)
                     if key_name is not None:
                         result.attribute.keyed_dict_key = key_name
+                        if len(slot_ranges) == 1:
+                            result.attribute.keyed_dict_value = self.generate_collection_value_name(slot)
                         if result.injected_classes is None:
                             result.injected_classes = [includes.KeyedCollectionCoercion]
                         else:
@@ -903,6 +915,52 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         if len(key_names) == 1:
             return key_names.pop()
         return None
+
+    def generate_collection_value_name(self, slot_def: SlotDefinition) -> str | None:
+        """
+        Find the generated field name a scalar entry value maps to for an
+        inlined-as-dict slot, reproducing the positional second-argument
+        semantics of the dataclass metamodel (e.g. ``Annotation(tag, value)``):
+        the slot following the key slot on the class that defines the key
+        (so mixin-inherited slots of subclasses do not shadow it).
+
+        :param slot_def: the inlined-as-dict slot
+        """
+        if slot_def.range not in self.schemaview.all_classes():
+            return None
+        identifier_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
+        if identifier_slot is None:
+            return None
+        ordering_class = slot_def.range
+        for ancestor in reversed(self.schemaview.class_ancestors(slot_def.range, mixins=False)):
+            ancestor_cls = self.schemaview.get_class(ancestor)
+            if identifier_slot.name in ancestor_cls.slots or identifier_slot.name in ancestor_cls.attributes:
+                ordering_class = ancestor
+                break
+        for range_slot in self.schemaview.class_induced_slots(ordering_class):
+            if range_slot.name != identifier_slot.name:
+                alias = range_slot.alias if range_slot.alias else range_slot.name
+                return make_valid_python_identifier(underscore(alias))
+        return None
+
+    def generate_inlined_list_key_name(self, slot_def: SlotDefinition) -> str | None:
+        """
+        Find the generated field name dict keys inject into for a multivalued
+        slot inlined as a list: the identifier/key slot of the (single) class
+        range, or its first required slot (the pseudo-key the dataclass
+        metamodel uses, e.g. ``structured_aliases`` keyed by ``literal_form``).
+
+        :param slot_def: the inlined-as-list slot
+        """
+        identifier_slot = self.schemaview.get_identifier_slot(slot_def.range, use_key=True)
+        if identifier_slot is None:
+            identifier_slot = next(
+                (s for s in self.schemaview.class_induced_slots(slot_def.range) if s.required), None
+            )
+        if identifier_slot is None:
+            return None
+        alias = identifier_slot.alias if identifier_slot.alias else identifier_slot.name
+        return make_valid_python_identifier(underscore(alias))
 
     def _generate_subproperty_constraint(self, slot_def: SlotDefinition) -> str:
         """
@@ -1162,6 +1220,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         base_model = PydanticBaseModel(
             extra_fields=self.extra_fields,
+            validate_assignment=self.validate_assignment,
             fields=self.injected_fields,
             empty_list_for_multivalued_slots=self.empty_list_for_multivalued_slots,
         )

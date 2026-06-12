@@ -366,6 +366,15 @@ classes:
         range: PrefixLike
         multivalued: true
         inlined: true
+      aliases:
+        range: AliasLike
+        multivalued: true
+        inlined: true
+  AliasLike:
+    attributes:
+      literal:
+        required: true
+      pred: {}
   Item:
     attributes:
       name:
@@ -395,10 +404,10 @@ def test_keyed_dict_generated_code():
     code = PydanticGenerator(KEYED_DICT_SCHEMA, package=PACKAGE).serialize()
     assert "def _coerce_keyed_collection(" in code
     assert "@field_validator('items', mode='before')" in code
-    assert '_coerce_keyed_collection(v, "name")' in code
+    assert '_coerce_keyed_collection(v, "name", value_name="value")' in code
     # simple-dict union form is coerced via the value class's key slot
     assert "@field_validator('prefixes', mode='before')" in code
-    assert '_coerce_keyed_collection(v, "pfx")' in code
+    assert '_coerce_keyed_collection(v, "pfx", value_name="ref")' in code
 
 
 @pytest.mark.parametrize(
@@ -446,22 +455,39 @@ def test_multivalued_list_scalar_coercion(keyed_dict_module, tags, expected):
 
 
 @pytest.mark.parametrize(
-    "prefixes,expected",
+    "aliases,expected",
     [
-        ({"linkml": "https://w3id.org/linkml/"}, "https://w3id.org/linkml/"),
-        ({"linkml": {"ref": "https://w3id.org/linkml/"}}, None),
+        ({"dad": {"pred": "EXACT"}}, [("dad", "EXACT")]),
+        ({"dad": None, "mom": None}, [("dad", None), ("mom", None)]),
+        ({"literal": "dad", "pred": "EXACT"}, [("dad", "EXACT")]),
+        ([{"literal": "dad"}], [("dad", None)]),
+    ],
+    ids=["dict-keyed-by-required-slot", "dict-null-bodies", "flat-single-object", "list-passthrough"],
+)
+def test_inlined_list_dict_form(keyed_dict_module, aliases, expected):
+    """Inlined-as-list slots accept dict forms keyed by the range's first required slot."""
+    container = keyed_dict_module.Container.model_validate({"aliases": aliases})
+    assert [(a.literal, a.pred) for a in container.aliases] == expected
+
+
+@pytest.mark.parametrize(
+    "prefixes",
+    [
+        {"linkml": "https://w3id.org/linkml/"},
+        {"linkml": {"ref": "https://w3id.org/linkml/"}},
     ],
     ids=["simple-string-value", "object-value-key-injected"],
 )
-def test_keyed_dict_simple_dict_union(keyed_dict_module, prefixes, expected):
-    """Simple-dict slots keep scalar values as-is and key-inject object values."""
+def test_keyed_dict_simple_dict_union(keyed_dict_module, prefixes):
+    """Simple-dict slots normalize scalar and object values to full objects.
+
+    Matches dataclass metamodel semantics: ``prefixes: {pfx: url}`` loads as
+    PrefixLike(pfx=..., ref=url), so consumers can rely on attribute access.
+    """
     container = keyed_dict_module.Container.model_validate({"prefixes": prefixes})
     value = container.prefixes["linkml"]
-    if expected is not None:
-        assert value == expected
-    else:
-        assert value.pfx == "linkml"
-        assert value.ref == "https://w3id.org/linkml/"
+    assert value.pfx == "linkml"
+    assert value.ref == "https://w3id.org/linkml/"
 
 
 @pytest.mark.parametrize(
