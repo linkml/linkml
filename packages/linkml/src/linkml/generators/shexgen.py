@@ -24,7 +24,7 @@ from linkml_runtime.linkml_model.meta import (
     TypeDefinition,
 )
 from linkml_runtime.linkml_model.types import SHEX
-from linkml_runtime.utils.formatutils import camelcase, sfx
+from linkml_runtime.utils.formatutils import camelcase, sfx, underscore
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
@@ -36,8 +36,7 @@ class ShExGenerator(Generator):
     generatorversion = "0.0.2"
     valid_formats = ["shex", "json", "rdf"]
     file_extension = "shex.rdf"
-    visit_all_class_slots = False
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     # ObjectVars
     shex: Schema = field(default_factory=lambda: Schema())  # ShEx Schema being generated
@@ -50,6 +49,21 @@ class ShExGenerator(Generator):
     def __post_init__(self):
         super().__post_init__()
 
+        # load (not merge) the closure so imported prefixes/types resolve;
+        # CURIE-form imports cache namespaces() mid-closure, so invalidate
+        # before rebuilding (imports_closure does not set_modified itself)
+        self.schemaview.imports_closure()
+        self.schemaview.set_modified()
+        self.namespaces = self.schemaview.namespaces()
+        # the loader anchored _base on the default prefix expansion
+        if self.schema.default_prefix:
+            self.namespaces._base = (
+                self.schema.default_prefix
+                if ":" in self.schema.default_prefix
+                else self.namespaces[self.schema.default_prefix]
+            )
+        else:
+            self.namespaces._base = sfx(str(self.schema.id))
         if METAMODEL_NAMESPACE_NAME not in self.namespaces:
             self.namespaces[METAMODEL_NAMESPACE_NAME] = METAMODEL_NAMESPACE
         self.meta = Namespace(
@@ -63,12 +77,12 @@ class ShExGenerator(Generator):
             out += f"# version: {self.schema.version}\n"
         return out
 
-    def visit_schema(self, **_):
+    def serialize(self, output: str | None = None, **kwargs) -> str:
         # Adjust the schema context to include the base model URI
         context = self.shex["@context"]
         self.shex["@context"] = [context, {"@base": self.namespaces._base}]
         # Emit all of the type definitions
-        for typ in self.schema.types.values():
+        for typ in sorted(self.schemaview.all_types(imports=self.mergeimports).values(), key=lambda t: t.name.lower()):
             model_uri = self._class_or_type_uri(typ)
             if typ.uri:
                 typ_type_uri = self.namespaces.uri_for(typ.uri)
@@ -81,24 +95,41 @@ class ShExGenerator(Generator):
             else:
                 typeof_uri = self._class_or_type_uri(typ.typeof)
                 self.shapes.append(Shape(id=model_uri, expression=typeof_uri))
-        if self.format != "json":
-            return self.generate_header()
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+        for cls in sorted(self.schemaview.all_classes(imports=self.mergeimports).values(), key=lambda c: c.name.lower()):
+            self._add_class(cls)
+
+        out = self._build_output(output)
+        if self.format != "json":
+            out = self.generate_header() + out
+        return out.rstrip() + "\n"
+
+    def _class_uri_of(self, cls: ClassDefinition) -> str:
+        """Declared class_uri, or the derived CURIE the loader would have filled in."""
+        return cls.class_uri if cls.class_uri else self.schemaview.get_uri(cls)
+
+    def _add_class(self, cls: ClassDefinition) -> None:
+        sv = self.schemaview
         self.shape = Shape()
 
         # Start with all the parent classes, mixins and appytos
         struct_ref_list = [cls.is_a] if cls.is_a else []
         struct_ref_list += cls.mixins
-        if cls.name in self.synopsis.applytorefs:
-            for applier in self.synopsis.applytorefs[cls.name].classrefs:
-                struct_ref_list.append(applier)
+        # classes that declare apply_to this class (synopsis.applytorefs)
+        struct_ref_list += sorted(c.name for c in sv.all_classes().values() if cls.name in c.apply_to)
         for sr in struct_ref_list:
             self._add_constraint(self._class_or_type_uri(sr, "_tes"))
-            self._add_constraint(self._type_arc(self.schema.classes[sr].class_uri, opt=True))
-        return True
+            self._add_constraint(self._type_arc(self._class_uri_of(sv.get_class(sr)), opt=True))
 
-    def end_class(self, cls: ClassDefinition) -> None:
+        # own slots: not inherited from the is_a parent, unless redefined via slot_usage
+        parent_slot_names = set(sv.class_slots(cls.is_a)) if cls.is_a else set()
+        for slot in self.induced_slots_legacy_order(cls.name):
+            if slot.name not in parent_slot_names or slot.name in cls.slot_usage:
+                self._add_class_slot(slot)
+
+        self._end_class(cls)
+
+    def _end_class(self, cls: ClassDefinition) -> None:
         # On entry self.shape contains all of the triple expressions that define the body of the shape
 
         # Finish off the shape definition itself
@@ -108,18 +139,20 @@ class ShExGenerator(Generator):
         if self.shape.expression is None:
             self._add_constraint(TripleConstraint(predicate=RDF.type, min=0, max=-1))
         self.shape.expression.id = self._class_or_type_uri(cls, "_tes")
+        identifier_slot = self.schemaview.get_identifier_slot(cls.name, use_key=True)
         self.shape.expression = EachOf(
             expressions=[
                 self.shape.expression,
-                self._type_arc(cls.class_uri, not bool(self.class_identifier(cls))),
+                self._type_arc(self._class_uri_of(cls), not bool(identifier_slot)),
             ]
         )
         self.shape.closed = not (cls.abstract or cls.mixin)
 
         # If this class has subtypes, define the class as the union of its subtypes and itself (if not abstract)
-        if cls.name in self.synopsis.isarefs:
+        is_a_children = sorted(c.name for c in self.schemaview.all_classes().values() if c.is_a == cls.name)
+        if is_a_children:
             childrenExprs = []
-            for child_classname in sorted(list(self.synopsis.isarefs[cls.name].classrefs)):
+            for child_classname in is_a_children:
                 childrenExprs.append(self._class_or_type_uri(child_classname))
             if not (cls.mixin or cls.abstract) or len(childrenExprs) == 1:
                 childrenExprs.insert(0, self.shape)
@@ -132,21 +165,27 @@ class ShExGenerator(Generator):
             self.shape.id = self._class_or_type_uri(cls)
             self.shapes.append(self.shape)
 
-    def visit_class_slot(
-        self,
-        cls: ClassDefinition,
-        aliased_slot_name: SlotDefinitionName,
-        slot: SlotDefinition,
-    ) -> None:
+    def _add_class_slot(self, slot: SlotDefinition) -> None:
         if not (slot.identifier or slot.abstract or slot.mixin):
             constraint = TripleConstraint()
             self._add_constraint(constraint)
-            constraint.predicate = self.namespaces.uri_for(slot.slot_uri)
+            if slot.slot_uri:
+                slot_uri = slot.slot_uri
+            else:
+                # the loader derived missing slot_uris from the aliased name
+                try:
+                    prefix = self._defining_prefix(slot)
+                except ValueError:
+                    prefix = self.schema.default_prefix
+                slot_uri = self.namespaces.uri_or_curie_for(
+                    prefix, underscore(slot.alias if slot.alias else slot.name)
+                )
+            constraint.predicate = self.namespaces.uri_for(slot_uri)
             constraint.min = int(bool(slot.required))
             constraint.max = 1 if not slot.multivalued else -1
-            if slot.range in self.schema.enums:
+            if slot.range in self.schemaview.all_enums():
                 # Handle permissible values from enums
-                enum = self.schema.enums[slot.range]
+                enum = self.schemaview.all_enums()[slot.range]
                 values = []
                 for value in enum.permissible_values.values():
                     if value.meaning:
@@ -170,7 +209,7 @@ class ShExGenerator(Generator):
             else:
                 constraint.valueExpr = self._class_or_type_uri(slot.range)
 
-    def end_schema(self, output: str | None = None, **_) -> str:
+    def _build_output(self, output: str | None = None) -> str:
         self.shex.shapes = self.shapes if self.shapes else [Shape()]
         shex = as_json_1(self.shex)
         if self.format == "rdf":
@@ -197,18 +236,30 @@ class ShExGenerator(Generator):
         if isinstance(item, TypeDefinition | ClassDefinition | EnumDefinition):
             cls_or_type = item
         else:
-            cls_or_type = self.class_or_type_for(item)
+            sv = self.schemaview
+            cls_or_type = (
+                (sv.get_class(item) if item else None)
+                or (sv.get_type(item) if item else None)
+                or (sv.get_enum(item) if item else None)
+            )
+            if cls_or_type is None:
+                # absent/unresolvable ranges defaulted to string under the loader
+                cls_or_type = sv.get_type(self.schema.default_range or "string")
         return self.namespaces.uri_for(
             self.namespaces.uri_or_curie_for(
-                self.schema_defaults[cls_or_type.from_schema],
+                self._defining_prefix(cls_or_type),
                 camelcase(cls_or_type.name) + suffix,
             )
         )
 
+    def _defining_prefix(self, element) -> str:
+        """Default prefix of the schema defining element (loader's schema_defaults)."""
+        return self.defining_schema(element).default_prefix
+
     def _slot_uri(self, name: str, suffix: str | None = "") -> URIorCURIE:
-        slot = self.schema.slots[name]
+        slot = self.schemaview.get_slot(name)
         return self.namespaces.uri_for(
-            self.namespaces.uri_or_curie_for(self.schema_defaults[slot.from_schema], camelcase(name) + suffix)
+            self.namespaces.uri_or_curie_for(self._defining_prefix(slot), camelcase(name) + suffix)
         )
 
     def _add_constraint(self, constraint) -> None:
@@ -241,11 +292,8 @@ class ShExGenerator(Generator):
         :param slot: SlotDefinition with subproperty_of set
         :return: List of URI strings for NodeConstraint values
         """
-        from linkml_runtime.utils.schemaview import SchemaView
-
-        sv = SchemaView(self.schema)
         # ShEx always uses full URIs
-        return get_subproperty_values(sv, slot, expand_uri=True)
+        return get_subproperty_values(self.schemaview, slot, expand_uri=True)
 
 
 @shared_arguments(ShExGenerator)

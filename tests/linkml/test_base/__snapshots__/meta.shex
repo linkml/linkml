@@ -6,53 +6,53 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX skosxl: <http://www.w3.org/2008/05/skos-xl#>
+PREFIX OIO: <http://www.geneontology.org/formats/oboInOwl#>
 PREFIX pav: <http://purl.org/pav/>
 PREFIX oslc: <http://open-services.net/ns/core#>
 PREFIX schema1: <http://schema.org/>
 PREFIX bibo: <http://purl.org/ontology/bibo/>
 PREFIX qudt: <http://qudt.org/schema/qudt/>
-PREFIX dcterms: <http://purl.org/dc/terms/>
-PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
-
-<String> xsd:string
-
-<Integer> xsd:integer
 
 <Boolean> xsd:boolean
 
-<Float> xsd:float
-
-<Double> xsd:double
-
-<Decimal> xsd:decimal
-
-<Time> xsd:time
+<Curie> xsd:string
 
 <Date> xsd:date
 
-<Datetime> xsd:dateTime
-
 <DateOrDatetime> <DateOrDatetime>
 
-<Uriorcurie> IRI
+<Datetime> xsd:dateTime
 
-<Curie> xsd:string
+<Decimal> xsd:decimal
 
-<Uri> IRI
+<Double> xsd:double
 
-<Ncname> xsd:string
+<Float> xsd:float
 
-<Objectidentifier> IRI
-
-<Nodeidentifier> NONLITERAL
-
-<Jsonpointer> xsd:string
+<Integer> xsd:integer
 
 <Jsonpath> xsd:string
 
+<Jsonpointer> xsd:string
+
+<Ncname> xsd:string
+
+<Nodeidentifier> NONLITERAL
+
+<Objectidentifier> IRI
+
 <Sparqlpath> xsd:string
+
+<String> xsd:string
+
+<Time> xsd:time
+
+<Uri> IRI
+
+<Uriorcurie> IRI
 
 <AltDescription> CLOSED {
     (  $<AltDescription_tes> (  <source> @<String> ;
@@ -138,7 +138,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -263,7 +263,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -298,6 +298,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Definition> ] ? ;
           &<ClassExpression_tes> ;
           rdf:type [ <ClassExpression> ] ? ;
+          <mixins> @<ClassDefinition> * ;
+          <apply_to> @<ClassDefinition> * ;
           <slots> @<SlotDefinition> * ;
           <slot_usage> @<SlotDefinition> * ;
           <attributes> @<SlotDefinition> * ;
@@ -315,8 +317,6 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <children_are_mutually_disjoint> @<Boolean> ? ;
           <extra_slots> @<ExtraSlotsExpression> ? ;
           skos:prefLabel @<String> ? ;
-          <mixins> @<ClassDefinition> * ;
-          <apply_to> @<ClassDefinition> * ;
           <any_of> @<AnonymousClassExpression> * ;
           <exactly_one_of> @<AnonymousClassExpression> * ;
           <none_of> @<AnonymousClassExpression> * ;
@@ -372,7 +372,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -410,7 +410,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -479,7 +479,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -537,7 +537,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -592,7 +592,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -733,7 +733,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -806,7 +806,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -856,7 +856,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -908,7 +908,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -1001,6 +1001,8 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           rdf:type [ <Definition> ] ? ;
           &<SlotExpression_tes> ;
           rdf:type [ <SlotExpression> ] ? ;
+          <mixins> @<SlotDefinition> * ;
+          <apply_to> @<SlotDefinition> * ;
           <singular_name> @<String> ? ;
           <domain> @<ClassDefinition> ? ;
           <slot_uri> @<Uriorcurie> ? ;
@@ -1039,8 +1041,6 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           <children_are_mutually_disjoint> @<Boolean> ? ;
           <union_of> @<SlotDefinition> * ;
           <type_mappings> @<TypeMapping> * ;
-          <mixins> @<SlotDefinition> * ;
-          <apply_to> @<SlotDefinition> * ;
           <range> @<Element> ? ;
           <range_expression> @<AnonymousClassExpression> ? ;
           <enum_range> @<EnumExpression> ? ;
@@ -1139,7 +1139,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -1245,7 +1245,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
@@ -1295,7 +1295,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
           skos:editorialNote @<String> * ;
           skos:note @<String> * ;
           <examples> @<Example> * ;
-          oboInOwl:inSubset @<SubsetDefinition> * ;
+          OIO:inSubset @<SubsetDefinition> * ;
           skos:inScheme @<Uri> ? ;
           <imported_from> @<String> ? ;
           dcterms:source @<Uriorcurie> ? ;
