@@ -7,6 +7,7 @@ from linkml import LOCAL_METAMODEL_LDCONTEXT_FILE, LOCAL_METAMODEL_YAML_FILE, ME
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
+from linkml.generators.pydanticgen import PydanticGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.rdfgen import RDFGenerator
 from linkml.generators.shexgen import ShExGenerator
@@ -41,6 +42,7 @@ from linkml_runtime.utils.compile_python import compile_python
             marks=pytest.mark.jsonldgen,
         ),
         pytest.param(PythonGenerator, ".py", {}, marks=pytest.mark.pythongen),
+        pytest.param(PydanticGenerator, ".pydantic.py", {}, marks=pytest.mark.pydanticgen),
         pytest.param(
             SQLAlchemyGenerator, ".sqla.py", {"template": TemplateEnum.DECLARATIVE}, marks=pytest.mark.sqlalchemygen
         ),
