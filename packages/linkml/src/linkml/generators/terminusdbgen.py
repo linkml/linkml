@@ -54,14 +54,13 @@ class TerminusdbGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.2.0"
     valid_formats = ["json"]
-    visit_all_class_slots = True
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     # ObjectVars
     documents: list = field(default_factory=list)
     current_class_doc: dict = field(default_factory=dict)
 
-    def visit_schema(self, inline: bool = False, **kwargs) -> None:
+    def serialize(self, **kwargs) -> str:
         self.documents = []
         schema_id = str(self.schema.id) if self.schema.id else "terminusdb:///schema"
         schema_base = schema_id.rstrip("/").rstrip("#") + "#"
@@ -78,11 +77,13 @@ class TerminusdbGenerator(Generator):
             }
         )
 
-    def end_schema(self, **_) -> str:
+        for cls in sorted(self.schemaview.all_classes().values(), key=lambda c: c.name.lower()):
+            self.documents.append(self._class_doc(cls))
+
         # Emit enum documents
-        for enum_def in self.schema.enums.values():
+        for enum_def in self.schemaview.all_enums().values():
             self._emit_enum(enum_def)
-        return json.dumps(self.documents, indent=2)
+        return json.dumps(self.documents, indent=2) + "\n"
 
     def _emit_enum(self, enum_def: EnumDefinition) -> None:
         """Produce a TerminusDB Enum document."""
@@ -93,7 +94,7 @@ class TerminusdbGenerator(Generator):
         }
         self.documents.append(doc)
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def _class_doc(self, cls: ClassDefinition) -> dict:
         doc = {
             "@type": "Class",
             "@id": camelcase(cls.name),
@@ -111,18 +112,24 @@ class TerminusdbGenerator(Generator):
             ):
                 doc.setdefault("@inherits", []).append("Document")
         self.current_class_doc = doc
-        return True
+        for slot in self.induced_slots_legacy_order(cls.name):
+            self._add_class_slot(slot)
+        return doc
 
-    def end_class(self, cls: ClassDefinition) -> None:
-        self.documents.append(self.current_class_doc)
-
-    def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> None:
+    def _add_class_slot(self, slot: SlotDefinition) -> None:
         rng = self._resolve_range(slot)
-        prop_name = underscore(aliased_slot_name)
+        prop_name = underscore(slot.alias if slot.alias else slot.name)
 
         # Determine cardinality wrapper
         if slot.multivalued:
-            if slot.inlined_as_list:
+            # references to classes without identifiers are always inlined as
+            # list; SchemaLoader materialized this onto the resolved slot
+            inlined_as_list = slot.inlined_as_list or (
+                slot.range in self.schemaview.all_classes()
+                and self.schemaview.is_inlined(slot)
+                and self.schemaview.get_identifier_slot(slot.range, use_key=True) is None
+            )
+            if inlined_as_list:
                 prop_value = {"@type": "List", "@class": rng}
             else:
                 prop_value = {"@type": "Set", "@class": rng}
@@ -140,12 +147,12 @@ class TerminusdbGenerator(Generator):
 
     def _resolve_range(self, slot: SlotDefinition) -> str:
         """Resolve a slot range to a TerminusDB type string."""
-        if slot.range in self.schema.classes:
+        if slot.range in self.schemaview.all_classes():
             return camelcase(slot.range)
-        if slot.range in self.schema.enums:
+        if slot.range in self.schemaview.all_enums():
             return camelcase(slot.range)
-        if slot.range in self.schema.types:
-            rng = str(self.schema.types[slot.range].uri)
+        if slot.range in self.schemaview.all_types():
+            rng = str(self.schemaview.induced_type(slot.range).uri)
         else:
             rng = "xsd:string"
 
