@@ -53,13 +53,13 @@ DATASET2PERSON = """
 "Dataset" *--> "0..*" "Person" : "persons"
 """
 
-PERSON_URL = "https://kroki.io/plantuml/svg/eNp9VMtqw0AMvOcrhI-hMe01h0LapvTQlNIeQ2pUW4kF3l2z2gRMyL93_YjrPDY-2dJoRhoJpwWKQPRJVoyOYLncz6BsPu6g4B3rDRgLGWF2WK1gPwL_7NdMRXYAzmAK4mwNgpOMRkWhHG4oYZ1UhFY8hrWjDdkzkJSUMklyi0icUZjmSWq22gWZWJJujim885q-HbqtzPVWnfdVMArJQG15H8fj1egwSluTnti6fL4j7RqjPoym1pR_yCzLLIkE8wvKOMXiNskrKvbNFF9UoGOjJecyCJ6rsjCV8ny3SZ-NKlFXwfwLOj9-uH6B1rLf3W2VN5RZ6-MlpD-y8WTyCJE39yE6NXUKUY4Cv3UIqIldqRpHA599CbbvXjIAPjW9E1FtEHL2d2SrUO31XXQc6y4JdpANtnGxqY6F-vigmeu6DV3t2lHAUzTalIEzvqzf8tDiATilGtXv-qS_Aaz9A9STnK09QKtq1LGH4Q38xHEP_AO-dmYq"
+PERSON_URL = "https://kroki.io/plantuml/svg/eNp9U8tuwkAMvPMVVo6ooPbKoRJtqXooVdUeEY3cxBBL2d1ovSAhxL938yBNgE1OiT0ztsdOkqMIRJ9kxegIVqvjHIrq4w5y3rPegrGQEqan9RqOI_DPccOUpyfgFGYgzpYg6GU0KgrlcEsx6_hAaMVjWDvakr0ASUEJk8RDQuKMwiSLE7PTLqjEEjdzzOCdN_Tt0O1koXfqsq-cUUg61Vb30-l4PTqNktqkJ7YuW-xJu8qoD6OpNuUfMk9TSyLB_JJSTjAfFnlFxb6Z_ItydGy0ZFwEwQtV5OagvN6w6LNRBepDMP-Czo8f5i_RWva7G67yhjKvfbyGtEc2nkweIfLmPkR9U2cQZSjwW4aAqtgN1jjq-OwpWL_7kgFw3_SmiKqDkLG_I3sIcW_votHYNEmwnWywjatNNSrUxjvNtOvqenWW9cSEjEe1S-sV6sDqX7ls6fYgFe1CuhqGUnBlhYu1B7pRJepM6d7Az3TaAv8A7yVmKg=="
 
 DATASET2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kLEKwjAQhvc-xZGxWNHVQRB1VcFRHM7klEhzKUksFvHdjSlWFOuWn_s-7vLLEr0HgTLoWodGwG53Q6icrYklFSdichg0n-CF3Pd7uGXZPZOtuiHnLSdxBlUKAygjGh3rQBGqb2WBAT2F5Kws0_d8bhVtGx_I_EFMhdz0zmfcrA9nku2S5RVNVRLYI1xYWvbBoWZSkOjOfR-WF8UUxGg4zMXnORMQMkbwKXvR57wLnXRBUz_f_ScteL7_0a_OI9w2_hsdi48iIm0ooIqceAA8u58V"
 
 PERSON2MEDICALEVENT_URL = "https://kroki.io/plantuml/svg/eNqNUctuwjAQvOcrVj61qEHtlUMl1HLs445otNgLbOWsI9tBRVH-vRYhkQj04Zt3ZjyeWW0xBFDv3mkytacnJ5qqqGC5bF6dULtaQZNlbaZPRIuafkRfyLBGu9iTjJ-AdJoNkzUthIg-kikwFpFLuuFbmIHBSABnPBLzDxaHQtfeJ8uOsnbOEkpiDf96ZtyKCxz-jEc-ODnCc6iOlzuwvGfZgvNgCM1Yci1sQkddTPL8EdT9dPqgrrU9A1X1Q_Wr9jJK0pp-eKE9s-12l_gsYJ3GyClrNoQefCZqvMqk2WGAshvCjkN0_pC0J_wjz0eSvp65HN7Wn6S7ihZfWFaWwG2gFu0kRI8sZODI7sv7BsIk1Pk="
 
-FAMILIALRELATIONSHIP2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kEFrAjEQhe_5FY-cqrhSrx4KIu2xlNKbWBk2ow5kkyVJC7LsfzduRbviOreZ9703zJSWYoT-ZEtJvIt7qTVWq-bdO27XazRKtar8gz44RO86eYG6ayaw8ituBx9gmMyt5Y0qsUL2QT5yNVtha1qUPphMO87eOZbX7tX9VECPTYeaM3Rvw9dJ6tMxUUhsNpQ2SSp-klH2Gkq3HDszQLVq4JqieIGe6et_5tDhRLBB8lpd5uOOfJ5Ox3roM9m6p4jtWUT4p8Yc1ae_i2Ig6Aix-J1Y"
+FAMILIALRELATIONSHIP2PERSON_URL = "https://kroki.io/plantuml/svg/eNp9kEFrAjEQhe_5FY-crHSlve5BKEWPpUhvYmXYjDqQTZYkCmXZ_964LVWXrnObed97w0xlKUboFVtK4l08SKOxXrdv3nG32aBVqlPVD_TOIXrXyy9o-uYRVk7i9vABhskMLUuqxQrZO_nI1e6EremQvhpGif9cH2cJN3Tlg8mU47ypxOulW7hjPWBjopDYbCltk9Q8kYdsMZSGmezMCNWpkWuKYg79rC__KaHDmWCD5LX6m0978mk2m-qxz2TrgSJ2vyLClRpz1C39WRQjQd-4Cp1Y"
 
 
 @pytest.fixture(scope="module")
@@ -217,7 +217,7 @@ def test_preserve_names():
 
     # Test default behavior (names are normalized)
     gen_default = PlantumlGenerator(schema=schema)
-    diagram_default = gen_default.visit_schema()
+    diagram_default = gen_default.serialize()
 
     # Check that slot names and ranges are normalized (underscore)
     assert "my_slot" in diagram_default
@@ -226,7 +226,7 @@ def test_preserve_names():
 
     # Test preserve_names behavior (names are preserved)
     gen_preserve = PlantumlGenerator(schema=schema, preserve_names=True)
-    diagram_preserve = gen_preserve.visit_schema()
+    diagram_preserve = gen_preserve.serialize()
 
     # Check that slot names and ranges are preserved
     assert "my_slot" in diagram_preserve
@@ -240,7 +240,7 @@ def test_preserve_names():
 
     with tempfile.TemporaryDirectory() as temp_dir, patch("requests.get", return_value=mock_response):
         gen = PlantumlGenerator(schema=schema, preserve_names=True, dry_run=False)
-        gen.visit_schema(classes={"My_Class"}, directory=temp_dir)
+        gen.serialize(classes={"My_Class"}, directory=temp_dir)
         assert gen.output_file_name.endswith("My_Class.svg")
 
 
@@ -279,7 +279,7 @@ def enum_schema() -> SchemaDefinition:
 def test_include_enums_disabled_by_default(enum_schema: SchemaDefinition) -> None:
     """Enum blocks must not appear unless include_enums=True."""
     gen = PlantumlGenerator(schema=enum_schema, include_enums=False)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert 'enum "StatusEnum"' not in output
     assert 'enum "ExtendedStatusEnum"' not in output
 
@@ -287,7 +287,7 @@ def test_include_enums_disabled_by_default(enum_schema: SchemaDefinition) -> Non
 def test_include_enums_generates_enum_blocks(enum_schema: SchemaDefinition) -> None:
     """Enum blocks are emitted for all enumerations referenced by the schema's classes."""
     gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert 'enum "StatusEnum"' in output
     assert "ACTIVE" in output
     assert "INACTIVE" in output
@@ -296,7 +296,7 @@ def test_include_enums_generates_enum_blocks(enum_schema: SchemaDefinition) -> N
 def test_include_enums_unreferenced_enum_excluded(enum_schema: SchemaDefinition) -> None:
     """Enumerations not referenced by any slot are not rendered."""
     gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     # ExtendedStatusEnum is not used by any slot, so it must be absent
     assert 'enum "ExtendedStatusEnum"' not in output
 
@@ -304,7 +304,7 @@ def test_include_enums_unreferenced_enum_excluded(enum_schema: SchemaDefinition)
 def test_include_enums_generates_association_arrow(enum_schema: SchemaDefinition) -> None:
     """An association arrow is emitted from each class to its enum-typed slots."""
     gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert '"Thing" --> "StatusEnum" : "status"' in output
 
 
@@ -323,7 +323,7 @@ def test_include_enums_parametrized(
 ) -> None:
     """Parametrized check: enum blocks and arrows appear iff include_enums=True."""
     gen = PlantumlGenerator(schema=enum_schema, include_enums=include_enums)
-    output = gen.visit_schema()
+    output = gen.serialize()
     if expect_enum_block:
         assert 'enum "StatusEnum"' in output
     else:
@@ -340,7 +340,7 @@ def test_include_enums_inheritance_arrow(enum_schema: SchemaDefinition) -> None:
     enum_schema.slots["ext_status"] = SlotDefinition(name="ext_status", range="ExtendedStatusEnum", domain_of=["Thing"])
     enum_schema.classes["Thing"].slots.append("ext_status")
     gen = PlantumlGenerator(schema=enum_schema, include_enums=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert 'enum "StatusEnum"' in output
     assert 'enum "ExtendedStatusEnum"' in output
     assert '"StatusEnum" <|-- "ExtendedStatusEnum"' in output
@@ -350,7 +350,7 @@ def test_include_all_generates_all_classes(enum_schema: SchemaDefinition) -> Non
     """include_all=True includes every class in the schema."""
     enum_schema.classes["Other"] = ClassDefinition(name="Other")
     gen = PlantumlGenerator(schema=enum_schema, include_all=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert 'class "Thing"' in output or '"Thing"' in output
     assert '"Other"' in output
 
@@ -358,7 +358,7 @@ def test_include_all_generates_all_classes(enum_schema: SchemaDefinition) -> Non
 def test_include_all_generates_all_enums(enum_schema: SchemaDefinition) -> None:
     """include_all=True renders every enumeration, including unreferenced ones."""
     gen = PlantumlGenerator(schema=enum_schema, include_all=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     # StatusEnum is referenced, ExtendedStatusEnum is not — both must appear
     assert 'enum "StatusEnum"' in output
     assert 'enum "ExtendedStatusEnum"' in output
@@ -370,14 +370,14 @@ def test_include_all_overrides_explicit_classes(enum_schema: SchemaDefinition) -
     enum_schema.classes["Other"] = ClassDefinition(name="Other")
     gen = PlantumlGenerator(schema=enum_schema, include_all=True)
     # Even when passing a restricted class set, include_all should expand it
-    output = gen.visit_schema(classes={"Thing"})
+    output = gen.serialize(classes={"Thing"})
     assert '"Other"' in output
 
 
 def test_include_all_does_not_need_include_enums(enum_schema: SchemaDefinition) -> None:
     """include_all=True renders enums even when include_enums=False."""
     gen = PlantumlGenerator(schema=enum_schema, include_all=True, include_enums=False)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert 'enum "StatusEnum"' in output
     assert 'enum "ExtendedStatusEnum"' in output
 
@@ -455,7 +455,7 @@ def mixin_schema() -> SchemaDefinition:
 def test_mixin_arrow_is_dashed_realization(mixin_schema: SchemaDefinition) -> None:
     """Mixin usage is rendered as a dashed realization arrow with mixin (parent) on the left."""
     gen = PlantumlGenerator(schema=mixin_schema)
-    output = gen.visit_schema()
+    output = gen.serialize()
     # old "-- : uses" style must be gone
     assert ": uses" not in output
     # dashed realization arrow: mixin is the generalisation target (left side)
@@ -465,21 +465,21 @@ def test_mixin_arrow_is_dashed_realization(mixin_schema: SchemaDefinition) -> No
 def test_mark_mixins_disabled_by_default(mixin_schema: SchemaDefinition) -> None:
     """Mixin stereotype must not appear unless mark_mixins=True."""
     gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=False)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert "<<(M,orchid) mixin>>" not in output
 
 
 def test_mark_mixins_adds_stereotype(mixin_schema: SchemaDefinition) -> None:
     """mark_mixins=True adds the spot stereotype to mixin class definitions."""
     gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     assert "<<(M,orchid) mixin>>" in output
 
 
 def test_mark_mixins_only_on_mixin_classes(mixin_schema: SchemaDefinition) -> None:
     """Regular (non-mixin) classes must not receive the mixin stereotype."""
     gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=True)
-    output = gen.visit_schema()
+    output = gen.serialize()
     # Person is not a mixin — count occurrences: should appear exactly once (for HasName)
     assert output.count("<<(M,orchid) mixin>>") == 1
 
@@ -495,7 +495,7 @@ def test_mark_mixins_parametrized(
 ) -> None:
     """Parametrized check: stereotype appears iff mark_mixins=True."""
     gen = PlantumlGenerator(schema=mixin_schema, mark_mixins=mark_mixins)
-    output = gen.visit_schema()
+    output = gen.serialize()
     if expect_stereotype:
         assert "<<(M,orchid) mixin>>" in output
     else:

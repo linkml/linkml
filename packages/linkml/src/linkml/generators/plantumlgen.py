@@ -42,7 +42,7 @@ class PlantumlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["puml", "plantuml", "png", "pdf", "jpg", "json", "svg"]
-    visit_all_class_slots = False
+    uses_schemaloader = False
     preserve_names: bool = False
 
     referenced: set[ClassDefinitionName] | None = None  # List of classes that have to be emitted
@@ -70,20 +70,82 @@ class PlantumlGenerator(Generator):
     """If True, mixin classes are annotated with a ``<<(M,orchid) mixin>>`` PlantUML
     spot stereotype so they are visually distinguishable from regular classes."""
 
+    def _build_refs(self) -> None:
+        """Build the reference maps SchemaSynopsis provided under SchemaLoader."""
+        sv = self.schemaview
+        self._all_classes = sv.all_classes()
+        self._isa_children: dict[str, set[str]] = {}
+        self._mixin_users: dict[str, set[str]] = {}
+        self._appliers: dict[str, set[str]] = {}
+        self._applytos: set[str] = set()
+        self._rangerefs: dict[str, set[tuple[str, str]]] = {}
+        for cls in self._all_classes.values():
+            if cls.is_a:
+                self._isa_children.setdefault(cls.is_a, set()).add(cls.name)
+            for mixin in cls.mixins:
+                self._mixin_users.setdefault(mixin, set()).add(cls.name)
+            if cls.apply_to:
+                self._applytos.add(cls.name)
+            for target in cls.apply_to:
+                self._appliers.setdefault(target, set()).add(cls.name)
+            # slots declared (or specialized) on this class whose induced range
+            # is a class; keyed per declaring class so per-class slot_usage
+            # ranges are kept, as the loader's mangled slot copies were
+            declared = set(cls.slots) | set(cls.attributes) | set(cls.slot_usage)
+            for slot in sv.class_induced_slots(cls.name):
+                if slot.name in declared and slot.range in self._all_classes:
+                    self._rangerefs.setdefault(slot.range, set()).add((cls.name, slot.name))
+        self._root_classes = {c.name for c in self._all_classes.values() if not c.is_a}
+
+    def _aliased(self, slot: SlotDefinition) -> str:
+        """User-declared alias or slot name (induced slots derive an underscored alias)."""
+        if slot.alias and slot.alias != underscore(slot.name):
+            return slot.alias
+        return slot.name
+
+    def _own_first_slots(self, cn: ClassDefinitionName) -> list[SlotDefinition]:
+        """Induced slots with the class's own slots first (all_slots cls_slots_first=True)."""
+        cls = self._all_classes[cn]
+        ordered = self.induced_slots_legacy_order(cn)
+        parent_slot_names = set(self.schemaview.class_slots(cls.is_a)) if cls.is_a else set()
+        own = [s for s in ordered if s.name not in parent_slot_names or s.name in cls.slot_usage]
+        own_names = {s.name for s in own}
+        return own + [s for s in ordered if s.name not in own_names]
+
+    def _class_neighborhood(self, classes: list[ClassDefinitionName]) -> set[ClassDefinitionName]:
+        """Class references that touch any of classes (Generator.neighborhood classrefs)."""
+        sv = self.schemaview
+        touches: set[ClassDefinitionName] = set()
+        for element in classes:
+            touches.add(element)
+            cls = self._all_classes[element]
+            if cls.is_a:
+                touches.add(cls.is_a)
+            touches.update(set(cls.mixins))
+            for slot in sv.class_induced_slots(element):
+                if slot.range in self._all_classes:
+                    touches.add(slot.range)
+            touches.update(self._isa_children.get(element, set()))
+            for slotname in self._rangerefs.get(element, set()):
+                raw_slot = sv.get_slot(slotname)
+                if raw_slot is not None and raw_slot.domain:
+                    touches.add(raw_slot.domain)
+        return touches
+
     def _referenced_enum_names(self) -> set[str]:
         """Return the names of all enumerations referenced by slots in the generated classes."""
-        all_enum_names = set(self.schema.enums.keys())
+        all_enum_names = set(self.schemaview.all_enums().keys())
         referenced: set[str] = set()
         for cn in self.generated or set():
-            if cn in self.schema.classes:
-                for slot in self.all_slots(self.schema.classes[cn], cls_slots_first=True):
+            if cn in self._all_classes:
+                for slot in self._own_first_slots(cn):
                     if slot.range in all_enum_names:
                         referenced.add(slot.range)
         return referenced
 
     def _all_enum_names(self) -> set[str]:
         """Return the names of all enumerations defined in the schema."""
-        return set(self.schema.enums.keys())
+        return set(self.schemaview.all_enums().keys())
 
     def _generate_enum_defs(self, enum_names: set[str]) -> list[str]:
         """Return PlantUML ``enum`` block definitions for each name in *enum_names*.
@@ -93,7 +155,7 @@ class PlantumlGenerator(Generator):
         """
         defs: list[str] = []
         for enum_name in sorted(enum_names):
-            enum_def = self.schema.enums[enum_name]
+            enum_def = self.schemaview.all_enums()[enum_name]
             members: list[str] = []
             for pv_name, pv in (enum_def.permissible_values or {}).items():
                 label = pv_name
@@ -111,7 +173,7 @@ class PlantumlGenerator(Generator):
         """
         arrows: list[str] = []
         for enum_name in sorted(enum_names):
-            enum_def = self.schema.enums[enum_name]
+            enum_def = self.schemaview.all_enums()[enum_name]
             for parent in enum_def.inherits or []:
                 if parent in enum_names:
                     arrows.append(f'"{parent}" <|-- "{enum_name}"')
@@ -125,31 +187,31 @@ class PlantumlGenerator(Generator):
         """
         assocs: list[str] = []
         for cn in sorted(self.generated or set()):
-            if cn not in self.schema.classes:
+            if cn not in self._all_classes:
                 continue
-            cls = self.schema.classes[cn]
-            for slot in self.all_slots(cls, cls_slots_first=True):
+            for slot in self._own_first_slots(cn):
                 if slot.range not in enum_names:
                     continue
                 if cn not in slot.domain_of:
                     continue
-                slot_name = self.aliased_slot_name(slot)
+                slot_name = self._aliased(slot)
                 assocs.append(f'"{cn}" --> "{slot.range}" : "{slot_name}"')
         return assocs
 
-    def visit_schema(
+    def serialize(
         self,
         classes: set[ClassDefinitionName] = None,
         directory: str | None = None,
-        **_,
+        **kwargs,
     ) -> str | None:
+        self._build_refs()
         if self.include_all:
-            classes = set(self.schema.classes.keys())
+            classes = set(self._all_classes.keys())
         if directory:
             os.makedirs(directory, exist_ok=True)
         if classes is not None:
             for cls in classes:
-                if cls not in self.schema.classes:
+                if cls not in self._all_classes:
                     raise ValueError(f"Unknown class name: {cls}")
         self.class_generated = set()
         self.associations_generated = set()
@@ -158,9 +220,9 @@ class PlantumlGenerator(Generator):
         else:
             self.focus_classes = set(classes)
         if classes:
-            self.gen_classes = self.neighborhood(list(classes)).classrefs.union(classes)
+            self.gen_classes = self._class_neighborhood(list(classes)).union(classes)
         else:
-            self.gen_classes = self.synopsis.roots.classrefs
+            self.gen_classes = self._root_classes
         self.referenced = self.gen_classes
         self.generated = set()
         plantumlclassdef: list[str] = []
@@ -229,22 +291,18 @@ class PlantumlGenerator(Generator):
         """
         slot_defs: list[str] = []
         if cn not in self.class_generated and (not self.focus_classes or cn in self.focus_classes):
-            cls = self.schema.classes[cn]
-            for slot in self.filtered_cls_slots(cn, all_slots=True, filtr=lambda s: s.range not in self.schema.classes):
+            cls = self._all_classes[cn]
+            for slot in self.filtered_cls_slots(cn, all_slots=True, filtr=lambda s: s.range not in self._all_classes):
                 if True or cn in slot.domain_of:
                     mod = self.prop_modifier(cls, slot)
-                    slot_name = (
-                        self.aliased_slot_name(slot)
-                        if self.preserve_names
-                        else underscore(self.aliased_slot_name(slot))
-                    )
+                    slot_name = self._aliased(slot) if self.preserve_names else underscore(self._aliased(slot))
                     range_name = slot.range if self.preserve_names else underscore(slot.range)
                     slot_defs.append(
                         "    {field} " + slot_name + mod + " : " + range_name + " " + self.cardinality(slot)
                     )
             self.class_generated.add(cn)
         self.referenced.add(cn)
-        cls = self.schema.classes[cn]
+        cls = self._all_classes[cn]
 
         tooltip_contents = str(cls.description)
         first_newline_index = tooltip_contents.find("\n")
@@ -272,12 +330,15 @@ class PlantumlGenerator(Generator):
         classes: list[str] = []
         assocs: list[str] = []
         if cn not in self.associations_generated and (not self.focus_classes or cn in self.focus_classes):
-            cls = self.schema.classes[cn]
+            cls = self._all_classes[cn]
 
             # Slots that reference other classes
-            for slot in self.filtered_cls_slots(cn, False, lambda s: s.range in self.schema.classes)[::-1]:
+            for slot in self.filtered_cls_slots(cn, False, lambda s: s.range in self._all_classes)[::-1]:
                 # Swap the two boxes because, in the case of self reference, the last definition wins
-                if slot.range not in self.associations_generated and cn in slot.domain_of:
+                # slot_usage specializations count as owned, as the loader's mangled copies did
+                if slot.range not in self.associations_generated and (
+                    cn in slot.domain_of or slot.name in cls.slot_usage
+                ):
                     if cn not in self.class_generated:
                         classes.append(self.add_class(cn))
                     lhs = cn
@@ -288,25 +349,25 @@ class PlantumlGenerator(Generator):
                         '"'
                         + lhs
                         + '" '
-                        + (plantuml_inline if slot.inlined else plantuml_ref)
+                        + (plantuml_inline if self.schemaview.is_inlined(slot) else plantuml_ref)
                         + "> "
                         + self.cardinality(slot, False)
                         + '"'
                         + rhs
                         + '" : '
                         + '"'
-                        + self.aliased_slot_name(slot)
+                        + self._aliased(slot)
                         + '"'
                         + self.prop_modifier(cls, slot)
                     )
 
             # Slots in other classes that reference this
-            for slotname in sorted(self.synopsis.rangerefs.get(cn, [])):
-                slot = self.schema.slots[slotname]
+            for owner_name, slotname in sorted(self._rangerefs.get(cn, [])):
+                slot = self.schemaview.induced_slot(slotname, owner_name)
                 # Don't do self references twice
                 # Also, slot must be owned by the class
-                if cls.name not in slot.domain_of and cls.name not in self.associations_generated:
-                    for dom in [self.schema.classes[dof] for dof in slot.domain_of]:
+                if cls.name != owner_name and cls.name not in self.associations_generated:
+                    for dom in [self._all_classes[owner_name]]:
                         if dom.name not in self.class_generated:
                             classes.append(self.add_class(dom.name))
                         if cn not in self.class_generated:
@@ -315,14 +376,14 @@ class PlantumlGenerator(Generator):
                             '"'
                             + dom.name
                             + '" '
-                            + (plantuml_inline if slot.inlined else plantuml_ref)
+                            + (plantuml_inline if self.schemaview.is_inlined(slot) else plantuml_ref)
                             + "> "
                             + self.cardinality(slot, False)
                             + '"'
                             + cn
                             + '" : '
                             + '"'
-                            + self.aliased_slot_name(slot)
+                            + self._aliased(slot)
                             + '"'
                             + self.prop_modifier(dom, slot)
                         )
@@ -336,8 +397,8 @@ class PlantumlGenerator(Generator):
                 assocs.append('"' + mixin + '" ' + plantuml_mixin + " " + '"' + cn + '"')
 
             # Classes that use the class as a mixin — cn (parent) on left, user class (child) on right
-            if cls.name in self.synopsis.mixinrefs:
-                for mixin in sorted(self.synopsis.mixinrefs[cls.name].classrefs, reverse=True):
+            if cls.name in self._mixin_users:
+                for mixin in sorted(self._mixin_users[cls.name], reverse=True):
                     if ClassDefinitionName(mixin) not in self.class_generated:
                         classes.append(self.add_class(ClassDefinitionName(mixin)))
                     if cn not in self.class_generated:
@@ -345,8 +406,8 @@ class PlantumlGenerator(Generator):
                     assocs.append('"' + cn + '" ' + plantuml_mixin + " " + '"' + ClassDefinitionName(mixin) + '"')
 
             # Classes that inject information
-            if cn in self.synopsis.applytos.classrefs:
-                for injector in sorted(self.synopsis.applytorefs[cn].classrefs, reverse=True):
+            if cn in self._applytos:
+                for injector in sorted(self._appliers.get(cn, set()), reverse=True):
                     if cn not in self.class_generated:
                         classes.append(self.add_class(cn))
                     if ClassDefinitionName(injector) not in self.class_generated:
@@ -355,8 +416,8 @@ class PlantumlGenerator(Generator):
             self.associations_generated.add(cn)
 
             # Children
-            if cn in self.synopsis.isarefs:
-                for is_a_cls in sorted(self.synopsis.isarefs[cn].classrefs, reverse=True):
+            if cn in self._isa_children:
+                for is_a_cls in sorted(self._isa_children[cn], reverse=True):
                     if cn not in self.class_generated:
                         classes.append(self.add_class(cn))
                     if ClassDefinitionName(is_a_cls) not in self.class_generated:
@@ -408,10 +469,8 @@ class PlantumlGenerator(Generator):
                 return True
 
         rval = []
-        cls = self.schema.classes[cn]
-        cls_slots = self.all_slots(cls, cls_slots_first=True)
-        for slot in cls_slots:
-            if (all_slots or slot.range in self.schema.classes) and filtr(slot):
+        for slot in self._own_first_slots(cn):
+            if (all_slots or slot.range in self._all_classes) and filtr(slot):
                 rval.append(slot)
 
         return rval
@@ -428,12 +487,12 @@ class PlantumlGenerator(Generator):
         @return:
         """
         pk = "(pk)" if slot.key else ""
-        inherited = slot.name not in self.own_slot_names(cls)
-        mixin = inherited and slot.name in [mslot.name for mslot in [self.schema.classes[m] for m in cls.mixins]]
-        injected = cls.name in self.synopsis.applytos.classrefs and slot.name in [
-            aslot.name
-            for aslot in [self.schema.classes[a] for a in sorted(self.synopsis.applytorefs[cls.name].classrefs)]
-        ]
+        parent_slot_names = set(self.schemaview.class_slots(cls.is_a)) if cls.is_a else set()
+        inherited = slot.name in parent_slot_names and slot.name not in cls.slot_usage
+        # NB: the two checks below compare slot names against CLASS names, faithfully
+        # reproducing the original (SchemaLoader-era) behavior
+        mixin = inherited and slot.name in cls.mixins
+        injected = cls.name in self._applytos and slot.name in sorted(self._appliers.get(cls.name, set()))
         return pk + ("(a)" if injected else "(m)" if mixin else "(i)" if inherited else "")
 
 
