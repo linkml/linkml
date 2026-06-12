@@ -461,6 +461,21 @@ class Generator(metaclass=abc.ABCMeta):
     def own_slot_names(self, cls: ClassDefinitionName | ClassDefinition) -> list[SlotDefinitionName]:
         return [slot.name for slot in self.own_slots(cls)]
 
+    def defining_schema(self, element: Element) -> SchemaDefinition:
+        """Return the schema in the imports closure that defines element.
+
+        Replaces reads of the loader-filled ``from_schema``/``schema_defaults``.
+        Note SchemaView.schema_map is keyed by import name (e.g. ``linkml:types``)
+        while in_schema returns the schema name (``types``), cf. linkml#2913,
+        so this matches on schema name.
+        """
+        schema_name = self.schemaview.in_schema(element.name)
+        for schema in self.schemaview.schema_map.values():
+            if schema.name == schema_name:
+                return schema
+        msg = f"Cannot find defining schema {schema_name} for {element.name}"
+        raise ValueError(msg)
+
     def induced_slots_legacy_order(self, class_name: ClassDefinitionName) -> list[SlotDefinition]:
         """Return induced slots ordered like SchemaLoader's resolved class slots.
 

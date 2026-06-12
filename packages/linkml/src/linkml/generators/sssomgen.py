@@ -28,7 +28,7 @@ class SSSOMGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["tsv"]
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     # TODO: move up
     msdf_columns = [
@@ -77,17 +77,15 @@ class SSSOMGenerator(Generator):
         self.table_as_list.append(list_of_row)
 
     def definition_extract_info(self, obj: Definition):
-        subject_source = obj.from_schema
+        subject_source = obj.from_schema if obj.from_schema else str(self.defining_schema(obj).id)
         if type(obj) is not EnumDefinition:
             if type(obj) is ClassDefinition:
                 obj: ClassDefinition
-                if obj.class_uri:
-                    subject_id = obj.class_uri
+                subject_id = obj.class_uri if obj.class_uri else self.schemaview.get_uri(obj)
 
             elif type(obj) is SlotDefinition:
                 obj: SlotDefinition
-                if obj.slot_uri:
-                    subject_id = obj.slot_uri
+                subject_id = obj.slot_uri if obj.slot_uri else self.schemaview.get_uri(obj)
 
             if obj.title:
                 subject_label = obj.title
@@ -95,10 +93,15 @@ class SSSOMGenerator(Generator):
                 subject_label = obj.name
 
             for map_key, map_val in self.mapping_type_dict.items():
-                if obj.__dict__[map_key]:
+                mapping_values = list(getattr(obj, map_key))
+                if map_key == "exact_mappings" and type(obj) is ClassDefinition:
+                    # class URIs count as trivial exact mappings, as SchemaLoader
+                    # injected them into resolved schemas
+                    mapping_values.insert(0, subject_id)
+                if mapping_values:
                     predicate_id = map_val
                     match_type = map_val
-                    for obj_id in obj.__dict__[map_key]:
+                    for obj_id in mapping_values:
                         object_id = obj_id
                         # obj_label = "OBJ_LABEL" # Placeholder for the future
                         row_dict = {}
@@ -118,7 +121,7 @@ class SSSOMGenerator(Generator):
                 obj: EnumDefinition
                 subject_category = obj.name.replace(" ", "")
                 predicate_id = "skos:exactMatch"
-                default_prefix = self.schema_defaults[obj.from_schema]
+                default_prefix = self.defining_schema(obj).default_prefix
                 for k, v in obj.permissible_values.items():
                     if v["meaning"]:
                         subject_id = default_prefix + ":" + subject_category + "#" + k.replace(" ", "")
@@ -143,17 +146,18 @@ class SSSOMGenerator(Generator):
                 )
             )
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
-        self.definition_extract_info(cls)
-        return True
+    def serialize(self, **kwargs) -> str:
+        sv = self.schemaview
+        for enum in sorted(sv.all_enums().values(), key=lambda e: e.name.lower()):
+            self.definition_extract_info(enum)
+        for slot in sorted(sv.all_slots().values(), key=lambda s: s.name.lower()):
+            self.definition_extract_info(slot)
+        for cls in sorted(sv.all_classes().values(), key=lambda c: c.name.lower()):
+            self.definition_extract_info(cls)
+        self._write_output()
+        return "\n"
 
-    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        self.definition_extract_info(slot)
-
-    def visit_enum(self, enum: EnumDefinition) -> None:
-        self.definition_extract_info(enum)
-
-    def end_schema(self, context: str = None, **_) -> None:
+    def _write_output(self) -> None:
         metadata = {}
         schema: SchemaDefinition = self.schema
 
