@@ -1,0 +1,113 @@
+# Auto generated from {{ source_file }} by dataclassgen version: {{ generator_version }}
+{% if generation_date %}
+# Generation date: {{ generation_date }}
+{% endif %}
+# Schema: {{ schema_name }}
+#
+# id: {{ schema_id }}
+# description: {{ schema_description }}
+# license: {{ schema_license }}
+
+import dataclasses
+import re
+from dataclasses import dataclass
+from datetime import (
+    date,
+    datetime,
+    time
+)
+from decimal import Decimal
+from typing import (
+    Any,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Union
+)
+
+from jsonasobj2 import (
+    JsonObj,
+    as_dict
+)
+from linkml_runtime.linkml_model.meta import (
+    EnumDefinition,
+    PermissibleValue,
+    PvFormulaOptions
+)
+from linkml_runtime.utils.curienamespace import CurieNamespace
+from linkml_runtime.utils.enumerations import EnumDefinitionImpl
+from linkml_runtime.utils.formatutils import (
+    camelcase,
+    sfx,
+    underscore
+)
+from linkml_runtime.utils.metamodelcore import (
+    Bool,
+    Curie,
+    Decimal,
+    ElementIdentifier,
+    NCName,
+    NodeIdentifier,
+    URI,
+    URIorCURIE,
+    XSDDate,
+    XSDDateTime,
+    XSDTime,
+    bnode,
+    empty_dict,
+    empty_list
+)
+from linkml_runtime.utils.slot import Slot
+from linkml_runtime.utils.yamlutils import (
+    YAMLRoot,
+    extended_float,
+    extended_int,
+    extended_str
+)
+from rdflib import (
+    Namespace,
+    URIRef
+)
+
+
+metamodel_version = "{{ metamodel_version }}"
+version = {{ version }}
+
+# Namespaces
+{% for ns in namespaces %}
+{{ ns }}
+{% endfor %}
+DEFAULT_ = {{ default_namespace }}
+
+
+# Types
+{% for type in types %}
+{{ type }}
+
+{% endfor %}
+
+# Class references
+{% for name_class in name_classes %}
+{{ name_class }}
+
+{% endfor %}
+
+{% for class_ in classes %}
+{{ class_ }}
+
+{% endfor %}
+# Enumerations
+{% for enum in enums %}
+{{ enum }}
+
+{% endfor %}
+
+# Slots
+class slots:
+    pass
+
+{% for slot in slot_entries %}
+{{ slot }}
+
+{% endfor %}

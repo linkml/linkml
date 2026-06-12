@@ -1,0 +1,29 @@
+@dataclass(repr=False)
+class {{ name }}({{ base }}):
+{% if description %}
+    """
+    {{ description }}
+    """
+{% endif %}
+    _inherited_slots: ClassVar[list[str]] = [{{ inherited_slots }}]
+
+    class_class_uri: ClassVar[URIRef] = {{ class_class_uri }}
+    class_class_curie: ClassVar[str] = {{ class_class_curie }}
+    class_name: ClassVar[str] = "{{ class_name_value }}"
+    class_model_uri: ClassVar[URIRef] = {{ class_model_uri }}
+
+{% for attribute in attributes %}
+    {{ attribute }}
+{% endfor %}
+{% if post_init_lines %}
+
+    def __post_init__(self, *_: str, **kwargs: Any):
+{% for line in post_init_lines %}
+{% if line %}
+        {{ line }}
+{% else %}
+
+{% endif %}
+{% endfor %}
+        super().__post_init__(**kwargs)
+{% endif %}

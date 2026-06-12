@@ -1,0 +1,16 @@
+class {{ name }}(EnumDefinitionImpl):
+{% if description %}
+    """
+    {{ description }}
+    """
+{% endif %}
+{% for pv in permissible_values %}
+    {{ pv }}
+{% endfor %}
+
+    _defn = EnumDefinition(
+        name="{{ name }}",
+{% if description %}
+        description="""{{ description }}""",
+{% endif %}
+    )
