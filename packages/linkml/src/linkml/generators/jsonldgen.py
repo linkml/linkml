@@ -50,7 +50,6 @@ class JSONLDGenerator(Generator):
         "json",
     ]  # jsonld includes @type and @context.  json is pure JSON
     uses_schemaloader = True
-    requires_metamodel = True
     file_extension = "jsonld"
 
     # ObjectVars

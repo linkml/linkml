@@ -175,7 +175,6 @@ class ERDiagramGenerator(Generator):
     generatorversion = "0.0.1"
     valid_formats = ["markdown", "mermaid"]
     uses_schemaloader = False
-    requires_metamodel = False
 
     structural: bool = True
     """If True, then only the tree_root and entities reachable from the root are drawn"""

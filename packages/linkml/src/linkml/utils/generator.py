@@ -103,8 +103,8 @@ class Generator(metaclass=abc.ABCMeta):
     # uses_schemaview: ClassVar[bool] = True
     # """New-style generator that uses SchemaView"""
 
-    requires_metamodel: ClassVar[bool] = True
-    """Generator queries an instance of the metamodel"""
+    requires_metamodel: ClassVar[bool] = False
+    """Generator queries a SchemaLoader instance over the metamodel (legacy; no in-repo generator uses it)"""
 
     valid_formats: ClassVar[list[str]] = []
     """Allowed formats - first format is default"""

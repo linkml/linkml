@@ -29,7 +29,6 @@ class MermaidClassDiagramGenerator(Generator):
     generatorversion = "0.0.1"
     valid_formats = ["markdown"]
     uses_schemaloader = False
-    requires_metamodel = False
 
     directory: str | None = None  # output directory with generated markdown files
     template_file: str | None = None  # custom/default jinja template for class diagrams

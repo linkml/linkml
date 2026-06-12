@@ -100,7 +100,6 @@ class OOCodeGenerator(Generator):
     java_style = True
     visit_all_class_slots = False
     uses_schemaloader = False
-    requires_metamodel = False
     schemaview: SchemaView = None
 
     template_file: str = None

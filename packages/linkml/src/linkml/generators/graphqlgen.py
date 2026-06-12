@@ -20,7 +20,6 @@ class GraphqlGenerator(Generator):
     valid_formats = ["graphql"]
     visit_all_class_slots = True
     uses_schemaloader = True
-    requires_metamodel = False
 
     strict_naming: bool = False
     _permissible_value_valid_characters = re.compile("^[_A-Za-z][_0-9A-Za-z]*?$")

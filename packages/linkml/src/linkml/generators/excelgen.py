@@ -20,7 +20,6 @@ class ExcelGenerator(Generator):
     generatorversion = "0.1.1"
     valid_formats = ["xlsx"]
     uses_schemaloader = False
-    requires_metamodel = False
 
     split_workbook_by_class: bool = False
     include_mixins: bool = False

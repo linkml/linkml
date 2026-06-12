@@ -305,8 +305,8 @@ class OwlSchemaGenerator(Generator):
         # initialize the rdflib Graph where all axiom triples will be added
         graph = Graph(identifier=base)
         self.graph = graph
-        for prefix in self.metamodel.schema.emit_prefixes:
-            self.graph.bind(prefix, self.metamodel.namespaces[prefix])
+        for prefix in self.metamodel_schemaview.schema.emit_prefixes:
+            self.graph.bind(prefix, self.metamodel_schemaview.namespaces()[prefix])
         for pfx in schema.prefixes.values():
             self.graph.namespace_manager.bind(pfx.prefix_prefix, URIRef(pfx.prefix_reference))
         graph.add((base, RDF.type, OWL.Ontology))
@@ -1033,7 +1033,7 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((type_uri, RDFS.subClassOf, self._type_uri(typ.typeof)))
             else:
                 if not self.top_value_uri:
-                    self.top_value_uri = self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["topValue"]
+                    self.top_value_uri = self.metamodel_schemaview.namespaces()[METAMODEL_NAMESPACE_NAME]["topValue"]
                     self.graph.add((self.top_value_uri, RDF.type, OWL.DatatypeProperty))
                     self.graph.add((self.top_value_uri, RDFS.label, Literal("value")))
                 restr = BNode()
@@ -1134,7 +1134,7 @@ class OwlSchemaGenerator(Generator):
             g.add(
                 (
                     enum_uri,
-                    self.metamodel.namespaces[METAMODEL_NAMESPACE_NAME]["permissible_values"],
+                    self.metamodel_schemaview.namespaces()[METAMODEL_NAMESPACE_NAME]["permissible_values"],
                     pv_node,
                 )
             )
