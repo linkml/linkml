@@ -33,11 +33,11 @@ class DBMLGenerator(Generator):
     generatorname = "dbmlgen"
     generatorversion = "0.2.0"
     valid_formats = ["dbml"]
+    uses_schemaloader = False
 
     def __post_init__(self) -> None:
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        self.schemaview = SchemaView(self.schema)
 
     def serialize(self) -> str:
         """
@@ -70,8 +70,7 @@ class DBMLGenerator(Generator):
         """
         dbml = [f"Table {camelcase(class_name)} {{"]
 
-        for slot_name in self.schemaview.class_induced_slots(class_name):
-            slot = self.schemaview.get_slot(slot_name.name)
+        for slot in self.schemaview.class_induced_slots(class_name):
             dbml.append(self._generate_column(slot))
 
         dbml.append("}\n")
@@ -108,17 +107,15 @@ class DBMLGenerator(Generator):
         """
         relationships = []
         for class_name, class_def in self.schemaview.all_classes().items():
-            for slot_name in self.schemaview.class_induced_slots(class_name):
-                slot = self.schemaview.get_slot(slot_name.name)
-
+            for slot in self.schemaview.class_induced_slots(class_name):
                 # Check if the slot references another class
                 if slot.range in self.schemaview.all_classes():
                     # Find the identifier slot of the referenced class
                     identifier_slot_name = next(
                         (
-                            slot_name.name
-                            for slot_name in self.schemaview.class_induced_slots(slot.range)
-                            if self.schemaview.get_slot(slot_name.name).identifier
+                            range_slot.name
+                            for range_slot in self.schemaview.class_induced_slots(slot.range)
+                            if range_slot.identifier
                         ),
                         None,
                     )

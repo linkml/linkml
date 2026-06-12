@@ -37,15 +37,13 @@ class YarrrmlGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.3.0"
     valid_formats = ["yml", "yaml"]
-    visit_all_class_slots = False
+    uses_schemaloader = False
 
     def __init__(self, schema: str | TextIO | SchemaDefinition, format: str = "yml", **kwargs):
         raw_src = kwargs.pop("source", None)
         it = kwargs.pop("iterator_template", None)
         super().__init__(schema, **kwargs)
 
-        self.schemaview = SchemaView(schema)
-        self.schema: SchemaDefinition = self.schemaview.schema
         self.format = format
         self.source: str = self._infer_source_suffix(raw_src) if raw_src else DEFAULT_SOURCE_JSON
         if it:
