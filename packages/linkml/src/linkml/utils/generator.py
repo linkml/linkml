@@ -880,6 +880,9 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(defn, SlotDefinition):
             mappings.append(defn.slot_uri)
         for mapping in mappings:
+            if mapping is None:
+                # class_uri/slot_uri are unset on raw (non-SchemaLoader) schemas
+                continue
             if "://" in str(mapping):
                 mcurie = self.namespaces.curie_for(mapping)
                 if mcurie is None:

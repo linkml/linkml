@@ -25,8 +25,7 @@ class PrefixGenerator(Generator):
     generatorname = os.path.basename(__file__)
     generatorversion = "0.1.1"
     valid_formats = ["json", "tsv"]
-    visit_all_class_slots = False
-    uses_schemaloader = True
+    uses_schemaloader = False
 
     # ObjectVars
     emit_prefixes: set[str] = field(default_factory=lambda: set())
@@ -40,7 +39,12 @@ class PrefixGenerator(Generator):
         if self.namespaces is None:
             raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
 
-    def visit_schema(self, base: str | None = None, output: str | None = None, **_):
+    def serialize(self, base: str | Namespace | None = None, output: str | None = None, **kwargs) -> str:
+        sv = self.schemaview
+        if self.mergeimports:
+            sv.imports_closure()
+        self.namespaces = sv.namespaces()
+
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
             self.emit_prefixes.add(prefix.prefix_prefix)
@@ -57,7 +61,14 @@ class PrefixGenerator(Generator):
             if self.default_ns:
                 self.emit_prefixes.add(self.default_ns)
 
-    def end_schema(self, base: str | Namespace | None = None, output: str | None = None, **_) -> str:
+        for cls in sorted(sv.all_classes(imports=self.mergeimports).values(), key=lambda c: c.name.casefold()):
+            self._add_class(cls)
+        for slot in sorted(sv.all_slots(imports=self.mergeimports).values(), key=lambda s: s.name.casefold()):
+            self.add_mappings(slot)
+
+        return self._build_output(base=base, output=output)
+
+    def _build_output(self, base: str | Namespace | None = None, output: str | None = None) -> str:
         context = JsonObj()
         if base:
             base = str(base)
@@ -91,23 +102,20 @@ class PrefixGenerator(Generator):
 
         return out
 
-    def visit_class(self, cls: ClassDefinition) -> bool:
+    def _add_class(self, cls: ClassDefinition) -> None:
         class_def = {}
         cn = camelcase(cls.name)
         self.add_mappings(cls)
-        cls_prefix = self.namespaces.prefix_for(cls.class_uri)
+        # raw schemas leave class_uri unset; get_uri derives it from the
+        # defining schema's default prefix, as SchemaLoader resolution did
+        class_uri = cls.class_uri if cls.class_uri else self.schemaview.get_uri(cls)
+        cls_prefix = self.namespaces.prefix_for(class_uri)
         if not self.default_ns or not cls_prefix or cls_prefix != self.default_ns:
-            class_def["@id"] = cls.class_uri
+            class_def["@id"] = class_uri
             if cls_prefix:
                 self.add_prefix(cls_prefix)
         if class_def:
             self.slot_class_maps[cn] = class_def
-
-        # We don't bother to visit class slots - just all slots
-        return False
-
-    def visit_slot(self, aliased_slot_name: str, slot: SlotDefinition) -> None:
-        self.add_mappings(slot)
 
 
 @shared_arguments(PrefixGenerator)
