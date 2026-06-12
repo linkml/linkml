@@ -43,9 +43,9 @@ type FamilialRelationship
   {
     startedAtTime: String
     endedAtTime: String
-    cordialness: CordialnessEnum
-    type: FamilialRelationshipType!
     relatedTo: Person!
+    type: FamilialRelationshipType!
+    cordialness: CordialnessEnum
   }
 """
 
