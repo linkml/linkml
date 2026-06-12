@@ -411,29 +411,66 @@ class DataclassGenerator(Generator):
             default_expr = f"CurieNamespace('', '{sfx(str(self.schema.id))}')"
         return lines, default_expr
 
+    def _slot_ns_var(self, slot: SlotDefinition) -> str:
+        """Namespace variable of the slot's defining schema (CORE.name, not DEFAULT_.name)."""
+        try:
+            prefix = self.defining_schema(slot).default_prefix
+        except ValueError:
+            prefix = None
+        if prefix and "://" not in prefix and self._ns_var(prefix) in self._ns_vars:
+            return self._ns_var(prefix)
+        return "DEFAULT_"
+
+    def _registry_range(self, slot: SlotDefinition) -> str:
+        sv = self.schemaview
+        if slot.identifier or slot.key:
+            return "URIRef"
+        if slot.range in sv.all_classes() or slot.range in sv.all_enums():
+            return "Optional[str]"
+        annotation, _ = self._type_info(slot.range if slot.range in sv.all_types() else None)
+        return annotation if slot.required else f"Optional[{annotation}]"
+
     def _build_slot_entries(self) -> list[SlotEntry]:
         sv = self.schemaview
         out: list[SlotEntry] = []
         for slot in sv.all_slots().values():
             alias = self._slot_alias(slot)
-            annotation, _ = self._type_info(slot.range if slot.range in sv.all_types() else None)
-            if slot.identifier or slot.key:
-                range_expr = "URIRef"
-            elif slot.range in sv.all_classes() or slot.range in sv.all_enums():
-                range_expr = f"Optional[str]"
-            else:
-                range_expr = annotation if slot.required else f"Optional[{annotation}]"
+            ns = self._slot_ns_var(slot)
             out.append(
                 SlotEntry(
                     pyname=alias,
-                    uri=f"DEFAULT_.{alias}",
+                    uri=f"{ns}.{alias}",
                     slot_name=slot.name,
-                    curie=f"DEFAULT_.curie('{alias}')",
+                    curie=f"{ns}.curie('{alias}')",
                     model_uri=f"DEFAULT_.{alias}",
                     domain="None",
-                    range=range_expr,
+                    range=self._registry_range(slot),
                 )
             )
+        # slot_usage refinements: the loader synthesized mangled Class_slot
+        # copies; emit registry entries for them with the class-context range
+        for cls in self._class_order():
+            for slot_name in cls.slot_usage:
+                base_slot = sv.get_slot(slot_name)
+                if base_slot is None:
+                    continue
+                induced = sv.induced_slot(slot_name, cls.name)
+                alias = self._slot_alias(induced)
+                ns = self._slot_ns_var(base_slot)
+                pyname = f"{camelcase(cls.name)}_{alias}"
+                field_line, _ = self._field_for_slot(cls, induced)
+                annotation = field_line.split(": ", 1)[1].rsplit(" = ", 1)[0]
+                out.append(
+                    SlotEntry(
+                        pyname=pyname,
+                        uri=f"{ns}.{alias}",
+                        slot_name=f"{camelcase(cls.name)}_{induced.name}",
+                        curie=f"{ns}.curie('{alias}')",
+                        model_uri=f"DEFAULT_.{pyname}",
+                        domain=self._class_py_name(cls.name),
+                        range=annotation,
+                    )
+                )
         return out
 
     # -- entry point -----------------------------------------------------------
@@ -446,6 +483,7 @@ class DataclassGenerator(Generator):
         self.ifabsent_processor = PythonIfAbsentProcessor(sv)
         namespaces, default_ns = self._build_namespaces()
         self._ns_prefixes = {line.split(" = ")[1].split("'")[1] for line in namespaces}
+        self._ns_vars = {line.split(" = ")[0] for line in namespaces}
         types = self._build_types()
         name_classes = self._build_name_classes()
         classes: list = []
