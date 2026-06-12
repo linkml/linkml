@@ -4,6 +4,7 @@ import os
 from dataclasses import dataclass
 
 import click
+from deprecated.classic import deprecated
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
@@ -11,10 +12,17 @@ from linkml.utils.schemaloader import load_raw_schema
 from linkml_runtime.utils.yamlutils import as_yaml
 
 
+@deprecated("Use gen-linkml (linkmlgen) for YAML output of a schema; use linkml-validate for validation")
 @dataclass
 class YAMLGenerator(Generator):
     """
-    A generator that produces a schema as a YAML Document
+    A generator that produces the SchemaLoader-resolved schema as a YAML document.
+
+    Deprecated: the output contract of this generator is SchemaLoader's
+    resolution itself. Use :class:`~linkml.generators.linkmlgen.LinkmlGenerator`
+    (``gen-linkml``) for raw or SchemaView-materialized schema YAML, and
+    ``linkml-validate`` for schema validation. This generator will be retired
+    together with SchemaLoader.
     """
 
     # ClassVars
