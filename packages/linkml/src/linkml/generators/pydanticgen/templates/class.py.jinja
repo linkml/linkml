@@ -11,7 +11,12 @@ class {{ name }}({% if bases is string %}{{ bases }}{% else %}{{ bases | join(',
     """
     {% endif -%}
     {% if extra %}
+      {% if extra in ("forbid", "allow", "ignore") %}
     model_config = ConfigDict(extra = "{{ extra }}")
+      {% else %}
+    __pydantic_extra__: dict[str, {{ extra }}]
+    model_config = ConfigDict(extra = "allow")
+      {% endif %}
 
     {% endif -%}
     {% if meta %}

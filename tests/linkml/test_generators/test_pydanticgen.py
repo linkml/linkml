@@ -3226,7 +3226,7 @@ def extra_slots(input_path) -> ModuleType:
             False,
             {
                 "x": 1,
-                "another": True,
+                "another": 1.5,
             },
         ),
         ("ExtraCardinality", True, {"x": 1, "another": [1, 2, 3, 4, 5]}),

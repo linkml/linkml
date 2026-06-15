@@ -214,6 +214,11 @@ class PydanticAttribute(PydanticTemplateModel):
     """
     Metadata for the slot to be included in a Field annotation
     """
+    as_annotated: bool = False
+    """
+    If ``True``, render as Annotated[range, Field()] form,
+    rather than model field form.
+    """
 
     @computed_field
     def field(self) -> str:
@@ -267,7 +272,7 @@ class PydanticClass(PydanticTemplateModel):
     """
     Metadata for the class to be included in a linkml_meta class attribute
     """
-    extra: Literal["allow", "forbid", "ignore"] | None = None
+    extra: Literal["allow", "forbid", "ignore"] | PydanticAttribute | None = None
     """
     Per-class override for the ``extra`` argument of pydantic's ``ConfigDict``.
 

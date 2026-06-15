@@ -36,6 +36,7 @@ from linkml.generators.pydanticgen.template import (
 from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import (
+    AnonymousSlotExpression,
     ClassDefinition,
     ElementName,
     SchemaDefinition,
@@ -77,6 +78,7 @@ DEFAULT_IMPORTS = (
     + Import(
         module="typing",
         objects=[
+            ObjectImport(name="Annotated"),
             ObjectImport(name="Any"),
             ObjectImport(name="ClassVar"),
             ObjectImport(name="Literal"),
@@ -485,7 +487,9 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                 raise ValueError(f"could not find suitable element in {clist} that does not ref {slist}")
         return slist
 
-    def _get_extra_for_class(self, cls: ClassDefinition) -> Literal["allow", "forbid", "ignore"] | None:
+    def _get_extra_for_class(
+        self, cls: ClassDefinition
+    ) -> Literal["allow", "forbid", "ignore"] | PydanticAttribute | None:
         """
         Determine the per-class ``extra`` value for the Pydantic ``ConfigDict``
         based on the class's ``extra_slots`` metadata.
@@ -493,9 +497,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         Returns ``None`` if the class does not override the generator-wide default,
         so the inherited base-model configuration is used.
         """
-        if not cls.extra_slots or cls.extra_slots.allowed is None:
+        if not cls.extra_slots:
             return None
-        return "allow" if cls.extra_slots.allowed else "forbid"
+        elif cls.extra_slots.range_expression:
+            result = self.generate_slot(cls.extra_slots.range_expression, cls)
+            return result.attribute
+        else:
+            return "allow" if cls.extra_slots.allowed else "forbid"
 
     def generate_class(self, cls: ClassDefinition) -> ClassResult:
         # Handle union_of classes by creating a type alias instead of a class
@@ -588,31 +596,43 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
 
         return result
 
-    def generate_slot(self, slot: SlotDefinition, cls: ClassDefinition) -> SlotResult:
+    def generate_slot(self, slot: SlotDefinition | AnonymousSlotExpression, cls: ClassDefinition) -> SlotResult:
+        """
+        Generate the template representation of a slot.
+
+        If slot is a SlotDefinition, renders as a pydantic field,
+        if an AnonymousSlotExpression, renders as an annotated type.
+        """
         slot_args = {
             k: getattr(slot, k, None)
             for k in PydanticAttribute.model_fields.keys()
             if getattr(slot, k, None) is not None
         }
         slot_args["empty_list_for_multivalued_slots"] = self.empty_list_for_multivalued_slots
-        slot_alias = slot.alias if slot.alias else slot.name
 
-        # Create a valid Python identifier for the field name
-        python_field_name = make_valid_python_identifier(underscore(slot_alias))
-        slot_args["name"] = python_field_name
-
-        # If the original name is different from the Python identifier, set an alias
-        if slot_alias != python_field_name:
-            slot_args["alias"] = slot_alias
+        if isinstance(slot, AnonymousSlotExpression):
+            slot_args["name"] = "__anonymous__"
+            slot_args["as_annotated"] = True
         else:
-            # Remove any existing alias if the names are the same
-            if "alias" in slot_args:
-                del slot_args["alias"]
+            slot_alias = slot.alias if slot.alias else slot.name
+
+            # Create a valid Python identifier for the field name
+            python_field_name = make_valid_python_identifier(underscore(slot_alias))
+            slot_args["name"] = python_field_name
+
+            # If the original name is different from the Python identifier, set an alias
+            if slot_alias != python_field_name:
+                slot_args["alias"] = slot_alias
+            else:
+                # Remove any existing alias if the names are the same
+                if "alias" in slot_args:
+                    del slot_args["alias"]
+
+            predef = self.predefined_slot_values.get(self._get_class_python_name(cls.name), {}).get(slot.name, None)
+            if predef is not None:
+                slot_args["predefined"] = str(predef)
 
         slot_args["description"] = slot.description.replace('"', '\\"') if slot.description is not None else None
-        predef = self.predefined_slot_values.get(self._get_class_python_name(cls.name), {}).get(slot.name, None)
-        if predef is not None:
-            slot_args["predefined"] = str(predef)
 
         pyslot = PydanticAttribute(**slot_args)
         pyslot = self.include_metadata(pyslot, slot)
@@ -673,8 +693,13 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
                     result.attribute.range = f"dict[str, {simple_dict_value}]"
                 else:
                     result.attribute.range = f"dict[{collection_key}, {result.attribute.range}]"
-        if not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
+
+        if isinstance(slot, AnonymousSlotExpression):
+            if not slot.required:
+                result.attribute.range = f"Optional[{result.attribute.range}]"
+        elif not (slot.required or slot.identifier or slot.key) and not slot.designates_type:
             result.attribute.range = f"Optional[{result.attribute.range}]"
+
         return result
 
     @property
@@ -821,7 +846,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
         """
         sv = self.schemaview
 
-        if slot_def.designates_type:
+        if getattr(slot_def, "designates_type", False):
             pyrange = (
                 "Literal["
                 + ",".join(['"' + x + '"' for x in get_accepted_type_designator_values(sv, slot_def, class_def)])
@@ -833,7 +858,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = "Literal[" + ", ".join([f'"{a_string}"' for a_string in slot_def.equals_string_in]) + "]"
         elif (
             self.expand_subproperty_of
-            and slot_def.subproperty_of
+            and getattr(slot_def, "subproperty_of", False)
             and slot_range not in sv.all_classes()
             and slot_range not in sv.all_enums()
         ):
