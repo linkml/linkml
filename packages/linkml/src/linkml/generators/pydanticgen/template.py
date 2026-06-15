@@ -154,7 +154,7 @@ class PydanticBaseModel(PydanticTemplateModel):
 
     default_name: ClassVar[str] = "ConfiguredBaseModel"
     name: str = Field(default_factory=lambda: PydanticBaseModel.default_name)
-    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    extra_fields: Literal["allow", "forbid", "ignore"] | None = "forbid"
     """
     Sets the ``extra`` model for pydantic models
     """

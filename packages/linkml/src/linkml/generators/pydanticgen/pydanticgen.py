@@ -33,6 +33,7 @@ from linkml.generators.pydanticgen.template import (
     PydanticModule,
     PydanticTemplateModel,
 )
+from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import shared_arguments
 from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
@@ -238,7 +239,7 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     for each class. If a matching template is not found in the override directory,
     the default templates will be used.
     """
-    extra_fields: Literal["allow", "forbid", "ignore"] = "forbid"
+    extra_fields: Literal["allow", "forbid", "ignore"] | None = None
     """
     How to handle extra fields in Pydantic models. Sets the default for all classes;
     individual classes can override this via their ``extra_slots`` metadata.
@@ -409,6 +410,14 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
     # Private attributes
     _predefined_slot_values: dict[str, dict[str, str]] | None = None
     _class_bases: dict[str, list[str]] | None = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.extra_fields is not None:
+            deprecation_warning("pydanticgen-extra-fields")
+        else:
+            # preserve prior behavior until removal
+            self.extra_fields = "forbid"
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
