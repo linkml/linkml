@@ -11,7 +11,10 @@ class EnumDefinitionMeta(type):
         cls._addvals()
 
     def __getitem__(cls, item):
-        return cls.__dict__[item]
+        for klass in cls.__mro__:
+            if item in klass.__dict__:
+                return klass.__dict__[item]
+        raise KeyError(item)
 
     def __setitem__(cls, key, value):
         if key in cls.__dict__:
@@ -26,7 +29,7 @@ class EnumDefinitionMeta(type):
         super().__setattr__(key, value)
 
     def __contains__(cls, item) -> bool:
-        return item in cls.__dict__
+        return any(item in klass.__dict__ for klass in cls.__mro__)
 
 
 def isinstance_dt(cls: type, inst: str) -> bool:
