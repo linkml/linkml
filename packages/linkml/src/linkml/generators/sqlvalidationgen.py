@@ -76,39 +76,6 @@ class SQLValidationGenerator(Generator):
     check_unique_keys: bool = True
     check_rules: bool = True
 
-    def _get_dialect(self):
-        """
-        Get the SQLAlchemy dialect object for the configured dialect.
-
-        Only ``sqlite`` and ``postgresql`` are supported.  Any other value is
-        rejected: a warning is logged and the dialect is reset to ``sqlite``.
-
-        :return: SQLAlchemy dialect instance
-        """
-        supported = {"postgresql", "sqlite"}
-        if self.dialect not in supported:
-            logger.warning(
-                f"Dialect '{self.dialect}' is not supported. "
-                "Only 'sqlite' and 'postgresql' are supported. Falling back to 'sqlite'."
-            )
-            self.dialect = "sqlite"
-        dialect_map = {
-            "postgresql": postgresql.dialect(),
-            "sqlite": sqlite_dialect.dialect(),
-        }
-        return dialect_map[self.dialect]
-
-    def _compile_query(self, query) -> str:
-        """
-        Compile a SQLAlchemy query to SQL string for the configured dialect.
-
-        :param query: SQLAlchemy selectable object
-        :return: Compiled SQL string
-        """
-        dialect = self._get_dialect()
-        compiled = query.compile(dialect=dialect, compile_kwargs={"literal_binds": True})
-        return str(compiled)
-
     def serialize(self, **kwargs: dict[str, Any]) -> str:
         """
         Main entry point for generating validation queries.
@@ -177,7 +144,6 @@ class SQLValidationGenerator(Generator):
                 # Generate validation queries for each constraint type
                 if self.check_required and induced.required:
                     query = self._generate_required_violations(class_name, induced, identifier_slot_name)
-
                     if query is not None:
                         query_objects.append(query)
 
@@ -257,6 +223,39 @@ class SQLValidationGenerator(Generator):
         if result and not result.endswith("\n"):
             result += "\n"
         return result
+
+    def _get_dialect(self):
+        """
+        Get the SQLAlchemy dialect object for the configured dialect.
+
+        Only ``sqlite`` and ``postgresql`` are supported.  Any other value is
+        rejected: a warning is logged and the dialect is reset to ``sqlite``.
+
+        :return: SQLAlchemy dialect instance
+        """
+        supported = {"postgresql", "sqlite"}
+        if self.dialect not in supported:
+            logger.warning(
+                f"Dialect '{self.dialect}' is not supported. "
+                "Only 'sqlite' and 'postgresql' are supported. Falling back to 'sqlite'."
+            )
+            self.dialect = "sqlite"
+        dialect_map = {
+            "postgresql": postgresql.dialect(),
+            "sqlite": sqlite_dialect.dialect(),
+        }
+        return dialect_map[self.dialect]
+
+    def _compile_query(self, query) -> str:
+        """
+        Compile a SQLAlchemy query to SQL string for the configured dialect.
+
+        :param query: SQLAlchemy selectable object
+        :return: Compiled SQL string
+        """
+        dialect = self._get_dialect()
+        compiled = query.compile(dialect=dialect, compile_kwargs={"literal_binds": True})
+        return str(compiled)
 
     def _generate_header(self) -> str:
         """Generate a header comment for the SQL output."""
