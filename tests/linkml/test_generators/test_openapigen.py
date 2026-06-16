@@ -72,3 +72,47 @@ def test_resources_presence_and_absence(openapi_spec):
     assert "Person" in openapi_spec["components"]["schemas"].keys()
     # ensure unneeded resource schemas are not present
     assert "AnyOfSimpleType" not in openapi_spec["components"]["schemas"].keys()
+
+
+def test_printout_template(kitchen_sink_path):
+    """Test that printout_template returns a valid YAML generic template."""
+    output = OpenApiGenerator(kitchen_sink_path).printout_template()
+    parsed = yaml.safe_load(output)
+    assert parsed["openapi"] == "3.0.3"
+    assert "paths" in parsed
+    assert "schemas" in parsed["components"]
+    # the schema id from kitchen_sink must appear in the template
+    assert "https://w3id.org/linkml/tests/kitchen_sink" in output
+
+
+def test_schema_id_mismatch_raises(input_path, kitchen_sink_path):
+    """Test that a mismatched x-linkml-schema raises ValueError with a descriptive message."""
+    head_path = str(input_path("openapi/spec-wrong-schema-id.openapi.yaml"))
+    with pytest.raises(ValueError, match="x-linkml-schema"):
+        OpenApiGenerator(kitchen_sink_path).serialize(head_path)
+
+
+def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
+    """Test that referencing an endpoint resource with no schema declaration raises KeyError."""
+    template = tmp_path / "bad.yaml"
+    template.write_text(
+        "openapi: 3.0.3\ninfo:\n  title: t\n  version: 1\n"
+        "paths:\n  /x:\n    get:\n      responses:\n        '200':\n"
+        "          content:\n            application/json:\n              schema:\n"
+        "                $ref: '#/components/schemas/NonExistent'\n"
+        "components:\n  schemas: {}\n"
+    )
+    with pytest.raises(KeyError, match="NonExistent"):
+        OpenApiGenerator(kitchen_sink_path).serialize(str(template))
+
+
+def test_renaming(input_path, kitchen_sink_path):
+    """Test that resource names differing from LinkML class names are renamed throughout the spec."""
+    head_path = str(input_path("openapi/spec-renaming.openapi.yaml"))
+    spec = yaml.safe_load(OpenApiGenerator(kitchen_sink_path).serialize(head_path))
+    schemas = spec["components"]["schemas"]
+    # resource is exposed under the template name, not the LinkML class name
+    assert "PersonResource" in schemas
+    assert "Person" not in schemas
+    # all $ref values in the spec must use the renamed
+    assert "Person" not in str(spec).replace("PersonResource", "")

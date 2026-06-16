@@ -1,0 +1,25 @@
+openapi: 3.0.3
+info:
+  title: LinkML tests - wrong schema id
+  version: 1.0.0
+servers:
+  - url: https://example.org/
+security:
+  - PayloadSignature: []
+paths:
+  /api/endpoint1:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+
+components:
+  schemas:
+    Person:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/WRONG_SCHEMA_ID
+      x-linkml-source: Person
