@@ -1,0 +1,58 @@
+name: Audit dependencies
+
+# Global environment variables applied to all steps
+env:
+  UV_PREVIEW: "1"        # Enables the preview uv audit and malware engines
+  UV_MALWARE_CHECK: "1"  # Automatically blocks malicious installs on sync/run
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  security-check:
+    name: Validate Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      # Install the latest uv: the audit/malware-check features are preview-only
+      # and ship in recent releases, so this job intentionally does not pin uv.
+      - name: Install uv and setup uv caching
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        id: setup-python
+        with:
+          python-version: 3.13
+
+      # Step 1: Run uv audit to check for vulnerabilities (CVEs)
+      - name: Audit lockfile for CVEs
+        run: uv audit
+
+      # Step 2: Run a sync. If a package contains known malware,
+      # the OSV-lookup triggers an immediate, non-zero failure exit.
+      #
+      # NOTE: The malware gate only blocks malware that has *already* been
+      # published as an OSV advisory. There is a window between a malicious
+      # upload and its advisory. To cover that gap, pair this gate with uv's
+      # dependency cooldown (`exclude-newer`, a resolution-time setting added
+      # in uv 0.9.17), e.g. a 7-day window:
+      #
+      #   [tool.uv]
+      #   exclude-newer = "7 days"
+      #
+      # Cooldown is intentionally NOT enabled here: enabling it in pyproject.toml writes a timestamp
+      # into uv.lock that can cause merge conflicts across branches
+      # (see astral-sh/uv#18708). enablement tbd.
+      - name: Verify Environment Sync (Anti-Malware Gate)
+        run: uv sync --frozen
