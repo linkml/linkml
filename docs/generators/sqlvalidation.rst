@@ -56,6 +56,9 @@ All queries are concatenated using `UNION ALL`. Overall, the generated query loo
 
 To learn more about constraints in LinkML, check out :doc:`Adding constraints and rules <./../schemas/constraints>`.
 
+For simplicity, each example below shows only the query for the constraint being described. The full
+output for a schema also includes the ``required`` and uniqueness checks implied by every ``identifier`` slot.
+
 Constraint: Required
 ^^^^^^^^^^^^^^^^^^^^
 
