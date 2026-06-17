@@ -13,6 +13,11 @@ from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
 openapi_generic_template = """openapi: 3.0.3
+# This is a valid OpenAPI template to be used by the LinkML OpenAPI generator.
+# It adds one (random) class of the schema as an example.
+# Please adapt it to your needs.
+# See more information in the online documentation:
+#   https://linkml.io/linkml/generators/openapi.html
 info:
   title: Generic example referring in LinkML-modelled resources
   version: 0.1.0
