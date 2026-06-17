@@ -43,7 +43,7 @@ type FamilialRelationship
   {
     startedAtTime: String
     endedAtTime: String
-    cordialness: String
+    cordialness: CordialnessEnum
     type: FamilialRelationshipType!
     relatedTo: Person!
   }

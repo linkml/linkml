@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v6.0.2
         with:
           name: codecov-results-rustgen
           token: ${{ secrets.CODECOV_TOKEN }}
