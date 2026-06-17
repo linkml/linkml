@@ -66,6 +66,8 @@ For slots marked as ``required: true``, the generated query looks for ``NULL`` v
   classes:
     NamedThing:
       attributes:
+        id:
+          identifier: true
         name:
           required: true
 
@@ -87,6 +89,8 @@ For slots with ``minimum_value`` or ``maximum_value``, the generated query ident
   classes:
     Person:
       attributes:
+        id:
+          identifier: true
         age_in_years:
           range: integer
           minimum_value: 0
@@ -115,6 +119,8 @@ For the ``range`` keyword pointing to an enum, the generated query flags values 
   classes:
     Organization:
       attributes:
+        id:
+          identifier: true
         categories:
           range: OrganizationType
 
@@ -136,6 +142,8 @@ For slots with a ``pattern`` (regular expression), the generated query returns v
   classes:
     Person:
       attributes:
+        id:
+          identifier: true
         primary_email:
           pattern: "^\\S+@[\\S+\\.]+\\S+"
 
@@ -183,6 +191,8 @@ For classes with ``unique_keys`` (multi-column uniqueness constraints), the gene
   classes:
     Person:
       attributes:
+        id:
+          identifier: true
         name:
         primary_email:
       unique_keys:
