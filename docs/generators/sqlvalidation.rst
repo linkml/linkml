@@ -94,7 +94,7 @@ For slots with ``minimum_value`` or ``maximum_value``, the generated query ident
       attributes:
         id:
           identifier: true
-        age_in_years:
+        age:
           range: integer
           minimum_value: 0
           maximum_value: 999
@@ -208,9 +208,9 @@ would generate the following constraint:
 
 .. code-block:: sql
 
-  SELECT 'Person' AS table_name, 'name_and_email' AS column_name, 'unique_key' AS constraint_type, id AS record_id, CAST(name AS TEXT) || '|' || CAST(primary_email AS TEXT) AS invalid_value
+  SELECT 'Person' AS table_name, 'name_and_email' AS column_name, 'unique_key' AS constraint_type, id AS record_id, (CAST(name AS TEXT) || '|') || CAST(primary_email AS TEXT) AS invalid_value
   FROM "Person"
-  WHERE (name, primary_email) IN (SELECT name, primary_email
+  WHERE ("Person".name, "Person".primary_email) IN (SELECT name, primary_email
   FROM "Person" GROUP BY name, primary_email
   HAVING count(*) > 1)
 
