@@ -41,8 +41,8 @@ validation query would return:
 General Functionality
 ^^^^^^^^^^^^^^^^^^^^^
 
-For every constraint from the LinkML schema, one query is created. Each of those queries consists of a `SELECT` with one or multiple `WHERE` conditions.
-All queries are concatenated using `UNION ALL`. Overall, the generated query looks like this:
+For every constraint from the LinkML schema, one query is created. Each of those queries consists of a ``SELECT`` with one or multiple ``WHERE`` conditions.
+All queries are concatenated using ``UNION ALL``. Overall, the generated query looks like this:
 
 .. code-block:: sql
 
@@ -78,7 +78,12 @@ will generate the following constraint:
 
 .. code-block:: sql
 
-  SELECT 'NamedThing' AS table_name, 'name' AS column_name, 'required' AS constraint_type, id AS record_id, NULL AS invalid_value
+  SELECT
+      'NamedThing' AS table_name,
+      'name' AS column_name,
+      'required' AS constraint_type,
+      id AS record_id,
+      NULL AS invalid_value
   FROM "NamedThing"
   WHERE "NamedThing".name IS NULL
 
@@ -103,7 +108,12 @@ will generate the following constraint:
 
 .. code-block:: sql
 
-  SELECT 'Person' AS table_name, 'age' AS column_name, 'range' AS constraint_type, id AS record_id, age AS invalid_value
+  SELECT
+      'Person' AS table_name,
+      'age' AS column_name,
+      'range' AS constraint_type,
+      id AS record_id,
+      age AS invalid_value
   FROM "Person"
   WHERE "Person".age < 0 OR "Person".age > 999
 
@@ -131,7 +141,12 @@ will generate the following constraint:
 
 .. code-block:: sql
 
-  SELECT 'Organization' AS table_name, 'categories' AS column_name, 'enum' AS constraint_type, id AS record_id, categories AS invalid_value
+  SELECT
+      'Organization' AS table_name,
+      'categories' AS column_name,
+      'enum' AS constraint_type,
+      id AS record_id,
+      categories AS invalid_value
   FROM "Organization"
   WHERE "Organization".categories NOT IN ('non profit', 'for profit')
 
@@ -154,7 +169,12 @@ will generate the following constraint (SQLite dialect):
 
 .. code-block:: sql
 
-  SELECT 'Person' AS table_name, 'primary_email' AS column_name, 'pattern' AS constraint_type, id AS record_id, primary_email AS invalid_value
+  SELECT
+      'Person' AS table_name,
+      'primary_email' AS column_name,
+      'pattern' AS constraint_type,
+      id AS record_id,
+      primary_email AS invalid_value
   FROM "Person"
   WHERE "Person".primary_email NOT REGEXP '^\S+@[\S+\.]+\S+'
 
@@ -176,11 +196,19 @@ will generate the following constraint:
 
 .. code-block:: sql
 
-  SELECT 'Person' AS table_name, 'id' AS column_name, 'identifier' AS constraint_type, id AS record_id, id AS invalid_value
+  SELECT
+      'Person' AS table_name,
+      'id' AS column_name,
+      'identifier' AS constraint_type,
+      id AS record_id,
+      id AS invalid_value
   FROM "Person"
-  WHERE "Person".id IN (SELECT id
-  FROM "Person" GROUP BY id
-  HAVING count(*) > 1)
+  WHERE "Person".id IN (
+      SELECT id
+      FROM "Person"
+      GROUP BY id
+      HAVING count(*) > 1
+  )
 
 All records sharing a duplicate value are returned, not just one of them.
 
@@ -208,11 +236,19 @@ would generate the following constraint:
 
 .. code-block:: sql
 
-  SELECT 'Person' AS table_name, 'name_and_email' AS column_name, 'unique_key' AS constraint_type, id AS record_id, (CAST(name AS TEXT) || '|') || CAST(primary_email AS TEXT) AS invalid_value
+  SELECT
+      'Person' AS table_name,
+      'name_and_email' AS column_name,
+      'unique_key' AS constraint_type,
+      id AS record_id,
+      (CAST(name AS TEXT) || '|') || CAST(primary_email AS TEXT) AS invalid_value
   FROM "Person"
-  WHERE ("Person".name, "Person".primary_email) IN (SELECT name, primary_email
-  FROM "Person" GROUP BY name, primary_email
-  HAVING count(*) > 1)
+  WHERE ("Person".name, "Person".primary_email) IN (
+      SELECT name, primary_email
+      FROM "Person"
+      GROUP BY name, primary_email
+      HAVING count(*) > 1
+  )
 
 
 Docs
