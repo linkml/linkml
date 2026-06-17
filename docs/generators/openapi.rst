@@ -22,6 +22,10 @@ The generator works in two stages:
    definitions generated from the LinkML schema, keeping only those classes
    that are transitively reachable from the endpoints.
 
+Both the input template and the final output are automatically validated
+against the OpenAPI 3.0.3 specification using
+`openapi-spec-validator <https://github.com/p1c2u/openapi-spec-validator>`_.
+
 To run:
 
 .. code:: bash
@@ -36,11 +40,21 @@ be used as a starting point:
 
    gen-openapi personinfo.yaml > api-template.yaml
 
-Validating the Template
------------------------
+OpenAPI Validation
+------------------
 
-The template's ``components/schemas`` section must declare each resource
-that is referenced by an endpoint, using two custom extension fields:
+The generator validates both the input template and the final output against
+the OpenAPI specification using
+`openapi-spec-validator <https://github.com/p1c2u/openapi-spec-validator>`_.
+
+The ``openapi`` field in the template is checked against the expected
+version for the chosen output format (currently ``openapi303`` →
+``3.0.3``). If the versions do not match, the generator raises a
+``ValueError``.
+
+Additionally, the template's ``components/schemas`` section must declare each
+resource that is referenced by an endpoint, using two custom extension
+fields:
 
 ``x-linkml-schema``
    The ``id`` of the LinkML schema being used. Must match exactly.

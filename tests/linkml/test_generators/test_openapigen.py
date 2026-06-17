@@ -1,6 +1,7 @@
 import pytest
 import yaml
 from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from referencing.exceptions import PointerToNowhere
 
 from linkml.generators.openapigen import OpenApiGenerator
 
@@ -93,16 +94,23 @@ def test_schema_id_mismatch_raises(input_path, kitchen_sink_path):
 
 
 def test_missing_schema_declaration_raises(tmp_path, kitchen_sink_path):
-    """Test that referencing an endpoint resource with no schema declaration raises KeyError."""
+    """Test that referencing a non-existent schema in the template raises an error."""
     template = tmp_path / "bad.yaml"
     template.write_text(
-        "openapi: 3.0.3\ninfo:\n  title: t\n  version: 1\n"
-        "paths:\n  /x:\n    get:\n      responses:\n        '200':\n"
-        "          content:\n            application/json:\n              schema:\n"
+        "openapi: 3.0.3\ninfo:\n  title: t\n  version: '1'\n"
+        "paths:\n  /x:\n    get:\n"
+        "      responses:\n"
+        "        '200':\n"
+        "          description: test\n"
+        "          content:\n"
+        "            application/json:\n"
+        "              schema:\n"
         "                $ref: '#/components/schemas/NonExistent'\n"
-        "components:\n  schemas: {}\n"
+        "components:\n"
+        "  schemas: {}\n"
     )
-    with pytest.raises(KeyError, match="NonExistent"):
+    # The OpenAPI validator resolves $ref and catches a missing target
+    with pytest.raises(PointerToNowhere):
         OpenApiGenerator(kitchen_sink_path).serialize(str(template))
 
 
