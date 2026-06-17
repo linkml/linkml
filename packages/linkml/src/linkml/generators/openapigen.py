@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 
 import click
 import yaml
+from openapi_spec_validator import OpenAPIV30SpecValidator, validate
 
 from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -74,6 +75,20 @@ class OpenApiGenerator(Generator):
 
     _template: dict = field(default_factory=dict, init=False, repr=False)
     _renaming: dict[str, str] = field(default_factory=dict, init=False, repr=False)
+    # Mapping of valid_formats entries to OpenAPI version strings.
+    # Extend this dict when adding support for additional OpenAPI versions.
+    _openapi_versions: dict[str, str] = field(
+        default_factory=lambda: {"openapi303": "3.0.3"},
+        init=False,
+        repr=False,
+    )
+    # Mapping of OpenAPI version strings to validators from openapi-spec-validator.
+    # Extend this dict when adding support for additional OpenAPI versions.
+    _openapi_validators: dict[str, type] = field(
+        default_factory=lambda: {"3.0.3": OpenAPIV30SpecValidator},
+        init=False,
+        repr=False,
+    )
 
     def _find_referenced_resources(self) -> set[str]:
         """Return the set of resource names referenced by the template's endpoints."""
@@ -189,6 +204,23 @@ class OpenApiGenerator(Generator):
             raise ValueError("An OpenAPI template file is required")
         with open(template_file) as tf:
             self._template = yaml.safe_load(tf)
+        # Determine the expected OpenAPI version from the active output format
+        format_name = getattr(self, "format", self.valid_formats[0]) or self.valid_formats[0]
+        expected_version = self._openapi_versions.get(format_name)
+        if expected_version is None:
+            raise ValueError(f"Unsupported output format '{format_name}'")
+        validator_class = self._openapi_validators.get(expected_version)
+        if validator_class is None:
+            raise ValueError(f"No validator available for OpenAPI version {expected_version}")
+        # Validate that the template declares the expected OpenAPI version
+        declared_version = self._template.get("openapi")
+        if declared_version != expected_version:
+            raise ValueError(
+                f"Template OpenAPI version is '{declared_version}', "
+                f"but format '{format_name}' requires version '{expected_version}'"
+            )
+        # Validate the input template against the OpenAPI specification
+        validate(self._template, cls=validator_class)
         if not isinstance(self._template.get("paths"), dict):
             raise ValueError("OpenAPI template is missing required 'paths' section")
         if not isinstance(self._template.get("components"), dict):
@@ -229,6 +261,8 @@ class OpenApiGenerator(Generator):
         if self._renaming:
             class_schemas = self._rename(class_schemas)
         self._template["components"]["schemas"] = class_schemas
+        # Validate the generated output against the OpenAPI specification
+        validate(self._template, cls=validator_class)
         return yaml.dump(self._template, sort_keys=False)
 
     def printout_template(self) -> str:
