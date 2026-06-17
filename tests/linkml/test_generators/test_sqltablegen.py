@@ -263,6 +263,113 @@ def test_cli_dialect(write_schema):
     assert "COMMENT='A person'" in result_mysql.output
 
 
+def test_cli_no_foreign_keys(write_schema):
+    """Test CLI --no-use-foreign-keys suppresses FOREIGN KEY declarations."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_slot(SlotDefinition("address_ref", range="Address"))
+    b.add_class("Address", slots=["id", "name"])
+    b.add_class("Person", slots=["id", "name", "address_ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_with_fk = runner.invoke(cli, [schema_path, "--use-foreign-keys"])
+    assert result_with_fk.exit_code == 0, f"CLI failed: {result_with_fk.output}"
+    assert "FOREIGN KEY" in result_with_fk.output
+
+    result_no_fk = runner.invoke(cli, [schema_path, "--no-use-foreign-keys"])
+    assert result_no_fk.exit_code == 0, f"CLI failed: {result_no_fk.output}"
+    assert "FOREIGN KEY" not in result_no_fk.output
+
+
+def test_cli_relmodel_output(tmp_path, write_schema):
+    """Test CLI --relmodel-output writes the intermediate relational model YAML."""
+    relmodel_path = tmp_path / "relmodel.yaml"
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Person", slots=["id", "name"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path, "--relmodel-output", str(relmodel_path)])
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    assert relmodel_path.exists(), "relmodel output file should be created"
+
+    relmodel = yaml.safe_load(relmodel_path.read_text())
+    assert "classes" in relmodel
+    assert "Person" in relmodel["classes"]
+
+
+def test_cli_generate_abstract_class_ddl(write_schema):
+    """Test CLI --generate_abstract_class_ddl controls abstract class table emission."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Animal", slots=["id", "name"], **{"abstract": True})
+    b.add_class("Dog", slots=["name"], **{"is_a": "Animal"})
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_with = runner.invoke(cli, [schema_path, "--generate_abstract_class_ddl", "True"])
+    assert result_with.exit_code == 0, f"CLI failed: {result_with.output}"
+    assert 'CREATE TABLE "Animal"' in result_with.output
+    assert 'CREATE TABLE "Dog"' in result_with.output
+
+    result_without = runner.invoke(cli, [schema_path, "--generate_abstract_class_ddl", "False"])
+    assert result_without.exit_code == 0, f"CLI failed: {result_without.output}"
+    assert 'CREATE TABLE "Animal"' not in result_without.output
+    assert 'CREATE TABLE "Dog"' in result_without.output
+
+
+def test_cli_rename_foreign_keys(write_schema):
+    """Test CLI --rename-foreign-keys suffixes FK columns with target PK name."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_slot(SlotDefinition("address_ref", range="Address"))
+    b.add_class("Address", slots=["id", "name"])
+    b.add_class("Person", slots=["id", "name", "address_ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_default = runner.invoke(cli, [schema_path])
+    assert result_default.exit_code == 0, f"CLI failed: {result_default.output}"
+    assert "address_ref" in result_default.output
+    assert "address_ref_id" not in result_default.output
+
+    result_renamed = runner.invoke(cli, [schema_path, "--rename-foreign-keys"])
+    assert result_renamed.exit_code == 0, f"CLI failed: {result_renamed.output}"
+    assert "address_ref_id" in result_renamed.output
+
+
+def test_cli_default_length_oracle(write_schema):
+    """Test CLI --default_length_oracle sets VARCHAR2 length for oracle dialect."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Person", slots=["id", "name"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        [schema_path, "--dialect", "oracle", "--default_length_oracle", "512"],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    assert "VARCHAR2(512 CHAR)" in result.output
+
+
 def test_cli_index(schema: str) -> None:
     runner = CliRunner()
     result = runner.invoke(
