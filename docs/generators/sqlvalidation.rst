@@ -1,6 +1,13 @@
 SQL Validation
 ==============
 
+Example Output
+--------------
+
+A generated sql query for the `personinfo.yml` schema with `sqlite` syntax.
+
+`personinfo.sql <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/sqlvalidation/personinfo.sql>`_
+
 Overview
 --------
 
@@ -30,17 +37,48 @@ validation query would return:
      - P001
      - 200
 
-Example Output
---------------
 
-A generated sql query for the `personinfo.yml` schema with `sqlite` syntax.
+General Functionality
+^^^^^^^^^^^^^^^^^^^^^
 
-`personinfo.sql <https://github.com/linkml/linkml/tree/main/examples/PersonSchema/personinfo/sqlvalidation/personinfo.sql>`_
+For every constraint from the LinkML schema, one query is created. Each of those queries consists of a `SELECT` with one or multiple `WHERE` conditions.
+All queries are concated using the `UNION ALL`. Overall, the generated query looks like this
 
-Overview
---------
+.. code-block:: sql
 
+  SELECT <error information>
+  WHERE <constraint 1>
+  UNION ALL
+  SELECT <error information>
+  WHERE <constraint 2>
+  UNION ALL
+  ...
 
+To learn more about constraints in LinkML, check out :doc:`Adding constraints and rules <./../schemas/constraints>`.
+
+Constraint: Range
+^^^^^^^^^^^^^^^^^
+
+For the `range` keyword, checks for enumeration are implemented so far. A schema like this
+
+.. code-block:: yaml
+
+  enums:
+    OrganizationType:
+      permissible_values:
+        non profit:
+        for profit:
+  classes:
+    Organization:
+      attributes:
+        categories:
+          range: OrganizationType
+
+will generate the following constraint:
+
+.. code-block:: sql
+
+  WHERE "Organization".categories NOT IN ('non profit', 'for profit')
 
 
 
