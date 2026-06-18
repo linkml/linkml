@@ -883,7 +883,7 @@ to include metaclasses. To restore this behavior:</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-gen-owl-skip-abstract-class-as-unionof-subclasses">
 <span id="cmdoption-gen-owl-no-skip-abstract-class-as-unionof-subclasses"></span><span class="sig-name descname"><span class="pre">--skip-abstract-class-as-unionof-subclasses</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-skip-abstract-class-as-unionof-subclasses</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-owl-skip-abstract-class-as-unionof-subclasses" title="Link to this definition">¶</a></dt>
-<dd><p>If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. By default such axioms are emitted for every abstract class that has direct is_a children.</p>
+<dd><p>If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. By default such axioms are emitted for every abstract class that has direct is_a children. Note: an info message is logged for abstract classes with zero children (no axiom); a warning is emitted for one child (equivalence).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p>

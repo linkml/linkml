@@ -616,7 +616,11 @@
 <span class="sd">    one direct ``is_a`` child, the generator adds</span>
 <span class="sd">    ``AbstractClass rdfs:subClassOf (Child1 or Child2 or …)``, expressing the open-world covering</span>
 <span class="sd">    constraint that every instance of the abstract class must also be an instance of one of its</span>
-<span class="sd">    direct subclasses.&quot;&quot;&quot;</span>
+<span class="sd">    direct subclasses.</span>
+
+<span class="sd">    .. note:: An info message is emitted when an abstract class has no children (no axiom generated).</span>
+<span class="sd">       A warning is emitted when there is only one child (covering axiom degenerates to equivalence</span>
+<span class="sd">       Parent ≡ Child).  Use this flag to suppress covering axioms entirely if equivalence is undesired.&quot;&quot;&quot;</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_present</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">_T</span> <span class="o">|</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">_T</span><span class="p">]:</span>
@@ -976,6 +980,26 @@
         <span class="c1"># must be an instance of at least one of its direct subclasses.</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">abstract</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">skip_abstract_class_as_unionof_subclasses</span><span class="p">:</span>
             <span class="n">children</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">class_children</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span> <span class="n">mixins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_a</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">children</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Abstract class &#39;</span><span class="si">%s</span><span class="s2">&#39; has no children. No covering axiom will be generated.&quot;</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Warn: with one child C, the covering axiom degenerates to</span>
+                <span class="c1"># Parent ⊑ C which, combined with C ⊑ Parent (from is_a),</span>
+                <span class="c1"># creates Parent ≡ C (equivalence).  This is semantically</span>
+                <span class="c1"># correct per OWL 2 but may be surprising for extensible</span>
+                <span class="c1"># ontologies where more children are added later.</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Abstract class &#39;</span><span class="si">%s</span><span class="s2">&#39; has only 1 direct child (&#39;</span><span class="si">%s</span><span class="s2">&#39;). &quot;</span>
+                    <span class="s2">&quot;The covering axiom makes them equivalent (</span><span class="si">%s</span><span class="s2"> ≡ </span><span class="si">%s</span><span class="s2">). &quot;</span>
+                    <span class="s2">&quot;Use --skip-abstract-class-as-unionof-subclasses to suppress.&quot;</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="n">children</span><span class="p">:</span>
                 <span class="n">child_uris</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_uri</span><span class="p">(</span><span class="n">child</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
                 <span class="n">union_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_union_of</span><span class="p">(</span><span class="n">child_uris</span><span class="p">)</span>
@@ -2126,7 +2150,9 @@
     <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="p">(</span>
         <span class="s2">&quot;If true, suppress rdfs:subClassOf owl:unionOf(subclasses) covering axioms for abstract classes. &quot;</span>
-        <span class="s2">&quot;By default such axioms are emitted for every abstract class that has direct is_a children.&quot;</span>
+        <span class="s2">&quot;By default such axioms are emitted for every abstract class that has direct is_a children. &quot;</span>
+        <span class="s2">&quot;Note: an info message is logged for abstract classes with zero children (no axiom); &quot;</span>
+        <span class="s2">&quot;a warning is emitted for one child (equivalence).&quot;</span>
     <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
