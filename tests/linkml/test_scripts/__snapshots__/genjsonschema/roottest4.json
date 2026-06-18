@@ -1,13 +1,13 @@
 {
     "$defs": {
         "C1": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "title": "C1",
             "type": "object"
         },
         "C2": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "title": "C2",
             "type": "object"

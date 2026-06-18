@@ -1555,10 +1555,9 @@ classes:
     slots:
     - started at time
     - ended at time
-    - cordialness
+    - FamilialRelationship_cordialness
     - FamilialRelationship_type
     - FamilialRelationship_related to
-    - FamilialRelationship_cordialness
     slot_usage:
       type:
         name: type

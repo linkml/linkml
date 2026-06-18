@@ -7,7 +7,7 @@ from collections.abc import Iterable, Sequence
 from copy import copy
 from dataclasses import dataclass, field
 from enum import Enum, unique
-from typing import Any, TypeAlias, TypeVar
+from typing import Any, ClassVar, TypeAlias, TypeVar
 
 import click
 import rdflib
@@ -22,6 +22,7 @@ from linkml._version import __version__
 from linkml.generators.common.subproperty import is_xsd_anyuri_range
 from linkml.utils.deprecation import deprecation_warning
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
@@ -239,6 +240,49 @@ class OwlSchemaGenerator(Generator):
     - have no ``rdfs:range`` restriction (any IRI is valid)
     """
 
+    default_language: str | None = None
+    """Default BCP 47 language tag for human-readable string literals.
+
+    When set, ``rdfs:label``, ``rdfs:comment``, ``skos:definition``,
+    ``dcterms:title``, and other annotation literals are emitted with the
+    specified language tag (e.g. ``"Person"@en``).  An element-level
+    ``in_language`` value overrides this default for that element.
+
+    Technical literals (URIs, numeric constraints, XSD facets) are never
+    language-tagged.  Conforms to :rfc:`5646` (BCP 47).
+    """
+
+    # Metaslot ranges that represent human-readable text (eligible for language tags).
+    # Everything else (uri, uriorcurie, datetime, boolean, integer, classes, enums, …)
+    # is technical and must never be language-tagged.
+    _LANGUAGE_TAGGABLE_RANGES: ClassVar[frozenset[str]] = frozenset({"string", "ncname"})
+
+    def __post_init__(self) -> None:
+        # Resolver must be assigned before ``super().__post_init__()`` so that
+        # any hook the parent invokes during initialisation can safely call
+        # ``_resolve_language``. The resolver also validates the default tag
+        # once here; per-element tags are validated lazily, with at most one
+        # warning per distinct malformed tag.
+        self._language_resolver = LanguageTagResolver(self.default_language)
+        super().__post_init__()
+
+    def _resolve_language(self, element: "Definition | PermissibleValue | None" = None) -> str | None:
+        """Return the BCP 47 language tag for *element*, or ``None``.
+
+        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.
+        Resolution order is element-level ``in_language`` first, then the
+        generator-level default.
+        """
+        return self._language_resolver.resolve(element)
+
+    def _literal(self, value: str, element: "Definition | PermissibleValue | None" = None) -> Literal:
+        """Create a language-tagged ``Literal`` for a human-readable string.
+
+        If no language tag is resolved, falls back to a plain literal.
+        """
+        lang = self._resolve_language(element)
+        return Literal(value, lang=lang) if lang else Literal(value)
+
     def as_graph(self) -> Graph:
         """
         Generate an rdflib Graph from the LinkML schema.
@@ -311,6 +355,8 @@ class OwlSchemaGenerator(Generator):
         Add annotation properties.
 
         Set the profile attribute to the appropriate OWL profile.
+        Human-readable string literals are language-tagged when
+        ``default_language`` is set or the element has ``in_language``.
 
         :param e: schema element
         :param uri: URI representation of schema element
@@ -320,6 +366,7 @@ class OwlSchemaGenerator(Generator):
         msv = self.metamodel_schemaview
         this_sv = self.schemaview
         sn_mappings = msv.slot_name_mappings()
+        lang = self._resolve_language(e)
 
         # iterate through all the assigned metamodel slots
         for metaslot_name, metaslot_value in vars(e).items():
@@ -344,6 +391,8 @@ class OwlSchemaGenerator(Generator):
                         obj = URIRef(v)
                     elif metaslot_range == "uriorcurie":
                         obj = URIRef(this_sv.expand_curie(v))
+                    elif metaslot_range in self._LANGUAGE_TAGGABLE_RANGES and lang:
+                        obj = Literal(v, lang=lang)
                     else:
                         obj = Literal(v)
                 elif metaslot_range in msv.all_subsets():
@@ -355,6 +404,15 @@ class OwlSchemaGenerator(Generator):
                     # else:
                     #    logger.debug(f"Skipping {uri} {metaslot_uri} => {v}")
                 else:
+                    # Catch-all for ranges that are not types, subsets, or
+                    # classes -- in practice these are enum-ranged metaslots
+                    # such as ``pv_formula`` (range ``pv_formula_options``) on
+                    # a PermissibleValue or ``obligation_level`` (range
+                    # ``obligation_level_enum``) on a SlotDefinition. Their
+                    # values are permissible-value identifiers, i.e. constraint
+                    # data, not labels: tagging them would shift the datatype
+                    # from ``xsd:string`` to ``rdf:langString`` and break
+                    # downstream string equality / SHACL ``sh:in`` matching.
                     obj = Literal(v)
                 self.graph.add((uri, metaslot_uri, obj))
 
@@ -372,7 +430,11 @@ class OwlSchemaGenerator(Generator):
                 if k_uri == k:
                     k_uri = None
             if k_uri:
-                self.graph.add((uri, URIRef(k_uri), Literal(v.value)))
+                if isinstance(v.value, str):
+                    obj = self._literal(v.value, e)
+                else:
+                    obj = Literal(v.value)
+                self.graph.add((uri, URIRef(k_uri), obj))
 
     def add_class(self, cls: ClassDefinition) -> None:
         """
@@ -1103,7 +1165,7 @@ class OwlSchemaGenerator(Generator):
             if not isinstance(pv_node, Literal):
                 self.add_metadata(pv, pv_node)
                 g.add((pv_node, RDF.type, pv_owl_type))
-                g.add((pv_node, RDFS.label, Literal(pv.text)))
+                g.add((pv_node, RDFS.label, self._literal(pv.text, pv)))
                 # TODO: make this configurable
                 # self._add_element_properties(pv_uri, pv)
                 if self.metaclasses:
@@ -1692,6 +1754,17 @@ class OwlSchemaGenerator(Generator):
         "instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). "
         "Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and "
         "the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id)."
+    ),
+)
+@click.option(
+    "--default-language",
+    default=None,
+    show_default=True,
+    help=(
+        "Default BCP 47 language tag for human-readable string literals "
+        "(e.g. en, de, zh-Hans).  When set, rdfs:label, rdfs:comment, "
+        "skos:definition and other text annotations are emitted with the "
+        "specified language tag.  Element-level in_language overrides this."
     ),
 )
 @click.version_option(__version__, "-V", "--version")

@@ -1712,7 +1712,7 @@ type ChemicalToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntity
 
 interface ChemicalToEntityAssociationMixin
   {
-    subject: NamedThing!
+    subject: ChemicalEntityOrGeneOrGeneProduct!
     predicate: PredicateType!
     object: NamedThing!
   }
@@ -2617,7 +2617,7 @@ type DrugLabel
 
 interface DrugToEntityAssociationMixin
   {
-    subject: NamedThing!
+    subject: Drug!
     predicate: PredicateType!
     object: NamedThing!
   }
