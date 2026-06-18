@@ -3,6 +3,8 @@ import py_compile
 import pytest
 
 from linkml.generators.projectgen import ProjectConfiguration, ProjectGenerator
+from linkml.generators.pythongen import PythonGenerator
+from linkml_runtime.utils.schemaview import SchemaView
 
 
 @pytest.mark.slow
@@ -42,3 +44,22 @@ def test_metamodel_python_compiles(metamodel_path, tmp_path):
     assert python_file.exists(), "Python file not generated"
     # py_compile.compile raises py_compile.PyCompileError if there are syntax errors
     py_compile.compile(str(python_file), doraise=True)
+
+
+@pytest.mark.slow
+def test_bundled_schema_loads(bundled_schema_path):
+    """Verify that each bundled schema can be loaded by SchemaView."""
+    sv = SchemaView(bundled_schema_path)
+    assert sv.schema is not None
+    assert sv.schema.name
+
+
+@pytest.mark.slow
+def test_bundled_schema_python_generates(bundled_schema_path, tmp_path):
+    """Verify that each bundled schema can generate compilable Python."""
+    gen = PythonGenerator(bundled_schema_path)
+    output = gen.serialize()
+    assert output
+    out_file = tmp_path / "output.py"
+    out_file.write_text(output)
+    py_compile.compile(str(out_file), doraise=True)
