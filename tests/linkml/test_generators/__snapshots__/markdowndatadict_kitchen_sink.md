@@ -2,7 +2,7 @@
 # KITCHEN_SINK
 
 
-**metamodel version:** 1.7.0
+**metamodel version:** 1.11.0
 
 **version:** None
 
@@ -72,6 +72,7 @@ BirthEvent {
 CodeSystem {
     string id  
     string name  
+    LongEnum long_id  
 }
 Company {
     string id  
@@ -738,6 +739,7 @@ Dataset ||--}o Person : "persons"
 | --- | --- | --- | --- |
 | **[id](#id)** | <sub>1..1</sub> | string |  |
 | **[name](#name)** | <sub>0..1</sub> | string |  |
+| **[long_id](#long_id)** | <sub>0..1</sub> | [LongEnum](#longenum) |  |
 
 #### Referenced by:
 
@@ -1513,6 +1515,7 @@ WithLocation ||--|o Place : "in location"
 | <a id="in location"></a>**in location** | <sub>0..1</sub><br/>[Place](#place) | [BirthEvent](#birthevent), [MarriageEvent](#marriageevent), [MedicalEvent](#medicalevent), [WithLocation](#withlocation) |
 | <a id="is current"></a>**is current** | <sub>0..1</sub><br/>boolean | [BirthEvent](#birthevent), [EmploymentEvent](#employmentevent), [Event](#event), [MarriageEvent](#marriageevent), [MedicalEvent](#medicalevent) |
 | <a id="life_status"></a>**life_status** | <sub>0..1</sub><br/>[LifeStatusEnum](#lifestatusenum) |  |
+| <a id="long_id"></a>**long_id** | <sub>0..1</sub><br/>[LongEnum](#longenum) | [CodeSystem](#codesystem) |
 | <a id="married to"></a>**married to** | <sub>0..1</sub><br/>[Person](#person) | [MarriageEvent](#marriageevent) |
 | <a id="metadata"></a>**metadata**<br/>Example of a slot that has an unconstrained range | <sub>0..1</sub><br/>[AnyObject](#anyobject) | [BirthEvent](#birthevent), [Dataset](#dataset), [EmploymentEvent](#employmentevent), [Event](#event), [MarriageEvent](#marriageevent), [MedicalEvent](#medicalevent) |
 | <a id="mixin_slot_i"></a>**mixin_slot_I** | <sub>0..1</sub><br/>string |  |
@@ -1606,6 +1609,34 @@ codes for different kinds of employment/HR related events
 #### Used by
 
  *  **[Person](#person)** *[person__is_living](#person__is_living)*  <sub>0..1</sub> 
+
+### LongEnum
+
+An example enum whose joined values will exceed 255 characters.
+
+| Text | Meaning: | Description |
+| --- | --- | --- |
+| AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern | None |  |
+| BetaSequenceIdentifier02_LongPatternLongPatternLongPattern | None |  |
+| DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern | None |  |
+| EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern | None |  |
+| EtaSequenceIdentifier07_LongPatternLongPatternLongPattern | None |  |
+| GammaSequenceIdentifier03_LongPatternLongPatternLongPattern | None |  |
+| IotaSequenceIdentifier09_LongPatternLongPatternLongPattern | None |  |
+| KappaSequenceIdentifier10_LongPatternLongPatternLongPattern | None |  |
+| LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern | None |  |
+| MuSequenceIdentifier12_LongPatternLongPatternLongPattern | None |  |
+| NuSequenceIdentifier13_LongPatternLongPatternLongPattern | None |  |
+| OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern | None |  |
+| PiSequenceIdentifier16_LongPatternLongPatternLongPattern | None |  |
+| RhoSequenceIdentifier17_LongPatternLongPatternLongPattern | None |  |
+| ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern | None |  |
+| XiSequenceIdentifier14_LongPatternLongPatternLongPattern | None |  |
+| ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern | None |  |
+
+#### Used by
+
+ *  **[CodeSystem](#codesystem)** *[long_id](#long_id)*  <sub>0..1</sub> 
 
 ### OtherCodes
 

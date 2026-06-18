@@ -2,11 +2,9 @@ import keyword
 import logging
 import os
 import re
-from collections import defaultdict
 from collections.abc import Callable, Iterator
 from copy import copy
 from dataclasses import dataclass
-from graphlib import TopologicalSorter
 from pathlib import Path
 from types import ModuleType
 
@@ -84,6 +82,18 @@ class PythonGenerator(Generator):
             logger.error("Generating metamodel without --genmeta is highly inadvisable!")
         if not self.schema.source_file and isinstance(self.sourcefile, str) and "\n" not in self.sourcefile:
             self.schema.source_file = os.path.basename(self.sourcefile)
+
+    def slot_name(self, name: str) -> str:
+        """Python-safe slot identifier. Appends a trailing underscore (PEP 8)
+        if the underscored name collides with a Python reserved keyword, so
+        that emissions like ``self.class`` become ``self.class_``. The
+        original slot name is preserved on the runtime ``Slot(name=...)``
+        argument, so schema lookups and URI resolution are unaffected.
+        """
+        pyname = super().slot_name(name)
+        if keyword.iskeyword(pyname):
+            pyname += "_"
+        return pyname
 
     def compile_module(self, **kwargs) -> ModuleType:
         """
@@ -406,18 +416,45 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         return curienamespace_declarations + catalog_declaration
 
     def gen_references(self) -> str:
-        """Generate python type declarations for all identifiers (primary keys)"""
-        rval = dict()
-        graph = defaultdict(set)
+        """Generate python type declarations for all identifiers (primary keys).
+
+        Each class with a key or identifier slot gets a small wrapper class, e.g.
+        ``Thing`` with identifier ``pid`` produces::
+
+            class ThingPid(URIorCURIE):
+                pass
+
+        When ``AnnotationTag`` is a subclass of ``Thing`` it inherits the same
+        identifier, so its wrapper must extend the parent's wrapper::
+
+            class AnnotationTagPid(ThingPid):   # ThingPid must be defined first
+                pass
+
+        Order matters: because ``_sort_classes`` puts every data class after its parent,
+        but is ignorant about wrapper-class inheritance, so wrappers can still come out
+        in the wrong order, causing a ``NameError`` on import.
+
+        Approach: collect first, then emit in dependency order
+        -------------------------------------------------
+        1. Walk classes in sorted order and record each wrapper class plus its parent.
+        2. Before writing any wrapper, recursively write its parent first.
+           If the parent is an imported type (e.g. ``URIorCURIE``) it is already
+           available so stop immediately.
+        """
+        # Step 1: record every wrapper class without writing anything yet.
+        # ref_info: name -> (parent name, source line to emit)
+        # emit_order: original iteration order, used as sibling tie-breaker
+        ref_info: dict[str, tuple[str, str]] = {}
+        emit_order: list[str] = []
+
         for cls in self._sort_classes(self.schema.classes.values()):
             if not cls.imported_from:
                 pkeys = self.primary_keys_for(cls)
                 if pkeys:
                     for pk in pkeys:
                         classname = camelcase(cls.name) + camelcase(self.aliased_slot_name(pk))
-                        # If we've got a parent slot and the range of the parent is the range of the child, the
-                        # child slot is a subclass of the parent.  Otherwise, the child range has been overridden,
-                        # so the inheritance chain has been broken
+                        # Inherit from parent's wrapper when parent has a compatible
+                        # identifier; otherwise fall back to the slot's own range path
                         parent_pk = self.class_identifier(cls.is_a) if cls.is_a else None
                         parent_pk_slot = self.schema.slots[parent_pk] if parent_pk else None
                         pk_slot = self.schema.slots[pk]
@@ -425,13 +462,37 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                             parents = self.class_identifier_path(cls.is_a, False)
                         else:
                             parents = self.slot_range_path(pk_slot)
+                        # Plain Python types (str/float/int) need linkml-runtime "extended_" wrapper
                         parent_cls = (
                             "extended_" + parents[-1] if parents[-1] in ["str", "float", "int"] else parents[-1]
                         )
-                        rval[classname] = f"class {classname}({parent_cls}):\n\tpass"
-                        graph[classname].add(parent_cls)
-                        break  # We only do the first primary key
-        return "\n\n\n".join(rval[name] for name in TopologicalSorter(graph).static_order() if name in rval)
+                        ref_info[classname] = (parent_cls, f"class {classname}({parent_cls}):\n\tpass")
+                        emit_order.append(classname)
+                        break  # Only the first primary key matters.
+
+        # Step 2: write each wrapper only after its parent has been written.
+        emitted: set[str] = set()
+        in_progress: set[str] = set()
+        rval: list[str] = []
+
+        def _emit(name: str) -> None:
+            if name in emitted or name not in ref_info:
+                return  # Already written, or imported type — nothing to do.
+            if name in in_progress:
+                raise ValueError(f"Cyclic wrapper inheritance at {name}")
+            in_progress.add(name)
+            parent_cls, line = ref_info[name]
+            try:
+                _emit(parent_cls)  # Write the parent first.
+            finally:
+                in_progress.discard(name)
+            emitted.add(name)
+            rval.append(line)
+
+        for name in emit_order:
+            _emit(name)
+
+        return "\n\n\n".join(rval)
 
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
@@ -559,7 +620,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             type_model_uri = f'URIRef("{type_model_uri}")'
         else:
             ns, ln = type_model_uri.split(":", 1)
-            ln_suffix = f".{ln}" if ln.isidentifier() else f'["{ln}"]'
+            ln_suffix = f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f'["{ln}"]'
             type_model_uri = f"{ns.upper()}{ln_suffix}"
         type_meta = [
             f"type_class_uri = {type_class_uri}",
@@ -775,22 +836,22 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
     @staticmethod
     def _sort_classes(clist: list[ClassDefinition]) -> list[ClassDefinition]:
         clist = list(clist)
-        slist = []  # sorted
+        slist: list[ClassDefinition] = []  # sorted
+        slist_names: set[str] = set()
         while len(clist) > 0:
             for i in range(len(clist)):
                 candidate = clist[i]
                 can_add = False
-                if candidate.is_a is None:
+                # Class can be added if no parent, or parent already in sorted list.
+                if candidate.is_a is None or candidate.is_a in slist_names:
                     can_add = True
-                else:
-                    if candidate.is_a in [p.name for p in slist]:
-                        can_add = True
                 if can_add:
-                    slist = slist + [candidate]
+                    slist.append(candidate)
+                    slist_names.add(candidate.name)
                     del clist[i]
                     break
             if not can_add:
-                raise (f"could not find suitable element in {clist} that does not ref {slist}")
+                raise ValueError(f"Cyclic or unresolved class inheritance in {clist}; emitted={slist}")
         return slist
 
     def is_key_value_class(self, range_name: DefinitionName) -> bool:
@@ -933,9 +994,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             ):
                 rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}()")
             else:
-                if slot.range in self.schema.enums and slot.ifabsent:
-                    rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
-                elif (
+                if (
                     (self.class_identifier(slot.range) and not slot.inlined)
                     or slot.range in self.schema.types
                     or slot.range in self.schema.enums
@@ -1071,7 +1130,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
         if ns is None:
             return '"str(uriorcurie)"', None
         return (
-            ns.upper() + (f".{ln}" if ln.isidentifier() else f"['{ln}']"),
+            ns.upper() + (f".{ln}" if ln.isidentifier() and not keyword.iskeyword(ln) else f"['{ln}']"),
             ns.upper() + f".curie('{ln}')",
         )
 
@@ -1085,6 +1144,10 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
     def gen_slot(self, slot: SlotDefinition) -> str:
         python_slot_name = underscore(slot.name)
+        # If slot name is a reserved keyword, follow PEP8 conventions to append an underscore.
+        # The transformed slot will be accessible as `slots.class_`, not `slots.class`.
+        if keyword.iskeyword(python_slot_name):
+            python_slot_name = python_slot_name + "_"
         slot_uri, slot_curie = self.python_uri_for(slot.slot_uri)
         slot_model_uri, slot_model_curie = self.python_uri_for(
             self.namespaces.uri_or_curie_for(self.schema.default_prefix, python_slot_name)

@@ -19,7 +19,7 @@ import functools
 import re
 import warnings
 from dataclasses import dataclass
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 from typing import Optional, TypeVar
 
 # Stolen from https://github.com/pypa/packaging/blob/main/src/packaging/version.py
@@ -115,8 +115,11 @@ class SemVer:
 
     @classmethod
     def from_package(cls, package: str) -> "SemVer":
-        """Get semver from package name"""
-        v = version(package)
+        """Get semver from package name, returning 0.0.0 if metadata is unavailable."""
+        try:
+            v = version(package)
+        except PackageNotFoundError:
+            v = "0.0.0"
         return SemVer.from_str(v)
 
     def __eq__(self, other: "SemVer"):
@@ -288,6 +291,14 @@ DEPRECATIONS = (
         ),
         recommendation="Remove the --validate flag from your command. Metamodel validation is now automatic.",
         issue=3259,
+    ),
+    Deprecation(
+        name="lint-validate-only-flag",
+        deprecated_in=SemVer.from_str("1.11.0"),
+        removed_in=SemVer.from_str("1.13.0"),
+        message=("The --validate-only flag for linkml-lint is deprecated. Use 'linkml validate schema.yaml' instead."),
+        recommendation="Use 'linkml validate schema.yaml' for schema validation without lint rules.",
+        issue=3387,
     ),
 )  # type: tuple[Deprecation, ...]
 

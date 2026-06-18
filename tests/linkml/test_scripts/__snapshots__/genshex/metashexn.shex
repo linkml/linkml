@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 BASE <https://w3id.org/linkml/tests/kitchen_sink/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -125,7 +125,26 @@ core:Agent CLOSED {
 )
 
 <CodeSystem> CLOSED {
-    (  $<CodeSystem_tes> core:name @linkml:String ? ;
+    (  $<CodeSystem_tes> (  core:name @linkml:String ? ;
+          <long_id> [
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#BetaSequenceIdentifier02_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#GammaSequenceIdentifier03_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EtaSequenceIdentifier07_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#IotaSequenceIdentifier09_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#KappaSequenceIdentifier10_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#MuSequenceIdentifier12_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#NuSequenceIdentifier13_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#XiSequenceIdentifier14_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#PiSequenceIdentifier16_LongPatternLongPatternLongPattern>
+             <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#RhoSequenceIdentifier17_LongPatternLongPatternLongPattern> ] ?
+       ) ;
        rdf:type [ <CodeSystem> ]
     )
 }
@@ -211,7 +230,9 @@ core:Agent CLOSED {
 <FamilialRelationship> CLOSED {
     (  $<FamilialRelationship_tes> (  &<Relationship_tes> ;
           rdf:type [ <Relationship> ] ? ;
-          <cordialness> @linkml:String ? ;
+          <cordialness> [ <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt>
+             <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful>
+             <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ] ? ;
           <type> [ <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#SIBLING_OF>
              <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#PARENT_OF>
              <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF> ] ;

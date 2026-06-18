@@ -1,0 +1,30 @@
+{% if description %}
+{{ description | cpp_comment }}
+{% endif %}
+enum class {{ name }} {
+{% for val in values.values() %}
+{% if val.description %}
+{{ val.description | cpp_comment("    ") }}
+{% endif %}
+    {{ val.name }}{% if not loop.last %},{% endif %}
+
+{% endfor %}
+};
+
+/// Convert {{ name }} to its string representation.
+inline const char* to_string({{ name }} value) {
+    switch (value) {
+{% for key, val in values.items() %}
+        case {{ name }}::{{ val.name }}: return "{{ val.value }}";
+{% endfor %}
+    }
+    return "unknown";
+}
+
+/// Parse a string into {{ name }}. Returns false if the string is not a valid value.
+inline bool from_string(const char* str, {{ name }}& out) {
+{% for key, val in values.items() %}
+    if (std::strcmp(str, "{{ val.value }}") == 0) { out = {{ name }}::{{ val.name }}; return true; }
+{% endfor %}
+    return false;
+}

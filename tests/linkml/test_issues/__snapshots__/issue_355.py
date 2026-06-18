@@ -59,7 +59,7 @@ from rdflib import (
 from linkml_runtime.linkml_model.types import String, Uriorcurie
 from linkml_runtime.utils.metamodelcore import URIorCURIE
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

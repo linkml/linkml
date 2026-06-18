@@ -8,7 +8,7 @@ def test_import_from_url(input_path):
     shex = ShExGenerator(input_path("import_test_l2.yaml")).serialize()
     shex = shex.strip()
     # replace metamodel version with 0.0.0
-    shex = re.sub(r"(?<=# metamodel_version: )\d\.\d\.\d", "0.0.0", shex)
+    shex = re.sub(r"(?<=# metamodel_version: )\d+\.\d+\.\d+", "0.0.0", shex)
     assert (
         """# metamodel_version: 0.0.0
 BASE <http://example.org/l2/>

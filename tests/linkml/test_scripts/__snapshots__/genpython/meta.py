@@ -71,7 +71,7 @@ from rdflib import (
 from linkml_runtime.linkml_model.types import Boolean, Date, Decimal, Integer, String
 from linkml_runtime.utils.metamodelcore import Bool, Decimal, XSDDate
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
@@ -129,6 +129,18 @@ class ConceptId(extended_str):
     pass
 
 
+class DiagnosisConceptId(ConceptId):
+    pass
+
+
+class ProcedureConceptId(ConceptId):
+    pass
+
+
+class CompanyId(OrganizationId):
+    pass
+
+
 class CodeSystemId(extended_str):
     pass
 
@@ -138,18 +150,6 @@ class ActivityId(extended_str):
 
 
 class AgentId(extended_str):
-    pass
-
-
-class CompanyId(OrganizationId):
-    pass
-
-
-class DiagnosisConceptId(ConceptId):
-    pass
-
-
-class ProcedureConceptId(ConceptId):
     pass
 
 
@@ -604,7 +604,7 @@ class FamilialRelationship(Relationship):
 
     type: Union[str, "FamilialRelationshipType"] = None
     related_to: Union[str, PersonId] = None
-    cordialness: Optional[str] = None
+    cordialness: Optional[Union[str, "CordialnessEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.type):
@@ -616,9 +616,6 @@ class FamilialRelationship(Relationship):
             self.MissingRequiredField("related_to")
         if not isinstance(self.related_to, PersonId):
             self.related_to = PersonId(self.related_to)
-
-        if self.cordialness is not None and not isinstance(self.cordialness, str):
-            self.cordialness = str(self.cordialness)
 
         if self.cordialness is not None and not isinstance(self.cordialness, CordialnessEnum):
             self.cordialness = CordialnessEnum(self.cordialness)
@@ -767,6 +764,7 @@ class CodeSystem(YAMLRoot):
 
     id: Union[str, CodeSystemId] = None
     name: Optional[str] = None
+    long_id: Optional[Union[str, "LongEnum"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.id):
@@ -776,6 +774,9 @@ class CodeSystem(YAMLRoot):
 
         if self.name is not None and not isinstance(self.name, str):
             self.name = str(self.name)
+
+        if self.long_id is not None and not isinstance(self.long_id, LongEnum):
+            self.long_id = LongEnum(self.long_id)
 
         super().__post_init__(**kwargs)
 
@@ -1043,6 +1044,33 @@ class CordialnessEnum(EnumDefinitionImpl):
         name="CordialnessEnum",
     )
 
+class LongEnum(EnumDefinitionImpl):
+    """
+    An example enum whose joined values will exceed 255 characters.
+    """
+    AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern = PermissibleValue(text="AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern")
+    BetaSequenceIdentifier02_LongPatternLongPatternLongPattern = PermissibleValue(text="BetaSequenceIdentifier02_LongPatternLongPatternLongPattern")
+    GammaSequenceIdentifier03_LongPatternLongPatternLongPattern = PermissibleValue(text="GammaSequenceIdentifier03_LongPatternLongPatternLongPattern")
+    DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern = PermissibleValue(text="DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern")
+    EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern = PermissibleValue(text="EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern")
+    ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern = PermissibleValue(text="ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern")
+    EtaSequenceIdentifier07_LongPatternLongPatternLongPattern = PermissibleValue(text="EtaSequenceIdentifier07_LongPatternLongPatternLongPattern")
+    ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern = PermissibleValue(text="ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern")
+    IotaSequenceIdentifier09_LongPatternLongPatternLongPattern = PermissibleValue(text="IotaSequenceIdentifier09_LongPatternLongPatternLongPattern")
+    KappaSequenceIdentifier10_LongPatternLongPatternLongPattern = PermissibleValue(text="KappaSequenceIdentifier10_LongPatternLongPatternLongPattern")
+    LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern = PermissibleValue(text="LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern")
+    MuSequenceIdentifier12_LongPatternLongPatternLongPattern = PermissibleValue(text="MuSequenceIdentifier12_LongPatternLongPatternLongPattern")
+    NuSequenceIdentifier13_LongPatternLongPatternLongPattern = PermissibleValue(text="NuSequenceIdentifier13_LongPatternLongPatternLongPattern")
+    XiSequenceIdentifier14_LongPatternLongPatternLongPattern = PermissibleValue(text="XiSequenceIdentifier14_LongPatternLongPatternLongPattern")
+    OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern = PermissibleValue(text="OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern")
+    PiSequenceIdentifier16_LongPatternLongPatternLongPattern = PermissibleValue(text="PiSequenceIdentifier16_LongPatternLongPatternLongPattern")
+    RhoSequenceIdentifier17_LongPatternLongPatternLongPattern = PermissibleValue(text="RhoSequenceIdentifier17_LongPatternLongPatternLongPattern")
+
+    _defn = EnumDefinition(
+        name="LongEnum",
+        description="An example enum whose joined values will exceed 255 characters.",
+    )
+
 class KitchenStatus(EnumDefinitionImpl):
 
     DIRTY = PermissibleValue(text="DIRTY")
@@ -1082,6 +1110,9 @@ slots.in_location = Slot(uri=KS.in_location, name="in location", curie=KS.curie(
 
 slots.diagnosis = Slot(uri=KS.diagnosis, name="diagnosis", curie=KS.curie('diagnosis'),
                    model_uri=KS.diagnosis, domain=None, range=Optional[Union[dict, DiagnosisConcept]])
+
+slots.long_id = Slot(uri=KS.long_id, name="long_id", curie=KS.curie('long_id'),
+                   model_uri=KS.long_id, domain=None, range=Optional[Union[str, "LongEnum"]])
 
 slots.procedure = Slot(uri=KS.procedure, name="procedure", curie=KS.curie('procedure'),
                    model_uri=KS.procedure, domain=None, range=Optional[Union[dict, ProcedureConcept]])

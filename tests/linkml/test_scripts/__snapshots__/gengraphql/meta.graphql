@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 enum CordialnessEnum
   {
     heartfelt
@@ -37,6 +37,27 @@ enum LifeStatusEnum
     LIVING
     DEAD
     UNKNOWN
+  }
+
+enum LongEnum
+  {
+    AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern
+    BetaSequenceIdentifier02_LongPatternLongPatternLongPattern
+    GammaSequenceIdentifier03_LongPatternLongPatternLongPattern
+    DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern
+    EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern
+    ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern
+    EtaSequenceIdentifier07_LongPatternLongPatternLongPattern
+    ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern
+    IotaSequenceIdentifier09_LongPatternLongPatternLongPattern
+    KappaSequenceIdentifier10_LongPatternLongPatternLongPattern
+    LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern
+    MuSequenceIdentifier12_LongPatternLongPatternLongPattern
+    NuSequenceIdentifier13_LongPatternLongPatternLongPattern
+    XiSequenceIdentifier14_LongPatternLongPatternLongPattern
+    OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern
+    PiSequenceIdentifier16_LongPatternLongPatternLongPattern
+    RhoSequenceIdentifier17_LongPatternLongPatternLongPattern
   }
 
 enum OtherCodes
@@ -109,6 +130,7 @@ type CodeSystem
   {
     id: String!
     name: String
+    longId: LongEnum
   }
 
 type Company
@@ -179,7 +201,7 @@ type FamilialRelationship
   {
     startedAtTime: String
     endedAtTime: String
-    cordialness: String
+    cordialness: CordialnessEnum
     type: FamilialRelationshipType!
     relatedTo: Person!
   }

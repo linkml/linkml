@@ -2,7 +2,7 @@
 # PERSONINFO
 
 
-**metamodel version:** 1.7.0
+**metamodel version:** 1.11.0
 
 **version:** None
 
@@ -114,7 +114,7 @@ Concept:
 
 | Name | Cardinality: | Type | Description |
 | --- | --- | --- | --- |
-| **[id](#id)** | <sub>0..1</sub> | uriorcurie |  |
+| **[id](#id)** | <sub>1..1</sub> | uriorcurie |  |
 | **[name](#name)** | <sub>1..1</sub> | string |  |
 | **[description](#description)** | <sub>0..1</sub> | string |  |
 | **[depicted_by](#depicted_by)** | <sub>0..1</sub> | ImageURL |  |
@@ -430,7 +430,7 @@ IntegerPrimaryKeyObject:
 
 | Name | Cardinality: | Type | Description |
 | --- | --- | --- | --- |
-| **[int_id](#int_id)** | <sub>0..1</sub> | integer |  |
+| **[int_id](#int_id)** | <sub>1..1</sub> | integer |  |
 
 
 
