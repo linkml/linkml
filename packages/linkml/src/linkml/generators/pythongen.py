@@ -1002,7 +1002,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(self.{aliased_slot_name})")
                 else:
                     rlines.append(f"\tself.{aliased_slot_name} = {base_type_name}(**as_dict(self.{aliased_slot_name}))")
-        elif slot.inlined:
+        elif slot.inlined and slot.range in self.schema.classes:
             slot_range_cls = self.schema.classes[slot.range]
             identifier = self.class_identifier(slot_range_cls)
             if not identifier:

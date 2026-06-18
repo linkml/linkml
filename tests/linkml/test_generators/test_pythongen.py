@@ -278,6 +278,45 @@ def test_keyword_named_slots_and_attributes(input_path):
     compile(output, "<generated>", "exec")
 
 
+@pytest.mark.parametrize("inlined_as_list", [False, True])
+def test_multivalued_inlined_primitive_range(inlined_as_list):
+    """A multivalued slot with ``inlined: true`` and a primitive range must not crash.
+
+    Inlining is only meaningful for class-typed ranges; for primitive ranges
+    (e.g. ``string``) it has no effect. Previously pythongen unconditionally did
+    ``self.schema.classes[slot.range]`` in the inlined branch, raising
+    ``KeyError: 'string'``.
+
+    Regression test for https://github.com/linkml/linkml/issues/3564
+    (originally fixed in https://github.com/linkml/linkml/pull/3568).
+    """
+    yaml = f"""
+id: https://example.org/issue3564
+name: issue3564
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://example.org/issue3564/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+
+classes:
+  MyData:
+    tree_root: true
+    attributes:
+      id:
+        identifier: true
+      items:
+        multivalued: true
+        inlined: true
+        inlined_as_list: {str(inlined_as_list).lower()}
+"""
+    module = make_python(yaml)
+    obj = module.MyData(id="foo", items=["item #1", "item #2", "item #3"])
+    assert obj.items == ["item #1", "item #2", "item #3"]
+
+
 def test_permissible_values():
     """
     Test that permissible values are generated correctly
