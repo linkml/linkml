@@ -1,5 +1,7 @@
 """Tests for the TypeDB TypeQL generator."""
 
+import re
+
 import pytest
 from click.testing import CliRunner
 
@@ -149,8 +151,8 @@ slots:
     assert f"attribute my-attr, value {expected_typedb_type}" in output
 
 
-def test_enum_produces_string_attribute_with_comment(tmp_path):
-    """Enums produce string attributes with a comment listing permitted values."""
+def test_enum_produces_values_annotation(tmp_path):
+    """Enums produce string attributes with a @values(...) annotation."""
     schema_yaml = """
 id: http://example.org/test
 name: test-schema
@@ -179,10 +181,47 @@ enums:
     gen = TypeDBGenerator(str(schema_file))
     output = gen.serialize()
     assert "attribute status, value string" in output
-    # enum values should be mentioned in a comment
-    assert "employed" in output
-    assert "unemployed" in output
-    assert "student" in output
+    assert '@values("employed", "unemployed", "student")' in output
+
+
+def test_multiple_enums_each_get_values_annotation(tmp_path):
+    """Each enum-ranged slot gets its own @values annotation on its attribute declaration."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+types:
+  string:
+    base: str
+    uri: xsd:string
+prefixes:
+  xsd: http://www.w3.org/2001/XMLSchema#
+classes:
+  Person:
+    slots:
+      - status
+      - role
+slots:
+  status:
+    range: EmploymentStatus
+  role:
+    range: RoleType
+enums:
+  EmploymentStatus:
+    permissible_values:
+      employed: {}
+      unemployed: {}
+  RoleType:
+    permissible_values:
+      admin: {}
+      user: {}
+      guest: {}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert 'attribute status, value string @values("employed", "unemployed");' in output
+    assert 'attribute role-attr, value string @values("admin", "user", "guest");' in output
 
 
 def test_abstract_class_produces_annotation(tmp_path):
@@ -276,6 +315,287 @@ slots:
     output = gen.serialize()
     assert "attribute person-attr, value string" in output
     assert "owns person-attr" in output
+
+
+@pytest.mark.parametrize(
+    "slot_extra,expected_range",
+    [
+        ("minimum_value: 0\n    maximum_value: 150", "@range(0..150)"),
+        ("minimum_value: 0", "@range(0..)"),
+        ("maximum_value: 100", "@range(..100)"),
+    ],
+)
+def test_range_annotation(slot_extra, expected_range, tmp_path):
+    """minimum_value / maximum_value produce @range annotations on attribute declarations."""
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - score
+slots:
+  score:
+    range: integer
+    {slot_extra}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert f"attribute score, value integer {expected_range};" in output
+
+
+def test_no_range_annotation_when_unset(tmp_path):
+    """No @range annotation when minimum_value and maximum_value are both unset."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - score
+slots:
+  score:
+    range: integer
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute score, value integer;" in output
+    assert "@range" not in output
+
+
+def test_attribute_subtyping_basic(tmp_path):
+    """A slot with is_a pointing to another scalar slot emits 'sub' instead of 'value'."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - contact_info
+      - email
+slots:
+  contact_info:
+    range: string
+  email:
+    is_a: contact_info
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute contact-info, value string;" in output
+    assert "attribute email, sub contact-info;" in output
+    # Child should NOT have a value declaration
+    assert "attribute email, value string;" not in output
+
+
+def test_attribute_subtyping_chain(tmp_path):
+    """A chain of slot is_a relationships produces a chain of sub declarations."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - base_field
+      - mid_field
+      - leaf_field
+slots:
+  base_field:
+    range: string
+  mid_field:
+    is_a: base_field
+    range: string
+  leaf_field:
+    is_a: mid_field
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert "attribute base-field, value string;" in output
+    assert "attribute mid-field, sub base-field;" in output
+    assert "attribute leaf-field, sub mid-field;" in output
+
+
+def test_attribute_subtyping_skipped_for_class_ranged_parent(tmp_path):
+    """A slot with is_a pointing to a class-ranged slot does NOT emit sub."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Person:
+    slots:
+      - related_to
+      - name_of_related
+  OtherPerson:
+    slots: []
+slots:
+  related_to:
+    range: OtherPerson
+  name_of_related:
+    is_a: related_to
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Parent is class-ranged (relation), child is scalar — no sub, just a normal attribute
+    assert "attribute name-of-related, value string;" in output
+    assert "sub related-to" not in output
+
+
+def test_mixin_slots_appear_on_consuming_class(tmp_path):
+    """Mixin-contributed slots are emitted as owns on the consuming class."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  HasAliases:
+    mixin: true
+    attributes:
+      aliases:
+        range: string
+        multivalued: true
+  Person:
+    mixins:
+      - HasAliases
+    slots:
+      - name
+slots:
+  name:
+    range: string
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Mixin class should NOT appear as a TypeDB entity
+    assert "entity hasaliases" not in output
+    # Mixin slot should appear as owns on the consuming class
+    person_block = re.search(r"^\s*entity person\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert person_block, f"person entity block not found:\n{output}"
+    assert "owns aliases" in person_block.group(0)
+    assert "owns name" in person_block.group(0)
+
+
+def test_mixin_with_object_ranged_slot(tmp_path):
+    """Mixin-contributed object-ranged slots produce plays on the consuming class."""
+    schema_yaml = """
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Place:
+    slots:
+      - name
+  WithLocation:
+    mixin: true
+    slots:
+      - in_location
+  Event:
+    slots:
+      - description
+  MarriageEvent:
+    is_a: Event
+    mixins:
+      - WithLocation
+    slots:
+      - married_to
+  Person:
+    slots:
+      - name
+slots:
+  name:
+    range: string
+  in_location:
+    range: Place
+  description:
+    range: string
+  married_to:
+    range: Person
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    # Mixin class should NOT appear as a TypeDB entity
+    assert "entity withlocation" not in output
+    # MarriageEvent should have plays for in_location (from mixin)
+    marriage_block = re.search(r"^\s*entity marriageevent\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert marriage_block, f"marriageevent entity block not found:\n{output}"
+    assert "plays in-location:" in marriage_block.group(0) or "plays in-location-rel:" in marriage_block.group(0), (
+        f"mixin object-ranged slot missing from marriageevent:\n{marriage_block.group(0)}"
+    )
+
+
+@pytest.mark.parametrize(
+    "slot_extra,expected_card",
+    [
+        ("minimum_cardinality: 1\n    maximum_cardinality: 5", "@card(1..5)"),
+        ("minimum_cardinality: 2", "@card(2..)"),
+        ("maximum_cardinality: 3", "@card(0..3)"),
+        ("exact_cardinality: 1", "@card(1..1)"),
+    ],
+)
+def test_precise_cardinality_annotation(slot_extra, expected_card, tmp_path):
+    """Precise cardinality fields produce exact @card(min..max) annotations."""
+    schema_yaml = f"""
+id: http://example.org/test
+name: test-schema
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+classes:
+  Thing:
+    slots:
+      - tags
+slots:
+  tags:
+    range: string
+    multivalued: true
+    {slot_extra}
+"""
+    schema_file = tmp_path / "test.yaml"
+    schema_file.write_text(schema_yaml)
+    gen = TypeDBGenerator(str(schema_file))
+    output = gen.serialize()
+    assert f"owns tags {expected_card}" in output
 
 
 def test_represents_relationship_class_becomes_relation(tmp_path):
