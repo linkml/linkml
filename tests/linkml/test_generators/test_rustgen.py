@@ -277,6 +277,97 @@ def test_rustgen_file_mode_generation(temp_dir):
     assert "pub fn register_pymodule" not in contents
 
 
+def test_rustgen_skip_serializing_if(temp_dir):
+    """Optional, list and mapping fields emit serde ``skip_serializing_if`` attributes.
+
+    This keeps generated JSON/YAML compact by omitting ``None`` options and
+    empty containers on serialization.
+    """
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/rustgen/skip
+        name: rustgen_skip_serializing_if
+        prefixes:
+          ex: https://example.org/rustgen/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        default_range: string
+        imports:
+          - linkml:types
+
+        classes:
+          MapEntry:
+            attributes:
+              identifier:
+                identifier: true
+                range: string
+              label:
+                range: string
+
+          SkipRoot:
+            attributes:
+              required_scalar:
+                range: string
+                required: true
+              optional_scalar:
+                range: string
+                required: false
+              required_list:
+                range: string
+                multivalued: true
+                required: true
+              mapping_values:
+                range: MapEntry
+                inlined: true
+                multivalued: true
+                required: true
+        """
+    )
+    schema_path = Path(temp_dir) / "rustgen_skip.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "skip.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # Optional scalar -> Option::is_none
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"Option::is_none"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub optional_scalar:",
+        contents,
+    ), "optional scalar should be skipped when None"
+
+    # Required list -> Vec::is_empty
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"Vec::is_empty"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub required_list:",
+        contents,
+    ), "list field should be skipped when empty"
+
+    # Mapping -> HashMap::is_empty
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"HashMap::is_empty"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub mapping_values:",
+        contents,
+    ), "mapping field should be skipped when empty"
+
+    # Required scalar must NOT get a skip attribute
+    assert re.search(
+        r"(?:#\[[^\]]*\]\s*)*pub required_scalar:",
+        contents,
+    )
+    required_block = contents[: contents.index("pub required_scalar:")].rsplit("\n\n", 1)[-1]
+    assert "skip_serializing_if" not in required_block, "required scalar must always serialize"
+
+
 def test_rustgen_dataframe_like_schema(temp_dir):
     schema_path = Path(__file__).parent / "input" / "rustgen_dataframe.yaml"
     out_dir = Path(temp_dir) / "rustgen_dataframe"
