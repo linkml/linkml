@@ -20,7 +20,8 @@ def normalizer():
 @pytest.fixture
 def matrix_data():
     """Load matrix data from array example data file."""
-    return yaml.safe_load(open(str(Path(INPUT_DIR) / "array_example_data.yaml")))
+    with open(str(Path(INPUT_DIR) / "array_example_data.yaml")) as f:
+        return yaml.safe_load(f)
 
 
 def test_array_normalization(normalizer, matrix_data):

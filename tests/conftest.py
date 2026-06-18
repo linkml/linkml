@@ -2,14 +2,12 @@ import os
 import re
 import shutil
 import sys
-import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 from importlib.abc import MetaPathFinder
 from importlib.metadata import version
 from pathlib import Path
 
-import docker
 import pytest
 import requests_cache
 from _pytest.assertion.util import _diff_text
@@ -253,6 +251,7 @@ def pytest_addoption(parser):
     parser.addoption(
         "--with-rustgen", action="store_true", help="Include tests marked as rustgen (Rust codegen/maturin)"
     )
+    parser.addoption("--with-docker", action="store_true", help="include docker tests")
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -282,6 +281,12 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
             if item.get_closest_marker("network"):
                 item.add_marker(skip_network)
 
+    if not config.getoption("--with-docker"):
+        skip_docker = pytest.mark.skip(reason="need --with-docker option to run")
+        for item in items:
+            if item.get_closest_marker("docker"):
+                item.add_marker(skip_docker)
+
     # Group compliance tests on a single xdist worker - they share
     # mutable module-level caches in helper.py that are not safe to split.
     for item in items:
@@ -300,13 +305,6 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
             if item.get_closest_marker("pydanticgen_npd"):
                 item.add_marker(skip_npd)
 
-    # skip docker tests when docker server not present on the system
-    if not _docker_server_running():
-        skip_docker = pytest.mark.skip(reason="Docker server not running on host machine")
-        for item in items:
-            if item.get_closest_marker("docker"):
-                item.add_marker(skip_docker)
-
     # the fixture that mocks black import failures should always come all the way last
     # see: https://github.com/linkml/linkml/pull/2209#issuecomment-2231548078
     # this causes really hard to diagnose errors, but we can't fail a test run if
@@ -322,23 +320,6 @@ def pytest_sessionstart(session: pytest.Session):
     tests.WITH_OUTPUT = session.config.getoption("--with-output")
     if session.config.getoption("--generate-snapshots"):
         tests.DEFAULT_MISMATCH_ACTION = "MismatchAction.Ignore"
-
-    # Clear all warning registries at session start
-    for module in list(sys.modules.values()):
-        if hasattr(module, "__warningregistry__"):
-            del module.__warningregistry__
-
-    warnings.resetwarnings()
-    warnings.simplefilter("always")
-
-
-def pytest_runtest_setup(item):
-    # Clear warning registries before each test
-    for module in list(sys.modules.values()):
-        if hasattr(module, "__warningregistry__"):
-            del module.__warningregistry__
-
-    warnings.simplefilter("always")
 
 
 def pytest_assertrepr_compare(config, op, left, right):
@@ -424,32 +405,8 @@ def mock_black_import():
 @pytest.fixture(autouse=True)
 def reset_warnings():
     """Reset warnings for each test."""
-    # Pre-test cleanup
-    for module in list(sys.modules.values()):
-        if hasattr(module, "__warningregistry__"):
-            del module.__warningregistry__
-
-    warnings.resetwarnings()
-    warnings.simplefilter("always")
     EMITTED.clear()
 
     yield
 
-    # Post-test cleanup
-    for module in list(sys.modules.values()):
-        if hasattr(module, "__warningregistry__"):
-            del module.__warningregistry__
     EMITTED.clear()
-
-
-# --------------------------------------------------
-# Helper functions ~only~
-# --------------------------------------------------
-
-
-def _docker_server_running() -> bool:
-    try:
-        _ = docker.from_env()
-        return True
-    except docker.errors.DockerException:
-        return False

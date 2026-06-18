@@ -97,7 +97,8 @@ class OpenApiGenerator(Generator, LifecycleMixin):
         return class_schemas
 
     def serialize(self, template_file: str = "", **kwargs) -> str:
-        self._template = yaml.safe_load(open(template_file))
+        with open(template_file) as f:
+            self._template = yaml.safe_load(f)
         referenced_classes = self._find_referenced_classes()
         self._template["components"]["schemas"] = {}
         class_schemas = {}

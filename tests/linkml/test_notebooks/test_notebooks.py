@@ -14,6 +14,8 @@ FORCE_REWRITE = True
 # Tests moved to root: tests/linkml/test_notebooks, notebooks at root
 NBBASEDIR = os.path.join(env.cwd, "..", "notebooks")
 
+pytestmark = pytest.mark.notebooks
+
 
 @pytest.fixture
 def ep():

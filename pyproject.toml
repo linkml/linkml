@@ -73,7 +73,10 @@ force-exclude = '''
 [tool.pytest.ini_options]
 filterwarnings = [
   # https://github.com/RDFLib/rdflib/issues/1830
-  "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning"
+  "ignore:.*_pytestfixturefunction is not defined in namespace:UserWarning",
+  # testing discipline - force warnings to errors to prevent accumulation
+  "error::ResourceWarning",
+  "error::pytest.PytestUnraisableExceptionWarning", # Needed to treat ResourceWarnings as errors
 ]
 markers = [
   "network: mark tests that make external network requests",
@@ -107,7 +110,8 @@ markers = [
   "owlgen: Tests for OWL generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",
-  "typedbgen: Tests for the TypeDB generator"
+  "typedbgen: Tests for the TypeDB generator",
+  "notebooks: Notebook generation and execution",
 ]
 
 # https://docs.astral.sh/ruff/settings/
