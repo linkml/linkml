@@ -530,20 +530,31 @@ it’s not possible to <em>override</em> existing constraints, new constraints a
 <p>Rather than the first overriding the second, the two constraints are combined, and the first becomes redundant
 (because <code class="docutils literal notranslate"><span class="pre">CarPart</span></code> is a subclass of <code class="docutils literal notranslate"><span class="pre">VehiclePart</span></code>)</p>
 </section>
-<section id="identifiers">
-<h2>Identifiers<a class="headerlink" href="#identifiers" title="Link to this heading">¶</a></h2>
-<p>If a slot is declared as an <a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>
-then it serves as a unique key for members of that class. It can also
-be used for <a class="reference internal" href="inlining.html"><span class="doc std std-doc">inlining</span></a> as a dict in JSON serializations.</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">id</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</pre></div>
-</div>
-<p>the range of an identifier can be any type, but it is a good idea to have these be of type <a class="reference external" href="https://w3id.org/linkml/Uriorcurie">Uriorcurie</a></p>
-<p>A class must not have more than one identifier (asserted or derived). <code class="docutils literal notranslate"><span class="pre">identifier</span></code> marks the <em>primary</em> identifier.</p>
+<section id="keys-identifiers">
+<h2>Keys &amp; Identifiers<a class="headerlink" href="#keys-identifiers" title="Link to this heading">¶</a></h2>
+<p>A slot can be declared as a “key slot” by marking it with <a class="reference external" href="https://w3id.org/linkml/key"><code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">true</span></code></a>. This has the following
+consequences:</p>
+<ul class="simple">
+<li><p>it makes the slot automatically <em>required</em>;</p></li>
+<li><p>it makes the class holding such a slot eligible for <a class="reference internal" href="inlining.html"><span class="std std-doc">inlining as a dictionary</span></a> in JSON serializations;</p></li>
+<li><p>it creates a unicity constraint that there cannot be two instances of the class with the same value for the key slot in any
+given container.</p></li>
+</ul>
+<p>Alternatively, a slot can be declared as an “identifier slot” by marking it with
+<a class="reference external" href="https://w3id.org/linkml/identifier"><code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">true</span></code></a>. This has the following consequences:</p>
+<ul class="simple">
+<li><p>it makes the slot automatically <em>required</em>;</p></li>
+<li><p>it makes the class holding such a slot eligible for <a class="reference internal" href="inlining.html"><span class="std std-doc">inlining as a dictionary</span></a> in JSON serializations;</p></li>
+<li><p>it makes the class holding such a slot eligible for <em>referencing</em> rather than <em>inlining</em>;</p></li>
+<li><p>it creates a unicity constraint that there cannot be two instances with the same value for the identifier slot <em>anywhere</em>.</p></li>
+</ul>
+<p>The range of a key or identifier slot can be any type, but it is a good idea to have these be of type
+<a class="reference external" href="https://w3id.org/linkml/Uriorcurie">Uriorcurie</a>.</p>
+<p>A class can have at most <em>one</em> key slot or identifier slot (asserted or inherited from a parent class). It cannot have both a
+key slot and an identifier slot.</p>
 <p>If you need to mark additional fields as unique, or a collection of slots that when considered as a tuple are unique, use
-<code class="docutils literal notranslate"><span class="pre">unique_keys</span></code> (see the <a class="reference internal" href="constraints.html"><span class="std std-doc">constraints</span></a> section of the docs).</p>
+<a class="reference external" href="https://w3id.org/linkml/unique_keys"><code class="docutils literal notranslate"><span class="pre">unique_keys</span></code></a> instead (referred to as <a class="reference internal" href="constraints.html#compound-keys"><span class="std std-ref">“compound keys”</span></a> in
+this documentation).</p>
 </section>
 <section id="type-designator">
 <h2>Type designator<a class="headerlink" href="#type-designator" title="Link to this heading">¶</a></h2>
@@ -720,7 +731,7 @@ inverses.</p>
 <li><a class="reference internal" href="#">Slots</a><ul>
 <li><a class="reference internal" href="#ranges">ranges</a></li>
 <li><a class="reference internal" href="#slot-usage">slot_usage</a></li>
-<li><a class="reference internal" href="#identifiers">Identifiers</a></li>
+<li><a class="reference internal" href="#keys-identifiers">Keys &amp; Identifiers</a></li>
 <li><a class="reference internal" href="#type-designator">Type designator</a></li>
 <li><a class="reference internal" href="#cardinality">Cardinality</a><ul>
 <li><a class="reference internal" href="#multivalued">multivalued</a></li>

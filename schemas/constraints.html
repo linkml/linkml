@@ -411,9 +411,19 @@
           <section id="adding-constraints-and-rules">
 <h1>Adding constraints and rules<a class="headerlink" href="#adding-constraints-and-rules" title="Link to this heading">¶</a></h1>
 <p>In addition to the basic <a class="reference internal" href="slots.html"><span class="doc std std-doc">cardinality</span></a> constraints for slots, additional constraints can be specified</p>
-<section id="unique-key">
-<h2>Unique Key<a class="headerlink" href="#unique-key" title="Link to this heading">¶</a></h2>
-<p>A class can declare <a class="reference external" href="https://w3id.org/linkml/unique_keys">unique_keys</a>, a set of slots that are unique for members of that class.</p>
+<section id="unique-keys">
+<h2>Unique Keys<a class="headerlink" href="#unique-keys" title="Link to this heading">¶</a></h2>
+<p>A class can have “unique keys”, which uniquely identify instances of that class within a certain scope.</p>
+<p>Unless specified otherwise below, the uniqueness scope is that of the container (the multi-valued slot) that contains instances
+of the identified class. That is, when a multi-valued slot has a range set to a class that has one or more “unique keys”, there
+cannot be two instances with the same values for the keys throughout the entire list.</p>
+<p>Unique keys are inherited: if a class defines a unique key, the unique key’s constraints automatically apply to all the
+subclasses, if any.</p>
+<p>There are two types of “unique keys”: “compound keys” and “singular keys”.</p>
+<section id="compound-keys">
+<h3>Compound keys<a class="headerlink" href="#compound-keys" title="Link to this heading">¶</a></h3>
+<p>Compound keys are defined through the <a class="reference external" href="https://w3id.org/linkml/unique_keys">unique_keys</a> slot, which allows to list the set of
+slots whose combined values must be unique for members of the class.</p>
 <p>For example, a database of chemical entities may with to declare the tuple of atomic number and neutron number
 as a unique key for an isotope:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">ChemicalEntity</span><span class="p">:</span>
@@ -442,7 +452,73 @@ as a unique key for an isotope:</p>
 <span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">symbol</span>
 </pre></div>
 </div>
-<p><a class="reference external" href="https://w3id.org/linkml/identifier">identifier</a>s are special cases of unique keys.</p>
+<p>Note that a compound key may very well comprise only one slot (there is no obligation for the <code class="docutils literal notranslate"><span class="pre">unique_key_slots</span></code> to list more than
+one slot). However, such a key would still be considered, as far as this documentation is concerned, a <em>compound</em> key, to
+distinguish it from a “singular unique key” (described below).</p>
+</section>
+<section id="singular-keys">
+<h3>Singular keys<a class="headerlink" href="#singular-keys" title="Link to this heading">¶</a></h3>
+<p>“Singular keys” have the additional constraints, compared to “compound keys”, that:</p>
+<ul class="simple">
+<li><p>there can be only one such key in any given class;</p></li>
+<li><p>they are automatically <em>required</em>, even if the slot holding them is not explicitly marked as such.</p></li>
+</ul>
+<p>Singular keys are required for <a class="reference internal" href="inlining.html"><span class="std std-doc">inlining as a dictionary</span></a>.</p>
+<p>There are two types of singular keys: “singular unique keys” and “identifiers“.</p>
+<section id="singular-unique-keys">
+<h4>Singular unique keys<a class="headerlink" href="#singular-unique-keys" title="Link to this heading">¶</a></h4>
+<p>A “singular unique key” is defined by marking a slot with <a class="reference external" href="https://w3id.org/linkml/key"><code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">true</span></code></a>. The slot marked as such is
+known as the “key slot” of the class that holds it.</p>
+<p>Be mindful of the difference between a “singular unique key” and a “compound key” that happens to comprise only one slot!
+Consider the following example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Foo</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+<span class="w">    </span><span class="nt">unique_keys</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">the_key</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">unique_key_slots</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+</pre></div>
+</div>
+<p>which defines a <em>Foo</em> class that has a “compound unique key” comprising only the <code class="docutils literal notranslate"><span class="pre">name</span></code> slot, and this one:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">classes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">Foo</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">slots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">name</span>
+</pre></div>
+</div>
+<p>which defines a <em>Foo</em> class that has a “singular unique key” <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+<p>The unicity constraints in both cases are the same (there cannot be two instances of <em>Foo</em> with the same <code class="docutils literal notranslate"><span class="pre">name</span></code> within a given
+list), but:</p>
+<ul class="simple">
+<li><p>only in the second form is the <em>Foo</em> class eligible for <a class="reference internal" href="inlining.html"><span class="std std-doc">dict inlining</span></a>;</p></li>
+<li><p>in the second form the <code class="docutils literal notranslate"><span class="pre">name</span></code> slot is implicitly required, even without <code class="docutils literal notranslate"><span class="pre">required:</span> <span class="pre">true</span></code> (and in fact trying to explicitly make
+the slot optional with <code class="docutils literal notranslate"><span class="pre">required:</span> <span class="pre">false</span></code> would be ignored).</p></li>
+</ul>
+<p>Or in other words, marking a slot with <code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">true</span></code> is <em>not</em> merely a syntactic sugar for a <code class="docutils literal notranslate"><span class="pre">unique_keys</span></code> definition with only
+one slot!</p>
+</section>
+<section id="identifiers">
+<h4>Identifiers<a class="headerlink" href="#identifiers" title="Link to this heading">¶</a></h4>
+<p>An “identifier” is defined by marking a slot with <a class="reference external" href="https://w3id.org/linkml/identifier"><code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">true</span></code></a>. The slot marked as
+such is known as the “identifier slot” of the class that holds it.</p>
+<p>Identifiers have the additional constraint, compared to singular unique keys, that their value must be <em>globally</em> unique (there
+cannot be two instances with the same identifier anywhere). In other words, their uniqueness scope is global, instead of being
+limited to an enclosing container.</p>
+<p>The presence of an identifier is necessary to allow instances of a class to be <em>referenced</em> rather than <em>inlined</em>.</p>
+<p>(Note that, since (1) singular unique keys and identifiers are two subtypes of singular keys and (2) any given class can have
+only one singular key, it naturally follows that a class can have <em>either</em> a singular unique key <em>or</em> an identifier, but not
+both. Using simultaneously <code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">identifier:</span> <span class="pre">true</span></code> on two slots of the same class is an error.)</p>
+</section>
+</section>
 </section>
 <section id="string-serialization">
 <h2>String serialization<a class="headerlink" href="#string-serialization" title="Link to this heading">¶</a></h2>
@@ -577,7 +653,15 @@ to write rules and expressions for more expressive constraints.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Adding constraints and rules</a><ul>
-<li><a class="reference internal" href="#unique-key">Unique Key</a></li>
+<li><a class="reference internal" href="#unique-keys">Unique Keys</a><ul>
+<li><a class="reference internal" href="#compound-keys">Compound keys</a></li>
+<li><a class="reference internal" href="#singular-keys">Singular keys</a><ul>
+<li><a class="reference internal" href="#singular-unique-keys">Singular unique keys</a></li>
+<li><a class="reference internal" href="#identifiers">Identifiers</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#string-serialization">String serialization</a></li>
 <li><a class="reference internal" href="#patterns">Patterns</a></li>
 <li><a class="reference internal" href="#structured-patterns">Structured patterns</a></li>
