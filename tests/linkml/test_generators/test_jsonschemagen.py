@@ -1090,3 +1090,111 @@ def test_add_lax_def_missing_required():
     schema["$defs"]["NormalClass"] = {"type": "object", "properties": {"id": {}}, "required": ["id", "name"]}
     schema.add_lax_def("NormalClass", "id")
     assert schema["$defs"]["NormalClass__identifier_optional"]["required"] == ["name"]
+
+
+def _inlined_dict_schema(key_slot_yaml: str, key_decl: str = "identifier: true", key_range: str = "string") -> str:
+    """Build a schema with an inlined-as-dict slot whose key slot is configured by
+    ``key_decl`` (``identifier: true`` or ``key: true``), ``key_range`` (the key slot
+    range), and ``key_slot_yaml`` (extra YAML lines for the key slot)."""
+    return f"""
+id: https://example.org/test-key-constraints
+name: test-key-constraints
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Container:
+    tree_root: true
+    attributes:
+      entries:
+        range: Entry
+        multivalued: true
+        inlined: true
+        inlined_as_list: false
+  Entry:
+    attributes:
+      key:
+        {key_decl}
+        range: {key_range}
+{key_slot_yaml}
+      val:
+        range: string
+"""
+
+
+@pytest.mark.parametrize("key_decl", ["identifier: true", "key: true"])
+def test_inlined_dict_key_pattern_emits_property_names(key_decl):
+    """A literal ``pattern`` on the inlined-dict key slot (identifier or key) must be
+    rendered onto ``propertyNames``."""
+    schema = _inlined_dict_schema('        pattern: "^[0-9]+$"', key_decl=key_decl)
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert generated["properties"]["entries"]["propertyNames"] == {"pattern": "^[0-9]+$"}
+
+
+def test_inlined_dict_key_enum_emits_property_names():
+    """``equals_string_in`` on the key slot becomes an ``enum`` constraint on keys."""
+    schema = _inlined_dict_schema("        equals_string_in:\n          - a\n          - b")
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert generated["properties"]["entries"]["propertyNames"] == {"enum": ["a", "b"]}
+
+
+def test_inlined_dict_no_key_constraint_emits_no_property_names():
+    """No constraint on the key slot -> no ``propertyNames`` (unchanged behavior)."""
+    schema = _inlined_dict_schema("")
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert "propertyNames" not in generated["properties"]["entries"]
+
+
+def test_inlined_dict_key_structured_pattern_requires_materialization():
+    """``structured_pattern`` on the key slot is honored only when patterns are
+    materialized -- identical to how value patterns are handled."""
+    schema = _inlined_dict_schema(
+        "        structured_pattern:\n          syntax: '^[0-9]+$'\n          interpolated: true"
+    )
+    without = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert "propertyNames" not in without["properties"]["entries"]
+
+    with_materialized = json.loads(JsonSchemaGenerator(schema, materialize_patterns=True).serialize())
+    assert with_materialized["properties"]["entries"]["propertyNames"] == {"pattern": "^[0-9]+$"}
+
+
+def test_inlined_dict_property_names_rejects_nonmatching_keys():
+    """Behavioral check: keys matching the pattern validate; non-matching keys fail."""
+    schema = _inlined_dict_schema('        pattern: "^[0-9]+$"')
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+
+    jsonschema.validate({"entries": {"0": {"val": "x"}}}, generated)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({"entries": {"bad-key": {"val": "x"}}}, generated)
+
+
+def test_inlined_dict_key_string_const_emits_property_names():
+    """A string ``const`` (``equals_string``) on the key slot becomes a key const."""
+    schema = _inlined_dict_schema("        equals_string: fixed")
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert generated["properties"]["entries"]["propertyNames"] == {"const": "fixed"}
+    jsonschema.validate({"entries": {"fixed": {"val": "x"}}}, generated)
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({"entries": {"other": {"val": "x"}}}, generated)
+
+
+def test_inlined_dict_key_numeric_const_is_not_emitted():
+    """A numeric ``const`` (``equals_number``) must NOT be emitted onto propertyNames:
+    keys are always strings, so a numeric const would reject every key. The keys are
+    left unconstrained instead."""
+    schema = _inlined_dict_schema("        equals_number: 5", key_range="integer")
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert "propertyNames" not in generated["properties"]["entries"]
+    # numeric-looking string keys still validate (unconstrained)
+    jsonschema.validate({"entries": {"5": {"val": "x"}}}, generated)
+    jsonschema.validate({"entries": {"anything": {"val": "x"}}}, generated)
+
+
+def test_inlined_dict_key_numeric_bounds_are_not_emitted():
+    """Numeric ``minimum``/``maximum`` on the key slot are no-ops on string keys and
+    must not be emitted (they would be misleading clutter)."""
+    schema = _inlined_dict_schema("        minimum_value: 1\n        maximum_value: 10", key_range="integer")
+    generated = json.loads(JsonSchemaGenerator(schema).serialize())
+    assert "propertyNames" not in generated["properties"]["entries"]
