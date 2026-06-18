@@ -841,6 +841,12 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">start_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inline</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inline</span> <span class="o">=</span> <span class="n">inline</span>
 
+        <span class="n">top_additional_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_closed</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">:</span>
+            <span class="n">top_class_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_class</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">top_class_def</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">top_additional_properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_additional_properties</span><span class="p">(</span><span class="n">top_class_def</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">top_level_schema</span> <span class="o">=</span> <span class="n">JsonSchema</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;https://json-schema.org/draft/2019-09/schema&quot;</span><span class="p">,</span>
@@ -849,7 +855,7 @@
                 <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_from</span> <span class="o">==</span> <span class="s2">&quot;title&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
                 <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_closed</span><span class="p">,</span>
+                <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="n">top_additional_properties</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
 
@@ -1327,7 +1333,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_class_unconstrained</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">not_closed</span>
         <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">allowed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">allowed</span>
         <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">extra_slots</span><span class="o">.</span><span class="n">range_expression</span><span class="p">:</span>
