@@ -88,10 +88,10 @@ schema:
         DELTA:
     Numbers:
       permissible_values:
-        ONE:
-        TWO:
-        THREE:
-        FOUR:
+        1:
+        2:
+        3:
+        4:
   classes:
     C1:
       slots:
@@ -124,9 +124,9 @@ data_cases:
   - data:
       letter_enum_multi_value: [BRAVO, CHARLIE]
   - data:
-      letter_or_number_enum_single_value: ONE
+      letter_or_number_enum_single_value: "1"
   - data:
-      letter_or_number_enum_multi_value: [TWO, DELTA]
+      letter_or_number_enum_multi_value: ["2", DELTA]
   - data:
       integer_single_value: 0
   - data:
@@ -159,7 +159,7 @@ data_cases:
   - data:
       grab_bag:
         - s1: two
-        - ONE
+        - "1"
         - 0
   - data:
       letter_enum_single_value: ONE
@@ -183,7 +183,7 @@ data_cases:
       letter_or_number_enum_multi_value: ALPHA
     error_message: is not of type 'array'
   - data:
-      letter_or_number_enum_multi_value: [ALPHA, THREE, NOT_A_VALUE]
+      letter_or_number_enum_multi_value: [ALPHA, "3", NOT_A_VALUE]
     error_message: Failed validating 'anyOf' in schema
   - data:
       integer_single_value: [0]
@@ -264,13 +264,13 @@ data_cases:
   - data:
       grab_bag:
         - s2: 'two'
-        - ONE
+        - "1"
         - 0
     error_message: Failed validating 'anyOf' in schema
   - data:
       grab_bag:
         - s1: 'two'
-        - ONE
+        - "1"
         - false
     error_message: Failed validating 'anyOf' in schema
   - data:

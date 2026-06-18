@@ -20,6 +20,7 @@ from linkml.linter.config.datamodel.config import (
 )
 from linkml.linter.linter import LinterProblem
 from linkml_runtime.linkml_model import (
+    AnonymousSlotExpression,
     ClassDefinition,
     ClassDefinitionName,
     Element,
@@ -447,3 +448,97 @@ class CanonicalPrefixesRule(LinterRule):
                     f"'{prefix.prefix_reference}' instead of using prefix "
                     f"'{namespace_to_prefix[prefix.prefix_reference]}'"
                 )
+
+
+class RangeAnyOfIncompatibleRule(LinterRule):
+    """Warns when any_of options are type-incompatible with slot range.
+
+    When a slot has both `range` and `any_of` specified, the JSON Schema generator
+    applies both constraints (implicit AND). This can result in unsatisfiable
+    constraints when the types are incompatible (e.g., range=string with
+    any_of containing an integer option).
+
+    This rule warns when any `any_of` option has a type that is incompatible
+    with the slot's direct range, as such options can never be satisfied.
+    """
+
+    id = "range_anyof_incompatible"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        """Check for incompatible range and any_of combinations.
+
+        :param schema_view: SchemaView object with schema access
+        :param fix: whether to fix (not supported for this rule)
+        :yields: LinterProblem for each incompatible any_of option
+        """
+        for slot in schema_view.all_slots(imports=False).values():
+            if not slot.range or not slot.any_of:
+                continue
+
+            range_json_type = self.get_json_schema_type(slot.range, schema_view, slot)
+            if range_json_type is None:
+                continue
+
+            for i, expr in enumerate(slot.any_of):
+                if expr.range:
+                    expr_json_type = self.get_json_schema_type(expr.range, schema_view, expr)
+                    if expr_json_type and not self.json_schema_types_compatible(range_json_type, expr_json_type):
+                        yield LinterProblem(
+                            f"Slot '{slot.name}' has range '{slot.range}' (JSON Schema type: {range_json_type}) "
+                            f"but any_of[{i}] has range '{expr.range}' (JSON Schema type: {expr_json_type}) - "
+                            f"these types are incompatible"
+                        )
+
+    def get_json_schema_type(
+        self,
+        range_name: str,
+        sv: SchemaView,
+        slot: SlotDefinition | AnonymousSlotExpression | None = None,
+    ) -> str | None:
+        """Return the JSON Schema type for a range.
+
+        :param range_name: name of the range (type, enum, or class)
+        :param sv: SchemaView for looking up definitions
+        :param slot: slot or expression to determine if class ranges are inlined
+        :returns: one of 'string', 'integer', 'number', 'boolean', 'object', or None
+        """
+        if range_name in sv.all_enums():
+            return "string"
+        if range_name in sv.all_classes():
+            # Class without identifier OR explicitly inlined -> object
+            # Class with identifier and not inlined -> type of the identifier slot
+            id_slot = sv.get_identifier_slot(range_name)
+            if slot is not None and sv.is_inlined(slot):
+                return "object"
+            elif id_slot is None:
+                # No identifier means must be inlined
+                return "object"
+            else:
+                # Not inlined, reference type is the identifier's type
+                return self.get_json_schema_type(id_slot.range, sv, None) if id_slot.range else "string"
+        if range_name in sv.all_types():
+            induced = sv.induced_type(range_name)
+            if induced.base:
+                base = induced.base.lower()
+                if base in ("int", "integer"):
+                    return "integer"
+                if base in ("float", "double", "decimal"):
+                    return "number"
+                if base in ("bool", "boolean"):
+                    return "boolean"
+            return "string"  # default for string, uri, date types, etc.
+        return None
+
+    def json_schema_types_compatible(self, type1: str, type2: str) -> bool:
+        """Check if two JSON Schema types are compatible.
+
+        :param type1: first JSON Schema type
+        :param type2: second JSON Schema type
+        :returns: True if compatible, False otherwise
+        """
+        if type1 == type2:
+            return True
+        # integer and number are compatible
+        if {type1, type2} == {"integer", "number"}:
+            return True
+        return False
