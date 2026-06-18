@@ -77,7 +77,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 
 {#- If the class is configured to allow extra slots, we need an extra
     field to store them. #}
-{%- if cls.source_class.extra_slots.allowed %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
     @ExtensionHolder
     private Map<String, Object> extraSlots;
 {% endif -%}
@@ -250,7 +250,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   endif %}
 {%- endfor %}
 
-{%- if cls.source_class.extra_slots.allowed %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
     public void setExtraSlots(Map<String,Object> extraSlots) {
         this.extraSlots = extraSlots;
     }

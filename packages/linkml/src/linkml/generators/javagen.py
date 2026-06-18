@@ -381,6 +381,22 @@ class JavaGenerator(OOCodeGenerator):
     def get_slot_actual_name(self, slot: SlotDefinition) -> str:
         return slot.alias if slot.alias and self.use_aliases else slot.name
 
+    def needs_extra_slots(self, klass: ClassDefinition) -> bool:
+        """Indicates whether a class requires handling of extra slots.
+
+        A Java class representing a LinkML class requires special code to
+        handle extra slots iff (1) the LinkML class is configured to allow
+        extra slots and (2) none of its parent classes are already
+        configured to allow extra slots.
+        """
+        if klass.extra_slots is None or not klass.extra_slots.allowed:
+            return False
+        for ancestor in self.schemaview.class_ancestors(klass.name, mixins=False, reflexive=False):
+            ancestor_extra_slots = self.schemaview.get_class(ancestor).extra_slots
+            if ancestor_extra_slots is not None and ancestor_extra_slots.allowed:
+                return False
+        return True
+
 
 @shared_arguments(JavaGenerator)
 @click.option(
