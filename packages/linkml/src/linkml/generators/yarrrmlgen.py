@@ -252,7 +252,11 @@ class YarrrmlGenerator(Generator):
             if parent_id:
                 return f"{prefix}:{c.name}_$({parent_id.name})"
 
-        return f"{prefix}:{c.name}/$(id)"
+        # No identifier, key, or owning parent id to template on: a class with no
+        # identity is a blank node, which YARRRML expresses by omitting the subject.
+        # Returning None lets the caller drop the `s` key rather than emit an IRI
+        # referencing a non-existent `id` field.
+        return None
 
     def _po_list_for_class(self, c: ClassDefinition, inline_owners: dict) -> list[dict[str, Any]]:
         sv = self.schemaview
