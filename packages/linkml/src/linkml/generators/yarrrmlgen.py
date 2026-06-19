@@ -70,6 +70,11 @@ class YarrrmlGenerator(Generator):
 
     def as_dict(self) -> dict[str, Any]:
         sv = self.schemaview
+        # Resolve prefixes (and normalise default_prefix to a real CURIE prefix)
+        # before building mappings. LinkML synthesises default_prefix from the
+        # full schema IRI when it is omitted; left unresolved that IRI would be
+        # emitted in subject/predicate positions (e.g. "https://ex.org/:$(id)").
+        prefixes = self._prefixes_with_defaults()
         mappings: dict[str, Any] = {}
 
         inline_owners: dict[str, list[tuple[str, str]]] = {}
@@ -180,13 +185,22 @@ class YarrrmlGenerator(Generator):
 
             mappings[str(cls.name)] = mapping_dict
 
-        prefixes = self._prefixes_with_defaults()
         return {"prefixes": prefixes, "mappings": mappings}
 
     def _is_json_source(self) -> bool:
         return "~jsonpath" in (self.source or "")
 
     def _prefixes_with_defaults(self) -> dict[str, str]:
+        """Build the output prefix map and normalise the schema's default prefix.
+
+        Returns the prefix map (always including ``rdf``, and an ``ex`` fallback
+        when the schema declares no usable prefix). As a side effect, rewrites
+        ``self.schema.default_prefix`` to a real declared CURIE prefix when it is
+        missing or set to a non-prefix value (LinkML synthesises a full schema
+        IRI when ``default_prefix`` is omitted). ``as_dict`` calls this before
+        building mappings so subjects and predicates resolve against the
+        normalised prefix.
+        """
         px: dict[str, str] = {}
 
         if self.schema.prefixes:
@@ -200,7 +214,10 @@ class YarrrmlGenerator(Generator):
         if not has_user_prefix:
             px.setdefault("ex", "https://example.org/default#")
 
-        if not self.schema.default_prefix:
+        # Replace a missing default_prefix, or one that is not a usable CURIE
+        # prefix (e.g. the full schema IRI LinkML synthesises when it is omitted),
+        # with a real declared prefix.
+        if not self.schema.default_prefix or self.schema.default_prefix not in px:
             if "ex" in px:
                 self.schema.default_prefix = "ex"
             else:
