@@ -1087,7 +1087,7 @@ linkml:Sparqlpath xsd:string
 <ChemicalToEntityAssociationMixin> {
     (  $<ChemicalToEntityAssociationMixin_tes> (  &<ChemicalEntityToEntityAssociationMixin_tes> ;
           rdf:type [ <ChemicalEntityToEntityAssociationMixin> ] ? ;
-          <subject> @<NamedThing>
+          <subject> @<ChemicalEntityOrGeneOrGeneProduct>
        ) ;
        rdf:type [ <ChemicalToEntityAssociationMixin> ] ?
     )
@@ -1493,7 +1493,7 @@ linkml:Sparqlpath xsd:string
 <DrugToEntityAssociationMixin> {
     (  $<DrugToEntityAssociationMixin_tes> (  &<ChemicalEntityToEntityAssociationMixin_tes> ;
           rdf:type [ <ChemicalEntityToEntityAssociationMixin> ] ? ;
-          <subject> @<NamedThing>
+          <subject> @<Drug>
        ) ;
        rdf:type [ <DrugToEntityAssociationMixin> ] ?
     )
