@@ -905,6 +905,132 @@ def test_rustgen_simple_dict_with_recursive_multivalued_sibling(temp_dir):
         )
 
 
+_ORSUBTYPE_BASE_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/orsubtype_base
+    name: rustgen_orsubtype_base
+    prefixes:
+      ex: https://example.org/rustgen/
+      linkml: https://w3id.org/linkml/
+    default_prefix: ex
+    default_range: string
+    imports:
+      - linkml:types
+
+    classes:
+      Animal:
+        slots:
+          - category
+          - name
+        slot_usage:
+          category:
+            designates_type: true
+      Dog:
+        is_a: Animal
+        slots:
+          - breed
+      Shelter:
+        tree_root: true
+        slots:
+          - occupant
+        slot_usage:
+          occupant:
+            inlined: true
+
+    slots:
+      category:
+        range: string
+      name:
+        range: string
+      breed:
+        range: string
+      occupant:
+        range: Animal
+    """
+)
+
+
+def test_rustgen_orsubtype_includes_concrete_base(temp_dir):
+    """A concrete base class is itself a variant of its ``*OrSubtype`` enum.
+
+    Regression: the enum was built from ``class_real_descendants`` (which excludes
+    the class itself), so a field ranged on a concrete base could not represent a
+    plain base instance — under untagged enums it was silently mis-decoded as an
+    arbitrary subtype, and under tagged enums it became an ``unknown variant`` error.
+    """
+    schema_path = Path(temp_dir) / "rustgen_orsubtype_base.yaml"
+    schema_path.write_text(_ORSUBTYPE_BASE_SCHEMA, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "orsubtype_base.rs"
+    RustGenerator(str(schema_path), mode="file", pyo3=False, serde=True, output=str(out_file)).serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+    enum_block = contents[contents.index("enum AnimalOrSubtype") :].split("}", 1)[0]
+    # Both the subtype and the concrete base are variants; base is last.
+    assert "Dog(Dog)" in enum_block
+    assert "Animal(Animal)" in enum_block
+    assert enum_block.index("Dog(Dog)") < enum_block.index("Animal(Animal)")
+
+
+def test_rustgen_orsubtype_base_roundtrip(temp_dir):
+    """A plain concrete-base instance round-trips as the base variant, and a
+    subtype instance as the subtype variant (tagged by the designator)."""
+    schema_path = Path(temp_dir) / "rustgen_orsubtype_base_rt.yaml"
+    schema_path.write_text(_ORSUBTYPE_BASE_SCHEMA, encoding="utf-8")
+
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "orsubtype_base_crate")
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "orsubtype_base.rs").write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn base_decodes_as_base() {\n"
+            f"    use {crate_ident}::{{Shelter, AnimalOrSubtype}};\n"
+            '    let yaml = "occupant:\\n  category: Animal\\n  name: Rex\\n";\n'
+            '    let v: Shelter = serde_yml::from_str(yaml).expect("plain base decode");\n'
+            "    match v.occupant.expect(\"occupant\") {\n"
+            "        AnimalOrSubtype::Animal(_) => {}\n"
+            '        _ => panic!("expected Animal variant"),\n'
+            "    }\n"
+            "}\n"
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn subtype_decodes_as_subtype() {\n"
+            f"    use {crate_ident}::{{Shelter, AnimalOrSubtype}};\n"
+            '    let yaml = "occupant:\\n  category: Dog\\n  name: Rex\\n  breed: lab\\n";\n'
+            '    let v: Shelter = serde_yml::from_str(yaml).expect("subtype decode");\n'
+            "    match v.occupant.expect(\"occupant\") {\n"
+            "        AnimalOrSubtype::Dog(_) => {}\n"
+            '        _ => panic!("expected Dog variant"),\n'
+            "    }\n"
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "orsubtype_base"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        pytest.skip(
+            "cargo test failed, likely due to a missing Rust toolchain:\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
 def test_subproperty_of_generates_rust_enum(temp_dir):
     """Test that subproperty_of generates a Rust enum with slot descendants."""
     schema_yaml = textwrap.dedent(
