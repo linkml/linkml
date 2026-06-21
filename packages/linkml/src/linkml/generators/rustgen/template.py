@@ -397,7 +397,7 @@ class RustStructOrSubtypeEnum(RustTemplateModel):
     struct_names: list[str]
     as_key_value: bool = False
     type_designator_field: str | None = None
-    type_designators: dict[str, str]
+    type_designators: dict[str, list[str]]
     key_property_type: str = "String"
 
 
