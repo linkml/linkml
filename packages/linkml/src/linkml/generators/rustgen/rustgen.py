@@ -595,7 +595,9 @@ class RustGenerator(Generator, LifecycleMixin):
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
                 struct_names=[get_name(self.schemaview.get_class(d)) for d in members],
-                type_designator_field=get_name(td) if td else None,
+                # The tag must match the designator field's serialized (wire) name,
+                # which is the un-escaped slot name (see serde_rename in generate_attribute).
+                type_designator_field=underscore(td.name) if td else None,
                 as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
                 type_designators=td_mapping,
                 key_property_type=key_type,
@@ -708,12 +710,20 @@ class RustGenerator(Generator, LifecycleMixin):
         else:
             range_info = get_rust_range_info(cls, attr, self.schemaview)
 
+        # When the Rust field name had to be escaped (a slot named after a Rust
+        # keyword, e.g. ``type`` -> ``type_``), the serialized data still uses the
+        # original LinkML slot name. Emit a serde rename so the wire format matches.
+        rust_name = get_name(attr)
+        wire_name = underscore(attr.name)
+        serde_rename = wire_name if rust_name != wire_name else None
+
         res = AttributeResult(
             source=attr,
             attribute=RustProperty(
-                name=get_name(attr),
+                name=rust_name,
                 inline_mode=inline_mode.value,
                 alias=attr.alias if attr.alias is not None and attr.alias != get_name(attr) else None,
+                serde_rename=serde_rename,
                 generate_merge=MERGE_ANNOTATION in cls.annotations,
                 container_mode=container_mode.value,
                 type_=range_info,

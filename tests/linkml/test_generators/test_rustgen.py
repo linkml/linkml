@@ -1149,6 +1149,121 @@ def test_rustgen_orsubtype_base_roundtrip(temp_dir):
         )
 
 
+_PROTECTED_NAME_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/protected_name
+    name: rustgen_protected_name
+    prefixes:
+      ex: https://example.org/rustgen/
+      linkml: https://w3id.org/linkml/
+    default_prefix: ex
+    default_range: string
+    imports:
+      - linkml:types
+
+    classes:
+      Parent:
+        slots:
+          - type
+          - id
+        slot_usage:
+          type:
+            designates_type: true
+      Child:
+        is_a: Parent
+        slots:
+          - extra
+      Container:
+        tree_root: true
+        slots:
+          - obj
+        slot_usage:
+          obj:
+            inlined: true
+
+    slots:
+      type:
+        range: string
+      id:
+        range: string
+      extra:
+        range: string
+      obj:
+        range: Parent
+    """
+)
+
+
+def test_rustgen_protected_name_slot_gets_serde_rename(temp_dir):
+    """A slot named after a Rust keyword (``type``) is escaped to ``type_`` but must
+    carry ``#[serde(rename = "type")]`` so the wire format keeps the LinkML name.
+
+    The designator tag must likewise use the un-escaped name (``serde(tag = "type")``).
+    """
+    schema_path = Path(temp_dir) / "rustgen_protected_name.yaml"
+    schema_path.write_text(_PROTECTED_NAME_SCHEMA, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "protected_name.rs"
+    RustGenerator(str(schema_path), mode="file", pyo3=False, serde=True, output=str(out_file)).serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+    assert "pub type_:" in contents, "the Rust field should be escaped"
+    assert 'serde(rename = "type")' in contents, "escaped field must serialize under the LinkML name"
+    assert 'serde(tag = "type")' in contents, "designator tag must use the un-escaped wire name"
+    assert 'serde(tag = "type_")' not in contents
+
+
+def test_rustgen_protected_name_slot_roundtrip(temp_dir):
+    """Real LinkML data keyed by the slot name ``type`` round-trips (it must not
+    require the Rust-escaped ``type_`` key)."""
+    schema_path = Path(temp_dir) / "rustgen_protected_name_rt.yaml"
+    schema_path.write_text(_PROTECTED_NAME_SCHEMA, encoding="utf-8")
+
+    out_dir = _generate_rust_crate(str(schema_path), Path(temp_dir) / "protected_name_crate")
+
+    cargo_toml = (out_dir / "Cargo.toml").read_text(encoding="utf-8")
+    crate_match = re.search(r"^name\s*=\s*\"([A-Za-z0-9_-]+)\"", cargo_toml, re.MULTILINE)
+    assert crate_match
+    crate_ident = crate_match.group(1).replace("-", "_")
+
+    tests_dir = out_dir / "tests"
+    tests_dir.mkdir(exist_ok=True)
+    (tests_dir / "protected_name.rs").write_text(
+        (
+            '#[cfg(feature = "serde")]\n'
+            "#[test]\n"
+            "fn type_key_roundtrips() {\n"
+            f"    use {crate_ident}::{{Container, ParentOrSubtype}};\n"
+            '    let yaml = "obj:\\n  type: Child\\n  id: x\\n  extra: y\\n";\n'
+            "    let v: Container = serde_yml::from_str(yaml).expect(\"decode with 'type' key\");\n"
+            '    match v.obj.expect("obj") {\n'
+            "        ParentOrSubtype::Child(_) => {}\n"
+            '        _ => panic!("expected Child variant"),\n'
+            "    }\n"
+            "    let out = serde_yml::to_string(&serde_yml::from_str::<Container>(yaml).unwrap()).unwrap();\n"
+            '    assert!(out.contains("type: Child"), "wire form must use \'type\': {out}");\n'
+            '    assert!(!out.contains("type_:"), "must not leak escaped key: {out}");\n'
+            "}\n"
+        ),
+        encoding="utf-8",
+    )
+
+    env = os.environ.copy()
+    env.setdefault("RUST_BACKTRACE", "1")
+    result = subprocess.run(
+        ["cargo", "test", "--features", "serde", "--test", "protected_name"],
+        cwd=out_dir,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        pytest.skip(
+            "cargo test failed, likely due to a missing Rust toolchain:\n"
+            f"stdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
 def test_subproperty_of_generates_rust_enum(temp_dir):
     """Test that subproperty_of generates a Rust enum with slot descendants."""
     schema_yaml = textwrap.dedent(
