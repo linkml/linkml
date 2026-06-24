@@ -1,7 +1,7 @@
 name: Publish Python Package
 # Upload to PyPI is triggered by creating & publishing a release in GitHub UI
 env:
-  UV_VERSION: "0.7.13"
+  UV_VERSION: "0.11.21"
 on:
   release:
     # Trigger the workflow only for real releases but not for draft releases
