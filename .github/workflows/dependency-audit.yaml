@@ -2,8 +2,9 @@ name: Audit dependencies
 
 # Global environment variables applied to all steps
 env:
-  UV_PREVIEW: "1"        # Enables the preview uv audit and malware engines
-  UV_MALWARE_CHECK: "1"  # Automatically blocks malicious installs on sync/run
+  UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
+  UV_MALWARE_CHECK: "1"    # Automatically blocks malicious installs on sync/run
+  UV_EXCLUDE_NEWER: "7 days"  # Mirror the pyproject.toml cooldown for this job's resolution
 
 on:
   push:
@@ -44,15 +45,17 @@ jobs:
       #
       # NOTE: The malware gate only blocks malware that has *already* been
       # published as an OSV advisory. There is a window between a malicious
-      # upload and its advisory. To cover that gap, pair this gate with uv's
-      # dependency cooldown (`exclude-newer`, a resolution-time setting added
-      # in uv 0.9.17), e.g. a 7-day window:
+      # upload and its advisory. That gap is covered by uv's dependency
+      # cooldown (`exclude-newer`, a resolution-time setting added in uv
+      # 0.9.17), which is now enabled with a 7-day window in pyproject.toml:
       #
       #   [tool.uv]
       #   exclude-newer = "7 days"
       #
-      # Cooldown is intentionally NOT enabled here: enabling it in pyproject.toml writes a timestamp
-      # into uv.lock that can cause merge conflicts across branches
-      # (see astral-sh/uv#18708). enablement tbd.
+      # uv >= 0.9.17 records this as a relative span (`exclude-newer-span = "P7D"`)
+      # in uv.lock rather than an absolute timestamp, which avoids the
+      # per-relock timestamp churn / cross-branch merge conflicts that earlier
+      # uv versions caused (see astral-sh/uv#18708). The UV_EXCLUDE_NEWER env
+      # var above mirrors the setting for this job's resolution.
       - name: Verify Environment Sync (Anti-Malware Gate)
         run: uv sync --frozen
