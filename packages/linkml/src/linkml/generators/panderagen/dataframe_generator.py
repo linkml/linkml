@@ -79,13 +79,16 @@ class DataframeGenerator(OOCodeGenerator, ABC):
 
         if t.uri:
             typ = self.TYPE_MAP.get(t.uri, None)
-            if typ is None:
-                typ = self.map_type(self.schemaview.get_type(t.typeof))
-        elif t.typeof:
-            typ = self.map_type(self.schemaview.get_type(t.typeof))
+        if typ is None and t.typeof:
+            # Chain up to the parent type only when ``typeof`` is defined and
+            # resolvable; recursing on an undefined/unknown ``typeof`` would
+            # call map_type(None) and crash with an opaque AttributeError.
+            parent = self.schemaview.get_type(t.typeof)
+            if parent is not None:
+                typ = self.map_type(parent)
 
         if typ is None:
-            raise ValueError(f"{t} cannot be mapped to a type")
+            raise ValueError(f"Type {t.name!r} cannot be mapped to a pandera type (uri={t.uri!r}, typeof={t.typeof!r})")
 
         return typ
 
