@@ -325,7 +325,7 @@ class OOCodeGenerator(Generator):
                     source_slot=slot,
                     range=range,
                     default_value=default_value,
-                    slot_uri=sv.get_uri(slot.name, expand=True),
+                    slot_uri=sv.get_uri(slot, expand=True),
                 )
 
                 if sn not in parent_slots:
