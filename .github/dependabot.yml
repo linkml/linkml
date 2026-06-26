@@ -19,8 +19,7 @@ updates:
       default-days: 7
 
   - package-ecosystem: "uv"
-    directories:
-      - "/"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "sunday"
