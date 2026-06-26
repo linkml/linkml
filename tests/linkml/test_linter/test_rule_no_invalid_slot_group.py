@@ -94,3 +94,23 @@ classes:
         problems[0].message
         == "Class 'SomeClass' slot_usage 'member_slot' has slot_group 'Not A Slot' which is not a defined slot."
     )
+
+
+def test_slot_group_on_class_attribute() -> None:
+    """slot_group on an inline attribute is checked, including one overriding a global slot name."""
+    test_schema = """id: http://example.org/test_slot_group
+name: test_slot_group
+slots:
+  member_slot:
+classes:
+  A:
+    attributes:
+      member_slot:
+        slot_group: Not A Slot
+"""
+    problems = check_schema(test_schema)
+    assert len(problems) == 1
+    assert (
+        problems[0].message
+        == "Class 'A' attribute 'member_slot' has slot_group 'Not A Slot' which is not a defined slot."
+    )

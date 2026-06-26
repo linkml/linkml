@@ -106,3 +106,36 @@ classes:
         problems[0].message
         == "Class 'SomeClass' slot_usage 'member_slot' asserts membership in undeclared subset 'made_up_subset'."
     )
+
+
+def test_undeclared_in_subset_on_class_attributes() -> None:
+    """in_subset on inline attributes is checked per class.
+
+    Covers attributes that share a name across classes and an attribute that overrides
+    a globally declared slot name. all_slots() de-duplicates these by name, so this
+    guards against the rule silently skipping them.
+    """
+    test_schema = """id: http://example.org/test_subsets
+name: test_subsets
+slots:
+  shared:
+    in_subset:
+      - missing_global
+classes:
+  A:
+    attributes:
+      shared:
+        in_subset:
+          - missing_in_a
+  B:
+    attributes:
+      shared:
+        in_subset:
+          - missing_in_b
+"""
+    messages = sorted(p.message for p in check_schema(test_schema))
+    assert messages == [
+        "Class 'A' attribute 'shared' asserts membership in undeclared subset 'missing_in_a'.",
+        "Class 'B' attribute 'shared' asserts membership in undeclared subset 'missing_in_b'.",
+        "Slot 'shared' asserts membership in undeclared subset 'missing_global'.",
+    ]
