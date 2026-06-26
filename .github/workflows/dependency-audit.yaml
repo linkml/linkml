@@ -26,7 +26,7 @@ jobs:
       # Install the latest uv: the audit/malware-check features are preview-only
       # and ship in recent releases, so this job intentionally does not pin uv.
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           enable-cache: true
 
