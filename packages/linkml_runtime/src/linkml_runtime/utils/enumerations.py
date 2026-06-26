@@ -117,6 +117,16 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
         """The string representation of an enumerated value should be the code representing this value."""
         return self._code.text
 
+    def __hash__(self) -> int:
+        """Hash on the permissible value text.
+
+        ``YAMLRoot`` inherits ``__eq__`` from ``jsonasobj2`` without a matching
+        ``__hash__``, which leaves ``__hash__`` set to ``None`` and makes
+        instances unhashable.  Two equal enum values always share the same
+        permissible value text, so hashing on it stays consistent with equality.
+        """
+        return hash(self._code.text)
+
     def __repr__(self) -> str:
         rlist = [(f.name, getattr(self._code, f.name)) for f in fields(self._code)]
         return self.__class__.__name__ + "(" + ", ".join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ")"
