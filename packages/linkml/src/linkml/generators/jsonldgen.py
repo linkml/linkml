@@ -68,11 +68,20 @@ class JSONLDGenerator(Generator):
         self.original_schema = deepcopy(self.schema)
         super().__post_init__()
 
-    def _add_type(self, node: YAMLRoot) -> dict:
+    def _add_type(self, node: YAMLRoot) -> dict | YAMLRoot:
+        """Add the JSON-LD ``@type`` field to *node* and return it as a plain dict or as-is.
+
+        In jsonld format: injects ``@type`` into ``node.__dict__`` (the live backing
+        store of the :class:`YAMLRoot` instance, so the mutation is visible on *node*
+        itself) and returns that :class:`dict` so callers can iterate and modify it
+        with standard dict operations.
+
+        In non-jsonld format: returns *node* unchanged as a :class:`YAMLRoot`, since
+        ``@type`` is not part of plain JSON output.
+        """
         if self.format == "jsonld":
-            typ = node.__class__.__name__
-            node = node.__dict__
-            node["@type"] = typ
+            node.__dict__["@type"] = node.__class__.__name__
+            return node.__dict__
         return node
 
     def _visit(self, node: Any) -> Any | None:
