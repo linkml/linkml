@@ -1190,9 +1190,7 @@ class OwlSchemaGenerator(Generator):
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
-                    self._declare_grouping_class(
-                        URIRef(PermissibleValue.class_class_uri), PermissibleValue.class_name
-                    )
+                    self._declare_grouping_class(URIRef(PermissibleValue.class_class_uri), PermissibleValue.class_name)
         if all([pv is not None for pv in pv_uris]):
             # every single PV in the enum is not-null
             all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
