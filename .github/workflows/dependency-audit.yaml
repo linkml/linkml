@@ -37,8 +37,14 @@ jobs:
           python-version: 3.13
 
       # Step 1: Run uv audit to check for vulnerabilities (CVEs)
+      #
+      # GHSA-6w46-j5rx-g56g (pytest predictable tmpdir path) is fixed only in
+      # pytest 9.0.3, but pytest 9 removed the private _pytest.assertion.util
+      # ._diff_text API that tests/conftest.py depends on. We pin pytest <9
+      # (see packages/linkml/pyproject.toml) and ignore this single test-only,
+      # low-risk advisory until conftest is migrated to stdlib difflib.
       - name: Audit lockfile for CVEs
-        run: uv audit
+        run: uv audit --ignore GHSA-6w46-j5rx-g56g
 
       # Step 2: Run a sync. If a package contains known malware,
       # the OSV-lookup triggers an immediate, non-zero failure exit.
