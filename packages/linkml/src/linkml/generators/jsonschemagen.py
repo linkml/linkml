@@ -763,6 +763,26 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         return constraints
 
+    def _subschema_for_boolean_member(
+        self, parent_slot: SlotDefinition | AnonymousSlotExpression, member: AnonymousSlotExpression
+    ) -> JsonSchema:
+        # Boolean-combinator members (any_of, all_of, exactly_one_of, none_of) are
+        # anonymous slot expressions that do not carry the parent slot's inlining.
+        # Without it, a member whose range is an identifier-bearing class is reduced
+        # to that identifier's (string) type instead of a $ref to the class. Inherit
+        # the parent's inlining so class-ranged union members are referenced. See #3684.
+        if (
+            member.range is not None
+            and member.range in self.schemaview.all_classes()
+            and member.inlined is None
+            and parent_slot.inlined is not None
+        ):
+            member = deepcopy(member)
+            member.inlined = parent_slot.inlined
+            if member.inlined_as_list is None and parent_slot.inlined_as_list is not None:
+                member.inlined_as_list = parent_slot.inlined_as_list
+        return self.get_subschema_for_slot(member, include_null=False)
+
     def get_subschema_for_slot(
         self, slot: SlotDefinition | AnonymousSlotExpression, omit_type: bool = False, include_null: bool = True
     ) -> JsonSchema:
@@ -877,25 +897,25 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
             bool_subschema["anyOf"] = _deduplicate_subschemas(
-                [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+                [self._subschema_for_boolean_member(slot, s) for s in slot.any_of]
             )
             if not slot.required and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
             bool_subschema["allOf"] = _deduplicate_subschemas(
-                [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+                [self._subschema_for_boolean_member(slot, s) for s in slot.all_of]
             )
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
             bool_subschema["oneOf"] = _deduplicate_subschemas(
-                [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+                [self._subschema_for_boolean_member(slot, s) for s in slot.exactly_one_of]
             )
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
                 "anyOf": _deduplicate_subschemas(
-                    [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                    [self._subschema_for_boolean_member(slot, s) for s in slot.none_of]
                 )
             }
 

@@ -41,6 +41,52 @@ def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_yaml_and_j
     assert generated_schema["$defs"]["C3"]["properties"]["a"]["anyOf"][0]["$ref"] == "#/$defs/C1"
 
 
+def test_issue_3684_inlined_any_of_class_union_keeps_refs():
+    """An inlined any_of union of classes with identifiers should produce $refs, not strings.
+
+    Regression test for #3684: the anonymous any_of members did not inherit the parent
+    slot's ``inlined`` setting, so a member whose range was an identifier-bearing class
+    was reduced to ``{"type": "string"}`` instead of ``{"$ref": "#/$defs/ClassName"}``.
+    """
+    schema = """
+id: https://example.org/test_3684
+name: test_3684
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Any:
+    class_uri: linkml:Any
+  Catalogue:
+    attributes:
+      id:
+        identifier: true
+      title:
+  Dataset:
+    attributes:
+      id:
+        identifier: true
+      name:
+  Record:
+    tree_root: true
+    attributes:
+      primary_topic:
+        range: Any
+        required: true
+        inlined: true
+        any_of:
+          - range: Catalogue
+          - range: Dataset
+"""
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    primary_topic = generated_schema["$defs"]["Record"]["properties"]["primary_topic"]
+    refs = {member.get("$ref") for member in primary_topic["anyOf"]}
+    assert refs == {"#/$defs/Catalogue", "#/$defs/Dataset"}
+    assert all("type" not in member for member in primary_topic["anyOf"])
+
+
 def test_jsonschema_integration(kitchen_sink_path, input_path):
     """Integration test for JsonSchemaGenerator.
 
