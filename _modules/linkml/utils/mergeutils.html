@@ -541,6 +541,28 @@
 
 
 
+<span class="c1"># Fields that carry per-schema provenance rather than structural meaning. Two</span>
+<span class="c1"># element declarations that differ only in these fields describe the same</span>
+<span class="c1"># element re-exported from sibling schemas and should be merged silently.</span>
+<span class="n">_PROVENANCE_FIELDS</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;from_schema&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;imported_from&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;definition_uri&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_file&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_file_date&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_file_size&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_structurally_equal</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if two metamodel elements are equal ignoring provenance fields.&quot;&quot;&quot;</span>
+    <span class="n">a_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_PROVENANCE_FIELDS</span><span class="p">}</span>
+    <span class="n">b_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">asdict</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_PROVENANCE_FIELDS</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">a_dict</span> <span class="o">==</span> <span class="n">b_dict</span>
+
+
 <div class="viewcode-block" id="merge_dicts">
 <a class="viewcode-back" href="../../../code/utils.html#linkml.utils.mergeutils.merge_dicts">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">merge_dicts</span><span class="p">(</span>
@@ -552,6 +574,16 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span> <span class="o">!=</span> <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_structurally_equal</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
+                <span class="c1"># Same element redeclared in a sibling import; keep the existing</span>
+                <span class="c1"># target entry (with its original provenance) and skip overwriting.</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;Element &#39;</span><span class="si">%s</span><span class="s2">&#39; is redeclared identically in </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">; treating as a single element.&quot;</span><span class="p">,</span>
+                    <span class="n">k</span><span class="p">,</span>
+                    <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="p">,</span>
+                    <span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">continue</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Conflicting URIs (</span><span class="si">{</span><span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">from_schema</span><span class="si">}</span><span class="s2">) for item: </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="c1"># currently all imports closures are merged into main schema, EXCEPT</span>
