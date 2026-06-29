@@ -4,7 +4,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import click
 from jsonasobj2 import as_dict
@@ -58,9 +58,9 @@ _base_implied_patterns: dict[str, str] = {
 
 
 def _slot_examples_for_json_schema(
-    examples: list[Example],
+    examples: dict | Example | list[dict | Example] | None,
     *,
-    json_schema_type: str | None = None,
+    json_schema_type: list[str] | str | None = None,
     is_array_valued: bool,
 ) -> list:
     """Convert a list of LinkML :class:`~linkml_runtime.linkml_model.meta.Example` objects
@@ -132,12 +132,12 @@ def _slot_examples_for_json_schema(
     if not examples:
         return []
 
-    def _coerce_string_to_type(v: str, json_schema_type: str, is_array_valued: bool) -> Any:
+    def _coerce_string_to_type(v: str, json_schema_type: str | None, is_array_valued: bool) -> Any:
         """Coerce string to JSON type, falling back to the original on failure."""
 
         try:
             # Example.value is typed as Optional[str] in the LinkML metamodel. A list
-            # written in YAML as  value: ["a", "b"]  is coerced to its Python str()
+            # written in YAML as value: ["a", "b"] is coerced to its Python str()
             # representation "['a', 'b']" on load. Recover the original list with
             # ast.literal_eval when the string looks like a Python list literal.
             if is_array_valued and isinstance(v, str) and v.strip().startswith("["):
@@ -166,7 +166,7 @@ def _slot_examples_for_json_schema(
     merged_example = []
     direct_examples = []
 
-    for ex in examples:
+    for ex in cast(list[Example], examples):  # Element.__post_init__() ensures list
         if ex.object is not None:
             value = as_dict(ex.object)
         elif ex.value is not None:
@@ -553,7 +553,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         # Include class-level examples if present. Each Example on a class is an
         # independent full-instance example (same semantics as single-valued slots).
-        if getattr(cls, "examples", None):
+        if cls.examples:
             class_examples = _slot_examples_for_json_schema(cls.examples, is_array_valued=False)
             if class_examples:
                 class_subschema.add_keyword("examples", class_examples)
@@ -765,7 +765,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if slot.examples:
                 prop.add_keyword("examples", _slot_examples_for_json_schema(slot.examples, is_array_valued=True))
             return prop
-        slot_is_multivalued = "multivalued" in slot and slot.multivalued
+        slot_is_multivalued = cast(bool, "multivalued" in slot and slot.multivalued)
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
 
