@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 
 import pytest
@@ -526,6 +527,175 @@ def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
     assert _union_members(g, EX.Orphan) is None
 
 
+def test_abstract_class_with_no_children_emits_info(caplog):
+    """An abstract class with no children emits an info message about missing coverage.
+
+    When an abstract class has zero subclasses, no covering axiom can be
+    generated.  An info message alerts users that the class hierarchy is
+    incomplete — this is not a warning because abstract leaf classes are
+    a normal pattern in base schemas designed for downstream extension.
+
+    See: mgskjaeveland's review on linkml/linkml#3309.
+    See: matentzn's review on linkml/linkml#3309.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+
+    with caplog.at_level(logging.INFO, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # No covering axiom emitted
+    assert _union_members(g, EX.Orphan) is None
+
+    # An info message must be logged (not a warning)
+    assert any("has no children" in msg for msg in caplog.messages), (
+        "Expected an info message about abstract class with no children"
+    )
+    assert any("No covering axiom" in msg for msg in caplog.messages), (
+        "Info message should mention that no covering axiom will be generated"
+    )
+
+
+def test_no_children_info_suppressed_by_skip_flag(caplog):
+    """When --skip-abstract-class-as-unionof-subclasses is set, no info for zero children."""
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+
+    with caplog.at_level(logging.INFO, logger="linkml.generators.owlgen"):
+        _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=True)
+
+    assert not any("has no children" in msg for msg in caplog.messages)
+
+
+def test_abstract_class_with_single_child_emits_warning(caplog):
+    """An abstract class with one child still gets a covering axiom but emits a warning.
+
+    Per OWL 2 semantics, the covering axiom with a single child creates an
+    equivalence (Parent ≡ Child).  This is logically correct but may surprise
+    users who plan to extend the ontology later.  The generator should warn
+    and recommend ``--skip-abstract-class-as-unionof-subclasses``.
+
+    See: W3C OWL 2 Primer §4.2 — bidirectional rdfs:subClassOf = equivalence.
+    See: mgskjaeveland's review on linkml/linkml#3309.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("GrandParent")
+    sb.add_class("Parent", is_a="GrandParent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # Covering axiom IS still emitted (single child → equivalence is OWL-correct).
+    # With one child, _union_of returns the child URI directly (no owl:unionOf wrapper),
+    # so the covering axiom materialises as Parent rdfs:subClassOf Child.
+    # Combined with Child rdfs:subClassOf Parent (from is_a), this is the equivalence.
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) in g, (
+        "Covering axiom should produce Parent rdfs:subClassOf Child for single-child case"
+    )
+    assert (EX.Child, RDFS.subClassOf, EX.Parent) in g
+    assert (EX.Parent, RDFS.subClassOf, EX.GrandParent) in g
+
+    # But a warning must be logged
+    assert any("only 1 direct child" in msg for msg in caplog.messages), (
+        "Expected a warning about single-child covering axiom creating equivalence"
+    )
+    assert any("--skip-abstract-class-as-unionof-subclasses" in msg for msg in caplog.messages), (
+        "Warning should recommend the skip flag"
+    )
+
+
+def test_single_child_warning_suppressed_by_skip_flag(caplog):
+    """When --skip-abstract-class-as-unionof-subclasses is set, no warning is emitted.
+
+    The skip flag suppresses covering axioms entirely, so the single-child
+    equivalence case never arises.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Parent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=True)
+
+    # No covering axiom emitted
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) not in g
+    # No warning either
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
+def test_multiple_children_no_warning(caplog):
+    """An abstract class with 2+ children must NOT emit a warning.
+
+    The covering axiom is a proper union (not a degenerate equivalence),
+    so no warning is needed.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # Covering axiom emitted (proper union)
+    members = _union_members(g, EX.Animal)
+    assert members == {EX.Dog, EX.Cat}
+
+    # No warning about children count
+    assert not any("has no children" in msg for msg in caplog.messages)
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
+def test_non_abstract_class_no_warning(caplog):
+    """A non-abstract class must NOT emit covering axiom warnings.
+
+    Covering axioms only apply to abstract classes.  Concrete classes
+    should be silently skipped regardless of child count.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Parent")  # not abstract
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # No covering axiom for non-abstract class
+    assert _union_members(g, EX.Parent) is None
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) not in g
+
+    # No warning either
+    assert not any("has no children" in msg for msg in caplog.messages)
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
+def test_abstract_class_with_only_mixin_children_emits_info(caplog):
+    """An abstract class whose only children are via mixins (not is_a) gets the no-children info.
+
+    The covering axiom only considers direct is_a children (not mixins).
+    If an abstract class has mixin children but no is_a children, it should
+    log an info message about having no children for covering axiom purposes.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Base", abstract=True)
+    sb.add_class("MixinChild", mixins=["Base"])
+    sb.add_defaults()
+
+    with caplog.at_level(logging.INFO, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    assert _union_members(g, EX.Base) is None
+    assert any("has no children" in msg for msg in caplog.messages), (
+        "Abstract class with only mixin children should log info about no is_a children"
+    )
+
+
 @pytest.mark.parametrize("skip", [False, True])
 def test_union_of_axiom_only_covers_direct_children(skip: bool):
     """Union-of axiom lists only direct is_a children, not grandchildren.
@@ -824,3 +994,405 @@ def test_children_are_mutually_disjoint(
         members_node = list(g.objects(disjoint_nodes[0], OWL.members))[0]
         members = set(Collection(g, members_node))
         assert members == {EX[name] for name in child_names}
+
+
+# ---------------------------------------------------------------------------
+# --default-language tests
+# ---------------------------------------------------------------------------
+
+
+def _build_lang_test_schema():
+    """Build a small schema with classes, slots, and an enum for language-tag testing."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "vehicle_name",
+            range="string",
+            description="The vehicle name.",
+            title="Name",
+        )
+    )
+    sb.add_slot(
+        SlotDefinition(
+            "color",
+            range="ColorEnum",
+            description="Paint color.",
+        )
+    )
+    sb.add_class(
+        "Vehicle",
+        slots=["vehicle_name", "color"],
+        description="A road vehicle.",
+        title="Vehicle",
+    )
+    sb.add_enum(
+        "ColorEnum",
+        permissible_values=[
+            PermissibleValue(text="Red", description="A warm color."),
+            PermissibleValue(text="Blue", description="A cool color."),
+        ],
+    )
+    sb.add_defaults()
+    return sb.schema
+
+
+def test_default_language_tags_owl_labels():
+    """With --default-language en, rdfs:label and skos:definition get @en."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Class label
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle", lang="en") in labels
+
+    # Class description
+    defs = list(g.objects(EX.Vehicle, SKOS.definition))
+    assert Literal("A road vehicle.", lang="en") in defs
+
+    # Enum PV label — PVs are emitted as <{enum_uri}#{pv_text}>
+    pv_red = URIRef(str(EX.ColorEnum) + "#Red")
+    pv_labels = list(g.objects(pv_red, RDFS.label))
+    assert Literal("Red", lang="en") in pv_labels
+
+    # No plain (untagged) literals should be present for these predicates
+    for lit in labels + defs + pv_labels:
+        assert lit.language == "en", f"Expected @en, got lang={lit.language!r} on {lit!r}"
+
+
+def test_no_default_language_produces_plain_literals():
+    """Without --default-language, literals have no language tag (backward-compat)."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no language tag, got {lit.language!r}"
+
+
+def test_default_language_does_not_tag_uri_range_metaslots():
+    """Metaslots with non-string ranges must never produce language-tagged literals.
+
+    This is the *negative* counterpart to the positive tagging tests. It asserts
+    that language tags appear only on human-readable predicates (per RDF 1.1
+    Concepts §3.3 and the ``_LANGUAGE_TAGGABLE_RANGES`` allowlist), and never on:
+
+    - IRI-valued predicates (``owl:imports``, ``rdf:type``, ``rdfs:isDefinedBy``)
+    - The ``status`` metaslot (range ``uriorcurie``)
+    - Enum-ranged metaslots that land in ``add_metadata``'s catch-all branch
+      (e.g. ``pv_formula`` on permissible values).
+
+    A regression where any of these become ``rdf:langString`` would silently
+    break SHACL ``sh:in`` / OWL ``owl:oneOf`` matching downstream.
+    """
+    schema = _build_lang_test_schema()
+    # uriorcurie-ranged metaslots that should remain IRIs:
+    schema.id_prefixes = ["http://example.org/"]
+    schema.status = "release"
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="de",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Positive sanity check: string-ranged labels still get the @de tag.
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle", lang="de") in labels
+
+    # Strong negative: language tags appear ONLY on known human-readable
+    # predicates. Whitelist everything we expect to be tag-bearing; anything
+    # else carrying a language tag is a regression.
+    from rdflib.namespace import DCTERMS
+
+    # All known human-readable annotation predicates that owlgen may emit
+    # from string-ranged metaslots. Adding a new string metaslot to the
+    # linkml metamodel requires extending this allowlist (or proving the
+    # value is constraint data, not a label).
+    LANG_TAG_ALLOWED_PREDICATES = {
+        RDFS.label,
+        RDFS.comment,
+        SKOS.definition,
+        SKOS.prefLabel,
+        SKOS.altLabel,
+        SKOS.editorialNote,  # linkml ``notes`` metaslot
+        SKOS.note,
+        SKOS.example,
+        DCTERMS.title,
+        DCTERMS.description,
+    }
+    for s, p, o in g:
+        if isinstance(o, Literal) and o.language is not None:
+            assert p in LANG_TAG_ALLOWED_PREDICATES, (
+                f"Predicate {p!r} produced a language-tagged literal {o!r}; "
+                "only label/description-style predicates may carry @lang."
+            )
+
+    # And specifically: every emitted ``status`` (uriorcurie range) reaches the
+    # graph as a URIRef, not a Literal of any kind.
+    BIBO_STATUS = URIRef("http://purl.org/ontology/bibo/status")
+    for obj in g.objects(None, BIBO_STATUS):
+        assert isinstance(obj, URIRef), f"uriorcurie-ranged ``status`` metaslot must emit URIRef, got {obj!r}"
+
+
+def test_default_language_in_language_override():
+    """Element-level in_language overrides the generator default_language."""
+    schema = _build_lang_test_schema()
+    schema.classes["Vehicle"].in_language = "de"
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Vehicle class should use element-level "de", not default "en"
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle", lang="de") in labels
+    assert Literal("Vehicle", lang="en") not in labels
+
+    # ColorEnum should still use the default "en" (no override)
+    enum_labels = list(g.objects(EX.ColorEnum, RDFS.label))
+    assert Literal("ColorEnum", lang="en") in enum_labels
+
+
+def test_default_language_annotations_tagged():
+    """OWL annotations with string values are language-tagged."""
+    from linkml_runtime.linkml_model.meta import Annotation, Prefix
+
+    sb = SchemaBuilder()
+    sb.add_class("Widget", description="A widget.")
+    sb.add_defaults()
+    sb.schema.prefixes["skos"] = Prefix(
+        prefix_prefix="skos",
+        prefix_reference="http://www.w3.org/2004/02/skos/core#",
+    )
+    sb.schema.classes["Widget"].annotations["skos:altLabel"] = Annotation(tag="skos:altLabel", value="Gadget")
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    alt_labels = list(g.objects(EX.Widget, SKOS.altLabel))
+    assert Literal("Gadget", lang="en") in alt_labels
+
+
+def test_default_language_empty_string_treated_as_none():
+    """An empty string default_language is normalised to None (no tags)."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+def test_default_language_whitespace_only_treated_as_none():
+    """A whitespace-only default_language is normalised to None (no tags)."""
+    schema = _build_lang_test_schema()
+    owl = OwlSchemaGenerator(
+        schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="   ",
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+def test_default_language_bcp47_warning(caplog):
+    """A malformed BCP 47 tag logs a warning but still produces output."""
+    import logging
+
+    schema = _build_lang_test_schema()
+    # "toolongtag" passes rdflib's lax regex but fails strict BCP 47 (max 8 chars for subtag).
+    with caplog.at_level(logging.WARNING):
+        owl = OwlSchemaGenerator(
+            schema,
+            mergeimports=False,
+            metaclasses=False,
+            type_objects=False,
+            default_language="toolongtag",
+        ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Tag is still applied (warning, not error)
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert any(lit.language == "toolongtag" for lit in labels)
+    # Warning was emitted
+    assert any("not a well-formed BCP 47 tag" in rec.message for rec in caplog.records)
+
+
+def test_default_language_bcp47_valid_no_warning(caplog):
+    """A well-formed BCP 47 tag does not log any warning."""
+    import logging
+
+    schema = _build_lang_test_schema()
+    with caplog.at_level(logging.WARNING):
+        OwlSchemaGenerator(
+            schema,
+            mergeimports=False,
+            metaclasses=False,
+            type_objects=False,
+            default_language="en",
+        ).serialize()
+    assert not any("BCP 47" in rec.message for rec in caplog.records)
+
+
+def test_default_language_in_language_override_bcp47_warning(caplog):
+    """A malformed in_language value logs a warning."""
+    import logging
+
+    schema = _build_lang_test_schema()
+    # "toolongtag" passes rdflib but fails strict BCP 47.
+    schema.classes["Vehicle"].in_language = "toolongtag"
+    with caplog.at_level(logging.WARNING):
+        owl = OwlSchemaGenerator(
+            schema,
+            mergeimports=False,
+            metaclasses=False,
+            type_objects=False,
+            default_language="en",
+        ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    # Vehicle uses the (malformed) in_language, not the default
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert any(lit.language == "toolongtag" for lit in labels)
+    assert any("in_language" in rec.message and "toolongtag" in rec.message for rec in caplog.records)
+
+
+def test_default_language_does_not_tag_enum_ranged_metaslot_in_catchall_branch(monkeypatch):
+    """Direct regression test for PR #3449 review comment #2.
+
+    The ``else`` branch in :meth:`OwlSchemaGenerator.add_metadata` is reached
+    when a metaslot's range is neither a type, subset, nor class -- in
+    practice, an enum-ranged metaslot. The fix removes the unconditional
+    ``Literal(v, lang=lang)`` emission from that branch.
+
+    No metaslot in the *current* LinkML metamodel reaches this branch with
+    a non-``linkml:`` slot URI (``pv_formula``, ``obligation_level``,
+    ``alias_predicate`` are all either filtered by the ``linkml:`` guard
+    or nested inside class-ranged containers). To exercise the branch
+    directly, this test temporarily promotes ``pv_formula``'s slot URI to
+    a non-``linkml:`` value via ``monkeypatch``, then verifies the emitted
+    permissible-value identifier remains a plain ``xsd:string`` literal --
+    never ``rdf:langString`` -- even with ``--default-language en`` set.
+
+    Tagging this value would shift the datatype and silently break
+    downstream SHACL ``sh:in`` / OWL ``owl:oneOf`` matching (RDF 1.1
+    Concepts §3.3).
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("ColorEnum", permissible_values=[PermissibleValue(text="Red")])
+    sb.schema.enums["ColorEnum"].pv_formula = "CODE"
+    sb.add_defaults()
+
+    gen = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        default_language="en",
+    )
+    # Promote pv_formula's slot URI so it passes the ``linkml:`` guard in
+    # add_metadata and actually reaches the catch-all else branch.
+    pv_formula_slot = gen.metamodel_schemaview.get_slot("pv_formula")
+    monkeypatch.setattr(pv_formula_slot, "slot_uri", "https://example.org/pv_formula")
+
+    owl = gen.serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    pv_formula_objects = list(g.objects(None, URIRef("https://example.org/pv_formula")))
+    assert pv_formula_objects, (
+        "Test setup failure: pv_formula triple was not emitted -- the monkey-patch may have stopped working."
+    )
+    for obj in pv_formula_objects:
+        assert isinstance(obj, Literal), f"expected Literal, got {obj!r}"
+        assert obj.language is None, f"catch-all else branch language-tagged an enum-ranged metaslot value: {obj!r}"
+        assert str(obj) == "CODE"
+
+
+def test_default_language_bcp47_warning_is_deduplicated(caplog):
+    """Each distinct malformed tag warns at most once across the whole run.
+
+    Regression test for the original implementation, which re-validated on
+    every call to ``_resolve_language`` and emitted one warning per element
+    -- potentially hundreds per run. The shared :class:`LanguageTagResolver`
+    caches the default check (one warning at construction) and remembers
+    already-warned per-element ``in_language`` tags.
+    """
+    import logging
+
+    schema = _build_lang_test_schema()
+    # Stamp the same malformed in_language on multiple elements.
+    schema.classes["Vehicle"].in_language = "toolongtag"
+    schema.enums["ColorEnum"].in_language = "toolongtag"
+    schema.slots["vehicle_name"].in_language = "toolongtag"
+    schema.slots["color"].in_language = "toolongtag"
+
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.language_tags"):
+        OwlSchemaGenerator(
+            schema,
+            mergeimports=False,
+            metaclasses=False,
+            type_objects=False,
+            # Also stamp a malformed default to exercise the default branch.
+            default_language="anothertoolongone",
+        ).serialize()
+
+    in_language_warnings = [
+        rec for rec in caplog.records if "in_language" in rec.message and "toolongtag" in rec.message
+    ]
+    default_warnings = [
+        rec for rec in caplog.records if "default language" in rec.message and "anothertoolongone" in rec.message
+    ]
+    assert len(in_language_warnings) == 1, (
+        f"expected exactly 1 in_language warning for 'toolongtag', got {len(in_language_warnings)}"
+    )
+    assert len(default_warnings) == 1, f"expected exactly 1 default-language warning, got {len(default_warnings)}"
