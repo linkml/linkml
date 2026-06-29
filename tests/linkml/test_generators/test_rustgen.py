@@ -277,6 +277,215 @@ def test_rustgen_file_mode_generation(temp_dir):
     assert "pub fn register_pymodule" not in contents
 
 
+MERGE_SCHEMA = textwrap.dedent(
+    """
+    id: https://example.org/rustgen/merge
+    name: rustgen_merge_strategies
+    prefixes:
+      ex: https://example.org/rustgen/
+      linkml: https://w3id.org/linkml/
+    default_prefix: ex
+    default_range: string
+    imports:
+      - linkml:types
+
+    classes:
+      Entry:
+        attributes:
+          key:
+            identifier: true
+            range: string
+          value:
+            range: string
+
+      Holder:
+        annotations:
+          rust.linkml.io/generate/merge: true
+        attributes:
+          optional_mapping:
+            range: Entry
+            inlined: true
+            multivalued: true
+            required: false
+          required_mapping:
+            range: Entry
+            inlined: true
+            multivalued: true
+            required: true
+          optional_scalar:
+            range: string
+            required: false
+    """
+)
+
+
+def test_rustgen_merge_strategy_per_key_for_optional_maps(temp_dir):
+    """Optional map fields merge per-key, not whole-map overwrite.
+
+    A ``slot_usage``/mixin override of a map-valued slot (e.g. ``annotations``)
+    must fold keys together rather than replacing the inherited map wholesale.
+    Optional maps therefore use the ``option_map_overwrite`` strategy and the
+    generator must emit that helper.
+    """
+    schema_path = Path(temp_dir) / "rustgen_merge.yaml"
+    schema_path.write_text(MERGE_SCHEMA, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "merge.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # The per-key merge helper must be emitted.
+    assert "fn option_map_overwrite" in contents
+
+    # Optional map -> per-key merge.
+    assert re.search(
+        r"#\[merge\(strategy = option_map_overwrite\)\]\s*"
+        r"(?:#\[[^\]]*\]\s*)*pub optional_mapping:",
+        contents,
+    ), "optional map field should use per-key option_map_overwrite"
+
+    # Required map keeps the existing whole-map per-key overwrite strategy.
+    assert re.search(
+        r"#\[merge\(strategy = merge::hashmap::overwrite\)\]\s*"
+        r"(?:#\[[^\]]*\]\s*)*pub required_mapping:",
+        contents,
+    ), "required map field should keep merge::hashmap::overwrite"
+
+    # Optional scalar still overwrites unless None.
+    assert re.search(
+        r"#\[merge\(strategy = overwrite_except_none\)\]\s*"
+        r"(?:#\[[^\]]*\]\s*)*pub optional_scalar:",
+        contents,
+    ), "optional scalar should keep overwrite_except_none"
+
+    # The optional map must NOT fall back to whole-value overwrite.
+    optional_block = contents[: contents.index("pub optional_mapping:")].rsplit("#[merge(", 1)[-1]
+    assert "overwrite_except_none" not in optional_block, "optional map must not use overwrite_except_none"
+
+
+def test_rustgen_merge_strategy_cargo_check(temp_dir):
+    """The generated per-key merge helper compiles as a valid merge strategy."""
+    schema_path = Path(temp_dir) / "rustgen_merge_check.yaml"
+    schema_path.write_text(MERGE_SCHEMA, encoding="utf-8")
+
+    out_dir = Path(temp_dir) / "merge_check_rust"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    gen = RustGenerator(
+        str(schema_path),
+        mode="crate",
+        pyo3=False,
+        serde=True,
+        output=str(out_dir),
+    )
+    gen.serialize(force=True)
+
+    result = _cargo_check(out_dir, context="merge strategy schema")
+    if result.returncode != 0:
+        pytest.fail(
+            f"cargo check failed for merge strategy schema.\nstdout:\n{result.stdout}\n\nstderr:\n{result.stderr}\n"
+        )
+
+
+def test_rustgen_skip_serializing_if(temp_dir):
+    """Optional, list and mapping fields emit serde ``skip_serializing_if`` attributes.
+
+    This keeps generated JSON/YAML compact by omitting ``None`` options and
+    empty containers on serialization.
+    """
+    schema_yaml = textwrap.dedent(
+        """
+        id: https://example.org/rustgen/skip
+        name: rustgen_skip_serializing_if
+        prefixes:
+          ex: https://example.org/rustgen/
+          linkml: https://w3id.org/linkml/
+        default_prefix: ex
+        default_range: string
+        imports:
+          - linkml:types
+
+        classes:
+          MapEntry:
+            attributes:
+              identifier:
+                identifier: true
+                range: string
+              label:
+                range: string
+
+          SkipRoot:
+            attributes:
+              required_scalar:
+                range: string
+                required: true
+              optional_scalar:
+                range: string
+                required: false
+              required_list:
+                range: string
+                multivalued: true
+                required: true
+              mapping_values:
+                range: MapEntry
+                inlined: true
+                multivalued: true
+                required: true
+        """
+    )
+    schema_path = Path(temp_dir) / "rustgen_skip.yaml"
+    schema_path.write_text(schema_yaml, encoding="utf-8")
+
+    out_file = Path(temp_dir) / "skip.rs"
+    gen = RustGenerator(
+        str(schema_path),
+        mode="file",
+        pyo3=False,
+        serde=True,
+        output=str(out_file),
+    )
+    gen.serialize(force=True)
+
+    contents = out_file.read_text(encoding="utf-8")
+
+    # Optional scalar -> Option::is_none
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"Option::is_none"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub optional_scalar:",
+        contents,
+    ), "optional scalar should be skipped when None"
+
+    # Required list -> Vec::is_empty
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"Vec::is_empty"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub required_list:",
+        contents,
+    ), "list field should be skipped when empty"
+
+    # Mapping -> HashMap::is_empty
+    assert re.search(
+        r'skip_serializing_if\s*=\s*"HashMap::is_empty"[^)]*\)\)\]\s*'
+        r"(?:#\[[^\]]*\]\s*)*pub mapping_values:",
+        contents,
+    ), "mapping field should be skipped when empty"
+
+    # Required scalar must NOT get a skip attribute
+    assert re.search(
+        r"(?:#\[[^\]]*\]\s*)*pub required_scalar:",
+        contents,
+    )
+    required_block = contents[: contents.index("pub required_scalar:")].rsplit("\n\n", 1)[-1]
+    assert "skip_serializing_if" not in required_block, "required scalar must always serialize"
+
+
 def test_rustgen_dataframe_like_schema(temp_dir):
     schema_path = Path(__file__).parent / "input" / "rustgen_dataframe.yaml"
     out_dir = Path(temp_dir) / "rustgen_dataframe"
