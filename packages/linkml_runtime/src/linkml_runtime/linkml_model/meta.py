@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-02-18T21:04:52
+# Generation date: 2026-05-05T18:49:13
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -47,7 +47,7 @@ from .annotations import Annotation, AnnotationTag
 from .extensions import Extension, ExtensionTag
 from .units import UnitOfMeasure
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
@@ -1355,7 +1355,7 @@ class EnumBinding(YAMLRoot):
 @dataclass(repr=False)
 class MatchQuery(YAMLRoot):
     """
-    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
+    A query that is used on an enum expression to dynamically obtain a set of permissible values via a query that
     matches on properties of the external concepts.
     """
 
@@ -5078,14 +5078,14 @@ class ExtraSlotsExpression(YAMLRoot):
     class_model_uri: ClassVar[URIRef] = LINKML.ExtraSlotsExpression
 
     allowed: Optional[Union[bool, Bool]] = None
-    range_expression: Optional[Union[dict, AnonymousClassExpression]] = None
+    range_expression: Optional[Union[dict, AnonymousSlotExpression]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.allowed is not None and not isinstance(self.allowed, Bool):
             self.allowed = Bool(self.allowed)
 
-        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousClassExpression):
-            self.range_expression = AnonymousClassExpression(**as_dict(self.range_expression))
+        if self.range_expression is not None and not isinstance(self.range_expression, AnonymousSlotExpression):
+            self.range_expression = AnonymousSlotExpression(**as_dict(self.range_expression))
 
         super().__post_init__(**kwargs)
 
@@ -7488,4 +7488,13 @@ slots.permissible_value_mixins = Slot(
     model_uri=LINKML.permissible_value_mixins,
     domain=PermissibleValue,
     range=Optional[Union[Union[str, PermissibleValueText], list[Union[str, PermissibleValueText]]]],
+)
+
+slots.extra_slots_expression_range_expression = Slot(
+    uri=LINKML.range_expression,
+    name="extra_slots_expression_range_expression",
+    curie=LINKML.curie("range_expression"),
+    model_uri=LINKML.extra_slots_expression_range_expression,
+    domain=ExtraSlotsExpression,
+    range=Optional[Union[dict, AnonymousSlotExpression]],
 )

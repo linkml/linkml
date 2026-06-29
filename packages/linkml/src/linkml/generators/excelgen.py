@@ -1,3 +1,4 @@
+import hashlib
 import logging
 from dataclasses import dataclass
 from pathlib import Path
@@ -55,14 +56,21 @@ class ExcelGenerator(Generator):
         # Compute enum lookup before next inner loop
         enum_set = set(sv.all_enums(imports=self.mergeimports).keys())
 
+        used_titles: set[str] = set()
         for cls_name in classes:
-            workbook.create_sheet(cls_name)
+            title = self._safe_sheet_title(cls_name, used_titles)
+            if title != cls_name:
+                self.logger.warning(
+                    f"Class name '{cls_name}' exceeds Excel's 31-character sheet title limit; "
+                    f"using '{title}' as the worksheet name."
+                )
+            workbook.create_sheet(title)
 
             # Add columns to the worksheet for the current class
             # (call class_induced_slots, reuse for heading/enum validation)
             induced_slots = list(sv.class_induced_slots(cls_name, self.mergeimports))
             slot_names = [s.name for s in induced_slots]
-            self.add_columns_to_worksheet(workbook, cls_name, slot_names)
+            self.add_columns_to_worksheet(workbook, title, slot_names)
 
             # Add enum validation for columns with enum types
             for s in induced_slots:
@@ -77,7 +85,7 @@ class ExcelGenerator(Generator):
                     # including the separators is <= 255 characters
                     enum_length = len(dv_formula)
                     if enum_length <= 255:
-                        self.column_enum_validation(workbook, cls_name, s.name, dv_formula)
+                        self.column_enum_validation(workbook, title, s.name, dv_formula)
                     else:
                         self.logger.warning(
                             f"'{s.range}' has permissible values with total "
@@ -88,6 +96,31 @@ class ExcelGenerator(Generator):
         workbook.save(output_path)
         if self.split_workbook_by_class:
             self.logger.info(f"The Excel workbooks have been written to {output_path}")
+
+    @staticmethod
+    def _safe_sheet_title(cls_name: str, used: set) -> str:
+        """Return a valid Excel sheet title for *cls_name* (≤ 31 chars, unique).
+
+        Excel limits worksheet titles to 31 characters.  When *cls_name* is
+        longer, a deterministic 6-hex-char SHA-1 suffix is appended so the
+        title is still traceable to the class name.
+
+        :param cls_name: The LinkML class name.
+        :param used: Set of already-allocated titles; updated in place.
+        :return: A deterministic, collision-free sheet title ≤ 31 characters.
+        """
+        if len(cls_name) <= 31:
+            title = cls_name
+        else:
+            h = hashlib.sha1(cls_name.encode("utf-8")).hexdigest()[:6]
+            title = f"{cls_name[:24]}_{h}"  # 24 + 1 + 6 = 31
+        base, n = title, 1
+        while title in used:
+            suffix = f"~{n}"
+            title = base[: 31 - len(suffix)] + suffix
+            n += 1
+        used.add(title)
+        return title
 
     @staticmethod
     def add_columns_to_worksheet(workbook: Workbook, worksheet_name: str, sheet_headings: list[str]) -> None:

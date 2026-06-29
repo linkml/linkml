@@ -59,7 +59,7 @@ from rdflib import (
 from linkml_runtime.linkml_model.types import Boolean, Date, Double, Float, Integer, String, Time, Uriorcurie
 from linkml_runtime.utils.metamodelcore import Bool, URIorCURIE, XSDDate, XSDTime
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = "4.2.5"
 
 # Namespaces
@@ -8196,15 +8196,15 @@ class DrugToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
     class_name: ClassVar[str] = "drug to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.DrugToEntityAssociationMixin
 
-    subject: Union[str, NamedThingId] = None
+    subject: Union[str, DrugId] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
-        if not isinstance(self.subject, NamedThingId):
-            self.subject = NamedThingId(self.subject)
+        if not isinstance(self.subject, DrugId):
+            self.subject = DrugId(self.subject)
 
         if self._is_empty(self.predicate):
             self.MissingRequiredField("predicate")
@@ -8215,11 +8215,6 @@ class DrugToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
             self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
-
-        if self._is_empty(self.subject):
-            self.MissingRequiredField("subject")
-        if not isinstance(self.subject, DrugId):
-            self.subject = DrugId(self.subject)
 
         super().__post_init__(**kwargs)
 
@@ -8236,15 +8231,15 @@ class ChemicalToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
     class_name: ClassVar[str] = "chemical to entity association mixin"
     class_model_uri: ClassVar[URIRef] = BIOLINK.ChemicalToEntityAssociationMixin
 
-    subject: Union[str, NamedThingId] = None
+    subject: Union[dict, ChemicalEntityOrGeneOrGeneProduct] = None
     predicate: Union[str, PredicateType] = None
     object: Union[str, NamedThingId] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self._is_empty(self.subject):
             self.MissingRequiredField("subject")
-        if not isinstance(self.subject, NamedThingId):
-            self.subject = NamedThingId(self.subject)
+        if not isinstance(self.subject, ChemicalEntityOrGeneOrGeneProduct):
+            self.subject = ChemicalEntityOrGeneOrGeneProduct()
 
         if self._is_empty(self.predicate):
             self.MissingRequiredField("predicate")
@@ -8255,11 +8250,6 @@ class ChemicalToEntityAssociationMixin(ChemicalEntityToEntityAssociationMixin):
             self.MissingRequiredField("object")
         if not isinstance(self.object, NamedThingId):
             self.object = NamedThingId(self.object)
-
-        if self._is_empty(self.subject):
-            self.MissingRequiredField("subject")
-        if not isinstance(self.subject, ChemicalEntityOrGeneOrGeneProduct):
-            self.subject = ChemicalEntityOrGeneOrGeneProduct()
 
         super().__post_init__(**kwargs)
 

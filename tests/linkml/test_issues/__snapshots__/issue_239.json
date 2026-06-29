@@ -1,7 +1,7 @@
 {
     "$defs": {
         "C": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "id": {},
@@ -48,7 +48,7 @@
     "$id": "http://example.org/sample/types",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
-    "metamodel_version": "1.7.0",
+    "metamodel_version": "1.11.0",
     "title": "types",
     "type": "object",
     "version": null

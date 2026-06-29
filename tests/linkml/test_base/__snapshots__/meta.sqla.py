@@ -524,7 +524,7 @@ class EnumBinding(Base):
 
 class MatchQuery(Base):
     """
-    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that matches on properties of the external concepts.
+    A query that is used on an enum expression to dynamically obtain a set of permissible values via a query that matches on properties of the external concepts.
     """
     __tablename__ = 'match_query'
 
@@ -2287,7 +2287,7 @@ class Annotatable(Base):
 
 class UnitOfMeasure(Base):
     """
-    A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for  measuring other quantities the same kind (more generally of equivalent dimension).
+    A unit of measure, or unit, is a particular quantity value that has been chosen as a scale for measuring other quantities the same kind (more generally of equivalent dimension).
     """
     __tablename__ = 'UnitOfMeasure'
 

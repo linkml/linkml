@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 BASE <https://w3id.org/linkml/tests/kitchen_sink/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
@@ -233,7 +233,9 @@ core:Agent CLOSED {
 <FamilialRelationship> CLOSED {
     (  $<FamilialRelationship_tes> (  &<Relationship_tes> ;
           rdf:type [ <Relationship> ] ? ;
-          <cordialness> @linkml:String ? ;
+          <cordialness> [ <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt>
+             <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful>
+             <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ] ? ;
           <type> [ <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#SIBLING_OF>
              <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#PARENT_OF>
              <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF> ] ;

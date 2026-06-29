@@ -1,5 +1,5 @@
 # --- accessible_dna_region_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: accessible_dna_region
+# metamodel_version: 1.11.0# version: 4.2.5id: accessible_dna_region
 schema_generating: true
 description: A region (or regions) of a chromatinized genome that has been measured
   to be more accessible to an enzyme such as DNase-I or Tn5 Transpose
@@ -80,7 +80,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- activity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: activity
+# metamodel_version: 1.11.0# version: 4.2.5id: activity
 schema_generating: true
 description: An activity is something that occurs over a period of time and acts upon
   or with entities; it may include consuming, processing, transforming, modifying,
@@ -151,7 +151,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- agent_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: agent
+# metamodel_version: 1.11.0# version: 4.2.5id: agent
 schema_generating: true
 description: person, group, organization or project that provides a piece of information
   (i.e. a knowledge association)
@@ -239,7 +239,7 @@ fields:
     "surname, firstname initial."
   display_name: agent_name
 # --- anatomical_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: anatomical_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: anatomical_entity
 schema_generating: true
 description: A subcellular location, cell type or gross anatomical part
 display_name: anatomical entity
@@ -316,7 +316,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- anatomical_entity_to_anatomical_entity_ontogenic_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: anatomical_entity_to_anatomical_entity_ontogenic_association
+# metamodel_version: 1.11.0# version: 4.2.5id: anatomical_entity_to_anatomical_entity_ontogenic_association
 schema_generating: true
 description: A relationship between two anatomical entities where the relationship
   is ontogenic, i.e. the two entities are related by development. A number of different
@@ -518,7 +518,7 @@ fields:
     This is analogous to category for nodes.
   display_name: anatomical entity to anatomical entity ontogenic association_predicate
 # --- anatomical_entity_to_anatomical_entity_part_of_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: anatomical_entity_to_anatomical_entity_part_of_association
+# metamodel_version: 1.11.0# version: 4.2.5id: anatomical_entity_to_anatomical_entity_part_of_association
 schema_generating: true
 description: A relationship between two anatomical entities where the relationship
   is mereological, i.e the two entities are related by parthood. This includes relationships
@@ -721,7 +721,7 @@ fields:
     This is analogous to category for nodes.
   display_name: anatomical entity to anatomical entity part of association_predicate
 # --- article_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: article
+# metamodel_version: 1.11.0# version: 4.2.5id: article
 schema_generating: true
 description: a piece of writing on a particular topic presented as a stand-alone section
   of a larger publication
@@ -863,7 +863,7 @@ fields:
     purpose
   display_name: issue
 # --- association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: association
+# metamodel_version: 1.11.0# version: 4.2.5id: association
 schema_generating: true
 description: A typed association between two entities, supported by evidence
 display_name: association
@@ -1065,7 +1065,7 @@ fields:
   display_name: association_category
   cardinality: multi
 # --- attribute_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: attribute
+# metamodel_version: 1.11.0# version: 4.2.5id: attribute
 schema_generating: true
 description: A property or characteristic of an entity. For example, an apple may
   have properties such as color, shape, age, crispiness. An environmental sample may
@@ -1149,7 +1149,7 @@ fields:
     rules.
   display_name: iri
 # --- bacterium_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: bacterium
+# metamodel_version: 1.11.0# version: 4.2.5id: bacterium
 schema_generating: true
 description: A member of a group of unicellular microorganisms lacking a nuclear membrane,
   that reproduce by binary fission and are often motile.
@@ -1227,7 +1227,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- behavior_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: behavior
+# metamodel_version: 1.11.0# version: 4.2.5id: behavior
 schema_generating: true
 display_name: behavior
 document_category: behavior
@@ -1318,7 +1318,7 @@ fields:
   display_name: enabled by
   cardinality: multi
 # --- behavior_to_behavioral_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: behavior_to_behavioral_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: behavior_to_behavioral_feature_association
 schema_generating: true
 description: An association between an mixture behavior and a behavioral feature manifested
   by the individual exhibited or has exhibited the behavior.
@@ -1597,7 +1597,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- behavioral_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: behavioral_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: behavioral_exposure
 schema_generating: true
 description: A behavioral exposure is a factor relating to behavior impacting an individual.
 display_name: behavioral exposure
@@ -1682,7 +1682,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- behavioral_feature_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: behavioral_feature
+# metamodel_version: 1.11.0# version: 4.2.5id: behavioral_feature
 schema_generating: true
 description: A phenotypic feature which is behavioral in nature.
 display_name: behavioral feature
@@ -1759,7 +1759,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- biological_process_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: biological_process
+# metamodel_version: 1.11.0# version: 4.2.5id: biological_process
 schema_generating: true
 description: One or more causally connected executions of molecular functions
 display_name: biological process
@@ -1851,7 +1851,7 @@ fields:
   display_name: enabled by
   cardinality: multi
 # --- biological_process_or_activity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: biological_process_or_activity
+# metamodel_version: 1.11.0# version: 4.2.5id: biological_process_or_activity
 schema_generating: true
 description: Either an individual molecular activity, or a collection of causally
   connected molecular activities in a biological system.
@@ -1944,7 +1944,7 @@ fields:
   display_name: enabled by
   cardinality: multi
 # --- biological_sex_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: biological_sex
+# metamodel_version: 1.11.0# version: 4.2.5id: biological_sex
 schema_generating: true
 display_name: biological sex
 document_category: biological sex
@@ -2025,7 +2025,7 @@ fields:
     rules.
   display_name: iri
 # --- biotic_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: biotic_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: biotic_exposure
 schema_generating: true
 description: An external biotic exposure is an intake of (sometimes pathological)
   biological organisms (including viruses).
@@ -2111,7 +2111,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- book_chapter_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: book_chapter
+# metamodel_version: 1.11.0# version: 4.2.5id: book_chapter
 schema_generating: true
 display_name: book chapter
 document_category: book chapter
@@ -2246,7 +2246,7 @@ fields:
   description: chapter of a book
   display_name: chapter
 # --- book_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: book
+# metamodel_version: 1.11.0# version: 4.2.5id: book
 schema_generating: true
 description: This class may rarely be instantiated except if use cases of a given
   knowledge graph support its utility.
@@ -2368,7 +2368,7 @@ fields:
   display_name: book_type
   cardinality: multi
 # --- case_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: case
+# metamodel_version: 1.11.0# version: 4.2.5id: case
 schema_generating: true
 description: An individual (human) organism that has a patient role in some clinical
   context.
@@ -2446,7 +2446,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- case_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: case_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: case_to_phenotypic_feature_association
 schema_generating: true
 description: An association between a case (e.g. individual patient) and a phenotypic
   feature in which the individual has or has had the phenotype.
@@ -2727,7 +2727,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- causal_gene_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: causal_gene_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: causal_gene_to_disease_association
 schema_generating: true
 display_name: causal gene to disease association
 document_category: causal gene to disease association
@@ -3006,7 +3006,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: causal gene to disease association_object
 # --- cell_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cell
+# metamodel_version: 1.11.0# version: 4.2.5id: cell
 schema_generating: true
 display_name: cell
 document_category: cell
@@ -3082,7 +3082,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- cell_line_as_a_model_of_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cell_line_as_a_model_of_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: cell_line_as_a_model_of_disease_association
 schema_generating: true
 display_name: cell line as a model of disease association
 document_category: cell line as a model of disease association
@@ -3327,7 +3327,7 @@ fields:
     relationship expressed in an association took place.
   display_name: disease context qualifier
 # --- cell_line_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cell_line
+# metamodel_version: 1.11.0# version: 4.2.5id: cell_line
 schema_generating: true
 display_name: cell line
 document_category: cell line
@@ -3403,7 +3403,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- cell_line_to_disease_or_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cell_line_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: cell_line_to_disease_or_phenotypic_feature_association
 schema_generating: true
 description: An relationship between a cell line and a disease or a phenotype, where
   the cell line is derived from an individual with that disease or phenotype.
@@ -3606,7 +3606,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: cell line to disease or phenotypic feature association_subject
 # --- cellular_component_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cellular_component
+# metamodel_version: 1.11.0# version: 4.2.5id: cellular_component
 schema_generating: true
 description: A location in or around a cell
 display_name: cellular component
@@ -3683,7 +3683,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- cellular_organism_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cellular_organism
+# metamodel_version: 1.11.0# version: 4.2.5id: cellular_organism
 schema_generating: true
 description: ''
 display_name: cellular organism
@@ -3760,7 +3760,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- chemical_affects_gene_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_affects_gene_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_affects_gene_association
 schema_generating: true
 description: Describes an effect that a chemical has on a gene or gene product (e.g.
   an impact of on its abundance, activity,localization, processing, expression, etc.)
@@ -4052,7 +4052,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: chemical affects gene association_object
 # --- chemical_entity_assesses_named_thing_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_entity_assesses_named_thing_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_entity_assesses_named_thing_association
 schema_generating: true
 display_name: chemical entity assesses named thing association
 document_category: chemical entity assesses named thing association
@@ -4253,7 +4253,7 @@ fields:
     This is analogous to category for nodes.
   display_name: chemical entity assesses named thing association_predicate
 # --- chemical_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_entity
 schema_generating: true
 description: A chemical entity is a physical entity that pertains to chemistry or
   biochemistry.
@@ -4343,7 +4343,7 @@ fields:
   display_name: has chemical role
   cardinality: multi
 # --- chemical_entity_or_gene_or_gene_product_regulates_gene_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_entity_or_gene_or_gene_product_regulates_gene_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_entity_or_gene_or_gene_product_regulates_gene_association
 schema_generating: true
 description: A regulatory relationship between two genes
 display_name: chemical entity or gene or gene product regulates gene association
@@ -4550,7 +4550,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: chemical entity or gene or gene product regulates gene association_object
 # --- chemical_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_exposure
 schema_generating: true
 description: A chemical exposure is an intake of a particular chemical entity.
 display_name: chemical exposure
@@ -4635,7 +4635,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- chemical_gene_interaction_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_gene_interaction_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_gene_interaction_association
 schema_generating: true
 description: describes a physical interaction between a chemical entity and a gene
   or gene product. Any biological or chemical effect resulting from such an interaction
@@ -4885,7 +4885,7 @@ fields:
     This is analogous to category for nodes.
   display_name: chemical gene interaction association_predicate
 # --- chemical_mixture_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_mixture
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_mixture
 schema_generating: true
 description: A chemical mixture is a chemical entity composed of two or more molecular
   entities.
@@ -4993,7 +4993,7 @@ fields:
   display_name: routes of delivery
   cardinality: multi
 # --- chemical_or_drug_or_treatment_side_effect_disease_or_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_or_drug_or_treatment_side_effect_disease_or_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_or_drug_or_treatment_side_effect_disease_or_phenotypic_feature_association
 schema_generating: true
 description: This association defines a relationship between a chemical or treatment
   (or procedure) and a disease or phenotypic feature where the disesae or phenotypic
@@ -5247,7 +5247,7 @@ fields:
   display_name: chemical or drug or treatment side effect disease or phenotypic feature
     association_predicate
 # --- chemical_or_drug_or_treatment_to_disease_or_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_or_drug_or_treatment_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_or_drug_or_treatment_to_disease_or_phenotypic_feature_association
 schema_generating: true
 description: This association defines a relationship between a chemical or treatment
   (or procedure) and a disease or phenotypic feature where the disease or phenotypic
@@ -5499,7 +5499,7 @@ fields:
     relationship expressed in an association took place.
   display_name: disease context qualifier
 # --- chemical_role_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_role
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_role
 schema_generating: true
 description: A role played by the molecular entity or part thereof within a chemical
   context.
@@ -5582,7 +5582,7 @@ fields:
     rules.
   display_name: iri
 # --- chemical_to_chemical_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_to_chemical_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_to_chemical_association
 schema_generating: true
 description: A relationship between two chemical entities. This can encompass actual
   interactions as well as temporal causal edges, e.g. one chemical converted to another.
@@ -5784,7 +5784,7 @@ fields:
   description: the chemical element that is the target of the statement
   display_name: chemical to chemical association_object
 # --- chemical_to_chemical_derivation_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_to_chemical_derivation_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_to_chemical_derivation_association
 schema_generating: true
 description: 'A causal relationship between two chemical entities, where the subject
   represents the upstream entity and the object represents the downstream. For any
@@ -5993,7 +5993,7 @@ fields:
     This is analogous to category for nodes.
   display_name: chemical to chemical derivation association_predicate
 # --- chemical_to_disease_or_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_to_disease_or_phenotypic_feature_association
 schema_generating: true
 description: An interaction between a chemical entity and a phenotype or disease,
   where the presence of the chemical gives rise to or exacerbates the phenotype.
@@ -6195,7 +6195,7 @@ fields:
   description: the disease or phenotype that is affected by the chemical
   display_name: chemical to disease or phenotypic feature association_object
 # --- chemical_to_pathway_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chemical_to_pathway_association
+# metamodel_version: 1.11.0# version: 4.2.5id: chemical_to_pathway_association
 schema_generating: true
 description: An interaction between a chemical entity and a biological process or
   pathway.
@@ -6396,7 +6396,7 @@ fields:
   description: the pathway that is affected by the chemical
   display_name: chemical to pathway association_object
 # --- chi_squared_analysis_result_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: chi_squared_analysis_result
+# metamodel_version: 1.11.0# version: 4.2.5id: chi_squared_analysis_result
 schema_generating: true
 description: A result of a chi squared analysis.
 display_name: chi squared analysis result
@@ -6475,7 +6475,7 @@ fields:
     edges
   display_name: creation date
 # --- clinical_attribute_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_attribute
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_attribute
 schema_generating: true
 description: Attributes relating to a clinical manifestation
 display_name: clinical attribute
@@ -6557,7 +6557,7 @@ fields:
     rules.
   display_name: iri
 # --- clinical_course_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_course
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_course
 schema_generating: true
 description: The course a disease typically takes from its onset, progression in time,
   and eventual resolution or death of the affected individual
@@ -6640,7 +6640,7 @@ fields:
     rules.
   display_name: iri
 # --- clinical_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_entity
 schema_generating: true
 description: Any entity or process that exists in the clinical domain and outside
   the biological realm. Diseases are placed under biological entities
@@ -6710,7 +6710,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- clinical_finding_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_finding
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_finding
 schema_generating: true
 description: this category is currently considered broad enough to tag clinical lab
   measurements and other biological attributes taken as 'clinical traits' with some
@@ -6789,7 +6789,7 @@ fields:
   display_name: clinical finding_has attribute
   cardinality: multi
 # --- clinical_intervention_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_intervention
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_intervention
 schema_generating: true
 display_name: clinical intervention
 document_category: clinical intervention
@@ -6857,7 +6857,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- clinical_measurement_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_measurement
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_measurement
 schema_generating: true
 description: A clinical measurement is a special kind of attribute which results from
   a laboratory observation from a subject individual or sample. Measurements can be
@@ -6941,7 +6941,7 @@ fields:
   description: connects an attribute to a class that describes it
   display_name: clinical measurement_has attribute type
 # --- clinical_modifier_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_modifier
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_modifier
 schema_generating: true
 description: Used to characterize and specify the phenotypic abnormalities defined
   in the phenotypic abnormality sub-ontology, with respect to severity, laterality,
@@ -7025,7 +7025,7 @@ fields:
     rules.
   display_name: iri
 # --- clinical_trial_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: clinical_trial
+# metamodel_version: 1.11.0# version: 4.2.5id: clinical_trial
 schema_generating: true
 display_name: clinical trial
 document_category: clinical trial
@@ -7093,7 +7093,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- coding_sequence_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: coding_sequence
+# metamodel_version: 1.11.0# version: 4.2.5id: coding_sequence
 schema_generating: true
 display_name: coding sequence
 document_category: coding sequence
@@ -7172,7 +7172,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- cohort_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: cohort
+# metamodel_version: 1.11.0# version: 4.2.5id: cohort
 schema_generating: true
 description: A group of people banded together or treated as a group who share common
   characteristics. A cohort 'study' is a particular form of longitudinal study that
@@ -7251,7 +7251,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- common_data_element_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: common_data_element
+# metamodel_version: 1.11.0# version: 4.2.5id: common_data_element
 schema_generating: true
 description: A Common Data Element (CDE) is a standardized, precisely defined question,
   paired with a set of allowable responses, used systematically across different sites,
@@ -7333,7 +7333,7 @@ fields:
     edges
   display_name: creation date
 # --- complex_chemical_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: complex_chemical_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: complex_chemical_exposure
 schema_generating: true
 description: A complex chemical exposure is an intake of a chemical mixture (e.g.
   gasoline), other than a drug.
@@ -7416,7 +7416,7 @@ fields:
     rules.
   display_name: iri
 # --- complex_molecular_mixture_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: complex_molecular_mixture
+# metamodel_version: 1.11.0# version: 4.2.5id: complex_molecular_mixture
 schema_generating: true
 description: A complex molecular mixture is a chemical mixture composed of two or
   more molecular entities with unknown concentration and stoichiometry.
@@ -7524,7 +7524,7 @@ fields:
   display_name: routes of delivery
   cardinality: multi
 # --- concept_count_analysis_result_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: concept_count_analysis_result
+# metamodel_version: 1.11.0# version: 4.2.5id: concept_count_analysis_result
 schema_generating: true
 description: A result of a concept count analysis.
 display_name: concept count analysis result
@@ -7603,7 +7603,7 @@ fields:
     edges
   display_name: creation date
 # --- confidence_level_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: confidence_level
+# metamodel_version: 1.11.0# version: 4.2.5id: confidence_level
 schema_generating: true
 description: Level of confidence in a statement
 display_name: confidence level
@@ -7682,7 +7682,7 @@ fields:
     edges
   display_name: creation date
 # --- contributor_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: contributor_association
+# metamodel_version: 1.11.0# version: 4.2.5id: contributor_association
 schema_generating: true
 description: Any association between an entity (such as a publication) and various
   agents that contribute to its realisation
@@ -7884,7 +7884,7 @@ fields:
   display_name: contributor association_qualifiers
   cardinality: multi
 # --- correlated_gene_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: correlated_gene_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: correlated_gene_to_disease_association
 schema_generating: true
 display_name: correlated gene to disease association
 document_category: correlated gene to disease association
@@ -8163,7 +8163,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: correlated gene to disease association_object
 # --- dataset_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: dataset
+# metamodel_version: 1.11.0# version: 4.2.5id: dataset
 schema_generating: true
 description: an item that refers to a collection of data from a data source.
 display_name: dataset
@@ -8242,7 +8242,7 @@ fields:
     edges
   display_name: creation date
 # --- dataset_distribution_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: dataset_distribution
+# metamodel_version: 1.11.0# version: 4.2.5id: dataset_distribution
 schema_generating: true
 description: an item that holds distribution level information about a dataset.
 display_name: dataset distribution
@@ -8323,7 +8323,7 @@ fields:
 - id: distribution_download_url
   display_name: distribution download url
 # --- dataset_summary_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: dataset_summary
+# metamodel_version: 1.11.0# version: 4.2.5id: dataset_summary
 schema_generating: true
 description: an item that holds summary level information about a dataset.
 display_name: dataset summary
@@ -8406,7 +8406,7 @@ fields:
 - id: source_logo
   display_name: source logo
 # --- dataset_version_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: dataset_version
+# metamodel_version: 1.11.0# version: 4.2.5id: dataset_version
 schema_generating: true
 description: an item that holds version level information about a dataset.
 display_name: dataset version
@@ -8491,7 +8491,7 @@ fields:
 - id: has_distribution
   display_name: has distribution
 # --- device_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: device
+# metamodel_version: 1.11.0# version: 4.2.5id: device
 schema_generating: true
 description: A thing made or adapted for a particular purpose, especially a piece
   of mechanical or electronic equipment
@@ -8561,7 +8561,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- diagnostic_aid_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: diagnostic_aid
+# metamodel_version: 1.11.0# version: 4.2.5id: diagnostic_aid
 schema_generating: true
 description: A device or substance used to help diagnose disease or injury
 display_name: diagnostic aid
@@ -8630,7 +8630,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- disease_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease
+# metamodel_version: 1.11.0# version: 4.2.5id: disease
 schema_generating: true
 description: A disorder of structure or function, especially one that produces specific
   signs, phenotypes or symptoms or that affects a specific location and is not simply
@@ -8710,7 +8710,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- disease_or_phenotypic_feature_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease_or_phenotypic_feature
+# metamodel_version: 1.11.0# version: 4.2.5id: disease_or_phenotypic_feature
 schema_generating: true
 description: Either one of a disease or an individual phenotypic feature. Some knowledge
   resources such as Monarch treat these as distinct, others such as MESH conflate.  Please
@@ -8791,7 +8791,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- disease_or_phenotypic_feature_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease_or_phenotypic_feature_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: disease_or_phenotypic_feature_exposure
 schema_generating: true
 description: A disease or phenotypic feature state, when viewed as an exposure, represents
   an precondition, leading to or influencing an outcome, e.g. HIV predisposing an
@@ -8879,7 +8879,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- disease_or_phenotypic_feature_to_genetic_inheritance_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease_or_phenotypic_feature_to_genetic_inheritance_association
+# metamodel_version: 1.11.0# version: 4.2.5id: disease_or_phenotypic_feature_to_genetic_inheritance_association
 schema_generating: true
 description: An association between either a disease or a phenotypic feature and its
   mode of (genetic) inheritance.
@@ -9082,7 +9082,7 @@ fields:
     feature.
   display_name: disease or phenotypic feature to genetic inheritance association_object
 # --- disease_or_phenotypic_feature_to_location_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease_or_phenotypic_feature_to_location_association
+# metamodel_version: 1.11.0# version: 4.2.5id: disease_or_phenotypic_feature_to_location_association
 schema_generating: true
 description: An association between either a disease or a phenotypic feature and an
   anatomical entity, where the disease/feature manifests in that site.
@@ -9284,7 +9284,7 @@ fields:
   description: anatomical entity in which the disease or feature is found.
   display_name: disease or phenotypic feature to location association_object
 # --- disease_to_exposure_event_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease_to_exposure_event_association
+# metamodel_version: 1.11.0# version: 4.2.5id: disease_to_exposure_event_association
 schema_generating: true
 description: An association between an exposure event and a disease.
 display_name: disease to exposure event association
@@ -9486,7 +9486,7 @@ fields:
   display_name: association_category
   cardinality: multi
 # --- disease_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: disease_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: disease_to_phenotypic_feature_association
 schema_generating: true
 description: An association between a disease and a phenotypic feature in which the
   phenotypic feature is associated with the disease in some way.
@@ -9771,7 +9771,7 @@ fields:
     or sub-cellular location).
   display_name: anatomical context qualifier
 # --- drug_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: drug
+# metamodel_version: 1.11.0# version: 4.2.5id: drug
 schema_generating: true
 description: A substance intended for use in the diagnosis, cure, mitigation, treatment,
   or prevention of disease
@@ -9879,7 +9879,7 @@ fields:
   display_name: routes of delivery
   cardinality: multi
 # --- drug_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: drug_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: drug_exposure
 schema_generating: true
 description: A drug exposure is an intake of a particular drug.
 display_name: drug exposure
@@ -9964,7 +9964,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- drug_label_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: drug_label
+# metamodel_version: 1.11.0# version: 4.2.5id: drug_label
 schema_generating: true
 description: a document accompanying a drug or its container that provides written,
   printed or graphic information about the drug, including drug contents, specific
@@ -10092,7 +10092,7 @@ fields:
     as an acceptable alias for the node property 'name' (just in case).
   display_name: publication_name
 # --- drug_to_gene_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: drug_to_gene_association
+# metamodel_version: 1.11.0# version: 4.2.5id: drug_to_gene_association
 schema_generating: true
 description: An interaction between a drug and a gene or gene product.
 display_name: drug to gene association
@@ -10293,7 +10293,7 @@ fields:
   description: the gene or gene product that is affected by the drug
   display_name: drug to gene association_object
 # --- drug_to_gene_interaction_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: drug_to_gene_interaction_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: drug_to_gene_interaction_exposure
 schema_generating: true
 description: drug to gene interaction exposure is a drug exposure is where the interactions
   of the drug with specific genes are known to constitute an 'exposure' to the organism,
@@ -10384,7 +10384,7 @@ fields:
   display_name: has gene or gene product
   cardinality: multi
 # --- druggable_gene_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: druggable_gene_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: druggable_gene_to_disease_association
 schema_generating: true
 display_name: druggable gene to disease association
 document_category: druggable gene to disease association
@@ -10665,7 +10665,7 @@ fields:
   display_name: druggable gene to disease association_has evidence
   cardinality: multi
 # --- entity_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: entity_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: entity_to_disease_association
 schema_generating: true
 display_name: entity to disease association
 document_category: entity to disease association
@@ -10871,7 +10871,7 @@ fields:
 - id: max_research_phase
   display_name: max research phase
 # --- entity_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: entity_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: entity_to_phenotypic_feature_association
 schema_generating: true
 display_name: entity to phenotypic feature association
 document_category: entity to phenotypic feature association
@@ -11077,7 +11077,7 @@ fields:
 - id: max_research_phase
   display_name: max research phase
 # --- environmental_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: environmental_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: environmental_exposure
 schema_generating: true
 description: A environmental exposure is a factor relating to abiotic processes in
   the environment including sunlight (UV-B), atmospheric (heat, cold, general pollution)
@@ -11164,7 +11164,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- environmental_feature_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: environmental_feature
+# metamodel_version: 1.11.0# version: 4.2.5id: environmental_feature
 schema_generating: true
 display_name: environmental feature
 document_category: environmental feature
@@ -11232,7 +11232,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- environmental_food_contaminant_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: environmental_food_contaminant
+# metamodel_version: 1.11.0# version: 4.2.5id: environmental_food_contaminant
 schema_generating: true
 display_name: environmental food contaminant
 document_category: environmental food contaminant
@@ -11320,7 +11320,7 @@ fields:
   display_name: has chemical role
   cardinality: multi
 # --- environmental_process_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: environmental_process
+# metamodel_version: 1.11.0# version: 4.2.5id: environmental_process
 schema_generating: true
 display_name: environmental process
 document_category: environmental process
@@ -11388,7 +11388,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- event_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: event
+# metamodel_version: 1.11.0# version: 4.2.5id: event
 schema_generating: true
 description: Something that happens at a given place and time.
 display_name: event
@@ -11457,7 +11457,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- evidence_type_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: evidence_type
+# metamodel_version: 1.11.0# version: 4.2.5id: evidence_type
 schema_generating: true
 description: Class of evidence that supports an association
 display_name: evidence type
@@ -11536,7 +11536,7 @@ fields:
     edges
   display_name: creation date
 # --- exon_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: exon
+# metamodel_version: 1.11.0# version: 4.2.5id: exon
 schema_generating: true
 description: A region of the transcript sequence within a gene which is not removed
   from the primary RNA transcript by RNA splicing.
@@ -11614,7 +11614,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- exon_to_transcript_relationship_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: exon_to_transcript_relationship
+# metamodel_version: 1.11.0# version: 4.2.5id: exon_to_transcript_relationship
 schema_generating: true
 description: A transcript is formed from multiple exons
 display_name: exon to transcript relationship
@@ -11816,7 +11816,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: exon to transcript relationship_object
 # --- exposure_event_to_outcome_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: exposure_event_to_outcome_association
+# metamodel_version: 1.11.0# version: 4.2.5id: exposure_event_to_outcome_association
 schema_generating: true
 description: An association between an exposure event and an outcome.
 display_name: exposure event to outcome association
@@ -12026,7 +12026,7 @@ fields:
     for time intervales, use temporal interval qualifier.
   display_name: temporal context qualifier
 # --- exposure_event_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: exposure_event_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: exposure_event_to_phenotypic_feature_association
 schema_generating: true
 description: Any association between an environment and a phenotypic feature, where
   being in the environment influences the phenotype.
@@ -12307,7 +12307,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- food_additive_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: food_additive
+# metamodel_version: 1.11.0# version: 4.2.5id: food_additive
 schema_generating: true
 display_name: food additive
 document_category: food additive
@@ -12395,7 +12395,7 @@ fields:
   display_name: has chemical role
   cardinality: multi
 # --- food_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: food
+# metamodel_version: 1.11.0# version: 4.2.5id: food
 schema_generating: true
 description: A substance consumed by a living organism as a source of nutrition
 display_name: food
@@ -12502,7 +12502,7 @@ fields:
   display_name: routes of delivery
   cardinality: multi
 # --- functional_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: functional_association
+# metamodel_version: 1.11.0# version: 4.2.5id: functional_association
 schema_generating: true
 description: An association between a macromolecular machine mixin (gene, gene product
   or complex of gene products) and either a molecular activity, a biological process
@@ -12706,7 +12706,7 @@ fields:
     product
   display_name: functional association_object
 # --- fungus_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: fungus
+# metamodel_version: 1.11.0# version: 4.2.5id: fungus
 schema_generating: true
 description: A kingdom of eukaryotic, heterotrophic organisms that live as saprobes
   or parasites, including mushrooms, yeasts, smuts, molds, etc. They reproduce either
@@ -12786,7 +12786,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- gene_affects_chemical_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_affects_chemical_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_affects_chemical_association
 schema_generating: true
 description: Describes an effect that a gene or gene product has on a chemical entity
   (e.g. an impact of on its abundance, activity, localization, processing, transport,
@@ -13086,7 +13086,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: gene affects chemical association_object
 # --- gene_as_a_model_of_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_as_a_model_of_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_as_a_model_of_disease_association
 schema_generating: true
 display_name: gene as a model of disease association
 document_category: gene as a model of disease association
@@ -13367,7 +13367,7 @@ fields:
     core features of the disease.
   display_name: gene as a model of disease association_subject
 # --- gene_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene
+# metamodel_version: 1.11.0# version: 4.2.5id: gene
 schema_generating: true
 description: A region (or regions) that includes all of the sequence elements necessary
   to encode a functional transcript. A gene locus may include regulatory regions,
@@ -13452,7 +13452,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- gene_family_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_family
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_family
 schema_generating: true
 description: any grouping of multiple genes or gene products related by common descent
 display_name: gene family
@@ -13533,7 +13533,7 @@ fields:
   display_name: has gene or gene product
   cardinality: multi
 # --- gene_has_variant_that_contributes_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_has_variant_that_contributes_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_has_variant_that_contributes_to_disease_association
 schema_generating: true
 display_name: gene has variant that contributes to disease association
 document_category: gene has variant that contributes to disease association
@@ -13822,7 +13822,7 @@ fields:
     This is analogous to category for nodes.
   display_name: gene has variant that contributes to disease association_predicate
 # --- gene_regulates_gene_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_regulates_gene_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_regulates_gene_association
 schema_generating: true
 description: Describes a regulatory relationship between two genes or gene products.
 display_name: gene regulates gene association
@@ -14047,7 +14047,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: gene regulates gene association_object
 # --- gene_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_disease_association
 schema_generating: true
 display_name: gene to disease association
 document_category: gene to disease association
@@ -14327,7 +14327,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: gene to disease association_object
 # --- gene_to_disease_or_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_disease_or_phenotypic_feature_association
 schema_generating: true
 display_name: gene to disease or phenotypic feature association
 document_category: gene to disease or phenotypic feature association
@@ -14606,7 +14606,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- gene_to_expression_site_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_expression_site_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_expression_site_association
 schema_generating: true
 description: An association between a gene and a gene expression site, possibly qualified
   by stage/timing info.
@@ -14813,7 +14813,7 @@ fields:
   description: expression relationship
   display_name: gene to expression site association_predicate
 # --- gene_to_gene_coexpression_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_gene_coexpression_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_gene_coexpression_association
 schema_generating: true
 description: Indicates that two genes are co-expressed, generally under the same conditions.
 display_name: gene to gene coexpression association
@@ -15032,7 +15032,7 @@ fields:
     use XXX.
   display_name: phenotypic state
 # --- gene_to_gene_family_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_gene_family_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_gene_family_association
 schema_generating: true
 description: Set membership of a gene in a family of genes related by common evolutionary
   ancestry usually inferred by sequence comparisons. The genes in a given family generally
@@ -15236,7 +15236,7 @@ fields:
   description: membership of the gene in the given gene family.
   display_name: gene to gene family association_predicate
 # --- gene_to_gene_homology_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_gene_homology_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_gene_homology_association
 schema_generating: true
 description: A homology association between two genes. May be orthology (in which
   case the species of subject and object should differ) or paralogy (in which case
@@ -15439,7 +15439,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: gene to gene homology association_object
 # --- gene_to_gene_product_relationship_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_gene_product_relationship
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_gene_product_relationship
 schema_generating: true
 description: A gene is transcribed and potentially translated to a gene product
 display_name: gene to gene product relationship
@@ -15641,7 +15641,7 @@ fields:
     This is analogous to category for nodes.
   display_name: gene to gene product relationship_predicate
 # --- gene_to_go_term_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_go_term_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_go_term_association
 schema_generating: true
 display_name: gene to go term association
 document_category: gene to go term association
@@ -15842,7 +15842,7 @@ fields:
     product
   display_name: gene to go term association_object
 # --- gene_to_pathway_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_pathway_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_pathway_association
 schema_generating: true
 description: An interaction between a gene or gene product and a biological process
   or pathway.
@@ -16044,7 +16044,7 @@ fields:
   description: the pathway that includes or is affected by the gene or gene product
   display_name: gene to pathway association_object
 # --- gene_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gene_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: gene_to_phenotypic_feature_association
 schema_generating: true
 display_name: gene to phenotypic feature association
 document_category: gene to phenotypic feature association
@@ -16323,7 +16323,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: gene to phenotypic feature association_object
 # --- genetic_inheritance_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genetic_inheritance
+# metamodel_version: 1.11.0# version: 4.2.5id: genetic_inheritance
 schema_generating: true
 description: The pattern or 'mode' in which a particular genetic trait or disorder
   is passed from one generation to the next, e.g. autosomal dominant, autosomal recessive,
@@ -16402,7 +16402,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- genome_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genome
+# metamodel_version: 1.11.0# version: 4.2.5id: genome
 schema_generating: true
 description: A genome is the sum of genetic material within a cell or virion.
 display_name: genome
@@ -16482,7 +16482,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- genomic_background_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genomic_background_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: genomic_background_exposure
 schema_generating: true
 description: A genomic background exposure is where an individual's specific genomic
   background of genes, sequence variants or other pre-existing genomic conditions
@@ -16584,7 +16584,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- genomic_sequence_localization_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genomic_sequence_localization
+# metamodel_version: 1.11.0# version: 4.2.5id: genomic_sequence_localization
 schema_generating: true
 description: A relationship between a sequence feature and a nucleic acid entity it
   is localized to. The reference entity may be a chromosome, chromosome region or
@@ -16809,7 +16809,7 @@ fields:
     This is analogous to category for nodes.
   display_name: genomic sequence localization_predicate
 # --- genotype_as_a_model_of_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype_as_a_model_of_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype_as_a_model_of_disease_association
 schema_generating: true
 display_name: genotype as a model of disease association
 document_category: genotype as a model of disease association
@@ -17051,7 +17051,7 @@ fields:
   description: A genotype that has a role in modeling the disease.
   display_name: genotype as a model of disease association_subject
 # --- genotype_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype
 schema_generating: true
 description: An information content entity that describes a genome by specifying the
   total variation in genomic sequence and/or gene expression, relative to some established
@@ -17135,7 +17135,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- genotype_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype_to_disease_association
 schema_generating: true
 display_name: genotype to disease association
 document_category: genotype to disease association
@@ -17377,7 +17377,7 @@ fields:
     relationship expressed in an association took place.
   display_name: disease context qualifier
 # --- genotype_to_gene_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype_to_gene_association
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype_to_gene_association
 schema_generating: true
 description: Any association between a genotype and a gene. The genotype have have
   multiple variants in that gene or a single one. There is no assumption of cardinality
@@ -17577,7 +17577,7 @@ fields:
   description: gene implicated in genotype
   display_name: genotype to gene association_object
 # --- genotype_to_genotype_part_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype_to_genotype_part_association
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype_to_genotype_part_association
 schema_generating: true
 description: Any association between one genotype and a genotypic entity that is a
   sub-component of it
@@ -17778,7 +17778,7 @@ fields:
   description: child genotype
   display_name: genotype to genotype part association_object
 # --- genotype_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype_to_phenotypic_feature_association
 schema_generating: true
 description: Any association between one genotype and a phenotypic feature, where
   having the genotype confers the phenotype, either in isolation or through environment
@@ -18058,7 +18058,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- genotype_to_variant_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotype_to_variant_association
+# metamodel_version: 1.11.0# version: 4.2.5id: genotype_to_variant_association
 schema_generating: true
 description: Any association between a genotype and a sequence variant.
 display_name: genotype to variant association
@@ -18257,7 +18257,7 @@ fields:
   description: gene implicated in genotype
   display_name: genotype to variant association_object
 # --- genotypic_sex_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: genotypic_sex
+# metamodel_version: 1.11.0# version: 4.2.5id: genotypic_sex
 schema_generating: true
 description: An attribute corresponding to the genotypic sex of the individual, based
   upon genotypic composition of sex chromosomes.
@@ -18340,7 +18340,7 @@ fields:
     rules.
   display_name: iri
 # --- geographic_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: geographic_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: geographic_exposure
 schema_generating: true
 description: A geographic exposure is a factor relating to geographic proximity to
   some impactful entity.
@@ -18426,7 +18426,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- geographic_location_at_time_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: geographic_location_at_time
+# metamodel_version: 1.11.0# version: 4.2.5id: geographic_location_at_time
 schema_generating: true
 description: a location that can be described in lat/long coordinates, for a particular
   time
@@ -18505,7 +18505,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- geographic_location_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: geographic_location
+# metamodel_version: 1.11.0# version: 4.2.5id: geographic_location
 schema_generating: true
 description: a location that can be described in lat/long coordinates
 display_name: geographic location
@@ -18580,7 +18580,7 @@ fields:
   description: longitude
   display_name: longitude
 # --- gross_anatomical_structure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: gross_anatomical_structure
+# metamodel_version: 1.11.0# version: 4.2.5id: gross_anatomical_structure
 schema_generating: true
 display_name: gross anatomical structure
 document_category: gross anatomical structure
@@ -18656,7 +18656,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- haplotype_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: haplotype
+# metamodel_version: 1.11.0# version: 4.2.5id: haplotype
 schema_generating: true
 description: A set of zero or more Alleles on a single instance of a Sequence[VMC]
 display_name: haplotype
@@ -18736,7 +18736,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- hospitalization_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: hospitalization
+# metamodel_version: 1.11.0# version: 4.2.5id: hospitalization
 schema_generating: true
 display_name: hospitalization
 document_category: hospitalization
@@ -18804,7 +18804,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- human_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: human
+# metamodel_version: 1.11.0# version: 4.2.5id: human
 schema_generating: true
 description: A member of the the species Homo sapiens.
 display_name: human
@@ -18881,7 +18881,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- individual_organism_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: individual_organism
+# metamodel_version: 1.11.0# version: 4.2.5id: individual_organism
 schema_generating: true
 description: 'An instance of an organism. For example, Richard Nixon, Charles Darwin,
   my pet cat. Example ID: ORCID:0000-0002-5355-2576'
@@ -18959,7 +18959,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- information_content_entity_to_named_thing_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: information_content_entity_to_named_thing_association
+# metamodel_version: 1.11.0# version: 4.2.5id: information_content_entity_to_named_thing_association
 schema_generating: true
 description: association between a named thing and a information content entity where
   the specific context of the relationship between that named thing and the publication
@@ -19168,7 +19168,7 @@ fields:
     This is analogous to category for nodes.
   display_name: information content entity to named thing association_predicate
 # --- invertebrate_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: invertebrate
+# metamodel_version: 1.11.0# version: 4.2.5id: invertebrate
 schema_generating: true
 description: An animal lacking a vertebral column. This group consists of 98% of all
   animal species.
@@ -19246,7 +19246,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- journal_article_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: journal_article
+# metamodel_version: 1.11.0# version: 4.2.5id: journal_article
 schema_generating: true
 description: an article, typically presenting results of research, that is published
   in an issue of a scientific journal.
@@ -19388,7 +19388,7 @@ fields:
     purpose
   display_name: issue
 # --- life_stage_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: life_stage
+# metamodel_version: 1.11.0# version: 4.2.5id: life_stage
 schema_generating: true
 description: A stage of development or growth of an organism, including post-natal
   adult stages
@@ -19466,7 +19466,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- log_odds_analysis_result_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: log_odds_analysis_result
+# metamodel_version: 1.11.0# version: 4.2.5id: log_odds_analysis_result
 schema_generating: true
 description: A result of a log odds ratio analysis.
 display_name: log odds analysis result
@@ -19545,7 +19545,7 @@ fields:
     edges
   display_name: creation date
 # --- macromolecular_complex_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: macromolecular_complex
+# metamodel_version: 1.11.0# version: 4.2.5id: macromolecular_complex
 schema_generating: true
 description: A stable assembly of two or more macromolecules, i.e. proteins, nucleic
   acids, carbohydrates or lipids, in which at least one component is a protein and
@@ -19624,7 +19624,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- macromolecular_machine_to_biological_process_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: macromolecular_machine_to_biological_process_association
+# metamodel_version: 1.11.0# version: 4.2.5id: macromolecular_machine_to_biological_process_association
 schema_generating: true
 description: A functional association between a macromolecular machine (gene, gene
   product or complex) and a biological process or pathway (as represented in the GO
@@ -19833,7 +19833,7 @@ fields:
     in which a relationship expressed in an association took place.
   display_name: species context qualifier
 # --- macromolecular_machine_to_cellular_component_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: macromolecular_machine_to_cellular_component_association
+# metamodel_version: 1.11.0# version: 4.2.5id: macromolecular_machine_to_cellular_component_association
 schema_generating: true
 description: A functional association between a macromolecular machine (gene, gene
   product or complex) and a cellular component (as represented in the GO cellular
@@ -20041,7 +20041,7 @@ fields:
     in which a relationship expressed in an association took place.
   display_name: species context qualifier
 # --- macromolecular_machine_to_molecular_activity_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: macromolecular_machine_to_molecular_activity_association
+# metamodel_version: 1.11.0# version: 4.2.5id: macromolecular_machine_to_molecular_activity_association
 schema_generating: true
 description: A functional association between a macromolecular machine (gene, gene
   product or complex) and a molecular activity (as represented in the GO molecular
@@ -20250,7 +20250,7 @@ fields:
     in which a relationship expressed in an association took place.
   display_name: species context qualifier
 # --- mammal_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: mammal
+# metamodel_version: 1.11.0# version: 4.2.5id: mammal
 schema_generating: true
 description: A member of the class Mammalia, a clade of endothermic amniotes distinguished
   from reptiles and birds by the possession of hair, three middle ear bones, mammary
@@ -20329,7 +20329,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- material_sample_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: material_sample
+# metamodel_version: 1.11.0# version: 4.2.5id: material_sample
 schema_generating: true
 description: A sample is a limited quantity of something (e.g. an individual or set
   of individuals from a population, or a portion of a substance) to be used for testing,
@@ -20400,7 +20400,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- material_sample_derivation_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: material_sample_derivation_association
+# metamodel_version: 1.11.0# version: 4.2.5id: material_sample_derivation_association
 schema_generating: true
 description: An association between a material sample and the material entity from
   which it is derived.
@@ -20602,7 +20602,7 @@ fields:
     a geographic feature, or some environmental material.
   display_name: material sample derivation association_object
 # --- material_sample_to_disease_or_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: material_sample_to_disease_or_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: material_sample_to_disease_or_phenotypic_feature_association
 schema_generating: true
 description: An association between a material sample and a disease or phenotype.
 display_name: material sample to disease or phenotypic feature association
@@ -20804,7 +20804,7 @@ fields:
   display_name: association_category
   cardinality: multi
 # --- microRNA_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: microRNA
+# metamodel_version: 1.11.0# version: 4.2.5id: microRNA
 schema_generating: true
 display_name: microRNA
 document_category: microRNA
@@ -20880,7 +20880,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- molecular_activity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: molecular_activity
+# metamodel_version: 1.11.0# version: 4.2.5id: molecular_activity
 schema_generating: true
 description: An execution of a molecular function carried out by a gene product or
   macromolecular complex.
@@ -20970,7 +20970,7 @@ fields:
   display_name: molecular activity_enabled by
   cardinality: multi
 # --- molecular_activity_to_chemical_entity_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: molecular_activity_to_chemical_entity_association
+# metamodel_version: 1.11.0# version: 4.2.5id: molecular_activity_to_chemical_entity_association
 schema_generating: true
 description: Added in response to capturing relationship between microbiome activities
   as measured via measurements of blood analytes as collected via blood and stool
@@ -21174,7 +21174,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: molecular activity to chemical entity association_object
 # --- molecular_activity_to_molecular_activity_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: molecular_activity_to_molecular_activity_association
+# metamodel_version: 1.11.0# version: 4.2.5id: molecular_activity_to_molecular_activity_association
 schema_generating: true
 description: Added in response to capturing relationship between microbiome activities
   as measured via measurements of blood analytes as collected via blood and stool
@@ -21378,7 +21378,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: molecular activity to molecular activity association_object
 # --- molecular_activity_to_pathway_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: molecular_activity_to_pathway_association
+# metamodel_version: 1.11.0# version: 4.2.5id: molecular_activity_to_pathway_association
 schema_generating: true
 description: Association that holds the relationship between a reaction and the pathway
   it participates in.
@@ -21581,7 +21581,7 @@ fields:
     This is analogous to category for nodes.
   display_name: molecular activity to pathway association_predicate
 # --- molecular_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: molecular_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: molecular_entity
 schema_generating: true
 description: A molecular entity is a chemical entity composed of individual or covalently
   bonded atoms.
@@ -21674,7 +21674,7 @@ fields:
   description: indicates whether a molecular entity is a metabolite
   display_name: is metabolite
 # --- molecular_mixture_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: molecular_mixture
+# metamodel_version: 1.11.0# version: 4.2.5id: molecular_mixture
 schema_generating: true
 description: A molecular mixture is a chemical mixture composed of two or more molecular
   entities with known concentration and stoichiometry.
@@ -21782,7 +21782,7 @@ fields:
   display_name: routes of delivery
   cardinality: multi
 # --- named_thing_associated_with_likelihood_of_named_thing_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: named_thing_associated_with_likelihood_of_named_thing_association
+# metamodel_version: 1.11.0# version: 4.2.5id: named_thing_associated_with_likelihood_of_named_thing_association
 schema_generating: true
 description: ''
 display_name: named thing associated with likelihood of named thing association
@@ -22012,7 +22012,7 @@ fields:
     set of characteristics to constrain an association.
   display_name: population context qualifier
 # --- named_thing_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: named_thing
+# metamodel_version: 1.11.0# version: 4.2.5id: named_thing
 schema_generating: true
 description: a databased entity or concept/class
 display_name: named thing
@@ -22081,7 +22081,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- noncoding_RNA_product_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: noncoding_RNA_product
+# metamodel_version: 1.11.0# version: 4.2.5id: noncoding_RNA_product
 schema_generating: true
 display_name: noncoding RNA product
 document_category: noncoding RNA product
@@ -22157,7 +22157,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- nucleic_acid_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: nucleic_acid_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: nucleic_acid_entity
 schema_generating: true
 description: A nucleic acid entity is a molecular entity characterized by availability
   in gene databases of nucleotide-based sequence representations of its precise sequence;
@@ -22262,7 +22262,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- nucleic_acid_sequence_motif_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: nucleic_acid_sequence_motif
+# metamodel_version: 1.11.0# version: 4.2.5id: nucleic_acid_sequence_motif
 schema_generating: true
 description: A linear nucleotide sequence pattern that is widespread and has, or is
   conjectured to have, a biological significance. e.g. the TATA box promoter motif,
@@ -22341,7 +22341,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- nucleosome_modification_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: nucleosome_modification
+# metamodel_version: 1.11.0# version: 4.2.5id: nucleosome_modification
 schema_generating: true
 description: A chemical modification of a histone protein within a nucleosome octomer
   or a substitution of a histone with a variant histone isoform. e.g. Histone 4 Lysine
@@ -22423,7 +22423,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- observed_expected_frequency_analysis_result_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: observed_expected_frequency_analysis_result
+# metamodel_version: 1.11.0# version: 4.2.5id: observed_expected_frequency_analysis_result
 schema_generating: true
 description: A result of a observed expected frequency analysis.
 display_name: observed expected frequency analysis result
@@ -22502,7 +22502,7 @@ fields:
     edges
   display_name: creation date
 # --- onset_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: onset
+# metamodel_version: 1.11.0# version: 4.2.5id: onset
 schema_generating: true
 description: The age group in which (disease) symptom manifestations appear.
 display_name: onset
@@ -22584,7 +22584,7 @@ fields:
     rules.
   display_name: iri
 # --- organism_attribute_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: organism_attribute
+# metamodel_version: 1.11.0# version: 4.2.5id: organism_attribute
 schema_generating: true
 description: describes a characteristic of an organismal entity.
 display_name: organism attribute
@@ -22666,7 +22666,7 @@ fields:
     rules.
   display_name: iri
 # --- organism_taxon_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: organism_taxon
+# metamodel_version: 1.11.0# version: 4.2.5id: organism_taxon
 schema_generating: true
 description: 'A classification of a set of organisms. Example instances: NCBITaxon:9606
   (Homo sapiens), NCBITaxon:2 (Bacteria). Can also be used to represent strains or
@@ -22739,7 +22739,7 @@ fields:
 - id: has_taxonomic_rank
   display_name: organism taxon_has taxonomic rank
 # --- organism_taxon_to_organism_taxon_interaction_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: organism_taxon_to_organism_taxon_interaction
+# metamodel_version: 1.11.0# version: 4.2.5id: organism_taxon_to_organism_taxon_interaction
 schema_generating: true
 description: 'An interaction relationship between two taxa. This may be a symbiotic
   relationship (encompassing mutualism and parasitism), or it may be non-symbiotic.
@@ -22946,7 +22946,7 @@ fields:
     This is analogous to category for nodes.
   display_name: organism taxon to organism taxon interaction_predicate
 # --- organism_taxon_to_organism_taxon_specialization_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: organism_taxon_to_organism_taxon_specialization
+# metamodel_version: 1.11.0# version: 4.2.5id: organism_taxon_to_organism_taxon_specialization
 schema_generating: true
 description: 'A child-parent relationship between two taxa. For example: Homo sapiens
   subclass_of Homo'
@@ -23147,7 +23147,7 @@ fields:
     This is analogous to category for nodes.
   display_name: organism taxon to organism taxon specialization_predicate
 # --- organism_to_organism_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: organism_to_organism_association
+# metamodel_version: 1.11.0# version: 4.2.5id: organism_to_organism_association
 schema_generating: true
 display_name: organism to organism association
 document_category: organism to organism association
@@ -23347,7 +23347,7 @@ fields:
   description: An association between two individual organisms.
   display_name: organism to organism association_object
 # --- organismal_entity_as_a_model_of_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: organismal_entity_as_a_model_of_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: organismal_entity_as_a_model_of_disease_association
 schema_generating: true
 display_name: organismal entity as a model of disease association
 document_category: organismal entity as a model of disease association
@@ -23592,7 +23592,7 @@ fields:
     relationship expressed in an association took place.
   display_name: disease context qualifier
 # --- pairwise_gene_to_gene_interaction_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pairwise_gene_to_gene_interaction
+# metamodel_version: 1.11.0# version: 4.2.5id: pairwise_gene_to_gene_interaction
 schema_generating: true
 description: An interaction between two genes or two gene products. May be physical
   (e.g. protein binding) or genetic (between genes). May be symmetric (e.g. protein
@@ -23797,7 +23797,7 @@ fields:
   description: interaction relationship type
   display_name: pairwise gene to gene interaction_predicate
 # --- pairwise_molecular_interaction_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pairwise_molecular_interaction
+# metamodel_version: 1.11.0# version: 4.2.5id: pairwise_molecular_interaction
 schema_generating: true
 description: An interaction at the molecular level between two physical entities
 display_name: pairwise molecular interaction
@@ -24000,7 +24000,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: pairwise molecular interaction_object
 # --- patent_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: patent
+# metamodel_version: 1.11.0# version: 4.2.5id: patent
 schema_generating: true
 description: a legal document granted by a patent issuing authority which confers
   upon the patenter the sole right to make, use and sell an invention for a set period
@@ -24127,7 +24127,7 @@ fields:
     as an acceptable alias for the node property 'name' (just in case).
   display_name: publication_name
 # --- pathological_anatomical_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pathological_anatomical_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: pathological_anatomical_exposure
 schema_generating: true
 description: An abnormal anatomical structure, when viewed as an exposure, representing
   an precondition, leading to or influencing an outcome, e.g. thrombosis leading to
@@ -24214,7 +24214,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- pathological_anatomical_structure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pathological_anatomical_structure
+# metamodel_version: 1.11.0# version: 4.2.5id: pathological_anatomical_structure
 schema_generating: true
 description: An anatomical structure with the potential of have an abnormal or deleterious
   effect at the subcellular, cellular, multicellular, or organismal level.
@@ -24292,7 +24292,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- pathological_process_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pathological_process
+# metamodel_version: 1.11.0# version: 4.2.5id: pathological_process
 schema_generating: true
 description: A biologic function or a process having an abnormal or deleterious effect
   at the subcellular, cellular, multicellular, or organismal level.
@@ -24385,7 +24385,7 @@ fields:
   display_name: enabled by
   cardinality: multi
 # --- pathological_process_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pathological_process_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: pathological_process_exposure
 schema_generating: true
 description: A pathological process, when viewed as an exposure, representing a precondition,
   leading to or influencing an outcome, e.g. autoimmunity leading to disease.
@@ -24471,7 +24471,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- pathway_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: pathway
+# metamodel_version: 1.11.0# version: 4.2.5id: pathway
 schema_generating: true
 display_name: pathway
 document_category: pathway
@@ -24562,7 +24562,7 @@ fields:
   display_name: enabled by
   cardinality: multi
 # --- phenomenon_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: phenomenon
+# metamodel_version: 1.11.0# version: 4.2.5id: phenomenon
 schema_generating: true
 description: a fact or situation that is observed to exist or happen, especially one
   whose cause or explanation is in question
@@ -24632,7 +24632,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- phenotypic_feature_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: phenotypic_feature
+# metamodel_version: 1.11.0# version: 4.2.5id: phenotypic_feature
 schema_generating: true
 description: A combination of entity and quality that makes up a phenotyping statement.
   An observable characteristic of an individual resulting from the interaction of
@@ -24711,7 +24711,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- phenotypic_feature_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: phenotypic_feature_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: phenotypic_feature_to_disease_association
 schema_generating: true
 display_name: phenotypic feature to disease association
 document_category: phenotypic feature to disease association
@@ -24971,7 +24971,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- phenotypic_feature_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: phenotypic_feature_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: phenotypic_feature_to_phenotypic_feature_association
 schema_generating: true
 description: Association between two concept nodes of phenotypic character, qualified
   by the predicate used. This association may typically be used to specify 'similar_to'
@@ -25253,7 +25253,7 @@ fields:
     or sub-cellular location).
   display_name: anatomical context qualifier
 # --- phenotypic_quality_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: phenotypic_quality
+# metamodel_version: 1.11.0# version: 4.2.5id: phenotypic_quality
 schema_generating: true
 description: A property of a phenotype
 display_name: phenotypic quality
@@ -25335,7 +25335,7 @@ fields:
     rules.
   display_name: iri
 # --- phenotypic_sex_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: phenotypic_sex
+# metamodel_version: 1.11.0# version: 4.2.5id: phenotypic_sex
 schema_generating: true
 description: An attribute corresponding to the phenotypic sex of the individual, based
   upon the reproductive organs present.
@@ -25418,7 +25418,7 @@ fields:
     rules.
   display_name: iri
 # --- physical_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: physical_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: physical_entity
 schema_generating: true
 description: An entity that has material reality (a.k.a. physical essence).
 display_name: physical entity
@@ -25487,7 +25487,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- physiological_process_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: physiological_process
+# metamodel_version: 1.11.0# version: 4.2.5id: physiological_process
 schema_generating: true
 display_name: physiological process
 document_category: physiological process
@@ -25578,7 +25578,7 @@ fields:
   display_name: enabled by
   cardinality: multi
 # --- planetary_entity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: planetary_entity
+# metamodel_version: 1.11.0# version: 4.2.5id: planetary_entity
 schema_generating: true
 description: Any entity or process that exists at the level of the whole planet
 display_name: planetary entity
@@ -25647,7 +25647,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- plant_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: plant
+# metamodel_version: 1.11.0# version: 4.2.5id: plant
 schema_generating: true
 description: ''
 display_name: plant
@@ -25724,7 +25724,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- polypeptide_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: polypeptide
+# metamodel_version: 1.11.0# version: 4.2.5id: polypeptide
 schema_generating: true
 description: A polypeptide is a molecular entity characterized by availability in
   protein databases of amino-acid-based sequence representations of its precise primary
@@ -25804,7 +25804,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- population_of_individual_organisms_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: population_of_individual_organisms
+# metamodel_version: 1.11.0# version: 4.2.5id: population_of_individual_organisms
 schema_generating: true
 description: A collection of individuals from the same taxonomic class distinguished
   by one or more characteristics.  Characteristics can include, but are not limited
@@ -25883,7 +25883,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- population_to_population_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: population_to_population_association
+# metamodel_version: 1.11.0# version: 4.2.5id: population_to_population_association
 schema_generating: true
 description: An association between a two populations
 display_name: population to population association
@@ -26084,7 +26084,7 @@ fields:
     overlaps object. Derivation relationships can also be used
   display_name: population to population association_predicate
 # --- posttranslational_modification_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: posttranslational_modification
+# metamodel_version: 1.11.0# version: 4.2.5id: posttranslational_modification
 schema_generating: true
 description: A chemical modification of a polypeptide or protein that occurs after
   translation. e.g. polypeptide cleavage to form separate proteins, methylation or
@@ -26163,7 +26163,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- predicate_mapping_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: predicate_mapping
+# metamodel_version: 1.11.0# version: 4.2.5id: predicate_mapping
 schema_generating: true
 description: A deprecated predicate mapping object contains the deprecated predicate
   and an example of the rewiring that should be done to use a qualified statement
@@ -26296,7 +26296,7 @@ fields:
   display_name: broad match
   cardinality: multi
 # --- preprint_publication_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: preprint_publication
+# metamodel_version: 1.11.0# version: 4.2.5id: preprint_publication
 schema_generating: true
 description: a document reresenting an early version of an author's original scholarly
   work, such as a research paper or a review, prior to formal peer review and publication
@@ -26423,7 +26423,7 @@ fields:
     as an acceptable alias for the node property 'name' (just in case).
   display_name: publication_name
 # --- procedure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: procedure
+# metamodel_version: 1.11.0# version: 4.2.5id: procedure
 schema_generating: true
 description: A series of actions conducted in a certain order or manner
 display_name: procedure
@@ -26492,7 +26492,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- process_regulates_process_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: process_regulates_process_association
+# metamodel_version: 1.11.0# version: 4.2.5id: process_regulates_process_association
 schema_generating: true
 description: Describes a regulatory relationship between two genes or gene products.
 display_name: process regulates process association
@@ -26694,7 +26694,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: process regulates process association_object
 # --- processed_material_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: processed_material
+# metamodel_version: 1.11.0# version: 4.2.5id: processed_material
 schema_generating: true
 description: A chemical entity (often a mixture) processed for consumption for nutritional,
   medical or technical use. Is a material entity that is created or changed during
@@ -26803,7 +26803,7 @@ fields:
   display_name: routes of delivery
   cardinality: multi
 # --- protein_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: protein
+# metamodel_version: 1.11.0# version: 4.2.5id: protein
 schema_generating: true
 description: A gene product that is composed of a chain of amino acid sequences and
   is produced by ribosome-mediated translation of mRNA
@@ -26881,7 +26881,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- protein_domain_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: protein_domain
+# metamodel_version: 1.11.0# version: 4.2.5id: protein_domain
 schema_generating: true
 description: A conserved part of protein sequence and (tertiary) structure that can
   evolve, function, and exist independently of the rest of the protein chain. Protein
@@ -26965,7 +26965,7 @@ fields:
   display_name: has gene or gene product
   cardinality: multi
 # --- protein_family_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: protein_family
+# metamodel_version: 1.11.0# version: 4.2.5id: protein_family
 schema_generating: true
 display_name: protein family
 document_category: protein family
@@ -27045,7 +27045,7 @@ fields:
   display_name: has gene or gene product
   cardinality: multi
 # --- protein_isoform_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: protein_isoform
+# metamodel_version: 1.11.0# version: 4.2.5id: protein_isoform
 schema_generating: true
 description: Represents a protein that is a specific isoform of the canonical or reference
   protein. See https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4114032/
@@ -27123,7 +27123,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- publication_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: publication
+# metamodel_version: 1.11.0# version: 4.2.5id: publication
 schema_generating: true
 description: "Any \u2018published\u2019 piece of information. Publications are considered\
   \ broadly to include any document or document part made available in print or on\
@@ -27253,7 +27253,7 @@ fields:
     as an acceptable alias for the node property 'name' (just in case).
   display_name: publication_name
 # --- quantity_value_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: quantity_value
+# metamodel_version: 1.11.0# version: 4.2.5id: quantity_value
 schema_generating: true
 description: A value of an attribute that is quantitative and measurable, expressed
   as a combination of a unit and a numeric value
@@ -27268,7 +27268,7 @@ fields:
   description: connects a quantity value to a number
   display_name: has numeric value
 # --- reaction_to_catalyst_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: reaction_to_catalyst_association
+# metamodel_version: 1.11.0# version: 4.2.5id: reaction_to_catalyst_association
 schema_generating: true
 display_name: reaction to catalyst association
 document_category: reaction to catalyst association
@@ -27480,7 +27480,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: reaction to catalyst association_object
 # --- reaction_to_participant_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: reaction_to_participant_association
+# metamodel_version: 1.11.0# version: 4.2.5id: reaction_to_participant_association
 schema_generating: true
 display_name: reaction to participant association
 document_category: reaction to participant association
@@ -27691,7 +27691,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: reaction to participant association_subject
 # --- reagent_targeted_gene_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: reagent_targeted_gene
+# metamodel_version: 1.11.0# version: 4.2.5id: reagent_targeted_gene
 schema_generating: true
 description: A gene altered in its expression level in the context of some experiment
   as a result of being targeted by gene-knockdown reagent(s) such as a morpholino
@@ -27773,7 +27773,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- regulatory_region_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: regulatory_region
+# metamodel_version: 1.11.0# version: 4.2.5id: regulatory_region
 schema_generating: true
 description: A region (or regions) of the genome that contains known or putative regulatory
   elements that act in cis- or trans- to affect the transcription of gene
@@ -27854,7 +27854,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- relative_frequency_analysis_result_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: relative_frequency_analysis_result
+# metamodel_version: 1.11.0# version: 4.2.5id: relative_frequency_analysis_result
 schema_generating: true
 description: A result of a relative frequency analysis.
 display_name: relative frequency analysis result
@@ -27933,7 +27933,7 @@ fields:
     edges
   display_name: creation date
 # --- retrieval_source_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: retrieval_source
+# metamodel_version: 1.11.0# version: 4.2.5id: retrieval_source
 schema_generating: true
 description: Provides information about how a particular InformationResource served
   as a source from which knowledge expressed in an Edge, or data used to generate
@@ -28027,7 +28027,7 @@ fields:
   display_name: xref
   cardinality: multi
 # --- RNA_product_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: RNA_product
+# metamodel_version: 1.11.0# version: 4.2.5id: RNA_product
 schema_generating: true
 display_name: RNA product
 document_category: RNA product
@@ -28103,7 +28103,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- RNA_product_isoform_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: RNA_product_isoform
+# metamodel_version: 1.11.0# version: 4.2.5id: RNA_product_isoform
 schema_generating: true
 description: Represents a protein that is a specific isoform of the canonical or reference
   RNA
@@ -28181,7 +28181,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- sequence_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: sequence_association
+# metamodel_version: 1.11.0# version: 4.2.5id: sequence_association
 schema_generating: true
 description: An association between a sequence feature and a nucleic acid entity it
   is localized to.
@@ -28384,7 +28384,7 @@ fields:
   display_name: association_category
   cardinality: multi
 # --- sequence_feature_relationship_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: sequence_feature_relationship
+# metamodel_version: 1.11.0# version: 4.2.5id: sequence_feature_relationship
 schema_generating: true
 description: For example, a particular exon is part of a particular transcript or
   gene
@@ -28587,7 +28587,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: sequence feature relationship_object
 # --- sequence_variant_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: sequence_variant
+# metamodel_version: 1.11.0# version: 4.2.5id: sequence_variant
 schema_generating: true
 description: A sequence_variant is a non exact copy of a sequence_feature or genome
   exhibiting one or more sequence_alteration.
@@ -28672,7 +28672,7 @@ fields:
     for a URI or a complete URI
   display_name: sequence variant_id
 # --- serial_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: serial
+# metamodel_version: 1.11.0# version: 4.2.5id: serial
 schema_generating: true
 description: This class may rarely be instantiated except if use cases of a given
   knowledge graph support its utility.
@@ -28811,7 +28811,7 @@ fields:
   display_name: serial_type
   cardinality: multi
 # --- severity_value_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: severity_value
+# metamodel_version: 1.11.0# version: 4.2.5id: severity_value
 schema_generating: true
 description: describes the severity of a phenotypic feature or disease
 display_name: severity value
@@ -28893,7 +28893,7 @@ fields:
     rules.
   display_name: iri
 # --- siRNA_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: siRNA
+# metamodel_version: 1.11.0# version: 4.2.5id: siRNA
 schema_generating: true
 description: A small RNA molecule that is the product of a longer exogenous or endogenous
   dsRNA, which is either a bimolecular duplex or very long hairpin, processed (via
@@ -28973,7 +28973,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- small_molecule_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: small_molecule
+# metamodel_version: 1.11.0# version: 4.2.5id: small_molecule
 schema_generating: true
 description: A small molecule entity is a molecular entity characterized by availability
   in small-molecule databases of SMILES, InChI, IUPAC, or other unambiguous representation
@@ -29069,7 +29069,7 @@ fields:
   description: indicates whether a molecular entity is a metabolite
   display_name: is metabolite
 # --- snv_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: snv
+# metamodel_version: 1.11.0# version: 4.2.5id: snv
 schema_generating: true
 description: SNVs are single nucleotide positions in genomic DNA at which different
   sequence alternatives exist
@@ -29154,7 +29154,7 @@ fields:
     for a URI or a complete URI
   display_name: sequence variant_id
 # --- socioeconomic_attribute_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: socioeconomic_attribute
+# metamodel_version: 1.11.0# version: 4.2.5id: socioeconomic_attribute
 schema_generating: true
 description: Attributes relating to a socioeconomic manifestation
 display_name: socioeconomic attribute
@@ -29236,7 +29236,7 @@ fields:
     rules.
   display_name: iri
 # --- socioeconomic_exposure_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: socioeconomic_exposure
+# metamodel_version: 1.11.0# version: 4.2.5id: socioeconomic_exposure
 schema_generating: true
 description: A socioeconomic exposure is a factor relating to social and financial
   status of an affected individual (e.g. poverty).
@@ -29322,7 +29322,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- study_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: study
+# metamodel_version: 1.11.0# version: 4.2.5id: study
 schema_generating: true
 description: a detailed investigation and/or analysis
 display_name: study
@@ -29391,7 +29391,7 @@ fields:
   display_name: named thing_category
   cardinality: multi
 # --- study_population_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: study_population
+# metamodel_version: 1.11.0# version: 4.2.5id: study_population
 schema_generating: true
 description: A group of people banded together or treated as a group as participants
   in a research study.
@@ -29469,7 +29469,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- study_variable_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: study_variable
+# metamodel_version: 1.11.0# version: 4.2.5id: study_variable
 schema_generating: true
 description: a variable that is used as a measure in the investigation of a study
 display_name: study variable
@@ -29548,7 +29548,7 @@ fields:
     edges
   display_name: creation date
 # --- taxon_to_taxon_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: taxon_to_taxon_association
+# metamodel_version: 1.11.0# version: 4.2.5id: taxon_to_taxon_association
 schema_generating: true
 display_name: taxon to taxon association
 document_category: taxon to taxon association
@@ -29748,7 +29748,7 @@ fields:
   description: An association between individuals of different taxa.
   display_name: taxon to taxon association_object
 # --- text_mining_result_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: text_mining_result
+# metamodel_version: 1.11.0# version: 4.2.5id: text_mining_result
 schema_generating: true
 description: A result of text mining.
 display_name: text mining result
@@ -29827,7 +29827,7 @@ fields:
     edges
   display_name: creation date
 # --- transcript_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: transcript
+# metamodel_version: 1.11.0# version: 4.2.5id: transcript
 schema_generating: true
 description: An RNA synthesized on a DNA or RNA template by an RNA polymerase.
 display_name: transcript
@@ -29904,7 +29904,7 @@ fields:
   description: The human readable scientific name for the taxon of the entity.
   display_name: in taxon label
 # --- transcript_to_gene_relationship_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: transcript_to_gene_relationship
+# metamodel_version: 1.11.0# version: 4.2.5id: transcript_to_gene_relationship
 schema_generating: true
 description: A gene is a collection of transcripts
 display_name: transcript to gene relationship
@@ -30106,7 +30106,7 @@ fields:
     in a gene-to-phenotype association, the gene is subject and phenotype is object.
   display_name: transcript to gene relationship_object
 # --- transcription_factor_binding_site_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: transcription_factor_binding_site
+# metamodel_version: 1.11.0# version: 4.2.5id: transcription_factor_binding_site
 schema_generating: true
 description: A region (or regions) of the genome that contains a region of DNA known
   or predicted to bind a protein that modulates gene transcription
@@ -30187,7 +30187,7 @@ fields:
   description: connects a genomic feature to its sequence
   display_name: has biological sequence
 # --- treatment_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: treatment
+# metamodel_version: 1.11.0# version: 4.2.5id: treatment
 schema_generating: true
 description: A treatment is targeted at a disease or phenotype and may involve multiple
   drug 'exposures', medical devices and/or procedures
@@ -30272,7 +30272,7 @@ fields:
   description: a point in time
   display_name: timepoint
 # --- variant_as_a_model_of_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: variant_as_a_model_of_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: variant_as_a_model_of_disease_association
 schema_generating: true
 display_name: variant as a model of disease association
 document_category: variant as a model of disease association
@@ -30514,7 +30514,7 @@ fields:
   description: A variant that has a role in modeling the disease.
   display_name: variant as a model of disease association_subject
 # --- variant_to_disease_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: variant_to_disease_association
+# metamodel_version: 1.11.0# version: 4.2.5id: variant_to_disease_association
 schema_generating: true
 display_name: variant to disease association
 document_category: variant to disease association
@@ -30757,7 +30757,7 @@ fields:
     relationship expressed in an association took place.
   display_name: disease context qualifier
 # --- variant_to_gene_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: variant_to_gene_association
+# metamodel_version: 1.11.0# version: 4.2.5id: variant_to_gene_association
 schema_generating: true
 description: An association between a variant and a gene, where the variant has a
   genetic association with the gene (i.e. is in linkage disequilibrium)
@@ -30960,7 +30960,7 @@ fields:
     This is analogous to category for nodes.
   display_name: variant to gene association_predicate
 # --- variant_to_gene_expression_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: variant_to_gene_expression_association
+# metamodel_version: 1.11.0# version: 4.2.5id: variant_to_gene_expression_association
 schema_generating: true
 description: An association between a variant and expression of a gene (i.e. e-QTL)
 display_name: variant to gene expression association
@@ -31177,7 +31177,7 @@ fields:
     use XXX.
   display_name: phenotypic state
 # --- variant_to_phenotypic_feature_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: variant_to_phenotypic_feature_association
+# metamodel_version: 1.11.0# version: 4.2.5id: variant_to_phenotypic_feature_association
 schema_generating: true
 display_name: variant to phenotypic feature association
 document_category: variant to phenotypic feature association
@@ -31456,7 +31456,7 @@ fields:
   description: equivalent to has quotient multiplied by 100
   display_name: has percentage
 # --- variant_to_population_association_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: variant_to_population_association
+# metamodel_version: 1.11.0# version: 4.2.5id: variant_to_population_association
 schema_generating: true
 description: An association between a variant and a population, where the variant
   has particular frequency in the population
@@ -31675,7 +31675,7 @@ fields:
     the phenotype is observed in the subject
   display_name: frequency qualifier
 # --- vertebrate_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: vertebrate
+# metamodel_version: 1.11.0# version: 4.2.5id: vertebrate
 schema_generating: true
 description: A sub-phylum of animals consisting of those having a bony or cartilaginous
   vertebral column.
@@ -31753,7 +31753,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- virus_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: virus
+# metamodel_version: 1.11.0# version: 4.2.5id: virus
 schema_generating: true
 description: A virus is a microorganism that replicates itself as a microRNA and infects
   the host cell.
@@ -31831,7 +31831,7 @@ fields:
   display_name: organismal entity_has attribute
   cardinality: multi
 # --- web_page_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: web_page
+# metamodel_version: 1.11.0# version: 4.2.5id: web_page
 schema_generating: true
 description: a document that is published according to World Wide Web standards, which
   may incorporate text, graphics, sound, and/or other features.
@@ -31957,7 +31957,7 @@ fields:
     as an acceptable alias for the node property 'name' (just in case).
   display_name: publication_name
 # --- zygosity_config.yaml ---
-# metamodel_version: 1.7.0# version: 4.2.5id: zygosity
+# metamodel_version: 1.11.0# version: 4.2.5id: zygosity
 schema_generating: true
 display_name: zygosity
 document_category: zygosity

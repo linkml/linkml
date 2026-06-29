@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 enum CordialnessEnum
   {
     heartfelt
@@ -201,7 +201,7 @@ type FamilialRelationship
   {
     startedAtTime: String
     endedAtTime: String
-    cordialness: String
+    cordialness: CordialnessEnum
     type: FamilialRelationshipType!
     relatedTo: Person!
   }

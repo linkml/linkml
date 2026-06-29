@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Course": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "name": {
@@ -12,7 +12,7 @@
             "type": "object"
         },
         "Student": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "courses": {
@@ -36,7 +36,7 @@
     "$id": "http://example.org/sample/example1",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
-    "metamodel_version": "1.7.0",
+    "metamodel_version": "1.11.0",
     "title": "example1",
     "type": "object",
     "version": null

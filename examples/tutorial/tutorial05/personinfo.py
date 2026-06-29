@@ -24,7 +24,7 @@ from rdflib import Namespace, URIRef
 from linkml_runtime.utils.curienamespace import CurieNamespace
 from linkml_runtime.linkml_model.types import Integer, String
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 
 # Namespaces
 ORCID = CurieNamespace('ORCID', 'https://orcid.org/')

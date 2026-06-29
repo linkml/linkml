@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 enum AliasPredicateEnum
   {
     EXACT_SYNONYM
@@ -757,7 +757,7 @@ type Extension
 type ExtraSlotsExpression implements Expression
   {
     allowed: Boolean
-    rangeExpression: AnonymousClassExpression
+    rangeExpression: AnonymousSlotExpression
   }
 
 type ImportExpression implements Extensible, Annotatable, CommonMetadata

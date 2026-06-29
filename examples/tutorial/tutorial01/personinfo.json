@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Person": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "age": {
@@ -42,7 +42,7 @@
     "$id": "https://w3id.org/linkml/examples/personinfo",
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
-    "metamodel_version": "1.7.0",
+    "metamodel_version": "1.11.0",
     "title": "personinfo",
     "type": "object",
     "version": null

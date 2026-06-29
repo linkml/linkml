@@ -1,5 +1,5 @@
 # --- activity_config.yaml ---
-# metamodel_version: 1.7.0id: activity
+# metamodel_version: 1.11.0id: activity
 schema_generating: true
 description: a provence-generating activity
 display_name: activity
@@ -21,7 +21,7 @@ fields:
 - id: description
   display_name: description
 # --- Address_config.yaml ---
-# metamodel_version: 1.7.0id: Address
+# metamodel_version: 1.11.0id: Address
 schema_generating: true
 display_name: Address
 document_category: Address
@@ -34,7 +34,7 @@ fields:
 - id: altitude
   display_name: altitude
 # --- agent_config.yaml ---
-# metamodel_version: 1.7.0id: agent
+# metamodel_version: 1.11.0id: agent
 schema_generating: true
 description: a provence-generating agent
 display_name: agent
@@ -48,7 +48,7 @@ fields:
 - id: was_informed_by
   display_name: was informed by
 # --- BirthEvent_config.yaml ---
-# metamodel_version: 1.7.0id: BirthEvent
+# metamodel_version: 1.11.0id: BirthEvent
 schema_generating: true
 display_name: BirthEvent
 document_category: BirthEvent
@@ -66,7 +66,7 @@ fields:
 - id: in_location
   display_name: in location
 # --- CodeSystem_config.yaml ---
-# metamodel_version: 1.7.0id: CodeSystem
+# metamodel_version: 1.11.0id: CodeSystem
 schema_generating: true
 display_name: CodeSystem
 document_category: CodeSystem
@@ -79,7 +79,7 @@ fields:
 - id: long_id
   display_name: long_id
 # --- Company_config.yaml ---
-# metamodel_version: 1.7.0id: Company
+# metamodel_version: 1.11.0id: Company
 schema_generating: true
 display_name: Company
 document_category: Company
@@ -95,7 +95,7 @@ fields:
 - id: ceo
   display_name: company__ceo
 # --- Concept_config.yaml ---
-# metamodel_version: 1.7.0id: Concept
+# metamodel_version: 1.11.0id: Concept
 schema_generating: true
 display_name: Concept
 document_category: Concept
@@ -108,7 +108,7 @@ fields:
 - id: in_code_system
   display_name: in code system
 # --- Dataset_config.yaml ---
-# metamodel_version: 1.7.0id: Dataset
+# metamodel_version: 1.11.0id: Dataset
 schema_generating: true
 display_name: Dataset
 document_category: Dataset
@@ -130,7 +130,7 @@ fields:
   display_name: dataset__code_systems
   cardinality: multi
 # --- DiagnosisConcept_config.yaml ---
-# metamodel_version: 1.7.0id: DiagnosisConcept
+# metamodel_version: 1.11.0id: DiagnosisConcept
 schema_generating: true
 display_name: DiagnosisConcept
 document_category: DiagnosisConcept
@@ -143,7 +143,7 @@ fields:
 - id: in_code_system
   display_name: in code system
 # --- EmploymentEvent_config.yaml ---
-# metamodel_version: 1.7.0id: EmploymentEvent
+# metamodel_version: 1.11.0id: EmploymentEvent
 schema_generating: true
 display_name: EmploymentEvent
 document_category: EmploymentEvent
@@ -163,7 +163,7 @@ fields:
 - id: type
   display_name: EmploymentEvent_type
 # --- Event_config.yaml ---
-# metamodel_version: 1.7.0id: Event
+# metamodel_version: 1.11.0id: Event
 schema_generating: true
 display_name: Event
 document_category: Event
@@ -179,7 +179,7 @@ fields:
   description: Example of a slot that has an unconstrained range
   display_name: metadata
 # --- FamilialRelationship_config.yaml ---
-# metamodel_version: 1.7.0id: FamilialRelationship
+# metamodel_version: 1.11.0id: FamilialRelationship
 schema_generating: true
 display_name: FamilialRelationship
 document_category: FamilialRelationship
@@ -190,13 +190,13 @@ fields:
 - id: ended_at_time
   display_name: ended at time
 - id: cordialness
-  display_name: cordialness
+  display_name: FamilialRelationship_cordialness
 - id: type
   display_name: FamilialRelationship_type
 - id: related_to
   display_name: FamilialRelationship_related to
 # --- MarriageEvent_config.yaml ---
-# metamodel_version: 1.7.0id: MarriageEvent
+# metamodel_version: 1.11.0id: MarriageEvent
 schema_generating: true
 display_name: MarriageEvent
 document_category: MarriageEvent
@@ -216,7 +216,7 @@ fields:
 - id: in_location
   display_name: in location
 # --- MedicalEvent_config.yaml ---
-# metamodel_version: 1.7.0id: MedicalEvent
+# metamodel_version: 1.11.0id: MedicalEvent
 schema_generating: true
 display_name: MedicalEvent
 document_category: MedicalEvent
@@ -238,7 +238,7 @@ fields:
 - id: procedure
   display_name: procedure
 # --- Organization_config.yaml ---
-# metamodel_version: 1.7.0id: Organization
+# metamodel_version: 1.11.0id: Organization
 schema_generating: true
 description: "An organization.\n\nThis description\nincludes newlines\n\n## Markdown\
   \ headers\n\n * and\n * a\n * list"
@@ -254,7 +254,7 @@ fields:
   display_name: hasAliases__aliases
   cardinality: multi
 # --- Person_config.yaml ---
-# metamodel_version: 1.7.0id: Person
+# metamodel_version: 1.11.0id: Person
 schema_generating: true
 description: A person, living or dead
 display_name: Person
@@ -292,7 +292,7 @@ fields:
   display_name: hasAliases__aliases
   cardinality: multi
 # --- Place_config.yaml ---
-# metamodel_version: 1.7.0id: Place
+# metamodel_version: 1.11.0id: Place
 schema_generating: true
 display_name: Place
 document_category: Place
@@ -306,7 +306,7 @@ fields:
   display_name: hasAliases__aliases
   cardinality: multi
 # --- ProcedureConcept_config.yaml ---
-# metamodel_version: 1.7.0id: ProcedureConcept
+# metamodel_version: 1.11.0id: ProcedureConcept
 schema_generating: true
 display_name: ProcedureConcept
 document_category: ProcedureConcept
@@ -319,7 +319,7 @@ fields:
 - id: in_code_system
   display_name: in code system
 # --- Relationship_config.yaml ---
-# metamodel_version: 1.7.0id: Relationship
+# metamodel_version: 1.11.0id: Relationship
 schema_generating: true
 display_name: Relationship
 document_category: Relationship
@@ -336,7 +336,7 @@ fields:
 - id: cordialness
   display_name: Relationship_cordialness
 # --- Sub_sub_class_2_config.yaml ---
-# metamodel_version: 1.7.0id: Sub_sub_class_2
+# metamodel_version: 1.11.0id: Sub_sub_class_2
 schema_generating: true
 display_name: Sub sub class 2
 document_category: Sub sub class 2
@@ -347,7 +347,7 @@ fields:
 - id: slot_with_space_2
   display_name: subclassTest__slot_with_space_2
 # --- subclass_test_config.yaml ---
-# metamodel_version: 1.7.0id: subclass_test
+# metamodel_version: 1.11.0id: subclass_test
 schema_generating: true
 display_name: subclass test
 document_category: subclass test
@@ -358,7 +358,7 @@ fields:
 - id: slot_with_space_2
   display_name: subclassTest__slot_with_space_2
 # --- tub_sub_class_1_config.yaml ---
-# metamodel_version: 1.7.0id: tub_sub_class_1
+# metamodel_version: 1.11.0id: tub_sub_class_1
 schema_generating: true
 description: Same depth as Sub sub class 1
 display_name: tub sub class 1

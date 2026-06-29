@@ -2,7 +2,7 @@
 # KITCHEN_SINK
 
 
-**metamodel version:** 1.7.0
+**metamodel version:** 1.11.0
 
 **version:** None
 
