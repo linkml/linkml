@@ -54,3 +54,14 @@ slots:
   inlined_as_list_integer:
     range: integer
     inlined_as_list: true
+
+  # is_a inheritance cases — inlined/inlined_as_list declared only on the parent slot.
+  # A child slot that does not re-declare inlined should still be considered inlined
+  # if its parent slot (via is_a) declares inlined: true.
+  child_of_inlined_thing_with_id:
+    is_a: inlined_thing_with_id       # parent has inlined: true
+    range: ThingWithId
+
+  child_of_inlined_as_list_thing_with_id:
+    is_a: inlined_as_list_thing_with_id  # parent has inlined_as_list: true
+    range: ThingWithId
