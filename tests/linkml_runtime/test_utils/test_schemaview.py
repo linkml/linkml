@@ -1656,6 +1656,20 @@ def test_get_uri(schema_view_with_imports: SchemaView) -> None:
 
     assert view.get_uri("string") == "xsd:string"
 
+    # SubsetDefinition: multi-word names are camelcased when building the native URI.
+    # "subset A" -> "SubsetA"; the transformation is directly observable.
+    assert view.get_uri("subset A") == "ks:SubsetA"
+    assert view.get_uri("subset A", expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/SubsetA"
+    assert view.get_uri("subset B") == "ks:SubsetB"
+
+    # TypeDefinition and EnumDefinition: add multi-word names to the kitchen_sink schema
+    # so the camelcase transformation is directly observable (the fixture is function-scoped).
+    view.add_type(TypeDefinition(name="my custom type"))
+    assert view.get_uri("my custom type") == "ks:MyCustomType"
+
+    view.add_enum(EnumDefinition(name="relationship type"))
+    assert view.get_uri("relationship type") == "ks:RelationshipType"
+
 
 def test_uris_without_default_prefix() -> None:
     """Test if uri is correct if no default_prefix is defined for the schema.
