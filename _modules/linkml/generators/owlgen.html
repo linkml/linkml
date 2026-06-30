@@ -1347,7 +1347,16 @@
         <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">equals_string</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">equals_string</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">equals_string</span>
             <span class="k">if</span> <span class="n">is_literal</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ignoring equals_string=</span><span class="si">{</span><span class="n">equals_string</span><span class="si">}</span><span class="s2"> as unable to tell if literal&quot;</span><span class="p">)</span>
+                <span class="c1"># Enum-ranged slots sit between literals and URIs in OWL.</span>
+                <span class="c1"># Build a proper &quot;owl:oneOf&quot; datatype so that rules like</span>
+                <span class="c1"># `none_of: [{equals_string: &quot;X&quot;}]` produce a valid</span>
+                <span class="c1"># owl:datatypeComplementOf instead of being silently dropped.</span>
+                <span class="n">one_of_expr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_boolean_expression</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">Literal</span><span class="p">(</span><span class="n">equals_string</span><span class="p">)],</span> <span class="n">OWL</span><span class="o">.</span><span class="n">oneOf</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">BNode</span><span class="p">(),</span> <span class="n">owl_types</span><span class="o">=</span><span class="p">{</span><span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span><span class="p">}</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">one_of_expr</span><span class="p">:</span>
+                    <span class="n">owl_exprs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">one_of_expr</span><span class="p">)</span>
+                    <span class="n">owl_types</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">RDFS</span><span class="o">.</span><span class="n">Literal</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">is_literal</span><span class="p">:</span>
                 <span class="n">constraints</span><span class="p">[</span><span class="n">XSD</span><span class="o">.</span><span class="n">pattern</span><span class="p">]</span> <span class="o">=</span> <span class="n">equals_string</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1822,6 +1831,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OWL_EXPRESSION</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">expr_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OWL_EXPRESSION</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_present</span><span class="p">(</span><span class="n">exprs</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">expr_list</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;All operands in complement expression resolved to None; skipping&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">neg_expr</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">owl_types</span><span class="p">:</span>
@@ -1890,7 +1900,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Null expr in: </span><span class="si">{</span><span class="n">exprs</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">predicate</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expr_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expr_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expr_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">predicate</span> <span class="o">!=</span> <span class="n">OWL</span><span class="o">.</span><span class="n">oneOf</span><span class="p">:</span>
+            <span class="c1"># owl:oneOf always requires a list structure (even for one member), so</span>
+            <span class="c1"># we do not stop it here.</span>
             <span class="k">return</span> <span class="n">expr_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="n">BNode</span><span class="p">()</span>
