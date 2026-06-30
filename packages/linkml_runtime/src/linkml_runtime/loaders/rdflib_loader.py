@@ -157,13 +157,14 @@ class RDFLibLoader(Loader):
                                 namespaces,
                                 schemaview,
                                 cast_literals,
+                                subject,
                             )
                             dict_obj[slot_name].append(v)
                             if member not in processed and slot.range in schemaview.all_classes():
                                 node_tuples_to_visit.append((member, ClassDefinitionName(slot.range)))
                         continue
                     v = self._object_to_value(
-                        o, slot, range_applicable_elements, is_inlined, namespaces, schemaview, cast_literals
+                        o, slot, range_applicable_elements, is_inlined, namespaces, schemaview, cast_literals, subject
                     )
                     if slot.multivalued:
                         if slot_name not in dict_obj:
@@ -232,6 +233,7 @@ class RDFLibLoader(Loader):
         namespaces: Any,
         schemaview: SchemaView,
         cast_literals: bool,
+        subject: VALID_SUBJECT = None,
     ) -> Any:
         """
         Convert a single RDF object node into the Python value for a slot.
@@ -243,6 +245,7 @@ class RDFLibLoader(Loader):
         :param namespaces: schema namespaces, used to resolve CURIEs
         :param schemaview: schema view guiding interpretation
         :param cast_literals: if True, cast unexpected literals/URIs to strings
+        :param subject: the RDF subject the value belongs to, used only for diagnostics
         :return: the Python value (scalar, id reference, or a Pointer to an inlined object)
         """
         slot_name = underscore(slot.name)
@@ -256,7 +259,7 @@ class RDFLibLoader(Loader):
             return o.value
         elif isinstance(o, BNode):
             if not is_inlined:
-                logger.error(f"blank nodes should be inlined; {slot_name}={o}")
+                logger.error(f"blank nodes should be inlined; {slot_name}={o} in {subject}")
             return Pointer(o)
         else:
             if ClassDefinition.class_name in range_applicable_elements:
