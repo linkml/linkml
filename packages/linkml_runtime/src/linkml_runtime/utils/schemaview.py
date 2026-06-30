@@ -1927,13 +1927,33 @@ class SchemaView:
     def is_inlined(self, slot: SlotDefinition, imports: bool = True) -> bool:
         """Return true if slot is inferred or asserted inline.
 
+        A slot is inlined when:
+
+        * ``slot.inlined`` or ``slot.inlined_as_list`` is ``True`` (directly or
+          inherited through the slot's ``is_a`` chain), **or**
+        * the slot's range is a class with no identifier/key slot (which forces
+          inlining because there is no reference to use).
+
         :param slot:
         :param imports:
         :return:
         """
         slot_range = slot.range
         if slot_range in self.all_classes():
-            if slot.inlined or slot.inlined_as_list:
+            # Resolve inlined through the slot's is_a chain so that a slot that
+            # inherits inlined=True from a parent slot is correctly detected.
+            resolved_inlined = slot.inlined
+            resolved_inlined_as_list = slot.inlined_as_list
+            parent_name = getattr(slot, "is_a", None)
+            while (resolved_inlined is None and resolved_inlined_as_list is None) and parent_name:
+                parent = self.all_slots(imports=imports).get(parent_name)
+                if parent is None:
+                    break
+                resolved_inlined = parent.inlined
+                resolved_inlined_as_list = parent.inlined_as_list
+                parent_name = parent.is_a
+
+            if resolved_inlined or resolved_inlined_as_list:
                 return True
 
             id_slot = self.get_identifier_slot(slot_range, imports=imports)
