@@ -1,5 +1,5 @@
 # Auto generated from config.yaml by pythongen.py version: 0.0.1
-# Generation date: 2025-09-30T13:24:19
+# Generation date: 2026-06-26T12:49:40
 # Schema: linter-config
 #
 # id: https://w3id.org/linkml/linter/config
@@ -25,7 +25,7 @@ from rdflib import Namespace, URIRef
 from linkml_runtime.linkml_model.types import Boolean, String
 from linkml_runtime.utils.metamodelcore import Bool
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
@@ -81,8 +81,10 @@ class Rules(YAMLRoot):
 
     canonical_prefixes: Optional[Union[dict, "CanonicalPrefixesConfig"]] = None
     no_empty_title: Optional[Union[dict, "NoEmptyTitleConfig"]] = None
+    no_invalid_slot_group: Optional[Union[dict, "RuleConfig"]] = None
     no_invalid_slot_usage: Optional[Union[dict, "RuleConfig"]] = None
     no_undeclared_slots: Optional[Union[dict, "RuleConfig"]] = None
+    no_undeclared_subsets: Optional[Union[dict, "RuleConfig"]] = None
     no_undeclared_ranges: Optional[Union[dict, "RuleConfig"]] = None
     no_xsd_int_type: Optional[Union[dict, "RuleConfig"]] = None
     one_identifier_per_class: Optional[Union[dict, "RuleConfig"]] = None
@@ -100,11 +102,17 @@ class Rules(YAMLRoot):
         if self.no_empty_title is not None and not isinstance(self.no_empty_title, NoEmptyTitleConfig):
             self.no_empty_title = NoEmptyTitleConfig(**as_dict(self.no_empty_title))
 
+        if self.no_invalid_slot_group is not None and not isinstance(self.no_invalid_slot_group, RuleConfig):
+            self.no_invalid_slot_group = RuleConfig(**as_dict(self.no_invalid_slot_group))
+
         if self.no_invalid_slot_usage is not None and not isinstance(self.no_invalid_slot_usage, RuleConfig):
             self.no_invalid_slot_usage = RuleConfig(**as_dict(self.no_invalid_slot_usage))
 
         if self.no_undeclared_slots is not None and not isinstance(self.no_undeclared_slots, RuleConfig):
             self.no_undeclared_slots = RuleConfig(**as_dict(self.no_undeclared_slots))
+
+        if self.no_undeclared_subsets is not None and not isinstance(self.no_undeclared_subsets, RuleConfig):
+            self.no_undeclared_subsets = RuleConfig(**as_dict(self.no_undeclared_subsets))
 
         if self.no_undeclared_ranges is not None and not isinstance(self.no_undeclared_ranges, RuleConfig):
             self.no_undeclared_ranges = RuleConfig(**as_dict(self.no_undeclared_ranges))
@@ -439,6 +447,15 @@ slots.rules__no_empty_title = Slot(
     range=Optional[Union[dict, NoEmptyTitleConfig]],
 )
 
+slots.rules__no_invalid_slot_group = Slot(
+    uri=LINTCFG.no_invalid_slot_group,
+    name="rules__no_invalid_slot_group",
+    curie=LINTCFG.curie("no_invalid_slot_group"),
+    model_uri=LINTCFG.rules__no_invalid_slot_group,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
+)
+
 slots.rules__no_invalid_slot_usage = Slot(
     uri=LINTCFG.no_invalid_slot_usage,
     name="rules__no_invalid_slot_usage",
@@ -453,6 +470,15 @@ slots.rules__no_undeclared_slots = Slot(
     name="rules__no_undeclared_slots",
     curie=LINTCFG.curie("no_undeclared_slots"),
     model_uri=LINTCFG.rules__no_undeclared_slots,
+    domain=None,
+    range=Optional[Union[dict, RuleConfig]],
+)
+
+slots.rules__no_undeclared_subsets = Slot(
+    uri=LINTCFG.no_undeclared_subsets,
+    name="rules__no_undeclared_subsets",
+    curie=LINTCFG.curie("no_undeclared_subsets"),
+    model_uri=LINTCFG.rules__no_undeclared_subsets,
     domain=None,
     range=Optional[Union[dict, RuleConfig]],
 )

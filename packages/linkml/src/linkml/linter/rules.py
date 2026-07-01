@@ -27,6 +27,7 @@ from linkml_runtime.linkml_model import (
     EnumDefinition,
     EnumDefinitionName,
     SlotDefinition,
+    SlotDefinitionName,
     TypeDefinition,
     TypeDefinitionName,
 )
@@ -455,3 +456,94 @@ class CanonicalPrefixesRule(LinterRule):
                     f"'{prefix.prefix_reference}' instead of using prefix "
                     f"'{namespace_to_prefix[prefix.prefix_reference]}'"
                 )
+
+
+class NoInvalidSlotGroupRule(LinterRule):
+    """Disallow `slot_group` references that do not resolve to a grouping slot.
+
+    A slot may declare `slot_group: B` only if B is a defined slot and B is marked
+    `is_grouping_slot: true`. The LinkML metamodel gives `slot_group` the range
+    `slot_definition` but does not enforce that the referenced name resolves to a
+    declared slot, nor that the target is a grouping slot, so dangling or
+    non-grouping `slot_group` references pass silently. This rule is the
+    `slot_group` analogue of `no_undeclared_ranges`. Not auto-fixable.
+    """
+
+    id = "no_invalid_slot_group"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        # Lookup table for resolving slot_group targets. all_slots() is acceptable here
+        # because we only need to know whether a grouping slot of a given name exists.
+        all_slots: dict[SlotDefinitionName, SlotDefinition] = schema_view.all_slots()
+
+        def check_slot(slot: SlotDefinition, descriptor: str) -> Iterable[LinterProblem]:
+            group = slot.slot_group
+            if not group:
+                return
+            if group not in all_slots:
+                yield LinterProblem(f"{descriptor} has slot_group '{group}' which is not a defined slot.")
+            elif not all_slots[group].is_grouping_slot:
+                yield LinterProblem(
+                    f"{descriptor} has slot_group '{group}' which is not marked 'is_grouping_slot: true'."
+                )
+
+        # Iterate global slots, then each class's attributes and slot_usage separately.
+        # all_slots() de-duplicates attributes by name, so iterating it would miss
+        # slot_group on attributes that share a name across classes or override a global
+        # slot. attributes=False yields only the global slots; attributes are checked
+        # per class below, each in its own context.
+        for slot_name, slot_def in schema_view.all_slots(attributes=False).items():
+            yield from check_slot(slot_def, f"Slot '{slot_name}'")
+
+        for class_name, class_def in schema_view.all_classes().items():
+            for attr_name, attr in (class_def.attributes or {}).items():
+                yield from check_slot(attr, f"Class '{class_name}' attribute '{attr_name}'")
+            for usage_name, usage in (class_def.slot_usage or {}).items():
+                yield from check_slot(usage, f"Class '{class_name}' slot_usage '{usage_name}'")
+
+
+class NoUndeclaredSubsetsRule(LinterRule):
+    """Disallow `in_subset` references to subsets not declared in the `subsets` section.
+
+    An element may declare `in_subset: S` only if S is a declared `SubsetDefinition`.
+    The LinkML metamodel gives `in_subset` the range `subset_definition` but does not
+    enforce that the referenced name resolves to a declared subset, so dangling
+    `in_subset` references pass silently. This rule is the `in_subset` analogue of
+    `no_undeclared_ranges`. Not auto-fixable.
+    """
+
+    id = "no_undeclared_subsets"
+
+    def check(self, schema_view: SchemaView, fix: bool = False) -> Iterable[LinterProblem]:
+        declared_subsets: set[str] = set(schema_view.all_subsets())
+
+        def check_element(element: Element, descriptor: str) -> Iterable[LinterProblem]:
+            for subset_name in getattr(element, "in_subset", None) or []:
+                if subset_name not in declared_subsets:
+                    yield LinterProblem(f"{descriptor} asserts membership in undeclared subset '{subset_name}'.")
+
+        # Iterate global slots, then each class's attributes and slot_usage separately.
+        # all_slots() de-duplicates attributes by name, so iterating it would miss
+        # in_subset on attributes that share a name across classes or override a global
+        # slot. attributes=False yields only the global slots; attributes are checked
+        # per class below, each in its own context.
+        for slot_name, slot_def in schema_view.all_slots(attributes=False).items():
+            yield from check_element(slot_def, f"Slot '{slot_name}'")
+
+        # classes, plus their attributes and slot_usage overrides
+        for class_name, class_def in schema_view.all_classes().items():
+            yield from check_element(class_def, f"Class '{class_name}'")
+            for attr_name, attr in (class_def.attributes or {}).items():
+                yield from check_element(attr, f"Class '{class_name}' attribute '{attr_name}'")
+            for usage_name, usage in (class_def.slot_usage or {}).items():
+                yield from check_element(usage, f"Class '{class_name}' slot_usage '{usage_name}'")
+
+        # enums and their permissible values
+        for enum_name, enum_def in schema_view.all_enums().items():
+            yield from check_element(enum_def, f"Enum '{enum_name}'")
+            for pv_name, pv in (enum_def.permissible_values or {}).items():
+                yield from check_element(pv, f"Enum '{enum_name}' permissible value '{pv_name}'")
+
+        # types
+        for type_name, type_def in schema_view.all_types().items():
+            yield from check_element(type_def, f"Type '{type_name}'")
