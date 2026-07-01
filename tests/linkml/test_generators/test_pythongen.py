@@ -375,6 +375,82 @@ slots:
             )
 
 
+def test_inlined_abstract_range_dispatches_to_concrete_subclass():
+    """An inlined slot whose range is an abstract dataclass with its own slots
+    must accept dicts whose keys belong to a concrete subclass.
+
+    Regression test: previously, ``Thing(detail={"given_name": "Alice"})`` failed
+    with ``TypeError: AbstractDetail.__init__() got an unexpected keyword
+    argument 'given_name'`` because pythongen unconditionally generated
+    ``self.detail = AbstractDetail(**as_dict(self.detail))`` in __post_init__.
+    """
+    schema = """
+id: https://example.org/abstract_range
+name: abstract_range
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Thing:
+    tree_root: true
+    slots:
+      - detail
+      - details
+
+  AbstractDetail:
+    abstract: true
+    slots:
+      - shared_field
+
+  PersonDetail:
+    is_a: AbstractDetail
+    slots:
+      - given_name
+
+  OrgDetail:
+    is_a: AbstractDetail
+    slots:
+      - org_name
+
+slots:
+  detail:
+    range: AbstractDetail
+    inlined: true
+  details:
+    range: AbstractDetail
+    inlined: true
+    inlined_as_list: true
+    multivalued: true
+  shared_field:
+  given_name:
+  org_name:
+"""
+    module = make_python(schema)
+
+    # Single-valued case: dict with a subclass-only field dispatches to that subclass
+    thing = module.Thing(detail={"given_name": "Alice"})
+    assert isinstance(thing.detail, module.PersonDetail)
+    assert thing.detail.given_name == "Alice"
+
+    # Different subclass, different field
+    thing2 = module.Thing(detail={"org_name": "Acme"})
+    assert isinstance(thing2.detail, module.OrgDetail)
+    assert thing2.detail.org_name == "Acme"
+
+    # An already-constructed concrete instance is preserved unchanged
+    p = module.PersonDetail(given_name="Bob")
+    thing3 = module.Thing(detail=p)
+    assert thing3.detail is p
+
+    # Multivalued, inlined-as-list with mixed concrete subclasses
+    thing4 = module.Thing(details=[{"given_name": "Carol"}, {"org_name": "Beta"}])
+    assert isinstance(thing4.details[0], module.PersonDetail)
+    assert isinstance(thing4.details[1], module.OrgDetail)
+
+
 def test_sort_classes_unresolved_parent_raises_value_error():
     """Unresolved parent references should fail with a clear ValueError."""
     classes = [ClassDefinition(name="Child", is_a="MissingParent")]
