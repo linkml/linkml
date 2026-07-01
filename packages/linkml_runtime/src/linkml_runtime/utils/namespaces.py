@@ -226,6 +226,17 @@ class Namespaces(CaseInsensitiveDict):
             prefix, local = self._base_key, uri_or_curie_str
 
         if prefix not in self:
+            if prefix == self._base_key:
+                # The value is a plain string (no scheme, no CURIE prefix) so we
+                # fell back to the base IRI to produce absolute URI - but no base
+                # is registered. So print root cause instead of leaking internal
+                # "@base" as if it were a CURIE prefix or useful info (its not).
+                raise ValueError(
+                    f"{TypedNode.yaml_loc(uri_or_curie)}Cannot expand plain identifier "
+                    f"{uri_or_curie_str!r} to a URI: no base IRI is registered. Register one "
+                    f"via the schema's default_prefix, or pass a base in the prefix map (e.g. "
+                    f'{{"@base": "https://example.org/"}}).'
+                )
             raise ValueError(f"{TypedNode.yaml_loc(uri_or_curie)}Unknown CURIE prefix: {prefix}")
         return URIRef(self.join(self[prefix], local))
 
