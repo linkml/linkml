@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           version: ${{ env.UV_VERSION }}
 
@@ -70,7 +70,7 @@ jobs:
           git fetch upstream --tags
 
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -86,8 +86,10 @@ jobs:
       - name: Setup Graphviz
         uses: ts-graphviz/setup-graphviz@v2.0.2
       - name: Test linkml package
+        # Notebook tests run their own `!uv pip install` cells that mutate the
+        # shared venv; they run in the isolated `test_notebooks` job instead (#3583).
         run: |
-          uv run pytest tests/linkml/ --with-network -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
+          uv run pytest tests/linkml/ --ignore=tests/linkml/test_notebooks --with-network -m "not kroki" -n auto --dist loadgroup --cov --cov-report xml:coverage-linkml.xml --cov-report term-missing
         shell: bash
       - name: Test linkml-runtime package
         run: |
@@ -97,7 +99,7 @@ jobs:
         shell: bash
       - name: Upload linkml coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v7.0.0
         with:
           name: codecov-linkml-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -106,7 +108,7 @@ jobs:
           fail_ci_if_error: true
       - name: Upload runtime coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v7.0.0
         with:
           name: codecov-runtime-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -131,7 +133,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
@@ -152,11 +154,58 @@ jobs:
           uv run coverage report -m
       - name: Upload linkml slow test coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v7.0.0
         with:
           name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage-linkml-slow.xml
+          flags: linkml
+          fail_ci_if_error: true
+
+  test_notebooks:
+    name: Notebook Tests
+    # Notebooks execute `!uv pip install ... --upgrade` cells that mutate the
+    # venv off the lock. Run them in a dedicated job with its own fresh runner
+    # so they cannot pollute the primary test environment (#3581, #3583).
+    # Linux only: notebook tests are skipped on Windows.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest ]
+        python-version: [ "3.10", "3.13" ]
+    needs:
+      - quality-checks
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        id: setup-python
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync --all-groups
+      - name: Run notebook tests
+        # Run serially (no xdist): concurrent `!uv pip install` would race on the venv.
+        run: |
+          uv run pytest tests/linkml/test_notebooks/ --with-network -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
+      - name: Upload notebook coverage
+        if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
+        uses: codecov/codecov-action@v7.0.0
+        with:
+          name: codecov-notebooks-${{ matrix.os }}-${{ matrix.python-version }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage-notebooks.xml
           flags: linkml
           fail_ci_if_error: true
 
@@ -177,7 +226,7 @@ jobs:
           python-version: 3.13
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@v8.2.0
         with:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives

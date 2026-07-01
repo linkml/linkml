@@ -54,6 +54,15 @@ from linkml.generators import (
     ShExGenerator,
     sqlalchemygen,
 )
+
+try:
+    from linkml.generators.bigquerygen import BigQueryGenerator
+
+    _BQ_AVAILABLE = True
+except ImportError:
+    BigQueryGenerator = None  # type: ignore[assignment,misc]
+    _BQ_AVAILABLE = False
+
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
@@ -85,12 +94,13 @@ PANDERA_POLARS_CLASS = "pandera_polars_class"
 DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
+SQL_DDL_BIGQUERY = "sql_ddl_bigquery"
 OWL = "owl"
 GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, Any]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
     JAVA: generators.JavaGenerator,
-    JSON_SCHEMA: generators.JsonSchemaGenerator,
+    JSON_SCHEMA: (generators.JsonSchemaGenerator, {"not_closed": False}),
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
     JSONLD: generators.JSONLDGenerator,
@@ -116,6 +126,9 @@ GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, A
         },
     ),
 }
+
+if _BQ_AVAILABLE:
+    GENERATORS[SQL_DDL_BIGQUERY] = (BigQueryGenerator, {"dataset": "compliance_test"})
 
 
 class ValidationBehavior(str, enum.Enum):
