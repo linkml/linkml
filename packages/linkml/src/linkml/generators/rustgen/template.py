@@ -336,12 +336,17 @@ class RustProperty(RustTemplateModel):
 
     @computed_field
     def merge_strategy(self) -> str:
-        if self.type_.optional:
+        if self.type_.containerType == ContainerType.MAPPING:
+            # Maps merge per-key so an override (e.g. slot_usage annotations)
+            # folds into the inherited map instead of replacing it wholesale.
+            # Optional maps need a helper that handles the outer Option.
+            if self.type_.optional:
+                return "strategy = option_map_overwrite"
+            return "strategy = merge::hashmap::overwrite"
+        elif self.type_.optional:
             return "strategy = overwrite_except_none"
         elif self.type_.containerType == ContainerType.LIST:
             return "skip"
-        elif self.type_.containerType == ContainerType.MAPPING:
-            return "strategy = merge::hashmap::overwrite"
         else:
             return "skip"
 
@@ -836,6 +841,15 @@ class RustFile(RustTemplateModel):
     def needs_overwrite_except_none(self) -> bool:
         """Whether any struct uses the custom merge helper."""
         return any(s.generate_merge for s in self.structs)
+
+    @computed_field
+    def needs_option_map_overwrite(self) -> bool:
+        """Whether any merged optional map field needs the per-key helper."""
+        return any(
+            p.generate_merge and p.type_.optional and p.type_.containerType == ContainerType.MAPPING
+            for s in self.structs
+            for p in s.properties
+        )
 
 
 class RangeEnum(RustTemplateModel):
