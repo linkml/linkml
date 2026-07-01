@@ -6,6 +6,7 @@ import pytest
 from hbreader import FileInfo
 
 from linkml_runtime.dumpers import yaml_dumper
+from linkml_runtime.linkml_model.meta import SchemaDefinition
 from linkml_runtime.loaders import RDFLoader, json_loader, rdf_loader, yaml_loader
 from linkml_runtime.utils.yamlutils import YAMLRoot
 from tests.linkml_runtime.test_loaders_dumpers import LD_11_DIR, LD_11_SSL_SVR, LD_11_SVR
@@ -37,6 +38,49 @@ def context_server():
 
 def test_yaml_loader():
     loader_test("obo_sample.yaml", Package, yaml_loader)
+
+
+# Minimal schema used to exercise ``source_file`` assignment. Small enough to inline both as a
+# file and as a string, so the file/string branches can be compared directly.
+_SOURCE_FILE_SCHEMA = (
+    "id: https://example.org/source_file_test\n"
+    "name: source_file_test\n"
+    "prefixes:\n"
+    "  linkml: https://w3id.org/linkml/\n"
+    "default_range: string\n"
+)
+
+
+def test_yaml_loader_sets_source_file_for_path(tmp_path):
+    """When a schema is loaded from a file, its ``source_file`` attribute is set to that path.
+
+    This is relied on for resolving relative ``imports`` against the schema's location.
+    """
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA)
+
+    # str path
+    schema = yaml_loader.load(str(schema_path), target_class=SchemaDefinition)
+    assert schema.source_file == str(schema_path)
+
+    # Path object (parent annotation allows Path; loader coerces os.PathLike)
+    schema_from_path = yaml_loader.load(schema_path, target_class=SchemaDefinition)
+    assert schema_from_path.source_file == str(schema_path)
+
+
+def test_yaml_loader_leaves_source_file_unset_for_string():
+    """Loading inline schema text leaves ``source_file`` unset (no path to record)."""
+    schema = yaml_loader.load(_SOURCE_FILE_SCHEMA, target_class=SchemaDefinition)
+    assert schema.source_file is None
+
+
+def test_yaml_loader_does_not_overwrite_existing_source_file(tmp_path):
+    """A ``source_file`` already present in the loaded schema is preserved, not clobbered."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(_SOURCE_FILE_SCHEMA + "source_file: original.yaml\n")
+
+    schema = yaml_loader.load(str(schema_path), target_class=SchemaDefinition)
+    assert schema.source_file == "original.yaml"
 
 
 def test_json_loader_path():
