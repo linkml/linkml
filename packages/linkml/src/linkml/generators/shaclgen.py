@@ -75,6 +75,10 @@ class ShaclGenerator(Generator):
     """
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
+    stable_blank_node_labels: bool = False
+    """If True, label blank nodes by a hash of their subtree content instead of
+    RDFC-1.0's ordinal ``c14nN`` labels, so a small schema change yields a small
+    diff (change-locality).  See ``linkml_runtime.utils.rdf_canonicalize``."""
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -95,7 +99,7 @@ class ShaclGenerator(Generator):
     def serialize(self, **args) -> str:
         g = self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(g, output_format=fmt)
+        return canonicalize_rdf_graph(g, output_format=fmt, stable_blank_node_labels=self.stable_blank_node_labels)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview
@@ -526,6 +530,13 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
     "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--stable-blank-node-labels/--no-stable-blank-node-labels",
+    default=False,
+    show_default=True,
+    help="Label blank nodes by a hash of their subtree content instead of RDFC-1.0's ordinal c14nN labels, "
+    "so a small schema change produces a small diff. Opt-in; output stays isomorphic to the default.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

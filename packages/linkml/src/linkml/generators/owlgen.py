@@ -133,6 +133,11 @@ class OwlSchemaGenerator(Generator):
 
     add_root_classes: bool = False
 
+    stable_blank_node_labels: bool = False
+    """If True, label blank nodes by a hash of their subtree content instead of
+    RDFC-1.0's ordinal ``c14nN`` labels, so a small schema change yields a small
+    diff (change-locality).  See ``linkml_runtime.utils.rdf_canonicalize``."""
+
     add_ols_annotations: bool = True
     graph: Graph = field(default_factory=Graph)
     """Mutable graph that is being built up during OWL generation.
@@ -300,7 +305,9 @@ class OwlSchemaGenerator(Generator):
         """
         self.as_graph()
         fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
-        return canonicalize_rdf_graph(self.graph, output_format=fmt)
+        return canonicalize_rdf_graph(
+            self.graph, output_format=fmt, stable_blank_node_labels=self.stable_blank_node_labels
+        )
 
     def add_metadata(self, e: Definition | PermissibleValue, uri: URIRef) -> None:
         """
@@ -1666,6 +1673,16 @@ class OwlSchemaGenerator(Generator):
         "instead of owl:DatatypeProperty with rdfs:range xsd:anyURI (literal). "
         "Aligns OWL output with the SHACL generator (sh:nodeKind sh:IRI) and "
         "the JSON-LD context generator (--xsd-anyuri-as-iri → @type: @id)."
+    ),
+)
+@click.option(
+    "--stable-blank-node-labels/--no-stable-blank-node-labels",
+    default=False,
+    show_default=True,
+    help=(
+        "Label blank nodes by a hash of their subtree content instead of RDFC-1.0's "
+        "ordinal c14nN labels, so a small schema change produces a small diff. "
+        "Opt-in; output stays isomorphic to the default."
     ),
 )
 @click.version_option(__version__, "-V", "--version")

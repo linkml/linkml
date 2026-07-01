@@ -1169,3 +1169,14 @@ classes:
     uri_ref = props["https://example.org/uriRef"]
     uri_kinds = list(g.objects(uri_ref, SH.nodeKind))
     assert SH.IRI in uri_kinds, f"Expected sh:IRI for uri, got {uri_kinds}"
+
+
+def test_stable_blank_node_labels(kitchen_sink_path):
+    """--stable-blank-node-labels yields content-hash labels, isomorphic to the default."""
+    default = ShaclGenerator(kitchen_sink_path, mergeimports=True).serialize()
+    hashed = ShaclGenerator(kitchen_sink_path, mergeimports=True, stable_blank_node_labels=True).serialize()
+    assert "_:c14n" in default, "expected ordinal c14n labels by default"
+    assert "_:c14n" not in hashed, "opt-in output should not contain ordinal c14n labels"
+    g_default = rdflib.Graph().parse(data=default, format="turtle")
+    g_hashed = rdflib.Graph().parse(data=hashed, format="turtle")
+    assert rdflib.compare.isomorphic(g_default, g_hashed), "opt-in relabeling changed the graph"
