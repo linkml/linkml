@@ -11,22 +11,28 @@ class EnumDefinitionMeta(type):
         cls._addvals()
 
     def __getitem__(cls, item):
-        return cls.__dict__[item]
+        for klass in cls.__mro__:
+            if item in klass.__dict__:
+                return klass.__dict__[item]
+        raise KeyError(item)
 
     def __setitem__(cls, key, value):
         if key in cls.__dict__:
             raise ValueError(f"{cls.__name__} - {key} already assigned")
         cls.__dict__[key] = value
 
-    def __setattr__(cls, key, value):
-        from linkml_runtime.linkml_model.meta import PermissibleValue
-
-        if cls._defn.code_set and isinstance(value, PermissibleValue) and value.meaning:
-            print(f"Validating {value.meaning} against {cls._defn.code_set}")
-        super().__setattr__(key, value)
-
     def __contains__(cls, item) -> bool:
-        return item in cls.__dict__
+        # Accept strings, ``PermissibleValue`` instances, and ``EnumDefinitionImpl``
+        # instances as membership tests against the class's permissible value names.
+        # Walk the MRO so that empty wrapper subclasses inherit their parent
+        # enum's permissible values.
+        if isinstance_dt(item, "EnumDefinitionImpl"):
+            code = getattr(item, "_code", None)
+            if code is not None:
+                item = code.text
+        elif isinstance_dt(item, "PermissibleValue"):
+            item = item.text
+        return any(item in klass.__dict__ for klass in cls.__mro__)
 
 
 def isinstance_dt(cls: type, inst: str) -> bool:
@@ -123,3 +129,28 @@ class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     def __repr__(self) -> str:
         rlist = [(f.name, getattr(self._code, f.name)) for f in fields(self._code)]
         return self.__class__.__name__ + "(" + ", ".join([f"{f[0]}={repr(f[1])}" for f in rlist if f[1]]) + ")"
+
+    def __eq__(self, other) -> bool:
+        """Equality against another enum instance, a ``PermissibleValue``, or a ``str``.
+
+        Two enumerated values are considered equal when they share the same
+        underlying permissible value text.  Comparison with a bare ``str`` (or
+        ``PermissibleValue``) is supported so that user code can write
+        ``MyEnum.A == "A"`` in the same way as stdlib ``StrEnum``.
+        """
+        if isinstance(other, EnumDefinitionImpl):
+            return self._code.text == other._code.text
+        if isinstance_dt(other, "PermissibleValue"):
+            return self._code.text == other.text
+        if isinstance(other, str):
+            return self._code.text == other
+        return NotImplemented
+
+    def __ne__(self, other) -> bool:
+        result = self.__eq__(other)
+        if result is NotImplemented:
+            return result
+        return not result
+
+    def __hash__(self) -> int:
+        return hash(self._code.text)

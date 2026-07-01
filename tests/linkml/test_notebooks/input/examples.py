@@ -6,6 +6,7 @@ from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.pythongen import PythonGenerator
 from linkml.generators.shexgen import ShExGenerator
 from linkml_runtime.dumpers import json_dumper
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 yaml = """
 id: http://example.org/sample/example1
@@ -108,7 +109,7 @@ jsonld = json_dumper.dumps(joe_smith, cntxt)
 print(jsonld)
 g = Graph()
 g.parse(data=jsonld, format="json-ld")
-print(g.serialize(format="turtle"))
+print(canonicalize_rdf_graph(g, output_format="turtle"))
 
 
 shex = ShExGenerator(yaml).serialize(collections=False)

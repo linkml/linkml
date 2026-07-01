@@ -60,6 +60,23 @@ def test_no_injection(schema: str) -> None:
     assert "FOREIGN KEY" not in ddl
 
 
+def test_rename_foreign_keys_flag(schema: str) -> None:
+    """rename_foreign_keys=True should suffix every class-range FK column with
+    the target's PK name (matching SQLAlchemy 2.x declarative output), so the
+    DDL can be paired with that ORM. Default off preserves bare slot names."""
+    # Default: non-inlined FK slot keeps its bare slot name.
+    default_ddl = SQLTableGenerator(schema).generate_ddl()
+    assert re.search(r"related_to\s+TEXT", default_ddl)
+    assert 'FOREIGN KEY(related_to) REFERENCES "Person"' in default_ddl
+
+    # Flag on: column is renamed to <slot>_<target_pk>.
+    aligned_ddl = SQLTableGenerator(schema, rename_foreign_keys=True).generate_ddl()
+    assert re.search(r"related_to_id\s+TEXT", aligned_ddl)
+    assert 'FOREIGN KEY(related_to_id) REFERENCES "Person"' in aligned_ddl
+    # And the bare-name column no longer appears for that FK.
+    assert not re.search(r"\brelated_to\s+TEXT", aligned_ddl)
+
+
 def test_dialect() -> None:
     """Test dialect options."""
     b = SchemaBuilder()
