@@ -87,6 +87,172 @@ classes:
     assert all("type" not in member for member in primary_topic["anyOf"])
 
 
+def test_issue_3684_inlined_all_of_class_union_keeps_refs():
+    """Inlined all_of union of classes with identifiers should produce $refs under allOf."""
+    schema = """
+id: https://example.org/test_3684_all_of
+name: test_3684_all_of
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Any:
+    class_uri: linkml:Any
+  Catalogue:
+    attributes:
+      id:
+        identifier: true
+      title:
+  Dataset:
+    attributes:
+      id:
+        identifier: true
+      name:
+  Record:
+    tree_root: true
+    attributes:
+      primary_topic:
+        range: Any
+        required: true
+        inlined: true
+        all_of:
+          - range: Catalogue
+          - range: Dataset
+"""
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    primary_topic = generated_schema["$defs"]["Record"]["properties"]["primary_topic"]
+    refs = {member.get("$ref") for member in primary_topic["allOf"]}
+    assert refs == {"#/$defs/Catalogue", "#/$defs/Dataset"}
+    assert all("type" not in member for member in primary_topic["allOf"])
+
+
+def test_issue_3684_inlined_exactly_one_of_class_union_keeps_refs():
+    """Inlined exactly_one_of union of classes with identifiers should produce $refs under oneOf."""
+    schema = """
+id: https://example.org/test_3684_exactly_one_of
+name: test_3684_exactly_one_of
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Any:
+    class_uri: linkml:Any
+  Catalogue:
+    attributes:
+      id:
+        identifier: true
+      title:
+  Dataset:
+    attributes:
+      id:
+        identifier: true
+      name:
+  Record:
+    tree_root: true
+    attributes:
+      primary_topic:
+        range: Any
+        required: true
+        inlined: true
+        exactly_one_of:
+          - range: Catalogue
+          - range: Dataset
+"""
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    primary_topic = generated_schema["$defs"]["Record"]["properties"]["primary_topic"]
+    refs = {member.get("$ref") for member in primary_topic["oneOf"]}
+    assert refs == {"#/$defs/Catalogue", "#/$defs/Dataset"}
+    assert all("type" not in member for member in primary_topic["oneOf"])
+
+
+def test_issue_3684_inlined_none_of_class_union_keeps_refs():
+    """Inlined none_of union of classes with identifiers should produce $refs under not.anyOf."""
+    schema = """
+id: https://example.org/test_3684_none_of
+name: test_3684_none_of
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Any:
+    class_uri: linkml:Any
+  Catalogue:
+    attributes:
+      id:
+        identifier: true
+      title:
+  Dataset:
+    attributes:
+      id:
+        identifier: true
+      name:
+  Record:
+    tree_root: true
+    attributes:
+      primary_topic:
+        range: Any
+        required: true
+        inlined: true
+        none_of:
+          - range: Catalogue
+          - range: Dataset
+"""
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    primary_topic = generated_schema["$defs"]["Record"]["properties"]["primary_topic"]
+    refs = {member.get("$ref") for member in primary_topic["not"]["anyOf"]}
+    assert refs == {"#/$defs/Catalogue", "#/$defs/Dataset"}
+    assert all("type" not in member for member in primary_topic["not"]["anyOf"])
+
+
+def test_issue_3684_inlined_as_list_class_union_keeps_refs():
+    """An inlined_as_list multivalued any_of union of classes should produce array of $refs."""
+    schema = """
+id: https://example.org/test_3684_inlined_as_list
+name: test_3684_inlined_as_list
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Any:
+    class_uri: linkml:Any
+  Catalogue:
+    attributes:
+      id:
+        identifier: true
+      title:
+  Dataset:
+    attributes:
+      id:
+        identifier: true
+      name:
+  Record:
+    tree_root: true
+    attributes:
+      primary_topics:
+        range: Any
+        required: true
+        multivalued: true
+        inlined_as_list: true
+        any_of:
+          - range: Catalogue
+          - range: Dataset
+"""
+    generated_schema = json.loads(JsonSchemaGenerator(schema).serialize())
+    primary_topics = generated_schema["$defs"]["Record"]["properties"]["primary_topics"]
+    assert primary_topics["type"] == "array"
+    refs = {member.get("$ref") for member in primary_topics["items"]["anyOf"]}
+    assert refs == {"#/$defs/Catalogue", "#/$defs/Dataset"}
+    assert all("type" not in member for member in primary_topics["items"]["anyOf"])
+
+
 def test_jsonschema_integration(kitchen_sink_path, input_path):
     """Integration test for JsonSchemaGenerator.
 
