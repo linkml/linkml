@@ -43,8 +43,14 @@ def isinstance_dt(cls: type, inst: str) -> bool:
 class EnumDefinitionImpl(YAMLRoot, metaclass=EnumDefinitionMeta):
     _defn: "EnumDefinition" = None  # Overridden by implementation
 
-    def __init__(self, code: str | Curie) -> None:
-        if isinstance_dt(code, "PermissibleValue"):
+    def __init__(self, code: "str | Curie | EnumDefinitionImpl") -> None:
+        # Fast-path: if code is already an EnumDefinitionImpl instance (e.g. a
+        # subclass enum passed through a duplicate cast in generated __post_init__
+        # code), extract its text and re-resolve in this class's namespace.  This
+        # makes the constructor idempotent across subclass-to-parent-class casts.
+        if isinstance(code, EnumDefinitionImpl):
+            key = code._code.text
+        elif isinstance_dt(code, "PermissibleValue"):
             key = code.text
         elif isinstance(code, Curie):
             key = str(code)
