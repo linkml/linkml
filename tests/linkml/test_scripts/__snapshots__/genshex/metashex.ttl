@@ -238,7 +238,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/cordialness> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 1 ;
                 shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;

@@ -57,6 +57,25 @@ _base_implied_patterns: dict[str, str] = {
 }
 
 
+def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
+    """Return *subschemas* with duplicate entries removed, preserving order.
+
+    Two subschemas are considered duplicates when their JSON representations are
+    identical.  This can occur, for example, when multiple ``any_of`` branches
+    point to different classes whose identifier slot shares the same scalar type
+    (e.g. both ``Person.id`` and ``Organization.id`` have ``range: string``),
+    producing redundant ``{"type": "string"}`` entries.
+    """
+    seen: set[str] = set()
+    result: list[JsonSchema] = []
+    for schema in subschemas:
+        key = json.dumps(schema, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            result.append(schema)
+    return result
+
+
 def _slot_examples_for_json_schema(
     examples: list[Example],
     *,
@@ -224,7 +243,8 @@ class JsonSchema(dict):
                 self._lax_forward_refs[canonical_name] = identifier_name
             else:
                 lax_cls = deepcopy(self["$defs"][canonical_name])
-                lax_cls["required"].remove(identifier_name)
+                if "required" in lax_cls and identifier_name in lax_cls["required"]:
+                    lax_cls["required"].remove(identifier_name)
                 self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
 
     def add_property(
@@ -434,6 +454,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
+        top_additional_properties = self.not_closed
+        if self.top_class:
+            top_class_def = self.schemaview.get_class(self.top_class)
+            if top_class_def is not None:
+                top_additional_properties = self.get_additional_properties(top_class_def)
+
         self.top_level_schema = JsonSchema(
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -442,7 +468,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
-                "additionalProperties": self.not_closed,
+                "additionalProperties": top_additional_properties,
             }
         )
 
@@ -850,19 +876,27 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
-            bool_subschema["anyOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            bool_subschema["anyOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            )
             if not slot.required and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
-            bool_subschema["allOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            bool_subschema["allOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            )
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
-            bool_subschema["oneOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            bool_subschema["oneOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            )
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
-                "anyOf": [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                "anyOf": _deduplicate_subschemas(
+                    [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                )
             }
 
         if bool_subschema:
@@ -920,7 +954,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.is_class_unconstrained(cls):
             return True
         elif not cls.extra_slots:
-            return False
+            return self.not_closed
         elif cls.extra_slots.allowed is not None:
             return cls.extra_slots.allowed
         elif cls.extra_slots.range_expression:
