@@ -275,6 +275,14 @@ class NoUndeclaredRangesRule(LinterRule):
             for slot in schema_view.class_induced_slots(class_name):
                 slot_range: set[ElementName] = set(schema_view.slot_range_as_union(slot))
 
+                # slot_range_as_union includes a None entry for a slot whose
+                # top-level `range` is unset. That is only undeclared when the
+                # slot offers no other range; when a boolean range expression
+                # (any_of / exactly_one_of) supplies concrete ranges, the None
+                # is expected and must not be reported (#3477).
+                if None in slot_range and len(slot_range) > 1:
+                    slot_range.discard(None)
+
                 # check slot range is valid
                 for range_name in slot_range:
                     if range_name not in all_possible_ranges:

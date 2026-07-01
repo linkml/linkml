@@ -519,6 +519,26 @@ def test_ignore_subclass_properties(input_path):
     )
 
 
+def test_ignored_properties_list_is_sorted(input_path):
+    """sh:ignoredProperties RDF list elements must be in deterministic order.
+
+    Regression test for https://github.com/linkml/linkml/issues/3516: the
+    set holding ignored properties was iterated in PYTHONHASHSEED-dependent
+    order, producing non-isomorphic graphs across processes that
+    RDFC-1.0 canonicalization could not normalize.
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/subclass_ignored_properties.yaml"), mergeimports=True).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    lists_checked = 0
+    for _, _, list_node in g.triples((None, SH.ignoredProperties, None)):
+        elements = [str(e) for e in Collection(g, list_node)]
+        assert elements == sorted(elements), f"sh:ignoredProperties list not sorted: {elements}"
+        lists_checked += 1
+    assert lists_checked == 7
+
+
 def test_multivalued_slot_min_cardinality(input_path):
     shacl = ShaclGenerator(input_path("shaclgen/cardinality.yaml"), mergeimports=True).serialize()
 
