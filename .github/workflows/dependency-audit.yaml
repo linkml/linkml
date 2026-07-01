@@ -1,0 +1,67 @@
+name: Audit dependencies
+
+# Global environment variables applied to all steps
+env:
+  UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
+  UV_MALWARE_CHECK: "1"    # Automatically blocks malicious installs on sync/run
+  UV_EXCLUDE_NEWER: "7 days"  # Mirror the pyproject.toml cooldown for this job's resolution
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  security-check:
+    name: Validate Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      # Install the latest uv: the audit/malware-check features are preview-only
+      # and ship in recent releases, so this job intentionally does not pin uv.
+      - name: Install uv and setup uv caching
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        id: setup-python
+        with:
+          python-version: 3.13
+
+      # Step 1: Run uv audit to check for vulnerabilities (CVEs)
+      #
+      # GHSA-6w46-j5rx-g56g (pytest predictable tmpdir path) is fixed only in
+      # pytest 9.0.3, but pytest 9 removed the private _pytest.assertion.util
+      # ._diff_text API that tests/conftest.py depends on. We pin pytest <9
+      # (see packages/linkml/pyproject.toml) and ignore this single test-only,
+      # low-risk advisory until conftest is migrated to stdlib difflib.
+      - name: Audit lockfile for CVEs
+        run: uv audit --ignore GHSA-6w46-j5rx-g56g
+
+      # Step 2: Run a sync. If a package contains known malware,
+      # the OSV-lookup triggers an immediate, non-zero failure exit.
+      #
+      # NOTE: The malware gate only blocks malware that has *already* been
+      # published as an OSV advisory. There is a window between a malicious
+      # upload and its advisory. That gap is covered by uv's dependency
+      # cooldown (`exclude-newer`, a resolution-time setting added in uv
+      # 0.9.17), which is now enabled with a 7-day window in pyproject.toml:
+      #
+      #   [tool.uv]
+      #   exclude-newer = "7 days"
+      #
+      # uv >= 0.9.17 records this as a relative span (`exclude-newer-span = "P7D"`)
+      # in uv.lock rather than an absolute timestamp, which avoids the
+      # per-relock timestamp churn / cross-branch merge conflicts that earlier
+      # uv versions caused (see astral-sh/uv#18708). The UV_EXCLUDE_NEWER env
+      # var above mirrors the setting for this job's resolution.
+      - name: Verify Environment Sync (Anti-Malware Gate)
+        run: uv sync --frozen
