@@ -37,7 +37,16 @@ class DBMLGenerator(Generator):
     def __post_init__(self) -> None:
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        self.schemaview = SchemaView(self.schema)
+        # ``SchemaLoader.resolve()`` strips ``schema.source_file`` to a basename,
+        # so a fresh ``SchemaView(self.schema)`` would later (during lazy
+        # ``load_import``) fall back to ``os.getcwd()`` when resolving sibling-
+        # relative imports. Build the view from the original schema location
+        # (preserved on ``self.schema_location``) when it's available so
+        # ``SchemaView`` sees a real path and can resolve imports correctly.
+        if self.schema_location:
+            self.schemaview = SchemaView(self.schema_location, base_dir=self.base_dir, importmap=self.importmap)
+        else:
+            self.schemaview = SchemaView(self.schema, base_dir=self.base_dir, importmap=self.importmap)
 
     def serialize(self) -> str:
         """
@@ -70,9 +79,13 @@ class DBMLGenerator(Generator):
         """
         dbml = [f"Table {camelcase(class_name)} {{"]
 
-        for slot_name in self.schemaview.class_induced_slots(class_name):
-            slot = self.schemaview.get_slot(slot_name.name)
-            dbml.append(self._generate_column(slot))
+        # ``class_induced_slots`` already returns slot definitions with
+        # inherited and inferred metadata applied (e.g. ``identifier=True``
+        # implies ``required=True``). Use the induced slot directly rather than
+        # re-fetching the raw slot via ``get_slot`` — that fetch would discard
+        # the inferred attributes the column generator depends on.
+        for induced_slot in self.schemaview.class_induced_slots(class_name):
+            dbml.append(self._generate_column(induced_slot))
 
         dbml.append("}\n")
         return "\n".join(dbml)
@@ -108,23 +121,33 @@ class DBMLGenerator(Generator):
         """
         relationships = []
         for class_name, class_def in self.schemaview.all_classes().items():
-            for slot_name in self.schemaview.class_induced_slots(class_name):
-                slot = self.schemaview.get_slot(slot_name.name)
-
+            # Use induced slots directly so inferred attributes (e.g. range)
+            # are honored; see ``_generate_table`` for the same reasoning.
+            for slot in self.schemaview.class_induced_slots(class_name):
                 # Check if the slot references another class
                 if slot.range in self.schemaview.all_classes():
                     # Find the identifier slot of the referenced class
                     identifier_slot_name = next(
                         (
-                            slot_name.name
-                            for slot_name in self.schemaview.class_induced_slots(slot.range)
-                            if self.schemaview.get_slot(slot_name.name).identifier
+                            target_slot.name
+                            for target_slot in self.schemaview.class_induced_slots(slot.range)
+                            if target_slot.identifier
                         ),
                         None,
                     )
 
                     if identifier_slot_name is None:
-                        raise ValueError(f"Referenced class '{slot.range}' does not have an identifier slot.")
+                        # Inlined / embedded references — where the referenced
+                        # class has no identifier — are a legitimate LinkML
+                        # pattern. DBML supports them: the foreign-key column
+                        # simply has no ``Ref:`` line. Skip rather than raise.
+                        self.logger.debug(
+                            "Skipping DBML relationship for %s.%s -> %s: referenced class has no identifier slot.",
+                            class_name,
+                            slot.name,
+                            slot.range,
+                        )
+                        continue
 
                     # Generate the DBML relationship
                     relationships.append(
