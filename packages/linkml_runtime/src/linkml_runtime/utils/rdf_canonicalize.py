@@ -35,13 +35,22 @@ with stable blank node labels and sorted triples.
 
 import hashlib
 import io
-import logging
 import re
+import warnings
 
 import pyoxigraph as ox
 import rdflib
 
-logger = logging.getLogger(__name__)
+
+class RDFCanonicalizationWarning(UserWarning):
+    """Issued when ``canonicalize_rdf_graph`` produces output via a degraded path.
+
+    Surfaced via ``warnings.warn`` (not the ``logging`` module) so that it is
+    visible by default to both CLI users and library API consumers regardless
+    of logging configuration. Filterable with
+    ``warnings.filterwarnings("ignore", category=RDFCanonicalizationWarning)``.
+    """
+
 
 # Mapping from rdflib/LinkML format strings to pyoxigraph RdfFormat objects.
 _FORMAT_MAP: dict[str, ox.RdfFormat] = {
@@ -67,28 +76,95 @@ _PREFIX_FORMATS = frozenset({ox.RdfFormat.TURTLE, ox.RdfFormat.TRIG, ox.RdfForma
 _PN_LOCAL_ESC_UNESCAPE = re.compile(r"\\([_~.\-!$&'()*+,;=/?#@%])")
 
 
+_CURIE_TRAILING_DOT_PATTERN = re.compile(
+    r"(?<![<\w])"
+    r"([A-Za-z_][\w.-]*?):"
+    r"([^\s,;()<>\"'\[\]]*?\\\.)"
+    r"(?=\s)"
+)
+
+
+def _iter_turtle_structural_spans(turtle_text: str):
+    """Yield ``(start, end, is_structural)`` spans of a Turtle string.
+
+    Structural spans are regions outside of string literals, IRI refs, and
+    line comments — i.e. the only places where a CURIE can syntactically
+    appear. Non-structural spans (literal contents, IRI bodies, comments)
+    are yielded as-is so they round-trip unchanged.
+
+    Handles single- and triple-quoted literals with backslash escapes for
+    both ``"`` and ``'`` delimiters, ``<...>`` IRI refs, and ``#...`` line
+    comments.
+    """
+    n = len(turtle_text)
+    i = 0
+    while i < n:
+        ch = turtle_text[i]
+        if ch in ('"', "'"):
+            # String literal — find matching delimiter, respecting triple-
+            # quote form and backslash escapes.
+            delim = ch
+            triple = turtle_text[i : i + 3] == delim * 3
+            end_marker = delim * 3 if triple else delim
+            j = i + len(end_marker)
+            while j < n:
+                if turtle_text[j] == "\\" and j + 1 < n:
+                    j += 2
+                    continue
+                if turtle_text[j : j + len(end_marker)] == end_marker:
+                    j += len(end_marker)
+                    break
+                j += 1
+            yield i, j, False
+            i = j
+        elif ch == "<":
+            # IRI ref — find closing '>' on the same logical line.
+            j = turtle_text.find(">", i + 1)
+            if j == -1:
+                yield i, n, False
+                i = n
+            else:
+                yield i, j + 1, False
+                i = j + 1
+        elif ch == "#":
+            # Line comment — to end of line.
+            j = turtle_text.find("\n", i)
+            j = n if j == -1 else j
+            yield i, j, False
+            i = j
+        else:
+            # Structural region — accumulate until the next literal / IRI /
+            # comment opener. Treat ``\X`` as a PN_LOCAL_ESC escape (two
+            # chars) so that ``\#`` and ``\.`` inside a CURIE local part
+            # don't trigger comment / boundary handling.
+            start = i
+            while i < n:
+                c = turtle_text[i]
+                if c == "\\" and i + 1 < n:
+                    i += 2
+                    continue
+                if c in ('"', "'", "<", "#"):
+                    break
+                i += 1
+            yield start, i, True
+
+
 def _expand_trailing_dot_curies(turtle_text: str, prefixes: dict[str, str]) -> str:
     """Replace CURIEs whose local part ends in ``\\.`` with full ``<IRI>`` form.
 
     rdflib's notation3 parser rejects PN_LOCAL ending in an escaped dot
-    even though Turtle permits it (PN_LOCAL_ESC).  pyoxigraph emits this
-    form for IRIs ending in ``.`` (e.g. ``biolink:StrandEnum#.``).  We
+    even though Turtle permits it (PN_LOCAL_ESC). pyoxigraph emits this
+    form for IRIs ending in ``.`` (e.g. ``biolink:StrandEnum#.``). We
     rewrite each such CURIE to its expanded ``<IRI>`` form so the output
     round-trips through rdflib.
+
+    The rewrite is applied only to *structural* spans of the document —
+    string literals, IRI refs, and comments are left untouched. This is
+    what prevents the regex from mangling CURIE-shaped substrings that
+    happen to appear inside a literal value.
     """
     if not prefixes:
         return turtle_text
-
-    # Match: a prefix name, ':', a local part (no whitespace or token
-    # delimiters), ending in ``\.``, followed by whitespace.  Use a
-    # negative lookbehind to avoid matching inside ``<...>`` or word
-    # characters that would make this a substring of something else.
-    pattern = re.compile(
-        r"(?<![<\w])"
-        r"([A-Za-z_][\w.-]*?):"
-        r"([^\s,;()<>\"'\[\]]*?\\\.)"
-        r"(?=\s)"
-    )
 
     def replace(match: re.Match[str]) -> str:
         prefix = match.group(1)
@@ -99,7 +175,44 @@ def _expand_trailing_dot_curies(turtle_text: str, prefixes: dict[str, str]) -> s
         local = _PN_LOCAL_ESC_UNESCAPE.sub(r"\1", local_escaped)
         return f"<{namespace}{local}>"
 
-    return pattern.sub(replace, turtle_text)
+    parts: list[str] = []
+    for start, end, is_structural in _iter_turtle_structural_spans(turtle_text):
+        chunk = turtle_text[start:end]
+        if is_structural:
+            chunk = _CURIE_TRAILING_DOT_PATTERN.sub(replace, chunk)
+        parts.append(chunk)
+    return "".join(parts)
+
+
+def _iri_terms(triples: list["ox.Triple"]) -> set[str]:
+    """Return the set of IRI strings appearing anywhere in ``triples``.
+
+    Walks subjects, predicates, non-literal objects, and literal datatypes.
+    Used to filter the prefix dict down to namespaces that are actually
+    referenced by the canonicalized graph, so the output isn't padded with
+    unused ``@prefix`` declarations.
+    """
+    iris: set[str] = set()
+    for t in triples:
+        for term in (t.subject, t.predicate, t.object):
+            if isinstance(term, ox.NamedNode):
+                iris.add(term.value)
+            elif isinstance(term, ox.Literal):
+                dt = term.datatype
+                if dt is not None:
+                    iris.add(dt.value)
+    return iris
+
+
+def _filter_prefixes_to_used(prefixes: dict[str, str], used_iris: set[str]) -> dict[str, str]:
+    """Drop prefix bindings whose namespace is not a prefix of any used IRI.
+
+    A prefix is kept if at least one IRI in ``used_iris`` starts with its
+    namespace string. Parent-namespace matches are honored (e.g. a prefix
+    bound to ``http://schema.org/`` is kept when ``http://schema.org/Person``
+    appears in the graph).
+    """
+    return {prefix: ns for prefix, ns in prefixes.items() if any(iri.startswith(ns) for iri in used_iris)}
 
 
 def _is_safe_prefix_iri(iri: str) -> bool:
@@ -223,9 +336,11 @@ def canonicalize_rdf_graph(
     """
     ox_format = _FORMAT_MAP.get(output_format.lower())
     if ox_format is None:
-        logger.warning(
-            "pyoxigraph does not support format %r; falling back to rdflib serializer",
-            output_format,
+        warnings.warn(
+            f"pyoxigraph does not support format {output_format!r}; falling back to "
+            "rdflib serializer. Output will not be deterministically canonicalized.",
+            RDFCanonicalizationWarning,
+            stacklevel=2,
         )
         return graph.serialize(format=output_format)
 
@@ -239,8 +354,12 @@ def canonicalize_rdf_graph(
     try:
         triples = list(ox.parse(io.BytesIO(nt_bytes), format=ox.RdfFormat.N_TRIPLES))
     except SyntaxError:
-        logger.warning(
-            "Graph contains non-standard RDF that pyoxigraph cannot parse; falling back to rdflib serializer"
+        warnings.warn(
+            "Graph contains non-standard RDF (e.g. literal predicates) that pyoxigraph "
+            "cannot parse; falling back to rdflib serializer. Output will not be "
+            "deterministically canonicalized.",
+            RDFCanonicalizationWarning,
+            stacklevel=2,
         )
         return graph.serialize(format=output_format)
 
@@ -287,6 +406,12 @@ def canonicalize_rdf_graph(
             if not _is_safe_prefix_iri(ns_str):
                 continue
             prefixes[str(prefix)] = ns_str
+        # Drop prefix bindings whose namespace is not referenced by any IRI
+        # in the graph. This prevents the rdflib NamespaceManager's default
+        # bindings (~30 well-known vocabularies) from being emitted into
+        # every output file regardless of whether the schema actually uses
+        # them.
+        prefixes = _filter_prefixes_to_used(prefixes, _iri_terms(sorted_triples))
     used_prefixes = prefixes
     try:
         result_bytes = ox.serialize(
@@ -295,12 +420,21 @@ def canonicalize_rdf_graph(
             prefixes=prefixes,
             base_iri=base_iri,
         )
-    except ValueError:
-        # pyoxigraph rejects prefixes with invalid IRIs (e.g. containing
-        # fragment-like characters such as double '#').  Retry without
-        # the offending prefixes by falling back to no prefixes, which
-        # still produces valid (if verbose) Turtle.
-        logger.warning("pyoxigraph rejected one or more prefix IRIs; serializing without prefix declarations")
+    except ValueError as e:
+        # pyoxigraph 0.5.x reports rejected prefix IRIs with a message
+        # that begins with "Invalid prefix" (verified empirically). Only
+        # swallow that case and retry without prefixes — any other
+        # ValueError (e.g. invalid base IRI, or an unrelated future
+        # serializer bug) must propagate so it surfaces as a stack trace
+        # rather than silently dropping all prefix declarations.
+        if not str(e).startswith("Invalid prefix"):
+            raise
+        warnings.warn(
+            f"pyoxigraph rejected one or more prefix IRIs ({e}); serializing without "
+            "prefix declarations. Output remains canonicalized but is more verbose.",
+            RDFCanonicalizationWarning,
+            stacklevel=2,
+        )
         result_bytes = ox.serialize(
             sorted_triples,
             format=ox_format,
