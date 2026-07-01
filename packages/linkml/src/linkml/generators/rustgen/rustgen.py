@@ -574,7 +574,7 @@ class RustGenerator(Generator, LifecycleMixin):
             return RustStructOrSubtypeEnum(
                 enum_name=get_name(cls) + "OrSubtype",
                 struct_names=[get_name(self.schemaview.get_class(d)) for d in descendants],
-                type_designator_name=get_name(td) if td else None,
+                type_designator_field=get_name(td) if td else None,
                 as_key_value=get_key_or_identifier_slot(cls, self.schemaview) is not None,
                 type_designators=td_mapping,
                 key_property_type=key_type,
