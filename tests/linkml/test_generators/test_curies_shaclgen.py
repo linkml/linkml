@@ -1,4 +1,4 @@
-"""Regression test for ISSUE-curies.md (shaclgen)."""
+"""Regression test for curies (shaclgen)."""
 
 from linkml.generators.shaclgen import ShaclGenerator
 

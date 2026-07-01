@@ -1,4 +1,4 @@
-"""Regression test for ISSUE-curies.md (owlgen)."""
+"""Regression test for curies (owlgen)."""
 
 from linkml.generators.owlgen import OwlSchemaGenerator
 
