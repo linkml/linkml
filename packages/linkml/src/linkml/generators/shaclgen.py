@@ -507,7 +507,7 @@ class ShaclGenerator(Generator):
 
         list_node = BNode()
         ignored_properties.add(RDF.type)
-        Collection(g, list_node, list(ignored_properties))
+        Collection(g, list_node, sorted(ignored_properties, key=str))
 
         return list_node
 

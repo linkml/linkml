@@ -100,7 +100,7 @@ GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, A
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
     JAVA: generators.JavaGenerator,
-    JSON_SCHEMA: generators.JsonSchemaGenerator,
+    JSON_SCHEMA: (generators.JsonSchemaGenerator, {"not_closed": False}),
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
     JSONLD: generators.JSONLDGenerator,
