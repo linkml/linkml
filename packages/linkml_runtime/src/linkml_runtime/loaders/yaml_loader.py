@@ -11,6 +11,8 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLRoot
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from pydantic import BaseModel
 
 
@@ -20,7 +22,7 @@ class YAMLLoader(Loader):
     """
 
     def load_as_dict(
-        self, source: str | dict | TextIO, *, base_dir: str | None = None, metadata: FileInfo | None = None
+        self, source: str | dict | TextIO | Path, *, base_dir: str | None = None, metadata: FileInfo | None = None
     ) -> dict | list[dict]:
         if metadata is None:
             metadata = FileInfo()
@@ -38,7 +40,7 @@ class YAMLLoader(Loader):
 
     def load_any(
         self,
-        source: str | dict | TextIO,
+        source: str | dict | TextIO | Path,
         target_class: type[YAMLRoot | BaseModel],
         *,
         base_dir: str | None = None,
