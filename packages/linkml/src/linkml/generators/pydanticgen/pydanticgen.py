@@ -828,6 +828,8 @@ class PydanticGenerator(OOCodeGenerator, LifecycleMixin):
             pyrange = _get_pyrange(t, sv)
         elif slot_range is None:
             pyrange = "str"
+        elif slot_range == "Any":
+            return slot_range
         else:
             # TODO: default ranges in schemagen
             # pyrange = 'str'

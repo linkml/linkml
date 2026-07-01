@@ -107,7 +107,8 @@ markers = [
   "owlgen: Tests for OWL generator",
   "yamlgen: Tests for the YAML generator",
   "yarrrml: End-to-end tests for the YARRRML generator",
-  "typedbgen: Tests for the TypeDB generator"
+  "typedbgen: Tests for the TypeDB generator",
+  "arrays: Array specifications!",
 ]
 
 # https://docs.astral.sh/ruff/settings/

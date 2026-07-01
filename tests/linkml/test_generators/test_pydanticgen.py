@@ -18,6 +18,7 @@ from jinja2 import DictLoader, Environment, Template
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from linkml.generators import pydanticgen as pydanticgen_root
+from linkml.generators.common.array import ArrayValidator
 from linkml.generators.common.lifecycle import TClass, TSlot
 from linkml.generators.pydanticgen import (
     MetadataMode,
@@ -27,7 +28,7 @@ from linkml.generators.pydanticgen import (
     pydanticgen,
     template,
 )
-from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation, ArrayValidator
+from linkml.generators.pydanticgen.array import AnyShapeArray, ArrayRepresentation
 from linkml.generators.pydanticgen.template import (
     ConditionalImport,
     Import,
@@ -46,7 +47,6 @@ from linkml_runtime.linkml_model import ClassDefinition, Definition, SchemaDefin
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.formatutils import camelcase, remove_empty_items, underscore
 from linkml_runtime.utils.schema_builder import SchemaBuilder
-from linkml_runtime.utils.schemaview import load_schema_wrap
 
 from .conftest import MyInjectedClass
 
@@ -1738,55 +1738,6 @@ def test_arrays_anyshape_strict():
 # --------------------------------------------------
 
 
-@pytest.fixture(scope="module")
-def array_anyshape(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "any_shape.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_bounded(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "bounded_dimensions.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_parameterized(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "parameterized_dimensions.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_complex(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "complex_dimensions.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_dtype(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "dtype.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_error_complex_dimensions(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "error_complex_dimensions.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_error_complex_unbounded(input_path) -> SchemaDefinition:
-    schema = str(Path(input_path("arrays")) / "error_complex_unbounded.yaml")
-    return load_schema_wrap(schema)
-
-
-@pytest.fixture(scope="module")
-def array_validator_errors(input_path) -> ClassDefinition:
-    schema_file = str(Path(input_path("arrays")) / "validator_errors.yaml")
-    schema = load_schema_wrap(schema_file)
-    return schema.classes["ErrorRiddenClass"]
-
-
 @pytest.fixture(
     scope="function",
     params=[
@@ -1814,6 +1765,7 @@ class TestCase:
             return pytest.raises(ValidationError)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [TestCase(type="pass", array=np.zeros((3, 4, 5, 6), dtype=dt)) for dt in (int, float, str)]
@@ -1835,6 +1787,7 @@ def test_generate_array_anyshape(case, array_representation, array_anyshape):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -1857,6 +1810,7 @@ def test_generate_array_anyshape_typed(case, array_representation, array_anyshap
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -1881,6 +1835,7 @@ def test_generate_array_dtype_union(case, array_representation, array_dtype):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -1904,6 +1859,7 @@ def test_generate_array_dtype_numpy(case, array_representation, array_dtype):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 def test_generate_array_dtype_class(array_representation, array_dtype):
     """
     Array representations can use classes as ranges
@@ -1927,6 +1883,7 @@ def test_generate_array_dtype_class(array_representation, array_dtype):
     assert isinstance(instance.array[0][0][0], target_cls)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -1952,6 +1909,7 @@ def test_generate_array_bounded_min(case, array_representation, array_bounded):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -1976,6 +1934,7 @@ def test_generate_array_bounded_max(case, array_representation, array_bounded):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2004,6 +1963,7 @@ def test_generate_array_bounded_range(case, array_representation, array_bounded)
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2030,6 +1990,7 @@ def test_generate_array_bounded_exact(case, array_representation, array_bounded)
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2056,6 +2017,7 @@ def test_generate_array_parameterized_min(case, array_representation, array_para
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2079,6 +2041,7 @@ def test_generate_array_parameterized_max(case, array_representation, array_para
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2103,6 +2066,7 @@ def test_generate_array_parameterized_range(case, array_representation, array_pa
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2126,6 +2090,7 @@ def test_generate_array_parameterized_exact(case, array_representation, array_pa
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2159,6 +2124,7 @@ def test_generate_array_complex_any(case, array_representation, array_complex):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2193,6 +2159,7 @@ def test_generate_array_complex_max(case, array_representation, array_complex):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2215,6 +2182,7 @@ def test_generate_array_complex_min(case, array_representation, array_complex):
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2250,6 +2218,7 @@ def test_generate_array_complex_range(case, array_representation, array_complex)
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "case",
     [
@@ -2283,6 +2252,7 @@ def test_generate_array_complex_exact(case, array_representation, array_complex)
         cls(array=case.array)
 
 
+@pytest.mark.arrays
 def test_generate_array_bounded_implicit_exact(array_representation, array_bounded):
     """
     The representation of an bounded array with min and max dimensions that are equal should be the same as
@@ -2297,6 +2267,7 @@ def test_generate_array_bounded_implicit_exact(array_representation, array_bound
     assert explicit.render() == implicit.render()
 
 
+@pytest.mark.arrays
 def test_generate_array_complex_implicit_exact(array_representation, array_complex):
     """
     The representation of an complex array with min and max dimensions that are equal should be the same as
@@ -2311,6 +2282,7 @@ def test_generate_array_complex_implicit_exact(array_representation, array_compl
     assert explicit.render() == implicit.render()
 
 
+@pytest.mark.arrays
 def test_generate_array_complex_noop_exact(array_representation, array_complex, array_parameterized):
     """
     When the exact number of dimensions is equal to the number of parameterized dimensions,
@@ -2328,6 +2300,7 @@ def test_generate_array_complex_noop_exact(array_representation, array_complex, 
     assert complex.render() == parameterized.render()
 
 
+@pytest.mark.arrays
 def test_generate_array_error_complex_exact_shape(array_representation, array_error_complex_dimensions):
     """
     When we try and make a complex array where the exact number of dimensions are lower than the parameterized
@@ -2338,6 +2311,7 @@ def test_generate_array_error_complex_exact_shape(array_representation, array_er
         _ = PydanticGenerator(array_error_complex_dimensions, array_representations=array_representation).serialize()
 
 
+@pytest.mark.arrays
 def test_generate_array_error_complex_unbounded_shape(array_representation, array_error_complex_unbounded):
     """
     When we specify a minimum number of dimensions without a max (or setting max to False) in a complex array,
@@ -2349,6 +2323,7 @@ def test_generate_array_error_complex_unbounded_shape(array_representation, arra
         _ = PydanticGenerator(array_error_complex_unbounded, array_representations=array_representation).serialize()
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize(
     "method",
     [
@@ -2374,6 +2349,7 @@ def test_array_validator(method, array_validator_errors):
         getattr(ArrayValidator, method)(array_expr)
 
 
+@pytest.mark.arrays
 @pytest.mark.parametrize("method", ["dimension_exact_cardinality", "dimension_ordinal"])
 def test_dimension_validator(method, array_validator_errors):
     """Dimension-level validator method testing for ArrayValidator"""

@@ -8,9 +8,12 @@ from typing import Any
 
 import click
 from jsonasobj2 import as_dict
+from pydantic import Field
 
 from linkml._version import __version__
 from linkml.generators.common import build
+from linkml.generators.common.array import ArrayRangeGenerator, ArrayRepresentation
+from linkml.generators.common.build import RangeResult
 from linkml.generators.common.lifecycle import LifecycleMixin
 from linkml.generators.common.subproperty import get_subproperty_values
 from linkml.generators.common.type_designators import get_type_designator_value
@@ -19,8 +22,10 @@ from linkml.utils.helpers import get_range_associated_slots
 from linkml_runtime.linkml_model.meta import (
     AnonymousClassExpression,
     AnonymousSlotExpression,
+    ArrayExpression,
     ClassDefinition,
     ClassDefinitionName,
+    DimensionExpression,
     EnumDefinition,
     Example,
     PermissibleValue,
@@ -213,8 +218,8 @@ class JsonSchema(dict):
         super().__init__(*args, **kwargs)
         self._lax_forward_refs = {}
 
-    def add_def(self, name: str, subschema: "JsonSchema") -> None:
-        canonical_name = name if self.PRESERVE_NAMES else camelcase(name)
+    def add_def(self, name: str, subschema: "JsonSchema", preserve_name: bool = False) -> None:
+        canonical_name = name if self.PRESERVE_NAMES or preserve_name else camelcase(name)
 
         if "$defs" not in self:
             self["$defs"] = {}
@@ -698,7 +703,8 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         slot_is_inlined = self.schemaview.is_inlined(slot)
         if slot.range in self.schemaview.all_types().keys():
             schema_type = self.schemaview.induced_type(slot.range)
-            (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
+            if schema_type.base:
+                (typ, fmt) = json_schema_types.get(schema_type.base.lower(), ("string", None))
         elif slot.range in self.schemaview.all_enums().keys():
             reference = slot.range
         elif slot.range in self.schemaview.all_classes().keys():
@@ -764,26 +770,17 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         return constraints
 
     def get_subschema_for_slot(
-        self, slot: SlotDefinition | AnonymousSlotExpression, omit_type: bool = False, include_null: bool = True
+        self,
+        slot: SlotDefinition | AnonymousSlotExpression,
+        omit_type: bool = False,
+        include_null: bool = True,
+        cls: ClassDefinition | None = None,
     ) -> JsonSchema:
         """
         Args:
             include_null: Include ``type: null`` when generating ranges that are not required
         """
         prop = JsonSchema()
-        if isinstance(slot, SlotDefinition) and slot.array:
-            # TODO: this is currently too lax, in that it will validate ANY array.
-            # see https://github.com/linkml/linkml/issues/2188
-            prop = JsonSchema(
-                {
-                    "type": ["null", "boolean", "object", "number", "string", "array"],
-                    "additionalProperties": True,
-                }
-            )
-            prop = JsonSchema.array_of(prop, include_null, required=slot.required)
-            if slot.examples:
-                prop.add_keyword("examples", _slot_examples_for_json_schema(slot.examples, is_array_valued=True))
-            return prop
         slot_is_multivalued = "multivalued" in slot and slot.multivalued
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
@@ -921,6 +918,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 ),
             )
 
+        if isinstance(slot, SlotDefinition) and slot.array:
+            # TODO: this is currently too lax, in that it will validate ANY array.
+            # see https://github.com/linkml/linkml/issues/2188
+            prop = self.get_array_subschema(slot, prop, cls=cls)
+
         return prop
 
     def handle_class_slot(self, subschema: JsonSchema, cls: ClassDefinition, slot: SlotDefinition) -> None:
@@ -932,7 +934,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         value_disallowed = slot.value_presence == PresenceEnum(PresenceEnum.ABSENT)
 
         aliased_slot_name = self.aliased_slot_name(slot)
-        prop = self.get_subschema_for_slot(slot, include_null=self.include_null)
+        prop = self.get_subschema_for_slot(slot, include_null=self.include_null, cls=cls)
         prop = self.after_generate_class_slot(
             SlotResult.model_construct(schema_=prop, source=slot), cls, self.schemaview
         ).schema_
@@ -962,6 +964,19 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         else:
             return False
 
+    def get_array_subschema(
+        self, slot: SlotDefinition, prop: JsonSchema, cls: ClassDefinition | None = None
+    ) -> JsonSchema:
+        """
+        Generate a constrained array schema.
+        Treat the `prop` as the inner type of the array
+        """
+        arraygen = JsonSchemaArrayGenerator(slot.array, prop, slot, cls_name=cls.name if cls else None)
+        result = arraygen.make()
+        for name, top_def in result.defs.items():
+            self.top_level_schema.add_def(name, top_def, preserve_name=True)
+        return result.schema_
+
     def generate(self) -> JsonSchema:
         self.schema = self.before_generate_schema(self.schema, self.schemaview)
         self.start_schema()
@@ -985,6 +1000,141 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             self.schemaview.materialize_patterns()
         result = self.generate().to_json(sort_keys=True, indent=self.indent if self.indent > 0 else None)
         return result.rstrip() + "\n"
+
+
+class ArrayRangeResult(RangeResult):
+    schema_: JsonSchema
+    defs: dict[str, JsonSchema] = Field(default_factory=dict)
+    """top-level defs to inject, used when a recursive schema is needed"""
+
+
+class JsonSchemaArrayGenerator(ArrayRangeGenerator):
+    """Generate the JSON Schema for a LinkML Array!"""
+
+    REPR = ArrayRepresentation.JSON_SCHEMA
+
+    def __init__(
+        self, array: ArrayExpression | None, dtype: JsonSchema, slot: SlotDefinition, cls_name: str | None = None
+    ):
+        super().__init__(array, dtype)
+        self.slot = slot
+        self.dtype: JsonSchema = dtype
+        self.cls_name = cls_name
+
+    def make(self) -> ArrayRangeResult:
+        return super().make()
+
+    def _any_shape(self, array: ArrayExpression | None = None, with_inner_union: bool = False) -> ArrayRangeResult:
+        if self.cls_name:
+            fullname = f"{self.cls_name}-{self.slot.name}-anyshape"
+        else:
+            fullname = f"{self.slot.name}-anyshape"
+
+        schema = JsonSchema(items={"$ref": f"#/$defs/{fullname}"}, type="array")
+        if with_inner_union:
+            schema = JsonSchema(anyOf=[schema, self.dtype])
+
+        defs = {fullname: JsonSchema(anyOf=[{"items": {"$ref": f"#/$defs/{fullname}"}, "type": "array"}, self.dtype])}
+        return ArrayRangeResult(schema_=schema, defs=defs)
+
+    def _bounded_dimensions(self, array: ArrayExpression) -> ArrayRangeResult:
+        if array.exact_number_dimensions or (
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
+        ):
+            exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
+            return ArrayRangeResult(schema_=self._n_depth_array(exact_dims, self.dtype))
+        elif not array.maximum_number_dimensions and (
+            array.minimum_number_dimensions is None or array.minimum_number_dimensions == 1
+        ):
+            return self._any_shape()
+        elif array.maximum_number_dimensions:
+            # e.g., if min = 2, max = 3, range = Union[list[list[dtype]], list[list[list[dtype]]]]
+            min_dims = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 1
+            ranges = [self._n_depth_array(i, self.dtype) for i in range(min_dims, array.maximum_number_dimensions + 1)]
+            return ArrayRangeResult(schema_=JsonSchema(anyOf=ranges))
+        else:
+            # min specified with no max
+            # e.g., if min = 3, range = list[list[AnyShapeArray[dtype]]]
+            anyshape = self._any_shape(array)
+            return ArrayRangeResult(
+                schema_=self._n_depth_array(array.minimum_number_dimensions - 1, anyshape.schema_), defs=anyshape.defs
+            )
+
+    def _parameterized_dimensions(self, array: ArrayExpression) -> ArrayRangeResult:
+        range = self.dtype
+        for dimension in reversed(array.dimensions):
+            range = self._parameterized_dimension(dimension, range)
+        return ArrayRangeResult(schema_=range)
+
+    def _complex_dimensions(self, array: ArrayExpression) -> ArrayRangeResult:
+        res = None
+        # first process any unlabeled dimensions which must be the innermost level of the range,
+        # then wrap that with labeled dimensions
+        if array.exact_number_dimensions or (
+            array.minimum_number_dimensions
+            and array.maximum_number_dimensions
+            and array.minimum_number_dimensions == array.maximum_number_dimensions
+        ):
+            exact_dims = array.exact_number_dimensions or array.minimum_number_dimensions
+            if exact_dims > len(array.dimensions):
+                res = ArrayRangeResult(schema_=self._n_depth_array(exact_dims - len(array.dimensions), self.dtype))
+            elif exact_dims == len(array.dimensions):
+                # equivalent to labeled shape
+                return self._parameterized_dimensions(array)
+            # else is invalid, see: ArrayValidator.array_consistent_n_dimensions
+
+        elif array.maximum_number_dimensions is not None and not array.maximum_number_dimensions:
+            # unlimited n dimensions, so innermost is AnyShape with dtype
+            res = self._any_shape(with_inner_union=True)
+
+            if array.minimum_number_dimensions:
+                # some minimum anonymous dimensions but unlimited max dimensions
+                # e.g., if min = 3, len(dim) = 2, then res.range = list[Union[AnyShapeArray[dtype], dtype]]
+                # res.range will be wrapped with the 2 labeled dimensions later
+                res.schema_ = self._n_depth_array(array.minimum_number_dimensions - len(array.dimensions), res.schema_)
+
+        elif array.maximum_number_dimensions:
+            initial_min = array.minimum_number_dimensions if array.minimum_number_dimensions is not None else 0
+            dmin = max(len(array.dimensions), initial_min) - len(array.dimensions)
+            dmax = array.maximum_number_dimensions - len(array.dimensions)
+
+            res = self._bounded_dimensions(
+                ArrayExpression(minimum_number_dimensions=dmin, maximum_number_dimensions=dmax)
+            )
+
+        if res is None:
+            raise ValueError("Unsupported array specification! this is almost certainly a bug!")  # pragma: no cover
+
+        # Wrap inner dimension with labeled dimension
+        for dim in reversed(array.dimensions):
+            res.schema_ = self._parameterized_dimension(dim, dtype=res.schema_)
+
+        return res
+
+    def _n_depth_array(self, dimensions: int, dtype: JsonSchema) -> JsonSchema:
+        if dimensions <= 0:
+            return dtype
+        arr = dtype
+        for _ in range(dimensions):
+            arr = JsonSchema(type="array", items=arr)
+        return arr
+
+    def _parameterized_dimension(self, dimension: DimensionExpression, dtype: JsonSchema) -> JsonSchema:
+        if dimension.exact_cardinality:
+            dmin = dimension.exact_cardinality
+            dmax = dimension.exact_cardinality
+        else:
+            dmin = dimension.minimum_cardinality
+            dmax = dimension.maximum_cardinality
+
+        arr = JsonSchema(type="array", items=dtype)
+        if dmin is not None:
+            arr["minItems"] = dmin
+        if dmax is not None:
+            arr["maxItems"] = dmax
+        return arr
 
 
 @shared_arguments(JsonSchemaGenerator)
