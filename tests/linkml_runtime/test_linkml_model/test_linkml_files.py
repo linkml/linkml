@@ -1,3 +1,5 @@
+import subprocess
+import tempfile
 from importlib.util import find_spec
 from itertools import product
 from pathlib import Path
@@ -130,15 +132,57 @@ VENDORED_RUNTIME_FILES = [(source, fmt) for source in Source for fmt in (Format.
 """Source files resolved locally at runtime by generators (YAML for schema imports,
 JSONLD for context resolution). Drift here means generators silently use stale definitions."""
 
-LINKML_MODEL_MAIN_BASE = "https://raw.githubusercontent.com/linkml/linkml-model/main/linkml_model/"
-"""Base URL for the source-of-truth copies on linkml-model's main branch.
+UPSTREAM_SHA_FILE = _LOCAL_BASE / "UPSTREAM_SHA"
+"""File written by ``make update_model`` that records the upstream linkml-model commit SHA
+that was vendored. The test uses this SHA to fetch the exact same revision from GitHub."""
 
-We compare against main rather than the w3id.org redirect because the redirect lags behind:
-it points to gh-pages, which only updates after a successful PyPI/docs publish workflow.
-A pre-release vendored bump (where local is intentionally ahead of the latest published
-release) would otherwise false-alarm here. Comparing to main catches the actually-useful
-signal — vendored files out of sync with what was merged upstream — without coupling to
-the publish pipeline."""
+LINKML_MODEL_GITHUB_RAW_BASE = "https://raw.githubusercontent.com/linkml/linkml-model/"
+"""Base URL for raw content on the linkml-model GitHub repository."""
+
+LINKML_MODEL_REPO = "https://github.com/linkml/linkml-model.git"
+"""URL of the upstream linkml-model Git repository."""
+
+LINKML_MODEL_MAIN_BASE = f"{LINKML_MODEL_GITHUB_RAW_BASE}main/linkml_model/"
+"""Base URL for the source-of-truth copies on linkml-model's main branch."""
+
+
+def _get_upstream_sha() -> str:
+    """Read the upstream commit SHA recorded by ``make update_model``.
+
+    Returns the 40-character hex SHA written to ``UPSTREAM_SHA`` at vendoring time.
+    """
+    assert UPSTREAM_SHA_FILE.exists(), (
+        f"{UPSTREAM_SHA_FILE} not found. Run 'make update_model' in packages/linkml_runtime/ to regenerate it."
+    )
+    assert len(open(UPSTREAM_SHA_FILE).read()) > 0, (
+        f"{UPSTREAM_SHA_FILE} is empty. Run 'make update_model' in packages/linkml_runtime/ to regenerate it."
+    )
+    return UPSTREAM_SHA_FILE.read_text().strip()
+
+
+def _git_show_file(sha: str, repo_path: str) -> str:
+    """Return the content of a file at a specific commit in the upstream repository.
+
+    Uses the git protocol (``git fetch`` + ``git show``) to retrieve the file
+    without touching the GitHub REST API, avoiding IP-based rate limiting.
+
+    ``repo_path`` is the path inside the repository (e.g.
+    ``"linkml_model/model/schema/meta.yaml"``).
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["git", "init", "--bare", "-q", tmp], check=True)
+        subprocess.run(
+            ["git", "-C", tmp, "fetch", "--depth=1", LINKML_MODEL_REPO, sha],
+            check=True,
+            capture_output=True,
+        )
+        result = subprocess.run(
+            ["git", "-C", tmp, "show", f"FETCH_HEAD:{repo_path}"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    return result.stdout
 
 
 def _linkml_model_main_url(source: Source, fmt: Format) -> str:
@@ -150,11 +194,44 @@ def _linkml_model_main_url(source: Source, fmt: Format) -> str:
 @pytest.mark.network
 @pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
 def test_vendored_files_match_upstream(source, fmt):
-    """Detect drift between vendored files and their upstream linkml-model main version.
+    """Detect drift between vendored files and the upstream commit they were vendored from.
 
     Generators resolve these files locally instead of fetching from the network.
-    If upstream changes without updating the vendored copies, generated output
-    will silently diverge from what users expect.
+    The expected upstream revision is read from ``UPSTREAM_SHA``, which is written
+    by ``make update_model`` at vendoring time and committed alongside the files.
+    If the vendored files were modified without re-running ``make update_model``,
+    this test will catch it.
+
+    File content is fetched via the git protocol (not the GitHub REST API) to
+    avoid IP-based rate limiting.
+    """
+    sha = _get_upstream_sha()
+    local_path = Path(LOCAL_PATH_FOR(source, fmt))
+    repo_path = f"linkml_model/{Path(LOCAL_PATH_FOR(source, fmt)).relative_to(_LOCAL_BASE).as_posix()}"
+
+    local_content = local_path.read_text()
+    upstream_content = _git_show_file(sha, repo_path)
+
+    assert local_content == upstream_content, (
+        f"Vendored {local_path.name} differs from upstream {LINKML_MODEL_REPO} "
+        f"at {repo_path} (SHA {sha[:12]}). "
+        "Run 'make update_model' in packages/linkml_runtime/ to re-vendor the files."
+    )
+
+
+@pytest.mark.network
+@pytest.mark.upstream_main
+@pytest.mark.parametrize("source,fmt", VENDORED_RUNTIME_FILES)
+def test_vendored_files_match_upstream_main(source, fmt):
+    """Detect drift between vendored files and the linkml-model main branch.
+
+    This is a soft-fail early-warning test. It catches cases where upstream main
+    has moved ahead of the vendored files before a new release is cut. Failures
+    here are informational — they do not block a PR — but signal that a vendored
+    update may be needed soon.
+
+    For the hard check against the vendored commit, see
+    ``test_vendored_files_match_upstream``.
     """
     local_path = Path(LOCAL_PATH_FOR(source, fmt))
     url = _linkml_model_main_url(source, fmt)
@@ -164,6 +241,7 @@ def test_vendored_files_match_upstream(source, fmt):
     assert response.ok, f"Failed to fetch {url}: {response.status_code}"
 
     assert local_content == response.text, (
-        f"Vendored {local_path.name} differs from upstream {url}. "
-        "Update vendored files to match the current upstream main."
+        f"Vendored {local_path.name} differs from upstream main {url}. "
+        "This is an early warning: upstream main has diverged from the vendored files. "
+        "No action is required until a new linkml-model release is cut."
     )

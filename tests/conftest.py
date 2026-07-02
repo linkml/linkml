@@ -246,6 +246,11 @@ def pytest_addoption(parser):
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
     parser.addoption("--with-network", action="store_true", help="include tests marked network")
     parser.addoption(
+        "--with-upstream-main",
+        action="store_true",
+        help="include soft-fail tests that compare vendored files against linkml-model main branch",
+    )
+    parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
     parser.addoption("--without-cache", action="store_true", help="Don't use a sqlite cache for network requests")
@@ -281,6 +286,12 @@ def pytest_collection_modifyitems(config, items: list[pytest.Item]):
         for item in items:
             if item.get_closest_marker("network"):
                 item.add_marker(skip_network)
+
+    if not config.getoption("--with-upstream-main"):
+        skip_upstream_main = pytest.mark.skip(reason="need --with-upstream-main option to run")
+        for item in items:
+            if item.get_closest_marker("upstream_main"):
+                item.add_marker(skip_upstream_main)
 
     # Group compliance tests on a single xdist worker - they share
     # mutable module-level caches in helper.py that are not safe to split.

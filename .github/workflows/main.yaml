@@ -231,3 +231,67 @@ jobs:
           version: ${{ env.UV_VERSION }}
       - name: Build source and wheel archives
         run: uv build --all-packages
+
+  test_upstream_main:
+    name: Vendored files vs upstream main (soft-fail)
+    needs:
+      - quality-checks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run upstream-main vendored-file checks
+        id: upstream_main_tests
+        run: |
+          uv run pytest tests/linkml_runtime/test_linkml_model/test_linkml_files.py \
+            --with-network --with-upstream-main -v
+        continue-on-error: true
+
+      - name: Warn via PR comment on drift (create or update)
+        if: steps.upstream_main_tests.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BODY: >-
+            ⚠️ **Vendored linkml-model files have drifted from upstream `main`.**
+            This won't block the PR, but the vendored copies may need updating
+            before the next release. See the
+            [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            for details.
+          MARKER: "<!-- upstream-main-drift -->"
+        run: |
+          FULL_BODY="${MARKER}
+          ${BODY}"
+
+          # Look for an existing comment that contains our marker
+          COMMENT_ID=$(gh api \
+            "/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
+            --paginate \
+            --jq ".[] | select(.body | contains(\"${MARKER}\")) | .id" \
+            | head -1)
+
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH \
+              "/repos/${{ github.repository }}/issues/comments/${COMMENT_ID}" \
+              -f body="${FULL_BODY}"
+          else
+            gh api --method POST \
+              "/repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
+              -f body="${FULL_BODY}"
+          fi
