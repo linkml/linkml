@@ -53,6 +53,7 @@ class RDFGenerator(Generator):
             self.original_schema,
             format=JSONLDGenerator.valid_formats[0],
             metadata=self.emit_metadata,
+            include_generation_date=self.include_generation_date,
             importmap=self.importmap,
             metamodel_context=LOCAL_METAMODEL_LDCONTEXT_FILE,
         )
