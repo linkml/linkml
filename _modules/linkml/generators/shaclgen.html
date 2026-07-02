@@ -404,6 +404,7 @@
           <h1>Source code for linkml.generators.shaclgen</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">string</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -425,6 +426,41 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">linkml_runtime.utils.yamlutils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypedNode</span><span class="p">,</span> <span class="n">extended_float</span><span class="p">,</span> <span class="n">extended_int</span><span class="p">,</span> <span class="n">extended_str</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="n">MESSAGE_TEMPLATE_FIELDS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;comments&quot;</span><span class="p">,</span> <span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Placeholders permitted in ``--message-template`` (see :attr:`ShaclGenerator.message_template`).&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_message_template</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate a ``--message-template`` string, failing fast with a helpful error.</span>
+
+<span class="sd">    Only the bare placeholders in :data:`MESSAGE_TEMPLATE_FIELDS` are permitted.</span>
+<span class="sd">    Attribute access (``{name.foo}``), indexing (``{name[0]}``), positional fields</span>
+<span class="sd">    (``{0}`` / ``{}``), conversions (``{name!r}``) and format specs (``{name:&gt;5}``)</span>
+<span class="sd">    are all rejected, as are unbalanced braces. Validation runs once, up front, so a</span>
+<span class="sd">    malformed template is caught even for schemas that contain no slots.</span>
+
+<span class="sd">    :param template: the raw template string.</span>
+<span class="sd">    :raises ValueError: if the template contains an unsupported placeholder or is</span>
+<span class="sd">        otherwise malformed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">allowed</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">MESSAGE_TEMPLATE_FIELDS</span><span class="p">)</span>
+    <span class="n">hint</span> <span class="o">=</span> <span class="s2">&quot;Allowed placeholders: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">{{</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">MESSAGE_TEMPLATE_FIELDS</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">Formatter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">template</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid placeholder in --message-template (</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">). </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+    <span class="k">for</span> <span class="n">_literal_text</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">format_spec</span><span class="p">,</span> <span class="n">conversion</span> <span class="ow">in</span> <span class="n">parsed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid placeholder &#39;</span><span class="se">{{</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="se">}}</span><span class="s2">&#39; in --message-template. </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conversion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">format_spec</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid placeholder &#39;</span><span class="se">{{</span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="se">}}</span><span class="s2">&#39; in --message-template: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;conversions and format specs are not supported. </span><span class="si">{</span><span class="n">hint</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
 
 <div class="viewcode-block" id="ShaclGenerator">
@@ -491,6 +527,27 @@
 <span class="sd">    Conforms to :rfc:`5646` (BCP 47).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">message_template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Template for ``sh:message`` on property shapes.</span>
+
+<span class="sd">    When set, each property shape receives an ``sh:message`` literal built from</span>
+<span class="sd">    this template.  The following placeholders are expanded:</span>
+
+<span class="sd">    * ``{name}`` — the slot&#39;s LinkML name, exactly as written in the schema</span>
+<span class="sd">    * ``{title}`` — the slot title (human-readable), falls back to *name*</span>
+<span class="sd">    * ``{description}`` — the slot description, falls back to empty string</span>
+<span class="sd">    * ``{comments}`` — the slot comments joined with ``; ``, falls back to empty string</span>
+<span class="sd">    * ``{class}`` — the enclosing class name</span>
+<span class="sd">    * ``{path}``  — the fully-expanded property IRI</span>
+
+<span class="sd">    Example: ``&quot;Validation of {name} failed!&quot;`` →</span>
+<span class="sd">    ``sh:message &quot;Validation of has_speed failed!&quot;``</span>
+
+<span class="sd">    If ``default_language`` is set the literal is tagged with it. The message text</span>
+<span class="sd">    is a single template, so it deliberately follows ``default_language`` only and</span>
+<span class="sd">    ignores any per-slot ``in_language``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">generatorname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
     <span class="n">generatorversion</span> <span class="o">=</span> <span class="s2">&quot;0.0.1&quot;</span>
     <span class="n">valid_formats</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ttl&quot;</span><span class="p">]</span>
@@ -515,6 +572,9 @@
         <span class="c1"># warning per distinct malformed tag.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_language_resolver</span> <span class="o">=</span> <span class="n">LanguageTagResolver</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default_language</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message_template</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_template</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_validate_message_template</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message_template</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generate_header</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -607,6 +667,22 @@
                 <span class="n">order</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">prop_pv_text</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
                 <span class="n">prop_pv_text</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+
+                <span class="c1"># sh:message from a user template. The template is validated once in</span>
+                <span class="c1"># __post_init__, so expansion here cannot raise. The message is a single</span>
+                <span class="c1"># template string, so it is tagged with the generator default language</span>
+                <span class="c1"># only (via _resolve_language(None)) and ignores per-slot in_language.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">msg_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">title</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">description</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">description</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="n">comments</span><span class="o">=</span><span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">comments</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">comments</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="o">**</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">},</span>
+                        <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">slot_uri</span><span class="p">),</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">msg_text</span><span class="p">:</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pnode</span><span class="p">,</span> <span class="n">SH</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">Literal</span><span class="p">(</span><span class="n">msg_text</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_language</span><span class="p">(</span><span class="kc">None</span><span class="p">))))</span>
                 <span class="c1"># minCount</span>
                 <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">:</span>
                     <span class="n">prop_pv_literal</span><span class="p">(</span><span class="n">SH</span><span class="o">.</span><span class="n">minCount</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">minimum_cardinality</span><span class="p">)</span>
@@ -980,6 +1056,18 @@
         <span class="s2">&quot;(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, &quot;</span>
         <span class="s2">&quot;rdfs:label and rdfs:comment are emitted with the specified &quot;</span>
         <span class="s2">&quot;language tag.&quot;</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;--message-template&quot;</span><span class="p">,</span>
+    <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+        <span class="s2">&quot;Template string for sh:message on each property shape. &quot;</span>
+        <span class="s2">&quot;Placeholders: </span><span class="si">{name}</span><span class="s2"> (slot name), </span><span class="si">{title}</span><span class="s2"> (slot title or name), &quot;</span>
+        <span class="s2">&quot;</span><span class="si">{description}</span><span class="s2"> (slot description), </span><span class="si">{comments}</span><span class="s2"> (slot comments joined with &#39;; &#39;), &quot;</span>
+        <span class="s2">&quot;</span><span class="si">{class}</span><span class="s2"> (class name), </span><span class="si">{path}</span><span class="s2"> (fully-expanded property IRI). &quot;</span>
+        <span class="s1">&#39;Example: &quot;</span><span class="si">{name}</span><span class="s1"> (</span><span class="si">{class}</span><span class="s1">): </span><span class="si">{description}</span><span class="s1"> [</span><span class="si">{comments}</span><span class="s1">]&quot;&#39;</span>
     <span class="p">),</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">version_option</span><span class="p">(</span><span class="n">__version__</span><span class="p">,</span> <span class="s2">&quot;-V&quot;</span><span class="p">,</span> <span class="s2">&quot;--version&quot;</span><span class="p">)</span>
