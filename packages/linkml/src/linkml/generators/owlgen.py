@@ -1554,7 +1554,10 @@ class OwlSchemaGenerator(Generator):
         if metamodel_class_name is not None:
             meta_class = self.metamodel_schemaview.get_class(metamodel_class_name)
             if meta_class is not None:
-                label = meta_class.title or meta_class.name or label
+                # Prefer a metamodel title; otherwise use the UpperCamelCase form of the
+                # metamodel name (matching the class IRI local name and the LinkML model
+                # docs, e.g. "EnumDefinition"), not the raw snake_case name.
+                label = meta_class.title or camelcase(meta_class.name) or label
                 description = meta_class.description or description
         if label is not None:
             self.graph.add((uri, RDFS.label, Literal(label)))
