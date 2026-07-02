@@ -9,6 +9,7 @@ from jinja2 import Template
 
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.schema_prefix_merge import materialize_prefixes
 from linkml_runtime.linkml_model.meta import Prefix
 from linkml_runtime.utils.formatutils import underscore
 from linkml_runtime.utils.schemaview import SchemaView
@@ -105,10 +106,7 @@ def materialize_schema(schemaview: SchemaView):
     schema = schemaview.schema
     if "rdf" not in schema.prefixes:
         schema.prefixes["rdf"] = Prefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-    for scn in schemaview.imports_closure():
-        for pfxn, pfx in schemaview.schema_map[scn].prefixes.items():
-            if pfxn not in schema:
-                schema.prefixes[pfxn] = pfx
+    materialize_prefixes(schemaview)
     for cn, c in schemaview.all_classes().items():
         for a in list(c.attributes.values()):
             schema.slots[a.name] = a

@@ -1,815 +1,1535 @@
 # metamodel_version: 1.11.0
-@prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix shex: <http://www.w3.org/ns/shex#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-<https://w3id.org/linkml/Curie> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-<https://w3id.org/linkml/Datetime> a shex:NodeConstraint ;
-    shex:datatype xsd:dateTime .
-
-<https://w3id.org/linkml/Double> a shex:NodeConstraint ;
-    shex:datatype xsd:double .
-
-<https://w3id.org/linkml/Float> a shex:NodeConstraint ;
-    shex:datatype xsd:float .
-
-<https://w3id.org/linkml/Jsonpath> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-<https://w3id.org/linkml/Jsonpointer> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-<https://w3id.org/linkml/Ncname> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-<https://w3id.org/linkml/Nodeidentifier> a shex:NodeConstraint ;
-    shex:nodeKind shex:nonliteral .
-
-<https://w3id.org/linkml/Objectidentifier> a shex:NodeConstraint ;
-    shex:nodeKind shex:iri .
-
-<https://w3id.org/linkml/Sparqlpath> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-<https://w3id.org/linkml/Time> a shex:NodeConstraint ;
-    shex:datatype xsd:time .
-
-<https://w3id.org/linkml/Uri> a shex:NodeConstraint ;
-    shex:nodeKind shex:iri .
-
-<https://w3id.org/linkml/Uriorcurie> a shex:NodeConstraint ;
-    shex:nodeKind shex:iri .
-
-<https://w3id.org/linkml/tests/core/Activity_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:startedAtTime ;
-                shex:valueExpr <https://w3id.org/linkml/Date> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:endedAtTime ;
-                shex:valueExpr <https://w3id.org/linkml/Date> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:wasInformedBy ;
-                shex:valueExpr <https://w3id.org/linkml/tests/core/Activity> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:wasAssociatedWith ;
-                shex:valueExpr <https://w3id.org/linkml/tests/core/Agent> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:used ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/core/description> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
-
-<https://w3id.org/linkml/tests/core/AgeInYearsType> a shex:NodeConstraint ;
-    shex:datatype xsd:integer .
-
-<https://w3id.org/linkml/tests/core/Agent_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:actedOnBehalfOf ;
-                shex:valueExpr <https://w3id.org/linkml/tests/core/Agent> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:wasInformedBy ;
-                shex:valueExpr <https://w3id.org/linkml/tests/core/Activity> ] ) .
-
-<https://w3id.org/linkml/tests/core/PhoneNumberType> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Address_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/street> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/city> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/altitude> ;
-                shex:valueExpr <https://w3id.org/linkml/Decimal> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyObject_tes> a shex:TripleConstraint ;
-    shex:max -1 ;
-    shex:min 0 ;
-    shex:predicate rdf:type .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute2> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute3> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute4> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute1> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/BirthEvent_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Event> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/long_id> ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#BetaSequenceIdentifier02_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#GammaSequenceIdentifier03_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EtaSequenceIdentifier07_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#IotaSequenceIdentifier09_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#KappaSequenceIdentifier10_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#MuSequenceIdentifier12_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#NuSequenceIdentifier13_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#XiSequenceIdentifier14_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#PiSequenceIdentifier16_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#RhoSequenceIdentifier17_LongPatternLongPatternLongPattern> ) ] ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Company_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Organization> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <http://schema.org/ceo> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Dataset_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/metadata> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/persons> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/companies> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Company> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/activities> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/core/Activity> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/code_systems> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Concept> ) ] ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Event> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/employed_at> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Company> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute6> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute5> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/FakeClass_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/test_attribute> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Relationship> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/cordialness> ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 1 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#SIBLING_OF> <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#PARENT_OF> <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 1 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/related_to> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Friend_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Event> ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/married_to> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Event> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/diagnosis> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/procedure> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Person_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_medical_history> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/age_in_years> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/addresses> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Address> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_birth_event> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/species_name> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/stomach_count> ;
-                shex:valueExpr <https://w3id.org/linkml/Integer> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/is_living> ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#LIVING> <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#DEAD> <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#UNKNOWN> ) ] ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate skos:altLabel ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Place_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate skos:altLabel ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Concept> ) ] ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ) ] ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ) ] ] ) .
-
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix shex: <http://www.w3.org/ns/shex#> .
 <https://w3id.org/linkml/Boolean> a shex:NodeConstraint ;
-    shex:datatype xsd:boolean .
-
-<https://w3id.org/linkml/DateOrDatetime> a shex:NodeConstraint ;
-    shex:datatype <https://w3id.org/linkml/DateOrDatetime> .
-
-<https://w3id.org/linkml/Decimal> a shex:NodeConstraint ;
-    shex:datatype xsd:decimal .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Dataset> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Dataset_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Dataset> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/EqualsString> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsString> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/FakeClass> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/FakeClass_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Friend> a shex:Shape ;
-    shex:closed false ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Friend_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Friend> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max -1 ;
-                shex:min 0 ;
-                shex:predicate skos:altLabel ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:startedAtTime ;
-                shex:valueExpr <https://w3id.org/linkml/Date> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:endedAtTime ;
-                shex:valueExpr <https://w3id.org/linkml/Date> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/related_to> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/cordialness> ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ) ] ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
-    shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> .
-
-<https://w3id.org/linkml/Integer> a shex:NodeConstraint ;
-    shex:datatype xsd:integer .
-
-<https://w3id.org/linkml/tests/core/Agent> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/core/Agent_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( prov:Agent ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Address> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Address_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Address> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/AnyObject> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/AnyObject_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/Any> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_code_system> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Organization> a shex:ShapeOr ;
-    shex:shapeExprs ( [ a shex:Shape ;
-                shex:closed true ;
-                shex:expression [ a shex:EachOf ;
-                        shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> [ a shex:TripleConstraint ;
-                                    shex:min 1 ;
-                                    shex:predicate rdf:type ;
-                                    shex:valueExpr [ a shex:NodeConstraint ;
-                                            shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Organization> ) ] ] ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/Company> ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Relationship> a shex:ShapeOr ;
-    shex:shapeExprs ( [ a shex:Shape ;
-                shex:closed true ;
-                shex:expression [ a shex:EachOf ;
-                        shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes> [ a shex:TripleConstraint ;
-                                    shex:min 0 ;
-                                    shex:predicate rdf:type ;
-                                    shex:valueExpr [ a shex:NodeConstraint ;
-                                            shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Relationship> ) ] ] ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> a shex:EachOf ;
-    shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes> [ a shex:TripleConstraint ;
-                shex:min 0 ;
-                shex:predicate rdf:type ;
-                shex:valueExpr [ a shex:NodeConstraint ;
-                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> ) ] ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_2> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/WithLocation> a shex:Shape ;
-    shex:closed false ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> a shex:ShapeOr ;
-    shex:shapeExprs ( [ a shex:Shape ;
-                shex:closed true ;
-                shex:expression [ a shex:EachOf ;
-                        shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes> [ a shex:TripleConstraint ;
-                                    shex:min 0 ;
-                                    shex:predicate rdf:type ;
-                                    shex:valueExpr [ a shex:NodeConstraint ;
-                                            shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> ) ] ] ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Concept> a shex:ShapeOr ;
-    shex:shapeExprs ( [ a shex:Shape ;
-                shex:closed true ;
-                shex:expression [ a shex:EachOf ;
-                        shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> [ a shex:TripleConstraint ;
-                                    shex:min 1 ;
-                                    shex:predicate rdf:type ;
-                                    shex:valueExpr [ a shex:NodeConstraint ;
-                                            shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Concept> ) ] ] ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> a shex:TripleConstraint ;
-    shex:max -1 ;
-    shex:min 0 ;
-    shex:predicate skos:altLabel ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
-
-<https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/core/Activity> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/core/Activity_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/core/Activity> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Company> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Company_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Company> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Event_tes> a shex:EachOf ;
-    shex:expressions ( [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:startedAtTime ;
-                shex:valueExpr <https://w3id.org/linkml/Date> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate prov:endedAtTime ;
-                shex:valueExpr <https://w3id.org/linkml/Date> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/is_current> ;
-                shex:valueExpr <https://w3id.org/linkml/Boolean> ] [ a shex:TripleConstraint ;
-                shex:max 1 ;
-                shex:min 0 ;
-                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/metadata> ;
-                shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> ] ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/HasAliases> a shex:Shape ;
-    shex:closed false ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> [ a shex:TripleConstraint ;
-                        shex:min 0 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> a shex:ShapeOr ;
-    shex:shapeExprs ( [ a shex:Shape ;
-                shex:closed true ;
-                shex:expression [ a shex:EachOf ;
-                        shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> [ a shex:TripleConstraint ;
-                                    shex:min 0 ;
-                                    shex:predicate rdf:type ;
-                                    shex:valueExpr [ a shex:NodeConstraint ;
-                                            shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ) ] ] ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Event> a shex:ShapeOr ;
-    shex:shapeExprs ( [ a shex:Shape ;
-                shex:closed true ;
-                shex:expression [ a shex:EachOf ;
-                        shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> [ a shex:TripleConstraint ;
-                                    shex:min 0 ;
-                                    shex:predicate rdf:type ;
-                                    shex:valueExpr [ a shex:NodeConstraint ;
-                                            shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Event> ) ] ] ) ] ] <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ) .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Person> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Person_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Person> ) ] ] ) ] .
-
-<https://w3id.org/linkml/tests/kitchen_sink/Place> a shex:Shape ;
-    shex:closed true ;
-    shex:expression [ a shex:EachOf ;
-            shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Place_tes> [ a shex:TripleConstraint ;
-                        shex:min 1 ;
-                        shex:predicate rdf:type ;
-                        shex:valueExpr [ a shex:NodeConstraint ;
-                                shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/Place> ) ] ] ) ] .
-
+	shex:datatype xsd:boolean .
+<https://w3id.org/linkml/Curie> a shex:NodeConstraint ;
+	shex:datatype xsd:string .
 <https://w3id.org/linkml/Date> a shex:NodeConstraint ;
-    shex:datatype xsd:date .
-
+	shex:datatype xsd:date .
+<https://w3id.org/linkml/DateOrDatetime> a shex:NodeConstraint ;
+	shex:datatype <https://w3id.org/linkml/DateOrDatetime> .
+<https://w3id.org/linkml/Datetime> a shex:NodeConstraint ;
+	shex:datatype xsd:dateTime .
+<https://w3id.org/linkml/Decimal> a shex:NodeConstraint ;
+	shex:datatype xsd:decimal .
+<https://w3id.org/linkml/Double> a shex:NodeConstraint ;
+	shex:datatype xsd:double .
+<https://w3id.org/linkml/Float> a shex:NodeConstraint ;
+	shex:datatype xsd:float .
+<https://w3id.org/linkml/Integer> a shex:NodeConstraint ;
+	shex:datatype xsd:integer .
+<https://w3id.org/linkml/Jsonpath> a shex:NodeConstraint ;
+	shex:datatype xsd:string .
+<https://w3id.org/linkml/Jsonpointer> a shex:NodeConstraint ;
+	shex:datatype xsd:string .
+<https://w3id.org/linkml/Ncname> a shex:NodeConstraint ;
+	shex:datatype xsd:string .
+<https://w3id.org/linkml/Nodeidentifier> a shex:NodeConstraint ;
+	shex:nodeKind shex:nonliteral .
+<https://w3id.org/linkml/Objectidentifier> a shex:NodeConstraint ;
+	shex:nodeKind shex:iri .
+<https://w3id.org/linkml/Sparqlpath> a shex:NodeConstraint ;
+	shex:datatype xsd:string .
 <https://w3id.org/linkml/String> a shex:NodeConstraint ;
-    shex:datatype xsd:string .
-
-[] a shex:Schema ;
-    shex:shapes ( <https://w3id.org/linkml/String> <https://w3id.org/linkml/Integer> <https://w3id.org/linkml/Boolean> <https://w3id.org/linkml/Float> <https://w3id.org/linkml/Double> <https://w3id.org/linkml/Decimal> <https://w3id.org/linkml/Time> <https://w3id.org/linkml/Date> <https://w3id.org/linkml/Datetime> <https://w3id.org/linkml/DateOrDatetime> <https://w3id.org/linkml/Uriorcurie> <https://w3id.org/linkml/Curie> <https://w3id.org/linkml/Uri> <https://w3id.org/linkml/Ncname> <https://w3id.org/linkml/Objectidentifier> <https://w3id.org/linkml/Nodeidentifier> <https://w3id.org/linkml/Jsonpointer> <https://w3id.org/linkml/Jsonpath> <https://w3id.org/linkml/Sparqlpath> <https://w3id.org/linkml/tests/core/PhoneNumberType> <https://w3id.org/linkml/tests/core/AgeInYearsType> <https://w3id.org/linkml/tests/core/Activity> <https://w3id.org/linkml/tests/kitchen_sink/Address> <https://w3id.org/linkml/tests/core/Agent> <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> <https://w3id.org/linkml/tests/kitchen_sink/Company> <https://w3id.org/linkml/tests/kitchen_sink/Concept> <https://w3id.org/linkml/tests/kitchen_sink/Dataset> <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> <https://w3id.org/linkml/tests/kitchen_sink/EqualsString> <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> <https://w3id.org/linkml/tests/kitchen_sink/Event> <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> <https://w3id.org/linkml/tests/kitchen_sink/Friend> <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> <https://w3id.org/linkml/tests/kitchen_sink/Organization> <https://w3id.org/linkml/tests/kitchen_sink/Person> <https://w3id.org/linkml/tests/kitchen_sink/Place> <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> <https://w3id.org/linkml/tests/kitchen_sink/Relationship> <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ) .
+	shex:datatype xsd:string .
+<https://w3id.org/linkml/Time> a shex:NodeConstraint ;
+	shex:datatype xsd:time .
+<https://w3id.org/linkml/Uri> a shex:NodeConstraint ;
+	shex:nodeKind shex:iri .
+<https://w3id.org/linkml/Uriorcurie> a shex:NodeConstraint ;
+	shex:nodeKind shex:iri .
+<https://w3id.org/linkml/tests/core/Activity> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n84 .
+<https://w3id.org/linkml/tests/core/Activity_tes> a shex:EachOf ;
+	shex:expressions _:c14n107 .
+<https://w3id.org/linkml/tests/core/AgeInYearsType> a shex:NodeConstraint ;
+	shex:datatype xsd:integer .
+<https://w3id.org/linkml/tests/core/Agent> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n120 .
+<https://w3id.org/linkml/tests/core/Agent_tes> a shex:EachOf ;
+	shex:expressions _:c14n150 .
+<https://w3id.org/linkml/tests/core/PhoneNumberType> a shex:NodeConstraint ;
+	shex:datatype xsd:string .
+<https://w3id.org/linkml/tests/kitchen_sink/Address> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n1 .
+<https://w3id.org/linkml/tests/kitchen_sink/Address_tes> a shex:EachOf ;
+	shex:expressions _:c14n157 .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyObject> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n103 .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyObject_tes> a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate rdf:type .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n156 .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute2> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n214 .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute3> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n43 .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute4> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n212 .
+<https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute1> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n199 .
+<https://w3id.org/linkml/tests/kitchen_sink/BirthEvent_tes> a shex:EachOf ;
+	shex:expressions _:c14n218 .
+<https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> a shex:ShapeOr ;
+	shex:shapeExprs _:c14n82 .
+<https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_1> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n3 .
+<https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes> a shex:EachOf ;
+	shex:expressions _:c14n102 .
+<https://w3id.org/linkml/tests/kitchen_sink/Company> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n83 .
+<https://w3id.org/linkml/tests/kitchen_sink/Company_tes> a shex:EachOf ;
+	shex:expressions _:c14n47 .
+<https://w3id.org/linkml/tests/kitchen_sink/Concept> a shex:ShapeOr ;
+	shex:shapeExprs _:c14n183 .
+<https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> a shex:EachOf ;
+	shex:expressions _:c14n10 .
+<https://w3id.org/linkml/tests/kitchen_sink/Dataset> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n124 .
+<https://w3id.org/linkml/tests/kitchen_sink/Dataset_tes> a shex:EachOf ;
+	shex:expressions _:c14n45 .
+<https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n137 .
+<https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept_tes> a shex:EachOf ;
+	shex:expressions _:c14n187 .
+<https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n145 .
+<https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent_tes> a shex:EachOf ;
+	shex:expressions _:c14n112 .
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsString> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n164 .
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n166 .
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute6> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/attribute5> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/Event> a shex:ShapeOr ;
+	shex:shapeExprs _:c14n143 .
+<https://w3id.org/linkml/tests/kitchen_sink/Event_tes> a shex:EachOf ;
+	shex:expressions _:c14n118 .
+<https://w3id.org/linkml/tests/kitchen_sink/FakeClass> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n89 .
+<https://w3id.org/linkml/tests/kitchen_sink/FakeClass_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/test_attribute> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n33 .
+<https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship_tes> a shex:EachOf ;
+	shex:expressions _:c14n27 .
+<https://w3id.org/linkml/tests/kitchen_sink/Friend> a shex:Shape ;
+	shex:closed false ;
+	shex:expression _:c14n140 .
+<https://w3id.org/linkml/tests/kitchen_sink/Friend_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/HasAliases> a shex:Shape ;
+	shex:closed false ;
+	shex:expression _:c14n223 .
+<https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate skos:altLabel ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n186 .
+<https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent_tes> a shex:EachOf ;
+	shex:expressions _:c14n134 .
+<https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n92 .
+<https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent_tes> a shex:EachOf ;
+	shex:expressions _:c14n67 .
+<https://w3id.org/linkml/tests/kitchen_sink/Organization> a shex:ShapeOr ;
+	shex:shapeExprs _:c14n180 .
+<https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> a shex:EachOf ;
+	shex:expressions _:c14n173 .
+<https://w3id.org/linkml/tests/kitchen_sink/Person> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n148 .
+<https://w3id.org/linkml/tests/kitchen_sink/Person_tes> a shex:EachOf ;
+	shex:expressions _:c14n25 .
+<https://w3id.org/linkml/tests/kitchen_sink/Place> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n136 .
+<https://w3id.org/linkml/tests/kitchen_sink/Place_tes> a shex:EachOf ;
+	shex:expressions _:c14n29 .
+<https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n37 .
+<https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept_tes> a shex:EachOf ;
+	shex:expressions _:c14n106 .
+<https://w3id.org/linkml/tests/kitchen_sink/Relationship> a shex:ShapeOr ;
+	shex:shapeExprs _:c14n69 .
+<https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes> a shex:EachOf ;
+	shex:expressions _:c14n211 .
+<https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n142 .
+<https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2_tes> a shex:EachOf ;
+	shex:expressions _:c14n149 .
+<https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> a shex:ShapeOr ;
+	shex:shapeExprs _:c14n49 .
+<https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> a shex:EachOf ;
+	shex:expressions _:c14n73 .
+<https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n110 .
+<https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1_tes> a shex:EachOf ;
+	shex:expressions _:c14n147 .
+<https://w3id.org/linkml/tests/kitchen_sink/WithLocation> a shex:Shape ;
+	shex:closed false ;
+	shex:expression _:c14n108 .
+<https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes> a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> .
+_:c14n0 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ;
+	rdf:rest _:c14n32 .
+_:c14n1 a shex:EachOf ;
+	shex:expressions _:c14n59 .
+_:c14n10 rdf:first _:c14n501 ;
+	rdf:rest _:c14n499 .
+_:c14n100 rdf:first <https://w3id.org/linkml/Uri> ;
+	rdf:rest _:c14n198 .
+_:c14n101 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses_tes> ;
+	rdf:rest _:c14n336 .
+_:c14n102 rdf:first _:c14n500 ;
+	rdf:rest _:c14n498 .
+_:c14n103 a shex:EachOf ;
+	shex:expressions _:c14n38 .
+_:c14n104 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> ;
+	rdf:rest _:c14n66 .
+_:c14n105 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
+	rdf:rest rdf:nil .
+_:c14n106 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> ;
+	rdf:rest _:c14n416 .
+_:c14n107 rdf:first _:c14n489 ;
+	rdf:rest _:c14n261 .
+_:c14n108 a shex:EachOf ;
+	shex:expressions _:c14n219 .
+_:c14n109 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ;
+	rdf:rest rdf:nil .
+_:c14n11 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Dataset> ;
+	rdf:rest rdf:nil .
+_:c14n110 a shex:EachOf ;
+	shex:expressions _:c14n135 .
+_:c14n111 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept_tes> ;
+	rdf:rest _:c14n389 .
+_:c14n112 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> ;
+	rdf:rest _:c14n275 .
+_:c14n113 rdf:first <https://w3id.org/linkml/Integer> ;
+	rdf:rest _:c14n75 .
+_:c14n114 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#LIVING> ;
+	rdf:rest _:c14n139 .
+_:c14n115 rdf:first <https://w3id.org/linkml/tests/core/Agent_tes> ;
+	rdf:rest _:c14n392 .
+_:c14n116 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship_tes> ;
+	rdf:rest _:c14n395 .
+_:c14n117 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
+	rdf:rest _:c14n192 .
+_:c14n118 rdf:first _:c14n491 ;
+	rdf:rest _:c14n486 .
+_:c14n119 rdf:first <https://w3id.org/linkml/Objectidentifier> ;
+	rdf:rest _:c14n53 .
+_:c14n12 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n190 .
+_:c14n120 a shex:EachOf ;
+	shex:expressions _:c14n115 .
+_:c14n121 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_code_system> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> .
+_:c14n122 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> ;
+	rdf:rest rdf:nil .
+_:c14n123 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/addresses> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Address> .
+_:c14n124 a shex:EachOf ;
+	shex:expressions _:c14n188 .
+_:c14n125 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/employed_at> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Company> .
+_:c14n126 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ;
+	rdf:rest rdf:nil .
+_:c14n127 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/persons> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> .
+_:c14n128 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> ;
+	rdf:rest _:c14n50 .
+_:c14n129 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_medical_history> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> .
+_:c14n13 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
+	rdf:rest rdf:nil .
+_:c14n130 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#UNKNOWN> ;
+	rdf:rest rdf:nil .
+_:c14n131 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/married_to> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> .
+_:c14n132 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> ;
+	rdf:rest _:c14n128 .
+_:c14n133 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ;
+	rdf:rest rdf:nil .
+_:c14n134 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> ;
+	rdf:rest _:c14n282 .
+_:c14n135 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1_tes> ;
+	rdf:rest _:c14n366 .
+_:c14n136 a shex:EachOf ;
+	shex:expressions _:c14n70 .
+_:c14n137 a shex:EachOf ;
+	shex:expressions _:c14n111 .
+_:c14n138 rdf:first <https://w3id.org/linkml/Date> ;
+	rdf:rest _:c14n8 .
+_:c14n139 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LifeStatusEnum#DEAD> ;
+	rdf:rest _:c14n130 .
+_:c14n14 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> ;
+	rdf:rest rdf:nil .
+_:c14n140 a shex:EachOf ;
+	shex:expressions _:c14n71 .
+_:c14n141 rdf:first <https://w3id.org/linkml/Float> ;
+	rdf:rest _:c14n227 .
+_:c14n142 a shex:EachOf ;
+	shex:expressions _:c14n90 .
+_:c14n143 rdf:first _:c14n302 ;
+	rdf:rest _:c14n265 .
+_:c14n144 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/altitude> ;
+	shex:valueExpr <https://w3id.org/linkml/Decimal> .
+_:c14n145 a shex:EachOf ;
+	shex:expressions _:c14n201 .
+_:c14n146 rdf:first <https://w3id.org/linkml/tests/core/AgeInYearsType> ;
+	rdf:rest _:c14n6 .
+_:c14n147 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> ;
+	rdf:rest _:c14n316 .
+_:c14n148 a shex:EachOf ;
+	shex:expressions _:c14n65 .
+_:c14n149 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> ;
+	rdf:rest _:c14n312 .
+_:c14n15 rdf:first <https://w3id.org/linkml/Time> ;
+	rdf:rest _:c14n138 .
+_:c14n150 rdf:first _:c14n194 ;
+	rdf:rest _:c14n255 .
+_:c14n151 rdf:first <https://w3id.org/linkml/tests/core/Activity_tes> ;
+	rdf:rest _:c14n437 .
+_:c14n152 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> ;
+	rdf:rest _:c14n482 .
+_:c14n153 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:used ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n154 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
+	rdf:rest rdf:nil .
+_:c14n155 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/companies> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Company> .
+_:c14n156 a shex:EachOf ;
+	shex:expressions _:c14n101 .
+_:c14n157 rdf:first _:c14n18 ;
+	rdf:rest _:c14n496 .
+_:c14n158 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> ;
+	rdf:rest _:c14n0 .
+_:c14n159 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n168 .
+_:c14n16 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix_tes> ;
+	rdf:rest _:c14n443 .
+_:c14n160 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#KappaSequenceIdentifier10_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n24 .
+_:c14n161 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ;
+	rdf:rest rdf:nil .
+_:c14n162 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#PiSequenceIdentifier16_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n170 .
+_:c14n163 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/diagnosis> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> .
+_:c14n164 a shex:EachOf ;
+	shex:expressions _:c14n55 .
+_:c14n165 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ;
+	rdf:rest rdf:nil .
+_:c14n166 a shex:EachOf ;
+	shex:expressions _:c14n9 .
+_:c14n167 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Address> ;
+	rdf:rest _:c14n34 .
+_:c14n168 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#IotaSequenceIdentifier09_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n160 .
+_:c14n169 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses> ;
+	rdf:rest _:c14n132 .
+_:c14n17 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_employment_history> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> .
+_:c14n170 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#RhoSequenceIdentifier17_LongPatternLongPatternLongPattern> ;
+	rdf:rest rdf:nil .
+_:c14n171 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/procedure> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> .
+_:c14n172 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums> ;
+	rdf:rest rdf:nil .
+_:c14n173 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> ;
+	rdf:rest _:c14n353 .
+_:c14n174 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/code_systems> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> .
+_:c14n175 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/stomach_count> ;
+	shex:valueExpr <https://w3id.org/linkml/Integer> .
+_:c14n176 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest_tes> ;
+	rdf:rest _:c14n433 .
+_:c14n177 a shex:Schema ;
+	shex:shapes _:c14n85 .
+_:c14n178 rdf:first <https://w3id.org/linkml/Decimal> ;
+	rdf:rest _:c14n15 .
+_:c14n179 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EtaSequenceIdentifier07_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n159 .
+_:c14n18 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/street> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n180 rdf:first _:c14n306 ;
+	rdf:rest _:c14n154 .
+_:c14n181 rdf:first <https://w3id.org/linkml/Curie> ;
+	rdf:rest _:c14n100 .
+_:c14n182 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EqualsString> ;
+	rdf:rest rdf:nil .
+_:c14n183 rdf:first _:c14n298 ;
+	rdf:rest _:c14n502 .
+_:c14n184 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ;
+	rdf:rest rdf:nil .
+_:c14n185 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ;
+	rdf:rest _:c14n104 .
+_:c14n186 a shex:EachOf ;
+	shex:expressions _:c14n196 .
+_:c14n187 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> ;
+	rdf:rest _:c14n329 .
+_:c14n188 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Dataset_tes> ;
+	rdf:rest _:c14n451 .
+_:c14n189 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/activities> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/core/Activity> .
+_:c14n19 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums_tes> ;
+	rdf:rest _:c14n402 .
+_:c14n190 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n179 .
+_:c14n191 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#CHILD_OF> ;
+	rdf:rest rdf:nil .
+_:c14n192 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
+	rdf:rest _:c14n202 .
+_:c14n193 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/description> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n194 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:actedOnBehalfOf ;
+	shex:valueExpr <https://w3id.org/linkml/tests/core/Agent> .
+_:c14n195 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept_tes> ;
+	rdf:rest _:c14n423 .
+_:c14n196 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent_tes> ;
+	rdf:rest _:c14n323 .
+_:c14n197 rdf:first prov:Agent ;
+	rdf:rest rdf:nil .
+_:c14n198 rdf:first <https://w3id.org/linkml/Ncname> ;
+	rdf:rest _:c14n119 .
+_:c14n199 a shex:EachOf ;
+	shex:expressions _:c14n58 .
+_:c14n2 rdf:first <https://w3id.org/linkml/DateOrDatetime> ;
+	rdf:rest _:c14n203 .
+_:c14n20 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes> ;
+	rdf:rest _:c14n426 .
+_:c14n200 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_familial_relationships> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> .
+_:c14n201 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent_tes> ;
+	rdf:rest _:c14n339 .
+_:c14n202 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Relationship> ;
+	rdf:rest _:c14n504 .
+_:c14n203 rdf:first <https://w3id.org/linkml/Uriorcurie> ;
+	rdf:rest _:c14n181 .
+_:c14n204 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/species_name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n205 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
+	rdf:rest rdf:nil .
+_:c14n206 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#BetaSequenceIdentifier02_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n77 .
+_:c14n207 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ;
+	rdf:rest rdf:nil .
+_:c14n208 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FakeClass> ;
+	rdf:rest rdf:nil .
+_:c14n209 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EqualsString> ;
+	rdf:rest _:c14n42 .
+_:c14n21 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/is_current> ;
+	shex:valueExpr <https://w3id.org/linkml/Boolean> .
+_:c14n210 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n206 .
+_:c14n211 rdf:first _:c14n490 ;
+	rdf:rest _:c14n286 .
+_:c14n212 a shex:EachOf ;
+	shex:expressions _:c14n216 .
+_:c14n213 rdf:first <https://w3id.org/linkml/tests/core/PhoneNumberType> ;
+	rdf:rest _:c14n146 .
+_:c14n214 a shex:EachOf ;
+	shex:expressions _:c14n19 .
+_:c14n215 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Address> ;
+	rdf:rest rdf:nil .
+_:c14n216 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType_tes> ;
+	rdf:rest _:c14n350 .
+_:c14n217 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Friend> ;
+	rdf:rest rdf:nil .
+_:c14n218 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> ;
+	rdf:rest _:c14n239 .
+_:c14n219 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes> ;
+	rdf:rest _:c14n253 .
+_:c14n22 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept> ;
+	rdf:rest rdf:nil .
+_:c14n220 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/WithLocation_tes> ;
+	rdf:rest _:c14n246 .
+_:c14n221 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept> ;
+	rdf:rest _:c14n225 .
+_:c14n222 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Place> ;
+	rdf:rest rdf:nil .
+_:c14n223 a shex:EachOf ;
+	shex:expressions _:c14n88 .
+_:c14n224 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 1 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/related_to> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> .
+_:c14n225 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Dataset> ;
+	rdf:rest _:c14n267 .
+_:c14n226 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent_tes> ;
+	rdf:rest _:c14n430 .
+_:c14n227 rdf:first <https://w3id.org/linkml/Double> ;
+	rdf:rest _:c14n178 .
+_:c14n228 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/long_id> ;
+	shex:valueExpr _:c14n478 .
+_:c14n229 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> .
+_:c14n23 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/city> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n230 rdf:first _:c14n229 ;
+	rdf:rest _:c14n231 .
+_:c14n231 rdf:first _:c14n163 ;
+	rdf:rest _:c14n232 .
+_:c14n232 rdf:first _:c14n171 ;
+	rdf:rest rdf:nil .
+_:c14n233 rdf:first _:c14n234 ;
+	rdf:rest _:c14n230 .
+_:c14n234 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n235 .
+_:c14n235 a shex:NodeConstraint ;
+	shex:values _:c14n236 .
+_:c14n236 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event> ;
+	rdf:rest rdf:nil .
+_:c14n237 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> .
+_:c14n238 rdf:first _:c14n237 ;
+	rdf:rest rdf:nil .
+_:c14n239 rdf:first _:c14n240 ;
+	rdf:rest _:c14n238 .
+_:c14n24 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n79 .
+_:c14n240 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n241 .
+_:c14n241 a shex:NodeConstraint ;
+	shex:values _:c14n242 .
+_:c14n242 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event> ;
+	rdf:rest rdf:nil .
+_:c14n243 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> .
+_:c14n244 rdf:first _:c14n243 ;
+	rdf:rest rdf:nil .
+_:c14n245 rdf:first _:c14n131 ;
+	rdf:rest _:c14n244 .
+_:c14n246 rdf:first _:c14n247 ;
+	rdf:rest _:c14n245 .
+_:c14n247 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n248 .
+_:c14n248 a shex:NodeConstraint ;
+	shex:values _:c14n249 .
+_:c14n249 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ;
+	rdf:rest rdf:nil .
+_:c14n25 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> ;
+	rdf:rest _:c14n463 .
+_:c14n250 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ;
+	rdf:rest rdf:nil .
+_:c14n251 a shex:NodeConstraint ;
+	shex:values _:c14n250 .
+_:c14n252 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n251 .
+_:c14n253 rdf:first _:c14n252 ;
+	rdf:rest rdf:nil .
+_:c14n254 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:wasInformedBy ;
+	shex:valueExpr <https://w3id.org/linkml/tests/core/Activity> .
+_:c14n255 rdf:first _:c14n254 ;
+	rdf:rest rdf:nil .
+_:c14n256 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:wasInformedBy ;
+	shex:valueExpr <https://w3id.org/linkml/tests/core/Activity> .
+_:c14n257 rdf:first _:c14n256 ;
+	rdf:rest _:c14n258 .
+_:c14n258 rdf:first _:c14n57 ;
+	rdf:rest _:c14n259 .
+_:c14n259 rdf:first _:c14n153 ;
+	rdf:rest _:c14n260 .
+_:c14n26 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> ;
+	rdf:rest rdf:nil .
+_:c14n260 rdf:first _:c14n193 ;
+	rdf:rest rdf:nil .
+_:c14n261 rdf:first _:c14n262 ;
+	rdf:rest _:c14n257 .
+_:c14n262 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:endedAtTime ;
+	shex:valueExpr <https://w3id.org/linkml/Date> .
+_:c14n263 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ;
+	rdf:rest _:c14n264 .
+_:c14n264 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> ;
+	rdf:rest _:c14n126 .
+_:c14n265 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ;
+	rdf:rest _:c14n263 .
+_:c14n266 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent> ;
+	rdf:rest _:c14n209 .
+_:c14n267 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ;
+	rdf:rest _:c14n266 .
+_:c14n268 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event> ;
+	rdf:rest rdf:nil .
+_:c14n269 a shex:NodeConstraint ;
+	shex:values _:c14n268 .
+_:c14n27 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Relationship_tes> ;
+	rdf:rest _:c14n383 .
+_:c14n270 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n269 .
+_:c14n271 rdf:first _:c14n270 ;
+	rdf:rest rdf:nil .
+_:c14n272 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event> ;
+	rdf:rest rdf:nil .
+_:c14n273 a shex:NodeConstraint ;
+	shex:values _:c14n272 .
+_:c14n274 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n273 .
+_:c14n275 rdf:first _:c14n274 ;
+	rdf:rest _:c14n276 .
+_:c14n276 rdf:first _:c14n125 ;
+	rdf:rest _:c14n277 .
+_:c14n277 rdf:first _:c14n278 ;
+	rdf:rest rdf:nil .
+_:c14n278 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n279 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event> ;
+	rdf:rest rdf:nil .
+_:c14n28 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1> ;
+	rdf:rest rdf:nil .
+_:c14n280 a shex:NodeConstraint ;
+	shex:values _:c14n279 .
+_:c14n281 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n280 .
+_:c14n282 rdf:first _:c14n281 ;
+	rdf:rest _:c14n220 .
+_:c14n283 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n284 rdf:first _:c14n283 ;
+	rdf:rest _:c14n288 .
+_:c14n285 rdf:first _:c14n30 ;
+	rdf:rest _:c14n284 .
+_:c14n286 rdf:first _:c14n287 ;
+	rdf:rest _:c14n285 .
+_:c14n287 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:endedAtTime ;
+	shex:valueExpr <https://w3id.org/linkml/Date> .
+_:c14n288 rdf:first _:c14n289 ;
+	rdf:rest rdf:nil .
+_:c14n289 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/cordialness> ;
+	shex:valueExpr _:c14n290 .
+_:c14n29 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> ;
+	rdf:rest _:c14n369 .
+_:c14n290 a shex:NodeConstraint ;
+	shex:values _:c14n291 .
+_:c14n291 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt> ;
+	rdf:rest _:c14n292 .
+_:c14n292 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful> ;
+	rdf:rest _:c14n293 .
+_:c14n293 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ;
+	rdf:rest rdf:nil .
+_:c14n294 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> ;
+	rdf:rest _:c14n60 .
+_:c14n295 a shex:EachOf ;
+	shex:expressions _:c14n176 .
+_:c14n296 a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n295 .
+_:c14n297 a shex:EachOf ;
+	shex:expressions _:c14n97 .
+_:c14n298 a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n297 .
+_:c14n299 a shex:EachOf ;
+	shex:expressions _:c14n56 .
+_:c14n3 a shex:EachOf ;
+	shex:expressions _:c14n51 .
+_:c14n30 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/related_to> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n300 a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n299 .
+_:c14n301 a shex:EachOf ;
+	shex:expressions _:c14n72 .
+_:c14n302 a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n301 .
+_:c14n303 a shex:EachOf ;
+	shex:expressions _:c14n20 .
+_:c14n304 a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n303 .
+_:c14n305 a shex:EachOf ;
+	shex:expressions _:c14n152 .
+_:c14n306 a shex:Shape ;
+	shex:closed true ;
+	shex:expression _:c14n305 .
+_:c14n307 a shex:NodeConstraint ;
+	shex:values _:c14n96 .
+_:c14n308 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n307 .
+_:c14n309 rdf:first _:c14n308 ;
+	rdf:rest rdf:nil .
+_:c14n31 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event> ;
+	rdf:rest _:c14n158 .
+_:c14n310 a shex:NodeConstraint ;
+	shex:values _:c14n313 .
+_:c14n311 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n310 .
+_:c14n312 rdf:first _:c14n311 ;
+	rdf:rest rdf:nil .
+_:c14n313 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ;
+	rdf:rest rdf:nil .
+_:c14n314 a shex:NodeConstraint ;
+	shex:values _:c14n317 .
+_:c14n315 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n314 .
+_:c14n316 rdf:first _:c14n315 ;
+	rdf:rest rdf:nil .
+_:c14n317 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ;
+	rdf:rest rdf:nil .
+_:c14n318 a shex:NodeConstraint ;
+	shex:values _:c14n215 .
+_:c14n319 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n318 .
+_:c14n32 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Friend> ;
+	rdf:rest _:c14n46 .
+_:c14n320 rdf:first _:c14n319 ;
+	rdf:rest rdf:nil .
+_:c14n321 a shex:NodeConstraint ;
+	shex:values _:c14n122 .
+_:c14n322 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n321 .
+_:c14n323 rdf:first _:c14n322 ;
+	rdf:rest rdf:nil .
+_:c14n324 a shex:NodeConstraint ;
+	shex:values _:c14n182 .
+_:c14n325 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n324 .
+_:c14n326 rdf:first _:c14n325 ;
+	rdf:rest rdf:nil .
+_:c14n327 a shex:NodeConstraint ;
+	shex:values _:c14n330 .
+_:c14n328 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n327 .
+_:c14n329 rdf:first _:c14n328 ;
+	rdf:rest rdf:nil .
+_:c14n33 a shex:EachOf ;
+	shex:expressions _:c14n116 .
+_:c14n330 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept> ;
+	rdf:rest rdf:nil .
+_:c14n331 a shex:NodeConstraint ;
+	shex:values _:c14n80 .
+_:c14n332 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n331 .
+_:c14n333 rdf:first _:c14n332 ;
+	rdf:rest rdf:nil .
+_:c14n334 a shex:NodeConstraint ;
+	shex:values _:c14n14 .
+_:c14n335 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n334 .
+_:c14n336 rdf:first _:c14n335 ;
+	rdf:rest rdf:nil .
+_:c14n337 a shex:NodeConstraint ;
+	shex:values _:c14n109 .
+_:c14n338 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n337 .
+_:c14n339 rdf:first _:c14n338 ;
+	rdf:rest rdf:nil .
+_:c14n34 rdf:first <https://w3id.org/linkml/tests/core/Agent> ;
+	rdf:rest _:c14n39 .
+_:c14n340 a shex:NodeConstraint ;
+	shex:values _:c14n114 .
+_:c14n341 a shex:NodeConstraint ;
+	shex:values _:c14n184 .
+_:c14n342 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n341 .
+_:c14n343 rdf:first _:c14n342 ;
+	rdf:rest rdf:nil .
+_:c14n344 a shex:NodeConstraint ;
+	shex:values _:c14n347 .
+_:c14n345 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n344 .
+_:c14n346 rdf:first _:c14n345 ;
+	rdf:rest rdf:nil .
+_:c14n347 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> ;
+	rdf:rest rdf:nil .
+_:c14n348 a shex:NodeConstraint ;
+	shex:values _:c14n87 .
+_:c14n349 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n348 .
+_:c14n35 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#PARENT_OF> ;
+	rdf:rest _:c14n191 .
+_:c14n350 rdf:first _:c14n349 ;
+	rdf:rest rdf:nil .
+_:c14n351 a shex:NodeConstraint ;
+	shex:values _:c14n358 .
+_:c14n352 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n351 .
+_:c14n353 rdf:first _:c14n352 ;
+	rdf:rest _:c14n354 .
+_:c14n354 rdf:first _:c14n357 ;
+	rdf:rest _:c14n355 .
+_:c14n355 rdf:first _:c14n356 ;
+	rdf:rest rdf:nil .
+_:c14n356 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate skos:altLabel ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n357 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n358 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ;
+	rdf:rest rdf:nil .
+_:c14n359 a shex:NodeConstraint ;
+	shex:values _:c14n363 .
+_:c14n36 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem> ;
+	rdf:rest _:c14n74 .
+_:c14n360 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n359 .
+_:c14n361 rdf:first _:c14n360 ;
+	rdf:rest _:c14n362 .
+_:c14n362 rdf:first _:c14n99 ;
+	rdf:rest rdf:nil .
+_:c14n363 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> ;
+	rdf:rest rdf:nil .
+_:c14n364 a shex:NodeConstraint ;
+	shex:values _:c14n28 .
+_:c14n365 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n364 .
+_:c14n366 rdf:first _:c14n365 ;
+	rdf:rest rdf:nil .
+_:c14n367 a shex:NodeConstraint ;
+	shex:values _:c14n374 .
+_:c14n368 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n367 .
+_:c14n369 rdf:first _:c14n368 ;
+	rdf:rest _:c14n370 .
+_:c14n37 a shex:EachOf ;
+	shex:expressions _:c14n195 .
+_:c14n370 rdf:first _:c14n373 ;
+	rdf:rest _:c14n371 .
+_:c14n371 rdf:first _:c14n372 ;
+	rdf:rest rdf:nil .
+_:c14n372 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate skos:altLabel ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n373 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n374 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ;
+	rdf:rest rdf:nil .
+_:c14n375 a shex:NodeConstraint ;
+	shex:values _:c14n376 .
+_:c14n376 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt> ;
+	rdf:rest _:c14n377 .
+_:c14n377 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful> ;
+	rdf:rest _:c14n378 .
+_:c14n378 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ;
+	rdf:rest rdf:nil .
+_:c14n379 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/cordialness> ;
+	shex:valueExpr _:c14n375 .
+_:c14n38 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyObject_tes> ;
+	rdf:rest _:c14n333 .
+_:c14n380 rdf:first _:c14n379 ;
+	rdf:rest _:c14n381 .
+_:c14n381 rdf:first _:c14n40 ;
+	rdf:rest _:c14n382 .
+_:c14n382 rdf:first _:c14n224 ;
+	rdf:rest rdf:nil .
+_:c14n383 rdf:first _:c14n384 ;
+	rdf:rest _:c14n380 .
+_:c14n384 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n385 .
+_:c14n385 a shex:NodeConstraint ;
+	shex:values _:c14n386 .
+_:c14n386 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Relationship> ;
+	rdf:rest rdf:nil .
+_:c14n387 a shex:NodeConstraint ;
+	shex:values _:c14n161 .
+_:c14n388 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n387 .
+_:c14n389 rdf:first _:c14n388 ;
+	rdf:rest rdf:nil .
+_:c14n39 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> ;
+	rdf:rest _:c14n169 .
+_:c14n390 a shex:NodeConstraint ;
+	shex:values _:c14n197 .
+_:c14n391 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n390 .
+_:c14n392 rdf:first _:c14n391 ;
+	rdf:rest rdf:nil .
+_:c14n393 a shex:NodeConstraint ;
+	shex:values _:c14n86 .
+_:c14n394 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n393 .
+_:c14n395 rdf:first _:c14n394 ;
+	rdf:rest rdf:nil .
+_:c14n396 a shex:NodeConstraint ;
+	shex:values _:c14n399 .
+_:c14n397 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n396 .
+_:c14n398 rdf:first _:c14n397 ;
+	rdf:rest rdf:nil .
+_:c14n399 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ;
+	rdf:rest rdf:nil .
+_:c14n4 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#NuSequenceIdentifier13_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n7 .
+_:c14n40 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 1 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;
+	shex:valueExpr _:c14n448 .
+_:c14n400 a shex:NodeConstraint ;
+	shex:values _:c14n172 .
+_:c14n401 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n400 .
+_:c14n402 rdf:first _:c14n401 ;
+	rdf:rest rdf:nil .
+_:c14n403 a shex:NodeConstraint ;
+	shex:values _:c14n208 .
+_:c14n404 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n403 .
+_:c14n405 rdf:first _:c14n404 ;
+	rdf:rest rdf:nil .
+_:c14n406 a shex:NodeConstraint ;
+	shex:values _:c14n217 .
+_:c14n407 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n406 .
+_:c14n408 rdf:first _:c14n407 ;
+	rdf:rest rdf:nil .
+_:c14n409 a shex:NodeConstraint ;
+	shex:values _:c14n413 .
+_:c14n41 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <http://schema.org/ceo> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Person> .
+_:c14n410 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n409 .
+_:c14n411 rdf:first _:c14n410 ;
+	rdf:rest _:c14n412 .
+_:c14n412 rdf:first _:c14n41 ;
+	rdf:rest rdf:nil .
+_:c14n413 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Organization> ;
+	rdf:rest rdf:nil .
+_:c14n414 a shex:NodeConstraint ;
+	shex:values _:c14n417 .
+_:c14n415 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n414 .
+_:c14n416 rdf:first _:c14n415 ;
+	rdf:rest rdf:nil .
+_:c14n417 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept> ;
+	rdf:rest rdf:nil .
+_:c14n418 a shex:NodeConstraint ;
+	shex:values _:c14n61 .
+_:c14n419 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n418 .
+_:c14n42 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> ;
+	rdf:rest _:c14n31 .
+_:c14n420 rdf:first _:c14n419 ;
+	rdf:rest rdf:nil .
+_:c14n421 a shex:NodeConstraint ;
+	shex:values _:c14n22 .
+_:c14n422 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n421 .
+_:c14n423 rdf:first _:c14n422 ;
+	rdf:rest rdf:nil .
+_:c14n424 a shex:NodeConstraint ;
+	shex:values _:c14n427 .
+_:c14n425 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n424 .
+_:c14n426 rdf:first _:c14n425 ;
+	rdf:rest rdf:nil .
+_:c14n427 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Relationship> ;
+	rdf:rest rdf:nil .
+_:c14n428 a shex:NodeConstraint ;
+	shex:values _:c14n207 .
+_:c14n429 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n428 .
+_:c14n43 a shex:EachOf ;
+	shex:expressions _:c14n16 .
+_:c14n430 rdf:first _:c14n429 ;
+	rdf:rest rdf:nil .
+_:c14n431 a shex:NodeConstraint ;
+	shex:values _:c14n434 .
+_:c14n432 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n431 .
+_:c14n433 rdf:first _:c14n432 ;
+	rdf:rest rdf:nil .
+_:c14n434 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubclassTest> ;
+	rdf:rest rdf:nil .
+_:c14n435 a shex:NodeConstraint ;
+	shex:values _:c14n78 .
+_:c14n436 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n435 .
+_:c14n437 rdf:first _:c14n436 ;
+	rdf:rest rdf:nil .
+_:c14n438 a shex:NodeConstraint ;
+	shex:values _:c14n222 .
+_:c14n439 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n438 .
+_:c14n44 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n162 .
+_:c14n440 rdf:first _:c14n439 ;
+	rdf:rest rdf:nil .
+_:c14n441 a shex:NodeConstraint ;
+	shex:values _:c14n64 .
+_:c14n442 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n441 .
+_:c14n443 rdf:first _:c14n442 ;
+	rdf:rest rdf:nil .
+_:c14n444 a shex:NodeConstraint ;
+	shex:values _:c14n445 .
+_:c14n445 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept> ;
+	rdf:rest rdf:nil .
+_:c14n446 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n444 .
+_:c14n447 rdf:first _:c14n446 ;
+	rdf:rest rdf:nil .
+_:c14n448 a shex:NodeConstraint ;
+	shex:values _:c14n63 .
+_:c14n449 a shex:NodeConstraint ;
+	shex:values _:c14n11 .
+_:c14n45 rdf:first _:c14n488 ;
+	rdf:rest _:c14n495 .
+_:c14n450 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n449 .
+_:c14n451 rdf:first _:c14n450 ;
+	rdf:rest rdf:nil .
+_:c14n452 a shex:NodeConstraint ;
+	shex:values _:c14n105 .
+_:c14n453 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n452 .
+_:c14n454 rdf:first _:c14n453 ;
+	rdf:rest rdf:nil .
+_:c14n455 a shex:NodeConstraint ;
+	shex:values _:c14n81 .
+_:c14n456 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n455 .
+_:c14n457 rdf:first _:c14n456 ;
+	rdf:rest rdf:nil .
+_:c14n458 a shex:NodeConstraint ;
+	shex:values _:c14n13 .
+_:c14n459 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n458 .
+_:c14n46 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ;
+	rdf:rest _:c14n505 .
+_:c14n460 rdf:first _:c14n459 ;
+	rdf:rest rdf:nil .
+_:c14n461 a shex:NodeConstraint ;
+	shex:values _:c14n477 .
+_:c14n462 a shex:TripleConstraint ;
+	shex:min 0 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n461 .
+_:c14n463 rdf:first _:c14n462 ;
+	rdf:rest _:c14n464 .
+_:c14n464 rdf:first _:c14n476 ;
+	rdf:rest _:c14n465 .
+_:c14n465 rdf:first _:c14n17 ;
+	rdf:rest _:c14n466 .
+_:c14n466 rdf:first _:c14n200 ;
+	rdf:rest _:c14n467 .
+_:c14n467 rdf:first _:c14n129 ;
+	rdf:rest _:c14n468 .
+_:c14n468 rdf:first _:c14n54 ;
+	rdf:rest _:c14n469 .
+_:c14n469 rdf:first _:c14n123 ;
+	rdf:rest _:c14n470 .
+_:c14n47 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> ;
+	rdf:rest _:c14n411 .
+_:c14n470 rdf:first _:c14n94 ;
+	rdf:rest _:c14n471 .
+_:c14n471 rdf:first _:c14n204 ;
+	rdf:rest _:c14n472 .
+_:c14n472 rdf:first _:c14n175 ;
+	rdf:rest _:c14n473 .
+_:c14n473 rdf:first _:c14n98 ;
+	rdf:rest _:c14n474 .
+_:c14n474 rdf:first _:c14n475 ;
+	rdf:rest rdf:nil .
+_:c14n475 a shex:TripleConstraint ;
+	shex:max -1 ;
+	shex:min 0 ;
+	shex:predicate skos:altLabel ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n476 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n477 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases> ;
+	rdf:rest rdf:nil .
+_:c14n478 a shex:NodeConstraint ;
+	shex:values _:c14n210 .
+_:c14n479 a shex:NodeConstraint ;
+	shex:values _:c14n480 .
+_:c14n48 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n12 .
+_:c14n480 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Organization> ;
+	rdf:rest rdf:nil .
+_:c14n481 a shex:TripleConstraint ;
+	shex:min 1 ;
+	shex:predicate rdf:type ;
+	shex:valueExpr _:c14n479 .
+_:c14n482 rdf:first _:c14n481 ;
+	rdf:rest rdf:nil .
+_:c14n483 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/metadata> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> .
+_:c14n484 rdf:first _:c14n483 ;
+	rdf:rest rdf:nil .
+_:c14n485 rdf:first _:c14n21 ;
+	rdf:rest _:c14n484 .
+_:c14n486 rdf:first _:c14n487 ;
+	rdf:rest _:c14n485 .
+_:c14n487 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:endedAtTime ;
+	shex:valueExpr <https://w3id.org/linkml/Date> .
+_:c14n488 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/metadata> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/AnyObject> .
+_:c14n489 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:startedAtTime ;
+	shex:valueExpr <https://w3id.org/linkml/Date> .
+_:c14n49 rdf:first _:c14n296 ;
+	rdf:rest _:c14n503 .
+_:c14n490 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:startedAtTime ;
+	shex:valueExpr <https://w3id.org/linkml/Date> .
+_:c14n491 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:startedAtTime ;
+	shex:valueExpr <https://w3id.org/linkml/Date> .
+_:c14n492 rdf:first _:c14n155 ;
+	rdf:rest _:c14n493 .
+_:c14n493 rdf:first _:c14n189 ;
+	rdf:rest _:c14n494 .
+_:c14n494 rdf:first _:c14n174 ;
+	rdf:rest rdf:nil .
+_:c14n495 rdf:first _:c14n127 ;
+	rdf:rest _:c14n492 .
+_:c14n496 rdf:first _:c14n23 ;
+	rdf:rest _:c14n497 .
+_:c14n497 rdf:first _:c14n144 ;
+	rdf:rest rdf:nil .
+_:c14n498 rdf:first _:c14n228 ;
+	rdf:rest rdf:nil .
+_:c14n499 rdf:first _:c14n121 ;
+	rdf:rest rdf:nil .
+_:c14n5 rdf:first <https://w3id.org/linkml/Jsonpath> ;
+	rdf:rest _:c14n52 .
+_:c14n50 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> ;
+	rdf:rest _:c14n294 .
+_:c14n500 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n501 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+	shex:valueExpr <https://w3id.org/linkml/String> .
+_:c14n502 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept> ;
+	rdf:rest _:c14n205 .
+_:c14n503 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> ;
+	rdf:rest _:c14n26 .
+_:c14n504 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> ;
+	rdf:rest _:c14n185 .
+_:c14n505 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent> ;
+	rdf:rest _:c14n93 .
+_:c14n51 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes> ;
+	rdf:rest _:c14n454 .
+_:c14n52 rdf:first <https://w3id.org/linkml/Sparqlpath> ;
+	rdf:rest _:c14n213 .
+_:c14n53 rdf:first <https://w3id.org/linkml/Nodeidentifier> ;
+	rdf:rest _:c14n95 .
+_:c14n54 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/age_in_years> ;
+	shex:valueExpr <https://w3id.org/linkml/Integer> .
+_:c14n55 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EqualsString_tes> ;
+	rdf:rest _:c14n326 .
+_:c14n56 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes> ;
+	rdf:rest _:c14n346 .
+_:c14n57 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate prov:wasAssociatedWith ;
+	shex:valueExpr <https://w3id.org/linkml/tests/core/Agent> .
+_:c14n58 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent_tes> ;
+	rdf:rest _:c14n343 .
+_:c14n59 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Address_tes> ;
+	rdf:rest _:c14n320 .
+_:c14n6 rdf:first <https://w3id.org/linkml/tests/core/Activity> ;
+	rdf:rest _:c14n167 .
+_:c14n60 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> ;
+	rdf:rest _:c14n36 .
+_:c14n61 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
+	rdf:rest rdf:nil .
+_:c14n62 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Organization> ;
+	rdf:rest _:c14n76 .
+_:c14n63 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationshipType#SIBLING_OF> ;
+	rdf:rest _:c14n35 .
+_:c14n64 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix> ;
+	rdf:rest rdf:nil .
+_:c14n65 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Person_tes> ;
+	rdf:rest _:c14n460 .
+_:c14n66 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/WithLocation> ;
+	rdf:rest rdf:nil .
+_:c14n67 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> ;
+	rdf:rest _:c14n233 .
+_:c14n68 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FakeClass_tes> ;
+	rdf:rest _:c14n405 .
+_:c14n69 rdf:first _:c14n304 ;
+	rdf:rest _:c14n133 .
+_:c14n7 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#XiSequenceIdentifier14_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n44 .
+_:c14n70 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Place_tes> ;
+	rdf:rest _:c14n440 .
+_:c14n71 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Friend_tes> ;
+	rdf:rest _:c14n408 .
+_:c14n72 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Event_tes> ;
+	rdf:rest _:c14n271 .
+_:c14n73 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces_tes> ;
+	rdf:rest _:c14n361 .
+_:c14n74 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Company> ;
+	rdf:rest _:c14n221 .
+_:c14n75 rdf:first <https://w3id.org/linkml/Boolean> ;
+	rdf:rest _:c14n141 .
+_:c14n76 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Person> ;
+	rdf:rest _:c14n117 .
+_:c14n77 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#GammaSequenceIdentifier03_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n48 .
+_:c14n78 rdf:first <https://w3id.org/linkml/tests/core/Activity> ;
+	rdf:rest rdf:nil .
+_:c14n79 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#MuSequenceIdentifier12_LongPatternLongPatternLongPattern> ;
+	rdf:rest _:c14n4 .
+_:c14n8 rdf:first <https://w3id.org/linkml/Datetime> ;
+	rdf:rest _:c14n2 .
+_:c14n80 rdf:first <https://w3id.org/linkml/Any> ;
+	rdf:rest rdf:nil .
+_:c14n81 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2> ;
+	rdf:rest rdf:nil .
+_:c14n82 rdf:first _:c14n300 ;
+	rdf:rest _:c14n165 .
+_:c14n83 a shex:EachOf ;
+	shex:expressions _:c14n91 .
+_:c14n84 a shex:EachOf ;
+	shex:expressions _:c14n151 .
+_:c14n85 rdf:first <https://w3id.org/linkml/String> ;
+	rdf:rest _:c14n113 .
+_:c14n86 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship> ;
+	rdf:rest rdf:nil .
+_:c14n87 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType> ;
+	rdf:rest rdf:nil .
+_:c14n88 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/HasAliases_tes> ;
+	rdf:rest _:c14n398 .
+_:c14n89 a shex:EachOf ;
+	shex:expressions _:c14n68 .
+_:c14n9 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn_tes> ;
+	rdf:rest _:c14n309 .
+_:c14n90 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2_tes> ;
+	rdf:rest _:c14n457 .
+_:c14n91 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Company_tes> ;
+	rdf:rest _:c14n420 .
+_:c14n92 a shex:EachOf ;
+	shex:expressions _:c14n226 .
+_:c14n93 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent> ;
+	rdf:rest _:c14n62 .
+_:c14n94 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/has_birth_event> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/BirthEvent> .
+_:c14n95 rdf:first <https://w3id.org/linkml/Jsonpointer> ;
+	rdf:rest _:c14n5 .
+_:c14n96 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn> ;
+	rdf:rest rdf:nil .
+_:c14n97 rdf:first <https://w3id.org/linkml/tests/kitchen_sink/Concept_tes> ;
+	rdf:rest _:c14n447 .
+_:c14n98 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/is_living> ;
+	shex:valueExpr _:c14n340 .
+_:c14n99 a shex:TripleConstraint ;
+	shex:max 1 ;
+	shex:min 0 ;
+	shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/slot_with_space_2> ;
+	shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces> .
 

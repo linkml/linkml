@@ -12,6 +12,7 @@ from linkml_runtime.linkml_model.meta import (
     ClassDefinition,
     Element,
     EnumDefinition,
+    Prefix,
     SchemaDefinition,
     SlotDefinition,
     SlotDefinitionName,
@@ -99,16 +100,28 @@ def merge_namespaces(target: SchemaDefinition, mergee: SchemaDefinition, namespa
                         mergee.name,
                         namespaces[prefix.prefix_prefix],
                     )
+                elif prefix.prefix_prefix not in target.prefixes:
+                    # The prefix already resolved into a shared Namespaces map
+                    # (some other schema provided the absolute form). Propagate
+                    # it into target.prefixes so downstream generators that
+                    # iterate target.prefixes (e.g. gen-yaml, gen-shacl) see
+                    # the union of imported prefixes.
+                    target.prefixes[prefix.prefix_prefix] = Prefix(
+                        prefix.prefix_prefix, namespaces[prefix.prefix_prefix]
+                    )
             continue
 
         namespaces[prefix.prefix_prefix] = prefix.prefix_reference
-        # if prefix.prefix_prefix not in target.prefixes:
-        #     target.prefixes[prefix.prefix_prefix] = prefix
         if (
             prefix.prefix_prefix in target.prefixes
             and target.prefixes[prefix.prefix_prefix].prefix_reference != prefix.prefix_reference
         ):
             raise ValueError(f"Prefix: {prefix.prefix_prefix} mismatch between {target.name} and {mergee.name}")
+        if prefix.prefix_prefix not in target.prefixes:
+            # Propagate prefixes declared only in imported sub-schemas into the
+            # root schema's prefixes dict. Generators iterating target.prefixes
+            # need these so emitted content referencing the prefix resolves.
+            target.prefixes[prefix.prefix_prefix] = Prefix(prefix.prefix_prefix, prefix.prefix_reference)
     for mmap in mergee.default_curi_maps:
         namespaces.add_prefixmap(mmap)
 
