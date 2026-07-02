@@ -1,5 +1,5 @@
 # Auto generated from ordered_list.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-06-29T11:43:02
+# Generation date: 2026-07-02T16:20:46
 # Schema: ordered_list
 #
 # id: http://example.org/ordered_list
@@ -77,6 +77,9 @@ class ColumnDesc(YAMLRoot):
     atom: Union[str, ColumnDescAtom] = None
     scope: Optional[Union[str, list[str]]] = empty_list()
     items: Optional[Union[list[Union[str, ItemName]], dict[Union[str, ItemName], Union[dict, Item]]]] = empty_dict()
+    items_by_id: Optional[Union[list[Union[str, ItemName]], dict[Union[str, ItemName], Union[dict, Item]]]] = (
+        empty_dict()
+    )
     tags: Optional[Union[str, list[str]]] = empty_list()
 
     def __post_init__(self, *_: str, **kwargs: Any):
@@ -90,6 +93,8 @@ class ColumnDesc(YAMLRoot):
         self.scope = [v if isinstance(v, str) else str(v) for v in self.scope]
 
         self._normalize_inlined_as_list(slot_name="items", slot_type=Item, key_name="name", keyed=True)
+
+        self._normalize_inlined_as_dict(slot_name="items_by_id", slot_type=Item, key_name="name", keyed=True)
 
         if not isinstance(self.tags, list):
             self.tags = [self.tags] if self.tags is not None else []
@@ -133,6 +138,15 @@ slots.columnDesc__items = Slot(
     name="columnDesc__items",
     curie=EX.curie("items"),
     model_uri=EX.columnDesc__items,
+    domain=None,
+    range=Optional[Union[list[Union[str, ItemName]], dict[Union[str, ItemName], Union[dict, Item]]]],
+)
+
+slots.columnDesc__items_by_id = Slot(
+    uri=EX.items_by_id,
+    name="columnDesc__items_by_id",
+    curie=EX.curie("items_by_id"),
+    model_uri=EX.columnDesc__items_by_id,
     domain=None,
     range=Optional[Union[list[Union[str, ItemName]], dict[Union[str, ItemName], Union[dict, Item]]]],
 )
