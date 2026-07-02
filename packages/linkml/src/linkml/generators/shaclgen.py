@@ -193,7 +193,19 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
 
-                prop_pv(SH.path, slot_uri)
+                if s.multivalued and s.list_elements_ordered:
+                    # Ordered multivalued slots are serialized as an rdf:List (see issue #3531),
+                    # so the value constraints must apply to each list member rather than to the
+                    # list head. Use a SHACL sequence path that steps through the slot, walks the
+                    # rdf:rest spine, then reads each rdf:first:
+                    #   sh:path ( <slot> [ sh:zeroOrMorePath rdf:rest ] rdf:first )
+                    rest_path = BNode()
+                    g.add((rest_path, SH.zeroOrMorePath, RDF.rest))
+                    seq_path = BNode()
+                    Collection(g, seq_path, [slot_uri, rest_path, RDF.first])
+                    prop_pv(SH.path, seq_path)
+                else:
+                    prop_pv(SH.path, slot_uri)
                 prop_pv_literal(SH.order, order)
                 order += 1
                 prop_pv_text(SH.name, s.title)

@@ -1,0 +1,41 @@
+id: http://example.org/ordered_list
+name: ordered_list
+description: >-
+  Schema exercising ``list_elements_ordered`` on multivalued slots, which the
+  RDF dumper/loader represent as an ``rdf:List`` so that element order is part
+  of the RDF semantics. See https://github.com/linkml/linkml/issues/3531
+prefixes:
+  ex: http://example.org/
+  linkml: https://w3id.org/linkml/
+default_prefix: ex
+default_range: string
+imports:
+  - linkml:types
+classes:
+  Item:
+    attributes:
+      name:
+        identifier: true
+        slot_uri: ex:name
+  ColumnDesc:
+    tree_root: true
+    attributes:
+      atom:
+        identifier: true
+        slot_uri: ex:atom
+      scope:
+        description: ordered list of literals
+        multivalued: true
+        list_elements_ordered: true
+        slot_uri: ex:scope
+      items:
+        description: ordered list of inlined objects
+        multivalued: true
+        list_elements_ordered: true
+        inlined_as_list: true
+        range: Item
+        slot_uri: ex:items
+      tags:
+        description: unordered control slot (flat triples)
+        multivalued: true
+        slot_uri: ex:tags
