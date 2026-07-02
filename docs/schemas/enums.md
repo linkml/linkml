@@ -87,7 +87,7 @@ With an open enum:
 - In JSON Schema, an open enum maps to a plain `string` rather than a JSON Schema `enum` constraint.
 - When validating with the reference validator, an out-of-set value is reported at `INFO` severity rather than as an error.
 
-This is analogous to (say) NIST Metaschema `allow-other="yes"` construct (used by OSCAL).
+This is analogous to `allow-other="yes"` construct (NIST Metaschema).
 
 Closed enums (the default, or `is_open: false`) retain the original behavior: values MUST be drawn from the set of permissible values.
 
@@ -199,3 +199,28 @@ To run:
 pip install oaklib
 vskit expand -s my_schema.yaml -o my_schema_expanded.yaml
 ```
+
+### SchemaView materialization
+
+In `linkml_runtime`, `SchemaView.materialize_derived_schema()` now materializes
+intensional enum expressions into explicit `permissible_values` in the derived schema.
+
+- Locally materialized: `permissible_values`, `inherits`, `include`, `minus`, `concepts`
+- Resolver-backed (optional): `reachable_from`, `matches`, `code_set` / `pv_formula`
+
+You can configure resolver callbacks when your toolchain has ontology/code-system access:
+
+```python
+from linkml_runtime.utils.schemaview import SchemaView
+
+sv = SchemaView("my_schema.yaml")
+sv.configure_enum_materialization_resolvers(
+  reachable_from_resolver=my_reachability_fn,
+  matches_resolver=my_match_fn,
+  code_set_resolver=my_codeset_fn,
+)
+derived = sv.materialize_derived_schema()
+```
+
+This keeps enum semantics explicit for downstream validation/generation while allowing
+different stacks to plug in their own dynamic expansion logic.

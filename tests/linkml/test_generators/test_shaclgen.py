@@ -1231,6 +1231,7 @@ def _build_message_test_schema():
             range="string",
             description="The vehicle name.",
             title="Name",
+            comments=["keep it short", "must be unique"],
             required=True,
         )
     )
@@ -1509,3 +1510,105 @@ def test_open_enum_omits_sh_in_constraint(is_open, expect_sh_in):
         assert sh_in_triples, "Expected sh:in constraint for closed enum but none found"
     else:
         assert not sh_in_triples, f"Expected no sh:in constraint for open enum but found: {sh_in_triples}"
+
+
+def test_message_template_basic_expansion():
+    """--message-template adds an sh:message to every property shape, expanded per slot."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="Validation of {name} failed!")
+
+    name_msgs = _get_prop_objects(g, EX.Vehicle, EX.vehicle_name, SH.message)
+    assert Literal("Validation of vehicle_name failed!") in name_msgs
+
+    speed_msgs = _get_prop_objects(g, EX.Vehicle, EX.speed, SH.message)
+    assert Literal("Validation of speed failed!") in speed_msgs
+
+
+def test_message_template_all_placeholders_expand():
+    """Every supported placeholder is expanded from the slot/class metadata."""
+    schema = _build_message_test_schema()
+    template = "{name}|{title}|{description}|{comments}|{class}|{path}"
+    g = _parse_shacl(schema, message_template=template)
+
+    msgs = _get_prop_objects(g, EX.Vehicle, EX.vehicle_name, SH.message)
+    assert len(msgs) == 1
+    name, title, description, comments, cls, path = str(msgs[0]).split("|")
+    assert name == "vehicle_name"
+    assert title == "Name"
+    assert description == "The vehicle name."
+    assert comments == "keep it short; must be unique"  # joined with '; '
+    assert cls == "Vehicle"
+    assert path == str(EX.vehicle_name)
+
+
+def test_message_template_fallbacks_for_missing_fields():
+    """{title} falls back to the slot name; {description}/{comments} fall back to empty."""
+    schema = _build_message_test_schema()
+    # `speed` has no title and no comments, but does have a description.
+    g = _parse_shacl(schema, message_template="{title}/{description}/{comments}")
+
+    speed_msgs = _get_prop_objects(g, EX.Vehicle, EX.speed, SH.message)
+    assert Literal("speed/Speed in km/h./") in speed_msgs
+
+
+def test_message_template_absent_by_default():
+    """Without --message-template, no sh:message triples are emitted (backward-compat)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema)
+    assert list(g.subject_objects(SH.message)) == []
+
+
+@pytest.mark.parametrize("template", ["", "   "])
+def test_message_template_empty_or_whitespace_is_noop(template):
+    """An empty or whitespace-only template is normalized to no template."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template=template)
+    assert list(g.subject_objects(SH.message)) == []
+
+
+def test_message_template_empty_render_is_skipped():
+    """A template that renders to empty text for a given slot emits no sh:message for it."""
+    schema = _build_message_test_schema()
+    # `{comments}` is empty for `speed` (no comments) -> skipped, but present for vehicle_name.
+    g = _parse_shacl(schema, message_template="{comments}")
+
+    assert _get_prop_objects(g, EX.Vehicle, EX.speed, SH.message) == []
+    name_msgs = _get_prop_objects(g, EX.Vehicle, EX.vehicle_name, SH.message)
+    assert Literal("keep it short; must be unique") in name_msgs
+
+
+def test_message_template_uses_default_language():
+    """The sh:message literal is tagged with the generator default language when set."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="Invalid {name}", default_language="en")
+
+    msgs = _get_prop_objects(g, EX.Vehicle, EX.vehicle_name, SH.message)
+    assert Literal("Invalid vehicle_name", lang="en") in msgs
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "{bogus}",  # unknown placeholder
+        "{name:>5}",  # format spec
+        "{name!r}",  # conversion
+        "{name",  # unbalanced brace
+        "{0}",  # positional field
+        "{name.upper}",  # attribute access
+        "{name[0]}",  # indexing
+    ],
+)
+def test_message_template_invalid_raises(template):
+    """Malformed or unsupported templates fail fast at construction with a helpful error."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="message-template"):
+        ShaclGenerator(schema, mergeimports=False, message_template=template)
+
+
+def test_message_template_validated_even_without_slots():
+    """A malformed template is rejected up-front, even for a schema with no property shapes."""
+    sb = SchemaBuilder()
+    sb.add_class("Empty")
+    sb.add_defaults()
+    with pytest.raises(ValueError, match="message-template"):
+        ShaclGenerator(sb.schema, mergeimports=False, message_template="{bogus}")

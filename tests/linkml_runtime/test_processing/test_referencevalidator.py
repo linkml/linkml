@@ -1195,5 +1195,112 @@ def test_open_enum_out_of_set_value_is_info_not_error():
     assert report.results[0].type == ConstraintType.PermissibleValueConstraint
 
 
+def _intensional_enum_schema(is_open: bool) -> SchemaBuilder:
+    """Build a schema whose enum is defined *intensionally* via ``concepts``.
+
+    The enum has no static ``permissible_values`` in the source schema; its
+    members are only discoverable by materializing the derived schema.
+    """
+    sb = SchemaBuilder()
+    sb.add_enum("IntensionalEnum", concepts=["A", "B", "C"], is_open=is_open)
+    sb.add_slot("status", range="IntensionalEnum")
+    sb.add_class("Record", slots=["status"])
+    sb.add_defaults()
+    return sb
+
+
+def test_closed_intensional_enum_without_materialization_is_not_enforced():
+    """Baseline: a closed intensional enum has no permissible values in the source schema.
+
+    Because the source enum's ``permissible_values`` are empty, the intensional
+    definition (``concepts``) is not expanded and cannot be meaningfully enforced
+    against member values without materialization.
+    """
+    sb = _intensional_enum_schema(is_open=False)
+    source_enum = SchemaView(sb.schema).get_enum("IntensionalEnum")
+
+    materialized_keys = {k for k in source_enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == set()
+    assert list(source_enum.concepts) == ["A", "B", "C"]
+
+
+def test_closed_intensional_enum_with_materialization_is_enforced():
+    """A closed intensional enum is materialized into permissible values and enforced."""
+    sb = _intensional_enum_schema(is_open=False)
+    normalizer = ReferenceValidator(SchemaView(sb.schema))
+    derived_enum = normalizer.derived_schema.enums["IntensionalEnum"]
+
+    materialized_keys = {k for k in derived_enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"A", "B", "C"}
+
+    in_set_report = Report()
+    normalizer.normalize_enum("A", derived_enum, in_set_report)
+    assert in_set_report.errors() == []
+
+    out_of_set_report = Report()
+    normalizer.normalize_enum("Z", derived_enum, out_of_set_report)
+    assert len(out_of_set_report.errors()) == 1
+    assert out_of_set_report.errors()[0].type == ConstraintType.PermissibleValueConstraint
+
+
+def test_open_intensional_enum_without_materialization_is_advisory():
+    """Baseline: an open intensional enum accepts any value (advisory), even before materialization."""
+    sb = _intensional_enum_schema(is_open=True)
+    normalizer = ReferenceValidator(SchemaView(sb.schema))
+    source_enum = SchemaView(sb.schema).get_enum("IntensionalEnum")
+
+    assert {k for k in source_enum.permissible_values if k != "_if_missing"} == set()
+
+    for value in ("A", "Z"):
+        report = Report()
+        normalizer.normalize_enum(value, source_enum, report)
+        assert report.errors() == []
+        assert len(report.results) == 1
+        assert str(report.results[0].severity) == "INFO"
+
+
+def test_open_intensional_enum_with_materialization_is_enriched_advisory():
+    """An open intensional enum is enriched with materialized values but stays advisory.
+
+    After materialization, in-set values pass silently while out-of-set values are
+    still permitted and surfaced only at INFO severity (advisory), preserving ``is_open``.
+    """
+    sb = _intensional_enum_schema(is_open=True)
+    normalizer = ReferenceValidator(SchemaView(sb.schema))
+    derived_enum = normalizer.derived_schema.enums["IntensionalEnum"]
+
+    assert derived_enum.is_open is True
+    materialized_keys = {k for k in derived_enum.permissible_values if k != "_if_missing"}
+    assert materialized_keys == {"A", "B", "C"}
+
+    in_set_report = Report()
+    normalizer.normalize_enum("A", derived_enum, in_set_report)
+    assert in_set_report.results == []
+
+    out_of_set_report = Report()
+    normalizer.normalize_enum("Z", derived_enum, out_of_set_report)
+    assert out_of_set_report.errors() == []
+    assert len(out_of_set_report.results) == 1
+    assert str(out_of_set_report.results[0].severity) == "INFO"
+
+
+def test_materialized_closed_intensional_enum_enforced_in_reference_validation():
+    """Integration: materialized derived schema enforces a closed dynamic enum end-to-end.
+
+    A closed enum defined intensionally (via ``concepts``) is materialized when the
+    :class:`ReferenceValidator` builds its derived schema, so full-object reference
+    validation accepts in-set values and rejects out-of-set values.
+    """
+    sb = _intensional_enum_schema(is_open=False)
+    validator = ReferenceValidator(SchemaView(sb.schema))
+
+    valid_report = validator.validate({"status": "A"}, target="Record")
+    assert valid_report.errors() == []
+
+    invalid_report = validator.validate({"status": "Z"}, target="Record")
+    assert len(invalid_report.errors()) == 1
+    assert invalid_report.errors()[0].type == ConstraintType.PermissibleValueConstraint
+
+
 if __name__ == "__main__":
     unittest.main()
