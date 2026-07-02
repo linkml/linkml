@@ -285,7 +285,7 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
 
 # Enumerations
 {self.gen_enumerations()}
-
+{self.gen_post_enum_references()}
 # Slots
 {self.gen_slotdefs()}"""
 
@@ -430,22 +430,41 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
             class AnnotationTagPid(ThingPid):   # ThingPid must be defined first
                 pass
 
-        Order matters: because ``_sort_classes`` puts every data class after its parent,
-        but is ignorant about wrapper-class inheritance, so wrappers can still come out
-        in the wrong order, causing a ``NameError`` on import.
+        Order matters: "_sort_classes" puts every data class after its parent
+        but is ignorant of wrapper-class inheritance, so wrappers can still come
+        out in the wrong order, causing a ``NameError`` on import. Collection
+        (:meth:`_collect_references`) and dependency-ordered emission
+        (:meth:`_render_references`) keep parents ahead of their children.
 
-        Approach: collect first, then emit in dependency order
-        -------------------------------------------------
-        1. Walk classes in sorted order and record each wrapper class plus its parent.
-        2. Before writing any wrapper, recursively write its parent first.
-           If the parent is an imported type (e.g. ``URIorCURIE``) it is already
-           available so stop immediately.
+        Wrappers whose ultimate base is an enum are deferred and emitted by
+        :meth:`gen_post_enum_references` after the Enumerations section, since
+        enum classes are defined later in the generated file.
         """
-        # Step 1: record every wrapper class without writing anything yet.
-        # ref_info: name -> (parent name, source line to emit)
-        # emit_order: original iteration order, used as sibling tie-breaker
+        return self._render_references(enum_rooted=False)
+
+    def gen_post_enum_references(self) -> str:
+        """Emit class-reference wrappers whose ultimate base is an enum.
+
+        These must be emitted after the Enumerations section because the wrapper
+        "class FooBar(BarEnum): pass" requires "BarEnum" to already exist.
+        See :meth:`gen_references` for the general wrapper mechanism.
+        """
+        return self._render_references(enum_rooted=True)
+
+    def _collect_references(self) -> tuple[dict[str, tuple[str, str]], list[str], set[str]]:
+        """Walk classes in sorted order and record each wrapper class plus its parent.
+
+        No output is written here; emission is deferred to :meth:`_render_references`
+        so that parents can be written before children.
+
+        :return: tuple of (ref_info, emit_order, enum_names) where
+            ref_info maps wrapper name -> (parent name, source line to emit),
+            emit_order preserves discovery order, and
+            enum_names is the set of camelcased enum names defined in this schema.
+        """
         ref_info: dict[str, tuple[str, str]] = {}
         emit_order: list[str] = []
+        enum_names = {camelcase(e.name) for e in self.schema.enums.values() if not e.imported_from}
 
         for cls in self._sort_classes(self.schema.classes.values()):
             if not cls.imported_from:
@@ -470,29 +489,63 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                         emit_order.append(classname)
                         break  # Only the first primary key matters.
 
-        # Step 2: write each wrapper only after its parent has been written.
+        return ref_info, emit_order, enum_names
+
+    def _render_references(self, enum_rooted: bool) -> str:
+        """Render wrappers collected by :meth:`_collect_references`, partitioned
+        by whether their root base is an enum.
+
+        Each wrapper is written only after its parent has been written. If the
+        parent is an imported type (e.g. URIorCURIE) or a locally-defined
+        enum it is already available and the recursion stops.
+
+        :param enum_rooted: when True, emit only wrappers whose transitive base is
+            a locally-defined enum; when False, emit all other wrappers.
+        """
+        ref_info, emit_order, enum_names = self._collect_references()
+
+        def _root_base(name: str) -> str:
+            """Walk parent chain to find the ultimate (non-wrapper) base name."""
+            seen: set[str] = set()
+            current = name
+            while current in ref_info and current not in seen:
+                seen.add(current)
+                current = ref_info[current][0]
+            return current
+
         emitted: set[str] = set()
         in_progress: set[str] = set()
         rval: list[str] = []
 
         def _emit(name: str) -> None:
             if name in emitted or name not in ref_info:
-                return  # Already written, or imported type — nothing to do.
+                return  # Already written, or imported/enum type - nothing to do.
             if name in in_progress:
                 raise ValueError(f"Cyclic wrapper inheritance at {name}")
             in_progress.add(name)
             parent_cls, line = ref_info[name]
             try:
-                _emit(parent_cls)  # Write the parent first.
+                # Treat parent as external (do not recurse) when it is an enum
+                # defined locally, even if a wrapper happens to share its name.
+                if parent_cls not in enum_names:
+                    _emit(parent_cls)  # Write the parent first.
             finally:
                 in_progress.discard(name)
             emitted.add(name)
             rval.append(line)
 
         for name in emit_order:
+            is_enum_rooted = _root_base(name) in enum_names
+            if is_enum_rooted != enum_rooted:
+                continue
             _emit(name)
 
-        return "\n\n\n".join(rval)
+        if not rval:
+            return ""
+        body = "\n\n\n".join(rval)
+        # When emitting post-enum wrappers, frame with surrounding blank lines so
+        # the section is separated from the Enumerations and Slots sections.
+        return f"\n\n{body}\n" if enum_rooted else body
 
     def gen_typedefs(self) -> str:
         """Generate python type declarations for all defined types"""
