@@ -436,6 +436,17 @@ class OwlSchemaGenerator(Generator):
                     obj = Literal(v.value)
                 self.graph.add((uri, URIRef(k_uri), obj))
 
+        # OLS profile: also expose the element name as schema:name. OLS hides
+        # rdfs:label (which carries the name) from both the term page and the
+        # annotations panel, so without this the name is invisible in the OLS UI
+        # even though it is still indexed for search via the collated label field.
+        # schema.org is already used by this generator (e.g. schema:keywords), so
+        # staying on that vocabulary keeps the OLS profile self-consistent.
+        if self.has_profile(MetadataProfile.ols):
+            name = getattr(e, "name", None)
+            if name:
+                self.graph.add((uri, URIRef("http://schema.org/name"), Literal(name)))
+
     def add_class(self, cls: ClassDefinition) -> None:
         """
         Each ClassDefinition is represented as an OWL class.
