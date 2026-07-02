@@ -1,6 +1,6 @@
 
 Classes: 46
-	Referenced by: 29 classes, 236 slots, 0 types, 0 enums 
+	Referenced by: 29 classes, 237 slots, 0 types, 0 enums 
 	Root: 32
 	Leaf: 40
 	Standalone: 45
@@ -9,11 +9,11 @@ Classes: 46
 		enum_expression
 	Abstract: 5
 
-Slots: 272
+Slots: 273
 	Referenced by: 42 classes, 64 slots, 0 types, 0 enums 
-	Root: 208
-	Leaf: 243
-	Standalone: 275
+	Root: 209
+	Leaf: 244
+	Standalone: 276
 	Declared mixin: 0
 	Undeclared mixin: 0
 	Abstract: 8
@@ -38,7 +38,7 @@ Slots: 272
 	Domain unspecified: 57
 	Ranges:
 		Type:
-			boolean: 42
+			boolean: 43
 			datetime: 4
 			integer: 9
 			ncname: 7
@@ -91,7 +91,7 @@ Slots: 272
 			relational_role_enum: 1
 
 Types: 19
-	Referenced by: 0 classes, 159 slots, 0 types, 0 enums 
+	Referenced by: 0 classes, 160 slots, 0 types, 0 enums 
 	Bases:
 		Bool:
 			boolean

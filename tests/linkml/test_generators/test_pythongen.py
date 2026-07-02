@@ -11,6 +11,39 @@ from linkml_runtime.linkml_model.meta import ClassDefinition, SlotDefinition
 from linkml_runtime.loaders import json_loader
 from linkml_runtime.utils.compile_python import compile_python
 
+_OPEN_ENUM_SCHEMA = """\
+id: https://example.com/open-enum-test
+name: open_enum_test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+enums:
+  GenderEnum:
+    is_open: true
+    permissible_values:
+      male: {}
+      female: {}
+  ClosedEnum:
+    permissible_values:
+      active: {}
+      inactive: {}
+
+classes:
+  Person:
+    slots:
+      - gender
+      - status
+
+slots:
+  gender:
+    range: GenderEnum
+  status:
+    range: ClosedEnum
+"""
+
 pytestmark = pytest.mark.pythongen
 
 
@@ -405,3 +438,33 @@ def test_gen_references_cycle_safety_raises_value_error(monkeypatch):
 
     with pytest.raises(ValueError, match="Cyclic wrapper inheritance"):
         generator.gen_references()
+
+
+@pytest.mark.parametrize(
+    ("slot_name", "enum_is_open", "expect_coercion"),
+    [
+        ("gender", True, False),  # open enum → no type coercion in __post_init__
+        ("status", False, True),  # closed enum → type coercion present
+    ],
+)
+def test_open_enum_slot_no_type_coercion(slot_name, enum_is_open, expect_coercion):
+    """An open enum must not generate type-coercion code for the slot in __post_init__."""
+    output = str(PythonGenerator(_OPEN_ENUM_SCHEMA).serialize())
+
+    # Extract only the __post_init__ method body of Person
+    post_init_match = re.search(
+        r"def __post_init__\(self.*?\n(?=\s{4}\w|\Z)",
+        output,
+        re.DOTALL,
+    )
+    assert post_init_match, "Could not find __post_init__ in generated output"
+    post_init_body = post_init_match.group(0)
+
+    # Coercion lines look like: "self.gender = GenderEnum(self.gender)"
+    enum_type = "GenderEnum" if slot_name == "gender" else "ClosedEnum"
+    coercion_pattern = re.compile(rf"self\.{slot_name}\s*=\s*{enum_type}\(")
+    coercion_present = bool(coercion_pattern.search(post_init_body))
+
+    assert coercion_present == expect_coercion, (
+        f"Expected coercion for {slot_name} ({enum_type}) to be {expect_coercion}, but got {coercion_present}"
+    )
