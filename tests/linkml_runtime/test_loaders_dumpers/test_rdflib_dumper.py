@@ -471,3 +471,24 @@ classes:
     person_uri = subjects[0]
     assert (person_uri, EX.name, Literal("Alice")) in g
     assert (person_uri, EX.age, Literal(30)) in g
+
+
+@pytest.mark.parametrize("prefix_map", [PREFIX_MAP])
+def test_dumps_stable_blank_node_labels(prefix_map):
+    """rdflib_dumper honors stable_blank_node_labels; output stays isomorphic to the default."""
+    import rdflib.compare
+
+    view = SchemaView(str(SCHEMA))
+    address: Address = rdflib_loader.load(
+        str(BLANK_NODE_TTL),
+        target_class=Address,
+        schemaview=view,
+        prefix_map=prefix_map,
+        ignore_unmapped_predicates=True,
+    )
+    default = rdflib_dumper.dumps(address, schemaview=view)
+    hashed = rdflib_dumper.dumps(address, schemaview=view, stable_blank_node_labels=True)
+    assert "_:c14n" not in hashed
+    g_default = Graph().parse(data=default, format="ttl")
+    g_hashed = Graph().parse(data=hashed, format="ttl")
+    assert rdflib.compare.isomorphic(g_default, g_hashed)

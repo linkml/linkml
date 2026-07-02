@@ -1,5 +1,6 @@
 """Tests for deterministic RDF serialization via pyoxigraph RDFC-1.0."""
 
+import os
 import re
 import subprocess
 import sys
@@ -259,7 +260,7 @@ def test_sort_is_load_bearing():
     )
 
     def run(seed: str) -> str:
-        env = {"PYTHONHASHSEED": seed, "PATH": "/usr/bin:/bin"}
+        env = {**os.environ, "PYTHONHASHSEED": seed}
         result = subprocess.run(
             [sys.executable, "-c", program],
             check=True,
@@ -433,3 +434,124 @@ def test_fallback_on_invalid_rdf():
     with pytest.warns(RDFCanonicalizationWarning, match="non-standard RDF"):
         result = canonicalize_rdf_graph(g, output_format="turtle")
     assert "not_a_predicate" in result
+
+
+# --- stable (content-hash) blank-node labels -------------------------------
+
+
+def _label_of(ttl: str, literal_text: str) -> str:
+    """Return the blank-node label on the line carrying ``literal_text``."""
+    import re
+
+    for line in ttl.splitlines():
+        if f'"{literal_text}"' in line:
+            m = re.search(r"_:[A-Za-z0-9_]+", line)
+            if m:
+                return m.group(0)
+    raise AssertionError(f"no blank-node label found for {literal_text!r}")
+
+
+def test_stable_labels_are_content_hashed():
+    """Opt-in labels are content hashes (``_:b...``), not ordinal (``_:c14n...``)."""
+    g = _make_graph_with_bnodes()
+    ttl = canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True)
+    assert "_:c14n" not in ttl
+    assert _label_of(ttl, "blank_val").startswith("_:b")
+
+
+def test_stable_labels_isomorphic_to_default():
+    """Relabeling changes only blank-node identifiers, never the graph."""
+    g = _make_graph_with_bnodes()
+    default = canonicalize_rdf_graph(g, output_format="turtle")
+    hashed = canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True)
+    g_default = Graph().parse(data=default, format="turtle")
+    g_hashed = Graph().parse(data=hashed, format="turtle")
+    assert rdflib.compare.isomorphic(g_default, g_hashed)
+
+
+def test_stable_labels_deterministic():
+    """Content-hash labels are byte-identical across calls."""
+    g = _make_graph_with_bnodes()
+    results = [canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True) for _ in range(5)]
+    assert all(r == results[0] for r in results)
+
+
+def test_stable_labels_change_locality():
+    """Adding an unrelated blank-node subtree leaves existing labels unchanged.
+
+    This is the whole point: a blank node's label depends only on its own
+    subtree content, so an unrelated insertion is diff-local.  RDFC-1.0's
+    ordinal ``c14nN`` labels do not guarantee this.
+    """
+    q = URIRef("http://example.com/q")
+    g1 = Graph()
+    keep = BNode()
+    g1.add((URIRef("http://example.com/a"), URIRef("http://example.com/r"), keep))
+    g1.add((keep, q, Literal("keep")))
+
+    g2 = Graph()
+    for t in g1:
+        g2.add(t)
+    # An unrelated subject + blank node whose IRI sorts after ex:a.
+    new = BNode()
+    g2.add((URIRef("http://example.com/z"), URIRef("http://example.com/r"), new))
+    g2.add((new, q, Literal("brand_new")))
+
+    out1 = canonicalize_rdf_graph(g1, output_format="turtle", stable_blank_node_labels=True)
+    out2 = canonicalize_rdf_graph(g2, output_format="turtle", stable_blank_node_labels=True)
+    assert _label_of(out1, "keep") == _label_of(out2, "keep")
+
+
+def test_stable_labels_automorphic_nodes_kept_distinct():
+    """Two blank nodes with identical content stay distinct (no accidental merge)."""
+    g = Graph()
+    q = URIRef("http://example.com/q")
+    for subj in ("a", "b"):
+        bn = BNode()
+        g.add((URIRef(f"http://example.com/{subj}"), URIRef("http://example.com/r"), bn))
+        g.add((bn, q, Literal("same")))
+    hashed = canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True)
+    g_hashed = Graph().parse(data=hashed, format="turtle")
+    assert len(g_hashed) == 4, "automorphic blank nodes were merged"
+    assert rdflib.compare.isomorphic(g, g_hashed)
+
+
+def test_stable_labels_cycle_falls_back():
+    """Blank nodes in a cycle keep their c14n label (no infinite recursion)."""
+    g = Graph()
+    p = URIRef("http://example.com/p")
+    bn1, bn2 = BNode(), BNode()
+    g.add((bn1, p, bn2))
+    g.add((bn2, p, bn1))
+    g.add((URIRef("http://example.com/a"), URIRef("http://example.com/r"), bn1))
+    hashed = canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True)
+    # Cyclic nodes are left with ordinal labels rather than crashing/looping.
+    assert "_:c14n" in hashed
+    g_hashed = Graph().parse(data=hashed, format="turtle")
+    assert rdflib.compare.isomorphic(g, g_hashed)
+
+
+def test_stable_labels_stable_across_processes():
+    """Content-hash labels are byte-identical across PYTHONHASHSEED values."""
+    program = textwrap.dedent(
+        """
+        from rdflib import BNode, Graph, Literal, URIRef
+        from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
+
+        g = Graph()
+        g.bind("ex", "http://example.com/")
+        for letter in ["z", "y", "x", "m", "f", "a"]:
+            bn = BNode()
+            g.add((URIRef(f"http://example.com/{letter}"), URIRef("http://example.com/has"), bn))
+            g.add((bn, URIRef("http://example.com/q"), Literal(f"val_{letter}")))
+        print(canonicalize_rdf_graph(g, output_format="turtle", stable_blank_node_labels=True), end="")
+        """
+    )
+
+    def run(seed: str) -> str:
+        env = {**os.environ, "PYTHONHASHSEED": seed}
+        return subprocess.run(
+            [sys.executable, "-c", program], check=True, capture_output=True, text=True, env=env
+        ).stdout
+
+    assert run("0") == run("42")
