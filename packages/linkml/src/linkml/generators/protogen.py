@@ -7,7 +7,7 @@ import click
 from linkml._version import __version__
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model.meta import ClassDefinition, EnumDefinition, SlotDefinition
-from linkml_runtime.utils.formatutils import camelcase, lcamelcase
+from linkml_runtime.utils.formatutils import camelcase, underscore
 
 # ---------------------------------------------------------------------------
 # LinkML built-in type -> proto3 scalar
@@ -288,12 +288,23 @@ class ProtoGenerator(Generator):
 
     def visit_class_slot(self, cls: ClassDefinition, aliased_slot_name: str, slot: SlotDefinition) -> str:
         qual = "repeated " if slot.multivalued else ""
-        slotname = lcamelcase(aliased_slot_name)
+        # snake_case per https://protobuf.dev/programming-guides/style/#message-and-field-names
+        # `_to_proto_ident` enforces the proto3 identifier rules:
+        # (no leading or trailing `_`, no `__`, no `_<digit>`).
+        slotname = _to_proto_ident(underscore(aliased_slot_name))
+
         slot_range = self._proto_range(slot.range)
+        lines: list[str] = []
+        # Slot description -> `//` comments, mirroring the class-level loop in
+        # visit_class. Useful for both meta and wire consumers.
+        if slot.description:
+            for dline in slot.description.split("\n"):
+                lines.append(f"  // {dline}")
         # Every proto3 field statement must end with `;` - without it `protoc`
         # rejects the file. The field number comes from the pre-computed map
         # built in visit_class so we never emit forbidden ""= 0".
-        return f"\n  {qual}{slot_range} {slotname} = {self._field_numbers[slot.name]};"
+        lines.append(f"  {qual}{slot_range} {slotname} = {self._field_numbers[slot.name]};")
+        return "\n" + "\n".join(lines)
 
     # ------------------------------------------------------- enum emission
 
