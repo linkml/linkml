@@ -1626,6 +1626,29 @@
       "@type": "SlotDefinition"
     },
     {
+      "name": "is_open",
+      "definition_uri": "https://w3id.org/linkml/is_open",
+      "description": "Whether the enumeration is open, meaning that values outside of the set of permissible values are allowed. If true, the enumeration is open and data values that are not in the set of permissible values are permitted (though they SHOULD be drawn from the permissible values). If false (the default), the enumeration is closed and data values MUST be drawn from the set of permissible values.",
+      "comments": [
+        "An open enumeration is analogous to the OSCAL/Metaschema `allow-other=\"yes\"` construct.",
+        "When an enum is open, the permissible values are advisory - they document the recommended or expected values but do not constrain the range. In JSON Schema this maps to a plain string.",
+        "When an enum is closed (the default) and has no permissible values (and no other means of computing them), this is a schema error."
+      ],
+      "in_subset": [
+        "SpecificationSubset",
+        "BasicSubset"
+      ],
+      "from_schema": "https://w3id.org/linkml/meta",
+      "domain": "EnumExpression",
+      "slot_uri": "https://w3id.org/linkml/is_open",
+      "owner": "EnumExpression",
+      "domain_of": [
+        "EnumExpression"
+      ],
+      "range": "boolean",
+      "@type": "SlotDefinition"
+    },
+    {
       "name": "enum_uri",
       "definition_uri": "https://w3id.org/linkml/enum_uri",
       "description": "URI of the enum that provides a semantic interpretation of the element in a linked data context. The URI may come from any namespace and may be shared between schemas",
@@ -7280,6 +7303,7 @@
         "code_set_version",
         "pv_formula",
         "permissible_values",
+        "is_open",
         "include",
         "minus",
         "inherits",
@@ -7307,6 +7331,7 @@
         "code_set_version",
         "pv_formula",
         "permissible_values",
+        "is_open",
         "include",
         "minus",
         "inherits",
@@ -7412,6 +7437,7 @@
         "code_set_version",
         "pv_formula",
         "permissible_values",
+        "is_open",
         "include",
         "minus",
         "inherits",
@@ -9402,6 +9428,10 @@
       "is_grouping_slot": {
         "@type": "xsd:boolean",
         "@id": "is_grouping_slot"
+      },
+      "is_open": {
+        "@type": "xsd:boolean",
+        "@id": "is_open"
       },
       "is_usage_slot": {
         "@type": "xsd:boolean",
