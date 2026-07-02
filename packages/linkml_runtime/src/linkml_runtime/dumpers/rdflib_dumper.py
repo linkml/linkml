@@ -159,9 +159,11 @@ class RDFLibDumper(Dumper):
             if slot.identifier:
                 continue
             slot_uri = URIRef(schemaview.get_uri(slot, expand=True))
-            if slot.multivalued and slot.list_elements_ordered and isinstance(v_or_list, list):
+            if slot.multivalued and slot.list_elements_ordered:
                 # emit an ordered rdf:List (rdf:first/rdf:rest) so element order is part
-                # of the RDF semantics and survives canonicalization. See issue #3531.
+                # of the RDF semantics and survives canonicalization. This applies to
+                # both list- and dict-backed collections: ``vs`` is already in the
+                # correct (insertion) order for either form. See issue #3531.
                 nodes = [self.inject_triples(v, schemaview, graph, slot.range) for v in vs]
                 list_head = BNode()
                 Collection(graph, list_head, nodes)

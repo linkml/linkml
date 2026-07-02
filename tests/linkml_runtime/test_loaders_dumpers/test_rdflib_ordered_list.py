@@ -133,3 +133,24 @@ def test_unordered_slot_stays_flat(schemaview, dumper):
     assert list(g.triples((None, RDF.first, None))) == []
     tag_values = {str(o) for o in g.objects() if str(o) in {"a", "b", "c"}}
     assert tag_values == {"a", "b", "c"}
+
+
+def test_ordered_inlined_as_dict_round_trip_preserves_order(schemaview, dumper, loader):
+    """Ordered inlined-as-dict slots also serialize as an ``rdf:List`` and preserve order.
+
+    Regression for the dict form of #3531: the dumper previously gated the ``rdf:List``
+    branch on ``isinstance(v_or_list, list)``, so a dict-backed collection fell through to
+    flat, order-losing triples -- even though the loader and ``gen-shacl`` already treat
+    the same slot as ordered.
+    """
+    obj = model.ColumnDesc(
+        atom="ex:sampled_data",
+        items_by_id=[model.Item(name) for name in ITEM_NAMES],
+    )
+    g = _graph(dumper.dumps(obj, schemaview=schemaview))
+    # emitted as an rdf:List (one rdf:first per element), not flat triples
+    assert len(list(g.triples((None, RDF.first, None)))) == len(ITEM_NAMES)
+    loaded = loader.loads(
+        dumper.dumps(obj, schemaview=schemaview), target_class=model.ColumnDesc, schemaview=schemaview
+    )
+    assert [item.name for item in loaded.items_by_id.values()] == ITEM_NAMES
