@@ -914,9 +914,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
-                "anyOf": _deduplicate_subschemas(
-                    [self._subschema_for_boolean_member(slot, s) for s in slot.none_of]
-                )
+                "anyOf": _deduplicate_subschemas([self._subschema_for_boolean_member(slot, s) for s in slot.none_of])
             }
 
         if bool_subschema:
