@@ -2980,6 +2980,11 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
         ("an_integer", False),
         ("inlined_integer", False),
         ("inlined_as_list_integer", False),
+        # Slots that inherit inlined/inlined_as_list via is_a without redeclaring it.
+        # Regression test for https://github.com/linkml/linkml/issues/3695:
+        # is_inlined() must traverse the slot's is_a chain, not only check the slot itself.
+        ("child_of_inlined_thing_with_id", True),
+        ("child_of_inlined_as_list_thing_with_id", True),
     ],
 )
 def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:
