@@ -1,5 +1,5 @@
 # Auto generated from meta.yaml by pythongen.py version: 0.0.1
-# Generation date: 2026-05-05T18:49:13
+# Generation date: 2026-07-02T12:53:02
 # Schema: meta
 #
 # id: https://w3id.org/linkml/meta
@@ -999,6 +999,7 @@ class AnonymousEnumExpression(YAMLRoot):
             list[Union[dict, "PermissibleValue"]],
         ]
     ] = empty_dict()
+    is_open: Optional[Union[bool, Bool]] = None
     include: Optional[Union[Union[dict, "AnonymousEnumExpression"], list[Union[dict, "AnonymousEnumExpression"]]]] = (
         empty_list()
     )
@@ -1026,6 +1027,9 @@ class AnonymousEnumExpression(YAMLRoot):
         self._normalize_inlined_as_dict(
             slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True
         )
+
+        if self.is_open is not None and not isinstance(self.is_open, Bool):
+            self.is_open = Bool(self.is_open)
 
         if not isinstance(self.include, list):
             self.include = [self.include] if self.include is not None else []
@@ -1081,6 +1085,7 @@ class EnumDefinition(Definition):
             list[Union[dict, "PermissibleValue"]],
         ]
     ] = empty_dict()
+    is_open: Optional[Union[bool, Bool]] = None
     include: Optional[Union[Union[dict, AnonymousEnumExpression], list[Union[dict, AnonymousEnumExpression]]]] = (
         empty_list()
     )
@@ -1116,6 +1121,9 @@ class EnumDefinition(Definition):
         self._normalize_inlined_as_dict(
             slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True
         )
+
+        if self.is_open is not None and not isinstance(self.is_open, Bool):
+            self.is_open = Bool(self.is_open)
 
         if not isinstance(self.include, list):
             self.include = [self.include] if self.include is not None else []
@@ -1760,6 +1768,7 @@ class EnumExpression(Expression):
             list[Union[dict, "PermissibleValue"]],
         ]
     ] = empty_dict()
+    is_open: Optional[Union[bool, Bool]] = None
     include: Optional[Union[Union[dict, AnonymousEnumExpression], list[Union[dict, AnonymousEnumExpression]]]] = (
         empty_list()
     )
@@ -1787,6 +1796,9 @@ class EnumExpression(Expression):
         self._normalize_inlined_as_dict(
             slot_name="permissible_values", slot_type=PermissibleValue, key_name="text", keyed=True
         )
+
+        if self.is_open is not None and not isinstance(self.is_open, Bool):
+            self.is_open = Bool(self.is_open)
 
         if not isinstance(self.include, list):
             self.include = [self.include] if self.include is not None else []
@@ -5619,6 +5631,15 @@ slots.permissible_values = Slot(
             list[Union[dict, "PermissibleValue"]],
         ]
     ],
+)
+
+slots.is_open = Slot(
+    uri=LINKML.is_open,
+    name="is_open",
+    curie=LINKML.curie("is_open"),
+    model_uri=LINKML.is_open,
+    domain=EnumExpression,
+    range=Optional[Union[bool, Bool]],
 )
 
 slots.enum_uri = Slot(
