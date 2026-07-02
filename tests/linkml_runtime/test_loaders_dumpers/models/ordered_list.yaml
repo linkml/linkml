@@ -35,6 +35,13 @@ classes:
         inlined_as_list: true
         range: Item
         slot_uri: ex:items
+      items_by_id:
+        description: ordered list of inlined objects held as a dict (inlined-as-dict)
+        multivalued: true
+        list_elements_ordered: true
+        inlined: true
+        range: Item
+        slot_uri: ex:items_by_id
       tags:
         description: unordered control slot (flat triples)
         multivalued: true
