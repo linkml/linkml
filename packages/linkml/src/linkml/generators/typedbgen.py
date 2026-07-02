@@ -230,20 +230,21 @@ def _build_name_maps(sv: SchemaView) -> tuple[dict[str, str], dict[str, str]]:
             attr_names[slot.name] = candidate
 
     # ── Relation names ────────────────────────────────────────────────────────
-    # Relations are derived from object-ranged slots only.
+    # Relations are derived from object-ranged slots only. ``class_induced_slots``
+    # returns the union of inherited slots, top-level ``slots:`` references, and
+    # inline ``attributes:`` declarations — so all three sources contribute.
     taken = entity_names | set(attr_names.values())
     rel_names: dict[str, str] = {}
     for class_name in sv.all_classes():
-        for slot_name in sv.get_class(class_name).slots or []:
-            if slot_name in rel_names:
+        for slot in sv.class_induced_slots(class_name):
+            if slot.name in rel_names:
                 continue
-            induced = sv.induced_slot(slot_name, class_name)
-            if induced.range not in sv.all_classes():
+            if slot.range not in all_class_names:
                 continue
-            candidate = _typedb_name(slot_name)
+            candidate = _typedb_name(slot.name)
             if candidate in taken:
                 candidate = candidate + "-rel"
-            rel_names[slot_name] = candidate
+            rel_names[slot.name] = candidate
             taken.add(candidate)
 
     return attr_names, rel_names
@@ -348,14 +349,32 @@ class TypeDBGenerator(Generator):
         result = list(seen.values()) + enum_attr_lines
         return result
 
-    def _ancestor_slots(self, sv: SchemaView, class_name: str) -> set[str]:
-        """Return the set of slot names inherited from all ancestors (excluding self)."""
+    def _ancestor_slot_names(self, sv: SchemaView, class_name: str) -> set[str]:
+        """Return the set of slot names inherited from all ancestors (excluding self).
+
+        Uses ``class_induced_slots`` on each ancestor so that inherited slots from
+        any source — top-level ``slots:`` references, inline ``attributes:``, or
+        slot_usage refinements — are all captured.
+        """
         result: set[str] = set()
         for ancestor in sv.class_ancestors(class_name)[1:]:  # skip self
-            ancestor_cls = sv.get_class(ancestor)
-            if ancestor_cls and ancestor_cls.slots:
-                result.update(ancestor_cls.slots)
+            for slot in sv.class_induced_slots(ancestor):
+                result.add(slot.name)
         return result
+
+    def _direct_induced_slots(
+        self, sv: SchemaView, class_name: str, ancestor_slot_names: set[str]
+    ) -> list[SlotDefinition]:
+        """Return induced slots declared directly on the class (not inherited).
+
+        ``class_induced_slots`` returns the union of inherited slots, top-level
+        ``slots:`` references, and inline ``attributes:`` — the standard slot
+        iteration across LinkML generators. Subtracting ancestor slot names
+        leaves the slots that are new on this class, which is what TypeDB needs
+        for ``owns``/``relates``/``plays`` since capabilities are inherited from
+        supertypes (redeclaring an inherited capability triggers [SVL42]).
+        """
+        return [s for s in sv.class_induced_slots(class_name) if s.name not in ancestor_slot_names]
 
     def _build_owns_stmt(self, slot_tname: str, induced: SlotDefinition) -> str:
         """Return a TypeQL ``owns`` statement with the appropriate cardinality annotation.
@@ -387,8 +406,15 @@ class TypeDBGenerator(Generator):
         :param attr_names: slot name → safe TypeDB attribute name
         :param rel_names: slot name → safe TypeDB relation name
         """
-        # Pre-compute ancestor slots for all classes to avoid redundant traversal
-        ancestor_slots_cache: dict[str, set[str]] = {cn: self._ancestor_slots(sv, cn) for cn in sv.all_classes()}
+        # Pre-compute ancestor slot names and direct induced slots for all classes
+        # to avoid redundant traversal.
+        ancestor_slot_names_cache: dict[str, set[str]] = {
+            cn: self._ancestor_slot_names(sv, cn) for cn in sv.all_classes()
+        }
+        direct_slots_cache: dict[str, list[SlotDefinition]] = {
+            cn: self._direct_induced_slots(sv, cn, ancestor_slot_names_cache[cn]) for cn in sv.all_classes()
+        }
+        all_class_names = set(sv.all_classes().keys())
 
         plays_map: dict[str, list[str]] = {cn: [] for cn in sv.all_classes()}
 
@@ -397,35 +423,27 @@ class TypeDBGenerator(Generator):
         for class_name in sv.all_classes():
             if not sv.get_class(class_name).represents_relationship:
                 continue
-            ancestor_slots = ancestor_slots_cache[class_name]
-            direct_slot_names = [s for s in (sv.get_class(class_name).slots or []) if s not in ancestor_slots]
             rel_tname = _typedb_name(class_name)
-            for slot_name in direct_slot_names:
-                induced = sv.induced_slot(slot_name, class_name)
-                if induced.range not in sv.all_classes():
+            for induced in direct_slots_cache[class_name]:
+                if induced.range not in all_class_names:
                     continue
-                role_name = _typedb_name(slot_name)
-                range_class = induced.range
-                if range_class in plays_map:
-                    plays_map[range_class].append(f"plays {rel_tname}:{role_name}")
+                role_name = _typedb_name(induced.name)
+                if induced.range in plays_map:
+                    plays_map[induced.range].append(f"plays {rel_tname}:{role_name}")
 
         # Populate plays_map for regular entity classes (non-represents_relationship).
         for class_name in sv.all_classes():
             if sv.get_class(class_name).represents_relationship:
                 continue  # handled above
-            ancestor_slots = ancestor_slots_cache[class_name]
-            direct_slot_names = [s for s in (sv.get_class(class_name).slots or []) if s not in ancestor_slots]
-            for slot_name in direct_slot_names:
-                induced = sv.induced_slot(slot_name, class_name)
-                if induced.range not in sv.all_classes():
+            for induced in direct_slots_cache[class_name]:
+                if induced.range not in all_class_names:
                     continue
-                slot_tname = rel_names.get(slot_name, _typedb_name(slot_name))
+                slot_tname = rel_names.get(induced.name, _typedb_name(induced.name))
                 domain_role = _typedb_name(class_name)
                 range_role = _typedb_name(induced.range)
                 plays_map[class_name].append(f"plays {slot_tname}:{domain_role}")
-                range_class = induced.range
-                if range_class in plays_map:
-                    plays_map[range_class].append(f"plays {slot_tname}:{range_role}")
+                if induced.range in plays_map:
+                    plays_map[induced.range].append(f"plays {slot_tname}:{range_role}")
 
         lines: list[str] = []
         for class_name, class_def in sv.all_classes().items():
@@ -442,17 +460,15 @@ class TypeDBGenerator(Generator):
                 if class_def.is_a:
                     parts[0] += f", sub {_typedb_name(class_def.is_a)}"
 
-                direct_slot_names = [s for s in (class_def.slots or []) if s not in ancestor_slots_cache[class_name]]
-                for slot_name in direct_slot_names:
-                    induced = sv.induced_slot(slot_name, class_name)
+                for induced in direct_slots_cache[class_name]:
                     value_type = _resolve_typedb_value_type(sv, induced.range)
                     if value_type is None:
                         # Object-ranged slot → becomes a relates role
-                        role_name = _typedb_name(slot_name)
+                        role_name = _typedb_name(induced.name)
                         parts.append(f"relates {role_name}")
                     else:
                         # Scalar slot → owns attribute
-                        slot_tname = attr_names.get(slot_name, _typedb_name(slot_name))
+                        slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
                         parts.append(self._build_owns_stmt(slot_tname, induced))
             else:
                 # Emit as TypeDB entity type
@@ -464,14 +480,12 @@ class TypeDBGenerator(Generator):
                     parts[0] += f", sub {_typedb_name(class_def.is_a)}"
 
                 # Slots that appear on ANY ancestor are already inherited in TypeDB —
-                # redeclaring them causes [SVL42]. Filter them out here.
-                direct_slot_names = [s for s in (class_def.slots or []) if s not in ancestor_slots_cache[class_name]]
-                for slot_name in direct_slot_names:
-                    induced = sv.induced_slot(slot_name, class_name)
+                # redeclaring them causes [SVL42], so _direct_induced_slots filters them out.
+                for induced in direct_slots_cache[class_name]:
                     value_type = _resolve_typedb_value_type(sv, induced.range)
                     if value_type is None:
                         continue  # object range → relation
-                    slot_tname = attr_names.get(slot_name, _typedb_name(slot_name))
+                    slot_tname = attr_names.get(induced.name, _typedb_name(induced.name))
                     parts.append(self._build_owns_stmt(slot_tname, induced))
 
                 for plays_stmt in dict.fromkeys(plays_map.get(class_name, [])):
@@ -501,18 +515,22 @@ class TypeDBGenerator(Generator):
 
         :param rel_names: slot name → safe TypeDB relation name
         """
-        # First pass: collect all (domain_class, range_class) pairs per slot.
+        # First pass: collect all (domain_class, range_class) pairs per slot from
+        # directly-declared slots on each class. ``class_induced_slots`` minus the
+        # union of ancestors' induced slot names gives the standard "new on this
+        # class" set, including inline ``attributes:``.
         # Classes with represents_relationship emit 'relates' roles instead of standalone
         # relation types, so they are skipped here.
+        all_class_names = set(sv.all_classes().keys())
         slot_pairs: dict[str, list[tuple[str, str]]] = {}
         for class_name in sv.all_classes():
             if sv.get_class(class_name).represents_relationship:
                 continue  # object-ranged slots handled as 'relates' in entity/relation defs
-            for slot_name in sv.get_class(class_name).slots or []:
-                induced = sv.induced_slot(slot_name, class_name)
-                if induced.range not in sv.all_classes():
+            ancestor_slot_names = self._ancestor_slot_names(sv, class_name)
+            for induced in self._direct_induced_slots(sv, class_name, ancestor_slot_names):
+                if induced.range not in all_class_names:
                     continue
-                slot_pairs.setdefault(slot_name, []).append((class_name, induced.range))
+                slot_pairs.setdefault(induced.name, []).append((class_name, induced.range))
 
         lines: list[str] = []
         for slot_name, pairs in slot_pairs.items():
