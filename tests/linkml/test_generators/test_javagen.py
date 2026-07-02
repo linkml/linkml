@@ -228,3 +228,13 @@ def test_refined_ranges(input_path):
     # - ThirdDerivedFoo refines the slot compared to its parent SecondDerivedFoo;
     #   this is the second refinement in the hierarchy since the defining class
     assert gen.get_refined_ranges("bar", "ThirdDerivedFoo", upwards=True) == ["FirstDerivedBar", "Bar"]
+
+
+def test_inherited_extra_slots(input_path, tmp_path):
+    """Test that we don't generate redundant extension holders."""
+    gen = JavaGenerator(input_path("redundant_extra_slots.yaml"))
+    assert gen.needs_extra_slots(gen.schemaview.get_class("Foo"))
+    assert not gen.needs_extra_slots(gen.schemaview.get_class("Bar"))
+    gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
+    assert_file_contains(tmp_path / "Foo.java", "private Map<String, Object> extraSlots;")
+    assert_file_contains(tmp_path / "Bar.java", "private Map<String, Object> extraSlots;", invert=True)
