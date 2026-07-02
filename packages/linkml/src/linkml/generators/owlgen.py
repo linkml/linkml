@@ -496,9 +496,12 @@ class OwlSchemaGenerator(Generator):
                             cls_uri,
                         )
                     )
-        if cls.class_uri:
-            # If a class_ur is assigned, and it is different from model class_uri, then
-            # Add an assertion that links the two
+        # Cross-reference the class_uri only when the element is minted at its
+        # name-based (native) URI: there the class_uri is a second, asserted identifier
+        # worth linking. When native URIs are disabled the element is already minted at
+        # its class_uri, so the name-based URI is synthetic and was never declared in
+        # the source; asserting a mapping to it would be a dangling reference.
+        if cls.class_uri and self.use_native_uris:
             mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
             if cls_uri != mapped_uri:
                 p = OWL.equivalentClass if self.assert_equivalent_classes else SKOS.exactMatch
