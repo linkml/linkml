@@ -403,6 +403,8 @@ class DocGenerator(Generator):
                 if curie:
                     return curie.split(":")[1]
             return camelcase(element.name)
+        elif type(element).class_name == "subset_definition":
+            return underscore(element.name)
         else:
             return camelcase(element.name)
 

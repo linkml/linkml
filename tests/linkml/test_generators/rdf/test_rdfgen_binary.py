@@ -1,7 +1,13 @@
-from pathlib import Path
-from typing import Any
+"""Tests for RDFGenerator.serialize() with and without output paths.
 
-from rdflib import Graph
+After the switch to canonicalize_rdf_graph (pyoxigraph RDFC-1.0),
+the old binary fallback (UnicodeDecodeError → destination) no longer
+exists.  These tests verify the current behaviour: serialize always
+returns a str, and when an output path is given the same text is
+written to the file.
+"""
+
+from pathlib import Path
 
 from linkml.generators.rdfgen import RDFGenerator
 
@@ -21,78 +27,29 @@ def _write_min_schema(p: Path) -> Path:
     return p
 
 
-def test_with_output_binary_path_on_decode_error(monkeypatch, tmp_path):
-    """On UnicodeDecodeError: write via destination, keep stdout empty."""
-    calls: dict[str, Any] = {"destination_called": False, "format": None}
-
-    def fake_serialize(self, *args, **kwargs):
-        if "destination" not in kwargs:
-            raise UnicodeDecodeError("utf-8", b"\xff", 0, 1, "invalid start byte")
-        calls["destination_called"] = True
-        calls["format"] = kwargs.get("format")
-        dest = kwargs["destination"]
-        Path(dest).write_bytes(b"\x00\x01\x02BINARY-DATA")
-        return None
-
-    monkeypatch.setattr(Graph, "serialize", fake_serialize, raising=True)
-
-    schema_path = _write_min_schema(tmp_path / "schema.yaml")
-    out_path = tmp_path / "out.bin"
-
-    gen = RDFGenerator(str(schema_path), mergeimports=False)
-    gen.format = "ttl"  # maps to 'turtle'
-
-    ret = gen.serialize(output=str(out_path))
-
-    assert ret.strip() == ""
-    assert calls["destination_called"] is True
-    assert calls["format"] == "turtle"
-    assert out_path.exists() and out_path.stat().st_size > 0
-
-    data = out_path.read_bytes()
-    assert data.startswith(b"\x00\x01\x02BINARY-DATA")
-
-
-def test_with_output_text_path_returns_text_and_writes_file(monkeypatch, tmp_path):
-    """If serialization returns text, write UTF-8 file and return the same text."""
-    calls: dict[str, Any] = {"destination_called": False, "format": None}
-
-    def fake_serialize(self, *args, **kwargs):
-        if "destination" in kwargs:
-            calls["destination_called"] = True
-            calls["format"] = kwargs.get("format")
-            return None
-        fmt = kwargs.get("format")
-        return f"# fake {fmt} content"
-
-    monkeypatch.setattr(Graph, "serialize", fake_serialize, raising=True)
-
-    schema_path = _write_min_schema(tmp_path / "schema.yaml")
-    out_path = tmp_path / "out.ttl"
-
-    gen = RDFGenerator(str(schema_path), mergeimports=False)
-    gen.format = "ttl"  # => 'turtle'
-
-    ret = gen.serialize(output=str(out_path))
-
-    assert isinstance(ret, str) and ret.startswith("# fake turtle")
-    assert calls["destination_called"] is False
-    txt = out_path.read_text(encoding="utf-8")
-    assert txt.rstrip("\n") == ret.rstrip("\n")
-
-
-def test_without_output_returns_text(monkeypatch, tmp_path):
-    """Without -o, return text."""
-
-    def fake_serialize(self, *args, **kwargs):
-        assert "destination" not in kwargs
-        return "# fake turtle content"
-
-    monkeypatch.setattr(Graph, "serialize", fake_serialize, raising=True)
-
+def test_without_output_returns_text(tmp_path):
+    """Without -o, serialize() returns a non-empty str."""
     schema_path = _write_min_schema(tmp_path / "s.yaml")
     gen = RDFGenerator(str(schema_path), mergeimports=False)
     gen.format = "turtle"
 
     ret = gen.serialize()
-    assert isinstance(ret, str) and ret.startswith("# fake turtle")
+    assert isinstance(ret, str)
+    assert len(ret.strip()) > 0
+
+
+def test_with_output_writes_file_and_returns_text(tmp_path):
+    """With -o, serialize() writes UTF-8 file and returns the same text."""
+    schema_path = _write_min_schema(tmp_path / "schema.yaml")
+    out_path = tmp_path / "out.ttl"
+
+    gen = RDFGenerator(str(schema_path), mergeimports=False)
+    gen.format = "ttl"
+
+    ret = gen.serialize(output=str(out_path))
+
+    assert isinstance(ret, str)
+    assert len(ret.strip()) > 0
+    assert out_path.exists()
+    txt = out_path.read_text(encoding="utf-8")
+    assert txt == ret

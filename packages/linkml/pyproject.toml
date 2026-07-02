@@ -10,7 +10,7 @@ authors = [
   {name = "Sierra Moxon", email = "smoxon@lbl.gov"},
   {name = "Harold Solbrig", email = "solbrig@jhu.edu"},
   {name = "Sujay Patil", email = "spatil@lbl.gov"},
-  {name = "Harshad Hegde", email = "hhegde@lbl.gov"},
+  {name = "Harshad Hegde", email = "hegdehb@gmail.com"},
   {name = "Mark Andrew Miller", email = "MAM@lbl.gov"},
   {name = "Deepak Unni"},
   {name = "Gaurav Vaidya", email = "gaurav@renci.org"},
@@ -79,8 +79,8 @@ tests = [
   { include-group = "lint" },
   { include-group = "typing" },
   { include-group = "shacl" },
-  "morph-kgc >= 2.9.0; python_version >= '3.10'",
   "duckdb>=1.5.2",
+  "sqlalchemy-bigquery >= 1.9.0",
 ]
 dev = [
   {include-group = "tests" },
@@ -111,6 +111,9 @@ tests-rustgen = [
 ]
 typedb = [
   "typedb-driver >= 3.0, < 4.0",
+]
+bigquery = [
+  "sqlalchemy-bigquery >= 1.9.0",
 ]
 
 tests-extra = [
@@ -179,6 +182,7 @@ gen-sqla = "linkml.generators.sqlalchemygen:cli"
 gen-sqlddl = "linkml.generators.sqltablegen:cli"
 gen-sqltables = "linkml.generators.sqltablegen:cli"
 gen-sqlvalidation = "linkml.generators.sqlvalidationgen:cli"
+gen-bigquery = "linkml.generators.bigquerygen:cli"
 gen-summary = "linkml.generators.summarygen:cli"
 gen-project = "linkml.generators.projectgen:cli"
 run-tutorial = "linkml.utils.execute_tutorial:cli"
