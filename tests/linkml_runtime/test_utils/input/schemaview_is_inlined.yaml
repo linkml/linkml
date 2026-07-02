@@ -65,3 +65,24 @@ slots:
   child_of_inlined_as_list_thing_with_id:
     is_a: inlined_as_list_thing_with_id  # parent has inlined_as_list: true
     range: ThingWithId
+
+  # mixin inheritance cases — inlined/inlined_as_list declared only on a mixin slot.
+  # A slot that does not re-declare inlined should still be considered inlined
+  # if a mixin slot declares inlined: true.
+  inlined_mixin:
+    mixin: true
+    inlined: true
+
+  inlined_as_list_mixin:
+    mixin: true
+    inlined_as_list: true
+
+  child_via_inlined_mixin:
+    mixins:
+      - inlined_mixin       # inlined: true inherited via mixin
+    range: ThingWithId
+
+  child_via_inlined_as_list_mixin:
+    mixins:
+      - inlined_as_list_mixin   # inlined_as_list: true inherited via mixin
+    range: ThingWithId
