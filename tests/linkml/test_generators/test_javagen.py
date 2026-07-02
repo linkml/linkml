@@ -104,7 +104,7 @@ def test_generate_enum_objects(kitchen_sink_path):
     # Same, but with an enum with names that must be transformed
     expected_enum = OOEnum(
         name="OtherCodes",
-        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/other codes",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/OtherCodes",
     )
     expected_enum.values = [OOEnumValue(label="a_b", text="a b")]
     assert expected_enum == enum_objects["other codes"]
