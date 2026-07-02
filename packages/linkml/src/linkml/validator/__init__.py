@@ -3,6 +3,7 @@ The ``linkml.validator`` package contains the LinkML validation framework.
 """
 
 import os
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,7 @@ def _get_default_validator(
     strict: bool = False,
     closed: bool = True,
     config: str | Path | dict | None = None,
+    importmap: Mapping[str, str | dict] | None = None,
 ) -> Validator:
     """Build the default :class:`Validator` for a schema.
 
@@ -34,6 +36,9 @@ def _get_default_validator(
         to a ``linkml-validate``-style YAML file or a pre-parsed mapping.
         When the mapping contains a ``plugins:`` key, those plugins are
         used in place of the default and ``closed`` is ignored.
+    :param importmap: A map used to resolve the schema's imports. Values may be
+        file-path/URL strings or in-memory schema dicts. Forwarded to the
+        :class:`Validator`. Defaults to ``None``.
     """
     try:
         if isinstance(schema, Path):
@@ -50,7 +55,7 @@ def _get_default_validator(
 
     validation_plugins = _resolve_default_plugins(closed=closed, config=config)
 
-    return Validator(schema, validation_plugins=validation_plugins, strict=strict)
+    return Validator(schema, validation_plugins=validation_plugins, strict=strict, importmap=importmap)
 
 
 def _resolve_default_plugins(
@@ -91,6 +96,7 @@ def validate(
     target_class: str | None = None,
     *,
     strict: bool = False,
+    importmap: Mapping[str, str | dict] | None = None,
 ) -> ValidationReport:
     """Validate a data instance against a schema
 
@@ -109,11 +115,13 @@ def validate(
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
+    :param importmap: A map used to resolve the schema's imports. Values may be
+        file-path/URL strings or in-memory schema dicts. Defaults to ``None``.
     :raises ValidationError: If requested to raise and validation errors are found.
     :return: A validation report
     :rtype: ValidationReport
     """
-    validator = _get_default_validator(schema, strict=strict)
+    validator = _get_default_validator(schema, strict=strict, importmap=importmap)
     return validator.validate(instance, target_class)
 
 
@@ -123,6 +131,7 @@ def validate_file(
     target_class: str | None = None,
     *,
     strict: bool = False,
+    importmap: Mapping[str, str | dict] | None = None,
 ) -> ValidationReport:
     """Validate instances loaded from a file against a schema
 
@@ -147,12 +156,14 @@ def validate_file(
     :param strict: If ``True``, validation will stop after the first validation
         error is found, Otherwise all validation problems will be reported.
         Defaults to ``False``.
+    :param importmap: A map used to resolve the schema's imports. Values may be
+        file-path/URL strings or in-memory schema dicts. Defaults to ``None``.
     :return: A validation report
     :rtype: ValidationReport
     """
     schema_path = schema if isinstance(schema, str | Path) else None
     loader = default_loader_for_file(file, schema_path=schema_path, target_class=target_class)
-    validator = _get_default_validator(schema, strict=strict)
+    validator = _get_default_validator(schema, strict=strict, importmap=importmap)
     return validator.validate_source(loader, target_class)
 
 
