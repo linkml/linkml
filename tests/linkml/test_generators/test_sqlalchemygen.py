@@ -1,15 +1,17 @@
 import logging
 import re
 from collections import Counter
+from pathlib import Path
 
 import pytest
+from click.testing import CliRunner
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum
-from linkml.generators.sqltablegen import SQLTableGenerator
-from linkml.utils.schema_builder import SchemaBuilder
+from linkml.generators.sqlalchemygen import SQLAlchemyGenerator, TemplateEnum, cli
+from linkml.generators.sqltablegen import RANGEMAP, SQL_TYPE_TO_PYTHON_TYPE, SQLTableGenerator
 from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +20,11 @@ pytestmark = pytest.mark.sqlalchemygen
 
 @pytest.fixture
 def schema(input_path):
+    return str(input_path("personinfo.yaml"))
+
+
+@pytest.fixture
+def schema_path(input_path):
     return str(input_path("personinfo.yaml"))
 
 
@@ -317,3 +324,311 @@ def test_sqla_declarative_exec(schema):
     session.commit()
     session.close()
     engine.dispose()
+
+
+# --- 2.x declarative tests ---
+
+
+def test_sql_type_to_python_type_covers_rangemap():
+    """Every value in RANGEMAP should have a corresponding Python type."""
+    for sql_type in RANGEMAP.values():
+        assert repr(sql_type) in SQL_TYPE_TO_PYTHON_TYPE, f"Missing mapping for {repr(sql_type)}"
+
+
+def test_sqla_2x_basic_declarative(schema):
+    """Test generation of 2.x declarative classes produces valid structure."""
+    gen = SQLAlchemyGenerator(schema)
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+
+    # Should use 2.x patterns
+    assert "class Base(DeclarativeBase):" in code
+    assert "Mapped[" in code
+    assert "mapped_column(" in code
+
+    # Should NOT use 1.x patterns
+    assert "declarative_base()" not in code
+    assert "= Column(" not in code
+
+    # Should still have all expected classes
+    expected_classes = [
+        "NamedThing",
+        "Person",
+        "Organization",
+        "Place",
+        "Address",
+        "Event",
+        "Concept",
+        "DiagnosisConcept",
+        "ProcedureConcept",
+        "Relationship",
+        "FamilialRelationship",
+        "EmploymentEvent",
+        "MedicalEvent",
+    ]
+    for expected in expected_classes:
+        assert f"class {expected}(" in code
+
+
+def test_sqla_2x_declarative_exec(schema):
+    """Full integration test: generate 2.x declarative, create DB, insert, query."""
+    engine = create_engine("sqlite://")
+    gen = SQLAlchemyGenerator(schema)
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    # 2.x declarative models use their own column naming (FK columns always
+    # suffixed). Let the ORM create the schema so the DDL matches the model.
+    mod.Base.metadata.create_all(engine)
+
+    session_class = sessionmaker(bind=engine)
+    session = session_class()
+
+    # Insert and query
+    session.add(mod.DiagnosisConcept(id="C999", name="rash"))
+    e1 = mod.MedicalEvent(duration=100.0, diagnosis_id="C999")
+    dc = mod.DiagnosisConcept(id="C001", name="cough")
+    e2 = mod.MedicalEvent(duration=200.0, diagnosis=dc)
+
+    p1 = mod.Person(id="P1", name="a b", age=22, has_medical_history=[e1, e2])
+    p1.aliases = ["Anne"]
+    p1.aliases.append("Fred")
+    p1.has_familial_relationships.append(mod.FamilialRelationship(related_to_id="P2", type="SIBLING_OF"))
+    p1.current_address = mod.Address(street="1 a street", city="big city", postal_code="ZZ1 ZZ2")
+    session.add(p1)
+    session.add(mod.Person(id="P2", name="Ferdinand Giggleheim", aliases=["Fred"]))
+    session.commit()
+
+    q = session.query(mod.Person).where(mod.Person.name == p1.name)
+    persons = q.all()
+    assert len(persons) == 1
+    p1_from_query = persons[0]
+    assert p1_from_query.age == 22
+    assert Counter(p1_from_query.aliases) == Counter(["Anne", "Fred"])
+    assert len(p1_from_query.has_medical_history) == 2
+    assert any(e for e in p1_from_query.has_medical_history if e.diagnosis_id == "C999")
+    assert any(e for e in p1_from_query.has_medical_history if e.diagnosis.name == "cough")
+    assert any(r for r in p1_from_query.has_familial_relationships if r.related_to_id == "P2")
+    # The relationship() attribute should resolve to a loaded Person object
+    fam = next(r for r in p1_from_query.has_familial_relationships if r.related_to_id == "P2")
+    assert fam.related_to.id == "P2"
+
+    session.commit()
+    session.close()
+    engine.dispose()
+
+
+def test_2x_mixin():
+    """Test that mixins work with 2.x declarative template."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("ref_to_c1", range="my_class1", multivalued=True))
+    b.add_class("my_mixin", slots=["my_mixin_slot"], mixin=True)
+    b.add_class("my_abstract", slots=["my_abstract_slot"], abstract=True)
+    b.add_class("my_class1", is_a="my_abstract", mixins=["my_mixin"])
+    b.add_class("my_class2", slots=["ref_to_c1"])
+    gen = SQLAlchemyGenerator(b.schema)
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    i1 = mod.MyClass1(my_mixin_slot="v1", my_abstract_slot="v2")
+    i2 = mod.MyClass2(ref_to_c1=[i1])
+    assert i2.ref_to_c1[0] == i1
+
+
+def test_sqla_2x_enum_columns(schema):
+    """Enum-backed columns should use str type annotation and Enum() column type."""
+    gen = SQLAlchemyGenerator(schema)
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+
+    # FamilialRelationship.type is enum-backed — should appear as Mapped with Enum
+    assert "Enum(" in code
+    # Should compile and run without error
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    assert hasattr(mod, "FamilialRelationship")
+
+
+def test_sqla_2x_cli(schema_path):
+    """Smoke test for --sqla-style 2 CLI flag."""
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path, "--sqla-style", "2"])
+    assert result.exit_code == 0
+    assert "class Base(DeclarativeBase):" in result.output
+    assert "Mapped[" in result.output
+
+
+def test_sqla_style_without_declarative_fails(schema_path):
+    """--sqla-style with --no-declarative should error."""
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path, "--no-declarative", "--sqla-style", "2"])
+    assert result.exit_code != 0
+    assert "only applies in declarative mode" in result.output
+
+
+# --- issue #3416 regression tests ---
+
+
+ISSUE_3416_SCHEMA = """
+id: https://example.org/test
+name: test_3416
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Term:
+    attributes:
+      uri:
+        identifier: true
+        range: uriorcurie
+        required: true
+  Event:
+    attributes:
+      id:
+        identifier: true
+        range: integer
+      term:
+        range: Term
+"""
+
+
+def test_sqla_2x_fk_column_type_matches_string_identifier_target(tmp_path):
+    """Issue #3416: FK column for a class with a string-typed identifier
+    must use Text(), not Integer()."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    # The FK column on Event -> Term.uri should be Text() (since uri is uriorcurie),
+    # and its Mapped annotation should be str, not int.
+    assert 'mapped_column(Text(), ForeignKey("Term.uri"))' in code
+    assert "Mapped[int | None] = mapped_column(Integer(), ForeignKey" not in code
+
+
+ISSUE_3416_ABSTRACT_PARENT_SCHEMA = """
+id: https://example.org/test
+name: test_3416_abstract
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  OntologyEntity:
+    abstract: true
+    description: Abstract parent with no declared identifier.
+  Term:
+    is_a: OntologyEntity
+    attributes:
+      term_uri:
+        identifier: true
+        range: uriorcurie
+        required: true
+      term_label:
+        range: string
+  Event:
+    attributes:
+      id:
+        identifier: true
+        range: integer
+      term:
+        range: Term
+"""
+
+
+def test_sqla_2x_fk_type_when_target_inherits_from_identifier_less_abstract(tmp_path):
+    """Issue #3416: when a class inherits from an abstract parent that declares
+    no identifier and declares its own string-typed identifier, FK columns
+    pointing at it must use Text() — not the Integer() type of the transformer's
+    auto-injected PK that leaks through inheritance."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_ABSTRACT_PARENT_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    assert 'term_term_uri: Mapped[str | None] = mapped_column(Text(), ForeignKey("Term.term_uri"))' in code
+    assert 'ForeignKey("Term.term_uri")' in code
+    assert 'Mapped[int | None] = mapped_column(Integer(), ForeignKey("Term.' not in code
+
+
+def test_sqla_2x_emits_relationship_for_non_inlined_fk(tmp_path):
+    """Issue #3416: non-inlined FK slots should still get a relationship()
+    attribute so ORM-side joins work."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    # FK column gets a _uri suffix, original name becomes the relationship attribute.
+    assert 'term_uri: Mapped[str | None] = mapped_column(Text(), ForeignKey("Term.uri"))' in code
+    assert "term: Mapped[Term | None] = relationship(foreign_keys=[term_uri])" in code
+
+
+def test_sqla_2x_non_inlined_fk_orm_join_works(tmp_path):
+    """Issue #3416: ORM-side joins via relationship() should work for
+    non-inlined FK slots once the relationship attribute is emitted."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+    gen = SQLAlchemyGenerator(str(schema_file))
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+
+    engine = create_engine("sqlite://")
+    mod.Base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine)()
+
+    term = mod.Term(uri="GO:0001234")
+    event = mod.Event(id=1, term=term)
+    session.add(term)
+    session.add(event)
+    session.commit()
+
+    fetched = session.query(mod.Event).where(mod.Event.id == 1).one()
+    # FK column holds the string identifier value
+    assert fetched.term_uri == "GO:0001234"
+    # ORM relationship resolves to the Term object without a separate query
+    assert fetched.term.uri == "GO:0001234"
+
+    session.close()
+    engine.dispose()
+
+
+def test_sqla_2x_non_inlined_fk_orm_join_works_with_aligned_ddl(tmp_path):
+    """Cross-generator integration: SQLTableGenerator with rename_foreign_keys=True
+    must emit DDL whose column names match the SQLA 2.x ORM, so the two
+    generators can be used together for the same schema."""
+    schema_file = tmp_path / "s.yaml"
+    schema_file.write_text(ISSUE_3416_SCHEMA)
+
+    ddl = SQLTableGenerator(str(schema_file), rename_foreign_keys=True).generate_ddl()
+    engine = create_engine("sqlite://")
+    with engine.connect() as connection:
+        connection.connection.cursor().executescript(ddl)
+
+    gen = SQLAlchemyGenerator(str(schema_file))
+    mod = gen.compile_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    session = sessionmaker(bind=engine)()
+
+    term = mod.Term(uri="GO:0001234")
+    event = mod.Event(id=1, term=term)
+    session.add(term)
+    session.add(event)
+    session.commit()
+
+    fetched = session.query(mod.Event).where(mod.Event.id == 1).one()
+    assert fetched.term_uri == "GO:0001234"
+    assert fetched.term.uri == "GO:0001234"
+
+    session.close()
+    engine.dispose()
+
+
+GOLDEN_FILE = Path(__file__).parent / "golden" / "personinfo_sqla_2x.py"
+
+
+def test_sqla_2x_golden_file(schema):
+    """Generated 2.x output should match the checked-in golden file."""
+    gen = SQLAlchemyGenerator(schema)
+    code = gen.generate_sqla(template=TemplateEnum.DECLARATIVE_2X)
+    if not GOLDEN_FILE.exists():
+        GOLDEN_FILE.parent.mkdir(parents=True, exist_ok=True)
+        GOLDEN_FILE.write_text(code)
+        pytest.skip("Golden file created — review and commit it, then re-run.")
+    expected = GOLDEN_FILE.read_text()
+    assert code == expected, (
+        f"Generated output differs from golden file {GOLDEN_FILE}. "
+        "If the change is intentional, delete the golden file and re-run to regenerate."
+    )

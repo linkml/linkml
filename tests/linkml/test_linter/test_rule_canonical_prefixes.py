@@ -2,8 +2,8 @@ import pytest
 
 from linkml.linter.config.datamodel.config import CanonicalPrefixesConfig, RuleLevel
 from linkml.linter.rules import CanonicalPrefixesRule
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime import SchemaView
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 pytestmark = pytest.mark.xdist_group("linter_cli")
 

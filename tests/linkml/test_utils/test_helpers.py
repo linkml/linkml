@@ -1,6 +1,6 @@
 from linkml.utils.helpers import is_simple_dict
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import ClassDefinition, SchemaDefinition, SlotDefinition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView
 
 SCHEMA = SchemaDefinition(

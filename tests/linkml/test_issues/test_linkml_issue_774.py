@@ -1,5 +1,3 @@
-import unittest
-
 from linkml_runtime import SchemaView
 
 
@@ -15,8 +13,7 @@ def test_slot_inheritance(input_path):
     slot = sv.induced_slot("s", "C")
     assert ["ex:1"] == slot.exact_mappings
     any_of_ranges = [x.range for x in slot.any_of]
-    tc = unittest.TestCase()
-    tc.assertCountEqual(["D", "E"], any_of_ranges)
+    assert sorted(["D", "E"]) == sorted(any_of_ranges)
     induced_c = sv.induced_class("C")
     # slots converted to attributes for derived view:
     # this allows local properties to be inlined
@@ -25,4 +22,4 @@ def test_slot_inheritance(input_path):
     slot = induced_c.attributes["s"]
     assert ["ex:1"] == slot.exact_mappings
     any_of_ranges = [x.range for x in slot.any_of]
-    tc.assertCountEqual(["D", "E"], any_of_ranges)
+    assert sorted(["D", "E"]) == sorted(any_of_ranges)

@@ -7,6 +7,7 @@ from rdflib import Graph
 from linkml_runtime.dumpers.dumper_root import Dumper
 from linkml_runtime.utils.context_utils import CONTEXT_TYPE, CONTEXTS_PARAM_TYPE
 from linkml_runtime.utils.formatutils import remove_empty_items
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
@@ -101,4 +102,6 @@ class RDFDumper(Dumper):
         """
         if isinstance(element, BaseModel):
             element = element.model_dump()
-        return self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts).serialize(format=fmt)
+        return canonicalize_rdf_graph(
+            self.as_rdf_graph(remove_empty_items(element, hide_protected_keys=True), contexts), output_format=fmt
+        )

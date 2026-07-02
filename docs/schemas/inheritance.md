@@ -110,6 +110,9 @@ Note that `is_a` has the characteristics of homeomorphicity: `is_a` **SHOULD** o
 
 See also the [Wikipedia page on mixins](https://en.wikipedia.org/wiki/Mixin)
 
+For a comparison of `is_a` / `mixins` with `implements` and `instantiates`, see
+the {ref}`howto-implements-instantiates` guide.
+
 ## Materializing inherited slots
 
 the [linkml generator](../generators/linkml) can be used with the

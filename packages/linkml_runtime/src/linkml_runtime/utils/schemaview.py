@@ -189,15 +189,17 @@ def _closure(
         detect_cycles(f, [x])
 
     rv = [x] if reflexive else []
-    visited = []
+    rv_set: set = {x} if reflexive else set()
+    visited: set = set()
     todo = [x]
     while todo:
         i = todo.pop() if depth_first else todo.pop(0)
-        visited.append(i)
+        visited.add(i)
         for v in f(i) or []:
-            if v not in visited and v not in rv:
+            if v not in visited and v not in rv_set:
                 todo.append(v)
                 rv.append(v)
+                rv_set.add(v)
     return rv
 
 
@@ -409,6 +411,22 @@ class SchemaView:
         for s in schemas:
             # get the value of element name from the schema; if empty, return empty dictionary.
             d1 = getattr(s, element_name, {})
+            if element_name == CLASSES:
+                # For classes that appear in multiple schemas, additively merge
+                # rules and classification_rules so that imported rules are not
+                # silently lost when a later schema redefines the same class.
+                d1 = dict(d1)
+                for k, v in d1.items():
+                    if k in d:
+                        prev = d[k]
+                        merged_v = deepcopy(v)
+                        for rule in prev.rules:
+                            if rule not in merged_v.rules:
+                                merged_v.rules.append(deepcopy(rule))
+                        for cr in prev.classification_rules:
+                            if cr not in merged_v.classification_rules:
+                                merged_v.classification_rules.append(deepcopy(cr))
+                        d1[k] = merged_v
             # {**d,**d1} syntax merges dictionary d and d1 into a single dictionary, removing duplicates.
             d = {**d, **d1}
 
@@ -1651,6 +1669,19 @@ class SchemaView:
             slot = self.get_slot(slot_name, imports, attributes=True)
 
         if slot is None:
+            # Callers (e.g. JSON/Python generators) may often normalise slot
+            # names with underscore() before using as property/attribute names.
+            # If above literal lookup failed, try to resolve name back to the
+            # canonical (hyphenated / space-containing) slot name via
+            # slot_name_mappings(). Recurse once with that name.
+            canonical = self.slot_name_mappings().get(slot_name)
+            if canonical is not None and canonical.name != slot_name:
+                return self.induced_slot(
+                    canonical.name,
+                    class_name=class_name,
+                    imports=imports,
+                    mangle_name=mangle_name,
+                )
             msg = (
                 f"No such slot {slot_name} as an attribute of {class_name} ancestors "
                 "or as a slot definition in the schema"
@@ -1701,10 +1732,10 @@ class SchemaView:
                 v = self.schema.default_range
             if v is not None:
                 setattr(induced_slot, metaslot_name, v)
-        if slot.inlined_as_list:
-            slot.inlined = True
-        if slot.identifier or slot.key:
-            slot.required = True
+        if induced_slot.inlined_as_list:
+            induced_slot.inlined = True
+        if induced_slot.identifier or induced_slot.key:
+            induced_slot.required = True
         if mangle_name:
             mangled_name = f"{camelcase(class_name)}__{underscore(slot_name)}"
             induced_slot.name = mangled_name
@@ -1712,17 +1743,34 @@ class SchemaView:
             underscored = underscore(slot_name)
             if underscored != induced_slot.name:
                 induced_slot.alias = underscored
-        for c in self.all_classes().values():
-            if (
-                induced_slot.name in c.slots or induced_slot.name in c.attributes
-            ) and c.name not in induced_slot.domain_of:
-                induced_slot.domain_of.append(c.name)
+        # set() handles edge case, slot name in both c.slots and c.attributes.
+        existing_domain_of = set(induced_slot.domain_of)
+
+        for class_name_candidate in self._slot_class_map().get(induced_slot.name, []):
+            if class_name_candidate not in existing_domain_of:
+                induced_slot.domain_of.append(class_name_candidate)
+                existing_domain_of.add(class_name_candidate)
         return induced_slot
 
     @lru_cache(None)
     def _metaslots_for_slot(self):
         fake_slot = SlotDefinition("__FAKE")
         return vars(fake_slot).keys()
+
+    @lru_cache(None)
+    def _slot_class_map(self) -> dict[str, list[str]]:
+        """Build a reverse map: slot/attribute name → list of class names that declare it.
+
+        Computed once and cached; automatically invalidated when set_modified() is called
+        (because SchemaView's hash changes with each modification).
+        """
+        result: dict[str, list[str]] = {}
+        for c in self.all_classes().values():
+            for sname in c.slots:
+                result.setdefault(sname, []).append(c.name)
+            for aname in c.attributes:
+                result.setdefault(aname, []).append(c.name)
+        return result
 
     @lru_cache(None)
     def class_slots(
@@ -1942,7 +1990,10 @@ class SchemaView:
             err_msg = "A SlotDefinition must be provided to generate the slot range as union."
             raise ValueError(err_msg)
 
-        return list({y.range for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]})
+        # Using dict with None as value to mimic ordered set behavior
+        return list(
+            {y.range: None for y in [slot, *[x for x in [*slot.exactly_one_of, *slot.any_of] if x.range]]}.keys()
+        )
 
     def induced_slot_range(self, slot: SlotDefinition, strict: bool = False) -> set[str | ElementName]:  # noqa: FBT001, FBT002
         """Retrieve all applicable ranges for a slot, falling back to the default if necessary.
@@ -2008,20 +2059,20 @@ class SchemaView:
         :param include_induced: supplement all direct slots with induced slots, defaults to False
         :return: list of slots, either direct, or both direct and induced
         """
-        classes_set = set()  # use set to avoid duplicates
+        classes_ordered_set = {}  #  To avoid duplicates. Using dict with None as value to mimic ordered set
         all_classes = self.all_classes()
 
         for c_name, c in all_classes.items():
             if slot.name in c.slots:
-                classes_set.add(c_name)
+                classes_ordered_set[c_name] = None
 
         if include_induced:
             for c_name in all_classes:
                 induced_slot_names = [ind_slot.name for ind_slot in self.class_induced_slots(c_name)]
                 if slot.name in induced_slot_names:
-                    classes_set.add(c_name)
+                    classes_ordered_set[c_name] = None
 
-        return list(classes_set)
+        return list(classes_ordered_set.keys())
 
     @lru_cache(None)
     def get_slots_by_enum(self, enum_name: ENUM_NAME = None) -> list[SlotDefinition]:

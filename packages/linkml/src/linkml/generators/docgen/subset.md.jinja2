@@ -1,3 +1,9 @@
+---
+search:
+  boost: {% if element.deprecated %}0.5{% else %}1.0{% endif %}
+---
+
+
 # Subset: {{ gen.name(element) }} {% if element.deprecated %} <span style="color: red;"><strong> (DEPRECATED) </strong></span> {% endif %}
 
 {%- if header -%}
@@ -10,6 +16,8 @@
 _{{ element_description_line }}_
 {% endfor %}
 {% endif %}
+
+<div data-search-exclude markdown="1">
 
 URI: {{ gen.link(element) }}
 
@@ -101,3 +109,5 @@ URI: {{ gen.link(element) }}
 {% endfor %}
 
 {%- endif %}
+
+</div>

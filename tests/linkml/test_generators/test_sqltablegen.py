@@ -2,14 +2,15 @@ import re
 import sqlite3
 
 import pytest
+import yaml
 from click.testing import CliRunner
 from sqlalchemy.dialects.oracle import VARCHAR2
 from sqlalchemy.sql.sqltypes import Boolean, Date, DateTime, Enum, Float, Integer, Numeric, Text, Time
 
 from linkml.generators.sqltablegen import ORACLE_MAX_VARCHAR_LENGTH, SQLTableGenerator, cli
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model.meta import Annotation, SlotDefinition, UniqueKey
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView
 
 # from tests.linkml.test_generators.environment import env
@@ -27,6 +28,19 @@ DUMMY_CLASS = "dummy class"
 @pytest.fixture
 def schema(input_path) -> str:
     return str(input_path("personinfo.yaml"))
+
+
+@pytest.fixture
+def write_schema(tmp_path):
+    """Return a helper that writes a SchemaBuilder's schema to a YAML file and returns its path."""
+
+    def _write(builder: SchemaBuilder, name: str = "test_schema.yaml") -> str:
+        path = tmp_path / name
+        with open(path, "w") as f:
+            yaml.dump(builder.as_dict(), f)
+        return str(path)
+
+    return _write
 
 
 def test_inject_primary_key() -> None:
@@ -58,6 +72,23 @@ def test_no_injection(schema: str) -> None:
     gen = SQLTableGenerator(schema, use_foreign_keys=False)
     ddl = gen.generate_ddl()
     assert "FOREIGN KEY" not in ddl
+
+
+def test_rename_foreign_keys_flag(schema: str) -> None:
+    """rename_foreign_keys=True should suffix every class-range FK column with
+    the target's PK name (matching SQLAlchemy 2.x declarative output), so the
+    DDL can be paired with that ORM. Default off preserves bare slot names."""
+    # Default: non-inlined FK slot keeps its bare slot name.
+    default_ddl = SQLTableGenerator(schema).generate_ddl()
+    assert re.search(r"related_to\s+TEXT", default_ddl)
+    assert 'FOREIGN KEY(related_to) REFERENCES "Person"' in default_ddl
+
+    # Flag on: column is renamed to <slot>_<target_pk>.
+    aligned_ddl = SQLTableGenerator(schema, rename_foreign_keys=True).generate_ddl()
+    assert re.search(r"related_to_id\s+TEXT", aligned_ddl)
+    assert 'FOREIGN KEY(related_to_id) REFERENCES "Person"' in aligned_ddl
+    # And the bare-name column no longer appears for that FK.
+    assert not re.search(r"\brelated_to\s+TEXT", aligned_ddl)
 
 
 def test_dialect() -> None:
@@ -180,6 +211,163 @@ def test_index_sqlddl():
     assert 'CREATE INDEX "ix_Class_With_Nowt_id" ON "Class_With_Nowt" (id)' in ddl
     # Tests to ensure the duplicate index name isn't created
     assert 'CREATE INDEX "ix_Class_With_Id_identifier_slot" ON "Class_With_Id" (identifier_slot, name);' not in ddl
+
+
+def test_cli_basic(write_schema):
+    """Test CLI with basic schema."""
+
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("age", range="integer"))
+    b.add_class("Person", slots=["id", "age"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path])
+
+    assert result.exit_code == 0
+    assert "Class: Person" in result.output, "Expect sql comments in output"
+    assert 'CREATE TABLE "Person"' in result.output, "Expect table CREATE statement in output"
+    assert "CREATE INDEX " in result.output, "Expect index CREATE statement in output"
+    assert "age INTEGER" in result.output, "Expect attribute age in output"
+
+
+def test_cli_dialect(write_schema):
+    """Test CLI --dialect option produces dialect-specific DDL."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("age", range="integer", description="age in years"))
+    b.add_class("Person", slots=["age"], description="A person")
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    # PostgreSQL: auto-injected PK becomes SERIAL and comments are supported
+    result_pg = runner.invoke(cli, [schema_path, "--dialect", "postgresql"])
+    assert result_pg.exit_code == 0, f"CLI failed: {result_pg.output}"
+    assert "SERIAL" in result_pg.output
+    assert "COMMENT ON TABLE" in result_pg.output
+
+    # SQLite: auto-injected PK is INTEGER; comments emitted as SQL line comments
+    result_sqlite = runner.invoke(cli, [schema_path, "--dialect", "sqlite"])
+    assert result_sqlite.exit_code == 0, f"CLI failed: {result_sqlite.output}"
+    assert "INTEGER" in result_sqlite.output
+    assert "COMMENT ON TABLE" not in result_sqlite.output
+    assert "-- # Class: Person Description: A person" in result_sqlite.output
+
+    # MySQL: auto-injected PK gets AUTO_INCREMENT
+    result_mysql = runner.invoke(cli, [schema_path, "--dialect", "mysql"])
+    assert result_mysql.exit_code == 0, f"CLI failed: {result_mysql.output}"
+    assert "AUTO_INCREMENT" in result_mysql.output
+    assert "COMMENT='A person'" in result_mysql.output
+
+
+def test_cli_no_foreign_keys(write_schema):
+    """Test CLI --no-use-foreign-keys suppresses FOREIGN KEY declarations."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_slot(SlotDefinition("address_ref", range="Address"))
+    b.add_class("Address", slots=["id", "name"])
+    b.add_class("Person", slots=["id", "name", "address_ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_with_fk = runner.invoke(cli, [schema_path, "--use-foreign-keys"])
+    assert result_with_fk.exit_code == 0, f"CLI failed: {result_with_fk.output}"
+    assert "FOREIGN KEY" in result_with_fk.output
+
+    result_no_fk = runner.invoke(cli, [schema_path, "--no-use-foreign-keys"])
+    assert result_no_fk.exit_code == 0, f"CLI failed: {result_no_fk.output}"
+    assert "FOREIGN KEY" not in result_no_fk.output
+
+
+def test_cli_relmodel_output(tmp_path, write_schema):
+    """Test CLI --relmodel-output writes the intermediate relational model YAML."""
+    relmodel_path = tmp_path / "relmodel.yaml"
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Person", slots=["id", "name"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [schema_path, "--relmodel-output", str(relmodel_path)])
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    assert relmodel_path.exists(), "relmodel output file should be created"
+
+    relmodel = yaml.safe_load(relmodel_path.read_text())
+    assert "classes" in relmodel
+    assert "Person" in relmodel["classes"]
+
+
+def test_cli_generate_abstract_class_ddl(write_schema):
+    """Test CLI --generate_abstract_class_ddl controls abstract class table emission."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Animal", slots=["id", "name"], **{"abstract": True})
+    b.add_class("Dog", slots=["name"], **{"is_a": "Animal"})
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_with = runner.invoke(cli, [schema_path, "--generate_abstract_class_ddl", "True"])
+    assert result_with.exit_code == 0, f"CLI failed: {result_with.output}"
+    assert 'CREATE TABLE "Animal"' in result_with.output
+    assert 'CREATE TABLE "Dog"' in result_with.output
+
+    result_without = runner.invoke(cli, [schema_path, "--generate_abstract_class_ddl", "False"])
+    assert result_without.exit_code == 0, f"CLI failed: {result_without.output}"
+    assert 'CREATE TABLE "Animal"' not in result_without.output
+    assert 'CREATE TABLE "Dog"' in result_without.output
+
+
+def test_cli_rename_foreign_keys(write_schema):
+    """Test CLI --rename-foreign-keys suffixes FK columns with target PK name."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_slot(SlotDefinition("address_ref", range="Address"))
+    b.add_class("Address", slots=["id", "name"])
+    b.add_class("Person", slots=["id", "name", "address_ref"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result_default = runner.invoke(cli, [schema_path])
+    assert result_default.exit_code == 0, f"CLI failed: {result_default.output}"
+    assert "address_ref" in result_default.output
+    assert "address_ref_id" not in result_default.output
+
+    result_renamed = runner.invoke(cli, [schema_path, "--rename-foreign-keys"])
+    assert result_renamed.exit_code == 0, f"CLI failed: {result_renamed.output}"
+    assert "address_ref_id" in result_renamed.output
+
+
+def test_cli_default_length_oracle(write_schema):
+    """Test CLI --default_length_oracle sets VARCHAR2 length for oracle dialect."""
+    b = SchemaBuilder()
+    b.add_slot(SlotDefinition("id", identifier=True))
+    b.add_slot(SlotDefinition("name", range="string"))
+    b.add_class("Person", slots=["id", "name"])
+    b.add_defaults()
+    schema_path = write_schema(b)
+
+    runner = CliRunner()
+
+    result = runner.invoke(
+        cli,
+        [schema_path, "--dialect", "oracle", "--default_length_oracle", "512"],
+    )
+    assert result.exit_code == 0, f"CLI failed: {result.output}"
+    assert "VARCHAR2(512 CHAR)" in result.output
 
 
 def test_cli_index(schema: str) -> None:
@@ -392,3 +580,115 @@ def test_sqlddl_basic(schema):
         )
 
     con.close()
+
+
+# Tests for get_sql_range SchemaView reuse (last commit)
+def test_get_sql_range_accepts_sv_argument() -> None:
+    """
+    get_sql_range accepts an explicit SchemaView and uses it instead of
+    constructing a new one. Passing a SchemaView built from the same schema
+    must produce the same result as calling without sv.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True)
+    sb.add_slot("name", range="string")
+    sb.add_class("Person", ["id", "name"])
+    sb.add_defaults()
+    schema = sb.schema
+
+    gen = SQLTableGenerator(schema)
+    sv = SchemaView(schema)
+
+    slot_string = SlotDefinition(name="name_col", range="string")
+    assert type(gen.get_sql_range(slot_string, schema)) is type(gen.get_sql_range(slot_string, schema, sv=sv))
+
+    slot_int = SlotDefinition(name="id_col", range="integer")
+    assert type(gen.get_sql_range(slot_int, schema)) is type(gen.get_sql_range(slot_int, schema, sv=sv))
+
+
+def test_get_sql_range_sv_none_fallback() -> None:
+    """
+    When sv=None (the default), get_sql_range creates its own SchemaView
+    internally and still returns the correct type.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True)
+    sb.add_slot("score", range="integer")
+    sb.add_class("Result", ["id", "score"])
+    sb.add_defaults()
+    gen = SQLTableGenerator(sb.schema)
+
+    # sv omitted entirely → falls back to internal SchemaView construction
+    assert isinstance(gen.get_sql_range(SlotDefinition(name="s", range="integer")), Integer)
+    assert isinstance(gen.get_sql_range(SlotDefinition(name="s", range="string")), Text)
+
+
+def test_get_sql_range_fk_chain_reuses_sv() -> None:
+    """
+    When a slot's range is a class that has an integer identifier, the recursive
+    call to get_sql_range must resolve the FK type correctly whether sv is
+    supplied or not.  Verifies the fix where sv was not threaded through the
+    recursive call.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True, range="integer")
+    sb.add_slot("name", range="string")
+    sb.add_slot("address", range="Address")
+    sb.add_class("Address", ["id", "name"])
+    sb.add_class("Person", ["id", "name", "address"])
+    sb.add_defaults()
+    schema = sb.schema
+    gen = SQLTableGenerator(schema)
+    sv = SchemaView(schema)
+
+    # A slot whose range is a class with an integer identifier should resolve
+    # to Integer (the identifier type of the referenced class).
+    slot_address = SlotDefinition(name="address", range="Address")
+    result_with_sv = gen.get_sql_range(slot_address, schema, sv=sv)
+    result_without_sv = gen.get_sql_range(slot_address, schema)
+    assert isinstance(result_with_sv, Integer)
+    assert isinstance(result_without_sv, Integer)
+
+
+def test_get_sql_range_class_without_identifier() -> None:
+    """
+    When a slot's range is a class with no identifier/key, get_sql_range
+    returns Text regardless of whether sv is supplied.
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("street", range="string")
+    sb.add_slot("ref", range="Address")
+    sb.add_class("Address", ["street"])
+    sb.add_class("Person", ["ref"])
+    sb.add_defaults()
+    schema = sb.schema
+    gen = SQLTableGenerator(schema)
+    sv = SchemaView(schema)
+
+    slot_ref = SlotDefinition(name="ref", range="Address")
+    assert isinstance(gen.get_sql_range(slot_ref, schema, sv=sv), Text)
+    assert isinstance(gen.get_sql_range(slot_ref, schema), Text)
+
+
+def test_generate_ddl_sv_reuse_consistent() -> None:
+    """
+    generate_ddl now passes sv into get_sql_range for every column.
+    The resulting DDL must be identical to what was produced before the
+    optimisation (i.e. the SchemaView reuse is transparent to callers).
+    """
+    sb = SchemaBuilder()
+    sb.add_slot("id", identifier=True, range="integer")
+    sb.add_slot("name", range="string")
+    sb.add_slot("age", range="integer")
+    sb.add_slot("address", range="Address")
+    sb.add_class("Address", ["id", "name"])
+    sb.add_class("Person", ["id", "name", "age", "address"])
+    sb.add_defaults()
+
+    gen = SQLTableGenerator(sb.schema)
+    ddl = gen.generate_ddl()
+
+    # FK column for 'address' referencing Address.id (integer) should be present
+    assert "address" in ddl.lower()
+    assert "Person".lower() in ddl.lower()
+    assert "Address".lower() in ddl.lower()

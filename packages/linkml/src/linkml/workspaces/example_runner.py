@@ -87,6 +87,15 @@ class ExampleRunner:
 
     use_type_designators: bool = True
 
+    closed: bool = True
+    """If True (default), the default validator runs closed-world JSON Schema
+    validation (undeclared slots are rejected). Set to False to allow extra
+    properties. Ignored when ``validator_config`` provides explicit plugins."""
+
+    validator_config: str | Path | None = None
+    """Optional path to a ``linkml-validate``-style config YAML used to
+    construct the default validator's plugins. Overrides ``closed``."""
+
     @property
     def python_module(self) -> ModuleType:
         """
@@ -111,7 +120,11 @@ class ExampleRunner:
         :return:
         """
         if self._validator is None:
-            self._validator = _get_default_validator(self.schemaview.schema)
+            self._validator = _get_default_validator(
+                self.schemaview.schema,
+                closed=self.closed,
+                config=self.validator_config,
+            )
         return self._validator
 
     def process_examples(self):
@@ -231,6 +244,12 @@ class ExampleRunner:
         if isinstance(dict_obj, dict):
             if target_class not in sv.all_classes():
                 raise ValueError(f"No such class as {target_class}")
+            # Classes with class_uri: linkml:Any are emitted as `ClassName = Any`
+            # by PythonGenerator.  In Python 3.11+, typing.Any(...) is not
+            # callable, so skip construction and return the raw dict unchanged.
+            target_cls_def = sv.get_class(target_class)
+            if target_cls_def and target_cls_def.class_uri == "linkml:Any":
+                return dict_obj
             td_slot = sv.get_type_designator_slot(target_class) if target_class else None
             if td_slot:
                 if td_slot.name in dict_obj:
@@ -266,7 +285,11 @@ class ExampleRunner:
                         v2 = self._load_from_dict(v_as_list, target_class=islot.range)
                     else:
                         v2 = self._load_from_dict(v, target_class=islot.range)
-                    new_dict_obj[k] = v2
+                    # YAML keys may contain hyphens (e.g. "how-many") which are
+                    # valid YAML identifiers but illegal as Python kwargs.  The
+                    # generated Python class uses underscored names, so normalise
+                    # here before passing to the constructor.
+                    new_dict_obj[k.replace("-", "_")] = v2
             py_target_class = getattr(self.python_module, camelcase(target_class))
             return py_target_class(**new_dict_obj)
         elif isinstance(dict_obj, list):
@@ -318,6 +341,22 @@ class ExampleRunner:
     default=True,
     show_default=True,
     help="If true use type_designators to deepen ranges",
+)
+@click.option(
+    "--closed/--not-closed",
+    default=True,
+    show_default=True,
+    help="If true (default), use closed-world JSON Schema validation "
+    "(undeclared slots are rejected). Use --not-closed to allow extra "
+    "properties. Ignored when --config supplies an explicit plugins block.",
+)
+@click.option(
+    "--config",
+    "validator_config",
+    type=click.Path(exists=True, dir_okay=False, resolve_path=True, path_type=Path),
+    default=None,
+    help="Path to a linkml-validate-style validation config YAML used to "
+    "construct the validator's plugins. Overrides --closed.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(schema, prefixes, output: TextIO, **kwargs):

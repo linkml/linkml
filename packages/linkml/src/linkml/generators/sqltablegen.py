@@ -63,6 +63,17 @@ RANGEMAP = {
     "XSDDate": Date(),
 }
 
+SQL_TYPE_TO_PYTHON_TYPE: dict[str, str] = {
+    "Text()": "str",
+    "Integer()": "int",
+    "Float()": "float",
+    "Numeric()": "Decimal",
+    "Boolean()": "bool",
+    "Time()": "time",
+    "DateTime()": "datetime",
+    "Date()": "date",
+}
+
 
 VARCHAR_REGEX = re.compile(r"VARCHAR2?(\((\d+)\))?")
 ORACLE_MAX_VARCHAR_LENGTH = 4096
@@ -145,6 +156,9 @@ class SQLTableGenerator(Generator):
     inject_primary_keys: bool = True
     use_foreign_keys: bool = True
     rename_foreign_keys: bool = False
+    """If true, rename every class-range slot to ``<slot>_<target_pk>`` so the
+    emitted DDL column names match the SQLAlchemy 2.x declarative ORM output.
+    Off by default for backward compatibility."""
     direct_mapping: bool = False
     relative_slot_num: bool = False
     default_length_oracle: int = ORACLE_MAX_VARCHAR_LENGTH
@@ -174,6 +188,12 @@ class SQLTableGenerator(Generator):
         sqltr = RelationalModelTransformer(SchemaView(self.schema))
         if not self.use_foreign_keys:
             sqltr.foreign_key_policy = ForeignKeyPolicy.NO_FOREIGN_KEYS
+        elif self.rename_foreign_keys:
+            # Rename every class-range slot to <slot>_<target_pk> so DDL column
+            # names match the SQLAlchemy 2.x declarative ORM output. Off by
+            # default to preserve backward compatibility with existing
+            # gen-sqltables consumers.
+            sqltr.foreign_key_policy = ForeignKeyPolicy.INJECT_FK_FOR_ALL_REFS
         tr_result = sqltr.transform(tgt_schema_name=kwargs.get("tgt_schema_name"), top_class=kwargs.get("top_class"))
         schema = tr_result.schema
 
@@ -233,7 +253,7 @@ class SQLTableGenerator(Generator):
                     if s.range in schema.classes and self.use_foreign_keys:
                         fk = sql_name(self.get_id_or_key(s.range, sv))
                         args = [ForeignKey(fk)]
-                    field_type = self.get_sql_range(s, schema)
+                    field_type = self.get_sql_range(s, schema, sv=sv)  # reuse the Schemaview
                     fk_index_cond = (s.key or s.identifier) and self.autogenerate_index
                     pk_index_cond = is_pk and self.autogenerate_index
                     is_index = fk_index_cond or pk_index_cond
@@ -333,7 +353,7 @@ class SQLTableGenerator(Generator):
         # use standard SQL range matching for anything else
         return None
 
-    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None):
+    def get_sql_range(self, slot: SlotDefinition, schema: SchemaDefinition = None, sv: SchemaView = None):
         """Get the slot range as a SQL Alchemy column type."""
         slot_range = slot.range
 
@@ -350,12 +370,21 @@ class SQLTableGenerator(Generator):
         if not schema:
             schema = self.schema
 
-        sv = SchemaView(schema)
+        if sv is None:  # if no SchemaView arg is provided, then create one
+            sv = SchemaView(schema)
         if slot_range in sv.all_classes():
-            # FK type should be the same as the identifier of the foreign key
-            fk = sv.get_identifier_slot(slot_range)
+            # FK type should be the same as the identifier of the foreign key.
+            # Prefer the target's *direct* identifier: an abstract parent without
+            # an identifier gets an auto-injected integer PK from the relational
+            # transformer, and that injection leaks into subclasses via
+            # class_induced_slots — masking a real identifier declared on the
+            # subclass. Fall back to the inherited identifier for the common
+            # case where the subclass legitimately inherits its PK.
+            fk = RelationalModelTransformer.get_direct_identifier_attribute(sv, slot_range)
+            if fk is None:
+                fk = sv.get_identifier_slot(slot_range)
             if fk:
-                return self.get_sql_range(fk, sv.schema)
+                return self.get_sql_range(fk, sv.schema, sv=sv)  # reuse the Schemaview
             return Text()
 
         if slot_range in sv.all_enums():
@@ -435,6 +464,16 @@ class SQLTableGenerator(Generator):
     default=True,
     show_default=True,
     help="A manual override to omit the abstract classes, set to true as a default for testing sake",
+)
+@click.option(
+    "--rename-foreign-keys/--no-rename-foreign-keys",
+    default=False,
+    show_default=True,
+    help=(
+        "Rename every class-range slot to <slot>_<target_pk> in the emitted DDL "
+        "so column names match SQLAlchemy 2.x declarative ORM output "
+        "(gen-sqlalchemy --template declarative_2x)."
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(

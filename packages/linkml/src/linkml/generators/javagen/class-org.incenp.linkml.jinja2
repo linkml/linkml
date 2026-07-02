@@ -29,6 +29,13 @@ import org.incenp.linkml.core.CurieConverter;
 public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_a %} extends {{ cls.is_a }}{% endif %} {
 {# The fields representing the slots. -#}
 {%- for f in cls.fields %}
+{%-   if f.source_slot.range == "uriorcurie" %}
+{%-     set real_range = "List<String>" if f.source_slot.multivalued else "String" %}
+{%-   elif f.source_slot.multivalued and gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+{%-     set real_range = "List<? extends " + f.range[5:] %}
+{%-   else %}
+{%-     set real_range = f.range %}
+{%-   endif %}
 {%-   if f.source_slot.identifier %}
 {#- Marks the slot that holds the unique identifier for objects of this class. #}
     @Identifier
@@ -40,9 +47,11 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {#- Marks the slot that holds the runtime type of this object. #}
     @TypeDesignator
 {%-   endif %}
-{%-   if f.source_slot.name != f.name %}
-{#- The Java field name differs from the name defined in the schema, so
-    the runtime must have a way to get the original name. #}
+{#- If the Java field name differs from the name or alias defined in the
+    schema, the runtime must have a way to get the original name. #}
+{%-   if f.source_slot.alias and f.source_slot.alias != f.name %}
+    @SlotName("{{ f.source_slot.alias }}")
+{%-   elif f.source_slot.alias is none and f.source_slot.name != f.name %}
     @SlotName("{{ f.source_slot.name }}")
 {%-   endif %}
 {#- The runtime must know how the slot is expected to be serialised. #}
@@ -63,7 +72,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   endif %}
 {#- We will need the slot URI for RDF import/export later. #}
     @LinkURI("{{ f.slot_uri }}")
-    private {{ f.range }} {{ f.name }};
+    private {{ real_range }} {{ f.name }};
 {% endfor %}
 
 {#- If the class is configured to allow extra slots, we need an extra
@@ -75,25 +84,171 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 
 {#- The public accessors. #}
 {%- for f in cls.fields %}
-    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ f.range }} {{ f.name }}) {
+{%-   if f.source_slot.range == "uriorcurie" %}
+{%-     set real_range = "List<String>" if f.source_slot.multivalued else "String" %}
+{%-   elif f.source_slot.multivalued and gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+{%-     set real_range = "List<? extends " + f.range[5:] %}
+{%-   else %}
+{%-     set real_range = f.range %}
+{%-   endif %}
+    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ real_range }} {{ f.name }}) {
         this.{{ f.name }} = {{ f.name }};
     }
 
-    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}() {
+    public {{ real_range }} {{ gen.get_read_accessor_name(f.source_slot) }}() {
         return this.{{ f.name }};
     }
 
 {%-   if f.source_slot.multivalued %}
 {#- Convenience accessor that initializes the list if needed. #}
 
-    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}(boolean set) {
+    public {{ real_range }} {{ gen.get_read_accessor_name(f.source_slot) }}(boolean set) {
         if ( this.{{ f.name }} == null && set ) {
+{%-     if gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+            this.{{ f.name }} = new ArrayList<{{ f.range[5:-1] }}>();
+{%-     else %}
             this.{{ f.name }} = new ArrayList<>();
+{%-     endif %}
         }
         return this.{{ f.name }};
     }
+{%-     if gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+{#- This is a multivalued slot whose range is refined in at least one subclass.
+    We provide two additional convenience accessors:
+
+    - one to easily return a list with a fully captured type;
+    - and one that additionally allows to initializes the list if needed. #}
+
+    @SuppressWarnings("unchecked")
+    public <T extends {{ f.range[5:-1] }}> List<T> {{ gen.get_read_accessor_name(f.source_slot) }}(Class<T> t) {
+        return (List<T>) this.{{ f.name }};
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends {{ f.range[5:-1] }}> List<T> {{ gen.get_read_accessor_name(f.source_slot) }}(Class<T> t, boolean create) {
+        if ( this.{{ f.name }} == null && create ) {
+            this.{{ f.name }} = new ArrayList<T>();
+        }
+        return (List<T>) this.{{ f.name }};
+    }
+{%-     endif %}
 {%-   endif %}
 {% endfor %}
+
+{#- The public accessors for the refined inherited slots. #}
+{%- for f in cls.all_fields %}
+{%-   if f.refined_ranges %}
+{%-     if not f.source_slot.multivalued %}
+{#- Simple case: A single-valued slot.
+
+    We need:
+
+    - one read accessor that overrides the inherited read accessor to
+      change the return type to the refined range;
+    - one write accessor that overloads the inherited write accessor to
+      accept an argument of the refined type;
+    - one write accessor that overrides the inherited write accessor to
+      add a runtime type check; there must be one such accessor for every
+      refinement that occurred in the "history" of the slot. #}
+    @Override
+    public {{ f.range }} {{ gen.get_read_accessor_name(f.source_slot) }}() {
+        return ({{ f.range }}) super.{{ gen.get_read_accessor_name(f.source_slot) }}();
+    }
+
+    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ f.range }} value) {
+        super.{{ gen.get_write_accessor_name(f.source_slot) }}(value);
+    }
+
+{%-       for refined_range in f.refined_ranges %}
+
+    @Override
+    public void {{ gen.get_write_accessor_name(f.source_slot) }}({{ refined_range }} value) {
+        if ( !(value instanceof {{ f.range }}) ) {
+            throw new IllegalArgumentException("Invalid {{ f.name }} value");
+        }
+        super.{{ gen.get_write_accessor_name(f.source_slot) }}(value);
+    }
+{%-       endfor %}
+{# #}
+{%-     else %}
+{#- Multivalued refined inherited slots are inherently more complex, due
+    to the fact that they are represented using Java generics, and that
+    with Java generics, List<G> is _not_ a subtype of List<F> even if G
+    is a subtype of F. This restricts what we can override from the
+    parent class(es).
+
+    So we do the following:
+
+    (1) We override the basic `getX()` read accessor so that it returns
+    a list of the refined type. The exact return type will depend on
+    whether the slot is further refined in a subclass or not: if it is
+    further refined, we must return `List<? extends REAL_RANGE>`, so
+    that derived classes can further override the accessor and refine the
+    return type; if there are no further refinement down the class tree,
+    then we can return `List<REAL_RANGE>` directly.
+
+    (2) We likewise override the `getX(boolean)` convenience accessor
+    (the one that creates the list as needed) in a similar fashion.
+
+    (3) We override the parameterized `getX(Class<T extends BASERANGE>)`
+    accessor (provided in the base class and intended to allow client
+    code to easily obtain a list of the exact required type without
+    having to do an explicit cast) to add a runtime check that the
+    required type is compatible with the refined type in this class.
+
+    (4) We likewise override the `getX(Class<T extends BASERANGE>, boolean)`
+    convenience accessor (which combines the functionalities of the two
+    previous accessors).
+
+    (5) Lastly, we override the basic `setX()` write accessor to add
+    a runtime check that all items in the provided list are compatible
+    with the refined type in this class.
+    #}
+{%-       set real_range = f.range[5:-1] %}
+{%-       set base_range = f.refined_ranges[-1][5:-1] %}
+{%-       set refined_further = gen.get_refined_ranges(f.source_slot.name, cls.source_class.name)|length %}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<{% if refined_further %}? extends {% endif %}{{ real_range }}> {{ gen.get_read_accessor_name(f.source_slot) }}() {
+        return (List<{{ real_range }}>) super.{{ gen.get_read_accessor_name(f.source_slot) }}();
+    }
+
+    @Override
+    public List<{% if refined_further %}? extends {% endif %}{{ real_range }}> {{ gen.get_read_accessor_name(f.source_slot) }}(boolean create) {
+        return super.{{ gen.get_read_accessor_name(f.source_slot) }}({{ real_range }}.class, create);
+    }
+
+    @Override
+    public <T extends {{ base_range }}> List<T> {{ gen.get_read_accessor_name(f.source_slot) }}(Class<T> t) {
+        if ( !{{ real_range }}.class.isAssignableFrom(t) ) {
+            throw new IllegalArgumentException("Invalid type parameter");
+        }
+        return super.{{ gen.get_read_accessor_name(f.source_slot) }}(t);
+    }
+
+    @Override
+    public <T extends {{ base_range }}> List<T> {{ gen.get_read_accessor_name(f.source_slot) }}(Class<T> t, boolean create) {
+        if ( !{{ real_range }}.class.isAssignableFrom(t) ) {
+            throw new IllegalArgumentException("Invalid type parameter");
+        }
+        return super.{{ gen.get_read_accessor_name(f.source_slot) }}(t, create);
+    }
+
+    @Override
+    public void {{ gen.get_write_accessor_name(f.source_slot) }}(List<? extends {{ base_range }}> value) {
+        if ( value != null ) {
+            for ( {{ base_range }} item : value ) {
+                if ( !(item instanceof {{ real_range }}) ) {
+                    throw new IllegalArgumentException("Invalid {{ f.name }} value");
+                }
+            }
+        }
+        super.{{ gen.get_write_accessor_name(f.source_slot) }}(value);
+    }
+{# #}
+{%-     endif %}
+{%-   endif %}
+{%- endfor %}
 
 {%- if cls.source_class.extra_slots.allowed %}
     public void setExtraSlots(Map<String,Object> extraSlots) {
@@ -126,14 +281,14 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
     public String toString() {
 {%- set identifier_slot = gen.schemaview.get_identifier_slot(cls.source_class.name, use_key=True) %}
 {%- if identifier_slot %}
-        return "{{ cls.name }}({{ identifier_slot.name }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
+        return "{{ cls.name }}({{ gen.get_slot_actual_name(identifier_slot) }}=" + this.{{ gen.get_read_accessor_name(identifier_slot) }}() + ")";
 {%- else %}
         StringBuilder sb = new StringBuilder();
         Object o;
         sb.append("{{ cls.name }}(");
 {%- for slot in gen.schemaview.class_induced_slots(cls.source_class.name) %}
         if ( (o = this.{{ gen.get_read_accessor_name(slot) }}()) != null ) {
-            sb.append("{{ slot.name }}=");
+            sb.append("{{ gen.get_slot_actual_name(slot) }}=");
             sb.append(o);
             sb.append(",");
         }
@@ -175,16 +330,17 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
         final int PRIME = 59;
         int result = {% if cls.is_a %}super.hashCode(){% else %}1{% endif %};
 {%- for f in cls.fields %}
-        final Object ${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
 {%-   if f.range == "int" %}
-        result = result * PRIME + Integer.hashCode(${{ f.name }});
+        result = result * PRIME + this.{{ gen.get_read_accessor_name(f.source_slot) }}();
 {%-   elif f.range == "float" %}
-        result = result * PRIME + Float.hashCode(${{ f.name }});
+        result = result * PRIME + Float.floatToIntBits(this.{{ gen.get_read_accessor_name(f.source_slot) }}());
 {%-   elif f.range == "double" %}
-        result = result * PRIME + Double.hashCode(${{ f.name }});
+        final long ${{ f.name }} = Double.doubleToLongBits(this.{{ gen.get_read_accessor_name(f.source_slot) }}());
+        result = result * PRIME + (int) (${{ f.name }} >>> 32 ^ ${{ f.name }});
 {%-   elif f.range == "boolean" %}
-        result = result * PRIME + Boolean.hashCode(${{ f.name }});
+        result = result * PRIME + (this.{{ gen.get_read_accessor_name(f.source_slot) }}() ? 79 : 97);
 {%-   else %}
+        final Object ${{ f.name }} = this.{{ gen.get_read_accessor_name(f.source_slot) }}();
         result = result * PRIME + (${{ f.name }} == null ? 43 : ${{ f.name }}.hashCode());
 {%-   endif %}
 {%- endfor %}

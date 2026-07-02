@@ -1,7 +1,7 @@
 {
     "$defs": {
         "Thing": {
-            "additionalProperties": false,
+            "additionalProperties": true,
             "description": "",
             "properties": {
                 "identifier": {
@@ -20,7 +20,7 @@
     "$schema": "https://json-schema.org/draft/2019-09/schema",
     "additionalProperties": true,
     "description": "",
-    "metamodel_version": "1.7.0",
+    "metamodel_version": "1.11.0",
     "properties": {
         "identifier": {
             "pattern": "^(https?://|(mailto|tel):)\\w+$",

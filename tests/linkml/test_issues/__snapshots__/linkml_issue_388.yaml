@@ -68,6 +68,8 @@ classes:
     name: C1
     definition_uri: https://example.org/this/C1
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - this:C1
     slots:
     - c1__a
     attributes:
@@ -80,6 +82,8 @@ classes:
     name: C2
     definition_uri: https://example.org/this/C2
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - this:C2
     slots:
     - c2__a
     attributes:
@@ -92,6 +96,8 @@ classes:
     name: C3
     definition_uri: https://example.org/this/C3
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - this:C3
     slots:
     - c3__a
     attributes:

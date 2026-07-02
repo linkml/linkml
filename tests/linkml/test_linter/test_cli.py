@@ -309,7 +309,8 @@ slots:
         assert "Slot has name 'a slot'" in result.stdout
 
 
-def test_validate_schema(runner):
+def test_metamodel_validation_always_runs(runner):
+    """Metamodel validation now runs without --validate flag (#3259)."""
     with runner.isolated_filesystem():
         with open(SCHEMA_FILE, "w") as f:
             f.write(
@@ -321,10 +322,11 @@ classes:
 """
             )
 
-        result = runner.invoke(main, ["--validate", SCHEMA_FILE])
+        result = runner.invoke(main, [SCHEMA_FILE])
         assert result.exit_code == 2
         assert "error    In <root>: 'name' is a required property  (valid-schema)" in result.stdout
-        assert "warning  Class has name 'person'  (standard_naming)" in result.stdout
+        # Lint rules should NOT run when metamodel validation fails
+        assert "(standard_naming)" not in result.stdout
 
 
 def test_validate_schema_only(runner):
@@ -343,3 +345,95 @@ classes:
         assert result.exit_code == 2
         assert "error    In <root>: 'name' is a required property  (valid-schema)" in result.stdout
         assert "(standard_naming)" not in result.stdout
+
+
+def test_name_with_spaces_caught(runner):
+    """Spaces in schema name are caught by metamodel validation (#3260)."""
+    with runner.isolated_filesystem():
+        with open(SCHEMA_FILE, "w") as f:
+            f.write(
+                """
+id: http://example.org/test
+name: Input Schema
+imports:
+  - linkml:types
+default_range: string
+classes:
+  InClass:
+    tree_root: true
+    attributes:
+      foo:
+        description: test
+"""
+            )
+
+        result = runner.invoke(main, [SCHEMA_FILE])
+        assert result.exit_code == 2
+        assert "does not match" in result.stdout
+        assert "Input Schema" in result.stdout
+
+
+def test_relative_uri_for_id_caught(runner):
+    """Relative URIs in schema id are caught by metamodel validation (#3261)."""
+    with runner.isolated_filesystem():
+        with open(SCHEMA_FILE, "w") as f:
+            f.write(
+                """
+id: input_schema
+name: input_schema
+imports:
+  - linkml:types
+default_range: string
+classes:
+  InClass:
+    tree_root: true
+    attributes:
+      foo:
+        description: test
+"""
+            )
+
+        result = runner.invoke(main, [SCHEMA_FILE])
+        assert result.exit_code == 2
+        assert "is not a 'uri'" in result.stdout
+
+
+def test_imported_schema_validated(runner):
+    """Metamodel validation runs on imported schemas too (#2898)."""
+    with runner.isolated_filesystem():
+        with open("imported.yaml", "w") as f:
+            f.write(
+                """
+id: bad_import_no_name
+default_range: string
+classes:
+  ImportedClass:
+    attributes:
+      foo:
+        description: test
+"""
+            )
+
+        with open(SCHEMA_FILE, "w") as f:
+            f.write(
+                """
+id: https://example.org/main
+name: main
+imports:
+  - linkml:types
+  - imported
+default_range: string
+classes:
+  MainClass:
+    tree_root: true
+    description: Test.
+    is_a: ImportedClass
+    attributes:
+      bar:
+        description: test
+"""
+            )
+
+        result = runner.invoke(main, [SCHEMA_FILE])
+        assert result.exit_code == 2
+        assert "'name' is a required property" in result.stdout

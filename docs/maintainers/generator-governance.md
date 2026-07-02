@@ -682,6 +682,14 @@ Experimental generator for TerminusDB graph database schemas.
 | Corey Cox | @amc-corey-cox | 1 |
 | ialarmedalien | @ialarmedalien | 1 |
 
+### TypeDB Generator (`gen-typedb`)
+
+Converts a LinkML schema to a TypeQL 3.x `define` block for loading into a TypeDB graph database.
+
+| Contributor | GitHub | Lines |
+| --- | --- | --- |
+| Gully Burns | @gullyburns | — |
+
 ### TypeScript Generator (`gen-typescript`)
 
 Generates TypeScript interfaces and types from a LinkML schema.

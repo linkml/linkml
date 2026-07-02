@@ -18,9 +18,9 @@ from linkml.transformers.relmodel_transformer import (
     get_foreign_key_map,
     get_primary_key_attributes,
 )
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 from linkml_runtime.utils.schemaview import SchemaView
 
 DUMMY_CLASS = "c"

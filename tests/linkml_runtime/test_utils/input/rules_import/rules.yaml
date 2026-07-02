@@ -1,0 +1,19 @@
+id: https://example.org/rules-import/rules
+name: rules
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Organization:
+    rules:
+      - description: imported rule
+        preconditions:
+          slot_conditions:
+            min_salary:
+              maximum_value: 80000
+        postconditions:
+          slot_conditions:
+            score:
+              maximum_value: 0

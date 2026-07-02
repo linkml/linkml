@@ -157,3 +157,6 @@ classes:
       - mymetamodel:StrictElement
     description: A person, living or dead   ## must be provided
 ```
+
+See also the {ref}`howto-implements-instantiates` guide for a comparison of
+`instantiates`, `implements`, and classical inheritance (`is_a` / `mixins`).

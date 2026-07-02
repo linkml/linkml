@@ -145,7 +145,7 @@ class LogicalModelTransformer(ModelTransformer):
 
     To demonstrate, consider a simple schema with a class Person inheriting from Thing:
 
-    >>> from linkml.utils.schema_builder import SchemaBuilder
+    >>> from linkml_runtime.utils.schema_builder import SchemaBuilder
     >>> sb = SchemaBuilder()
     >>> _ = sb.add_class("Thing", slots=["id", "name"])
     >>> _ = sb.add_class("Person", slots={"age": {"range": "integer"}}, is_a="Thing")

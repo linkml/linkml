@@ -1,3 +1,5 @@
+import logging
+import os
 from enum import Enum
 
 import pytest
@@ -5,10 +7,16 @@ from rdflib import RDFS, SKOS, BNode, Graph, Literal, Namespace, URIRef
 from rdflib.collection import Collection
 from rdflib.namespace import OWL, RDF
 
+from linkml import METAMODEL_CONTEXT_URI
 from linkml.generators.owlgen import MetadataProfile, OwlSchemaGenerator
-from linkml.utils.schema_builder import SchemaBuilder
 from linkml_runtime.linkml_model import SlotDefinition
-from linkml_runtime.linkml_model.meta import PermissibleValue
+from linkml_runtime.linkml_model.meta import (
+    AnonymousClassExpression,
+    AnonymousSlotExpression,
+    ClassRule,
+    PermissibleValue,
+)
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 SYMP = Namespace("http://purl.obolibrary.org/obo/SYMP_")
 KS = Namespace("https://w3id.org/linkml/tests/kitchen_sink/")
@@ -100,6 +108,66 @@ def test_rdfs_profile(kitchen_sink_path):
         assert list(g.objects(c, SKOS.definition)) == []
     # check that definitions are present, and use the RDFS profile
     assert Literal("A person, living or dead") in g.objects(KS.Person, RDFS.comment)
+
+
+def test_rule_none_of_ignores_empty_slot_expression() -> None:
+    """Issue 3358: empty ``none_of`` operands in rules must not crash OWL generation."""
+
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("object_category", range="string"))
+    sb.add_slot(SlotDefinition("object_source", range="string"))
+    sb.add_class("MappingRule", tree_root=True, slots=["object_category", "object_source"])
+    sb.add_defaults()
+    sb.schema.classes["MappingRule"].rules = [
+        ClassRule(
+            preconditions=AnonymousClassExpression(
+                slot_conditions={
+                    "object_category": SlotDefinition(
+                        "object_category",
+                        none_of=[AnonymousSlotExpression()],
+                    )
+                }
+            ),
+            postconditions=AnonymousClassExpression(
+                slot_conditions={
+                    "object_source": SlotDefinition(
+                        "object_source",
+                        equals_string="source",
+                    )
+                }
+            ),
+        )
+    ]
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert (EX.MappingRule, RDF.type, OWL.Class) in g
+    assert list(g.objects(None, OWL.complementOf)) == []
+    assert list(g.objects(None, OWL.datatypeComplementOf)) == []
+
+
+@pytest.mark.network
+def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_path):
+    """Ambiguous attribute URIs should keep the minimal shared OWL identity."""
+    generated_owl = OwlSchemaGenerator(
+        input_path("linkml_issue_388.yaml"),
+        metaclasses=False,
+        skip_vacuous_min_zero_cardinality_axioms=False,
+        skip_vacuous_local_range_axioms=False,
+        consolidate_cardinality_axioms=False,
+    ).serialize(context=[METAMODEL_CONTEXT_URI])
+
+    owl_graph = Graph()
+    owl_graph.parse(data=generated_owl, format="turtle")
+    this_a = URIRef("https://example.org/this/a")
+    assert len(list(owl_graph.triples((this_a, None, None)))) == 1
 
 
 @pytest.mark.parametrize(
@@ -401,6 +469,25 @@ def _build_abstract_schema() -> SchemaBuilder:
     return sb
 
 
+def _input_path(name: str) -> str:
+    return os.path.join(os.path.dirname(__file__), "input", name)
+
+
+def _literal_values_in_complement_filler(g: Graph) -> set[str]:
+    """Return all literal values inside datatypeComplementOf owl:oneOf fillers.
+
+    Produces: neg_expr owl:datatypeComplementOf [a rdfs:Datatype; owl:oneOf ("Red")].
+    We traverse: datatypeComplementOf -> filler -> owl:oneOf -> RDF list -> literals.
+    """
+    values: set[str] = set()
+    for filler in g.objects(None, OWL.datatypeComplementOf):
+        for list_node in g.objects(filler, OWL.oneOf):
+            for v in Collection(g, list_node):
+                if isinstance(v, Literal):
+                    values.add(str(v))
+    return values
+
+
 def _union_members(g: Graph, cls_uri: URIRef) -> set[URIRef] | None:
     """Return the set of URIRefs in the owl:unionOf covering axiom for *cls_uri*.
 
@@ -458,6 +545,175 @@ def test_abstract_class_without_subclasses_gets_no_union_of_axiom():
     sb.add_defaults()
     g = _owl_graph(sb)
     assert _union_members(g, EX.Orphan) is None
+
+
+def test_abstract_class_with_no_children_emits_info(caplog):
+    """An abstract class with no children emits an info message about missing coverage.
+
+    When an abstract class has zero subclasses, no covering axiom can be
+    generated.  An info message alerts users that the class hierarchy is
+    incomplete — this is not a warning because abstract leaf classes are
+    a normal pattern in base schemas designed for downstream extension.
+
+    See: mgskjaeveland's review on linkml/linkml#3309.
+    See: matentzn's review on linkml/linkml#3309.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+
+    with caplog.at_level(logging.INFO, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # No covering axiom emitted
+    assert _union_members(g, EX.Orphan) is None
+
+    # An info message must be logged (not a warning)
+    assert any("has no children" in msg for msg in caplog.messages), (
+        "Expected an info message about abstract class with no children"
+    )
+    assert any("No covering axiom" in msg for msg in caplog.messages), (
+        "Info message should mention that no covering axiom will be generated"
+    )
+
+
+def test_no_children_info_suppressed_by_skip_flag(caplog):
+    """When --skip-abstract-class-as-unionof-subclasses is set, no info for zero children."""
+    sb = SchemaBuilder()
+    sb.add_class("Orphan", abstract=True)
+    sb.add_defaults()
+
+    with caplog.at_level(logging.INFO, logger="linkml.generators.owlgen"):
+        _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=True)
+
+    assert not any("has no children" in msg for msg in caplog.messages)
+
+
+def test_abstract_class_with_single_child_emits_warning(caplog):
+    """An abstract class with one child still gets a covering axiom but emits a warning.
+
+    Per OWL 2 semantics, the covering axiom with a single child creates an
+    equivalence (Parent ≡ Child).  This is logically correct but may surprise
+    users who plan to extend the ontology later.  The generator should warn
+    and recommend ``--skip-abstract-class-as-unionof-subclasses``.
+
+    See: W3C OWL 2 Primer §4.2 — bidirectional rdfs:subClassOf = equivalence.
+    See: mgskjaeveland's review on linkml/linkml#3309.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("GrandParent")
+    sb.add_class("Parent", is_a="GrandParent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # Covering axiom IS still emitted (single child → equivalence is OWL-correct).
+    # With one child, _union_of returns the child URI directly (no owl:unionOf wrapper),
+    # so the covering axiom materialises as Parent rdfs:subClassOf Child.
+    # Combined with Child rdfs:subClassOf Parent (from is_a), this is the equivalence.
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) in g, (
+        "Covering axiom should produce Parent rdfs:subClassOf Child for single-child case"
+    )
+    assert (EX.Child, RDFS.subClassOf, EX.Parent) in g
+    assert (EX.Parent, RDFS.subClassOf, EX.GrandParent) in g
+
+    # But a warning must be logged
+    assert any("only 1 direct child" in msg for msg in caplog.messages), (
+        "Expected a warning about single-child covering axiom creating equivalence"
+    )
+    assert any("--skip-abstract-class-as-unionof-subclasses" in msg for msg in caplog.messages), (
+        "Warning should recommend the skip flag"
+    )
+
+
+def test_single_child_warning_suppressed_by_skip_flag(caplog):
+    """When --skip-abstract-class-as-unionof-subclasses is set, no warning is emitted.
+
+    The skip flag suppresses covering axioms entirely, so the single-child
+    equivalence case never arises.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Parent", abstract=True)
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb, skip_abstract_class_as_unionof_subclasses=True)
+
+    # No covering axiom emitted
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) not in g
+    # No warning either
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
+def test_multiple_children_no_warning(caplog):
+    """An abstract class with 2+ children must NOT emit a warning.
+
+    The covering axiom is a proper union (not a degenerate equivalence),
+    so no warning is needed.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Animal", abstract=True)
+    sb.add_class("Dog", is_a="Animal")
+    sb.add_class("Cat", is_a="Animal")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # Covering axiom emitted (proper union)
+    members = _union_members(g, EX.Animal)
+    assert members == {EX.Dog, EX.Cat}
+
+    # No warning about children count
+    assert not any("has no children" in msg for msg in caplog.messages)
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
+def test_non_abstract_class_no_warning(caplog):
+    """A non-abstract class must NOT emit covering axiom warnings.
+
+    Covering axioms only apply to abstract classes.  Concrete classes
+    should be silently skipped regardless of child count.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Parent")  # not abstract
+    sb.add_class("Child", is_a="Parent")
+    sb.add_defaults()
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    # No covering axiom for non-abstract class
+    assert _union_members(g, EX.Parent) is None
+    assert (EX.Parent, RDFS.subClassOf, EX.Child) not in g
+
+    # No warning either
+    assert not any("has no children" in msg for msg in caplog.messages)
+    assert not any("only 1 direct child" in msg for msg in caplog.messages)
+
+
+def test_abstract_class_with_only_mixin_children_emits_info(caplog):
+    """An abstract class whose only children are via mixins (not is_a) gets the no-children info.
+
+    The covering axiom only considers direct is_a children (not mixins).
+    If an abstract class has mixin children but no is_a children, it should
+    log an info message about having no children for covering axiom purposes.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Base", abstract=True)
+    sb.add_class("MixinChild", mixins=["Base"])
+    sb.add_defaults()
+
+    with caplog.at_level(logging.INFO, logger="linkml.generators.owlgen"):
+        g = _owl_graph(sb)
+
+    assert _union_members(g, EX.Base) is None
+    assert any("has no children" in msg for msg in caplog.messages), (
+        "Abstract class with only mixin children should log info about no is_a children"
+    )
 
 
 @pytest.mark.parametrize("skip", [False, True])
@@ -758,3 +1014,102 @@ def test_children_are_mutually_disjoint(
         members_node = list(g.objects(disjoint_nodes[0], OWL.members))[0]
         members = set(Collection(g, members_node))
         assert members == {EX[name] for name in child_names}
+
+
+# equals_string on an enum-ranged slot (is_literal=None) must not silently
+# drop the constraint; it should produce an owl:oneOf expression with a Literal.
+
+
+def test_equals_string_enum_none_of_no_crash():
+    """Regression: gen-owl on owlgen/slot_conditions.yaml must not raise an AssertionError.
+
+    The bug was that equals_string on an enum-ranged slot produced is_literal=None,
+    which caused the constraint to be dropped, leaving None in the expression list
+    and ultimately triggering rdflib's assertion inside graph.add().
+    """
+    owl = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml")).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+    # Schema parses without error and the Item class is present.
+    assert any(str(s).endswith("Item") for s, _, _ in g.triples((None, RDF.type, OWL.Class)))
+
+
+def test_equals_string_enum_slot_emits_one_of_literal():
+    """equals_string on an enum-ranged slot must produce an owl:oneOf with a Literal.
+
+    Before the fix, is_literal=None caused a warning and the expression was skipped.
+    After the fix, the value is treated like equals_string_in (single-item list).
+    """
+    owl = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml")).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+    assert "Red" in _literal_values_in_complement_filler(g), (
+        "Expected owl:oneOf with literal 'Red' for equals_string on enum-ranged slot"
+    )
+
+
+def test_equals_string_enum_produces_complement_expression():
+    """A none_of rule using equals_string on an enum slot must produce a complement axiom.
+
+    The complement (owl:complementOf / owl:datatypeComplementOf) wraps the oneOf
+    expression, expressing "value is not Red".
+    """
+    owl = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml")).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+    # There must be at least one owl:datatypeComplementOf or owl:complementOf triple.
+    complement_triples = list(g.triples((None, OWL.datatypeComplementOf, None))) + list(
+        g.triples((None, OWL.complementOf, None))
+    )
+    assert complement_triples, "Expected an owl:complementOf/datatypeComplementOf axiom from none_of rule"
+
+
+# _complement_of_union_of must handle None operands gracefully
+
+
+def test_complement_of_union_of_filters_none(caplog):
+    """_complement_of_union_of([None]) must return None and log a warning, not crash.
+
+    Without the guard, [None] is passed to _union_of which propagates None into
+    graph.add(), raising an AssertionError from rdflib.
+    """
+    import logging
+
+    gen = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml"))
+    gen.as_graph()  # initialises self.graph
+
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        result = gen._complement_of_union_of([None])
+
+    assert result is None, "_complement_of_union_of([None]) should return None"
+    assert any("None" in rec.message or "complement" in rec.message.lower() for rec in caplog.records), (
+        "Expected a warning about unresolvable complement operands"
+    )
+
+
+@pytest.mark.parametrize(
+    "exprs,expect_none",
+    [
+        ([None], True),
+        ([None, None], True),
+    ],
+)
+def test_complement_of_union_of_all_none_returns_none(exprs, expect_none):
+    """_complement_of_union_of with only None operands must return None without crashing."""
+    gen = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml"))
+    gen.as_graph()
+    result = gen._complement_of_union_of(exprs)
+    assert (result is None) == expect_none
+
+
+def test_complement_of_union_of_mixed_none_filters_silently():
+    """_complement_of_union_of with some valid and some None operands uses only valid ones."""
+    from rdflib import BNode
+
+    gen = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml"))
+    gen.as_graph()
+    valid_node = URIRef("http://example.org/Foo")
+    result = gen._complement_of_union_of([None, valid_node])
+    # Should succeed and return a BNode (the complement expression).
+    assert result is not None
+    assert isinstance(result, BNode)

@@ -442,6 +442,8 @@ classes:
     name: Thing
     definition_uri: https://w3id.org/linkml/examples/personinfo/Thing
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:Thing
     slots:
     - id
     - full_name
@@ -450,7 +452,7 @@ classes:
     name: Person
     definition_uri: https://w3id.org/linkml/examples/personinfo/Person
     from_schema: https://w3id.org/linkml/examples/personinfo
-    mappings:
+    exact_mappings:
     - sdo:Person
     is_a: Thing
     slots:
@@ -479,6 +481,8 @@ classes:
     name: Organization
     definition_uri: https://w3id.org/linkml/examples/personinfo/Organization
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:Organization
     is_a: Thing
     slots:
     - id
@@ -496,6 +500,8 @@ classes:
     name: GeoObject
     definition_uri: https://w3id.org/linkml/examples/personinfo/GeoObject
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:GeoObject
     is_a: Thing
     slots:
     - id
@@ -520,6 +526,8 @@ classes:
     name: GeoAge
     definition_uri: https://w3id.org/linkml/examples/personinfo/GeoAge
     from_schema: https://w3id.org/linkml/examples/personinfo
+    exact_mappings:
+    - ex:GeoAge
     slots:
     - geoAge__unit
     - geoAge__value

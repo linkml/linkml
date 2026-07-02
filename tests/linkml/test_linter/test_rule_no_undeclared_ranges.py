@@ -362,6 +362,49 @@ types:
 
 
 @pytest.mark.parametrize("range_type", ["any_of", "exactly_one_of"])
+def test_expression_range_without_top_level_range_no_false_positive(range_type: str) -> None:
+    """A slot whose range is expressed only through a boolean expression (no top-level
+    ``range``) must not be reported as having an undeclared ``None`` range (#3477)."""
+    test_schema = f"""id: http://example.org/test_undeclared_ranges
+
+classes:
+  Foo:
+    attributes:
+      bar:
+        {range_type}:
+          - range: integer
+          - range: string
+
+types:
+  integer:
+  string:
+"""
+    assert not check_schema(test_schema)
+
+
+@pytest.mark.parametrize("range_type", ["any_of", "exactly_one_of"])
+def test_expression_range_without_top_level_range_still_flags_undefined(range_type: str) -> None:
+    """An undefined range inside a boolean expression is still flagged by name even
+    when the slot has no top-level ``range`` — and never reported as ``None`` (#3477)."""
+    test_schema = f"""id: http://example.org/test_undeclared_ranges
+
+classes:
+  Foo:
+    attributes:
+      bar:
+        {range_type}:
+          - range: string
+          - range: spreadsheet
+
+types:
+  string:
+"""
+    problems = check_schema(test_schema)
+    assert len(problems) == 1
+    assert problems[0].message == "Class 'Foo' slot 'bar' range 'spreadsheet' is not defined."
+
+
+@pytest.mark.parametrize("range_type", ["any_of", "exactly_one_of"])
 def test_undeclared_ranges_Any_in_slots(range_type: str) -> None:
     """Test that declaring an 'Any' range with undefined types throws an error.
 

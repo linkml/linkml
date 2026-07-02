@@ -7,6 +7,7 @@ from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.openapigen import OpenApiGenerator
 from linkml.generators.owlgen import OwlSchemaGenerator
 from linkml.generators.panderagen import PanderaDataframeGenerator, PolarsSchemaDataframeGenerator
 from linkml.generators.pydanticgen import PydanticGenerator
@@ -18,6 +19,7 @@ from linkml.generators.shexgen import ShExGenerator
 from linkml.generators.sqlalchemygen import SQLAlchemyGenerator
 from linkml.generators.sqltablegen import SQLTableGenerator
 from linkml.generators.sqlvalidationgen import SQLValidationGenerator
+from linkml.generators.typedbgen import TypeDBGenerator
 
 __all__ = [
     "csvgen",
@@ -30,6 +32,7 @@ __all__ = [
     "jsonldgen",
     "jsonschemagen",
     "namespacegen",
+    "openapigen",
     "owlgen",
     "plantumlgen",
     "protogen",
@@ -40,7 +43,9 @@ __all__ = [
     "shaclgen",
     "sssomgen",
     "summarygen",
+    "typedbgen",
     "yamlgen",
+    "OpenApiGenerator",
     "OwlSchemaGenerator",
     "PydanticGenerator",
     "PanderaDataframeGenerator",
@@ -57,6 +62,7 @@ __all__ = [
     "SQLTableGenerator",
     "SQLValidationGenerator",
     "RDFGenerator",
+    "TypeDBGenerator",
 ]
 
 # TODO: deprecate usage of these

@@ -1,3 +1,8 @@
+---
+search:
+  boost: {% if element.deprecated %}0.5{% else %}10.0{% endif %}
+---
+
 {%- if element.title %}
     {%- set title = element.title ~ ' (' ~ element.name ~ ')' -%}
 {%- else %}
@@ -33,6 +38,8 @@
 _{{ element_description_line }}_
 {% endfor %}
 {% endif %}
+
+<div data-search-exclude markdown="1">
 
 {% if element.abstract %}
 * __NOTE__: this is an abstract class and should not be instantiated directly
@@ -224,20 +231,21 @@ The class must not satisfy any of:
 
 | Rule Applied | Preconditions | Postconditions | Elseconditions |
 |--------------|---------------|----------------|----------------|
-{% for key in rule.preconditions|default({}) -%}
+{%- set _pre = rule.preconditions or {} %}
+{%- set _post = rule.postconditions or {} %}
+{%- set _else = rule.elseconditions or {} %}
+{%- set _all_keys = ((_pre.keys()|list) + (_post.keys()|list) + (_else.keys()|list))|unique %}
+{% for key in _all_keys -%}
 | {{ key }} |
-{%- if rule.preconditions[key] is defined -%}
-```{{ rule.preconditions[key] }}```
-{%- else -%}
-{% endif %} |
-{%- if rule.postconditions and rule.postconditions[key] is defined -%}
-```{{ rule.postconditions[key] }}```
-{%- else -%}
-{% endif %} |
-{%- if rule.elseconditions and rule.elseconditions[key] is defined -%}
-```{{ rule.elseconditions[key] }}```
-{%- else -%}
-{% endif %} |
+{%- if _pre[key] is defined and _pre[key] -%}
+```{{ _pre[key] }}```
+{%- endif %} |
+{%- if _post[key] is defined and _post[key] -%}
+```{{ _post[key] }}```
+{%- endif %} |
+{%- if _else[key] is defined and _else[key] -%}
+```{{ _else[key] }}```
+{%- endif %} |
 {% endfor %}
 
 {% endfor %}
@@ -279,3 +287,5 @@ The class must not satisfy any of:
 {%- if footer -%}
 {{ footer }}
 {%- endif -%}
+
+</div>

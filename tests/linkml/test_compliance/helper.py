@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from copy import copy, deepcopy
@@ -30,6 +31,7 @@ from linkml_runtime.linkml_model import meta as meta
 from linkml_runtime.loaders import rdflib_loader
 from linkml_runtime.utils.compile_python import compile_python
 from linkml_runtime.utils.introspection import package_schemaview
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 from .dataframe_helper import check_data_pandera
@@ -52,6 +54,15 @@ from linkml.generators import (
     ShExGenerator,
     sqlalchemygen,
 )
+
+try:
+    from linkml.generators.bigquerygen import BigQueryGenerator
+
+    _BQ_AVAILABLE = True
+except ImportError:
+    BigQueryGenerator = None  # type: ignore[assignment,misc]
+    _BQ_AVAILABLE = False
+
 from linkml.utils.generator import Generator
 from linkml.utils.sqlutils import SQLStore
 from linkml.validator import JsonschemaValidationPlugin, Validator
@@ -83,12 +94,13 @@ PANDERA_POLARS_CLASS = "pandera_polars_class"
 DATAFRAME_POLARS_SCHEMA = "dataframe_polars_schema"
 SQL_DDL_SQLITE = "sql_ddl_sqlite"
 SQL_DDL_POSTGRES = "sql_ddl_postgres"
+SQL_DDL_BIGQUERY = "sql_ddl_bigquery"
 OWL = "owl"
 GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, Any]]] = {
     PYDANTIC: generators.PydanticGenerator,
     PYTHON_DATACLASSES: generators.PythonGenerator,
     JAVA: generators.JavaGenerator,
-    JSON_SCHEMA: generators.JsonSchemaGenerator,
+    JSON_SCHEMA: (generators.JsonSchemaGenerator, {"not_closed": False}),
     SHACL: generators.ShaclGenerator,
     SHEX: generators.ShExGenerator,
     JSONLD: generators.JSONLDGenerator,
@@ -114,6 +126,9 @@ GENERATORS: dict[FRAMEWORK, type[Generator] | tuple[type[Generator], dict[str, A
         },
     ),
 }
+
+if _BQ_AVAILABLE:
+    GENERATORS[SQL_DDL_BIGQUERY] = (BigQueryGenerator, {"dataset": "compliance_test"})
 
 
 class ValidationBehavior(str, enum.Enum):
@@ -978,7 +993,7 @@ def _convert_data_to_rdf(schema: dict, instance: dict, target_class: str, ttl_pa
             "P": "http://example.org/P/",
         },
     )
-    ttl_output = g.serialize(format="turtle")
+    ttl_output = canonicalize_rdf_graph(g, output_format="turtle")
     g = rdflib.Graph()
     g.parse(data=ttl_output, format="turtle")
     _roundtripped = rdflib_loader.load(ttl_output, target_class=py_cls, schemaview=schemaview)
@@ -1013,6 +1028,23 @@ def robot_is_on_path():
     return shutil.which("robot") is not None
 
 
+@lru_cache
+def _warn_robot_missing_for_owl_compliance() -> None:
+    """
+    Emit one visible warning when OWL coherency checks are skipped.
+
+    The compliance suite currently treats missing ROBOT as an untested path.
+    Make that explicit in pytest output so CI and local runs do not silently
+    look stronger than they are.
+    """
+    warnings.warn(
+        "ROBOT is not on PATH; OWL coherency checks are being marked UNTESTED. "
+        "Install ROBOT to exercise OWL reasoner-backed compliance validation.",
+        pytest.PytestWarning,
+        stacklevel=2,
+    )
+
+
 def robot_check_coherency(
     data_path: str | Path, ontology_path: str | Path, output_path: str | Path = None
 ) -> bool | None:
@@ -1028,6 +1060,7 @@ def robot_check_coherency(
     :return:
     """
     if not robot_is_on_path():
+        _warn_robot_missing_for_owl_compliance()
         return None
     if not ontology_path:
         return None

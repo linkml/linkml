@@ -20,6 +20,7 @@ from linkml._version import __version__
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.utils.generator import Generator, shared_arguments
 from linkml_runtime.linkml_model import SchemaDefinition
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 
 @dataclass
@@ -44,7 +45,8 @@ class RDFGenerator(Generator):
         super().__post_init__()
 
     def _data(self, g: Graph) -> str:
-        return g.serialize(format="turtle" if self.format == "ttl" else self.format)
+        fmt = "turtle" if self.format == "ttl" else self.format
+        return canonicalize_rdf_graph(g, output_format=fmt)
 
     def end_schema(self, output: str | None = None, context: str = None, **_) -> str:
         gen = JSONLDGenerator(
@@ -68,15 +70,7 @@ class RDFGenerator(Generator):
             prefix=True,
         )
         if output:
-            # Binary-safe when -o/--output is used:
-            # delegate to RDFLib (Graph.serialize(destination=..., format=...)).
-            # Serializers that produce bytes write directly to the file; stdout stays empty.
-            fmt = "turtle" if self.format == "ttl" else self.format
-            try:
-                out = graph.serialize(format=fmt)
-            except UnicodeDecodeError:
-                graph.serialize(destination=output, format=fmt)
-                return ""
+            out = self._data(graph)
             with open(output, "w", encoding="UTF-8") as outf:
                 outf.write(out)
             return out

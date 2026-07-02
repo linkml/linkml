@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 # version: 4.2.5
 enum AgentTypeEnum
   {
@@ -1712,7 +1712,7 @@ type ChemicalToDiseaseOrPhenotypicFeatureAssociation implements ChemicalToEntity
 
 interface ChemicalToEntityAssociationMixin
   {
-    subject: NamedThing!
+    subject: ChemicalEntityOrGeneOrGeneProduct!
     predicate: PredicateType!
     object: NamedThing!
   }
@@ -2617,7 +2617,7 @@ type DrugLabel
 
 interface DrugToEntityAssociationMixin
   {
-    subject: NamedThing!
+    subject: Drug!
     predicate: PredicateType!
     object: NamedThing!
   }

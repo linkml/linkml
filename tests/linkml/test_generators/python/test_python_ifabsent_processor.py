@@ -520,6 +520,94 @@ def test_default_ns_returns_none():
     )
 
 
+# Build a metamodel-shaped schema (id == META_URI) so the processor's metamodel
+# special-case fires. Mirrors the meta.yaml entries for these slots: each one is
+# the trigger case that was cross-contaminating user instances in meta.py before
+# the fix (SlotDefinition.range = "string", SlotDefinition.slot_uri = "linkml:slot_uri",
+# ClassDefinition.class_uri = "linkml:ClassDefinition", EnumDefinition.enum_uri = "linkml:EnumDefinition").
+metamodel_schema = """
+id: https://w3id.org/linkml/meta
+name: meta
+prefixes:
+  linkml: https://w3id.org/linkml/
+default_prefix: linkml
+default_range: string
+classes:
+  SlotDefinition:
+    attributes:
+      range:
+        range: string
+        ifabsent: default_range
+      slot_uri:
+        range: uriorcurie
+        ifabsent: slot_curie
+      direct_slot_uri:
+        range: uriorcurie
+        ifabsent: slot_uri
+  ClassDefinition:
+    attributes:
+      class_uri:
+        range: uriorcurie
+        ifabsent: class_curie
+      direct_class_uri:
+        range: uriorcurie
+        ifabsent: class_uri
+  EnumDefinition:
+    attributes:
+      enum_uri:
+        range: uriorcurie
+        ifabsent: class_curie
+types:
+  string:
+    uri: xsd:string
+    base: str
+  uriorcurie:
+    uri: xsd:anyURI
+    base: str
+"""
+
+
+@pytest.mark.parametrize(
+    "cls_name,slot_name",
+    [
+        ("SlotDefinition", "range"),  # ifabsent: default_range
+        ("SlotDefinition", "slot_uri"),  # ifabsent: slot_curie
+        ("SlotDefinition", "direct_slot_uri"),  # ifabsent: slot_uri
+        ("ClassDefinition", "class_uri"),  # ifabsent: class_curie
+        ("ClassDefinition", "direct_class_uri"),  # ifabsent: class_uri
+        ("EnumDefinition", "enum_uri"),  # ifabsent: class_curie
+    ],
+)
+def test_metamodel_runtime_computed_ifabsent_returns_none(cls_name, slot_name):
+    """On the metamodel schema, runtime-computed ifabsent directives must not be
+    baked as static dataclass defaults. SchemaView.induced_slot() resolves these
+    per-instance at load time; baking would cross-contaminate every user-schema
+    slot/class with the metamodel's own URIs/range."""
+    schema_view = SchemaView(metamodel_schema)
+    processor = PythonIfAbsentProcessor(schema_view)
+    cls = schema_view.all_classes()[ClassDefinitionName(cls_name)]
+    slot = cls.attributes[slot_name]
+    assert processor.process_slot(slot, cls) is None
+
+
+def test_runtime_computed_ifabsent_still_bakes_for_user_schemas():
+    """For non-metamodel schemas, the runtime-computed ifabsent directives must
+    still bake as static defaults — this is user-facing behavior (see test_issue_675)."""
+    schema = (
+        base_schema
+        + """
+      - name: my_class_curie
+        range: curie
+        ifabsent: class_curie
+    """
+    )
+    schema_view = SchemaView(schema)
+    processor = PythonIfAbsentProcessor(schema_view)
+    cls = schema_view.all_classes()[ClassDefinitionName("Student")]
+    slot = cls.attributes["my_class_curie"]
+    assert processor.process_slot(slot, cls) == '"ex:Student"'
+
+
 @pytest.mark.parametrize("cls_name", ["Inheritance", "Base"])
 def test_custom_types(cls_name, input_path):
     """

@@ -45,6 +45,7 @@ class BiolinkNameSpace:
         CurieNamespace('linkml', 'https://w3id.org/linkml/'),
         CurieNamespace('pav', 'http://purl.org/pav/'),
         CurieNamespace('prov', 'http://www.w3.org/ns/prov#'),
+        CurieNamespace('qudt', 'http://qudt.org/vocab/quantitykind/'),
         CurieNamespace('schema', 'http://schema.org/'),
         CurieNamespace('skos', 'http://www.w3.org/2004/02/skos/core#'),
         CurieNamespace('xsd', 'http://www.w3.org/2001/XMLSchema#'),
