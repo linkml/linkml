@@ -1942,13 +1942,32 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the CURIE or URI for a schema element.</span>
 
-<span class="sd">        If the schema defines a specific URI, this is used;</span>
-<span class="sd">        otherwise this is constructed from the default prefix combined with the element name.</span>
+<span class="sd">        If the schema declares a specific URI for the element (e.g. ``class_uri``,</span>
+<span class="sd">        ``slot_uri``, ``type.uri``, ``enum_uri``), that declared URI is used.</span>
+<span class="sd">        Otherwise — or when ``native=True`` — the *native* URI is constructed from</span>
+<span class="sd">        the schema&#39;s ``default_prefix`` combined with the normalized element name.</span>
+
+<span class="sd">        When ``native=True`` this method returns the element&#39;s ``definition_uri``</span>
+<span class="sd">        value (as a CURIE, or expanded to a full URI when ``expand=True``).  The</span>
+<span class="sd">        name-casing convention matches</span>
+<span class="sd">        :func:`linkml.utils.mergeutils.set_from_schema`:</span>
+
+<span class="sd">        * **Slots** – :func:`~linkml_runtime.utils.formatutils.underscore`</span>
+<span class="sd">        * **All other elements** (classes, types, enums, subsets) –</span>
+<span class="sd">          :func:`~linkml_runtime.utils.formatutils.camelcase`</span>
+
+<span class="sd">        When ``native=False`` (the default) the same casing is used for the native</span>
+<span class="sd">        fallback (applied when the element has no declared URI), but the element&#39;s</span>
+<span class="sd">        own declared URI takes precedence.</span>
 
 <span class="sd">        :param element: name of schema element</span>
 <span class="sd">        :param imports: include imports closure</span>
-<span class="sd">        :param native: return the native CURIE or URI rather than what is declared in the uri slot</span>
-<span class="sd">        :param expand: expand the CURIE to a URI; defaults to False</span>
+<span class="sd">        :param native: return the native URI (``definition_uri`` semantics) rather</span>
+<span class="sd">            than what is declared in the element&#39;s URI slot</span>
+<span class="sd">        :param expand: expand the result from a CURIE to a full URI;</span>
+<span class="sd">            defaults to ``False``</span>
+<span class="sd">        :param use_element_type: when constructing the native URI, insert the</span>
+<span class="sd">            element type as a path segment (e.g. ``core:class/TestClass``)</span>
 <span class="sd">        :return: URI or CURIE as a string</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_element</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
@@ -1961,13 +1980,15 @@
             <span class="n">e_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">EnumDefinition</span><span class="p">):</span>
             <span class="n">uri</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">enum_uri</span>
-            <span class="n">e_name</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">e_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">TypeDefinition</span><span class="p">):</span>
             <span class="n">uri</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">uri</span>
-            <span class="n">e_name</span> <span class="o">=</span> <span class="n">underscore</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">e_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">SubsetDefinition</span><span class="p">):</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">e_name</span> <span class="o">=</span> <span class="n">camelcase</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Must be class or slot or type: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="c1"># should be a TypeError</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Must be class, slot, type, enum, or subset: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">uri</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">native</span><span class="p">:</span>

@@ -1311,15 +1311,33 @@ the id_prefixes mapped to that element.</p>
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.get_uri">
 <span class="sig-name descname"><span class="pre">get_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ElementName</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">native</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_element_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.get_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.get_uri" title="Link to this definition">¶</a></dt>
 <dd><p>Return the CURIE or URI for a schema element.</p>
-<p>If the schema defines a specific URI, this is used;
-otherwise this is constructed from the default prefix combined with the element name.</p>
+<p>If the schema declares a specific URI for the element (e.g. <code class="docutils literal notranslate"><span class="pre">class_uri</span></code>,
+<code class="docutils literal notranslate"><span class="pre">slot_uri</span></code>, <code class="docutils literal notranslate"><span class="pre">type.uri</span></code>, <code class="docutils literal notranslate"><span class="pre">enum_uri</span></code>), that declared URI is used.
+Otherwise — or when <code class="docutils literal notranslate"><span class="pre">native=True</span></code> — the <em>native</em> URI is constructed from
+the schema’s <code class="docutils literal notranslate"><span class="pre">default_prefix</span></code> combined with the normalized element name.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">native=True</span></code> this method returns the element’s <code class="docutils literal notranslate"><span class="pre">definition_uri</span></code>
+value (as a CURIE, or expanded to a full URI when <code class="docutils literal notranslate"><span class="pre">expand=True</span></code>).  The
+name-casing convention matches
+<a class="reference internal" href="../code/utils.html#linkml.utils.mergeutils.set_from_schema" title="linkml.utils.mergeutils.set_from_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">linkml.utils.mergeutils.set_from_schema()</span></code></a>:</p>
+<ul class="simple">
+<li><p><strong>Slots</strong> – <code class="xref py py-func docutils literal notranslate"><span class="pre">underscore()</span></code></p></li>
+<li><p><strong>All other elements</strong> (classes, types, enums, subsets) –
+<code class="xref py py-func docutils literal notranslate"><span class="pre">camelcase()</span></code></p></li>
+</ul>
+<p>When <code class="docutils literal notranslate"><span class="pre">native=False</span></code> (the default) the same casing is used for the native
+fallback (applied when the element has no declared URI), but the element’s
+own declared URI takes precedence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element</strong> – name of schema element</p></li>
 <li><p><strong>imports</strong> – include imports closure</p></li>
-<li><p><strong>native</strong> – return the native CURIE or URI rather than what is declared in the uri slot</p></li>
-<li><p><strong>expand</strong> – expand the CURIE to a URI; defaults to False</p></li>
+<li><p><strong>native</strong> – return the native URI (<code class="docutils literal notranslate"><span class="pre">definition_uri</span></code> semantics) rather
+than what is declared in the element’s URI slot</p></li>
+<li><p><strong>expand</strong> – expand the result from a CURIE to a full URI;
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>use_element_type</strong> – when constructing the native URI, insert the
+element type as a path segment (e.g. <code class="docutils literal notranslate"><span class="pre">core:class/TestClass</span></code>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
