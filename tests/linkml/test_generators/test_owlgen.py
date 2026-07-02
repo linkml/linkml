@@ -153,6 +153,54 @@ def test_rule_none_of_ignores_empty_slot_expression() -> None:
     assert list(g.objects(None, OWL.datatypeComplementOf)) == []
 
 
+def test_add_root_classes_declares_grouping_classes() -> None:
+    """``add_root_classes`` must declare the metamodel grouping classes it references.
+
+    Regression test for https://github.com/linkml/linkml/issues/3605. With ``add_root_classes``,
+    enums, classes, and permissible values are made ``rdfs:subClassOf`` ``linkml:EnumDefinition`` /
+    ``linkml:ClassDefinition`` / ``linkml:PermissibleValue``. Previously those parents were never
+    declared as ``owl:Class``, so RDF-only consumers (such as OLS) treated them as dangling
+    references and dropped the grouping. Each referenced grouping class must now be declared as an
+    ``owl:Class`` with an ``rdfs:label`` sourced from the metamodel.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=True,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    for grouping_uri in (LINKML.EnumDefinition, LINKML.ClassDefinition, LINKML.PermissibleValue):
+        assert (grouping_uri, RDF.type, OWL.Class) in g, f"{grouping_uri} not declared as owl:Class"
+        assert next(g.objects(grouping_uri, RDFS.label), None) is not None, f"{grouping_uri} missing rdfs:label"
+
+
+def test_grouping_classes_not_declared_without_add_root_classes() -> None:
+    """Grouping-class declarations are emitted only when ``add_root_classes`` is set."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert (LINKML.EnumDefinition, RDF.type, OWL.Class) not in g
+
+
 @pytest.mark.network
 def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_path):
     """Ambiguous attribute URIs should keep the minimal shared OWL identity."""
