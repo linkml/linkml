@@ -1,5 +1,6 @@
 import logging
 import os
+import string
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -14,11 +15,48 @@ from linkml.generators.common.subproperty import get_subproperty_values, is_uri_
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shacl.shacl_ifabsent_processor import ShaclIfAbsentProcessor
 from linkml.utils.generator import Generator, shared_arguments
+from linkml.utils.language_tags import LanguageTagResolver
 from linkml_runtime.linkml_model.meta import ClassDefinition, ElementName
 from linkml_runtime.utils.formatutils import underscore
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
+
+
+MESSAGE_TEMPLATE_FIELDS = ("name", "title", "description", "comments", "class", "path")
+"""Placeholders permitted in ``--message-template`` (see :attr:`ShaclGenerator.message_template`)."""
+
+
+def _validate_message_template(template: str) -> None:
+    """Validate a ``--message-template`` string, failing fast with a helpful error.
+
+    Only the bare placeholders in :data:`MESSAGE_TEMPLATE_FIELDS` are permitted.
+    Attribute access (``{name.foo}``), indexing (``{name[0]}``), positional fields
+    (``{0}`` / ``{}``), conversions (``{name!r}``) and format specs (``{name:>5}``)
+    are all rejected, as are unbalanced braces. Validation runs once, up front, so a
+    malformed template is caught even for schemas that contain no slots.
+
+    :param template: the raw template string.
+    :raises ValueError: if the template contains an unsupported placeholder or is
+        otherwise malformed.
+    """
+    allowed = frozenset(MESSAGE_TEMPLATE_FIELDS)
+    hint = "Allowed placeholders: " + ", ".join(f"{{{name}}}" for name in MESSAGE_TEMPLATE_FIELDS)
+    try:
+        parsed = list(string.Formatter().parse(template))
+    except ValueError as exc:
+        raise ValueError(f"Invalid placeholder in --message-template ({exc}). {hint}") from None
+    for _literal_text, field_name, format_spec, conversion in parsed:
+        if field_name is None:
+            continue
+        if field_name not in allowed:
+            raise ValueError(f"Invalid placeholder '{{{field_name}}}' in --message-template. {hint}")
+        if conversion is not None or format_spec:
+            raise ValueError(
+                f"Invalid placeholder '{{{field_name}}}' in --message-template: "
+                f"conversions and format specs are not supported. {hint}"
+            )
 
 
 @dataclass
@@ -74,6 +112,36 @@ class ShaclGenerator(Generator):
     """
     expand_subproperty_of: bool = True
     """If True, expand subproperty_of to sh:in constraints with slot descendants"""
+
+    default_language: str | None = None
+    """Default BCP 47 language tag for human-readable string literals.
+
+    When set, ``sh:name``, ``sh:description``, ``rdfs:label``, and
+    ``rdfs:comment`` literals are emitted with the specified language tag.
+    Conforms to :rfc:`5646` (BCP 47).
+    """
+
+    message_template: str | None = None
+    """Template for ``sh:message`` on property shapes.
+
+    When set, each property shape receives an ``sh:message`` literal built from
+    this template.  The following placeholders are expanded:
+
+    * ``{name}`` — the slot's LinkML name, exactly as written in the schema
+    * ``{title}`` — the slot title (human-readable), falls back to *name*
+    * ``{description}`` — the slot description, falls back to empty string
+    * ``{comments}`` — the slot comments joined with ``; ``, falls back to empty string
+    * ``{class}`` — the enclosing class name
+    * ``{path}``  — the fully-expanded property IRI
+
+    Example: ``"Validation of {name} failed!"`` →
+    ``sh:message "Validation of has_speed failed!"``
+
+    If ``default_language`` is set the literal is tagged with it. The message text
+    is a single template, so it deliberately follows ``default_language`` only and
+    ignores any per-slot ``in_language``.
+    """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -81,8 +149,26 @@ class ShaclGenerator(Generator):
     visit_all_class_slots = False
     uses_schemaloader = False
 
+    def _resolve_language(self, element=None) -> str | None:
+        """Return the BCP 47 language tag for *element*, or ``None``.
+
+        Delegates to :class:`linkml.utils.language_tags.LanguageTagResolver`.
+        Resolution order is element-level ``in_language`` first, then the
+        generator-level default.
+        """
+        return self._language_resolver.resolve(element)
+
     def __post_init__(self) -> None:
+        # Resolver must be assigned before ``super().__post_init__()`` so that
+        # any hook the parent invokes during initialisation can safely call
+        # ``_resolve_language``. The resolver also validates the default tag
+        # once here; per-element tags are validated lazily, with at most one
+        # warning per distinct malformed tag.
+        self._language_resolver = LanguageTagResolver(self.default_language)
         super().__post_init__()
+        self.message_template = (self.message_template or "").strip() or None
+        if self.message_template is not None:
+            _validate_message_template(self.message_template)
         self.generate_header()
 
     def generate_header(self) -> str:
@@ -93,8 +179,8 @@ class ShaclGenerator(Generator):
 
     def serialize(self, **args) -> str:
         g = self.as_graph()
-        data = g.serialize(format="turtle" if self.format in ["owl", "ttl"] else self.format)
-        return data
+        fmt = "turtle" if self.format in ["owl", "ttl"] else self.format
+        return canonicalize_rdf_graph(g, output_format=fmt)
 
     def as_graph(self) -> Graph:
         sv = self.schemaview
@@ -132,13 +218,13 @@ class ShaclGenerator(Generator):
             if c.title is not None:
                 # Use rdfs:label for NodeShape titles per SHACL spec.
                 # sh:name has rdfs:domain of sh:PropertyShape. See issue #3059.
-                shape_pv(RDFS.label, Literal(c.title))
+                shape_pv(RDFS.label, Literal(c.title, lang=self._resolve_language(c)))
             if c.description is not None:
                 # Use rdfs:comment for NodeShape descriptions per SHACL spec.
                 # sh:description has rdfs:domain of sh:PropertyShape, so using it
                 # on NodeShapes causes RDFS-aware validators to incorrectly infer
                 # the NodeShape is also a PropertyShape. See issue #3059.
-                shape_pv(RDFS.comment, Literal(c.description))
+                shape_pv(RDFS.comment, Literal(c.description, lang=self._resolve_language(c)))
 
             shape_pv(SH.ignoredProperties, self._build_ignored_properties(g, c))
 
@@ -163,11 +249,31 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v)))
 
+                def prop_pv_text(p, v):
+                    if v is not None:
+                        g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
+
                 prop_pv(SH.path, slot_uri)
                 prop_pv_literal(SH.order, order)
                 order += 1
-                prop_pv_literal(SH.name, s.title)
-                prop_pv_literal(SH.description, s.description)
+                prop_pv_text(SH.name, s.title)
+                prop_pv_text(SH.description, s.description)
+
+                # sh:message from a user template. The template is validated once in
+                # __post_init__, so expansion here cannot raise. The message is a single
+                # template string, so it is tagged with the generator default language
+                # only (via _resolve_language(None)) and ignores per-slot in_language.
+                if self.message_template is not None:
+                    msg_text = self.message_template.format(
+                        name=s.name,
+                        title=s.title or s.name,
+                        description=s.description or "",
+                        comments="; ".join(s.comments) if s.comments else "",
+                        **{"class": c.name},
+                        path=str(slot_uri),
+                    ).strip()
+                    if msg_text:
+                        g.add((pnode, SH.message, Literal(msg_text, lang=self._resolve_language(None))))
                 # minCount
                 if s.minimum_cardinality:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
@@ -429,9 +535,14 @@ class ShaclGenerator(Generator):
             else:
                 N_predicate = Literal(a["tag"], datatype=XSD.string)
             # If the value is a string and ':' is in the value, treat it as a CURIE,
-            # otherwise treat as Literal with derived XSD datatype
+            # otherwise treat as Literal with derived XSD datatype.
+            # String annotations are language-tagged when default_language is set;
+            # non-string types (bool, int, float) keep their XSD datatype.
+            lang = self._resolve_language(item)
             if type(a["value"]) is extended_str and ":" in a["value"]:
                 N_object = URIRef(sv.expand_curie(a["value"]))
+            elif isinstance(a["value"], str) and lang:
+                N_object = Literal(a["value"], lang=lang)
             else:
                 N_object = Literal(a["value"], datatype=self._getXSDtype(a["value"]))
 
@@ -472,7 +583,7 @@ class ShaclGenerator(Generator):
 
         list_node = BNode()
         ignored_properties.add(RDF.type)
-        Collection(g, list_node, list(ignored_properties))
+        Collection(g, list_node, sorted(ignored_properties, key=str))
 
         return list_node
 
@@ -525,6 +636,29 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
     show_default=True,
     help="If --expand-subproperty-of (default), slots with subproperty_of will generate sh:in constraints "
     "containing all slot descendants. Use --no-expand-subproperty-of to disable this behavior.",
+)
+@click.option(
+    "--default-language",
+    default=None,
+    show_default=True,
+    help=(
+        "Default BCP 47 language tag for human-readable string literals "
+        "(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, "
+        "rdfs:label and rdfs:comment are emitted with the specified "
+        "language tag."
+    ),
+)
+@click.option(
+    "--message-template",
+    default=None,
+    show_default=True,
+    help=(
+        "Template string for sh:message on each property shape. "
+        "Placeholders: {name} (slot name), {title} (slot title or name), "
+        "{description} (slot description), {comments} (slot comments joined with '; '), "
+        "{class} (class name), {path} (fully-expanded property IRI). "
+        'Example: "{name} ({class}): {description} [{comments}]"'
+    ),
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, **args):

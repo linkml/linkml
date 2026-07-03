@@ -1,6 +1,7 @@
 id: https://w3id.org/linkml/meta
 title: LinkML Schema Metamodel
 name: meta
+metamodel_version: 1.11.0
 description: |-
   The metamodel for schemas defined using the Linked Data Modeling Language framework.
 
@@ -2822,7 +2823,7 @@ classes:
 
   match_query:
     description: >-
-      A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
+      A query that is used on an enum expression to dynamically obtain a set of permissible values via a query that
       matches on properties of the external concepts.
     slots:
       - identifier_pattern

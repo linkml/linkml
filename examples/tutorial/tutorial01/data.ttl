@@ -1,7 +1,9 @@
 @prefix personinfo: <https://w3id.org/linkml/examples/personinfo> .
-
-[] a personinfo:Person ;
-    personinfo:age "32" ;
-    personinfo:full_name "Clark Kent" ;
-    personinfo:id "ORCID:1234" ;
-    personinfo:phone "555-555-5555" .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix linkml: <https://w3id.org/linkml/> .
+_:c14n0 a personinfo:Person ;
+	personinfo:age "32" ;
+	personinfo:full_name "Clark Kent" ;
+	personinfo:id "ORCID:1234" ;
+	personinfo:phone "555-555-5555" .
