@@ -2572,13 +2572,44 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">is_inlined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">,</span> <span class="n">imports</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return true if slot is inferred or asserted inline.</span>
 
+<span class="sd">        A slot is inlined when:</span>
+
+<span class="sd">        * ``slot.inlined`` or ``slot.inlined_as_list`` is ``True`` (directly or</span>
+<span class="sd">          inherited through the slot&#39;s ``is_a`` / ``mixins`` ancestry), **or**</span>
+<span class="sd">        * the slot&#39;s range is a class with no identifier/key slot (which forces</span>
+<span class="sd">          inlining because there is no reference to use).</span>
+
 <span class="sd">        :param slot:</span>
 <span class="sd">        :param imports:</span>
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">slot_range</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span>
         <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span> <span class="ow">or</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span><span class="p">:</span>
+            <span class="n">resolved_inlined</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined</span>
+            <span class="n">resolved_inlined_as_list</span> <span class="o">=</span> <span class="n">slot</span><span class="o">.</span><span class="n">inlined_as_list</span>
+
+            <span class="n">slot_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">resolved_inlined</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">resolved_inlined_as_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">slot_name</span><span class="p">:</span>
+                <span class="c1"># walk all ancestors (reflexive=False to skip the slot itself,</span>
+                <span class="c1"># already checked above).</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># slot_ancestors() is @lru_cache and handles both is_a and mixins;</span>
+                    <span class="n">ancestors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slot_ancestors</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">,</span> <span class="n">reflexive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">ancestors</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="n">ancestors</span><span class="p">:</span>
+                    <span class="c1"># all_slots() is @lru_cache</span>
+                    <span class="n">all_slots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_slots</span><span class="p">(</span><span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">anc_name</span> <span class="ow">in</span> <span class="n">ancestors</span><span class="p">:</span>
+                        <span class="n">anc</span> <span class="o">=</span> <span class="n">all_slots</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">anc_name</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">anc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">resolved_inlined</span> <span class="o">=</span> <span class="n">resolved_inlined</span> <span class="ow">or</span> <span class="n">anc</span><span class="o">.</span><span class="n">inlined</span>
+                        <span class="n">resolved_inlined_as_list</span> <span class="o">=</span> <span class="n">resolved_inlined_as_list</span> <span class="ow">or</span> <span class="n">anc</span><span class="o">.</span><span class="n">inlined_as_list</span>
+                        <span class="k">if</span> <span class="n">resolved_inlined</span> <span class="ow">or</span> <span class="n">resolved_inlined_as_list</span><span class="p">:</span>
+                            <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">resolved_inlined</span> <span class="ow">or</span> <span class="n">resolved_inlined_as_list</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
 
             <span class="n">id_slot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_identifier_slot</span><span class="p">(</span><span class="n">slot_range</span><span class="p">,</span> <span class="n">imports</span><span class="o">=</span><span class="n">imports</span><span class="p">)</span>

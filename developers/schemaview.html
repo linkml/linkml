@@ -1510,6 +1510,13 @@ to infer missing values, for inheritable slots</p>
 <dt class="sig sig-object py" id="linkml_runtime.utils.schemaview.SchemaView.is_inlined">
 <span class="sig-name descname"><span class="pre">is_inlined</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../code/metamodel.html#linkml_runtime.linkml_model.meta.SlotDefinition" title="linkml_runtime.linkml_model.meta.SlotDefinition"><span class="pre">SlotDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">imports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/linkml_runtime/utils/schemaview.html#SchemaView.is_inlined"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml_runtime.utils.schemaview.SchemaView.is_inlined" title="Link to this definition">¶</a></dt>
 <dd><p>Return true if slot is inferred or asserted inline.</p>
+<p>A slot is inlined when:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">slot.inlined</span></code> or <code class="docutils literal notranslate"><span class="pre">slot.inlined_as_list</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> (directly or
+inherited through the slot’s <code class="docutils literal notranslate"><span class="pre">is_a</span></code> / <code class="docutils literal notranslate"><span class="pre">mixins</span></code> ancestry), <strong>or</strong></p></li>
+<li><p>the slot’s range is a class with no identifier/key slot (which forces
+inlining because there is no reference to use).</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
