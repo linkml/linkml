@@ -408,7 +408,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jsonasobj2</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_dict</span>
@@ -481,9 +481,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_slot_examples_for_json_schema</span><span class="p">(</span>
-    <span class="n">examples</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">],</span>
+    <span class="n">examples</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="n">Example</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span> <span class="o">|</span> <span class="n">Example</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">json_schema_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">json_schema_type</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">is_array_valued</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a list of LinkML :class:`~linkml_runtime.linkml_model.meta.Example` objects</span>
@@ -555,12 +555,12 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">examples</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_string_to_type</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">json_schema_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_array_valued</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_string_to_type</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">json_schema_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_array_valued</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Coerce string to JSON type, falling back to the original on failure.&quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Example.value is typed as Optional[str] in the LinkML metamodel. A list</span>
-            <span class="c1"># written in YAML as  value: [&quot;a&quot;, &quot;b&quot;]  is coerced to its Python str()</span>
+            <span class="c1"># written in YAML as value: [&quot;a&quot;, &quot;b&quot;] is coerced to its Python str()</span>
             <span class="c1"># representation &quot;[&#39;a&#39;, &#39;b&#39;]&quot; on load. Recover the original list with</span>
             <span class="c1"># ast.literal_eval when the string looks like a Python list literal.</span>
             <span class="k">if</span> <span class="n">is_array_valued</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">):</span>
@@ -589,7 +589,7 @@
     <span class="n">merged_example</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">direct_examples</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">],</span> <span class="n">examples</span><span class="p">):</span>  <span class="c1"># Element.__post_init__() ensures list</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">as_dict</span><span class="p">(</span><span class="n">ex</span><span class="o">.</span><span class="n">object</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ex</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -978,7 +978,7 @@
 
         <span class="c1"># Include class-level examples if present. Each Example on a class is an</span>
         <span class="c1"># independent full-instance example (same semantics as single-valued slots).</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;examples&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">examples</span><span class="p">:</span>
             <span class="n">class_examples</span> <span class="o">=</span> <span class="n">_slot_examples_for_json_schema</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">is_array_valued</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">class_examples</span><span class="p">:</span>
                 <span class="n">class_subschema</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;examples&quot;</span><span class="p">,</span> <span class="n">class_examples</span><span class="p">)</span>
@@ -1190,7 +1190,7 @@
             <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">examples</span><span class="p">:</span>
                 <span class="n">prop</span><span class="o">.</span><span class="n">add_keyword</span><span class="p">(</span><span class="s2">&quot;examples&quot;</span><span class="p">,</span> <span class="n">_slot_examples_for_json_schema</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">is_array_valued</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">prop</span>
-        <span class="n">slot_is_multivalued</span> <span class="o">=</span> <span class="s2">&quot;multivalued&quot;</span> <span class="ow">in</span> <span class="n">slot</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span>
+        <span class="n">slot_is_multivalued</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="s2">&quot;multivalued&quot;</span> <span class="ow">in</span> <span class="n">slot</span> <span class="ow">and</span> <span class="n">slot</span><span class="o">.</span><span class="n">multivalued</span><span class="p">)</span>
         <span class="n">slot_is_inlined</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span><span class="o">.</span><span class="n">is_inlined</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
         <span class="n">slot_is_boolean</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span><span class="n">slot</span><span class="o">.</span><span class="n">any_of</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">all_of</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">exactly_one_of</span><span class="p">,</span> <span class="n">slot</span><span class="o">.</span><span class="n">none_of</span><span class="p">])</span>
 
