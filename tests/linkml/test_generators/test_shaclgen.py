@@ -1,12 +1,15 @@
 from collections import Counter
 from typing import Any
 
+import pytest
 import rdflib
 from rdflib import RDF, RDFS, SH, Literal, URIRef
 from rdflib.collection import Collection
 
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
 from linkml.generators.shaclgen import ShaclGenerator
+from linkml_runtime.linkml_model import SlotDefinition
+from linkml_runtime.utils.schema_builder import SchemaBuilder
 
 EXPECTED = [
     (
@@ -376,7 +379,16 @@ def test_ifabsent(input_path):
 
     def check_slot_default_value(slot: URIRef, default_value: Any, datatype: str = None) -> None:
         for subject, predicate, object in g.triples((None, SH.path, slot)):
-            assert (subject, SH.defaultValue, Literal(default_value, datatype=datatype)) in g
+            # pyoxigraph's RDFC-1.0 serialization drops explicit ^^xsd:string
+            # per RDF 1.1 (plain literals and xsd:string are equivalent).
+            # Accept either form for xsd:string typed values.
+            expected = Literal(default_value, datatype=datatype)
+            if (subject, SH.defaultValue, expected) in g:
+                return
+            if datatype and str(datatype) == "http://www.w3.org/2001/XMLSchema#string":
+                if (subject, SH.defaultValue, Literal(default_value)) in g:
+                    return
+            raise AssertionError(f"Expected ({subject}, sh:defaultValue, {expected!r}) not found in graph")
 
     check_slot_default_value(
         URIRef("https://w3id.org/linkml/tests/kitchen_sink/ifabsent_string"),
@@ -506,6 +518,26 @@ def test_ignore_subclass_properties(input_path):
     assert frozenset(ignored_properties[URIRef("https://w3id.org/linkml/examples/animals/Bat")]) == frozenset(
         [URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type")]
     )
+
+
+def test_ignored_properties_list_is_sorted(input_path):
+    """sh:ignoredProperties RDF list elements must be in deterministic order.
+
+    Regression test for https://github.com/linkml/linkml/issues/3516: the
+    set holding ignored properties was iterated in PYTHONHASHSEED-dependent
+    order, producing non-isomorphic graphs across processes that
+    RDFC-1.0 canonicalization could not normalize.
+    """
+    shacl = ShaclGenerator(input_path("shaclgen/subclass_ignored_properties.yaml"), mergeimports=True).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    lists_checked = 0
+    for _, _, list_node in g.triples((None, SH.ignoredProperties, None)):
+        elements = [str(e) for e in Collection(g, list_node)]
+        assert elements == sorted(elements), f"sh:ignoredProperties list not sorted: {elements}"
+        lists_checked += 1
+    assert lists_checked == 7
 
 
 def test_multivalued_slot_min_cardinality(input_path):
@@ -1160,3 +1192,555 @@ classes:
     uri_ref = props["https://example.org/uriRef"]
     uri_kinds = list(g.objects(uri_ref, SH.nodeKind))
     assert SH.IRI in uri_kinds, f"Expected sh:IRI for uri, got {uri_kinds}"
+
+
+# ---------------------------------------------------------------------------
+# --default-language tests
+# ---------------------------------------------------------------------------
+
+EX = rdflib.Namespace("http://example.org/test-schema/")
+
+
+def _build_shacl_lang_schema():
+    """Build a schema with title/description for language-tag testing."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "vehicle_name",
+            range="string",
+            description="The vehicle name.",
+            title="Name",
+        )
+    )
+    sb.add_class(
+        "Vehicle",
+        slots=["vehicle_name"],
+        description="A road vehicle.",
+        title="Vehicle",
+    )
+    sb.add_defaults()
+    return sb.schema
+
+
+def _build_message_test_schema():
+    """Build a schema for sh:message testing (includes a second slot without title)."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "vehicle_name",
+            range="string",
+            description="The vehicle name.",
+            title="Name",
+            required=True,
+        )
+    )
+    sb.add_slot(
+        SlotDefinition(
+            "speed",
+            range="integer",
+            description="Speed in km/h.",
+        )
+    )
+    sb.add_class(
+        "Vehicle",
+        slots=["vehicle_name", "speed"],
+        description="A road vehicle.",
+    )
+    sb.add_defaults()
+    return sb.schema
+
+
+def _parse_shacl(schema, **kwargs):
+    shacl = ShaclGenerator(schema, mergeimports=False, **kwargs).serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+    return g
+
+
+def _get_prop_objects(g, shape_uri, prop_path_uri, predicate):
+    """Get predicate values for the property shape with the given sh:path."""
+    for prop_node in g.objects(shape_uri, SH.property):
+        paths = list(g.objects(prop_node, SH.path))
+        if paths and paths[0] == prop_path_uri:
+            return list(g.objects(prop_node, predicate))
+    return []
+
+
+def test_shacl_default_language_node_shape():
+    """NodeShape rdfs:label and rdfs:comment get @en with --default-language."""
+    schema = _build_shacl_lang_schema()
+    g = _parse_shacl(schema, default_language="en")
+
+    vehicle_shape = EX.Vehicle
+
+    labels = list(g.objects(vehicle_shape, RDFS.label))
+    assert Literal("Vehicle", lang="en") in labels
+
+    comments = list(g.objects(vehicle_shape, RDFS.comment))
+    assert Literal("A road vehicle.", lang="en") in comments
+
+
+def test_shacl_default_language_property_shape():
+    """PropertyShape sh:name and sh:description get @en with --default-language."""
+    schema = _build_shacl_lang_schema()
+    g = _parse_shacl(schema, default_language="en")
+
+    vehicle_shape = EX.Vehicle
+    slot_uri = EX.vehicle_name
+
+    sh_names = _get_prop_objects(g, vehicle_shape, slot_uri, SH["name"])
+    assert Literal("Name", lang="en") in sh_names
+
+    sh_descs = _get_prop_objects(g, vehicle_shape, slot_uri, SH.description)
+    assert Literal("The vehicle name.", lang="en") in sh_descs
+
+
+def test_shacl_no_default_language_plain_literals():
+    """Without --default-language, literals have no language tag (backward-compat)."""
+    schema = _build_shacl_lang_schema()
+    g = _parse_shacl(schema)
+
+    vehicle_shape = EX.Vehicle
+
+    labels = list(g.objects(vehicle_shape, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+    slot_uri = EX.vehicle_name
+    sh_names = _get_prop_objects(g, vehicle_shape, slot_uri, SH["name"])
+    assert Literal("Name") in sh_names
+    for lit in sh_names:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+def test_shacl_default_language_numeric_literals_untagged():
+    """Numeric literals (sh:order, sh:minCount, etc.) must never get language tags."""
+    schema = _build_shacl_lang_schema()
+    schema.slots["vehicle_name"].required = True
+    g = _parse_shacl(schema, default_language="fr")
+
+    vehicle_shape = EX.Vehicle
+    slot_uri = EX.vehicle_name
+
+    orders = _get_prop_objects(g, vehicle_shape, slot_uri, SH.order)
+    for lit in orders:
+        assert lit.language is None, f"sh:order must not be language-tagged: {lit!r}"
+
+    min_counts = _get_prop_objects(g, vehicle_shape, slot_uri, SH.minCount)
+    for lit in min_counts:
+        assert lit.language is None, f"sh:minCount must not be language-tagged: {lit!r}"
+
+
+def test_shacl_default_language_annotations_tagged():
+    """SHACL string annotations are language-tagged with --default-language."""
+    from linkml_runtime.linkml_model.meta import Annotation, Prefix
+
+    schema = _build_shacl_lang_schema()
+    schema.prefixes["skos"] = Prefix(
+        prefix_prefix="skos",
+        prefix_reference="http://www.w3.org/2004/02/skos/core#",
+    )
+    schema.classes["Vehicle"].annotations["skos:altLabel"] = Annotation(tag="skos:altLabel", value="Car")
+    g = _parse_shacl(schema, default_language="en", include_annotations=True)
+
+    vehicle_shape = EX.Vehicle
+    SKOS = rdflib.Namespace("http://www.w3.org/2004/02/skos/core#")
+    alt_labels = list(g.objects(vehicle_shape, SKOS.altLabel))
+    assert Literal("Car", lang="en") in alt_labels
+
+
+def test_shacl_default_language_empty_string_treated_as_none():
+    """An empty string default_language is normalised to None (no tags)."""
+    schema = _build_shacl_lang_schema()
+    g = _parse_shacl(schema, default_language="")
+
+    vehicle_shape = EX.Vehicle
+
+    labels = list(g.objects(vehicle_shape, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+def test_shacl_default_language_whitespace_only_treated_as_none():
+    """A whitespace-only default_language is normalised to None (no tags)."""
+    schema = _build_shacl_lang_schema()
+    g = _parse_shacl(schema, default_language="   ")
+
+    vehicle_shape = EX.Vehicle
+
+    labels = list(g.objects(vehicle_shape, RDFS.label))
+    assert Literal("Vehicle") in labels
+    for lit in labels:
+        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
+
+
+def test_shacl_default_language_in_language_override():
+    """Element-level in_language overrides the generator default_language in SHACL."""
+    schema = _build_shacl_lang_schema()
+    schema.classes["Vehicle"].in_language = "de"
+    g = _parse_shacl(schema, default_language="en")
+
+    vehicle_shape = EX.Vehicle
+
+    # Vehicle class should use element-level "de", not default "en"
+    labels = list(g.objects(vehicle_shape, RDFS.label))
+    assert Literal("Vehicle", lang="de") in labels
+    assert Literal("Vehicle", lang="en") not in labels
+
+    comments = list(g.objects(vehicle_shape, RDFS.comment))
+    assert Literal("A road vehicle.", lang="de") in comments
+    assert Literal("A road vehicle.", lang="en") not in comments
+
+
+def test_shacl_default_language_bcp47_warning(caplog):
+    """A malformed BCP 47 tag logs a warning but still produces output."""
+    import logging
+
+    schema = _build_shacl_lang_schema()
+    # "toolongtag" passes rdflib's lax regex but fails strict BCP 47.
+    with caplog.at_level(logging.WARNING):
+        shacl = ShaclGenerator(schema, mergeimports=False, default_language="toolongtag").serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Tag is still applied (warning, not error)
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert any(lit.language == "toolongtag" for lit in labels)
+    # Warning was emitted
+    assert any("not a well-formed BCP 47 tag" in rec.message for rec in caplog.records)
+
+
+def test_shacl_default_language_bcp47_valid_no_warning(caplog):
+    """A well-formed BCP 47 tag does not log any warning."""
+    import logging
+
+    schema = _build_shacl_lang_schema()
+    with caplog.at_level(logging.WARNING):
+        ShaclGenerator(schema, mergeimports=False, default_language="en").serialize()
+    assert not any("BCP 47" in rec.message for rec in caplog.records)
+
+
+def test_shacl_default_language_in_language_bcp47_warning(caplog):
+    """A malformed in_language value logs a warning in SHACL generator."""
+    import logging
+
+    schema = _build_shacl_lang_schema()
+    # "toolongtag" passes rdflib but fails strict BCP 47.
+    schema.classes["Vehicle"].in_language = "toolongtag"
+    with caplog.at_level(logging.WARNING):
+        shacl = ShaclGenerator(schema, mergeimports=False, default_language="en").serialize()
+    g = rdflib.Graph()
+    g.parse(data=shacl)
+
+    # Vehicle uses the (malformed) in_language, not the default
+    labels = list(g.objects(EX.Vehicle, RDFS.label))
+    assert any(lit.language == "toolongtag" for lit in labels)
+    assert any("in_language" in rec.message and "toolongtag" in rec.message for rec in caplog.records)
+
+
+def test_shacl_default_language_bcp47_warning_is_deduplicated(caplog):
+    """Each distinct malformed tag warns at most once across the whole SHACL run.
+
+    Mirrors the owlgen regression test (see PR #3449 review comment): the
+    original implementation emitted one warning per element. The shared
+    :class:`linkml.utils.language_tags.LanguageTagResolver` collapses these
+    to one warning per distinct malformed tag.
+    """
+    import logging
+
+    schema = _build_shacl_lang_schema()
+    schema.classes["Vehicle"].in_language = "toolongtag"
+    schema.slots["vehicle_name"].in_language = "toolongtag"
+
+    with caplog.at_level(logging.WARNING, logger="linkml.utils.language_tags"):
+        ShaclGenerator(
+            schema,
+            mergeimports=False,
+            default_language="anothertoolongone",
+        ).serialize()
+
+    in_language_warnings = [
+        rec for rec in caplog.records if "in_language" in rec.message and "toolongtag" in rec.message
+    ]
+    default_warnings = [
+        rec for rec in caplog.records if "default language" in rec.message and "anothertoolongone" in rec.message
+    ]
+    assert len(in_language_warnings) == 1, (
+        f"expected exactly 1 in_language warning for 'toolongtag', got {len(in_language_warnings)}"
+    )
+    assert len(default_warnings) == 1, f"expected exactly 1 default-language warning, got {len(default_warnings)}"
+
+
+# ---------------------------------------------------------------------------
+# --message-template tests
+# ---------------------------------------------------------------------------
+
+
+def test_message_template_basic():
+    """--message-template emits sh:message on every property shape."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="Validation of {name} failed!")
+
+    vehicle_shape = EX.Vehicle
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Validation of vehicle_name failed!") in msgs
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert Literal("Validation of speed failed!") in msgs
+
+
+def test_message_template_title_placeholder():
+    """{title} expands to slot title, falling back to slot name."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="{title} is invalid")
+
+    vehicle_shape = EX.Vehicle
+
+    # vehicle_name has title="Name"
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Name is invalid") in msgs
+
+    # speed has no title → falls back to slot name
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert Literal("speed is invalid") in msgs
+
+
+def test_message_template_class_placeholder():
+    """{class} expands to the enclosing class name."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="{class}.{name} constraint violated")
+
+    vehicle_shape = EX.Vehicle
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Vehicle.vehicle_name constraint violated") in msgs
+
+
+def test_message_template_description_placeholder():
+    """{description} expands to the slot description, empty string when absent."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="{name} ({class}): {description}")
+
+    vehicle_shape = EX.Vehicle
+
+    # vehicle_name has description="The vehicle name."
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("vehicle_name (Vehicle): The vehicle name.") in msgs
+
+    # speed has description="Speed in km/h."
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert Literal("speed (Vehicle): Speed in km/h.") in msgs
+
+
+def test_message_template_description_fallback_empty():
+    """{description} falls back to empty string when slot has no description."""
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("bare_slot", range="string"))
+    sb.add_class("Thing", slots=["bare_slot"])
+    sb.add_defaults()
+    g = _parse_shacl(sb.schema, message_template="{name}: {description}")
+
+    msgs = _get_prop_objects(g, EX.Thing, EX.bare_slot, SH.message)
+    assert Literal("bare_slot:") in msgs
+
+
+def test_message_template_comments_placeholder():
+    """{comments} expands to slot comments joined with '; '."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "wind_speed",
+            range="float",
+            description="Wind speed in metres per second.",
+            comments=["ISO 34503:2023, Section 10.2.3"],
+        )
+    )
+    sb.add_class("Weather", slots=["wind_speed"])
+    sb.add_defaults()
+    g = _parse_shacl(sb.schema, message_template="{name} ({class}): {description} [{comments}]")
+
+    msgs = _get_prop_objects(g, EX.Weather, EX.wind_speed, SH.message)
+    assert Literal("wind_speed (Weather): Wind speed in metres per second. [ISO 34503:2023, Section 10.2.3]") in msgs
+
+
+def test_message_template_comments_multiple():
+    """{comments} joins multiple comments with '; '."""
+    sb = SchemaBuilder()
+    sb.add_slot(
+        SlotDefinition(
+            "temperature",
+            range="float",
+            comments=["ISO 34503:2023, Section 10.2", "Unit: Celsius"],
+        )
+    )
+    sb.add_class("Weather", slots=["temperature"])
+    sb.add_defaults()
+    g = _parse_shacl(sb.schema, message_template="{comments}")
+
+    msgs = _get_prop_objects(g, EX.Weather, EX.temperature, SH.message)
+    assert Literal("ISO 34503:2023, Section 10.2; Unit: Celsius") in msgs
+
+
+def test_message_template_comments_fallback_empty():
+    """{comments} falls back to empty string when slot has no comments."""
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("bare_slot", range="string"))
+    sb.add_class("Thing", slots=["bare_slot"])
+    sb.add_defaults()
+    g = _parse_shacl(sb.schema, message_template="{name}: {comments}")
+
+    msgs = _get_prop_objects(g, EX.Thing, EX.bare_slot, SH.message)
+    assert Literal("bare_slot:") in msgs
+
+
+def test_no_message_template_no_sh_message():
+    """Without --message-template, no sh:message is emitted (backward-compat)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema)
+
+    vehicle_shape = EX.Vehicle
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert msgs == []
+
+    msgs = _get_prop_objects(g, vehicle_shape, EX.speed, SH.message)
+    assert msgs == []
+
+
+def test_message_template_invalid_placeholder_raises():
+    """An invalid placeholder in --message-template raises ValueError."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Error: {invalid}")
+
+
+def test_message_template_positional_placeholder_raises():
+    """Positional placeholders like {0} raise ValueError."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Error: {0}")
+
+
+def test_message_template_format_spec_raises():
+    """Format specs like {name:d} raise ValueError."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Error: {name:d}")
+
+
+def test_message_template_empty_string_treated_as_none():
+    """An empty message_template is normalised to None (no sh:message)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="")
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert msgs == []
+
+
+def test_message_template_whitespace_only_treated_as_none():
+    """A whitespace-only message_template is normalised to None (no sh:message)."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="   ")
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert msgs == []
+
+
+def test_message_template_with_default_language():
+    """sh:message is language-tagged when both --message-template and --default-language are set."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(
+        schema,
+        message_template="Validation of {name} failed!",
+        default_language="en",
+    )
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal("Validation of vehicle_name failed!", lang="en") in msgs
+
+    # Verify the message is NOT a plain literal
+    assert Literal("Validation of vehicle_name failed!") not in msgs
+
+
+def test_message_template_path_placeholder():
+    """{path} expands to the fully-expanded property IRI."""
+    schema = _build_message_test_schema()
+    g = _parse_shacl(schema, message_template="{path}")
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    assert Literal(str(EX.vehicle_name)) in msgs
+
+
+def test_message_template_expands_to_empty_no_message():
+    """A template that expands to an empty string emits no sh:message."""
+    sb = SchemaBuilder()
+    sb.add_slot(SlotDefinition("bare_slot", range="string"))
+    sb.add_class("Thing", slots=["bare_slot"])
+    sb.add_defaults()
+    # bare_slot has no description, so "{description}" -> "" -> no sh:message.
+    g = _parse_shacl(sb.schema, message_template="{description}")
+
+    msgs = _get_prop_objects(g, EX.Thing, EX.bare_slot, SH.message)
+    assert msgs == []
+
+
+def test_message_template_attribute_access_raises():
+    """Attribute access in a placeholder (e.g. {name.upper}) raises a friendly ValueError."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="{name.upper}")
+
+
+def test_message_template_index_access_raises():
+    """Index access in a placeholder (e.g. {name[0]}) raises a friendly ValueError."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="{name[0]}")
+
+
+def test_message_template_unbalanced_brace_raises():
+    """A malformed template (unbalanced brace) raises a friendly ValueError."""
+    schema = _build_message_test_schema()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        _parse_shacl(schema, message_template="Broken {name")
+
+
+def test_message_template_validated_up_front_on_slotless_schema():
+    """An invalid template is rejected up-front, even when no slots are iterated."""
+    sb = SchemaBuilder()
+    sb.add_class("Empty")  # no slots -> the per-slot loop never runs
+    sb.add_defaults()
+    with pytest.raises(ValueError, match="Invalid placeholder"):
+        ShaclGenerator(sb.schema, mergeimports=False, message_template="{bogus}")
+
+
+def test_message_template_ignores_per_slot_in_language():
+    """sh:message follows default_language only, ignoring a slot's in_language.
+
+    The message text is a single global template (one language), so unlike
+    sh:name / sh:description it must not be tagged with the slot's in_language.
+    """
+    schema = _build_message_test_schema()
+    schema.slots["vehicle_name"].in_language = "de"
+    g = _parse_shacl(
+        schema,
+        message_template="Validation of {name} failed!",
+        default_language="en",
+    )
+
+    vehicle_shape = EX.Vehicle
+    msgs = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.message)
+    # Message uses the generator default ("en"), NOT the slot's in_language ("de").
+    assert Literal("Validation of vehicle_name failed!", lang="en") in msgs
+    assert Literal("Validation of vehicle_name failed!", lang="de") not in msgs
+
+    # Contrast: sh:name DOES follow the slot's in_language ("de").
+    names = _get_prop_objects(g, vehicle_shape, EX.vehicle_name, SH.name)
+    assert Literal("Name", lang="de") in names

@@ -287,7 +287,7 @@ class SchemaLoader:
                     )
             # Class URI's also count as (trivial) mappings
             if cls.class_uri is not None:
-                cls.mappings.insert(0, cls.class_uri)
+                cls.exact_mappings.insert(0, cls.class_uri)
             if cls.class_uri is None or not self.useuris:
                 from_schema = cls.from_schema
                 if from_schema is None:
@@ -299,6 +299,7 @@ class SchemaLoader:
                     self.schema_defaults.get(cls.from_schema, suffixed_cls_schema),
                     camelcase(cls.name),
                 )
+                cls.exact_mappings.insert(0, cls.class_uri)
 
         # Get the inverse ducks all in a row before we start filling other stuff in
         for slot in self.schema.slots.values():
@@ -927,12 +928,49 @@ class SchemaLoader:
             if parent_slot is not None:
                 new_slot.is_a = parent_slot.name
                 merge_slots(new_slot, parent_slot)
-                # This situation occurs when we are doing chained overrides.  Kludgy, but it works...
+                # Each class keeps an ordered list of slot *names* in cls.slots.
+                # Replace the inherited slot name with the new mangled name.
+                # Support multiple levels of inheritance for slot usage.
+                #
+                # Example: Mammal defines slot "sound", Canine refines it via
+                #   slot_usage, and Dog refines it again via slot_usage. By the
+                #   time we reach Dog (whose slots contain *bare* name "sound"),
+                #   the parent_slot is already mangled to "Canine_sound", so
+                #   looking at parent_slot.name is not enough - we need to walk!
+                #
+                # Logic: if parent_slot.name is not in cls.slots, walk up parent_slot's
+                # own is_a chain until we find a name that IS in cls.slots, then swap
+                # that one.  Fall back to the bare slot name as a last resort.
+
+                ancestor_in_cls: str | None = None
                 if parent_slot.name in cls.slots:
+                    # Happy path: the proximal parent name is already in the list.
+                    ancestor_in_cls = parent_slot.name
+                else:
+                    # Walk up the is_a chain of the parent slot, looking for any
+                    # ancestor whose name is present in cls.slots.
+                    probe = parent_slot
+                    while probe.is_a and ancestor_in_cls is None:
+                        probe = self.schema.slots.get(probe.is_a)
+                        if probe is None:
+                            break  # give up and fall through to append
+                        if probe.name in cls.slots:
+                            ancestor_in_cls = probe.name
+                    # Last resort: try the original bare slot name (e.g. "sound").
+                    # This handles the case where the class listed the slot explicitly
+                    # in its schema-level slots: list rather than inheriting it.
+                    if ancestor_in_cls is None and slotname in cls.slots:
+                        ancestor_in_cls = slotname
+
+                if ancestor_in_cls is not None:
+                    # Swap: remove any pre-existing entry for child_name first to
+                    # avoid duplicates, then replace the ancestor entry in-place so
+                    # slot ordering is preserved.
                     if child_name in cls.slots:
                         del cls.slots[cls.slots.index(child_name)]
-                    cls.slots[cls.slots.index(parent_slot.name)] = child_name
+                    cls.slots[cls.slots.index(ancestor_in_cls)] = child_name
                 elif child_name not in cls.slots:
+                    # No ancestor found in the list at all — just append.
                     cls.slots.append(child_name)
             elif not new_slot.range:
                 new_slot.range = self.schema.default_range

@@ -1,145 +1,139 @@
- syntax="proto3";
- package
-// metamodel_version: 1.7.0
+syntax = "proto3";
+package kitchen_sink;
+// metamodel_version: 1.11.0
 // a provence-generating activity
-message Activity
- {
-  string id = 1
-  date startedAtTime = 0
-  date endedAtTime = 0
-  activity wasInformedBy = 0
-  agent wasAssociatedWith = 0
-  string used = 0
-  string description = 0
- }
-message Address
- {
-  string street = 0
-  string city = 0
-  decimal altitude = 0
- }
+message Activity {
+  string id = 1;
+  string started_at_time = 2;
+  string ended_at_time = 3;
+  Activity was_informed_by = 4;
+  Agent was_associated_with = 5;
+  string used = 6;
+  string description = 7;
+}
+message Address {
+  string street = 1;
+  string city = 2;
+  string altitude = 3;
+}
 // a provence-generating agent
-message Agent
- {
-  string id = 1
-  agent actedOnBehalfOf = 0
-  activity wasInformedBy = 0
- }
-message AnyOfClasses
- {
-  string attribute2 = 0
- }
-message AnyOfEnums
- {
-  string attribute3 = 0
- }
-message AnyOfMix
- {
-  string attribute4 = 0
- }
-message AnyOfSimpleType
- {
-  string attribute1 = 0
- }
-message BirthEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  boolean isCurrent = 0
-  anyObject metadata = 0
-  place inLocation = 0
- }
-message ClassWithSpaces
- {
-  string slotWithSpace1 = 0
- }
-message CodeSystem
- {
-  string id = 1
-  string name = 2
- }
-message Company
- {
-  string id = 1
-  string name = 2
- repeated  string aliases = 0
-  person ceo = 0
- }
-message Concept
- {
-  string id = 1
-  string name = 2
-  codeSystem inCodeSystem = 0
- }
-message Dataset
- {
-  anyObject metadata = 0
- repeated  person persons = 0
- repeated  company companies = 0
- repeated  activity activities = 0
- repeated  codeSystem codeSystems = 0
- }
-message DiagnosisConcept
- {
-  string id = 1
-  string name = 2
-  codeSystem inCodeSystem = 0
- }
-message EmploymentEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  boolean isCurrent = 0
-  anyObject metadata = 0
-  company employedAt = 0
-  string type = 0
- }
-message EqualsString
- {
-  string attribute5 = 0
- }
-message EqualsStringIn
- {
-  string attribute6 = 0
- }
-message Event
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  boolean isCurrent = 0
-  anyObject metadata = 0
- }
-message FakeClass
- {
-  string testAttribute = 0
- }
-message FamilialRelationship
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  string cordialness = 0
-  familialRelationshipType type = 0
-  person relatedTo = 0
- }
-message MarriageEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  boolean isCurrent = 0
-  anyObject metadata = 0
-  person marriedTo = 0
-  place inLocation = 0
- }
-message MedicalEvent
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  boolean isCurrent = 0
-  anyObject metadata = 0
-  place inLocation = 0
-  diagnosisConcept diagnosis = 0
-  procedureConcept procedure = 0
- }
+message Agent {
+  string id = 1;
+  Agent acted_on_behalf_of = 2;
+  Activity was_informed_by = 3;
+}
+// Example of unconstrained class
+message AnyObject {
+}
+message AnyOfClasses {
+  string attribute2 = 1;
+}
+message AnyOfEnums {
+  string attribute3 = 1;
+}
+message AnyOfMix {
+  string attribute4 = 1;
+}
+message AnyOfSimpleType {
+  string attribute1 = 1;
+}
+message BirthEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  bool is_current = 3;
+  // Example of a slot that has an unconstrained range
+  AnyObject metadata = 4;
+  Place in_location = 5;
+}
+message ClassWithSpaces {
+  string slot_with_space_N1 = 1;
+}
+message CodeSystem {
+  string id = 1;
+  string name = 2;
+  LongEnum long_id = 3;
+}
+message Company {
+  string id = 1;
+  string name = 2;
+  repeated string aliases = 3;
+  Person ceo = 4;
+}
+message Concept {
+  string id = 1;
+  string name = 2;
+  CodeSystem in_code_system = 3;
+}
+message Dataset {
+  // Example of a slot that has an unconstrained range
+  AnyObject metadata = 1;
+  repeated Person persons = 2;
+  repeated Company companies = 3;
+  repeated Activity activities = 4;
+  repeated CodeSystem code_systems = 5;
+}
+message DiagnosisConcept {
+  string id = 1;
+  string name = 2;
+  CodeSystem in_code_system = 3;
+}
+message EmploymentEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  bool is_current = 3;
+  // Example of a slot that has an unconstrained range
+  AnyObject metadata = 4;
+  Company employed_at = 5;
+  string type = 6;
+}
+message EqualsString {
+  string attribute5 = 1;
+}
+message EqualsStringIn {
+  string attribute6 = 1;
+}
+message Event {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  bool is_current = 3;
+  // Example of a slot that has an unconstrained range
+  AnyObject metadata = 4;
+}
+message FakeClass {
+  string test_attribute = 1;
+}
+message FamilialRelationship {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  CordialnessEnum cordialness = 3;
+  FamilialRelationshipType type = 4;
+  Person related_to = 5;
+}
+message Friend {
+  string name = 2;
+}
+message HasAliases {
+  repeated string aliases = 1;
+}
+message MarriageEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  bool is_current = 3;
+  // Example of a slot that has an unconstrained range
+  AnyObject metadata = 4;
+  Person married_to = 5;
+  Place in_location = 6;
+}
+message MedicalEvent {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  bool is_current = 3;
+  // Example of a slot that has an unconstrained range
+  AnyObject metadata = 4;
+  Place in_location = 5;
+  DiagnosisConcept diagnosis = 6;
+  ProcedureConcept procedure = 7;
+}
 // An organization.
 // 
 // This description
@@ -150,62 +144,119 @@ message MedicalEvent
 //  * and
 //  * a
 //  * list
-message Organization
- {
-  string id = 1
-  string name = 2
- repeated  string aliases = 0
- }
+message Organization {
+  string id = 1;
+  string name = 2;
+  repeated string aliases = 3;
+}
 // A person, living or dead
-message Person
- {
-  string id = 1
-  string name = 2
- repeated  employmentEvent hasEmploymentHistory = 7
- repeated  familialRelationship hasFamilialRelationships = 0
- repeated  medicalEvent hasMedicalHistory = 5
-  integer ageInYears = 0
- repeated  address addresses = 0
-  birthEvent hasBirthEvent = 0
-  string speciesName = 0
-  integer stomachCount = 0
-  lifeStatusEnum isLiving = 0
- repeated  string aliases = 0
- }
-message Place
- {
-  string id = 1
-  string name = 2
- repeated  string aliases = 0
- }
-message ProcedureConcept
- {
-  string id = 1
-  string name = 2
-  codeSystem inCodeSystem = 0
- }
-message Relationship
- {
-  date startedAtTime = 0
-  date endedAtTime = 0
-  string relatedTo = 0
-  string type = 0
-  cordialnessEnum cordialness = 0
- }
-message SubSubClass2
- {
-  string slotWithSpace1 = 0
-  classWithSpaces slotWithSpace2 = 0
- }
-message SubclassTest
- {
-  string slotWithSpace1 = 0
-  classWithSpaces slotWithSpace2 = 0
- }
+message Person {
+  string id = 1;
+  string name = 2;
+  repeated EmploymentEvent has_employment_history = 7;
+  repeated FamilialRelationship has_familial_relationships = 3;
+  repeated MedicalEvent has_medical_history = 5;
+  // number of years since birth
+  int32 age_in_years = 4;
+  repeated Address addresses = 6;
+  BirthEvent has_birth_event = 8;
+  string species_name = 9;
+  int32 stomach_count = 10;
+  LifeStatusEnum is_living = 11;
+  repeated string aliases = 12;
+}
+message Place {
+  string id = 1;
+  string name = 2;
+  repeated string aliases = 3;
+}
+message ProcedureConcept {
+  string id = 1;
+  string name = 2;
+  CodeSystem in_code_system = 3;
+}
+message Relationship {
+  string started_at_time = 1;
+  string ended_at_time = 2;
+  string related_to = 3;
+  string type = 4;
+  CordialnessEnum cordialness = 5;
+}
+message SubSubClass2 {
+  string slot_with_space_N1 = 1;
+  ClassWithSpaces slot_with_space_N2 = 2;
+}
+message SubclassTest {
+  string slot_with_space_N1 = 1;
+  ClassWithSpaces slot_with_space_N2 = 2;
+}
 // Same depth as Sub sub class 1
-message TubSubClass1
- {
-  string slotWithSpace1 = 0
-  classWithSpaces slotWithSpace2 = 0
- }
+message TubSubClass1 {
+  string slot_with_space_N1 = 1;
+  ClassWithSpaces slot_with_space_N2 = 2;
+}
+message WithLocation {
+  Place in_location = 1;
+}
+
+enum CordialnessEnum {
+  CORDIALNESS_ENUM_UNSPECIFIED = 0;
+  CORDIALNESS_ENUM_HEARTFELT = 1;
+  CORDIALNESS_ENUM_HATEFUL = 2;
+  CORDIALNESS_ENUM_INDIFFERENT = 3;
+}
+enum DiagnosisType {
+  DIAGNOSIS_TYPE_UNSPECIFIED = 0;
+  DIAGNOSIS_TYPE_TODO = 1;
+}
+// codes for different kinds of employment/HR related events
+enum EmploymentEventType {
+  EMPLOYMENT_EVENT_TYPE_UNSPECIFIED = 0;
+  EMPLOYMENT_EVENT_TYPE_HIRE = 1;
+  EMPLOYMENT_EVENT_TYPE_FIRE = 2;
+  EMPLOYMENT_EVENT_TYPE_PROMOTION = 3;
+  EMPLOYMENT_EVENT_TYPE_TRANSFER = 4;
+}
+enum FamilialRelationshipType {
+  FAMILIAL_RELATIONSHIP_TYPE_UNSPECIFIED = 0;
+  FAMILIAL_RELATIONSHIP_TYPE_SIBLING_OF = 1;
+  FAMILIAL_RELATIONSHIP_TYPE_PARENT_OF = 2;
+  FAMILIAL_RELATIONSHIP_TYPE_CHILD_OF = 3;
+}
+enum KitchenStatus {
+  KITCHEN_STATUS_UNSPECIFIED = 0;
+  KITCHEN_STATUS_DIRTY = 1;
+  KITCHEN_STATUS_CLEAN = 2;
+}
+enum LifeStatusEnum {
+  LIFE_STATUS_ENUM_UNSPECIFIED = 0;
+  LIFE_STATUS_ENUM_LIVING = 1;
+  LIFE_STATUS_ENUM_DEAD = 2;
+  LIFE_STATUS_ENUM_UNKNOWN = 3;
+}
+// An example enum whose joined values will exceed 255 characters.
+enum LongEnum {
+  LONG_ENUM_UNSPECIFIED = 0;
+  LONG_ENUM_ALPHA_SEQUENCE_IDENTIFIER01_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 1;
+  LONG_ENUM_BETA_SEQUENCE_IDENTIFIER02_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 2;
+  LONG_ENUM_GAMMA_SEQUENCE_IDENTIFIER03_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 3;
+  LONG_ENUM_DELTA_SEQUENCE_IDENTIFIER04_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 4;
+  LONG_ENUM_EPSILON_SEQUENCE_IDENTIFIER05_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 5;
+  LONG_ENUM_ZETA_SEQUENCE_IDENTIFIER06_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 6;
+  LONG_ENUM_ETA_SEQUENCE_IDENTIFIER07_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 7;
+  LONG_ENUM_THETA_SEQUENCE_IDENTIFIER08_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 8;
+  LONG_ENUM_IOTA_SEQUENCE_IDENTIFIER09_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 9;
+  LONG_ENUM_KAPPA_SEQUENCE_IDENTIFIER10_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 10;
+  LONG_ENUM_LAMBDA_SEQUENCE_IDENTIFIER11_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 11;
+  LONG_ENUM_MU_SEQUENCE_IDENTIFIER12_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 12;
+  LONG_ENUM_NU_SEQUENCE_IDENTIFIER13_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 13;
+  LONG_ENUM_XI_SEQUENCE_IDENTIFIER14_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 14;
+  LONG_ENUM_OMICRON_SEQUENCE_IDENTIFIER15_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 15;
+  LONG_ENUM_PI_SEQUENCE_IDENTIFIER16_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 16;
+  LONG_ENUM_RHO_SEQUENCE_IDENTIFIER17_LONG_PATTERN_LONG_PATTERN_LONG_PATTERN = 17;
+}
+enum OtherCodes {
+  OTHER_CODES_UNSPECIFIED = 0;
+  OTHER_CODES_A_B = 1;
+}
 

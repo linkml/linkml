@@ -6,6 +6,7 @@ from rdflib import RDF, Graph
 from rdflib.compare import IsomorphicGraph, graph_diff, to_isomorphic
 
 from linkml_runtime.linkml_model.meta import LINKML
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 # TODO: Find out why test_issue_namespace is emitting generation_date in the TYPE namespace
 from tests import SKIP_RDF_COMPARE, SKIP_RDF_COMPARE_REASON
@@ -38,7 +39,7 @@ def print_triples(g: Graph) -> None:
     Print the contents of g into stdout
     :param g: graph to print
     """
-    g_text = re.sub(r"@prefix.*\n", "", g.serialize(format="turtle"))
+    g_text = re.sub(r"@prefix.*\n", "", canonicalize_rdf_graph(g, output_format="turtle"))
     print(g_text)
 
 

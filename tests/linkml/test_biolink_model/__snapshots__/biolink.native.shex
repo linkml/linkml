@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 # version: 4.2.5
 BASE <https://w3id.org/biolink/vocab/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -1087,7 +1087,7 @@ linkml:Sparqlpath xsd:string
 <ChemicalToEntityAssociationMixin> {
     (  $<ChemicalToEntityAssociationMixin_tes> (  &<ChemicalEntityToEntityAssociationMixin_tes> ;
           rdf:type [ <ChemicalEntityToEntityAssociationMixin> ] ? ;
-          <subject> @<NamedThing>
+          <subject> @<ChemicalEntityOrGeneOrGeneProduct>
        ) ;
        rdf:type [ <ChemicalToEntityAssociationMixin> ] ?
     )
@@ -1493,7 +1493,7 @@ linkml:Sparqlpath xsd:string
 <DrugToEntityAssociationMixin> {
     (  $<DrugToEntityAssociationMixin_tes> (  &<ChemicalEntityToEntityAssociationMixin_tes> ;
           rdf:type [ <ChemicalEntityToEntityAssociationMixin> ] ? ;
-          <subject> @<NamedThing>
+          <subject> @<Drug>
        ) ;
        rdf:type [ <DrugToEntityAssociationMixin> ] ?
     )

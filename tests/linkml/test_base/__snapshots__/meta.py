@@ -86,7 +86,7 @@ from linkml_runtime.linkml_model.types import Boolean, Datetime, Integer, Ncname
 from linkml_runtime.linkml_model.units import UnitOfMeasure
 from linkml_runtime.utils.metamodelcore import Bool, NCName, URI, URIorCURIE, XSDDateTime
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces
@@ -1220,7 +1220,7 @@ class EnumBinding(YAMLRoot):
 @dataclass(repr=False)
 class MatchQuery(YAMLRoot):
     """
-    A query that is used on an enum expression to dynamically obtain a set of permissivle values via a query that
+    A query that is used on an enum expression to dynamically obtain a set of permissible values via a query that
     matches on properties of the external concepts.
     """
     _inherited_slots: ClassVar[list[str]] = []

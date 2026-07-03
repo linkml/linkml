@@ -53,6 +53,7 @@ SCHEMA_WITH_IMPORTS = INPUT_DIR_PATH / "kitchen_sink.yaml"
 SCHEMA_CORE = INPUT_DIR_PATH / "core.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE = INPUT_DIR_PATH / "imports_relative" / "L0_0" / "L1_0_0" / "main.yaml"
 SCHEMA_RELATIVE_IMPORT_TREE2 = INPUT_DIR_PATH / "imports_relative" / "L0_2" / "main.yaml"
+SCHEMA_RULES_IMPORT = INPUT_DIR_PATH / "rules_import" / "base.yaml"
 
 CREATURE_SCHEMA = "creature_schema"
 CREATURE_SCHEMA_BASE_URL = "https://github.com/linkml/linkml/tree/main/tests/linkml_runtime/test_utils/input/mcc"
@@ -475,6 +476,21 @@ def test_imports_overrides(sv_import_tree: SchemaView) -> None:
         defaults[name] = cls.attributes["value"].ifabsent
 
     assert defaults == target
+
+
+def test_imports_rules_merge() -> None:
+    """Rules from imported schemas should be additively merged onto same-named classes.
+
+    When a base schema imports a rules-only schema that defines rules on a class
+    also defined in the base, the rules should accumulate rather than being silently
+    dropped by the import merge.
+    """
+    sv = SchemaView(SCHEMA_RULES_IMPORT)
+    org = sv.get_class("Organization")
+    descriptions = {r.description for r in org.rules}
+    assert "base rule" in descriptions, "Base schema's own rules should be preserved"
+    assert "imported rule" in descriptions, "Imported schema's rules should be merged in"
+    assert len(org.rules) == 2
 
 
 def test_imports_relative() -> None:
@@ -1639,6 +1655,20 @@ def test_get_uri(schema_view_with_imports: SchemaView) -> None:
     assert view.get_uri("name", use_element_type=True) == "core:slot/name"
 
     assert view.get_uri("string") == "xsd:string"
+
+    # SubsetDefinition: multi-word names are camelcased when building the native URI.
+    # "subset A" -> "SubsetA"; the transformation is directly observable.
+    assert view.get_uri("subset A") == "ks:SubsetA"
+    assert view.get_uri("subset A", expand=True) == "https://w3id.org/linkml/tests/kitchen_sink/SubsetA"
+    assert view.get_uri("subset B") == "ks:SubsetB"
+
+    # TypeDefinition and EnumDefinition: add multi-word names to the kitchen_sink schema
+    # so the camelcase transformation is directly observable (the fixture is function-scoped).
+    view.add_type(TypeDefinition(name="my custom type"))
+    assert view.get_uri("my custom type") == "ks:MyCustomType"
+
+    view.add_enum(EnumDefinition(name="relationship type"))
+    assert view.get_uri("relationship type") == "ks:RelationshipType"
 
 
 def test_uris_without_default_prefix() -> None:
@@ -2964,6 +2994,15 @@ def test_materialize_patterns_attribute(sv_structured_patterns: SchemaView) -> N
         ("an_integer", False),
         ("inlined_integer", False),
         ("inlined_as_list_integer", False),
+        # Slots that inherit inlined/inlined_as_list via is_a without redeclaring it.
+        # Regression test for https://github.com/linkml/linkml/issues/3695:
+        # is_inlined() must traverse the slot's is_a chain, not only check the slot itself.
+        ("child_of_inlined_thing_with_id", True),
+        ("child_of_inlined_as_list_thing_with_id", True),
+        # Slots that inherit inlined/inlined_as_list via mixins without redeclaring it.
+        # is_inlined() must also traverse mixin ancestry, not only is_a chains.
+        ("child_via_inlined_mixin", True),
+        ("child_via_inlined_as_list_mixin", True),
     ],
 )
 def test_is_inlined(sv_inlined: SchemaView, slot_name: str, expected_result: bool) -> None:

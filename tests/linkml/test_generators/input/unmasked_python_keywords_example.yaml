@@ -8,22 +8,179 @@ license: https://creativecommons.org/publicdomain/zero/1.0/
 
 prefixes:
   ex: https://example.org/
+  linkml: https://w3id.org/linkml/
+
 default_prefix: ex
+default_range: string
+
+imports:
+  - linkml:types
 
 classes:
-  Translation:
+  Thing:
+    attributes:
+      "False":
+        range: KeywordEnum
+      "None":
+        range: KeywordEnum
+      "True":
+        range: KeywordEnum
+      and:
+        range: KeywordEnum
+      as:
+        range: KeywordEnum
+      assert:
+        range: KeywordEnum
+      async:
+        range: KeywordEnum
+      await:
+        range: KeywordEnum
+      break:
+        range: KeywordEnum
+      class:
+        range: KeywordEnum
+      continue:
+        range: KeywordEnum
+      def:
+        range: KeywordEnum
+      del:
+        range: KeywordEnum
+      elif:
+        range: KeywordEnum
+      else:
+        range: KeywordEnum
+      except:
+        range: KeywordEnum
+      finally:
+        range: KeywordEnum
+      for:
+        range: KeywordEnum
     slots:
       - from
-      - to
+      - global
+      - if
+      - import
+      - in
+      - is
+      - lambda
+      - nonlocal
+      - not
+      - or
+      - pass
+      - raise
+      - return
+      - try
+      - while
+      - with
+      - yield
 
 slots:
+  "False":
+    range: KeywordEnum
+  "None":
+    range: KeywordEnum
+  "True":
+    range: KeywordEnum
+  and:
+    range: KeywordEnum
+  as:
+    range: KeywordEnum
+  assert:
+    range: KeywordEnum
+  async:
+    range: KeywordEnum
+  await:
+    range: KeywordEnum
+  break:
+    range: KeywordEnum
+  class:
+    range: KeywordEnum
+  continue:
+    range: KeywordEnum
+  def:
+    range: KeywordEnum
+  del:
+    range: KeywordEnum
+  elif:
+    range: KeywordEnum
+  else:
+    range: KeywordEnum
+  except:
+    range: KeywordEnum
+  finally:
+    range: KeywordEnum
+  for:
+    range: KeywordEnum
   from:
-    range: LanguageEnum
-  to:
-    range: LanguageEnum
+    range: KeywordEnum
+  global:
+    range: KeywordEnum
+  if:
+    range: KeywordEnum
+  import:
+    range: KeywordEnum
+  in:
+    range: KeywordEnum
+  is:
+    range: KeywordEnum
+  lambda:
+    range: KeywordEnum
+  nonlocal:
+    range: KeywordEnum
+  not:
+    range: KeywordEnum
+  or:
+    range: KeywordEnum
+  pass:
+    range: KeywordEnum
+  raise:
+    range: KeywordEnum
+  return:
+    range: KeywordEnum
+  try:
+    range: KeywordEnum
+  while:
+    range: KeywordEnum
+  with:
+    range: KeywordEnum
+  yield:
+    range: KeywordEnum
 
 enums:
-  LanguageEnum:
+  KeywordEnum:
     permissible_values:
+      "False":
+      "None":
+      "True":
+      and:
+      as:
+      assert:
+      async:
+      await:
+      break:
+      class:
+      continue:
+      def:
       del:
-      eng:
+      elif:
+      else:
+      except:
+      finally:
+      for:
+      from:
+      global:
+      if:
+      import:
+      in:
+      is:
+      lambda:
+      nonlocal:
+      not:
+      or:
+      pass:
+      raise:
+      return:
+      try:
+      while:
+      with:
+      yield:

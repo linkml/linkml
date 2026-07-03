@@ -58,7 +58,7 @@ from rdflib import (
 
 
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

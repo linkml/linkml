@@ -61,7 +61,7 @@ from linkml_runtime.linkml_model.extensions import Extension, ExtensionTag
 from linkml_runtime.linkml_model.types import String
 from linkml_runtime.utils.metamodelcore import Curie, NCName, URI, URIorCURIE, XSDDateTime
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

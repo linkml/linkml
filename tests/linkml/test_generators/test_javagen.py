@@ -104,7 +104,7 @@ def test_generate_enum_objects(kitchen_sink_path):
     # Same, but with an enum with names that must be transformed
     expected_enum = OOEnum(
         name="OtherCodes",
-        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/other codes",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/OtherCodes",
     )
     expected_enum.values = [OOEnumValue(label="a_b", text="a b")]
     assert expected_enum == enum_objects["other codes"]
@@ -121,7 +121,7 @@ def test_create_documents_includes_enums(kitchen_sink_path):
     gen = JavaGenerator(kitchen_sink_path, true_enums=True)
     docs = gen.create_documents()
     enum_docs = [doc for doc in docs if doc.enums]
-    assert len(enum_docs) == 7  # 6 enums in kitchen sink + 1 in core
+    assert len(enum_docs) == 8  # 7 enums in kitchen sink + 1 in core
 
     # A document contains either a class or an enum, but not both
     assert not [doc for doc in docs if doc.classes and doc.enums]
@@ -181,3 +181,50 @@ def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
     gen = JavaGenerator(input_path("personinfo.yaml"))
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "NamedThing.java", "private String id")
+
+
+def test_refined_slots(input_path, tmp_path):
+    """Test that OOCodeGen provides required infos about refined slots."""
+    gen = JavaGenerator(input_path("refined_derived_slots.yaml"))
+    expected = {
+        ("Foo", "bar"): [],
+        ("Foo", "bars"): [],
+        ("FirstDerivedFoo", "bar"): ["Bar"],
+        ("FirstDerivedFoo", "bars"): ["List<Bar>"],
+        ("SecondDerivedFoo", "bar"): [],
+        ("SecondDerivedFoo", "bars"): [],
+        ("ThirdDerivedFoo", "bar"): ["FirstDerivedBar", "Bar"],
+        ("ThirdDerivedFoo", "bars"): ["List<FirstDerivedBar>", "List<Bar>"],
+    }
+    for doc in gen.create_documents():
+        for klass in doc.classes:
+            for field in klass.all_fields:
+                exp = expected[(klass.name, field.name)]
+                if exp is not None:
+                    assert exp == field.refined_ranges
+
+
+def test_refined_ranges(input_path):
+    """Test that OOCodeGen correctly infers refined ranges."""
+    gen = JavaGenerator(input_path("refined_derived_slots.yaml"))
+
+    # Refined ranges in subclasses
+    # - Subclasses of Foo refine the bar slot twice
+    assert gen.get_refined_ranges("bar", "Foo") == ["FirstDerivedBar", "SecondDerivedBar"]
+    # - Subclasses of FirstDerivedFoo refine it once
+    assert gen.get_refined_ranges("bar", "FirstDerivedFoo") == ["SecondDerivedBar"]
+    # - Likewise, subclasses of SecondDerivedFoo refine the slot once
+    assert gen.get_refined_ranges("bar", "SecondDerivedFoo") == ["SecondDerivedBar"]
+    # - No more refinement from ThirdDerivedFoo
+    assert gen.get_refined_ranges("bar", "ThirdDerivedFoo") == []
+
+    # Refined ranges in superclasses
+    # - Foo is the defining class for the slot, no refinement possible
+    assert gen.get_refined_ranges("bar", "Foo", upwards=True) == []
+    # - FirstDerivedFoo refines the slot compared to its parent Foo
+    assert gen.get_refined_ranges("bar", "FirstDerivedFoo", upwards=True) == ["Bar"]
+    # - SecondDerivedFoo does not refine the slot compared to its parent FirstDerivedFoo
+    assert gen.get_refined_ranges("bar", "SecondDerivedFoo", upwards=True) == []
+    # - ThirdDerivedFoo refines the slot compared to its parent SecondDerivedFoo;
+    #   this is the second refinement in the hierarchy since the defining class
+    assert gen.get_refined_ranges("bar", "ThirdDerivedFoo", upwards=True) == ["FirstDerivedBar", "Bar"]

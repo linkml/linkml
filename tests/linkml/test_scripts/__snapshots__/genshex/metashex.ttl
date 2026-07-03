@@ -1,4 +1,4 @@
-# metamodel_version: 1.7.0
+# metamodel_version: 1.11.0
 @prefix prov: <http://www.w3.org/ns/prov#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix shex: <http://www.w3.org/ns/shex#> .
@@ -143,11 +143,17 @@
                 shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/in_location> ;
                 shex:valueExpr <https://w3id.org/linkml/tests/kitchen_sink/Place> ] ) .
 
-<https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes> a shex:TripleConstraint ;
-    shex:max 1 ;
-    shex:min 0 ;
-    shex:predicate <https://w3id.org/linkml/tests/core/name> ;
-    shex:valueExpr <https://w3id.org/linkml/String> .
+<https://w3id.org/linkml/tests/kitchen_sink/CodeSystem_tes> a shex:EachOf ;
+    shex:expressions ( [ a shex:TripleConstraint ;
+                shex:max 1 ;
+                shex:min 0 ;
+                shex:predicate <https://w3id.org/linkml/tests/core/name> ;
+                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
+                shex:max 1 ;
+                shex:min 0 ;
+                shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/long_id> ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#BetaSequenceIdentifier02_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#GammaSequenceIdentifier03_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#EtaSequenceIdentifier07_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#IotaSequenceIdentifier09_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#KappaSequenceIdentifier10_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#MuSequenceIdentifier12_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#NuSequenceIdentifier13_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#XiSequenceIdentifier14_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#PiSequenceIdentifier16_LongPatternLongPatternLongPattern> <https://w3id.org/linkml/tests/kitchen_sink/LongEnum#RhoSequenceIdentifier17_LongPatternLongPatternLongPattern> ) ] ] ) .
 
 <https://w3id.org/linkml/tests/kitchen_sink/Company_tes> a shex:EachOf ;
     shex:expressions ( <https://w3id.org/linkml/tests/kitchen_sink/Organization_tes> [ a shex:TripleConstraint ;
@@ -232,7 +238,8 @@
                 shex:max 1 ;
                 shex:min 0 ;
                 shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/cordialness> ;
-                shex:valueExpr <https://w3id.org/linkml/String> ] [ a shex:TripleConstraint ;
+                shex:valueExpr [ a shex:NodeConstraint ;
+                        shex:values ( <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#heartfelt> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#hateful> <https://w3id.org/linkml/tests/kitchen_sink/CordialnessEnum#indifferent> ) ] ] [ a shex:TripleConstraint ;
                 shex:max 1 ;
                 shex:min 1 ;
                 shex:predicate <https://w3id.org/linkml/tests/kitchen_sink/type> ;

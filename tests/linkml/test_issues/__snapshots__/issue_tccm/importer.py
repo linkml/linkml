@@ -58,7 +58,7 @@ from rdflib import (
 
 from . importee import Base, BaseId, String
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

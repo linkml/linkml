@@ -454,6 +454,46 @@ enums:
       indifferent:
         text: indifferent
         description: not overly friendly nor obnoxiously spiteful
+  LongEnum:
+    name: LongEnum
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/LongEnum
+    description: An example enum whose joined values will exceed 255 characters.
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    permissible_values:
+      AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern:
+        text: AlphaSequenceIdentifier01_LongPatternLongPatternLongPattern
+      BetaSequenceIdentifier02_LongPatternLongPatternLongPattern:
+        text: BetaSequenceIdentifier02_LongPatternLongPatternLongPattern
+      GammaSequenceIdentifier03_LongPatternLongPatternLongPattern:
+        text: GammaSequenceIdentifier03_LongPatternLongPatternLongPattern
+      DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern:
+        text: DeltaSequenceIdentifier04_LongPatternLongPatternLongPattern
+      EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern:
+        text: EpsilonSequenceIdentifier05_LongPatternLongPatternLongPattern
+      ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern:
+        text: ZetaSequenceIdentifier06_LongPatternLongPatternLongPattern
+      EtaSequenceIdentifier07_LongPatternLongPatternLongPattern:
+        text: EtaSequenceIdentifier07_LongPatternLongPatternLongPattern
+      ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern:
+        text: ThetaSequenceIdentifier08_LongPatternLongPatternLongPattern
+      IotaSequenceIdentifier09_LongPatternLongPatternLongPattern:
+        text: IotaSequenceIdentifier09_LongPatternLongPatternLongPattern
+      KappaSequenceIdentifier10_LongPatternLongPatternLongPattern:
+        text: KappaSequenceIdentifier10_LongPatternLongPatternLongPattern
+      LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern:
+        text: LambdaSequenceIdentifier11_LongPatternLongPatternLongPattern
+      MuSequenceIdentifier12_LongPatternLongPatternLongPattern:
+        text: MuSequenceIdentifier12_LongPatternLongPatternLongPattern
+      NuSequenceIdentifier13_LongPatternLongPatternLongPattern:
+        text: NuSequenceIdentifier13_LongPatternLongPatternLongPattern
+      XiSequenceIdentifier14_LongPatternLongPatternLongPattern:
+        text: XiSequenceIdentifier14_LongPatternLongPatternLongPattern
+      OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern:
+        text: OmicronSequenceIdentifier15_LongPatternLongPatternLongPattern
+      PiSequenceIdentifier16_LongPatternLongPatternLongPattern:
+        text: PiSequenceIdentifier16_LongPatternLongPatternLongPattern
+      RhoSequenceIdentifier17_LongPatternLongPatternLongPattern:
+        text: RhoSequenceIdentifier17_LongPatternLongPatternLongPattern
   KitchenStatus:
     name: KitchenStatus
     definition_uri: https://w3id.org/linkml/tests/core/KitchenStatus
@@ -574,6 +614,15 @@ slots:
     range: DiagnosisConcept
     inlined: true
     inlined_as_list: false
+  long_id:
+    name: long_id
+    definition_uri: https://w3id.org/linkml/tests/kitchen_sink/long_id
+    from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    slot_uri: ks:long_id
+    owner: CodeSystem
+    domain_of:
+    - CodeSystem
+    range: LongEnum
   procedure:
     name: procedure
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/procedure
@@ -1216,6 +1265,8 @@ classes:
     name: AnyOfSimpleType
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfSimpleType
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:AnyOfSimpleType
     slots:
     - anyOfSimpleType__attribute1
     attributes:
@@ -1229,6 +1280,8 @@ classes:
     name: AnyOfClasses
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfClasses
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:AnyOfClasses
     slots:
     - anyOfClasses__attribute2
     attributes:
@@ -1242,6 +1295,8 @@ classes:
     name: AnyOfEnums
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfEnums
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:AnyOfEnums
     slots:
     - anyOfEnums__attribute3
     attributes:
@@ -1255,6 +1310,8 @@ classes:
     name: AnyOfMix
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyOfMix
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:AnyOfMix
     slots:
     - anyOfMix__attribute4
     attributes:
@@ -1269,6 +1326,8 @@ classes:
     name: EqualsString
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsString
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:EqualsString
     slots:
     - equalsString__attribute5
     attributes:
@@ -1280,6 +1339,8 @@ classes:
     name: EqualsStringIn
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EqualsStringIn
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:EqualsStringIn
     slots:
     - equalsStringIn__attribute6
     attributes:
@@ -1293,6 +1354,8 @@ classes:
     name: HasAliases
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/HasAliases
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:HasAliases
     mixin: true
     slots:
     - hasAliases__aliases
@@ -1306,6 +1369,8 @@ classes:
     name: Friend
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Friend
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Friend
     abstract: true
     slots:
     - name
@@ -1336,6 +1401,7 @@ classes:
     - https://en.wikipedia.org/wiki/Person
     - schema:Person
     exact_mappings:
+    - ks:Person
     - schema:Person
     rank: 2
     mixins:
@@ -1376,6 +1442,8 @@ classes:
     description: "An organization.\n\nThis description\nincludes newlines\n\n## Markdown\
       \ headers\n\n * and\n * a\n * list"
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Organization
     rank: 3
     mixins:
     - HasAliases
@@ -1388,6 +1456,8 @@ classes:
     name: Place
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Place
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Place
     mixins:
     - HasAliases
     slots:
@@ -1399,6 +1469,8 @@ classes:
     name: Address
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Address
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Address
     slots:
     - street
     - city
@@ -1410,6 +1482,8 @@ classes:
     - CODE
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Concept
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Concept
     slots:
     - id
     - name
@@ -1419,6 +1493,8 @@ classes:
     name: DiagnosisConcept
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/DiagnosisConcept
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:DiagnosisConcept
     close_mappings:
     - biolink:Disease
     is_a: Concept
@@ -1431,6 +1507,8 @@ classes:
     name: ProcedureConcept
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/ProcedureConcept
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:ProcedureConcept
     is_a: Concept
     slots:
     - id
@@ -1441,6 +1519,8 @@ classes:
     name: Event
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Event
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Event
     slots:
     - started at time
     - ended at time
@@ -1451,6 +1531,8 @@ classes:
     name: Relationship
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Relationship
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Relationship
     slots:
     - started at time
     - ended at time
@@ -1466,15 +1548,16 @@ classes:
     name: FamilialRelationship
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/FamilialRelationship
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:FamilialRelationship
     rank: 5
     is_a: Relationship
     slots:
     - started at time
     - ended at time
-    - cordialness
+    - FamilialRelationship_cordialness
     - FamilialRelationship_type
     - FamilialRelationship_related to
-    - FamilialRelationship_cordialness
     slot_usage:
       type:
         name: type
@@ -1491,6 +1574,8 @@ classes:
     name: BirthEvent
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/BirthEvent
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:BirthEvent
     is_a: Event
     slots:
     - started at time
@@ -1503,6 +1588,8 @@ classes:
     name: EmploymentEvent
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/EmploymentEvent
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:EmploymentEvent
     rank: 6
     is_a: Event
     slots:
@@ -1524,6 +1611,8 @@ classes:
     name: MedicalEvent
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/MedicalEvent
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:MedicalEvent
     is_a: Event
     slots:
     - started at time
@@ -1538,6 +1627,8 @@ classes:
     name: WithLocation
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/WithLocation
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:WithLocation
     mixin: true
     slots:
     - in location
@@ -1546,6 +1637,8 @@ classes:
     name: MarriageEvent
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/MarriageEvent
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:MarriageEvent
     is_a: Event
     mixins:
     - WithLocation
@@ -1561,6 +1654,8 @@ classes:
     name: Company
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Company
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Company
     is_a: Organization
     slots:
     - id
@@ -1577,14 +1672,19 @@ classes:
     name: CodeSystem
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/CodeSystem
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:CodeSystem
     slots:
     - id
     - name
+    - long_id
     class_uri: ks:CodeSystem
   Dataset:
     name: Dataset
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/Dataset
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:Dataset
     rank: 1
     slots:
     - metadata
@@ -1623,6 +1723,8 @@ classes:
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/FakeClass
     deprecated: this is not a real class, we are using it to test deprecation
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:FakeClass
     slots:
     - fakeClass__test_attribute
     attributes:
@@ -1633,6 +1735,8 @@ classes:
     name: class with spaces
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/ClassWithSpaces
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:ClassWithSpaces
     slots:
     - classWithSpaces__slot_with_space_1
     attributes:
@@ -1643,6 +1747,8 @@ classes:
     name: subclass test
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/SubclassTest
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:SubclassTest
     is_a: class with spaces
     slots:
     - classWithSpaces__slot_with_space_1
@@ -1656,6 +1762,8 @@ classes:
     name: Sub sub class 2
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/SubSubClass2
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:SubSubClass2
     is_a: subclass test
     slots:
     - classWithSpaces__slot_with_space_1
@@ -1666,6 +1774,8 @@ classes:
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/TubSubClass1
     description: Same depth as Sub sub class 1
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
+    exact_mappings:
+    - ks:TubSubClass1
     is_a: subclass test
     slots:
     - classWithSpaces__slot_with_space_1
@@ -1676,7 +1786,7 @@ classes:
     definition_uri: https://w3id.org/linkml/tests/kitchen_sink/AnyObject
     description: Example of unconstrained class
     from_schema: https://w3id.org/linkml/tests/kitchen_sink
-    mappings:
+    exact_mappings:
     - linkml:Any
     class_uri: linkml:Any
   activity:
@@ -1686,6 +1796,8 @@ classes:
     from_schema: https://w3id.org/linkml/tests/core
     mappings:
     - prov:Activity
+    exact_mappings:
+    - core:Activity
     slots:
     - id
     - started at time
@@ -1700,14 +1812,14 @@ classes:
     definition_uri: https://w3id.org/linkml/tests/core/Agent
     description: a provence-generating agent
     from_schema: https://w3id.org/linkml/tests/core
-    mappings:
+    exact_mappings:
     - prov:Agent
     slots:
     - id
     - acted on behalf of
     - was informed by
     class_uri: prov:Agent
-metamodel_version: 1.7.0
+metamodel_version: 1.11.0
 source_file: kitchen_sink.yaml
 source_file_date: '2000-01-01T00:00:00'
 source_file_size: 1

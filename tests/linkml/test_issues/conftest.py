@@ -3,7 +3,8 @@ from collections.abc import Callable, Mapping
 
 import pytest
 import rdflib
-from rdflib.compare import to_canonical_graph
+
+from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 
 
 @pytest.fixture
@@ -150,7 +151,7 @@ def _normalize_snapshot_bundle_output(name: str, output: str) -> str:
     if name.endswith((".ttl", ".owl")):
         graph = rdflib.Graph()
         graph.parse(data=output, format="turtle")
-        normalized = to_canonical_graph(graph).serialize(format="nt")
+        normalized = canonicalize_rdf_graph(graph, output_format="nt")
         return "\n".join(sorted(line for line in normalized.splitlines() if line)) + "\n"
     if name.endswith((".json", ".schema.json", ".context.jsonld")):
         return json.dumps(json.loads(output), indent=2, sort_keys=True, ensure_ascii=False) + "\n"

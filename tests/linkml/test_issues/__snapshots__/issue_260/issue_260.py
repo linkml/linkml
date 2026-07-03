@@ -60,7 +60,7 @@ from . issue_260a import C260a, String
 from ..issue_260.issue_260b import C260b
 from .issue_260c import C260c
 
-metamodel_version = "1.7.0"
+metamodel_version = "1.11.0"
 version = None
 
 # Namespaces

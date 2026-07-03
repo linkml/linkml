@@ -51,7 +51,7 @@ def test_rdf_shex(tmp_path):
     assert context_file.exists()
 
     rdf_file = tmp_path / "meta.ttl"
-    RDFGenerator(KITCHEN_SINK_PATH).serialize(output=rdf_file, context=context_file)
+    RDFGenerator(KITCHEN_SINK_PATH).serialize(output=rdf_file, context=str(context_file))
     assert rdf_file.exists()
 
     shex_file = tmp_path / "meta.shex"
