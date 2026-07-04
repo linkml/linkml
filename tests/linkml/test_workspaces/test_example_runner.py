@@ -139,16 +139,21 @@ def test_example_runner_non_defaults(example_runner):
     assert "Container-002" in md
 
 
-def test_cli_required_options(runner, example_runner, tmp_path):
+def test_cli_required_options(runner, example_runner, tmp_path, monkeypatch):
     """Test the CLI with required options."""
     schema_path = example_runner.schemaview.schema.source_file
     output_directory = example_runner.output_directory
+
+    # process_examples() falls back to Path.cwd() / "examples" (and "counter_examples")
+    # when --input-directory isn't given; run from an empty directory so this test
+    # doesn't pick up the repo's own top-level examples/ folder.
+    monkeypatch.chdir(tmp_path)
 
     result = runner.invoke(cli, ["--schema", schema_path, "--output-directory", str(output_directory)])
     assert result.exit_code == 0
 
 
-def test_cli_with_prefixes(runner, example_runner, tmp_path):
+def test_cli_with_prefixes(runner, example_runner, tmp_path, monkeypatch):
     """Test the CLI with the --prefixes option."""
     schema_path = example_runner.schemaview.schema.source_file
     output_directory = example_runner.output_directory
@@ -161,6 +166,9 @@ def test_cli_with_prefixes(runner, example_runner, tmp_path):
       ex: https://example.org/
     """
     )
+
+    # See test_cli_required_options: avoid picking up the repo's own examples/ folder.
+    monkeypatch.chdir(tmp_path)
 
     result = runner.invoke(
         cli, ["--schema", schema_path, "--prefixes", str(prefixes_file), "--output-directory", str(output_directory)]

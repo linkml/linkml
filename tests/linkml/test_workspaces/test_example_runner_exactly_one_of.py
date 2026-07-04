@@ -23,6 +23,8 @@ schema_slots = """
     imports:
         - linkml:types
     classes:
+        Any:
+            class_uri: linkml:Any
         Class1:
             slots:
                 - attr2
@@ -40,6 +42,7 @@ schema_slots = """
         attr3:
             required: true
         attr1:
+            range: Any
             exactly_one_of:
                 - range: Class1
                 - range: Class2
@@ -52,6 +55,8 @@ schema_attrs = """
     imports:
         - linkml:types
     classes:
+        Any:
+            class_uri: linkml:Any
         Class1:
             attributes:
                 attr2:
@@ -66,6 +71,7 @@ schema_attrs = """
             tree_root: true
             attributes:
                 attr1:
+                    range: Any
                     exactly_one_of:
                         - range: Class1
                         - range: Class2
@@ -77,8 +83,13 @@ def example_runner_attrs(input_path, tmp_path):
     schemaview = SchemaView(schema_attrs)
     print("schema", schema_attrs)
     ctxt = load_multi_context(["obo", "linked_data", "prefixcc"])
+    # Explicit (empty) directories so process_examples() doesn't fall back to
+    # Path.cwd() / "examples", which would pick up the repo's own examples/ folder.
     return ExampleRunner(
         schemaview=schemaview,
+        input_directory=tmp_path / "examples",
+        counter_example_input_directory=tmp_path / "counter_examples",
+        output_directory=tmp_path,
         prefix_map=ctxt.as_dict(),
     )
 
@@ -88,8 +99,12 @@ def example_runner_slots(input_path, tmp_path):
     schemaview = SchemaView(schema_slots)
     print("schema", schema_slots)
     ctxt = load_multi_context(["obo", "linked_data", "prefixcc"])
+    # See example_runner_attrs: isolate from the repo's own examples/ folder.
     return ExampleRunner(
         schemaview=schemaview,
+        input_directory=tmp_path / "examples",
+        counter_example_input_directory=tmp_path / "counter_examples",
+        output_directory=tmp_path,
         prefix_map=ctxt.as_dict(),
     )
 
