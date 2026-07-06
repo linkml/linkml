@@ -1,3 +1,4 @@
+import json
 from typing import TextIO
 
 from hbreader import FileInfo
@@ -41,10 +42,9 @@ class RDFLoader(Loader):
 
         def loader(data: str | dict, _: FileInfo) -> dict | None:
             """
-            Process an RDF graph or a JSON-LD string.  We do this by using pyld_jsonld_from_rdflib_graph to
-            emit a JSON-LD string and then process it with jsonld.frame.
+            Process an RDF string or dict into a target-class-shaped dict.
 
-            :param data: Graph or JSON-LD string
+            :param data: RDF/JSON-LD string or already-parsed dict
             :param _: Unused - part of signature for other implementations
             :return: Dictionary to load into the target class
             """
@@ -55,8 +55,9 @@ class RDFLoader(Loader):
                 if fmt != "json-ld":
                     g = Graph()
                     g.parse(data=data, format=fmt)
-                    jsonld_str = g.serialize(format="json-ld", indent=4)
-                    data = json.loads(jsonld_str)
+                    data = json.loads(g.serialize(format="json-ld", indent=4))
+                else:
+                    data = json.loads(data)
 
             if not isinstance(data, dict):
                 # TODO: Add a context processor to the source w/ CONTEXTS_PARAM_TYPE
@@ -82,11 +83,9 @@ class RDFLoader(Loader):
         if base_dir and not metadata.base_path:
             metadata.base_path = base_dir
 
-        # If the input is a graph, convert it to JSON-LD
+        # If the input is a graph, convert it to JSON-LD string for load_source
         if isinstance(source, Graph):
-            source = pyld_jsonld_from_rdflib_graph(source)
-            jsonld_str = source.serialize(format="json-ld", indent=4)
-            source = json.loads(jsonld_str)
+            source = source.serialize(format="json-ld", indent=4)
             fmt = "json-ld"
 
         # While we may want to allow full SSL verification at some point, the general philosophy is that content forgery
