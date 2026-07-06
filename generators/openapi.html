@@ -3,11 +3,11 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Excel Spreadsheet" href="excel.html"><link rel="prev" title="SSSOM" href="sssom.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="JSON-LD Contexts" href="jsonld-context.html"><link rel="prev" title="GraphQL" href="graphql.html">
         <link rel="prefetch" href="https://linkml.io/uploads/linkml-logo_color.png" as="image">
 
     <link rel="shortcut icon" href="https://linkml.io/uploads/linkml-logo_color-no-words.png"><!-- Generated with Sphinx 8.2.3 and Furo 2025.09.25 -->
-        <title>TerminusDB - linkml documentation</title>
+        <title>OpenAPI - linkml documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=580074bf" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
@@ -250,7 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="json-schema.html">JSON Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphql.html">GraphQL</a></li>
-<li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">OpenAPI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="jsonld.html">JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rdf.html">RDF</a></li>
@@ -276,7 +276,7 @@
 <li class="toctree-l2"><a class="reference internal" href="linkml.html">LinkML Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="prefixmap.html">Prefix Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sssom.html">SSSOM</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">TerminusDB</a></li>
+<li class="toctree-l2"><a class="reference internal" href="terminusdb.html">TerminusDB</a></li>
 <li class="toctree-l2"><a class="reference internal" href="excel.html">Excel Spreadsheet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="csv.html">CSV</a></li>
 <li class="toctree-l2"><a class="reference internal" href="yaml.html">Yaml</a></li>
@@ -391,7 +391,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/generators/terminusdb.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/generators/openapi.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -409,53 +409,154 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="terminusdb">
-<h1>TerminusDB<a class="headerlink" href="#terminusdb" title="Link to this heading">¶</a></h1>
+          <section id="openapi">
+<h1>OpenAPI<a class="headerlink" href="#openapi" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://www.openapis.org/">OpenAPI</a> is a specification for describing
+RESTful HTTP APIs. The OpenAPI generator produces an OpenAPI v3.0.3
+specification in YAML from a LinkML schema.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This generator produces a complete OpenAPI spec by combining a
+user-provided <em>template</em> (containing the API header, endpoints, and
+security schemes) with JSON Schema components derived from the
+LinkML schema.</p>
+</div>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
-<p><a class="reference external" href="https://terminusdb.com/">TerminusDB</a> is an open-source knowledge
-graph database that provides reliable, private &amp; efficient revision
-control &amp; collaboration.</p>
-<p>LinkML schemas can be compiled down to terminusdb WOQL schemas</p>
+<p>The generator works in two stages:</p>
+<ol class="arabic simple">
+<li><p>The user provides an <strong>OpenAPI template</strong> — a valid OpenAPI v3.0.3 YAML
+file that defines the API metadata (title, version, servers), paths
+(endpoints), and security schemes.</p></li>
+<li><p>The generator fills the <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section with JSON Schema
+definitions generated from the LinkML schema, keeping only those classes
+that are transitively reachable from the endpoints.</p></li>
+</ol>
+<p>Both the input template and the final output are automatically validated
+against the OpenAPI 3.0.3 specification using
+<a class="reference external" href="https://github.com/p1c2u/openapi-spec-validator">openapi-spec-validator</a>.</p>
 <p>To run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-terminusdb<span class="w"> </span>personinfo.yaml
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-openapi<span class="w"> </span>personinfo.yaml<span class="w"> </span>--template<span class="w"> </span>api-template.yaml<span class="w"> </span>&gt;<span class="w"> </span>personinfo.openapi.yaml
 </pre></div>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--template</span></code> / <code class="docutils literal notranslate"><span class="pre">-t</span></code> option is required when generating a concrete
+specification. If omitted, the generator prints a generic template that can
+be used as a starting point:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gen-openapi<span class="w"> </span>personinfo.yaml<span class="w"> </span>&gt;<span class="w"> </span>api-template.yaml
+</pre></div>
+</div>
+</section>
+<section id="openapi-validation">
+<h2>OpenAPI Validation<a class="headerlink" href="#openapi-validation" title="Link to this heading">¶</a></h2>
+<p>The generator validates both the input template and the final output against
+the OpenAPI specification using
+<a class="reference external" href="https://github.com/p1c2u/openapi-spec-validator">openapi-spec-validator</a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">openapi</span></code> field in the template is checked against the expected
+version for the chosen output format (currently <code class="docutils literal notranslate"><span class="pre">openapi303</span></code> →
+<code class="docutils literal notranslate"><span class="pre">3.0.3</span></code>). If the versions do not match, the generator raises a
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+<p>Additionally, the template’s <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section must declare each
+resource that is referenced by an endpoint, using two custom extension
+fields:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">x-linkml-schema</span></code></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">id</span></code> of the LinkML schema being used. Must match exactly.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">x-linkml-source</span></code></dt><dd><p>The name of the LinkML class that provides the schema for this resource.</p>
+</dd>
+</dl>
+<p>Example template fragment:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">schemas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">Person</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">x-linkml-schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/my_schema</span>
+<span class="w">      </span><span class="nt">x-linkml-source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
+<span class="w">    </span><span class="nt">Organization</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">x-linkml-schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/my_schema</span>
+<span class="w">      </span><span class="nt">x-linkml-source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Organization</span>
+</pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">x-linkml-schema</span></code> value does not match the schema being processed,
+the generator raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. Any endpoint that references a
+resource not declared in <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> also raises an error.</p>
+</section>
+<section id="name-rewiring">
+<h2>Name Rewiring<a class="headerlink" href="#name-rewiring" title="Link to this heading">¶</a></h2>
+<p>If the name used for a resource in the OpenAPI template differs from the
+LinkML class name specified in <code class="docutils literal notranslate"><span class="pre">x-linkml-source</span></code>, the generator
+automatically rewires all <code class="docutils literal notranslate"><span class="pre">$ref</span></code> references and schema keys to use the
+template name.</p>
+<p>For example, given this template:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">components</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">schemas</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">PersonResource</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">object</span>
+<span class="w">      </span><span class="nt">x-linkml-schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://w3id.org/linkml/my_schema</span>
+<span class="w">      </span><span class="nt">x-linkml-source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
+</pre></div>
+</div>
+<p>The generated spec will use <code class="docutils literal notranslate"><span class="pre">PersonResource</span></code> rather than <code class="docutils literal notranslate"><span class="pre">Person</span></code>
+throughout <code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> and all <code class="docutils literal notranslate"><span class="pre">$ref</span></code> values.</p>
+</section>
+<section id="json-schema-transformations">
+<h2>JSON Schema Transformations<a class="headerlink" href="#json-schema-transformations" title="Link to this heading">¶</a></h2>
+<p>The generator applies several compatibility transforms to the JSON Schema
+generated by <a class="reference internal" href="json-schema.html"><span class="doc">JsonSchemaGenerator</span></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">const</span></code> values become single-element <code class="docutils literal notranslate"><span class="pre">enum</span></code> arrays (OpenAPI 3.0 does
+not support <code class="docutils literal notranslate"><span class="pre">const</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> lists (e.g. <code class="docutils literal notranslate"><span class="pre">[&quot;string&quot;,</span> <span class="pre">&quot;null&quot;]</span></code> for nullable fields) are
+rewritten as <code class="docutils literal notranslate"><span class="pre">anyOf</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">$ref</span></code> paths are rewritten from <code class="docutils literal notranslate"><span class="pre">#/$defs/</span></code> to <code class="docutils literal notranslate"><span class="pre">#/components/schemas/</span></code>.</p></li>
+<li><p>Class-level <code class="docutils literal notranslate"><span class="pre">title</span></code> fields (redundant with the schema key) are
+stripped.</p></li>
+</ul>
+<p>Only classes transitively reachable from the endpoints are included in the
+output — unreferenced schemas are pruned automatically.</p>
 </section>
 <section id="docs">
 <h2>Docs<a class="headerlink" href="#docs" title="Link to this heading">¶</a></h2>
 <section id="command-line">
 <h3>Command Line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
-<section id="gen-terminusdb">
-<h4>gen-terminusdb<a class="headerlink" href="#gen-terminusdb" title="Link to this heading">¶</a></h4>
-<p>Generate TerminusDB JSON-LD schema from a LinkML model</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-terminusdb<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
+<section id="gen-openapi">
+<h4>gen-openapi<a class="headerlink" href="#gen-openapi" title="Link to this heading">¶</a></h4>
+<p>Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
+If no OpenAPI template is provided,
+a generic one with placeholders for all the classes in the schema is printed out.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gen-openapi<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-V">
-<span id="cmdoption-gen-terminusdb-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-V" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-t">
+<span id="cmdoption-gen-openapi-template"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--template</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template&gt;</span></span><a class="headerlink" href="#cmdoption-gen-openapi-t" title="Link to this definition">¶</a></dt>
+<dd><p>OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-V">
+<span id="cmdoption-gen-openapi-version"></span><span class="sig-name descname"><span class="pre">-V</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--version</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-V" title="Link to this definition">¶</a></dt>
 <dd><p>Show the version and exit.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-f">
-<span id="cmdoption-gen-terminusdb-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-terminusdb-f" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-f">
+<span id="cmdoption-gen-openapi-format"></span><span class="sig-name descname"><span class="pre">-f</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--format</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;format&gt;</span></span><a class="headerlink" href="#cmdoption-gen-openapi-f" title="Link to this definition">¶</a></dt>
 <dd><p>Output format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'json'</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">'openapi303'</span></code></p>
 </dd>
 <dt class="field-even">Options<span class="colon">:</span></dt>
-<dd class="field-even"><p>json</p>
+<dd class="field-even"><p>openapi303</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-metadata">
-<span id="cmdoption-gen-terminusdb-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-metadata" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-metadata">
+<span id="cmdoption-gen-openapi-no-metadata"></span><span class="sig-name descname"><span class="pre">--metadata</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-metadata</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-metadata" title="Link to this definition">¶</a></dt>
 <dd><p>Include metadata in output</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -465,8 +566,8 @@ control &amp; collaboration.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-useuris">
-<span id="cmdoption-gen-terminusdb-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-useuris" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-useuris">
+<span id="cmdoption-gen-openapi-metauris"></span><span class="sig-name descname"><span class="pre">--useuris</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--metauris</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-useuris" title="Link to this definition">¶</a></dt>
 <dd><p>Use class and slot URIs over model uris</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -476,14 +577,14 @@ control &amp; collaboration.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-im">
-<span id="cmdoption-gen-terminusdb-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-terminusdb-im" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-im">
+<span id="cmdoption-gen-openapi-importmap"></span><span class="sig-name descname"><span class="pre">-im</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--importmap</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;importmap&gt;</span></span><a class="headerlink" href="#cmdoption-gen-openapi-im" title="Link to this definition">¶</a></dt>
 <dd><p>Import mapping file</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-log_level">
-<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-terminusdb-log_level" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-log_level">
+<span class="sig-name descname"><span class="pre">--log_level</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;log_level&gt;</span></span><a class="headerlink" href="#cmdoption-gen-openapi-log_level" title="Link to this definition">¶</a></dt>
 <dd><p>Logging level</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -496,20 +597,20 @@ control &amp; collaboration.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-v">
-<span id="cmdoption-gen-terminusdb-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-v" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-v">
+<span id="cmdoption-gen-openapi-verbose"></span><span class="sig-name descname"><span class="pre">-v</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--verbose</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-v" title="Link to this definition">¶</a></dt>
 <dd><p>Verbosity. Takes precedence over –log_level.</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-mergeimports">
-<span id="cmdoption-gen-terminusdb-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-mergeimports" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-mergeimports">
+<span id="cmdoption-gen-openapi-no-mergeimports"></span><span class="sig-name descname"><span class="pre">--mergeimports</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-mergeimports</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-mergeimports" title="Link to this definition">¶</a></dt>
 <dd><p>Merge imports into source file (default=mergeimports)</p>
 </dd></dl>
 
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-stacktrace">
-<span id="cmdoption-gen-terminusdb-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-stacktrace" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-stacktrace">
+<span id="cmdoption-gen-openapi-no-stacktrace"></span><span class="sig-name descname"><span class="pre">--stacktrace</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--no-stacktrace</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-stacktrace" title="Link to this definition">¶</a></dt>
 <dd><p>Print a stack trace when an error occurs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
@@ -520,8 +621,8 @@ control &amp; collaboration.</p>
 
 <p class="rubric">Arguments</p>
 <dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-gen-terminusdb-arg-YAMLFILE">
-<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-terminusdb-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object std" id="cmdoption-gen-openapi-arg-YAMLFILE">
+<span class="sig-name descname"><span class="pre">YAMLFILE</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-gen-openapi-arg-YAMLFILE" title="Link to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
@@ -530,24 +631,18 @@ control &amp; collaboration.</p>
 <section id="code">
 <h3>Code<a class="headerlink" href="#code" title="Link to this heading">¶</a></h3>
 <dl class="py class">
-<dt class="sig sig-object py" id="linkml.generators.terminusdbgen.TerminusdbGenerator">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.terminusdbgen.</span></span><span class="sig-name descname"><span class="pre">TerminusdbGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">documents:</span> <span class="pre">list</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_class_doc:</span> <span class="pre">dict</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/terminusdbgen.html#TerminusdbGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.terminusdbgen.TerminusdbGenerator" title="Link to this definition">¶</a></dt>
-<dd><p>Generator for TerminusDB JSON-LD schema documents.</p>
-<p>Produces a JSON array of schema documents compatible with the
-TerminusDB v10+ document interface.  The output can be loaded via
-<code class="docutils literal notranslate"><span class="pre">client.insert_document(docs,</span> <span class="pre">graph_type=&quot;schema&quot;)</span></code>.</p>
+<dt class="sig sig-object py" id="linkml.generators.openapigen.OpenApiGenerator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">linkml.generators.openapigen.</span></span><span class="sig-name descname"><span class="pre">OpenApiGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~typing.TextIO</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">~linkml.utils.generator.Generator</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">schemaview:</span> <span class="pre">~linkml_runtime.utils.schemaview.SchemaView</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useuris:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mergeimports:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_date:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_file_size:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger:</span> <span class="pre">~logging.Logger</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose:</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces:</span> <span class="pre">~linkml_runtime.utils.namespaces.Namespaces</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory_output:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel_name_map:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importmap:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~collections.abc.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emit_prefixes:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metamodel:</span> <span class="pre">~linkml.utils.schemaloader.SchemaLoader</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stacktrace:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path</span> <span class="pre">|</span> <span class="pre">~linkml_runtime.linkml_model.meta.SchemaDefinition</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/linkml/generators/openapigen.html#OpenApiGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.openapigen.OpenApiGenerator" title="Link to this definition">¶</a></dt>
+<dd><p>Generates OpenAPI v3.0.3 specification YAML from a LinkML schema.</p>
+<p>The generator composes a user-provided OpenAPI template (containing the API header,
+paths/endpoints, and security schemes) with JSON Schema components generated from
+the LinkML schema via <a class="reference internal" href="json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator" title="linkml.generators.jsonschemagen.JsonSchemaGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonSchemaGenerator</span></code></a>. Only classes referenced by the
+template’s endpoints (and their transitive dependencies) are included in the
+<code class="docutils literal notranslate"><span class="pre">components/schemas</span></code> section.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="linkml.generators.terminusdbgen.TerminusdbGenerator.serialize">
-<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#linkml.generators.terminusdbgen.TerminusdbGenerator.serialize" title="Link to this definition">¶</a></dt>
-<dd><p>Generate output in the required format</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>kwargs</strong> – Generator specific parameters</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Generated output</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="linkml.generators.openapigen.OpenApiGenerator.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/linkml/generators/openapigen.html#OpenApiGenerator.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#linkml.generators.openapigen.OpenApiGenerator.serialize" title="Link to this definition">¶</a></dt>
+<dd><p>Generate an OpenAPI v3.0.3 spec from <code class="docutils literal notranslate"><span class="pre">template_file</span></code> and the loaded LinkML schema.</p>
 </dd></dl>
 
 </dd></dl>
@@ -561,23 +656,23 @@ TerminusDB v10+ document interface.  The output can be loaded via
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="excel.html">
+          <a class="next-page" href="jsonld-context.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Excel Spreadsheet</div>
+                <div class="title">JSON-LD Contexts</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="sssom.html">
+          <a class="prev-page" href="graphql.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">SSSOM</div>
+                <div class="title">GraphQL</div>
                 
               </div>
             </a>
@@ -611,16 +706,19 @@ TerminusDB v10+ document interface.  The output can be loaded via
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">TerminusDB</a><ul>
+<li><a class="reference internal" href="#">OpenAPI</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#openapi-validation">OpenAPI Validation</a></li>
+<li><a class="reference internal" href="#name-rewiring">Name Rewiring</a></li>
+<li><a class="reference internal" href="#json-schema-transformations">JSON Schema Transformations</a></li>
 <li><a class="reference internal" href="#docs">Docs</a><ul>
 <li><a class="reference internal" href="#command-line">Command Line</a><ul>
-<li><a class="reference internal" href="#gen-terminusdb">gen-terminusdb</a></li>
+<li><a class="reference internal" href="#gen-openapi">gen-openapi</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#code">Code</a><ul>
-<li><a class="reference internal" href="#linkml.generators.terminusdbgen.TerminusdbGenerator"><code class="docutils literal notranslate"><span class="pre">TerminusdbGenerator</span></code></a><ul>
-<li><a class="reference internal" href="#linkml.generators.terminusdbgen.TerminusdbGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">TerminusdbGenerator.serialize()</span></code></a></li>
+<li><a class="reference internal" href="#linkml.generators.openapigen.OpenApiGenerator"><code class="docutils literal notranslate"><span class="pre">OpenApiGenerator</span></code></a><ul>
+<li><a class="reference internal" href="#linkml.generators.openapigen.OpenApiGenerator.serialize"><code class="docutils literal notranslate"><span class="pre">OpenApiGenerator.serialize()</span></code></a></li>
 </ul>
 </li>
 </ul>

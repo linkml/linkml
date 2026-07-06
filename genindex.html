@@ -248,6 +248,7 @@
 <li class="toctree-l2"><a class="reference internal" href="generators/json-schema.html">JSON Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/graphql.html">GraphQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generators/openapi.html">OpenAPI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/jsonld.html">JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generators/rdf.html">RDF</a></li>
@@ -1009,6 +1010,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-f">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-f">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-f">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-f">gen-prefix-map command line option</a>
@@ -1251,6 +1254,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-im">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-im">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-im">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-im">gen-owl command line option</a>
 </li>
@@ -1579,6 +1584,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-log_level">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-log_level">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-log_level">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-log_level">gen-prefix-map command line option</a>
@@ -1770,6 +1777,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-mergeimports">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-mergeimports">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-mergeimports">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-mergeimports">gen-prefix-map command line option</a>
@@ -1934,6 +1943,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-metadata">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-metadata">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-metadata">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-metadata">gen-prefix-map command line option</a>
@@ -2075,6 +2086,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-useuris">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-useuris">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-useuris">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-useuris">gen-owl command line option</a>
 </li>
@@ -2607,6 +2620,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-mergeimports">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-mergeimports">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-mergeimports">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-mergeimports">gen-prefix-map command line option</a>
@@ -2752,6 +2767,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-metadata">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-metadata">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-metadata">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-metadata">gen-owl command line option</a>
 </li>
@@ -2910,8 +2927,6 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-sqla-pydantic">linkml-generate-(full)-sqla command line option</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-range-class-descendants
 
@@ -2921,6 +2936,8 @@
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-include-range-class-descendants">linkml-generate-(full)-json-schema command line option</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     --no-raw
 
@@ -3014,6 +3031,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-stacktrace">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-stacktrace">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-stacktrace">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-stacktrace">gen-owl command line option</a>
 </li>
@@ -3628,6 +3647,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-stacktrace">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-stacktrace">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-stacktrace">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-stacktrace">gen-prefix-map command line option</a>
@@ -3791,6 +3812,8 @@
     --template
 
         <ul>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-t">gen-openapi command line option</a>
+</li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-openapi-t">linkml-generate-(full)-openapi command line option</a>
 </li>
         </ul></li>
@@ -3987,6 +4010,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-useuris">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-useuris">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-useuris">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-useuris">gen-prefix-map command line option</a>
@@ -4147,6 +4172,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-v">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-v">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-v">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-v">gen-prefix-map command line option</a>
@@ -4283,6 +4310,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-V">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-V">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-V">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-V">gen-owl command line option</a>
 </li>
@@ -4543,6 +4572,8 @@
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-f">gen-linkml command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-f">gen-openapi command line option</a>
+</li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-f">gen-owl command line option</a>
 </li>
           <li><a href="generators/prefixmap.html#cmdoption-gen-prefix-map-f">gen-prefix-map command line option</a>
@@ -4704,6 +4735,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-im">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-im">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-im">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-im">gen-owl command line option</a>
 </li>
@@ -4956,6 +4989,8 @@
         <ul>
           <li><a href="generators/json-schema.html#cmdoption-gen-json-schema-t">gen-json-schema command line option</a>
 </li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-t">gen-openapi command line option</a>
+</li>
           <li><a href="data/conversion.html#cmdoption-linkml-convert-t">linkml-convert command line option</a>
 </li>
           <li><a href="cli/generate.html#cmdoption-linkml-generate-full-json-schema-t">linkml-generate-(full)-json-schema command line option</a>
@@ -4997,6 +5032,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-V">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-V">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-V">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-V">gen-owl command line option</a>
 </li>
@@ -5152,6 +5189,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-v">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-v">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-v">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-v">gen-owl command line option</a>
 </li>
@@ -6761,6 +6800,51 @@
 </li>
         </ul></li>
         <li>
+    gen-openapi command line option
+
+        <ul>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-f">--format</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-im">--importmap</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-log_level">--log_level</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-mergeimports">--mergeimports</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-metadata">--metadata</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-useuris">--metauris</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-mergeimports">--no-mergeimports</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-metadata">--no-metadata</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-stacktrace">--no-stacktrace</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-stacktrace">--stacktrace</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-t">--template</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-useuris">--useuris</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-v">--verbose</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-V">--version</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-f">-f</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-im">-im</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-t">-t</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-V">-V</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-v">-v</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-arg-YAMLFILE">YAMLFILE</a>
+</li>
+        </ul></li>
+        <li>
     gen-owl command line option
 
         <ul>
@@ -7011,6 +7095,8 @@
           <li><a href="generators/protobuf.html#cmdoption-gen-proto-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-pydantic command line option
 
@@ -7064,8 +7150,6 @@
           <li><a href="generators/pydantic.html#cmdoption-gen-pydantic-arg-YAMLFILE">YAMLFILE</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     gen-python command line option
 
@@ -11052,6 +11136,8 @@
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="code/utils.html#linkml.utils.generator.Generator.obj_for">obj_for() (linkml.utils.generator.Generator method)</a>
 </li>
+        <li><a href="generators/openapi.html#linkml.generators.openapigen.OpenApiGenerator">OpenApiGenerator (class in linkml.generators.openapigen)</a>
+</li>
         <li><a href="developers/schemaview.html#linkml_runtime.utils.schemaview.SchemaView.ordered">ordered() (linkml_runtime.utils.schemaview.SchemaView method)</a>
 </li>
         <li><a href="generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.original_schema">original_schema (linkml.generators.jsonldgen.JSONLDGenerator attribute)</a>
@@ -11359,6 +11445,8 @@
           <li><a href="generators/json-schema.html#linkml.generators.jsonschemagen.JsonSchemaGenerator.serialize">(linkml.generators.jsonschemagen.JsonSchemaGenerator method)</a>
 </li>
           <li><a href="generators/linkml.html#linkml.generators.linkmlgen.LinkmlGenerator.serialize">(linkml.generators.linkmlgen.LinkmlGenerator method)</a>
+</li>
+          <li><a href="generators/openapi.html#linkml.generators.openapigen.OpenApiGenerator.serialize">(linkml.generators.openapigen.OpenApiGenerator method)</a>
 </li>
           <li><a href="generators/owl.html#linkml.generators.owlgen.OwlSchemaGenerator.serialize">(linkml.generators.owlgen.OwlSchemaGenerator method)</a>
 </li>
@@ -11896,6 +11984,8 @@
           <li><a href="generators/jsonld-context.html#cmdoption-gen-jsonld-context-arg-YAMLFILE">gen-jsonld-context command line option</a>
 </li>
           <li><a href="generators/linkml.html#cmdoption-gen-linkml-arg-YAMLFILE">gen-linkml command line option</a>
+</li>
+          <li><a href="generators/openapi.html#cmdoption-gen-openapi-arg-YAMLFILE">gen-openapi command line option</a>
 </li>
           <li><a href="generators/owl.html#cmdoption-gen-owl-arg-YAMLFILE">gen-owl command line option</a>
 </li>

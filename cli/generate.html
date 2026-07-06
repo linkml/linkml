@@ -250,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../generators/json-schema.html">JSON Schema</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/protobuf.html">ProtoBuf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/graphql.html">GraphQL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../generators/openapi.html">OpenAPI</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld-context.html">JSON-LD Contexts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/jsonld.html">JSON-LD</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../generators/rdf.html">RDF</a></li>
@@ -2922,7 +2923,9 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 </section>
 <section id="linkml-generate-full-openapi">
 <h4>openapi<a class="headerlink" href="#linkml-generate-full-openapi" title="Link to this heading">¶</a></h4>
-<p>Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML</p>
+<p>Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
+If no OpenAPI template is provided,
+a generic one with placeholders for all the classes in the schema is printed out.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>linkml<span class="w"> </span>generate<span class="w"> </span><span class="o">(</span>full<span class="o">)</span><span class="w"> </span>openapi<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>YAMLFILE
 </pre></div>
 </div>
@@ -2930,7 +2933,7 @@ YAML, and including it when necessary but not by default (e.g. in documentation 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-linkml-generate-full-openapi-t">
 <span id="cmdoption-linkml-generate-full-openapi-template"></span><span class="sig-name descname"><span class="pre">-t</span></span><span class="sig-prename descclassname"></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">--template</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;template&gt;</span></span><a class="headerlink" href="#cmdoption-linkml-generate-full-openapi-t" title="Link to this definition">¶</a></dt>
-<dd><p>OpenAPI v3.0.3 template - includes the header, the endpoints and the securityschemes</p>
+<dd><p>OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes</p>
 </dd></dl>
 
 <dl class="std option">
