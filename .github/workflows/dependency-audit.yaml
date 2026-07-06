@@ -1,10 +1,13 @@
 name: Audit dependencies
 
+permissions:
+  contents: read
+
 # Global environment variables applied to all steps
 env:
+  UV_VERSION: "0.11.21"
   UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
   UV_MALWARE_CHECK: "1"    # Automatically blocks malicious installs on sync/run
-  UV_EXCLUDE_NEWER: "7 days"  # Mirror the pyproject.toml cooldown for this job's resolution
 
 on:
   push:
@@ -23,11 +26,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      # Install the latest uv: the audit/malware-check features are preview-only
-      # and ship in recent releases, so this job intentionally does not pin uv.
+      # Pin uv to a known-good, recent release. The audit/malware-check features
+      # are preview-only and ship in recent uv versions, so UV_VERSION must stay
+      # recent enough to include them (0.11.21 does).
       - name: Install uv and setup uv caching
         uses: astral-sh/setup-uv@v8.2.0
         with:
+          version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
@@ -53,7 +58,7 @@ jobs:
       # published as an OSV advisory. There is a window between a malicious
       # upload and its advisory. That gap is covered by uv's dependency
       # cooldown (`exclude-newer`, a resolution-time setting added in uv
-      # 0.9.17), which is now enabled with a 7-day window in pyproject.toml:
+      # 0.9.17), which is enabled with a 7-day window in the root pyproject.toml:
       #
       #   [tool.uv]
       #   exclude-newer = "7 days"
@@ -61,7 +66,8 @@ jobs:
       # uv >= 0.9.17 records this as a relative span (`exclude-newer-span = "P7D"`)
       # in uv.lock rather than an absolute timestamp, which avoids the
       # per-relock timestamp churn / cross-branch merge conflicts that earlier
-      # uv versions caused (see astral-sh/uv#18708). The UV_EXCLUDE_NEWER env
-      # var above mirrors the setting for this job's resolution.
+      # uv versions caused (see astral-sh/uv#18708). This job uses `--frozen`, so
+      # the cooldown is already baked into uv.lock at resolution time and needs
+      # no per-job override here.
       - name: Verify Environment Sync (Anti-Malware Gate)
-        run: uv sync --frozen
+        run: uv sync --frozen --all-groups
