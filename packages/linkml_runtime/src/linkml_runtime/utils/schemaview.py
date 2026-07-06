@@ -1948,13 +1948,44 @@ class SchemaView:
     def is_inlined(self, slot: SlotDefinition, imports: bool = True) -> bool:
         """Return true if slot is inferred or asserted inline.
 
+        A slot is inlined when:
+
+        * ``slot.inlined`` or ``slot.inlined_as_list`` is ``True`` (directly or
+          inherited through the slot's ``is_a`` / ``mixins`` ancestry), **or**
+        * the slot's range is a class with no identifier/key slot (which forces
+          inlining because there is no reference to use).
+
         :param slot:
         :param imports:
         :return:
         """
         slot_range = slot.range
         if slot_range in self.all_classes():
-            if slot.inlined or slot.inlined_as_list:
+            resolved_inlined = slot.inlined
+            resolved_inlined_as_list = slot.inlined_as_list
+
+            slot_name = getattr(slot, "name", None)
+            if (resolved_inlined is None and resolved_inlined_as_list is None) and slot_name:
+                # walk all ancestors (reflexive=False to skip the slot itself,
+                # already checked above).
+                try:
+                    # slot_ancestors() is @lru_cache and handles both is_a and mixins;
+                    ancestors = self.slot_ancestors(slot_name, imports=imports, reflexive=False)
+                except ValueError:
+                    ancestors = []
+                if ancestors:
+                    # all_slots() is @lru_cache
+                    all_slots = self.all_slots(imports=imports)
+                    for anc_name in ancestors:
+                        anc = all_slots.get(anc_name)
+                        if anc is None:
+                            continue
+                        resolved_inlined = resolved_inlined or anc.inlined
+                        resolved_inlined_as_list = resolved_inlined_as_list or anc.inlined_as_list
+                        if resolved_inlined or resolved_inlined_as_list:
+                            break
+
+            if resolved_inlined or resolved_inlined_as_list:
                 return True
 
             id_slot = self.get_identifier_slot(slot_range, imports=imports)
