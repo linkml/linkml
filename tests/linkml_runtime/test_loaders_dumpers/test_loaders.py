@@ -67,11 +67,10 @@ def test_yaml_load_to_dict():
     assert "system" in data
 
 
-@pytest.mark.skip(reason="This test will not work until https://github.com/digitalbazaar/pyld/issues/149 is fixed")
 def test_rdf_loader(context_server):
     """Load obo_sample.ttl and obo_sample.jsonld, emit yaml and check the results"""
     if context_server == LD_11_DIR:
-        pytest.skip("*****> Loading skipped until JSON-LD processor can handle non-http files")
+        pytest.skip("local context server required - start docker server per jsonld_context/README.md")
 
     contexts = os.path.join(context_server, "termci_schema_inlined.context.jsonld")
     fmt = "turtle"
