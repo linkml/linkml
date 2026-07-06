@@ -1,5 +1,8 @@
 name: Audit dependencies
 
+permissions:
+  contents: read
+
 # Global environment variables applied to all steps
 env:
   UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
