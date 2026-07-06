@@ -26,8 +26,11 @@ def test_roundtrip(input_path, tmp_path):
     g.parse(outpath, format=RDF_FORMAT)
 
 
-@pytest.mark.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
 def test_namespace(input_path):
+    """
+    Presumably fixed by https://github.com/linkml/linkml/issues/1993.
+    See upstream discussion https://github.com/RDFLib/rdflib/issues/2606
+    """
     name = "linkml_issue_163"
     inpath = input_path(f"{name}.yaml")
 
@@ -58,7 +61,12 @@ def test_namespace(input_path):
     )
 
 
-@pytest.mark.skip("skipping until https://github.com/linkml/linkml/issues/163 is fixed")
+@pytest.mark.skip(
+    "skipping: 'meta.context.jsonld' types slot_uri/class_uri/*_mappings as "
+    "xsd:anyURI literals instead of @id IRIs, so RDFGenerator emits Literals "
+    "(and unexpanded CURIEs for class-level mappings) instead of URIRefs. "
+    "See https://github.com/linkml/linkml/issues/163."
+)
 def test_issue_mappings_namespace(input_path, snapshot):
     """Make sure that types are generated as part of the output"""
     name = "linkml_issue_163"
