@@ -121,7 +121,7 @@ tests-extra = [
   # pytest 9 removed the private _pytest.assertion.util._diff_text API that
   # tests/conftest.py relies on for snapshot diffs. Pin <9 until conftest is
   # migrated to stdlib difflib. The only pytest 9 CVE (GHSA-6w46-j5rx-g56g,
-  # predictable tmpdir path) is test-infrastructure-only and low risk here.
+  # predictable tmpdir path) is test-infrastructure-only.
   "pytest >= 7.4.0, < 9",
   "pytest-subtests >= 0.11.0",
   "pytest-cov >= 4.1.0",

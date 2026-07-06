@@ -1,8 +1,4 @@
 [tool.uv]
-# Dependency cooldown: ignore releases newer than 7 days so malware/CVE
-# advisories have time to surface before a version is adopted. uv resolves
-# this to a timestamp embedded in uv.lock (see astral-sh/uv#18708 for the
-# associated lockfile merge-conflict tradeoff). Requires uv >= 0.9.17.
 exclude-newer = "7 days"
 
 [tool.uv.workspace]

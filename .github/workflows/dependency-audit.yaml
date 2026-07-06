@@ -26,9 +26,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      # Pin uv to a known-good, recent release. The audit/malware-check features
-      # are preview-only and ship in recent uv versions, so UV_VERSION must stay
-      # recent enough to include them (0.11.21 does).
+      # Pin uv to a known-good, recent release.
       - name: Install uv and setup uv caching
         uses: astral-sh/setup-uv@v8.2.0
         with:
@@ -63,11 +61,5 @@ jobs:
       #   [tool.uv]
       #   exclude-newer = "7 days"
       #
-      # uv >= 0.9.17 records this as a relative span (`exclude-newer-span = "P7D"`)
-      # in uv.lock rather than an absolute timestamp, which avoids the
-      # per-relock timestamp churn / cross-branch merge conflicts that earlier
-      # uv versions caused (see astral-sh/uv#18708). This job uses `--frozen`, so
-      # the cooldown is already baked into uv.lock at resolution time and needs
-      # no per-job override here.
       - name: Verify Environment Sync (Anti-Malware Gate)
         run: uv sync --frozen --all-groups
