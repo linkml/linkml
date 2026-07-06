@@ -311,6 +311,35 @@ def test_inline_attributes_produce_owns(input_path):
     assert "owns inline-description" in attrs_block.group(0)
 
 
+def test_inline_attributes_with_class_range_produce_relation(input_path):
+    """A class-ranged slot declared inline via `attributes:` must produce relates/plays.
+
+    Regression test for the object-ranged half of the inline-attributes fix: the
+    `inline_owner` attribute on `ClassWithAttributes` ranges over `ClassWithSlots`,
+    so it should be collected as a relation (with `relates` roles for both classes)
+    and both classes should get matching `plays` declarations, exactly like an
+    object-ranged slot declared via top-level `slots:`.
+    """
+    gen = TypeDBGenerator(str(input_path("typedb_inline_attributes.yaml")))
+    output = gen.serialize()
+
+    # The inline class-ranged slot produces a standalone relation type with roles
+    # for both the declaring class and its range class.
+    relation_block = re.search(r"^\s*relation inline-owner\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert relation_block, f"inline-owner relation block not found:\n{output}"
+    assert "relates classwithattributes" in relation_block.group(0)
+    assert "relates classwithslots" in relation_block.group(0)
+
+    # Both the declaring class and the range class get plays declarations.
+    attrs_block = re.search(r"^\s*entity classwithattributes\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert attrs_block, f"classwithattributes entity block not found:\n{output}"
+    assert "plays inline-owner:classwithattributes" in attrs_block.group(0)
+
+    slots_block = re.search(r"^\s*entity classwithslots\b[^;]*;", output, re.MULTILINE | re.DOTALL)
+    assert slots_block, f"classwithslots entity block not found:\n{output}"
+    assert "plays inline-owner:classwithslots" in slots_block.group(0)
+
+
 def test_represents_relationship_class_becomes_relation(tmp_path):
     """A class with represents_relationship: true becomes a TypeDB relation type."""
     schema_yaml = """

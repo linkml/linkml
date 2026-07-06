@@ -291,8 +291,12 @@ class TypeDBGenerator(Generator):
                 lines.append(f"  {attr_line}")
             lines.append("")
 
+        # Pre-compute direct (non-inherited) induced slots once; both entity and
+        # relation collection need this per-class breakdown.
+        direct_slots_cache = self._build_direct_slots_cache(sv)
+
         # ── Entity types ─────────────────────────────────────────────────────
-        entity_lines = self._collect_entity_defs(sv, attr_names, rel_names)
+        entity_lines = self._collect_entity_defs(sv, attr_names, rel_names, direct_slots_cache)
         if entity_lines:
             lines.append("  # Entity types")
             for el in entity_lines:
@@ -300,7 +304,7 @@ class TypeDBGenerator(Generator):
             lines.append("")
 
         # ── Relation types ───────────────────────────────────────────────────
-        relation_lines = self._collect_relation_defs(sv, rel_names)
+        relation_lines = self._collect_relation_defs(sv, rel_names, direct_slots_cache)
         if relation_lines:
             lines.append("  # Relations (from object-ranged slots)")
             for rl in relation_lines:
@@ -376,6 +380,15 @@ class TypeDBGenerator(Generator):
         """
         return [s for s in sv.class_induced_slots(class_name) if s.name not in ancestor_slot_names]
 
+    def _build_direct_slots_cache(self, sv: SchemaView) -> dict[str, list[SlotDefinition]]:
+        """Return a per-class cache of directly-declared (non-inherited) induced slots.
+
+        Shared between ``_collect_entity_defs`` and ``_collect_relation_defs`` so the
+        ``class_induced_slots``/ancestor traversal happens once per class rather than twice.
+        """
+        ancestor_slot_names_cache = {cn: self._ancestor_slot_names(sv, cn) for cn in sv.all_classes()}
+        return {cn: self._direct_induced_slots(sv, cn, ancestor_slot_names_cache[cn]) for cn in sv.all_classes()}
+
     def _build_owns_stmt(self, slot_tname: str, induced: SlotDefinition) -> str:
         """Return a TypeQL ``owns`` statement with the appropriate cardinality annotation.
 
@@ -392,7 +405,13 @@ class TypeDBGenerator(Generator):
             owns += " @card(0..)"
         return owns
 
-    def _collect_entity_defs(self, sv: SchemaView, attr_names: dict[str, str], rel_names: dict[str, str]) -> list[str]:
+    def _collect_entity_defs(
+        self,
+        sv: SchemaView,
+        attr_names: dict[str, str],
+        rel_names: dict[str, str],
+        direct_slots_cache: dict[str, list[SlotDefinition]],
+    ) -> list[str]:
         """Return entity and relation-class type definition lines including owns, relates, and plays.
 
         Only directly-declared slots are emitted as ``owns``, ``relates``, and ``plays``
@@ -405,15 +424,9 @@ class TypeDBGenerator(Generator):
 
         :param attr_names: slot name → safe TypeDB attribute name
         :param rel_names: slot name → safe TypeDB relation name
+        :param direct_slots_cache: per-class directly-declared induced slots (see
+            ``_build_direct_slots_cache``), shared with ``_collect_relation_defs``
         """
-        # Pre-compute ancestor slot names and direct induced slots for all classes
-        # to avoid redundant traversal.
-        ancestor_slot_names_cache: dict[str, set[str]] = {
-            cn: self._ancestor_slot_names(sv, cn) for cn in sv.all_classes()
-        }
-        direct_slots_cache: dict[str, list[SlotDefinition]] = {
-            cn: self._direct_induced_slots(sv, cn, ancestor_slot_names_cache[cn]) for cn in sv.all_classes()
-        }
         all_class_names = set(sv.all_classes().keys())
 
         plays_map: dict[str, list[str]] = {cn: [] for cn in sv.all_classes()}
@@ -507,18 +520,24 @@ class TypeDBGenerator(Generator):
 
         return lines
 
-    def _collect_relation_defs(self, sv: SchemaView, rel_names: dict[str, str]) -> list[str]:
+    def _collect_relation_defs(
+        self, sv: SchemaView, rel_names: dict[str, str], direct_slots_cache: dict[str, list[SlotDefinition]]
+    ) -> list[str]:
         """Return relation type definition lines for all object-ranged slots.
 
         One relation type per unique slot name. A slot may appear on multiple classes,
         so all domain classes and range classes are included as ``relates`` role types.
 
+        Only directly-declared slots (see ``_direct_induced_slots``) are considered, so an
+        object-ranged slot inherited by a subclass is collected once, at the class that
+        introduces it, rather than once per subclass — this is deliberate: TypeDB roles are
+        inherited from supertypes, so redeclaring the relation on every subclass would be
+        both redundant and rejected by TypeDB ([SVL42]).
+
         :param rel_names: slot name → safe TypeDB relation name
+        :param direct_slots_cache: per-class directly-declared induced slots (see
+            ``_build_direct_slots_cache``), shared with ``_collect_entity_defs``
         """
-        # First pass: collect all (domain_class, range_class) pairs per slot from
-        # directly-declared slots on each class. ``class_induced_slots`` minus the
-        # union of ancestors' induced slot names gives the standard "new on this
-        # class" set, including inline ``attributes:``.
         # Classes with represents_relationship emit 'relates' roles instead of standalone
         # relation types, so they are skipped here.
         all_class_names = set(sv.all_classes().keys())
@@ -526,8 +545,7 @@ class TypeDBGenerator(Generator):
         for class_name in sv.all_classes():
             if sv.get_class(class_name).represents_relationship:
                 continue  # object-ranged slots handled as 'relates' in entity/relation defs
-            ancestor_slot_names = self._ancestor_slot_names(sv, class_name)
-            for induced in self._direct_induced_slots(sv, class_name, ancestor_slot_names):
+            for induced in direct_slots_cache[class_name]:
                 if induced.range not in all_class_names:
                     continue
                 slot_pairs.setdefault(induced.name, []).append((class_name, induced.range))

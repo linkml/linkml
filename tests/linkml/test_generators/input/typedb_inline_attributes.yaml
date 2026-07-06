@@ -40,3 +40,6 @@ classes:
         required: true
       inline_description:
         range: string
+      inline_owner:
+        description: Inline attribute with a class range, exercising the relates/plays path.
+        range: ClassWithSlots
