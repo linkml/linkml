@@ -68,4 +68,4 @@ jobs:
       # uv versions caused (see astral-sh/uv#18708). The UV_EXCLUDE_NEWER env
       # var above mirrors the setting for this job's resolution.
       - name: Verify Environment Sync (Anti-Malware Gate)
-        run: uv sync --frozen
+        run: uv sync --frozen --all-groups
