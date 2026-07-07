@@ -193,7 +193,8 @@ class ShaclGenerator(Generator):
                     if v is not None:
                         g.add((pnode, p, Literal(v, lang=self._resolve_language(s))))
 
-                if s.multivalued and s.list_elements_ordered:
+                is_ordered_list = s.multivalued and s.list_elements_ordered
+                if is_ordered_list:
                     # Ordered multivalued slots are serialized as an rdf:List (see issue #3531),
                     # so the value constraints must apply to each list member rather than to the
                     # list head. Use a SHACL sequence path that steps through the slot, walks the
@@ -210,8 +211,17 @@ class ShaclGenerator(Generator):
                 order += 1
                 prop_pv_text(SH.name, s.title)
                 prop_pv_text(SH.description, s.description)
+                # Cardinality. For an ordered list the path is a SHACL sequence path over
+                # rdf:List members; SHACL value nodes are a *set*, so sh:minCount/sh:maxCount
+                # would count distinct member values, not list length -- a false violation on
+                # (a a b) with minimum_cardinality 3, a false pass on (a a a a) with
+                # maximum_cardinality 3. We therefore only assert non-emptiness (sh:minCount 1)
+                # for ordered lists and skip length-based counts. See #3531 / PR #3693 review.
                 # minCount
-                if s.minimum_cardinality:
+                if is_ordered_list:
+                    if s.required or s.minimum_cardinality or s.exact_cardinality:
+                        prop_pv_literal(SH.minCount, 1)
+                elif s.minimum_cardinality:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
                 elif s.exact_cardinality:
                     prop_pv_literal(SH.minCount, s.exact_cardinality)
@@ -220,8 +230,11 @@ class ShaclGenerator(Generator):
                 # would cause spurious violations on every instance.
                 elif s.required and not s.identifier:
                     prop_pv_literal(SH.minCount, 1)
-                # maxCount
-                if s.maximum_cardinality:
+                # maxCount (skipped for ordered lists: list length is not expressible over a
+                # set-valued sequence path)
+                if is_ordered_list:
+                    pass
+                elif s.maximum_cardinality:
                     prop_pv_literal(SH.maxCount, s.maximum_cardinality)
                 elif s.exact_cardinality:
                     prop_pv_literal(SH.maxCount, s.exact_cardinality)

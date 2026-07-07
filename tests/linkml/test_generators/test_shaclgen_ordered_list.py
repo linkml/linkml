@@ -65,6 +65,39 @@ def test_unordered_slot_keeps_plain_path(input_path):
     assert next(g.objects(pnode, SH.path)) == URIRef(EX + "tags")
 
 
+def test_ordered_slot_skips_length_based_cardinality():
+    """Length-based ``sh:minCount``/``sh:maxCount`` are dropped for ordered slots.
+
+    The ordered path is a SHACL sequence path over ``rdf:List`` members, and SHACL value
+    nodes are a *set*, so a count would measure distinct member values, not list length
+    (a false violation on ``(a a b)`` with ``minimum_cardinality 3``). Only non-emptiness
+    (``sh:minCount 1``) is asserted. Regression for PR #3693 review Finding 2.
+    """
+    schema = """
+id: https://example.org/f2
+name: f2
+prefixes: {linkml: 'https://w3id.org/linkml/', ex: 'https://example.org/f2/'}
+default_prefix: ex
+default_range: string
+imports: [linkml:types]
+classes:
+  Rec:
+    tree_root: true
+    attributes:
+      key: {identifier: true}
+      steps: {multivalued: true, list_elements_ordered: true, minimum_cardinality: 3, maximum_cardinality: 5}
+"""
+    g = _shapes_graph(schema)
+    rec = URIRef("https://example.org/f2/Rec")
+    pnode = _property_shape(g, rec, URIRef("https://example.org/f2/steps"))
+    assert pnode is not None
+    # member-level sequence path, not the bare slot uri
+    assert isinstance(next(g.objects(pnode, SH.path)), rdflib.BNode)
+    # non-emptiness only: minCount 1 (never the list-length 3); no maxCount at all
+    assert [int(o) for o in g.objects(pnode, SH.minCount)] == [1]
+    assert list(g.objects(pnode, SH.maxCount)) == []
+
+
 def test_generated_shapes_validate_rdf_list_output(input_path):
     """End to end: the dumper's ``rdf:List`` output conforms to the generated shapes."""
     schema = input_path("shaclgen/list_elements_ordered.yaml")

@@ -137,8 +137,14 @@ class RDFLibLoader(Loader):
                     slot_name = underscore(slot.name)
                     # An ordered multivalued slot is serialized as an rdf:List (see issue #3531);
                     # the object of the triple is the list head, which we traverse in order.
-                    is_list_head = o == RDF.nil or (o, RDF.first, None) in graph
-                    if slot.multivalued and slot.list_elements_ordered and is_list_head:
+                    # Only probe the graph for a list head on ordered slots -- the membership
+                    # check runs for every object of every slot otherwise.
+                    is_list_head = (
+                        slot.multivalued
+                        and slot.list_elements_ordered
+                        and (o == RDF.nil or (o, RDF.first, None) in graph)
+                    )
+                    if is_list_head:
                         members = list(Collection(graph, o))
                         # mark the rdf:List spine (rdf:first/rdf:rest triples) as processed
                         spine = o
@@ -269,7 +275,7 @@ class RDFLibLoader(Loader):
                 else:
                     v = namespaces.curie_for(o)
                 if v is None:
-                    logger.debug(f"No CURIE for {slot_name}={o}")
+                    logger.debug(f"No CURIE for {slot_name}={o} in {subject}")
                     v = str(o)
             elif EnumDefinition.class_name in range_applicable_elements:
                 range_union_elements = schemaview.slot_range_as_union(slot)
