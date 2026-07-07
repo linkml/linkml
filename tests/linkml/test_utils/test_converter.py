@@ -57,7 +57,6 @@ def test_infer(input_path, cli_runner, tmp_path):
     check_output(json_out)
 
 
-@pytest.mark.xfail(reason="Bug 2723: missing intermediate checks")
 def test_convert(input_path, cli_runner, tmp_path):
     """
     Tests using the --infer option to add missing values, and also roundtripping
@@ -79,7 +78,7 @@ def test_convert(input_path, cli_runner, tmp_path):
     check_output(json_out)
 
 
-@pytest.mark.xfail(reason="Bug 2382: ifabsent for enums does not work")
+# @pytest.mark.xfail(reason="Bug 2382: ifabsent for enums does not work")
 def test_infer_and_convert2(input_path, cli_runner, tmp_path):
     """
     Tests using the --infer option to add missing values, and also roundtripping
@@ -140,7 +139,7 @@ def test_prefix_file(input_path, cli_runner, tmp_path):
     assert namespaces["P"] == "http://www.example.com/personinfo/"
 
 
-@pytest.mark.xfail(reason="Bug 2382: ifabsent for enums does not work")
+# @pytest.mark.xfail(reason="Bug 2382: ifabsent for enums does not work")
 def test_prefix_file2(input_path, cli_runner, tmp_path):
     schema = input_path("schema_with_inference2.yaml")
     data_in = input_path("data_example2.yaml")
