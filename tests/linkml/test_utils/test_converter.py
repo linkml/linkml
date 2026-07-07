@@ -44,11 +44,12 @@ def test_infer(input_path, cli_runner, tmp_path):
         assert p2["full_name"] == "first2 last2"
 
 
-@pytest.mark.xfail(reason="Bug 2723: missing intermediate checks")
 def test_convert(input_path, cli_runner, tmp_path):
     """
     Tests using the --infer option to add missing values, and also roundtripping
     through yaml->json->yaml->rdf->json
+
+    This is a regression test for issue #2723
     """
     schema = input_path("schema_with_inference.yaml")
     data_in = input_path("data_example.yaml")
