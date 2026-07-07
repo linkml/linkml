@@ -1,5 +1,6 @@
 import logging
 import os
+import string
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -21,6 +22,41 @@ from linkml_runtime.utils.rdf_canonicalize import canonicalize_rdf_graph
 from linkml_runtime.utils.yamlutils import TypedNode, extended_float, extended_int, extended_str
 
 logger = logging.getLogger(__name__)
+
+
+MESSAGE_TEMPLATE_FIELDS = ("name", "title", "description", "comments", "class", "path")
+"""Placeholders permitted in ``--message-template`` (see :attr:`ShaclGenerator.message_template`)."""
+
+
+def _validate_message_template(template: str) -> None:
+    """Validate a ``--message-template`` string, failing fast with a helpful error.
+
+    Only the bare placeholders in :data:`MESSAGE_TEMPLATE_FIELDS` are permitted.
+    Attribute access (``{name.foo}``), indexing (``{name[0]}``), positional fields
+    (``{0}`` / ``{}``), conversions (``{name!r}``) and format specs (``{name:>5}``)
+    are all rejected, as are unbalanced braces. Validation runs once, up front, so a
+    malformed template is caught even for schemas that contain no slots.
+
+    :param template: the raw template string.
+    :raises ValueError: if the template contains an unsupported placeholder or is
+        otherwise malformed.
+    """
+    allowed = frozenset(MESSAGE_TEMPLATE_FIELDS)
+    hint = "Allowed placeholders: " + ", ".join(f"{{{name}}}" for name in MESSAGE_TEMPLATE_FIELDS)
+    try:
+        parsed = list(string.Formatter().parse(template))
+    except ValueError as exc:
+        raise ValueError(f"Invalid placeholder in --message-template ({exc}). {hint}") from None
+    for _literal_text, field_name, format_spec, conversion in parsed:
+        if field_name is None:
+            continue
+        if field_name not in allowed:
+            raise ValueError(f"Invalid placeholder '{{{field_name}}}' in --message-template. {hint}")
+        if conversion is not None or format_spec:
+            raise ValueError(
+                f"Invalid placeholder '{{{field_name}}}' in --message-template: "
+                f"conversions and format specs are not supported. {hint}"
+            )
 
 
 @dataclass
@@ -85,6 +121,27 @@ class ShaclGenerator(Generator):
     Conforms to :rfc:`5646` (BCP 47).
     """
 
+    message_template: str | None = None
+    """Template for ``sh:message`` on property shapes.
+
+    When set, each property shape receives an ``sh:message`` literal built from
+    this template.  The following placeholders are expanded:
+
+    * ``{name}`` — the slot's LinkML name, exactly as written in the schema
+    * ``{title}`` — the slot title (human-readable), falls back to *name*
+    * ``{description}`` — the slot description, falls back to empty string
+    * ``{comments}`` — the slot comments joined with ``; ``, falls back to empty string
+    * ``{class}`` — the enclosing class name
+    * ``{path}``  — the fully-expanded property IRI
+
+    Example: ``"Validation of {name} failed!"`` →
+    ``sh:message "Validation of has_speed failed!"``
+
+    If ``default_language`` is set the literal is tagged with it. The message text
+    is a single template, so it deliberately follows ``default_language`` only and
+    ignores any per-slot ``in_language``.
+    """
+
     generatorname = os.path.basename(__file__)
     generatorversion = "0.0.1"
     valid_formats = ["ttl"]
@@ -109,6 +166,9 @@ class ShaclGenerator(Generator):
         # warning per distinct malformed tag.
         self._language_resolver = LanguageTagResolver(self.default_language)
         super().__post_init__()
+        self.message_template = (self.message_template or "").strip() or None
+        if self.message_template is not None:
+            _validate_message_template(self.message_template)
         self.generate_header()
 
     def generate_header(self) -> str:
@@ -211,6 +271,22 @@ class ShaclGenerator(Generator):
                 order += 1
                 prop_pv_text(SH.name, s.title)
                 prop_pv_text(SH.description, s.description)
+
+                # sh:message from a user template. The template is validated once in
+                # __post_init__, so expansion here cannot raise. The message is a single
+                # template string, so it is tagged with the generator default language
+                # only (via _resolve_language(None)) and ignores per-slot in_language.
+                if self.message_template is not None:
+                    msg_text = self.message_template.format(
+                        name=s.name,
+                        title=s.title or s.name,
+                        description=s.description or "",
+                        comments="; ".join(s.comments) if s.comments else "",
+                        **{"class": c.name},
+                        path=str(slot_uri),
+                    ).strip()
+                    if msg_text:
+                        g.add((pnode, SH.message, Literal(msg_text, lang=self._resolve_language(None))))
                 # Cardinality. For an ordered list the path is a SHACL sequence path over
                 # rdf:List members; SHACL value nodes are a *set*, so sh:minCount/sh:maxCount
                 # would count distinct member values, not list length -- a false violation on
@@ -595,6 +671,18 @@ def add_simple_data_type(func: Callable, r: ElementName) -> None:
         "(e.g. en, de, zh-Hans).  When set, sh:name, sh:description, "
         "rdfs:label and rdfs:comment are emitted with the specified "
         "language tag."
+    ),
+)
+@click.option(
+    "--message-template",
+    default=None,
+    show_default=True,
+    help=(
+        "Template string for sh:message on each property shape. "
+        "Placeholders: {name} (slot name), {title} (slot title or name), "
+        "{description} (slot description), {comments} (slot comments joined with '; '), "
+        "{class} (class name), {path} (fully-expanded property IRI). "
+        'Example: "{name} ({class}): {description} [{comments}]"'
     ),
 )
 @click.version_option(__version__, "-V", "--version")
