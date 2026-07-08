@@ -1572,14 +1572,6 @@ class OwlSchemaGenerator(Generator):
         if native is None:
             # never use native unless type shadowing with objects is enabled
             native = self.type_objects
-        if native:
-            # UGLY HACK: Currently schemaview does not camelcase types
-            e = self.schemaview.get_element(tn, imports=True)
-            if e.from_schema is not None:
-                schema = next(sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema)
-                pfx = schema.default_prefix
-                if pfx == "linkml":
-                    return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))
         t = self.schemaview.get_type(tn)
         expanded = self.schemaview.get_uri(t, expand=True, native=native)
         if expanded.startswith("xsd:"):
