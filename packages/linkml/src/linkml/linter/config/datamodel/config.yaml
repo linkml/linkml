@@ -48,6 +48,11 @@ classes:
         description: >-
           Disallow empty titles on schema elements. Autofix will transform the element's
           name into a title.
+      no_invalid_slot_group:
+        range: RuleConfig
+        description: >-
+          Disallow `slot_group` references that do not resolve to a slot marked
+          `is_grouping_slot: true`. Not auto-fixable.
       no_invalid_slot_usage:
         range: RuleConfig
         description: >-
@@ -58,6 +63,11 @@ classes:
         description: >-
           Disallow the use of slots in class specifications if the name of the slot
           does not refer to an existing slot. Not auto-fixable.
+      no_undeclared_subsets:
+        range: RuleConfig
+        description: >-
+          Disallow `in_subset` references to subsets that are not declared in the
+          schema's `subsets` section. Not auto-fixable.
       no_undeclared_ranges:
         range: RuleConfig
         description: >-

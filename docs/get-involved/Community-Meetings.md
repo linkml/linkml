@@ -27,9 +27,9 @@ Join the LinkML community for regular sessions featuring presentations on LinkML
 
 | Date | Presenter 1	| Topic 1	| Presenter 2	| Topic 2 |
 | :---: | :---: | :---: | :----: | :---: |
-| August 20, 2026 | | | | |
-| July 16, 2026 | | | | |
-| June 18, 2026 | Anh Nguyet Vu | Adopting LinkML at Sage: Workflows, Wins, and Works in Progress | Cory Levinson | OAE Data Protocol: Data standardization for carbon removal research and deployment with LinkML |
+| August 20, 2026 | Patrick Golden | Use of LinkML in the [Zebrafish Toxicology Phenotype Atlas Project](https://zappfish.org/) | | |
+| July 16, 2026 | Sierra Moxon | LinkML Microschemas |Stephan Heunis |TBD |
+| [June 18, 2026](https://docs.google.com/presentation/d/1mA3xBfPglJLtMPbDLXT8lJ7SAu6iDPNL_HBJs_DZuB0/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Anh Nguyet Vu | Adopting LinkML at Sage: Workflows, Wins, and Works in Progress | Cory Levinson | OAE Data Protocol: Data standardization for carbon removal research and deployment with LinkML |
 | [May 21, 2026](https://docs.google.com/presentation/d/13KL_5xUkXBNg9IoGrv62OXUfzWXp-M94Pu4GF2TnIBc/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Inge Vejsbjerg | [LinkML for AI Governance at IBM](https://ibm.github.io/ai-atlas-nexus/) |Joshua Send|Why TypeDB is the Natural Backend for LinkML| |
 | [April 16, 2026](https://docs.google.com/presentation/d/1d2AjM9TBESO6njMXBB-lw5A6WDIFMBb14ZhCRKN2GiY/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50) | Daniel Kapitan| [Introducing PLUGIN and why we fell in love with LinkML](https://docs.google.com/presentation/d/1KqwKnq-f4JsSwHVRtCXZrwqBI7JIP1aqbUqlO7iEjd0/edit?slide=id.p1#slide=id.p1)| Community Discussion Topics| RareLink/REDCap + LinkML with Adam Graefe | |
 | [March 19, 2026](https://docs.google.com/presentation/d/13gQtrlTJcF3V8XzW4ruva9_D1tzyp8ZzDLATp2TuuMY/edit?slide=id.g36e69bd970c_1_50#slide=id.g36e69bd970c_1_50)| Damien Goutte-Gattat | [linkml-java](https://github.com/gouttegd/linkml-java): a LinkML runtime library for the Java language ([Slides](https://drive.google.com/file/d/1-hXJo9FFmIvpERrKNJjb_-tTO_6354cM/view?usp=sharing))| Chris Mungall| Validating dynamic value sets with [linkml-term-validator](https://github.com/linkml/linkml-term-validator) ([Slides](https://docs.google.com/presentation/d/1lhdDImxBQDaj8yFgpRYF_pnCTNDVn3Ilkb_pHfoR7Po/edit?slide=id.p#slide=id.p))|
