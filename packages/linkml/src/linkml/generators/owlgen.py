@@ -944,7 +944,16 @@ class OwlSchemaGenerator(Generator):
         if element.equals_string is not None:
             equals_string = element.equals_string
             if is_literal is None:
-                logger.warning(f"ignoring equals_string={equals_string} as unable to tell if literal")
+                # Enum-ranged slots sit between literals and URIs in OWL.
+                # Build a proper "owl:oneOf" datatype so that rules like
+                # `none_of: [{equals_string: "X"}]` produce a valid
+                # owl:datatypeComplementOf instead of being silently dropped.
+                one_of_expr = self._boolean_expression(
+                    [Literal(equals_string)], OWL.oneOf, node=BNode(), owl_types={RDFS.Literal}
+                )
+                if one_of_expr:
+                    owl_exprs.append(one_of_expr)
+                    owl_types.add(RDFS.Literal)
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
@@ -1421,6 +1430,7 @@ class OwlSchemaGenerator(Generator):
     ) -> OWL_EXPRESSION | None:
         expr_list: list[OWL_EXPRESSION] = self._present(exprs)
         if not expr_list:
+            logger.warning("All operands in complement expression resolved to None; skipping")
             return None
         neg_expr = BNode()
         if not owl_types:
@@ -1489,7 +1499,9 @@ class OwlSchemaGenerator(Generator):
             logger.warning(f"Null expr in: {exprs} for {predicate} {node}")
         if len(expr_list) == 0:
             return None
-        if len(expr_list) == 1:
+        if len(expr_list) == 1 and predicate != OWL.oneOf:
+            # owl:oneOf always requires a list structure (even for one member), so
+            # we do not stop it here.
             return expr_list[0]
         if node is None:
             node = BNode()
@@ -1602,14 +1614,6 @@ class OwlSchemaGenerator(Generator):
         if native is None:
             # never use native unless type shadowing with objects is enabled
             native = self.type_objects
-        if native:
-            # UGLY HACK: Currently schemaview does not camelcase types
-            e = self.schemaview.get_element(tn, imports=True)
-            if e.from_schema is not None:
-                schema = next(sc for sc in self.schemaview.schema_map.values() if sc.id == e.from_schema)
-                pfx = schema.default_prefix
-                if pfx == "linkml":
-                    return URIRef(self.schemaview.expand_curie(f"{pfx}:{camelcase(tn)}"))
         t = self.schemaview.get_type(tn)
         expanded = self.schemaview.get_uri(t, expand=True, native=native)
         if expanded.startswith("xsd:"):
