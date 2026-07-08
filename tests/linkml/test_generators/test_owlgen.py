@@ -214,11 +214,9 @@ def test_issue_388_attribute_slot_uri_conflicts_stay_disambiguated_in_owl(input_
                     RDFS.label,
                     Literal("MyPerson"),
                 ),
-                (
-                    SCHEMA.Person,
-                    SKOS.exactMatch,
-                    EX.MyPerson,
-                ),
+                # No class_uri <-> name-based URI cross-reference: when native URIs are disabled the
+                # class is minted at its class_uri (schema:Person) and the name-based URI
+                # (ex:MyPerson) is synthetic, so cross-referencing it would be a dangling assertion.
                 (
                     SCHEMA.name,
                     RDFS.label,
@@ -307,6 +305,46 @@ def test_definition_uris(
         for c in owl_classes:
             # check not using the default metadata profile
             assert list(g.objects(c, SKOS.definition)) == []
+
+
+@pytest.mark.parametrize("use_native_uris", [True, False])
+def test_no_synthetic_uri_crossref_when_native_uris_disabled(use_native_uris) -> None:
+    """The class_uri <-> name-based-URI cross-reference is emitted only for the native URI.
+
+    With ``use_native_uris=False`` a class is minted at its explicit ``class_uri``
+    (``schema:Person``) and the name-based URI (``ex:MyPerson``) is synthetic, so emitting an
+    ``owl:equivalentClass`` / ``skos:exactMatch`` to it produces a dangling, sometimes
+    self-referential assertion. That cross-reference must be suppressed in that case and kept when
+    the class is minted at its native URI.
+    """
+    sb = SchemaBuilder()
+    sb.add_class(
+        "MyPerson",
+        class_uri="schema:Person",
+        description="A person",
+        slots=[SlotDefinition("name", slot_uri="schema:name")],
+    )
+    sb.add_defaults()
+    sb.add_prefix("schema", "http://schema.org/")
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        mergeimports=False,
+        metaclasses=False,
+        type_objects=False,
+        use_native_uris=use_native_uris,
+        assert_equivalent_classes=True,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl)
+
+    crossref_predicates = (OWL.equivalentClass, SKOS.exactMatch)
+    if use_native_uris:
+        # class minted at ex:MyPerson; cross-reference to the real class_uri is retained
+        assert any((EX.MyPerson, p, SCHEMA.Person) in g for p in crossref_predicates)
+    else:
+        # class minted at schema:Person; no cross-reference to the synthetic ex:MyPerson
+        assert not any((SCHEMA.Person, p, EX.MyPerson) in g for p in crossref_predicates)
 
 
 class PermissibleValueURIMixture(Enum):

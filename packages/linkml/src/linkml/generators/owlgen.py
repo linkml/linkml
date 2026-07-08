@@ -502,7 +502,9 @@ class OwlSchemaGenerator(Generator):
         # its class_uri, so the name-based URI is synthetic and was never declared in
         # the source; asserting a mapping to it would be a dangling reference.
         if cls.class_uri and self.use_native_uris:
-            mapped_uri = sv.get_uri(cls, expand=True, native=not self.use_native_uris)
+            # In this branch use_native_uris is True, so cls_uri is the native URI and the
+            # mapped target is the explicit class_uri (native=False).
+            mapped_uri = sv.get_uri(cls, expand=True, native=False)
             if cls_uri != mapped_uri:
                 p = OWL.equivalentClass if self.assert_equivalent_classes else SKOS.exactMatch
                 self.graph.add((URIRef(cls_uri), p, URIRef(mapped_uri)))
