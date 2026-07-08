@@ -182,6 +182,36 @@ def test_add_root_classes_declares_grouping_classes() -> None:
         assert next(g.objects(grouping_uri, RDFS.label), None) is not None, f"{grouping_uri} missing rdfs:label"
 
 
+def test_add_root_classes_declares_mixin_grouping_class() -> None:
+    """The ``mixins_as_expressions`` path must declare its synthetic mixin grouping class.
+
+    Companion to :func:`test_add_root_classes_declares_grouping_classes`, covering the branch a
+    root mixin takes when ``mixins_as_expressions`` is set. Such a class is made
+    ``rdfs:subClassOf`` the synthetic ``ClassDefinition#Mixin`` grouping class; that grouping class
+    must itself be declared as an ``owl:Class`` with an ``rdfs:label`` so RDF-only consumers (such
+    as OLS) keep the grouping rather than treating it as a dangling reference.
+    """
+    from linkml_runtime.linkml_model.meta import ClassDefinition as MetaClassDefinition
+
+    sb = SchemaBuilder()
+    sb.add_class(MetaClassDefinition("RootMixin", mixin=True))
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=True,
+        mixins_as_expressions=True,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    mixin_grouping_uri = URIRef(str(MetaClassDefinition.class_class_uri) + "#Mixin")
+    assert (mixin_grouping_uri, RDF.type, OWL.Class) in g, "mixin grouping class not declared as owl:Class"
+    assert (mixin_grouping_uri, RDFS.label, Literal("mixin")) in g, "mixin grouping class missing rdfs:label 'mixin'"
+
+
 def test_grouping_classes_not_declared_without_add_root_classes() -> None:
     """Grouping-class declarations are emitted only when ``add_root_classes`` is set."""
     sb = SchemaBuilder()
