@@ -3,6 +3,9 @@
 # This workflow downloads the latest metamodel from linkml-model and runs
 # the compatibility tests to ensure the linkml toolkit can process it.
 # If tests pass and the metamodel has changed, it creates a PR with the update.
+#
+# It also checks whether the vendored linkml-model files have drifted from
+# upstream main, and opens (or updates) a tracking issue when drift is found.
 
 name: Metamodel Compatibility
 env:
@@ -113,3 +116,66 @@ jobs:
           branch: update-metamodel-fixtures
           delete-branch: true
           labels: metamodel-compat
+
+      - name: Check vendored files for drift against upstream main
+        id: drift_tests
+        if: always()
+        run: |
+          mkdir -p temp
+          uv run pytest tests/linkml_runtime/test_linkml_model/test_linkml_files.py \
+            --with-network --with-upstream-main -v 2>&1 | tee temp/drift_output.txt
+        continue-on-error: true
+
+      - name: Check for existing drift issue
+        if: always() && steps.drift_tests.outcome == 'failure'
+        id: check_drift_issue
+        run: |
+          EXISTING_ISSUE=$(gh issue list --label "vendored-model-drift" --state open --json number --jq '.[0].number // empty')
+          echo "existing_issue=${EXISTING_ISSUE}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update issue on drift
+        if: always() && steps.drift_tests.outcome == 'failure'
+        run: |
+          ISSUE_TITLE="Vendored linkml-model files have drifted from upstream main"
+          ISSUE_BODY=$(cat <<'EOF'
+          ## Vendored linkml-model Drift Detected
+
+          The vendored linkml-model files in `packages/linkml_runtime/src/linkml_runtime/linkml_model/`
+          have drifted from the upstream `main` branch of [linkml-model](https://github.com/linkml/linkml-model).
+
+          This does not block any PR, but the vendored copies will likely need updating
+          **before the next release**. Run `make update_model` in `packages/linkml_runtime/`
+          to re-vendor the files.
+
+          **Workflow run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ### Test Output (last 50 lines)
+          ```
+          $(tail -n 50 temp/drift_output.txt)
+          ```
+          EOF
+          )
+
+          if [ -n "${{ steps.check_drift_issue.outputs.existing_issue }}" ]; then
+            gh issue comment "${{ steps.check_drift_issue.outputs.existing_issue }}" --body "${ISSUE_BODY}"
+          else
+            gh issue create \
+              --title "${ISSUE_TITLE}" \
+              --body "${ISSUE_BODY}" \
+              --label "vendored-model-drift"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close drift issue if drift is resolved
+        if: always() && steps.drift_tests.outcome == 'success'
+        run: |
+          EXISTING_ISSUE=$(gh issue list --label "vendored-model-drift" --state open --json number --jq '.[0].number // empty')
+          if [ -n "${EXISTING_ISSUE}" ]; then
+            gh issue close "${EXISTING_ISSUE}" \
+              --comment "Vendored files are now in sync with upstream main. Closing."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

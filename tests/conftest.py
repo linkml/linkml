@@ -245,11 +245,7 @@ def pytest_addoption(parser):
     )
     parser.addoption("--with-slow", action="store_true", help="include tests marked slow")
     parser.addoption("--with-network", action="store_true", help="include tests marked network")
-    parser.addoption(
-        "--with-upstream-main",
-        action="store_true",
-        help="include soft-fail tests that compare vendored files against linkml-model main branch",
-    )
+    parser.addoption("--with-upstream-main", action="store_true", help="include tests marked upstream_main")
     parser.addoption(
         "--with-output", action="store_true", help="dump output in compliance test for richer debugging information"
     )
