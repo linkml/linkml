@@ -635,20 +635,21 @@
             <span class="n">attr_names</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span>
 
     <span class="c1"># ── Relation names ────────────────────────────────────────────────────────</span>
-    <span class="c1"># Relations are derived from object-ranged slots only.</span>
+    <span class="c1"># Relations are derived from object-ranged slots only. ``class_induced_slots``</span>
+    <span class="c1"># returns the union of inherited slots, top-level ``slots:`` references, and</span>
+    <span class="c1"># inline ``attributes:`` declarations — so all three sources contribute.</span>
     <span class="n">taken</span> <span class="o">=</span> <span class="n">entity_names</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">attr_names</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
     <span class="n">rel_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="p">[]:</span>
-            <span class="k">if</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">rel_names</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">rel_names</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">slot</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_class_names</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">candidate</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+            <span class="n">candidate</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">taken</span><span class="p">:</span>
                 <span class="n">candidate</span> <span class="o">=</span> <span class="n">candidate</span> <span class="o">+</span> <span class="s2">&quot;-rel&quot;</span>
-            <span class="n">rel_names</span><span class="p">[</span><span class="n">slot_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span>
+            <span class="n">rel_names</span><span class="p">[</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">candidate</span>
             <span class="n">taken</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">attr_names</span><span class="p">,</span> <span class="n">rel_names</span>
@@ -699,8 +700,12 @@
                 <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">attr_line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Pre-compute direct (non-inherited) induced slots once; both entity and</span>
+        <span class="c1"># relation collection need this per-class breakdown.</span>
+        <span class="n">direct_slots_cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_direct_slots_cache</span><span class="p">(</span><span class="n">sv</span><span class="p">)</span>
+
         <span class="c1"># ── Entity types ─────────────────────────────────────────────────────</span>
-        <span class="n">entity_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_entity_defs</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">attr_names</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">)</span>
+        <span class="n">entity_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_entity_defs</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">attr_names</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">,</span> <span class="n">direct_slots_cache</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">entity_lines</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  # Entity types&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">entity_lines</span><span class="p">:</span>
@@ -708,7 +713,7 @@
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
         <span class="c1"># ── Relation types ───────────────────────────────────────────────────</span>
-        <span class="n">relation_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_relation_defs</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">)</span>
+        <span class="n">relation_lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collect_relation_defs</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">,</span> <span class="n">direct_slots_cache</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">relation_lines</span><span class="p">:</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;  # Relations (from object-ranged slots)&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">rl</span> <span class="ow">in</span> <span class="n">relation_lines</span><span class="p">:</span>
@@ -758,14 +763,41 @@
         <span class="n">result</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">seen</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="n">enum_attr_lines</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_ancestor_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the set of slot names inherited from all ancestors (excluding self).&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ancestor_slot_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the set of slot names inherited from all ancestors (excluding self).</span>
+
+<span class="sd">        Uses ``class_induced_slots`` on each ancestor so that inherited slots from</span>
+<span class="sd">        any source — top-level ``slots:`` references, inline ``attributes:``, or</span>
+<span class="sd">        slot_usage refinements — are all captured.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">result</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">ancestor</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_ancestors</span><span class="p">(</span><span class="n">class_name</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>  <span class="c1"># skip self</span>
-            <span class="n">ancestor_cls</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">ancestor</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ancestor_cls</span> <span class="ow">and</span> <span class="n">ancestor_cls</span><span class="o">.</span><span class="n">slots</span><span class="p">:</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ancestor_cls</span><span class="o">.</span><span class="n">slots</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">ancestor</span><span class="p">):</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">slot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_direct_induced_slots</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">ancestor_slot_names</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return induced slots declared directly on the class (not inherited).</span>
+
+<span class="sd">        ``class_induced_slots`` returns the union of inherited slots, top-level</span>
+<span class="sd">        ``slots:`` references, and inline ``attributes:`` — the standard slot</span>
+<span class="sd">        iteration across LinkML generators. Subtracting ancestor slot names</span>
+<span class="sd">        leaves the slots that are new on this class, which is what TypeDB needs</span>
+<span class="sd">        for ``owns``/``relates``/``plays`` since capabilities are inherited from</span>
+<span class="sd">        supertypes (redeclaring an inherited capability triggers [SVL42]).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">class_induced_slots</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ancestor_slot_names</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_direct_slots_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a per-class cache of directly-declared (non-inherited) induced slots.</span>
+
+<span class="sd">        Shared between ``_collect_entity_defs`` and ``_collect_relation_defs`` so the</span>
+<span class="sd">        ``class_induced_slots``/ancestor traversal happens once per class rather than twice.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ancestor_slot_names_cache</span> <span class="o">=</span> <span class="p">{</span><span class="n">cn</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ancestor_slot_names</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">cn</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direct_induced_slots</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">cn</span><span class="p">,</span> <span class="n">ancestor_slot_names_cache</span><span class="p">[</span><span class="n">cn</span><span class="p">])</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_build_owns_stmt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slot_tname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">induced</span><span class="p">:</span> <span class="n">SlotDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a TypeQL ``owns`` statement with the appropriate cardinality annotation.</span>
@@ -783,7 +815,13 @@
             <span class="n">owns</span> <span class="o">+=</span> <span class="s2">&quot; @card(0..)&quot;</span>
         <span class="k">return</span> <span class="n">owns</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_entity_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">attr_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">rel_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_entity_defs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span>
+        <span class="n">attr_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">rel_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">direct_slots_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return entity and relation-class type definition lines including owns, relates, and plays.</span>
 
 <span class="sd">        Only directly-declared slots are emitted as ``owns``, ``relates``, and ``plays``</span>
@@ -796,9 +834,10 @@
 
 <span class="sd">        :param attr_names: slot name → safe TypeDB attribute name</span>
 <span class="sd">        :param rel_names: slot name → safe TypeDB relation name</span>
+<span class="sd">        :param direct_slots_cache: per-class directly-declared induced slots (see</span>
+<span class="sd">            ``_build_direct_slots_cache``), shared with ``_collect_relation_defs``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Pre-compute ancestor slots for all classes to avoid redundant traversal</span>
-        <span class="n">ancestor_slots_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cn</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ancestor_slots</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()}</span>
+        <span class="n">all_class_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
         <span class="n">plays_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cn</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">cn</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()}</span>
 
@@ -807,35 +846,27 @@
         <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">represents_relationship</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">ancestor_slots</span> <span class="o">=</span> <span class="n">ancestor_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span>
-            <span class="n">direct_slot_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ancestor_slots</span><span class="p">]</span>
             <span class="n">rel_tname</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">direct_slot_names</span><span class="p">:</span>
-                <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">induced</span> <span class="ow">in</span> <span class="n">direct_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_class_names</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">role_name</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
-                <span class="n">range_class</span> <span class="o">=</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span>
-                <span class="k">if</span> <span class="n">range_class</span> <span class="ow">in</span> <span class="n">plays_map</span><span class="p">:</span>
-                    <span class="n">plays_map</span><span class="p">[</span><span class="n">range_class</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;plays </span><span class="si">{</span><span class="n">rel_tname</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">role_name</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">plays_map</span><span class="p">:</span>
+                    <span class="n">plays_map</span><span class="p">[</span><span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;plays </span><span class="si">{</span><span class="n">rel_tname</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># Populate plays_map for regular entity classes (non-represents_relationship).</span>
         <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">represents_relationship</span><span class="p">:</span>
                 <span class="k">continue</span>  <span class="c1"># handled above</span>
-            <span class="n">ancestor_slots</span> <span class="o">=</span> <span class="n">ancestor_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span>
-            <span class="n">direct_slot_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ancestor_slots</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">direct_slot_names</span><span class="p">:</span>
-                <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">induced</span> <span class="ow">in</span> <span class="n">direct_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_class_names</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">slot_tname</span> <span class="o">=</span> <span class="n">rel_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot_name</span><span class="p">))</span>
+                <span class="n">slot_tname</span> <span class="o">=</span> <span class="n">rel_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
                 <span class="n">domain_role</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
                 <span class="n">range_role</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
                 <span class="n">plays_map</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;plays </span><span class="si">{</span><span class="n">slot_tname</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">domain_role</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">range_class</span> <span class="o">=</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span>
-                <span class="k">if</span> <span class="n">range_class</span> <span class="ow">in</span> <span class="n">plays_map</span><span class="p">:</span>
-                    <span class="n">plays_map</span><span class="p">[</span><span class="n">range_class</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;plays </span><span class="si">{</span><span class="n">slot_tname</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">range_role</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">in</span> <span class="n">plays_map</span><span class="p">:</span>
+                    <span class="n">plays_map</span><span class="p">[</span><span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;plays </span><span class="si">{</span><span class="n">slot_tname</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">range_role</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">class_def</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -852,17 +883,15 @@
                 <span class="k">if</span> <span class="n">class_def</span><span class="o">.</span><span class="n">is_a</span><span class="p">:</span>
                     <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, sub </span><span class="si">{</span><span class="n">_typedb_name</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
-                <span class="n">direct_slot_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ancestor_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]]</span>
-                <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">direct_slot_names</span><span class="p">:</span>
-                    <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">induced</span> <span class="ow">in</span> <span class="n">direct_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]:</span>
                     <span class="n">value_type</span> <span class="o">=</span> <span class="n">_resolve_typedb_value_type</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">value_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="c1"># Object-ranged slot → becomes a relates role</span>
-                        <span class="n">role_name</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot_name</span><span class="p">)</span>
+                        <span class="n">role_name</span> <span class="o">=</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                         <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;relates </span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># Scalar slot → owns attribute</span>
-                        <span class="n">slot_tname</span> <span class="o">=</span> <span class="n">attr_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot_name</span><span class="p">))</span>
+                        <span class="n">slot_tname</span> <span class="o">=</span> <span class="n">attr_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
                         <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_owns_stmt</span><span class="p">(</span><span class="n">slot_tname</span><span class="p">,</span> <span class="n">induced</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Emit as TypeDB entity type</span>
@@ -874,14 +903,12 @@
                     <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, sub </span><span class="si">{</span><span class="n">_typedb_name</span><span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">is_a</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
                 <span class="c1"># Slots that appear on ANY ancestor are already inherited in TypeDB —</span>
-                <span class="c1"># redeclaring them causes [SVL42]. Filter them out here.</span>
-                <span class="n">direct_slot_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">class_def</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ancestor_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]]</span>
-                <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">direct_slot_names</span><span class="p">:</span>
-                    <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+                <span class="c1"># redeclaring them causes [SVL42], so _direct_induced_slots filters them out.</span>
+                <span class="k">for</span> <span class="n">induced</span> <span class="ow">in</span> <span class="n">direct_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]:</span>
                     <span class="n">value_type</span> <span class="o">=</span> <span class="n">_resolve_typedb_value_type</span><span class="p">(</span><span class="n">sv</span><span class="p">,</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">value_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="k">continue</span>  <span class="c1"># object range → relation</span>
-                    <span class="n">slot_tname</span> <span class="o">=</span> <span class="n">attr_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">slot_name</span><span class="p">))</span>
+                    <span class="n">slot_tname</span> <span class="o">=</span> <span class="n">attr_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">_typedb_name</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
                     <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_owns_stmt</span><span class="p">(</span><span class="n">slot_tname</span><span class="p">,</span> <span class="n">induced</span><span class="p">))</span>
 
                 <span class="k">for</span> <span class="n">plays_stmt</span> <span class="ow">in</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">plays_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="p">[])):</span>
@@ -903,26 +930,35 @@
 
         <span class="k">return</span> <span class="n">lines</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_relation_defs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collect_relation_defs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sv</span><span class="p">:</span> <span class="n">SchemaView</span><span class="p">,</span> <span class="n">rel_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">direct_slots_cache</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">SlotDefinition</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return relation type definition lines for all object-ranged slots.</span>
 
 <span class="sd">        One relation type per unique slot name. A slot may appear on multiple classes,</span>
 <span class="sd">        so all domain classes and range classes are included as ``relates`` role types.</span>
 
+<span class="sd">        Only directly-declared slots (see ``_direct_induced_slots``) are considered, so an</span>
+<span class="sd">        object-ranged slot inherited by a subclass is collected once, at the class that</span>
+<span class="sd">        introduces it, rather than once per subclass — this is deliberate: TypeDB roles are</span>
+<span class="sd">        inherited from supertypes, so redeclaring the relation on every subclass would be</span>
+<span class="sd">        both redundant and rejected by TypeDB ([SVL42]).</span>
+
 <span class="sd">        :param rel_names: slot name → safe TypeDB relation name</span>
+<span class="sd">        :param direct_slots_cache: per-class directly-declared induced slots (see</span>
+<span class="sd">            ``_build_direct_slots_cache``), shared with ``_collect_entity_defs``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># First pass: collect all (domain_class, range_class) pairs per slot.</span>
         <span class="c1"># Classes with represents_relationship emit &#39;relates&#39; roles instead of standalone</span>
         <span class="c1"># relation types, so they are skipped here.</span>
+        <span class="n">all_class_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">slot_pairs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">represents_relationship</span><span class="p">:</span>
                 <span class="k">continue</span>  <span class="c1"># object-ranged slots handled as &#39;relates&#39; in entity/relation defs</span>
-            <span class="k">for</span> <span class="n">slot_name</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">get_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span><span class="o">.</span><span class="n">slots</span> <span class="ow">or</span> <span class="p">[]:</span>
-                <span class="n">induced</span> <span class="o">=</span> <span class="n">sv</span><span class="o">.</span><span class="n">induced_slot</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">induced</span> <span class="ow">in</span> <span class="n">direct_slots_cache</span><span class="p">[</span><span class="n">class_name</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_class_names</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">slot_pairs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">slot_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">class_name</span><span class="p">,</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
+                <span class="n">slot_pairs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">induced</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">class_name</span><span class="p">,</span> <span class="n">induced</span><span class="o">.</span><span class="n">range</span><span class="p">))</span>
 
         <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">slot_name</span><span class="p">,</span> <span class="n">pairs</span> <span class="ow">in</span> <span class="n">slot_pairs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
