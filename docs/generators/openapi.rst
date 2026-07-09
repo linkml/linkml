@@ -2,8 +2,9 @@ OpenAPI
 =======
 
 `OpenAPI <https://www.openapis.org/>`_ is a specification for describing
-RESTful HTTP APIs. The OpenAPI generator produces an OpenAPI v3.0.3
-specification in YAML from a LinkML schema.
+RESTful HTTP APIs. The OpenAPI generator produces an OpenAPI
+specification in YAML from a LinkML schema. As of now it supports OpenAPI
+specification versions v3.0.3 and v3.1.0.
 
 .. note:: This generator produces a complete OpenAPI spec by combining a
           user-provided *template* (containing the API header, endpoints, and
@@ -15,15 +16,16 @@ Overview
 
 The generator works in two stages:
 
-1. The user provides an **OpenAPI template** — a valid OpenAPI v3.0.3 YAML
+1. The user provides an **OpenAPI template** — a valid OpenAPI YAML
    file that defines the API metadata (title, version, servers), paths
-   (endpoints), and security schemes.
+   (endpoints), and security schemes. It also specifies the version of
+   the OpenAPI specification in its top-level attribute `openapi`.
 2. The generator fills the ``components/schemas`` section with JSON Schema
    definitions generated from the LinkML schema, keeping only those classes
    that are transitively reachable from the endpoints.
 
 Both the input template and the final output are automatically validated
-against the OpenAPI 3.0.3 specification using
+against the corresponding OpenAPI specification version using
 `openapi-spec-validator <https://github.com/p1c2u/openapi-spec-validator>`_.
 
 To run:
@@ -31,6 +33,9 @@ To run:
 .. code:: bash
 
    gen-openapi personinfo.yaml --template api-template.yaml > personinfo.openapi.yaml
+
+The **template's top-level attribute `openapi` MUST specify the supported OpenAPI
+version**.
 
 The ``--template`` / ``-t`` option is required when generating a concrete
 specification. If omitted, the generator prints a generic template that can
@@ -47,14 +52,8 @@ The generator validates both the input template and the final output against
 the OpenAPI specification using
 `openapi-spec-validator <https://github.com/p1c2u/openapi-spec-validator>`_.
 
-The ``openapi`` field in the template is checked against the expected
-version for the chosen output format (currently ``openapi303`` →
-``3.0.3``). If the versions do not match, the generator raises a
-``ValueError``.
-
-Additionally, the template's ``components/schemas`` section must declare each
-resource that is referenced by an endpoint, using two custom extension
-fields:
+The template's ``components/schemas`` section must declare each resource
+that is referenced by an endpoint, using two custom extension fields:
 
 ``x-linkml-schema``
    The ``id`` of the LinkML schema being used. Must match exactly.
