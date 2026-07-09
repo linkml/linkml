@@ -836,7 +836,11 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
             else:
                 if reference is not None:
-                    prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
+                    # for multivalued slots, nullability applies to the array (via array_of
+                    # below), not to the individual elements
+                    prop = JsonSchema.ref_for(
+                        reference, required=slot.required or slot_is_multivalued or not include_null
+                    )
                 elif typ and fmt is None:
                     prop = JsonSchema({"type": typ})
                 elif typ:

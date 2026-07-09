@@ -395,6 +395,9 @@ def test_slot_not_required_nullability(input_path, not_closed):
         else:
             pytest.fail(f"{key} has neither 'type' nor 'anyOf', so it cannot allow null: {prop}")
 
+    # nullability of an optional multivalued enum slot applies to the array, not its elements
+    assert properties["enum_range_multivalued"]["items"] == {"$ref": "#/$defs/StatusEnum"}
+
 
 def test_lifecycle_classes(kitchen_sink_path):
     """We can modify the generation process by subclassing lifecycle hooks"""
