@@ -836,7 +836,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
             else:
                 if reference is not None:
-                    prop = JsonSchema.ref_for(reference)
+                    prop = JsonSchema.ref_for(reference, required=slot.required or not include_null)
                 elif typ and fmt is None:
                     prop = JsonSchema({"type": typ})
                 elif typ:
