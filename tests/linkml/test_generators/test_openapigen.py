@@ -79,7 +79,7 @@ def test_printout_template(kitchen_sink_path):
     """Test that printout_template returns a valid YAML generic template."""
     output = OpenApiGenerator(kitchen_sink_path).printout_template()
     parsed = yaml.safe_load(output)
-    assert parsed["openapi"] == "3.0.3"
+    assert parsed["openapi"] == "x.y.z"
     assert "paths" in parsed
     assert "schemas" in parsed["components"]
     # the schema id from kitchen_sink must appear in the template

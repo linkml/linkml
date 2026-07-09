@@ -1,4 +1,4 @@
-"""Generate OpenAPI v3.0.3 Specification YAML files."""
+"""Generate OpenAPI YAML files."""
 
 import json
 import os
@@ -13,12 +13,17 @@ from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
 from linkml.utils.generator import Generator, shared_arguments
 
-openapi_generic_template = """openapi: 3.0.3
+SUPPORTED_OPENAPI_VERSIONS = ["3.0.3"]
+
+openapi_generic_template = """# TODO: remove this whole comment block after processing
 # This is a valid OpenAPI template to be used by the LinkML OpenAPI generator.
+# Make sure to set the right OpenAPI version in the `openapi` top-level attribute.
+# These are the supported OpenAPI versions: {openapi_version_list}
 # It adds one (random) class of the schema as an example.
-# Please adapt it to your needs.
+# Please adapt it to your needs and then.
 # See more information in the online documentation:
-#   https://linkml.io/linkml/generators/openapi.html
+#   https://linkml.io/linkml/generators/openapi.template
+openapi: x.y.z
 info:
   title: Generic example referring in LinkML-modelled resources
   version: 0.1.0
@@ -35,19 +40,23 @@ paths:
           content:
             application/json:
               schema:
+                # TODO: remove this whole comment block after processing
                 # any broken reference will cause template instantiation to fail
                 # OpenAPI editors typically also report them
                 $ref: '#/components/schemas/{schema_class}'
 components:
+  # TODO: remove this whole comment block after processing
   # any class schema provided here that is not used by at least
   # one endpoint will be eliminated from the template instantiation
   # OpenAPI editors typically also report them
   schemas:
+    # TODO: remove this whole comment block after processing
     # this resource name can differ from the name in the LinkML schema
     # it must only match the corresponding endpoint `$ref` references
     {schema_class}:
       type: object
       description: Resource schema to be generated from the LinkML data model.
+      # TODO: remove this whole comment block after processing
       # schema ID mismatching with provided schema will cause template
       # instantiation to fail
       x-linkml-schema: {schema_id}
@@ -58,18 +67,27 @@ components:
 @dataclass
 class OpenApiGenerator(Generator):
     """
-    Generates OpenAPI v3.0.3 specification YAML from a LinkML schema.
+    Generates OpenAPI specification YAML from a LinkML schema.
 
     The generator composes a user-provided OpenAPI template (containing the API header,
     paths/endpoints, and security schemes) with JSON Schema components generated from
     the LinkML schema via :class:`.JsonSchemaGenerator`. Only classes referenced by the
     template's endpoints (and their transitive dependencies) are included in the
     ``components/schemas`` section.
+
+    Currently only one generation path is supported (others might follow):
+
+    * **v3.0.3** — uses :class:`.JsonSchemaGenerator` and applies post-processing
+      transforms (``const`` → ``enum``, nullable ``type`` lists → ``anyOf``,
+      ``$defs`` → ``components/schemas``) required by OpenAPI 3.0.3.
+
+    The OpenAPI version to be generated is obtained from the template's top-level
+    attribute `openapi`.
     """
 
     generatorname = os.path.basename(__file__)
     generatorversion = "0.2.0"
-    valid_formats = ["openapi303"]
+    valid_formats = ["openapi"]
     file_extension = "yaml"
     uses_schemaloader = False
 
@@ -77,8 +95,8 @@ class OpenApiGenerator(Generator):
     _renaming: dict[str, str] = field(default_factory=dict, init=False, repr=False)
     # Mapping of valid_formats entries to OpenAPI version strings.
     # Extend this dict when adding support for additional OpenAPI versions.
-    _openapi_versions: dict[str, str] = field(
-        default_factory=lambda: {"openapi303": "3.0.3"},
+    _openapi_versions: list[str] = field(
+        default_factory=lambda: SUPPORTED_OPENAPI_VERSIONS,
         init=False,
         repr=False,
     )
@@ -109,11 +127,11 @@ class OpenApiGenerator(Generator):
                                     result.add(class_name)
         return result
 
-    def _fix_openapi_spec(self, element: dict | list) -> dict | list | None:
+    def _fix_openapi_spec_v303(self, element: dict | list) -> dict | list | None:
         """
         Transform JSON Schema constructs into OpenAPI v3.0.3 compatible forms:
 
-        - ``const`` becomes ``enum`` with a single value (OpenAPI 3.0 doesn't support ``const``)
+        - ``const`` becomes ``enum`` with a single value
         - ``type`` as a list (e.g. nullable ``["string", "null"]``) becomes ``anyOf``
         - ``$ref`` paths are rewritten from ``#/$defs/`` to ``#/components/schemas/``
         """
@@ -127,7 +145,7 @@ class OpenApiGenerator(Generator):
                     fixed_element["anyOf"] = [{"type": item} for item in value if item != "null"]
                 else:
                     if isinstance(value, dict | list):
-                        value = self._fix_openapi_spec(value)
+                        value = self._fix_openapi_spec_v303(value)
                     elif isinstance(value, str) and value.startswith("#/$defs/"):
                         value = value.replace("#/$defs/", "#/components/schemas/")
                     fixed_element[key] = value
@@ -135,7 +153,7 @@ class OpenApiGenerator(Generator):
             fixed_element = []
             for item in element:
                 if isinstance(item, dict | list):
-                    item = self._fix_openapi_spec(item)
+                    item = self._fix_openapi_spec_v303(item)
                 elif isinstance(item, str) and item.startswith("#/$defs/"):
                     item = item.replace("#/$defs/", "#/components/schemas/")
                 fixed_element.append(item)
@@ -198,36 +216,10 @@ class OpenApiGenerator(Generator):
                 self._find_references(class_schema, referenced_classes)
         return class_schemas
 
-    def serialize(self, template_file: str = "", **kwargs) -> str:
-        """Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema."""
-        if not template_file:
-            raise ValueError("An OpenAPI template file is required")
-        with open(template_file) as tf:
-            self._template = yaml.safe_load(tf)
-        # Determine the expected OpenAPI version from the active output format
-        format_name = getattr(self, "format", self.valid_formats[0]) or self.valid_formats[0]
-        expected_version = self._openapi_versions.get(format_name)
-        if expected_version is None:
-            raise ValueError(f"Unsupported output format '{format_name}'")
-        validator_class = self._openapi_validators.get(expected_version)
-        if validator_class is None:
-            raise ValueError(f"No validator available for OpenAPI version {expected_version}")
-        # Validate that the template declares the expected OpenAPI version
-        declared_version = self._template.get("openapi")
-        if declared_version != expected_version:
-            raise ValueError(
-                f"Template OpenAPI version is '{declared_version}', "
-                f"but format '{format_name}' requires version '{expected_version}'"
-            )
-        # Validate the input template against the OpenAPI specification
-        validate(self._template, cls=validator_class)
-        if not isinstance(self._template.get("paths"), dict):
-            raise ValueError("OpenAPI template is missing required 'paths' section")
-        if not isinstance(self._template.get("components"), dict):
-            raise ValueError("OpenAPI template is missing required 'components' section")
-        referenced_resource_names = self._find_referenced_resources()
+    def _generate_schemas_v303(self, referenced_resource_names: set[str]) -> dict:
+        """Generate component schemas for OpenAPI v3.0.3 via :class:`.JsonSchemaGenerator`."""
         resource_schemas = self._template["components"]["schemas"]
-        class_schemas = {}
+        class_schemas: dict = {}
         self._renaming = {}
         referenced_class_names = set()
         # get only the resource schemas that are really referenced from an endpoint
@@ -253,24 +245,52 @@ class OpenApiGenerator(Generator):
             json_schema = JsonSchemaGenerator(self.schema, include_null=False, top_class=class_name).generate()
             json_schema_classes = json.loads(json_schema.to_json())["$defs"]
             class_schemas = class_schemas | json_schema_classes
-        class_schemas = self._sanitize_schemas(class_schemas, referenced_class_names)
-        # title always duplicates the schema dict key, so it is redundant in components/schemas
-        for class_schema in class_schemas.values():
-            class_schema.pop("title", None)
-        class_schemas = self._fix_openapi_spec(class_schemas)
         if self._renaming:
             class_schemas = self._rename(class_schemas)
-        self._template["components"]["schemas"] = class_schemas
-        # Validate the generated output against the OpenAPI specification
+        class_schemas = self._sanitize_schemas(class_schemas, referenced_resource_names)
+        for class_schema in class_schemas.values():
+            class_schema.pop("title", None)
+        class_schemas = self._fix_openapi_spec_v303(class_schemas)
+        return class_schemas
+
+    def serialize(self, template_file: str = "", **kwargs) -> str:
+        """Generate an OpenAPI spec from ``template_file`` and the loaded LinkML schema."""
+        if not template_file:
+            raise ValueError("An OpenAPI template file is required")
+        with open(template_file) as tf:
+            self._template = yaml.safe_load(tf)
+        # Determine the expected OpenAPI version from the provided template
+        openapi_version = self._template["openapi"]
+        if openapi_version not in SUPPORTED_OPENAPI_VERSIONS:
+            raise ValueError(
+                f"Unsupported OpenAPI version {openapi_version}. "
+                + f"Only supported versions are: {','.join(self._openapi_versions)}"
+            )
+        validator_class = self._openapi_validators.get(openapi_version)
+        if validator_class is None:
+            raise ValueError(f"No validator available for OpenAPI version {openapi_version}.")
+        # Validate the input template against the OpenAPI specification
         validate(self._template, cls=validator_class)
-        return yaml.dump(self._template, sort_keys=False)
+        referenced_resource_names = self._find_referenced_resources()
+        if openapi_version == "3.0.3":
+            class_schemas = self._generate_schemas_v303(referenced_resource_names)
+        # instantiate the right resources in the OpenAPI template
+        openapi_spec = self._template
+        openapi_spec["components"]["schemas"] = class_schemas
+        # Validate the generated output against the OpenAPI specification
+        validate(openapi_spec, cls=validator_class)
+        return yaml.dump(openapi_spec, sort_keys=False)
 
     def printout_template(self) -> str:
         """Return a generic OpenAPI template pre-filled with the first class of the schema."""
         first_class = next(iter(self.schema.classes.keys()))
         if re.search(r"[ :\d]", first_class):
             first_class = f'"{first_class}"'
-        return openapi_generic_template.format(schema_id=self.schema.id, schema_class=first_class)
+        return openapi_generic_template.format(
+            schema_id=self.schema.id,
+            schema_class=first_class,
+            openapi_version_list=",".join(self._openapi_versions),
+        )
 
 
 @shared_arguments(OpenApiGenerator)
@@ -278,11 +298,11 @@ class OpenApiGenerator(Generator):
 @click.option(
     "--template",
     "-t",
-    help="OpenAPI v3.0.3 template - includes the header, the endpoints and the security schemes",
+    help="OpenAPI template - includes the header, the endpoints and the security schemes",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, template, **args):
-    """Generate an OpenAPI v3.0.3 spec with resources modelled with LinkML.
+    """Generate an OpenAPI spec with resources modelled with LinkML.
     If no OpenAPI template is provided,
     a generic one with placeholders for all the classes in the schema is printed out."""
     # if no template provided, print out a generic one with all the classes of the schema

@@ -15,7 +15,7 @@ OPENAPI_TEMPLATE_PATH = str(
 def test_help():
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
-    assert "Generate an OpenAPI v3.0.3 spec" in result.output
+    assert "Generate an OpenAPI spec" in result.output
 
 
 def test_valid_call():
@@ -31,5 +31,5 @@ def test_missing_template():
     runner = CliRunner()
     result = runner.invoke(cli, [KITCHEN_SINK_PATH], standalone_mode=False)
     assert result.exit_code == 0
-    assert "openapi: 3.0.3" in result.output
+    assert "openapi: x.y.z" in result.output
     assert "x-linkml-schema:" in result.output
