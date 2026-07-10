@@ -12,13 +12,13 @@ jobs:
     name: Build Python 🐍 distributions 📦 for publishing to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         # Checkout the code including tags required for dynamic versioning
         fetch-depth: 0
 
     - name: Set up Python
-      uses: actions/setup-python@v6.2.0
+      uses: actions/setup-python@v6.3.0
       with:
         python-version: 3.13
 
