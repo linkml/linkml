@@ -76,6 +76,9 @@ class ContextGenerator(Generator):
     _local_slots: set | None = field(default=None, repr=False)
     _external_classes: set | None = field(default=None, repr=False)
     _external_slots: set | None = field(default=None, repr=False)
+    use_curies: bool = False
+    """If true, use class_uri/slot_uri CURIEs as context keys instead of element names."""
+
     xsd_anyuri_as_iri: bool = False
     """Map xsd:anyURI-typed ranges (uri, uriorcurie) to ``@type: @id`` instead of ``@type: xsd:anyURI``.
 
@@ -238,6 +241,16 @@ class ContextGenerator(Generator):
 
         return str(as_json(context)) + "\n"
 
+    def _curie(self, element: ClassDefinition | SlotDefinition) -> str:
+        if self.schemaview is None:
+            source = self.schema.source_file or self.schema
+            if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
+                source = str(Path(self.base_dir) / source)
+            sv = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
+        else:
+            sv = self.schemaview
+        return sv.get_curie(element)
+
     def visit_class(self, cls: ClassDefinition) -> bool:
         if self.exclude_imports and cls.name not in self._local_classes:
             return False
@@ -245,7 +258,10 @@ class ContextGenerator(Generator):
             return False
 
         class_def = {}
-        cn = camelcase(cls.name)
+        if self.use_curies:
+            cn = self._curie(cls)
+        else:
+            cn = camelcase(cls.name)
         self.add_mappings(cls)
 
         self._build_element_id(class_def, cls.class_uri)
@@ -412,7 +428,10 @@ class ContextGenerator(Generator):
                 self._build_element_id(slot_def, slot.slot_uri)
                 self.add_mappings(slot)
         if slot_def:
-            key = underscore(aliased_slot_name)
+            if self.use_curies:
+                key = self._curie(slot)
+            else:
+                key = underscore(aliased_slot_name)
             self.context_body[key] = slot_def
 
             # collect @embed only for object-valued slots (range is a class)
@@ -460,7 +479,10 @@ class ContextGenerator(Generator):
             self._build_element_id(entry, global_slot.slot_uri)
             if override_type is not None:
                 entry["@type"] = override_type
-            scoped[underscore(slot_name)] = entry
+            if self.use_curies:
+                scoped[self._curie(global_slot)] = entry
+            else:
+                scoped[underscore(slot_name)] = entry
 
         # Check attributes that shadow global slots
         for attr_name, attr in cls.attributes.items():
@@ -578,6 +600,12 @@ class ContextGenerator(Generator):
     default=False,
     show_default=True,
     help="Map xsd:anyURI-typed ranges (uri, uriorcurie) to @type: @id instead of @type: xsd:anyURI.",
+)
+@click.option(
+    "--use-curies/--not-use-curies",
+    default=False,
+    show_default=True,
+    help="Use class_uri/slot_uri CURIEs as context keys instead of element names.",
 )
 @click.version_option(__version__, "-V", "--version")
 def cli(yamlfile, emit_frame, embed_context_in_frame, output, **args):
