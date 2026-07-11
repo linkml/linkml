@@ -322,6 +322,27 @@ This is what the underlying JSON-Schema looks like:
 
 
 
+Optional slots and null
+^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, optional (non-required) slots accept an explicit JSON ``null`` in
+addition to their base type — the generator emits ``"type": ["string", "null"]``
+for an optional string slot. This is convenient for producers that serialise
+missing values as ``null``.
+
+Some target schemas forbid explicit ``null`` on optional properties (a property
+must either be present with a typed value or absent). Use
+``--no-include-null`` to restrict optional slots to their base type:
+
+.. code:: bash
+
+   gen-json-schema --no-include-null personinfo.yaml
+
+With ``--no-include-null`` the optional string slot above is emitted as
+``"type": "string"``, so instance documents carrying ``"slot": null`` fail
+validation. The default (``--include-null``) preserves the previous behaviour.
+
+
 Patterns
 ^^^^^^^^
 
