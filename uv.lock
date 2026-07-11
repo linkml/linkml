@@ -2368,7 +2368,7 @@ requires-dist = [
     { name = "openpyxl" },
     { name = "parse" },
     { name = "prefixcommons", specifier = ">=0.1.7" },
-    { name = "prefixmaps", specifier = ">=0.2.2" },
+    { name = "prefixmaps", git = "https://github.com/linkml/prefixmaps?rev=75435150a1b31760b9780af2b64a265943a9b263" },
     { name = "pydantic", specifier = ">=2.0.0,<3.0.0" },
     { name = "pyjsg", specifier = ">=0.12.3" },
     { name = "pyshex", specifier = ">=0.9.0" },
@@ -3575,15 +3575,11 @@ wheels = [
 
 [[package]]
 name = "prefixmaps"
-version = "0.2.6"
-source = { registry = "https://pypi.org/simple" }
+version = "0.2.7.post2.dev0+7543515"
+source = { git = "https://github.com/linkml/prefixmaps?rev=75435150a1b31760b9780af2b64a265943a9b263#75435150a1b31760b9780af2b64a265943a9b263" }
 dependencies = [
     { name = "curies" },
     { name = "pyyaml" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/cf/f588bcdfd2c841839b9d59ce219a46695da56aa2805faff937bbafb9ee2b/prefixmaps-0.2.6.tar.gz", hash = "sha256:7421e1244eea610217fa1ba96c9aebd64e8162a930dc0626207cd8bf62ecf4b9", size = 709899, upload-time = "2024-10-17T16:30:57.738Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/89/b2/2b2153173f2819e3d7d1949918612981bc6bd895b75ffa392d63d115f327/prefixmaps-0.2.6-py3-none-any.whl", hash = "sha256:f6cef28a7320fc6337cf411be212948ce570333a0ce958940ef684c7fb192a62", size = 754732, upload-time = "2024-10-17T16:30:55.731Z" },
 ]
 
 [[package]]
