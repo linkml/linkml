@@ -355,6 +355,43 @@ will generate:
 LinkML also supports `Structured patterns <https://w3id.org/linkml/structured_pattern>`_, these are
 compiled down to patterns during JSON Schema generation.
 
+Dictionary key constraints (propertyNames)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A multivalued, inlined slot whose range class has an identifier slot is
+compiled to a JSON object keyed by that identifier (see *Inlining* above).
+When the identifier slot carries string-applicable constraints, they are
+emitted as a `propertyNames <https://json-schema.org/understanding-json-schema/reference/object.html#property-names>`_
+schema on the container object, so the *keys* of the dictionary are validated,
+not just the values:
+
+.. code-block:: yaml
+
+    slots:
+      tags:
+        range: Tag
+        multivalued: true
+        inlined: true
+      uid:
+        identifier: true
+        pattern: "^(0|[1-9][0-9]*)$"
+
+generates on the container:
+
+.. code-block:: json
+
+    "tags": {
+       "additionalProperties": {"$ref": "#/$defs/Tag"},
+       "propertyNames": {"pattern": "^(0|[1-9][0-9]*)$"},
+       "type": "object"
+    }
+
+The constraints carried over from the key slot are those applicable to JSON
+Schema strings: ``pattern``, ``minimum_value``/``maximum_value`` are not
+key-applicable, while ``pattern`` and length bounds are. Keys of a plain
+CURIE/identifier form without constraints are unaffected.
+
+
 Rules
 ^^^^^
 
