@@ -2,8 +2,6 @@
 
 import re
 
-from jsonasobj2 import as_json, loads
-
 
 def ldcontext_metadata_filter(s: str) -> str:
     """
@@ -55,38 +53,3 @@ def yaml_filter(s: str) -> str:
             re.sub(r"(source_file_size: ).*", r"\1 23600", s),
         ),
     )
-
-
-def nb_filter(s: str) -> str:
-    """Filter for jupyter (ipynb) notebooks"""
-    # It is easier to deal with notebook content in JSON
-    s_json = loads(ldcontext_metadata_filter(s))
-    for cell in s_json.cells:
-        if hasattr(cell, "execution_count"):
-            cell.execution_count = 1
-        if hasattr(cell, "metadata"):
-            delattr(cell, "metadata")
-        if hasattr(cell, "outputs"):
-            del_outputs = []
-            for output in cell.outputs:
-                to_del = []
-                if hasattr(output, "text"):
-                    for line in output.text:
-                        if (
-                            "WARNING: You are using pip" in line
-                            or "You should consider upgrading via" in line
-                            or "Requirement already satisfied:" in line
-                        ):
-                            to_del.append(line)
-                    for del_line in to_del:
-                        output.text.remove(del_line)
-                    if not output.text:
-                        del_outputs.append(output)
-            if del_outputs:
-                for del_output in del_outputs:
-                    cell.outputs.remove(del_output)
-    if hasattr(s_json.metadata, "language_info"):
-        if hasattr(s_json.metadata.language_info, "version"):
-            s_json.metadata.language_info.version = "3"
-
-    return as_json(s_json)
