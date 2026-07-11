@@ -1,0 +1,59 @@
+id: https://w3id.org/linkml/examples/any_of_pattern
+name: test_any_of_pattern
+description: >-
+  Test schema for pattern constraints inside any_of branches.
+  Exercises three cases: (1) pattern-only branch (no range),
+  (2) range + pattern on the same branch, (3) mixed branches
+  where some have pattern and some do not.
+prefixes:
+  linkml: https://w3id.org/linkml/
+  ex: https://w3id.org/linkml/examples/any_of_pattern/
+imports:
+  - linkml:types
+default_range: string
+default_prefix: ex
+
+enums:
+  LicenseEnum:
+    permissible_values:
+      MIT:
+      Apache-2.0:
+      GPL-3.0-only:
+
+classes:
+  PatternOnlyBranch:
+    description: >-
+      A class where one any_of branch specifies only a pattern
+      (no range). The generated SHACL sh:or should contain a
+      node with sh:pattern but no sh:datatype or sh:class.
+    attributes:
+      license:
+        any_of:
+          - range: LicenseEnum
+          - range: uri
+          - pattern: "^LicenseRef-[a-zA-Z0-9\\-\\.]+$"
+
+  RangeWithPattern:
+    description: >-
+      A class where an any_of branch combines range + pattern.
+      The generated SHACL sh:or node should have both sh:datatype
+      and sh:pattern.
+    attributes:
+      identifier:
+        any_of:
+          - range: string
+            pattern: "^[A-Z]{2}-[0-9]{4}$"
+          - range: integer
+
+  MixedBranches:
+    description: >-
+      A class with three any_of branches: one with range only,
+      one with pattern only, one with range + pattern. Ensures
+      pattern is emitted only on branches that declare it.
+    attributes:
+      code:
+        any_of:
+          - range: integer
+          - pattern: "^CUSTOM-.*$"
+          - range: string
+            pattern: "^STD-[0-9]+$"
