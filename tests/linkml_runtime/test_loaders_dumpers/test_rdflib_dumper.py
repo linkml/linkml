@@ -394,6 +394,15 @@ def test_phenopackets(prefix_map):
         assert Literal(test_label) in list(g.objects(URIRef(expected_uri))), (
             f"Expected label {test_label} for {expected_uri} in {ttl}"
         )
+        # Predicates and type objects must be fully expanded URIs, not raw CURIEs.
+        # A raw CURIE like "base:label" as a predicate indicates that sub-schema
+        # prefixes were not loaded into the namespace cache before URI expansion.
+        for s, p, o in g:
+            assert "://" in str(p), f"Predicate {p!r} is not a full URI — sub-schema prefixes may not have been loaded"
+            if str(p) == str(RDF.type):
+                assert "://" in str(o), (
+                    f"rdf:type object {o!r} is not a full URI — sub-schema prefixes may not have been loaded"
+                )
         pf = PhenotypicFeature(type=c)
         pkt = Phenopacket(
             id="id with spaces",
