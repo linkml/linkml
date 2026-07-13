@@ -1,4 +1,4 @@
-from linkml.generators.javagen import JavaGenerator
+from linkml.generators.javagen import JavaBundle, JavaGenerator
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -228,3 +228,72 @@ def test_refined_ranges(input_path):
     # - ThirdDerivedFoo refines the slot compared to its parent SecondDerivedFoo;
     #   this is the second refinement in the hierarchy since the defining class
     assert gen.get_refined_ranges("bar", "ThirdDerivedFoo", upwards=True) == ["FirstDerivedBar", "Bar"]
+
+
+def test_render_returns_bundle(kitchen_sink_path, tmp_path):
+    """`render()` returns a `JavaBundle` with rendered files but touches no disk."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+
+    assert isinstance(bundle, JavaBundle)
+    assert bundle.package == PACKAGE
+    assert bundle.documents, "expected at least one OODocument"
+    assert any(d.name == "Address" for d in bundle.documents)
+    assert "Address.java" in bundle.files
+    address_code = bundle.files["Address.java"]
+    assert "public class Address" in address_code
+    assert f"package {PACKAGE}" in address_code
+
+    # render() must not write anything to disk.
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_render_template_variant(kitchen_sink_path, tmp_path):
+    """`render(template_variant=...)` is honoured (records variant here)."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render(template_variant="records")
+
+    assert "Address.java" in bundle.files
+    assert "public record Address(String street, String city, BigDecimal altitude)" in bundle.files["Address.java"]
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_render_visitors(kitchen_sink_path, tmp_path):
+    """`render(visitors=[...])` emits the visitor interface and adds `accept()` to visited classes."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render(visitors=["Concept"])
+
+    assert "IConceptVisitor.java" in bundle.files
+    assert "public void visit(DiagnosisConcept visited);" in bundle.files["IConceptVisitor.java"]
+    # A class in the visited hierarchy carries the accept() method.
+    assert "ProcedureConcept.java" in bundle.files
+    assert "public void accept(IConceptVisitor visitor)" in bundle.files["ProcedureConcept.java"]
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_render_true_enums(kitchen_sink_path, tmp_path):
+    """With `true_enums=True`, enum-typed files appear in the bundle."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE, true_enums=True)
+    bundle = gen.render()
+
+    assert "CordialnessEnum.java" in bundle.files
+    assert "public enum CordialnessEnum" in bundle.files["CordialnessEnum.java"]
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_serialize_delegates_to_render(kitchen_sink_path, tmp_path, monkeypatch):
+    """`serialize()` calls `render()` and writes its `files` to `directory`."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    real_render = gen.render
+    render_calls = 0
+
+    def counting_render(*args, **kwargs):
+        nonlocal render_calls
+        render_calls += 1
+        return real_render(*args, **kwargs)
+
+    monkeypatch.setattr(gen, "render", counting_render)
+    gen.serialize(directory=str(tmp_path))
+
+    assert render_calls == 1
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
