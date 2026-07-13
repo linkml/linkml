@@ -1,4 +1,5 @@
 [tool.uv]
+required-version = ">=0.9.17"
 exclude-newer = "7 days"
 
 [tool.uv.workspace]
