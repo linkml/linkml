@@ -66,3 +66,42 @@ def test_owlgen_rdfs_profile():
 
     # and check rdfs:comment for property 'name' too
     assert (name_prop, RDFS.comment, None) in graph
+
+
+def test_owlgen_xsd_prefixes_from_imported_schema_are_expanded():
+    """Prefixes declared only in imported sub-schemas (e.g. xsd: from
+    https://w3id.org/linkml/types) must be resolved to full URIs by SchemaView.
+
+    This detects a premature-namespace-cache bug: SchemaView.namespaces() is
+    @lru_cache'd. When it is called before imports_closure() has fully populated
+    schema_map, prefixes declared only in imported schemas (e.g. xsd: from
+    https://w3id.org/linkml/types) are absent from the cache.  Subsequent calls
+    to get_uri(expand=True) on built-in types then silently return unexpanded
+    CURIEs like 'xsd:string' instead of the full
+    http://www.w3.org/2001/XMLSchema#string URI.
+
+    The fix is to call imports_closure() followed by namespaces.cache_clear()
+    at the start of as_graph() so the namespace cache is always seeded with the
+    complete schema_map before any URI expansion takes place.
+    """
+    gen = OwlSchemaGenerator(
+        schema_str,
+        ontology_uri_suffix=None,
+        type_objects=False,
+        metaclasses=False,
+        format="ttl",
+        skip_vacuous_min_zero_cardinality_axioms=True,
+        skip_vacuous_local_range_axioms=True,
+        consolidate_cardinality_axioms=True,
+    )
+    # Trigger the full generation pipeline so as_graph() applies the fix
+    gen.serialize()
+
+    sv = gen.schemaview
+    string_type = sv.get_type("string")
+    expanded = sv.get_uri(string_type, expand=True)
+    assert "://" in expanded, (
+        f"get_uri(expand=True) for built-in type 'string' returned {expanded!r} — "
+        "an unexpanded CURIE rather than a full URI. "
+        "The xsd: prefix from the imported schema was not in the namespace cache."
+    )
