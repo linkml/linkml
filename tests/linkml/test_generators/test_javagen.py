@@ -1,3 +1,5 @@
+import pytest
+
 from linkml.generators.javagen import JavaBundle, JavaGenerator
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
@@ -274,3 +276,25 @@ def test_render_true_enums(kitchen_sink_path):
 
     assert "CordialnessEnum.java" in bundle.files
     assert "public enum CordialnessEnum" in bundle.files["CordialnessEnum.java"]
+
+
+def test_serialize_accepts_rendered_module(kitchen_sink_path, tmp_path):
+    """Passing `rendered_module=` writes the given bundle as-is."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+    bundle.files["Address.java"] = "// sentinel: pre-rendered bundle content"
+
+    gen.serialize(directory=str(tmp_path), rendered_module=bundle)
+
+    assert_file_contains(tmp_path / "Address.java", "// sentinel: pre-rendered bundle content")
+
+
+@pytest.mark.parametrize("as_path", [False, True], ids=["str", "Path"])
+def test_serialize_accepts_str_or_path_directory(kitchen_sink_path, tmp_path, as_path):
+    """`directory` accepts both a ``str`` and a :class:`pathlib.Path`."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    directory = tmp_path if as_path else str(tmp_path)
+
+    gen.serialize(directory=directory)
+
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")

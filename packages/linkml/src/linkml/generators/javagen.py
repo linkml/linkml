@@ -334,30 +334,44 @@ class JavaGenerator(OOCodeGenerator):
 
     def serialize(
         self,
-        directory: str,
+        directory: str | Path,
         template_variant: str | None = None,
         extra_templates: list[str] | None = None,
         visitors: list[str] | None = None,
+        rendered_module: JavaBundle | None = None,
         **kwargs,
     ) -> None:
-        """Generate and write the Java code to files.
+        """Generate the Java code and write it to ``directory``, one file per class.
 
-        Thin wrapper around :meth:`render` that writes each rendered file in
-        the returned :class:`JavaBundle` to ``directory``.
+        Java requires one public class per file, so there is no meaningful
+        single-string serialization of a schema; callers that want the
+        generated code in memory should use :meth:`render` and work from the
+        returned :class:`JavaBundle` instead.
 
         :param directory: The directory where to write the code files.
         :param template_variant: The name of the template variant to use, if any.
+            Ignored when ``rendered_module`` is provided.
         :param extra_templates: A list of additional templates from which to generate
-            additional code files. See :meth:`render` for details.
+            additional code files. See :meth:`render` for details. Ignored when
+            ``rendered_module`` is provided.
         :param visitors: A list of class names for which to generate a visitor
-            interface. See :meth:`render` for details.
+            interface. See :meth:`render` for details. Ignored when
+            ``rendered_module`` is provided.
+        :param rendered_module: Optional pre-computed :class:`JavaBundle` to
+            write instead of calling :meth:`render` afresh. Allows caller to
+            render once and inspect/write multiple times. When supplied,
+            ``template_variant``, ``extra_templates``, and ``visitors``
+            are ignored (the bundle is used as-is).
         """
-        bundle = self.render(
-            template_variant=template_variant,
-            extra_templates=extra_templates,
-            visitors=visitors,
+        bundle = (
+            rendered_module
+            if rendered_module is not None
+            else self.render(
+                template_variant=template_variant,
+                extra_templates=extra_templates,
+                visitors=visitors,
+            )
         )
-        self.directory = directory
         os.makedirs(directory, exist_ok=True)
         for filename, code in bundle.files.items():
             path = os.path.join(directory, filename)
