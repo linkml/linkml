@@ -1,4 +1,4 @@
-from rdflib import Literal, URIRef
+from rdflib import Literal
 
 from linkml.generators.common.ifabsent_processor import IfAbsentProcessor
 from linkml.generators.shacl.shacl_data_type import ShaclDataType
@@ -62,8 +62,14 @@ class ShaclIfAbsentProcessor(IfAbsentProcessor):
             value = self._map_uri_special_case(default_value, slot, cls)
             return Literal(value, datatype=ShaclDataType.URI.uri_ref)
         else:
-            uri = URIRef(self.schema_view.expand_curie(default_value))
-            return Literal(uri, datatype=ShaclDataType.URI.uri_ref)
+            if "://" in default_value:
+                return Literal(default_value, datatype=ShaclDataType.URI.uri_ref)
+            try:
+                expanded = self.schema_view.expand_curie(default_value)
+                return Literal(expanded, datatype=ShaclDataType.URI.uri_ref)
+            except ValueError:
+                # CURIE with an unregistered prefix: keep as-is, typed as anyURI
+                return Literal(default_value, datatype=ShaclDataType.URI.uri_ref)
 
     def map_curie_default_value(self, default_value: str, slot: SlotDefinition, cls: ClassDefinition):
         if default_value in self.CURIE_SPECIAL_CASES:
