@@ -425,18 +425,31 @@ def test_rdf_output(issue_429_graph):
 
 
 def test_output_prefixes(issue_429_graph):
-    """Test output prefixes for issue 429."""
+    """Test output prefixes and key triples for issue 429.
+
+    Assertions use the graph object and namespace manager directly rather than
+    matching against the turtle serialisation string, so they are independent
+    of rdflib version, semweb_context prefix labels, and serialisation order.
+    """
     g = issue_429_graph
-    file_string = g.serialize(format="turtle")
-    # Serialisation-stable assertions: these prefixes are always present
-    # regardless of rdflib / semweb_context version.
-    for token in ["prefix ORCID:", "prefix personinfo:", "personinfo:age", "ORCID:1234"]:
-        assert token in file_string
-    # http://schema.org/ may be serialised as "sdo:" or "schema1:" depending on
-    # the semweb_context version; check at the graph level instead.
-    bound_uris = {str(ns) for _, ns in g.namespace_manager.namespaces()}
+    nm = g.namespace_manager
+    bound_prefixes = {pfx for pfx, _ in nm.namespaces()}
+    bound_uris = {str(ns) for _, ns in nm.namespaces()}
+    # Key prefix namespaces must be bound.
+    assert "ORCID" in bound_prefixes
+    assert "personinfo" in bound_prefixes
+    # http://schema.org/ may be serialised as sdo: or schema1: depending on the
+    # semweb_context version; check the URI rather than the label.
     assert "http://schema.org/" in bound_uris
-    assert (ORCID["1234"], RDF.type, SDO.Person) in g
+    # Both persons must be typed and have their properties present.
+    for orcid_id, full_name, age in [
+        ("1234", "Clark Kent", "32"),
+        ("4567", "Lois Lane", "33"),
+    ]:
+        subject = ORCID[orcid_id]
+        assert (subject, RDF.type, SDO.Person) in g
+        assert (subject, personinfo.age, Literal(age)) in g
+        assert (subject, personinfo.full_name, Literal(full_name)) in g
 
 
 def test_pydantic_model_dump():
