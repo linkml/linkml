@@ -101,6 +101,25 @@ class OOVisitorDocument(OOCustomDocument):
         self.type = "_visitor"
 
 
+@dataclass
+class JavaBundle:
+    """In-memory result of rendering a LinkML schema to Java source.
+
+    A ``JavaBundle`` is the output of :meth:`JavaGenerator.render`. It carries
+    the rendered Java source for every file that would be written to disk by
+    :meth:`JavaGenerator.serialize`, keyed by filename.
+
+    Mirrors render/serialize split used by `rustgen.RustGenerator` (FileResult /
+    CrateResult) and `pydanticgen.PydanticGenerator` (PydanticModule).
+    """
+
+    files: dict[str, str] = field(default_factory=dict)
+    """Rendered Java source, keyed by filename (e.g. ``"Address.java"``)."""
+
+    package: str = ""
+    """Java package name the rendered files belong to (informational)."""
+
+
 class TemplateCache:
     """Cache for template objects.
 
@@ -242,17 +261,17 @@ class JavaGenerator(OOCodeGenerator):
         else:
             raise ValueError(f"{t} cannot be mapped to a type")
 
-    def serialize(
+    def render(
         self,
-        directory: str,
         template_variant: str | None = None,
         extra_templates: list[str] | None = None,
         visitors: list[str] | None = None,
-        **kwargs,
-    ) -> None:
-        """Generate and write the Java code to files.
+    ) -> JavaBundle:
+        """Render the schema to an in-memory :class:`JavaBundle`.
 
-        :param directory: The directory where to write the code files.
+        Pure counterpart of :meth:`serialize`: returns the rendered Java
+        source for every file without touching the filesystem.
+
         :param template_variant: The name of the template variant to use, if any.
         :param extra_templates: A list of additional templates from which to generate
             additional code files. For example, if set to `[Foo,Bar]`, this will
@@ -266,6 +285,8 @@ class JavaGenerator(OOCodeGenerator):
             `IFooVisitor` interface, and the generated code for both the `Foo`
             class and all its descendants will include a `accept(IFooVisitor)`
             method.
+        :return: A :class:`JavaBundle` whose ``files`` maps each output filename
+            (e.g. ``"Address.java"``) to its rendered source.
         """
         oodocs = self.create_documents()
         # Create additional documents for additional templates and visitors
@@ -279,7 +300,8 @@ class JavaGenerator(OOCodeGenerator):
                 oodocs.append(OOVisitorDocument(name=visitor_name, package=self.package, visited_object=visited_name))
         else:
             visitors = []
-        self.directory = directory
+
+        files: dict[str, str] = {}
         for oodoc in oodocs:
             cls = None
             enum = None
@@ -306,8 +328,38 @@ class JavaGenerator(OOCodeGenerator):
                 model_version=self.schema.version,
             )
 
-            os.makedirs(directory, exist_ok=True)
-            filename = f"{oodoc.name}.java"
+            files[f"{oodoc.name}.java"] = code
+
+        return JavaBundle(files=files, package=self.package)
+
+    def serialize(
+        self,
+        directory: str,
+        template_variant: str | None = None,
+        extra_templates: list[str] | None = None,
+        visitors: list[str] | None = None,
+        **kwargs,
+    ) -> None:
+        """Generate and write the Java code to files.
+
+        Thin wrapper around :meth:`render` that writes each rendered file in
+        the returned :class:`JavaBundle` to ``directory``.
+
+        :param directory: The directory where to write the code files.
+        :param template_variant: The name of the template variant to use, if any.
+        :param extra_templates: A list of additional templates from which to generate
+            additional code files. See :meth:`render` for details.
+        :param visitors: A list of class names for which to generate a visitor
+            interface. See :meth:`render` for details.
+        """
+        bundle = self.render(
+            template_variant=template_variant,
+            extra_templates=extra_templates,
+            visitors=visitors,
+        )
+        self.directory = directory
+        os.makedirs(directory, exist_ok=True)
+        for filename, code in bundle.files.items():
             path = os.path.join(directory, filename)
             with open(path, "w", encoding="UTF-8") as stream:
                 stream.write(code)
