@@ -128,7 +128,7 @@ class OOCodeGenerator(Generator):
         super().__post_init__()
 
     @abc.abstractmethod
-    def serialize(self, directory: str) -> None:
+    def serialize(self, directory: str | None = None, **kwargs) -> str:
         raise NotImplementedError("Not implemented.")
 
     @abc.abstractmethod

@@ -1,3 +1,5 @@
+import pytest
+
 from linkml.generators.javagen import JavaBundle, JavaGenerator
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
@@ -293,7 +295,55 @@ def test_serialize_delegates_to_render(kitchen_sink_path, tmp_path, monkeypatch)
         return real_render(*args, **kwargs)
 
     monkeypatch.setattr(gen, "render", counting_render)
-    gen.serialize(directory=str(tmp_path))
+    gen.serialize(directory=tmp_path)
 
     assert render_calls == 1
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
+
+
+def test_serialize_returns_str(kitchen_sink_path, tmp_path):
+    """`serialize()` returns a non-empty `str` containing every rendered file."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    result = gen.serialize(directory=str(tmp_path))
+
+    assert isinstance(result, str)
+    assert "// FILE: Address.java" in result
+    assert "public class Address" in result
+
+
+def test_serialize_accepts_rendered_module(kitchen_sink_path, tmp_path, monkeypatch):
+    """Passing `rendered_module=` reuses the bundle without re-rendering."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+
+    def fail_render(*args, **kwargs):
+        raise AssertionError("render() should not be called when rendered_module is provided")
+
+    monkeypatch.setattr(gen, "render", fail_render)
+    result = gen.serialize(directory=str(tmp_path), rendered_module=bundle)
+
+    assert isinstance(result, str)
+    assert "// FILE: Address.java" in result
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
+
+
+def test_serialize_without_directory_does_not_write(kitchen_sink_path, tmp_path):
+    """`serialize()` with no `directory` renders in memory only."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    result = gen.serialize()
+
+    assert isinstance(result, str)
+    assert "public class Address" in result
+    assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize("as_path", [False, True], ids=["str", "Path"])
+def test_serialize_accepts_str_or_path_directory(kitchen_sink_path, tmp_path, as_path):
+    """`directory` accepts both a ``str`` and a :class:`pathlib.Path`."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    directory = tmp_path if as_path else str(tmp_path)
+
+    result = gen.serialize(directory=directory)
+
+    assert isinstance(result, str)
     assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
