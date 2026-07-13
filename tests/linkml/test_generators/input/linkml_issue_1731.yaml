@@ -12,6 +12,9 @@ imports:
 default_prefix: pokemon
 default_range: string
 
+prefixes:
+  pokemon: https://w3id.org/linkml/tests/linkml_issue_1731/
+  linkml: https://w3id.org/linkml/
 classes:
   Pokemon:
     description: >-
