@@ -424,13 +424,19 @@ def test_rdf_output(issue_429_graph):
     assert (ORCID["4567"], personinfo.phone, Literal("555-555-5555")) in g
 
 
-def test_output_prefixes():
+def test_output_prefixes(issue_429_graph):
     """Test output prefixes for issue 429."""
-    with open(str(OUT_429), encoding="UTF-8") as file:
-        file_string = file.read()
-    prefixes = ["prefix ORCID:", "prefix personinfo:", "prefix sdo:", "sdo:Person", "personinfo:age", "ORCID:1234"]
-    for prefix in prefixes:
-        assert prefix in file_string
+    g = issue_429_graph
+    file_string = g.serialize(format="turtle")
+    # Serialisation-stable assertions: these prefixes are always present
+    # regardless of rdflib / semweb_context version.
+    for token in ["prefix ORCID:", "prefix personinfo:", "personinfo:age", "ORCID:1234"]:
+        assert token in file_string
+    # http://schema.org/ may be serialised as "sdo:" or "schema1:" depending on
+    # the semweb_context version; check at the graph level instead.
+    bound_uris = {str(ns) for _, ns in g.namespace_manager.namespaces()}
+    assert "http://schema.org/" in bound_uris
+    assert (ORCID["1234"], RDF.type, SDO.Person) in g
 
 
 def test_pydantic_model_dump():
