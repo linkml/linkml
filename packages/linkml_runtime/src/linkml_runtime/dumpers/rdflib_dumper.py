@@ -105,7 +105,12 @@ class RDFLibDumper(Dumper):
             dt_uri = t.uri
             if dt_uri:
                 if dt_uri in ("rdfs:Resource", "xsd:anyURI"):
-                    return URIRef(schemaview.expand_curie(element))
+                    try:
+                        return URIRef(schemaview.expand_curie(element))
+                    except ValueError:
+                        # element is a valid anyURI data value whose "prefix" is not
+                        # registered in the schema — use it verbatim as a URIRef.
+                        return URIRef(element)
                 elif dt_uri == "xsd:string":
                     return Literal(element)
                 else:
