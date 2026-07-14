@@ -10,12 +10,12 @@ import yaml
 from openapi_spec_validator import OpenAPIV30SpecValidator, validate
 
 from linkml._version import __version__
-from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from linkml.generators.jsonschemagen import JsonSchemaGenerator, json_schema_types
 from linkml.utils.generator import Generator, shared_arguments
 
 openapi_generic_template = """openapi: 3.0.3
 # This is a valid OpenAPI template to be used by the LinkML OpenAPI generator.
-# It adds one (random) class of the schema as an example.
+# It adds one (random) class or type of the LinkML schema as an example.
 # Please adapt it to your needs.
 # See more information in the online documentation:
 #   https://linkml.io/linkml/generators/openapi.html
@@ -98,8 +98,13 @@ class OpenApiGenerator(Generator):
                 if "requestBody" in req_spec and "content" in req_spec["requestBody"]:
                     for content_spec in req_spec["requestBody"]["content"].values():
                         if "$ref" in content_spec["schema"]:
-                            class_name = content_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
-                            result.add(class_name)
+                            resource_name = content_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
+                            result.add(resource_name)
+                if "parameters" in req_spec:
+                    for param_spec in req_spec["parameters"]:
+                        if "$ref" in param_spec["schema"]:
+                            resource_name = param_spec["schema"]["$ref"].removeprefix("#/components/schemas/")
+                            result.add(resource_name)
                 if "responses" in req_spec:
                     for response in req_spec["responses"].values():
                         if "content" in response:
@@ -198,6 +203,29 @@ class OpenApiGenerator(Generator):
                 self._find_references(data_schema, referenced_schemas)
         return data_schemas
 
+    def _generate_type_schema(self, type_name: str) -> dict:
+        """Build an OpenAPI-compatible JSON Schema for a LinkML TypeDefinition."""
+        type_def = self.schemaview.get_type(type_name)
+        typ, fmt = json_schema_types.get(type_def.base.lower(), ("string", None))
+        schema: dict = {}
+        if typ:
+            schema["type"] = str(typ)
+        if fmt:
+            schema["format"] = str(fmt)
+        if type_def.pattern:
+            schema["pattern"] = str(type_def.pattern)
+        if type_def.minimum_value is not None:
+            schema["minimum"] = str(type_def.minimum_value)
+        if type_def.maximum_value is not None:
+            schema["maximum"] = str(type_def.maximum_value)
+        if type_def.equals_string is not None:
+            schema["const"] = str(type_def.equals_string)
+        if type_def.equals_number is not None:
+            schema["const"] = str(type_def.equals_number)
+        if type_def.description:
+            schema["description"] = str(type_def.description)
+        return schema
+
     def serialize(self, template_file: str = "", **kwargs) -> str:
         """Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema."""
         if not template_file:
@@ -250,6 +278,9 @@ class OpenApiGenerator(Generator):
             if endpoint_reference_name != linkml_element_name:
                 self._renaming[linkml_element_name] = endpoint_reference_name
             directly_required_linkml_elements.add(linkml_element_name)
+            if linkml_element_name in self.schemaview.all_types().keys():
+                all_req_data_schemas[linkml_element_name] = self._generate_type_schema(linkml_element_name)
+                continue
             json_schema = JsonSchemaGenerator(
                 self.schemaview.schema, include_null=False, top_class=linkml_element_name
             ).generate()
