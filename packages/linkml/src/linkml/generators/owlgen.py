@@ -426,10 +426,14 @@ class OwlSchemaGenerator(Generator):
                 if default_prefix in this_sv.schema.prefixes:
                     default_prefix = this_sv.schema.prefixes[default_prefix].prefix_reference
                 k = default_prefix + k
-                k_uri = this_sv.expand_curie(k)
+                try:
+                    k_uri = this_sv.expand_curie(k)
+                except ValueError:
+                    k_uri = None
             else:
-                k_uri = this_sv.expand_curie(k)
-                if k_uri == k:
+                try:
+                    k_uri = this_sv.expand_curie(k)
+                except ValueError:
                     k_uri = None
             if k_uri:
                 if isinstance(v.value, str):
