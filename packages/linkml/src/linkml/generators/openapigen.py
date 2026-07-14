@@ -250,7 +250,9 @@ class OpenApiGenerator(Generator):
             if referenced_resource_name != class_name:
                 self._renaming[class_name] = referenced_resource_name
             referenced_class_names.add(class_name)
-            json_schema = JsonSchemaGenerator(self.schema, include_null=False, top_class=class_name).generate()
+            json_schema = JsonSchemaGenerator(
+                self.schemaview.schema, include_null=False, top_class=class_name
+            ).generate()
             json_schema_classes = json.loads(json_schema.to_json())["$defs"]
             class_schemas = class_schemas | json_schema_classes
         class_schemas = self._sanitize_schemas(class_schemas, referenced_class_names)
@@ -267,7 +269,8 @@ class OpenApiGenerator(Generator):
 
     def printout_template(self) -> str:
         """Return a generic OpenAPI template pre-filled with the first class of the schema."""
-        first_class = next(iter(self.schema.classes.keys()))
+        class_names = self.schemaview.all_classes().keys()
+        first_class = next(iter(class_names))
         if re.search(r"[ :\d]", first_class):
             first_class = f'"{first_class}"'
         return openapi_generic_template.format(schema_id=self.schema.id, schema_class=first_class)
