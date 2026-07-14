@@ -139,16 +139,14 @@ class ProjectGenerator:
                 logger.info(f" {gen_name} ARGS: {serialize_args}")
                 gen_dump = gen.serialize(**serialize_args)
 
-                if gen_name != "excel":
-                    if gen_path_full.suffix != "":
-                        logger.info(f"  WRITING TO: {gen_path_full}")
-                        with open(gen_path_full, "w", encoding="UTF-8") as stream:
-                            stream.write(gen_dump)
-                else:
-                    # special handling for excel generator
-                    # we do not need to route the output
-                    # into a file like the other generators
-                    gen.serialize(**serialize_args)
+                if gen_dump is None:
+                    # Generator wrote its own files during serialize() (e.g. excelgen,
+                    # which produces binary xlsx via openpyxl). Nothing to route to disk.
+                    continue
+                if gen_path_full.suffix != "":
+                    logger.info(f"  WRITING TO: {gen_path_full}")
+                    with open(gen_path_full, "w", encoding="UTF-8") as stream:
+                        stream.write(gen_dump)
 
 
 @click.command(name="project")
