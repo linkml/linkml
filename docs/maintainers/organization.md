@@ -13,7 +13,7 @@ Note that for many LinkML users, there is no need to understand the overall orga
 The two most important packages are `linkml` and `linkml-runtime`. Both are developed in a single monorepo [linkml](https://github.com/linkml/linkml).
 
 * [linkml](https://pypi.org/project/linkml/)
-  - [generators](generators)
+  - [generators](/generators/index)
   - utilities for working with data
   - this documentation
 * [linkml-runtime](https://pypi.org/project/linkml-runtime/)
