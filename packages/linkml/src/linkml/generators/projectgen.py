@@ -81,6 +81,13 @@ class ProjectConfiguration:
     includes: list[str] = None
     excludes: list[str] = None
     mergeimports: bool = None
+    generators: dict[GENERATOR_NAME, CONFIG_TUPLE] = None
+    """Extra generator entries merged into :data:`GEN_MAP` at call time.
+
+    User entries override built-ins on key collision. See
+    :doc:`/generators/project-generator` (section "Extending with additional
+    generators") for the tuple shape and a full example.
+    """
 
 
 class ProjectGenerator:
@@ -101,7 +108,9 @@ class ProjectGenerator:
         else:
             all_schemas = get_local_imports(schema_path, Path(schema_path).parent)
         logger.debug(f"ALL_SCHEMAS = {all_schemas}")
-        for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in GEN_MAP.items():
+        # User-supplied generators override built-ins on key collision.
+        effective_gen_map = {**GEN_MAP, **(config.generators or {})}
+        for gen_name, (gen_cls, gen_path_fmt, default_gen_args) in effective_gen_map.items():
             if config.includes is not None and config.includes != [] and gen_name not in config.includes:
                 logger.info(f"Skipping {gen_name} as not in inclusion list: {config.includes}")
                 continue
