@@ -975,7 +975,12 @@ class OwlSchemaGenerator(Generator):
             elif is_literal:
                 constraints[XSD.pattern] = equals_string
             else:
-                eq_uri = URIRef(self.schemaview.expand_curie(equals_string))
+                try:
+                    eq_uri = URIRef(self.schemaview.expand_curie(equals_string))
+                except ValueError:
+                    # equals_string is a bare name or uses an unregistered prefix;
+                    # treat it as a relative URI reference (rdflib resolves against the base)
+                    eq_uri = URIRef(equals_string)
                 owl_exprs.append(eq_uri)
         if element.equals_string_in:
             equals_string_in = element.equals_string_in
