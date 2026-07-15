@@ -26,30 +26,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
         with:
-          # Full history so we can diff a PR against its base to see whether
-          # dependency files changed (see "Detect dependency changes" below).
+          # Full history so we can diff against a base ref to see whether the
+          # resolved dependency set changed (see "Detect dependency changes").
           fetch-depth: 0
-
-      # The CVE audit reflects the state of the *upstream advisory database*, not
-      # the PR's diff: a newly-published advisory against an already-pinned
-      # package turns every open PR red, even one that never touches dependencies.
-      # Scope the audit to PRs that actually change dependency files so unrelated
-      # PRs aren't held hostage. Non-PR events (push to main, merge_group,
-      # workflow_dispatch) always audit, keeping trunk's signal intact.
-      - name: Detect dependency changes
-        id: deps
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            if git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD" \
-                | grep -qE '(^|/)(uv\.lock|pyproject\.toml)$'; then
-              echo "changed=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "changed=false" >> "$GITHUB_OUTPUT"
-              echo "No dependency files changed in this PR; skipping the CVE audit."
-            fi
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
 
       # Pin uv to a known-good, recent release.
       - name: Install uv and setup uv caching
@@ -63,6 +42,58 @@ jobs:
         id: setup-python
         with:
           python-version: 3.13
+
+      # The CVE audit reflects the state of the *upstream advisory database*,
+      # not the change under test: a newly-published advisory against an
+      # already-pinned package would otherwise turn every open PR — and the next
+      # innocent merge to main — red, regardless of whether it touched deps.
+      #
+      # So gate the audit on whether the change actually altered dependencies,
+      # relative to each event's natural base:
+      #   * pull_request -> the PR base
+      #   * push (main)  -> the commit before the push (github.event.before)
+      #   * merge_group  -> the queue base
+      #   * otherwise (workflow_dispatch, first/force push) -> audit
+      #
+      # A pyproject.toml change is always a real dependency change. uv.lock is
+      # regenerated non-deterministically, so a textual change there is only
+      # treated as real if the resolved (name, version) set actually differs.
+      - name: Detect dependency changes
+        id: deps
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ github.event_name }}" in
+            pull_request) base="${{ github.event.pull_request.base.sha }}" ;;
+            merge_group)  base="${{ github.event.merge_group.base_sha }}" ;;
+            push)         base="${{ github.event.before }}" ;;
+            *)            base="" ;;
+          esac
+
+          zero="0000000000000000000000000000000000000000"
+          if [ -z "$base" ] || [ "$base" = "$zero" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
+            echo "No comparable base ref for '${{ github.event_name }}'; auditing."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed_files="$(git diff --name-only "$base...HEAD")"
+
+          if grep -qE '(^|/)pyproject\.toml$' <<<"$changed_files"; then
+            echo "pyproject.toml changed; auditing."
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif grep -qE '(^|/)uv\.lock$' <<<"$changed_files"; then
+            changed="$(python3 .github/scripts/uv_lock_deps_changed.py "$base")"
+            if [ "$changed" = "true" ]; then
+              echo "uv.lock resolved dependency set changed; auditing."
+            else
+              echo "uv.lock changed but the resolved dependency set is identical; skipping audit."
+            fi
+            echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          else
+            echo "No dependency files changed; skipping audit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       # Step 1: Run uv audit to check for vulnerabilities (CVEs)
       #
