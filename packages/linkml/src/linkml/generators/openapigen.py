@@ -3,11 +3,13 @@
 import json
 import os
 import re
+import textwrap
 from dataclasses import dataclass, field
 
 import click
 import yaml
 from openapi_spec_validator import OpenAPIV30SpecValidator, validate
+from yaml import MappingNode, ScalarNode
 
 from linkml._version import __version__
 from linkml.generators.jsonschemagen import JsonSchemaGenerator, json_schema_types
@@ -226,12 +228,30 @@ class OpenApiGenerator(Generator):
             schema["description"] = str(type_def.description)
         return schema
 
+    def _find_schemas_line(self, template_text: str) -> int:
+        """Return the 0-indexed line number of the ``schemas`` key under ``components``."""
+        doc = yaml.compose(template_text)
+        if not isinstance(doc, MappingNode):
+            raise ValueError("OpenAPI template is not a YAML mapping")
+        components_node = None
+        for key, value in doc.value:
+            if isinstance(key, ScalarNode) and key.value == "components":
+                components_node = value
+                break
+        if not isinstance(components_node, MappingNode):
+            raise ValueError("OpenAPI template is missing a valid 'components' section")
+        for key, _ in components_node.value:
+            if isinstance(key, ScalarNode) and key.value == "schemas":
+                return key.start_mark.line
+        raise ValueError("OpenAPI template is missing 'schemas' section under 'components'")
+
     def serialize(self, template_file: str = "", **kwargs) -> str:
         """Generate an OpenAPI v3.0.3 spec from ``template_file`` and the loaded LinkML schema."""
         if not template_file:
             raise ValueError("An OpenAPI template file is required")
         with open(template_file) as tf:
-            self._template = yaml.safe_load(tf)
+            template_text = tf.read()
+            self._template = yaml.safe_load(template_text)
         # Determine the expected OpenAPI version from the active output format
         format_name = getattr(self, "format", self.valid_formats[0]) or self.valid_formats[0]
         expected_version = self._openapi_versions.get(format_name)
@@ -293,10 +313,16 @@ class OpenApiGenerator(Generator):
         sanitized_data_schemas = self._fix_openapi_spec(sanitized_data_schemas)
         if self._renaming:
             sanitized_data_schemas = self._rename(sanitized_data_schemas)
-        self._template["components"]["schemas"] = sanitized_data_schemas
+        # Replace the existing schemas section in the text template with the generated schemas
+        lines = template_text.splitlines(keepends=True)
+        schemas_line_idx = self._find_schemas_line(template_text)
+        text_before_schemas = "".join(lines[:schemas_line_idx])
+        schemas_yaml = yaml.dump(sanitized_data_schemas, sort_keys=False)
+        indented_schemas = textwrap.indent(schemas_yaml, "    ")
+        result = text_before_schemas + "  schemas:\n" + indented_schemas
         # Validate the generated output against the OpenAPI specification
-        validate(self._template, cls=validator_class)
-        return yaml.dump(self._template, sort_keys=False)
+        validate(yaml.safe_load(result), cls=validator_class)
+        return result
 
     def printout_template(self) -> str:
         """Return a generic OpenAPI template pre-filled with the first class/type of the LinkML schema."""
