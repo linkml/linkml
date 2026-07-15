@@ -16,19 +16,11 @@ on:
   pull_request:
   merge_group:
   workflow_dispatch:
-  schedule:
-    # Weekly, Monday 09:00 UTC. Catches advisories newly published against
-    # already-pinned dependencies — the case the per-change gate deliberately
-    # ignores — and reports them in a tracking issue rather than blocking CI.
-    - cron: "0 9 * * 1"
 
 jobs:
   security-check:
     name: Validate Dependencies
     runs-on: ubuntu-latest
-    # The blocking gate is about the *change under test*; on the schedule there is
-    # no change to gate, so the scheduled run only files the tracking issue below.
-    if: github.event_name != 'schedule'
 
     steps:
       - name: Check out repository
@@ -128,94 +120,3 @@ jobs:
       #
       - name: Verify Environment Sync (Anti-Malware Gate)
         run: uv sync --frozen --all-groups
-
-  # Non-blocking detection of CVEs on the current main lockfile — including
-  # advisories published against dependencies that no PR has touched. Instead of
-  # failing CI, it keeps a single rolling tracking issue in sync with the audit:
-  # opened when vulnerabilities appear, refreshed while they persist, and closed
-  # automatically once the lockfile is clean again. It never assigns or mentions
-  # anyone, so it stays quiet (an entry in the issue list, no email drip) and is
-  # fully under the project's control — unlike Dependabot alert emails.
-  audit-issue:
-    name: Report CVEs via tracking issue
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    permissions:
-      contents: read
-      issues: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      AUDIT_LABEL: dependency-audit
-      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-
-      - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v8.2.0
-        with:
-          version: ${{ env.UV_VERSION }}
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@v6.2.0
-        with:
-          python-version: 3.13
-
-      - name: Audit and sync tracking issue
-        shell: bash
-        run: |
-          set -uo pipefail
-
-          # Capture findings without letting a non-zero audit fail the job:
-          # a scheduled failure would notify, which is exactly what we avoid.
-          findings="$(uv audit --ignore GHSA-6w46-j5rx-g56g 2>&1)"; rc=$?
-
-          # Ensure the tracking label exists (idempotent).
-          gh label create "$AUDIT_LABEL" --color B60205 \
-            --description "Open CVE(s) in uv.lock found by the scheduled dependency audit" \
-            2>/dev/null || true
-
-          open_issue="$(gh issue list --label "$AUDIT_LABEL" --state open \
-            --json number --jq '.[0].number // empty')"
-
-          if [ "$rc" -eq 0 ]; then
-            if [ -n "$open_issue" ]; then
-              gh issue close "$open_issue" \
-                --comment "\`uv audit\` no longer reports vulnerabilities as of ${RUN_URL} — closing automatically."
-              echo "Closed tracking issue #$open_issue (lockfile clean)."
-            else
-              echo "No vulnerabilities and no open tracking issue; nothing to do."
-            fi
-            exit 0
-          fi
-
-          # Vulnerabilities present: build the issue body from the raw audit output.
-          {
-            echo "\`uv audit\` reports known vulnerabilities in the committed \`uv.lock\`."
-            echo "These are not tied to any single change, so they are tracked here rather than blocking CI."
-            echo
-            echo '```'
-            printf '%s\n' "$findings"
-            echo '```'
-            echo
-            echo "_Maintained automatically by the scheduled dependency audit; it refreshes"
-            echo "while vulnerabilities remain and closes when \`uv audit\` is clean._"
-            echo
-            echo "[Latest run]($RUN_URL)"
-          } > "$RUNNER_TEMP/audit-body.md"
-
-          if [ -n "$open_issue" ]; then
-            # Only edit when the content actually changed, to avoid churn.
-            current="$(gh issue view "$open_issue" --json body --jq .body)"
-            if [ "$current" != "$(cat "$RUNNER_TEMP/audit-body.md")" ]; then
-              gh issue edit "$open_issue" --body-file "$RUNNER_TEMP/audit-body.md"
-              echo "Refreshed tracking issue #$open_issue."
-            else
-              echo "Tracking issue #$open_issue already current."
-            fi
-          else
-            gh issue create --title "Dependency vulnerabilities detected by uv audit" \
-              --label "$AUDIT_LABEL" --body-file "$RUNNER_TEMP/audit-body.md"
-          fi
