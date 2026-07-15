@@ -1,0 +1,25 @@
+id: https://w3id.org/linkml/tests/type_constraints
+name: type_constraints
+default_prefix: type_constraints
+imports:
+  - linkml:types
+
+types:
+  CodeString:
+    base: str
+    pattern: "^[A-Z]{2,10}$"
+    description: A 2-10 character uppercase code
+
+  PositiveInt:
+    base: int
+    minimum_value: 1
+    maximum_value: 9999
+    description: A positive integer between 1 and 9999
+
+classes:
+  WithCode:
+    description: A thing with a code
+    attributes:
+      code:
+        range: CodeString
+        required: true

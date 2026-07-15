@@ -1,0 +1,23 @@
+openapi: 3.0.3
+info:
+  title: LinkML type constraints test
+  version: 1.0.0
+servers:
+  - url: https://example.org/
+paths:
+  /api/code:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CodeStringRef'
+
+components:
+  schemas:
+    CodeStringRef:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/type_constraints
+      x-linkml-source: CodeString
