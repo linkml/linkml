@@ -25,6 +25,31 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          # Full history so we can diff a PR against its base to see whether
+          # dependency files changed (see "Detect dependency changes" below).
+          fetch-depth: 0
+
+      # The CVE audit reflects the state of the *upstream advisory database*, not
+      # the PR's diff: a newly-published advisory against an already-pinned
+      # package turns every open PR red, even one that never touches dependencies.
+      # Scope the audit to PRs that actually change dependency files so unrelated
+      # PRs aren't held hostage. Non-PR events (push to main, merge_group,
+      # workflow_dispatch) always audit, keeping trunk's signal intact.
+      - name: Detect dependency changes
+        id: deps
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            if git diff --name-only "${{ github.event.pull_request.base.sha }}...HEAD" \
+                | grep -qE '(^|/)(uv\.lock|pyproject\.toml)$'; then
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+              echo "No dependency files changed in this PR; skipping the CVE audit."
+            fi
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       # Pin uv to a known-good, recent release.
       - name: Install uv and setup uv caching
@@ -47,6 +72,7 @@ jobs:
       # (see packages/linkml/pyproject.toml) and ignore this single test-only,
       # low-risk advisory until conftest is migrated to stdlib difflib.
       - name: Audit lockfile for CVEs
+        if: steps.deps.outputs.changed == 'true'
         run: uv audit --ignore GHSA-6w46-j5rx-g56g
 
       # Step 2: Run a sync. If a package contains known malware,
