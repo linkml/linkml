@@ -493,6 +493,137 @@ def test_repeated_emitted_for_multivalued(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# Field naming convention — proto3 style guide requires snake_case
+# https://protobuf.dev/programming-guides/style/#message-and-field-names
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "slot_name,expected_field",
+    [
+        ("phenotypic features", "phenotypic_features"),
+        ("has news events", "has_news_events"),
+        ("first name", "first_name"),
+        ("birth_date", "birth_date"),  # already snake — leave alone
+        ("id", "id"),
+    ],
+)
+def test_slot_names_emitted_as_snake_case(slot_name, expected_field, tmp_path):
+    """Slot names must be emitted in proto3-style snake_case, not lcamelcase.
+
+    Pre-fix ``gen-proto`` used ``lcamelcase`` (e.g. ``phenotypicFeatures``),
+    which violates the proto3 style guide.
+    """
+    yaml_text = _schema(
+        name="snake_schema",
+        body=textwrap.dedent(
+            f"""
+            classes:
+              Holder:
+                attributes:
+                  "{slot_name}":
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert f"string {expected_field} =" in out, out
+    # And the lcamelcase form must NOT appear.
+    if "_" in expected_field:
+        from linkml_runtime.utils.formatutils import lcamelcase
+
+        assert f" {lcamelcase(slot_name)} =" not in out
+
+
+def test_slot_with_digit_segment_sanitised(tmp_path):
+    """A slot name like ``slot with space 1`` produces ``slot_with_space_N1`` —
+    ``_to_proto_ident`` inserts an ``N`` after an underscore-before-digit (the
+    proto3 style guide discourages ``_<digit>``) rather than dropping it, which
+    keeps ``foo_2bar`` distinct from ``foo2bar``."""
+    yaml_text = _schema(
+        name="digit_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              ClassWithSpaces:
+                attributes:
+                  "slot with space 1":
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "string slot_with_space_N1 =" in out
+
+
+# ---------------------------------------------------------------------------
+# Slot-level descriptions emitted as `//` comments
+# ---------------------------------------------------------------------------
+
+
+def test_slot_description_emitted_as_comment(tmp_path):
+    """``slot.description`` must be emitted as a ``//`` comment above the
+    field, mirroring how ``cls.description`` is emitted above the message."""
+    yaml_text = _schema(
+        name="desc_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    description: the person's full name
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "  // the person's full name\n  string name =" in out
+
+
+def test_multiline_slot_description_emits_one_comment_per_line(tmp_path):
+    """A multi-line ``slot.description`` becomes one ``//`` per line."""
+    yaml_text = _schema(
+        name="multi_desc_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  bio:
+                    description: |-
+                      first line
+                      second line
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    assert "  // first line\n  // second line\n  string bio =" in out
+
+
+def test_slot_without_description_emits_no_comment(tmp_path):
+    """When ``slot.description`` is unset the generator must NOT emit a stray
+    ``//`` line — only annotated slots get a leading comment."""
+    yaml_text = _schema(
+        name="no_desc_schema",
+        body=textwrap.dedent(
+            """
+            classes:
+              Person:
+                attributes:
+                  name:
+                    range: string
+            """
+        ).strip(),
+    )
+    out = _gen(yaml_text, tmp_path)
+    # The Person message body should be exactly the one field line, no `//`.
+    body = re.search(r"message Person \{(.*?)\}", out, re.DOTALL).group(1)
+    assert "//" not in body
+
+
+# ---------------------------------------------------------------------------
 # Defect #11: protoc compilation
 # ---------------------------------------------------------------------------
 

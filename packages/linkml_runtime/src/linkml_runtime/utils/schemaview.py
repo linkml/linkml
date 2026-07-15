@@ -1388,13 +1388,32 @@ class SchemaView:
     ) -> str:
         """Return the CURIE or URI for a schema element.
 
-        If the schema defines a specific URI, this is used;
-        otherwise this is constructed from the default prefix combined with the element name.
+        If the schema declares a specific URI for the element (e.g. ``class_uri``,
+        ``slot_uri``, ``type.uri``, ``enum_uri``), that declared URI is used.
+        Otherwise — or when ``native=True`` — the *native* URI is constructed from
+        the schema's ``default_prefix`` combined with the normalized element name.
+
+        When ``native=True`` this method returns the element's ``definition_uri``
+        value (as a CURIE, or expanded to a full URI when ``expand=True``).  The
+        name-casing convention matches
+        :func:`linkml.utils.mergeutils.set_from_schema`:
+
+        * **Slots** – :func:`~linkml_runtime.utils.formatutils.underscore`
+        * **All other elements** (classes, types, enums, subsets) –
+          :func:`~linkml_runtime.utils.formatutils.camelcase`
+
+        When ``native=False`` (the default) the same casing is used for the native
+        fallback (applied when the element has no declared URI), but the element's
+        own declared URI takes precedence.
 
         :param element: name of schema element
         :param imports: include imports closure
-        :param native: return the native CURIE or URI rather than what is declared in the uri slot
-        :param expand: expand the CURIE to a URI; defaults to False
+        :param native: return the native URI (``definition_uri`` semantics) rather
+            than what is declared in the element's URI slot
+        :param expand: expand the result from a CURIE to a full URI;
+            defaults to ``False``
+        :param use_element_type: when constructing the native URI, insert the
+            element type as a path segment (e.g. ``core:class/TestClass``)
         :return: URI or CURIE as a string
         """
         e = self.get_element(element, imports=imports)
@@ -1407,13 +1426,15 @@ class SchemaView:
             e_name = underscore(e.name)
         elif isinstance(e, EnumDefinition):
             uri = e.enum_uri
-            e_name = e.name
+            e_name = camelcase(e.name)
         elif isinstance(e, TypeDefinition):
             uri = e.uri
-            e_name = underscore(e.name)
+            e_name = camelcase(e.name)
+        elif isinstance(e, SubsetDefinition):
+            uri = None
+            e_name = camelcase(e.name)
         else:
-            msg = f"Must be class or slot or type: {e}"
-            # should be a TypeError
+            msg = f"Must be class, slot, type, enum, or subset: {e}"
             raise ValueError(msg)
 
         if uri is None or native:
@@ -1937,13 +1958,44 @@ class SchemaView:
     def is_inlined(self, slot: SlotDefinition, imports: bool = True) -> bool:
         """Return true if slot is inferred or asserted inline.
 
+        A slot is inlined when:
+
+        * ``slot.inlined`` or ``slot.inlined_as_list`` is ``True`` (directly or
+          inherited through the slot's ``is_a`` / ``mixins`` ancestry), **or**
+        * the slot's range is a class with no identifier/key slot (which forces
+          inlining because there is no reference to use).
+
         :param slot:
         :param imports:
         :return:
         """
         slot_range = slot.range
         if slot_range in self.all_classes():
-            if slot.inlined or slot.inlined_as_list:
+            resolved_inlined = slot.inlined
+            resolved_inlined_as_list = slot.inlined_as_list
+
+            slot_name = getattr(slot, "name", None)
+            if (resolved_inlined is None and resolved_inlined_as_list is None) and slot_name:
+                # walk all ancestors (reflexive=False to skip the slot itself,
+                # already checked above).
+                try:
+                    # slot_ancestors() is @lru_cache and handles both is_a and mixins;
+                    ancestors = self.slot_ancestors(slot_name, imports=imports, reflexive=False)
+                except ValueError:
+                    ancestors = []
+                if ancestors:
+                    # all_slots() is @lru_cache
+                    all_slots = self.all_slots(imports=imports)
+                    for anc_name in ancestors:
+                        anc = all_slots.get(anc_name)
+                        if anc is None:
+                            continue
+                        resolved_inlined = resolved_inlined or anc.inlined
+                        resolved_inlined_as_list = resolved_inlined_as_list or anc.inlined_as_list
+                        if resolved_inlined or resolved_inlined_as_list:
+                            break
+
+            if resolved_inlined or resolved_inlined_as_list:
                 return True
 
             id_slot = self.get_identifier_slot(slot_range, imports=imports)

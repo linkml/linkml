@@ -1,3 +1,6 @@
+[tool.uv]
+exclude-newer = "7 days"
+
 [tool.uv.workspace]
 members = [
   "packages/linkml",
