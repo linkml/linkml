@@ -603,6 +603,11 @@
             <span class="c1"># TODO: The _visit function above alters the schema in situ</span>
             <span class="c1"># force some context_kwargs</span>
             <span class="n">context_kwargs</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="c1"># Forward importmap/base_dir so the spawned ContextGenerator can</span>
+            <span class="c1"># re-resolve any URI-style imports in ``self.original_schema``</span>
+            <span class="c1"># through the same ``--importmap`` the caller supplied.</span>
+            <span class="n">context_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;importmap&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">)</span>
+            <span class="n">context_kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;base_dir&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span>
             <span class="n">add_prefixes</span> <span class="o">=</span> <span class="n">ContextGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span> <span class="o">**</span><span class="n">context_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
             <span class="n">add_prefixes_json</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">add_prefixes</span><span class="p">)</span>
             <span class="n">metamodel_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_context</span> <span class="ow">or</span> <span class="n">METAMODEL_CONTEXT_URI</span>

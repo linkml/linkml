@@ -442,7 +442,17 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: consider moving up a level</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">merge_imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
+        <span class="c1"># Forward importmap/base_dir; the call to ``super().__post_init__``</span>
+        <span class="c1"># above built a ``self.schemaview`` with these honoured, and this</span>
+        <span class="c1"># overwrite must not drop them or URI-style imports resolved via</span>
+        <span class="c1"># ``--importmap`` will fall through to HTTP when ``mergeimports``</span>
+        <span class="c1"># triggers ``imports_closure()``.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span>
+            <span class="n">merge_imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
+            <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
+            <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="LinkmlGenerator.materialize_classes">
 <a class="viewcode-back" href="../../../generators/linkml.html#linkml.generators.linkmlgen.LinkmlGenerator.materialize_classes">[docs]</a>

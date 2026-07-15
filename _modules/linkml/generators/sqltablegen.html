@@ -595,7 +595,10 @@
 
         <span class="n">engine</span> <span class="o">=</span> <span class="n">create_mock_engine</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dialect</span><span class="si">}</span><span class="s2">://./MyDb&quot;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;mock&quot;</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="n">dump</span><span class="p">)</span>
         <span class="n">schema_metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
-        <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">))</span>
+        <span class="c1"># Forward importmap/base_dir; ``self.schema`` may still be a path with</span>
+        <span class="c1"># URI-style imports resolved via ``--importmap``, which a bare</span>
+        <span class="c1"># ``SchemaView(self.schema)`` would re-resolve through HTTP.</span>
+        <span class="n">sqltr</span> <span class="o">=</span> <span class="n">RelationalModelTransformer</span><span class="p">(</span><span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_foreign_keys</span><span class="p">:</span>
             <span class="n">sqltr</span><span class="o">.</span><span class="n">foreign_key_policy</span> <span class="o">=</span> <span class="n">ForeignKeyPolicy</span><span class="o">.</span><span class="n">NO_FOREIGN_KEYS</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rename_foreign_keys</span><span class="p">:</span>
@@ -781,7 +784,9 @@
             <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span>
 
         <span class="k">if</span> <span class="n">sv</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># if no SchemaView arg is provided, then create one</span>
-            <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+            <span class="c1"># Forward importmap/base_dir so a URI-style schema input still</span>
+            <span class="c1"># resolves through the user&#39;s ``--importmap`` here.</span>
+            <span class="n">sv</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">slot_range</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">all_classes</span><span class="p">():</span>
             <span class="c1"># FK type should be the same as the identifier of the foreign key.</span>
             <span class="c1"># Prefer the target&#39;s *direct* identifier: an abstract parent without</span>

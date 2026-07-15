@@ -601,7 +601,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">example_runner</span> <span class="o">=</span> <span class="n">ExampleRunner</span><span class="p">(</span><span class="n">input_directory</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">example_directory</span><span class="p">))</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">merge_imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">)</span>
+        <span class="c1"># Forward importmap/base_dir; the call to ``super().__post_init__``</span>
+        <span class="c1"># above built a ``self.schemaview`` with these honoured, and this</span>
+        <span class="c1"># overwrite must not drop them or URI-style imports resolved via</span>
+        <span class="c1"># ``--importmap`` will fall through to HTTP when ``mergeimports``</span>
+        <span class="c1"># triggers ``imports_closure()``.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schemaview</span> <span class="o">=</span> <span class="n">SchemaView</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span>
+            <span class="n">merge_imports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mergeimports</span><span class="p">,</span>
+            <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span>
+            <span class="n">importmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importmap</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># Override schemaview&#39;s get_mappings to use preserved URIs when needed</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preserve_names</span><span class="p">:</span>
