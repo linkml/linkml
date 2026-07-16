@@ -194,7 +194,17 @@ class DocGenerator(Generator):
             self.example_runner = ExampleRunner(input_directory=Path(self.example_directory))
         super().__post_init__()
         self.logger = logging.getLogger(__name__)
-        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
+        # Forward importmap/base_dir; the call to ``super().__post_init__``
+        # above built a ``self.schemaview`` with these honoured, and this
+        # overwrite must not drop them or URI-style imports resolved via
+        # ``--importmap`` will fall through to HTTP when ``mergeimports``
+        # triggers ``imports_closure()``.
+        self.schemaview = SchemaView(
+            self.schema,
+            merge_imports=self.mergeimports,
+            base_dir=self.base_dir,
+            importmap=self.importmap,
+        )
 
         # Override schemaview's get_mappings to use preserved URIs when needed
         if self.preserve_names:
