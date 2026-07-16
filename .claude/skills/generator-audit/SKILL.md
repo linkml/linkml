@@ -33,8 +33,9 @@ There is no single spec doc; the contract lives in the code. Ground the audit in
   (`lifecycle.py`), `BuildResult` (`build.py`), `TemplateModel` (`template.py`), plus `naming.py`,
   `subproperty.py`, `ifabsent_processor.py`, `type_designators.py`. Reusing these instead of
   reinventing them **is** the ethos.
-- **Exemplars** — `generators/jsonschemagen.py` (dict-subclass output strategy) and
-  `generators/pydanticgen/` (model/template-driven strategy). Use them as **worked examples** of
+- **Exemplars** — `packages/linkml/src/linkml/generators/jsonschemagen.py` (dict-subclass output
+  strategy) and `packages/linkml/src/linkml/generators/pydanticgen/` (model/template-driven
+  strategy). Use them as **worked examples** of
   each criterion below.
 - **Governance intent** — `docs/maintainers/generator-governance.md` for why per-generator
   conformance matters.
@@ -51,7 +52,7 @@ two exemplars disagree with each other, say so and reason from the rubric.
 Separate two very different things, and never conflate them:
 
 - **Findings** = things that are *wrong relative to what the generator is trying to be*. These are
-  defects at any altitude: mutating shared schema state without a deep copy, an `uses_schemaloader`
+  defects at any altitude: mutating shared schema state without a deep copy, a `uses_schemaloader`
   flag that contradicts the generator's actual style, reinventing `common/` logic, defining
   lifecycle hooks instead of firing them, swallowed errors, missing tests. Findings are actionable
   and belong in the report as work to do.
