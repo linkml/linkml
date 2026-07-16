@@ -4,7 +4,7 @@ import logging
 import os
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import click
 from jsonasobj2 import as_dict
@@ -57,10 +57,29 @@ _base_implied_patterns: dict[str, str] = {
 }
 
 
+def _deduplicate_subschemas(subschemas: list["JsonSchema"]) -> list["JsonSchema"]:
+    """Return *subschemas* with duplicate entries removed, preserving order.
+
+    Two subschemas are considered duplicates when their JSON representations are
+    identical.  This can occur, for example, when multiple ``any_of`` branches
+    point to different classes whose identifier slot shares the same scalar type
+    (e.g. both ``Person.id`` and ``Organization.id`` have ``range: string``),
+    producing redundant ``{"type": "string"}`` entries.
+    """
+    seen: set[str] = set()
+    result: list[JsonSchema] = []
+    for schema in subschemas:
+        key = json.dumps(schema, sort_keys=True)
+        if key not in seen:
+            seen.add(key)
+            result.append(schema)
+    return result
+
+
 def _slot_examples_for_json_schema(
-    examples: list[Example],
+    examples: dict | Example | list[dict | Example] | None,
     *,
-    json_schema_type: str | None = None,
+    json_schema_type: list[str] | str | None = None,
     is_array_valued: bool,
 ) -> list:
     """Convert a list of LinkML :class:`~linkml_runtime.linkml_model.meta.Example` objects
@@ -132,12 +151,12 @@ def _slot_examples_for_json_schema(
     if not examples:
         return []
 
-    def _coerce_string_to_type(v: str, json_schema_type: str, is_array_valued: bool) -> Any:
+    def _coerce_string_to_type(v: str, json_schema_type: str | None, is_array_valued: bool) -> Any:
         """Coerce string to JSON type, falling back to the original on failure."""
 
         try:
             # Example.value is typed as Optional[str] in the LinkML metamodel. A list
-            # written in YAML as  value: ["a", "b"]  is coerced to its Python str()
+            # written in YAML as value: ["a", "b"] is coerced to its Python str()
             # representation "['a', 'b']" on load. Recover the original list with
             # ast.literal_eval when the string looks like a Python list literal.
             if is_array_valued and isinstance(v, str) and v.strip().startswith("["):
@@ -166,7 +185,7 @@ def _slot_examples_for_json_schema(
     merged_example = []
     direct_examples = []
 
-    for ex in examples:
+    for ex in cast(list[Example], examples):  # Element.__post_init__() ensures list
         if ex.object is not None:
             value = as_dict(ex.object)
         elif ex.value is not None:
@@ -224,7 +243,8 @@ class JsonSchema(dict):
                 self._lax_forward_refs[canonical_name] = identifier_name
             else:
                 lax_cls = deepcopy(self["$defs"][canonical_name])
-                lax_cls["required"].remove(identifier_name)
+                if "required" in lax_cls and identifier_name in lax_cls["required"]:
+                    lax_cls["required"].remove(identifier_name)
                 self["$defs"][canonical_name + self.OPTIONAL_IDENTIFIER_SUFFIX] = lax_cls
 
     def add_property(
@@ -434,6 +454,12 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
     def start_schema(self, inline: bool = False):
         self.inline = inline
 
+        top_additional_properties = self.not_closed
+        if self.top_class:
+            top_class_def = self.schemaview.get_class(self.top_class)
+            if top_class_def is not None:
+                top_additional_properties = self.get_additional_properties(top_class_def)
+
         self.top_level_schema = JsonSchema(
             {
                 "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -442,7 +468,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                 "version": self.schema.version if self.schema.version else None,
                 "title": self.schema.title if self.title_from == "title" and self.schema.title else self.schema.name,
                 "type": "object",
-                "additionalProperties": self.not_closed,
+                "additionalProperties": top_additional_properties,
             }
         )
 
@@ -546,7 +572,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         # Include class-level examples if present. Each Example on a class is an
         # independent full-instance example (same semantics as single-valued slots).
-        if getattr(cls, "examples", None):
+        if cls.examples:
             class_examples = _slot_examples_for_json_schema(cls.examples, is_array_valued=False)
             if class_examples:
                 class_subschema.add_keyword("examples", class_examples)
@@ -758,7 +784,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
             if slot.examples:
                 prop.add_keyword("examples", _slot_examples_for_json_schema(slot.examples, is_array_valued=True))
             return prop
-        slot_is_multivalued = "multivalued" in slot and slot.multivalued
+        slot_is_multivalued = cast(bool, "multivalued" in slot and slot.multivalued)
         slot_is_inlined = self.schemaview.is_inlined(slot)
         slot_is_boolean = any([slot.any_of, slot.all_of, slot.exactly_one_of, slot.none_of])
 
@@ -850,19 +876,27 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
 
         bool_subschema = JsonSchema()
         if slot.any_of is not None and len(slot.any_of) > 0:
-            bool_subschema["anyOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            bool_subschema["anyOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.any_of]
+            )
             if not slot.required and not prop.is_array and include_null:
                 bool_subschema["anyOf"].append({"type": "null"})
 
         if slot.all_of is not None and len(slot.all_of) > 0:
-            bool_subschema["allOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            bool_subschema["allOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.all_of]
+            )
 
         if slot.exactly_one_of is not None and len(slot.exactly_one_of) > 0:
-            bool_subschema["oneOf"] = [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            bool_subschema["oneOf"] = _deduplicate_subschemas(
+                [self.get_subschema_for_slot(s, include_null=False) for s in slot.exactly_one_of]
+            )
 
         if slot.none_of is not None and len(slot.none_of) > 0:
             bool_subschema["not"] = {
-                "anyOf": [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                "anyOf": _deduplicate_subschemas(
+                    [self.get_subschema_for_slot(s, include_null=False) for s in slot.none_of]
+                )
             }
 
         if bool_subschema:
@@ -920,7 +954,7 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
         if self.is_class_unconstrained(cls):
             return True
         elif not cls.extra_slots:
-            return False
+            return self.not_closed
         elif cls.extra_slots.allowed is not None:
             return cls.extra_slots.allowed
         elif cls.extra_slots.range_expression:

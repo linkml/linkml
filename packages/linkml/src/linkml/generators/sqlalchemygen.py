@@ -69,6 +69,11 @@ class SQLAlchemyGenerator(Generator):
         sqltr = RelationalModelTransformer(self.schemaview)
         if foreign_key_policy:
             sqltr.foreign_key_policy = foreign_key_policy
+        elif template == TemplateEnum.DECLARATIVE_2X:
+            # In 2.x declarative mode we want a relationship() attribute alongside
+            # every FK column, which requires the transformer to rename the source
+            # slot (adding `original_slot`) even when the slot is not inlined.
+            sqltr.foreign_key_policy = ForeignKeyPolicy.INJECT_FK_FOR_ALL_REFS
         tgen = SQLTableGenerator(self.schemaview.schema)
         tr_result = sqltr.transform(**kwargs)
         tr_schema = tr_result.schema

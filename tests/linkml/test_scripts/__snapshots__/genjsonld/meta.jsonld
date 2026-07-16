@@ -2053,10 +2053,9 @@
       "slots": [
         "started_at_time",
         "ended_at_time",
-        "cordialness",
+        "FamilialRelationship_cordialness",
         "FamilialRelationship_type",
-        "FamilialRelationship_related_to",
-        "FamilialRelationship_cordialness"
+        "FamilialRelationship_related_to"
       ],
       "slot_usage": {},
       "@type": "ClassDefinition"

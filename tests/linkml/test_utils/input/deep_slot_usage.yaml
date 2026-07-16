@@ -1,0 +1,55 @@
+id: http://example.org/deep_slot_usage
+name: deep_slot_usage
+
+description: >
+  Schema for regression-testing deep slot_usage chains where a leaf class
+  both explicitly lists a slot in its slots: list AND narrows it via slot_usage.
+  Bug: the bare slot name was left as an orphan in cls.slots alongside the
+  newly-synthesised mangled slot name.
+
+prefixes:
+    xsd: http://www.w3.org/2001/XMLSchema#
+    linkml: https://w3id.org/linkml/
+
+default_range: string
+
+imports:
+  linkml:types
+
+slots:
+    sound:
+      description: The sound an animal makes
+      range: string
+
+classes:
+  Animal:
+    description: Root class that owns the sound slot
+    slots:
+      - sound
+
+  Mammal:
+    description: Narrows sound range to integer
+    is_a: Animal
+    slot_usage:
+      sound:
+        range: integer
+
+  Canine:
+    description: Further narrows sound range to boolean
+    is_a: Mammal
+    slot_usage:
+      sound:
+        range: boolean
+
+  Dog:
+    description: >
+      Explicitly lists sound in slots AND narrows its range.
+      This triggers the orphan-slot bug: without the fix, the bare
+      'sound' stays in cls.slots alongside 'Dog_sound'.
+    is_a: Canine
+    slots:
+      - sound
+    slot_usage:
+      sound:
+        range: string
+        required: true

@@ -10,7 +10,7 @@ authors = [
   {name = "Sierra Moxon", email = "smoxon@lbl.gov"},
   {name = "Harold Solbrig", email = "solbrig@jhu.edu"},
   {name = "Sujay Patil", email = "spatil@lbl.gov"},
-  {name = "Harshad Hegde", email = "hhegde@lbl.gov"},
+  {name = "Harshad Hegde", email = "hegdehb@gmail.com"},
   {name = "Mark Andrew Miller", email = "MAM@lbl.gov"},
   {name = "Deepak Unni"},
   {name = "Gaurav Vaidya", email = "gaurav@renci.org"},
@@ -63,6 +63,7 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "watchdog >= 0.9.0",
     "typing-extensions >= 4.6.0; python_version < '3.12'",
     "sphinx-click (>=6.0.0)",
+    "openapi-spec-validator >= 0.8.4",
 ]
 
 [dependency-groups]
@@ -80,6 +81,7 @@ tests = [
   { include-group = "typing" },
   { include-group = "shacl" },
   "duckdb>=1.5.2",
+  "sqlalchemy-bigquery >= 1.9.0",
 ]
 dev = [
   {include-group = "tests" },
@@ -111,15 +113,22 @@ tests-rustgen = [
 typedb = [
   "typedb-driver >= 3.0, < 4.0",
 ]
+bigquery = [
+  "sqlalchemy-bigquery >= 1.9.0",
+]
 
 tests-extra = [
-  "pytest >= 7.4.0",
+  # pytest 9 removed the private _pytest.assertion.util._diff_text API that
+  # tests/conftest.py relies on for snapshot diffs. Pin <9 until conftest is
+  # migrated to stdlib difflib. The only pytest 9 CVE (GHSA-6w46-j5rx-g56g,
+  # predictable tmpdir path) is test-infrastructure-only.
+  "pytest >= 7.4.0, < 9",
   "pytest-subtests >= 0.11.0",
   "pytest-cov >= 4.1.0",
   "pytest-xdist >= 3.6.1",
   "numpy >= 1.24.3; python_version < '3.12'",
   "numpy >= 1.25.2; python_version >= '3.12'",
-  "requests-cache >= 1.2.0",
+  "requests-cache >= 1.3.2",
   "mock >= 5.1.0",
   "testcontainers == 3.7.1",
   "jsonpatch >= 1.33",
@@ -178,6 +187,7 @@ gen-sqla = "linkml.generators.sqlalchemygen:cli"
 gen-sqlddl = "linkml.generators.sqltablegen:cli"
 gen-sqltables = "linkml.generators.sqltablegen:cli"
 gen-sqlvalidation = "linkml.generators.sqlvalidationgen:cli"
+gen-bigquery = "linkml.generators.bigquerygen:cli"
 gen-summary = "linkml.generators.summarygen:cli"
 gen-project = "linkml.generators.projectgen:cli"
 run-tutorial = "linkml.utils.execute_tutorial:cli"
