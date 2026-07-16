@@ -408,7 +408,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
@@ -464,7 +464,7 @@
     <span class="n">original_schema</span><span class="p">:</span> <span class="n">SchemaDefinition</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;See https://github.com/linkml/linkml/issues/871&quot;&quot;&quot;</span>
 
-    <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">context</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Path to a JSONLD context file&quot;&quot;&quot;</span>
 
     <span class="n">metamodel_context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -582,7 +582,9 @@
 
 <div class="viewcode-block" id="JSONLDGenerator.end_schema">
 <a class="viewcode-back" href="../../../generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.end_schema">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">end_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_schema</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">_</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">default_context_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">context_kwargs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">context_kwargs</span> <span class="o">=</span> <span class="n">default_context_kwargs</span>
@@ -592,10 +594,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
         <span class="n">base_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_prefix</span><span class="p">()</span>
 
+        <span class="c1"># `context` can be a `str`, a `list[str]` or a `tuple[str]`</span>
+        <span class="c1"># since the context might need to get extended, `context_list` must be `list[str]`</span>
+        <span class="n">context_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># TODO: fix this, see https://github.com/linkml/linkml/issues/871</span>
         <span class="c1"># JSON LD adjusts context reference using &#39;@base&#39;.  If context is supplied and not a URI, generate an</span>
         <span class="c1"># absolute URI for it</span>
-        <span class="k">if</span> <span class="n">context</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;jsonld&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;jsonld&quot;</span><span class="p">:</span>
             <span class="c1"># TODO: Once we get pyld running w/ relative contexts, we need to figure out how to generate and add</span>
             <span class="c1">#       the relative (?) context reference below</span>
             <span class="c1"># model_context = self.schema.source_file.replace(&#39;.yaml&#39;, &#39;.prefixes.context.jsonld&#39;)</span>
@@ -611,23 +616,26 @@
             <span class="n">add_prefixes</span> <span class="o">=</span> <span class="n">ContextGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_schema</span><span class="p">,</span> <span class="o">**</span><span class="n">context_kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
             <span class="n">add_prefixes_json</span> <span class="o">=</span> <span class="n">loads</span><span class="p">(</span><span class="n">add_prefixes</span><span class="p">)</span>
             <span class="n">metamodel_ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metamodel_context</span> <span class="ow">or</span> <span class="n">METAMODEL_CONTEXT_URI</span>
-            <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">metamodel_ctx</span><span class="p">,</span> <span class="n">add_prefixes_json</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]]</span>
+            <span class="n">context_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">metamodel_ctx</span><span class="p">,</span> <span class="n">add_prefixes_json</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># Some of the older code doesn&#39;t do multiple contexts</span>
-            <span class="n">context</span> <span class="o">=</span> <span class="p">[</span><span class="n">context</span><span class="p">]</span>
+            <span class="n">context_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">context</span><span class="p">]</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="n">context</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+            <span class="n">context_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">context</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context_list</span> <span class="o">=</span> <span class="n">context</span>
+
         <span class="k">for</span> <span class="n">imp</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">context</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.context.jsonld&quot;</span><span class="p">)</span>
+            <span class="n">context_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.context.jsonld&quot;</span><span class="p">)</span>
 
         <span class="c1"># Absolute file paths have to have a prefix</span>
-        <span class="k">for</span> <span class="n">ci</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context</span><span class="p">[</span><span class="n">ci</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">context</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+        <span class="k">for</span> <span class="n">ci</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">context_list</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">context_list</span><span class="p">[</span><span class="n">ci</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">context_list</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
                 <span class="s2">&quot;/&quot;</span>
             <span class="p">):</span>  <span class="c1"># TODO: how do we deal with absolute DOS paths?</span>
-                <span class="n">context</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;file://&quot;</span> <span class="o">+</span> <span class="n">context</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span>
+                <span class="n">context_list</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;file://&quot;</span> <span class="o">+</span> <span class="n">context_list</span><span class="p">[</span><span class="n">ci</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">==</span> <span class="s2">&quot;jsonld&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">context</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">base_prefix</span> <span class="k">else</span> <span class="n">context</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">context_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">context_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">base_prefix</span> <span class="k">else</span> <span class="n">context_list</span>
             <span class="k">if</span> <span class="n">base_prefix</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">[</span><span class="s2">&quot;@context&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;@base&quot;</span><span class="p">:</span> <span class="n">base_prefix</span><span class="p">})</span>
         <span class="c1"># json_obj[&quot;@id&quot;] = self.schema.id</span>
@@ -638,9 +646,7 @@
 
 <div class="viewcode-block" id="JSONLDGenerator.serialize">
 <a class="viewcode-back" href="../../../generators/jsonld.html#linkml.generators.jsonldgen.JSONLDGenerator.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serialize the model to JSON-LD</span>
 
@@ -654,11 +660,13 @@
 
 
 
+<span class="c1"># Option &quot;context&quot; can be specified multiple times.</span>
 <span class="nd">@shared_arguments</span><span class="p">(</span><span class="n">JSONLDGenerator</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;jsonld&quot;</span><span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
     <span class="s2">&quot;--context&quot;</span><span class="p">,</span>
     <span class="n">multiple</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">click</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
     <span class="n">help</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;JSONLD context file (default: </span><span class="si">{</span><span class="n">METAMODEL_CONTEXT_URI</span><span class="si">}</span><span class="s2"> and &lt;model&gt;.prefixes.context.jsonld)&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
@@ -683,9 +691,6 @@
         <span class="n">context_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">context_kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">context_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="p">:</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">JSONLDGenerator</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">context_kwargs</span><span class="o">=</span><span class="n">context_kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
