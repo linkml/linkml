@@ -124,7 +124,7 @@ tests-extra = [
   # predictable tmpdir path) is test-infrastructure-only.
   "pytest >= 7.4.0, < 9",
   "pytest-subtests >= 0.11.0",
-  "pytest-cov >= 4.1.0",
+  "pytest-cov>=7.1.0",
   "pytest-xdist >= 3.6.1",
   "numpy >= 1.24.3; python_version < '3.12'",
   "numpy >= 1.25.2; python_version >= '3.12'",
