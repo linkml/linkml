@@ -19,4 +19,4 @@ def assert_file_contains(filename, text, after=None, invert=False) -> None:
                         found = True
             if after is not None and after in line:
                 is_after = True
-    assert found or invert
+    assert found != invert
