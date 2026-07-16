@@ -482,8 +482,14 @@ class OwlSchemaGenerator(Generator):
             # If user selects add_root_classes, then all classes will be subclasses of LinkML:ClassDefinition
             if cls.mixin and self.mixins_as_expressions:
                 self.graph.add((cls_uri, RDFS.subClassOf, self._mixin_grouping_class_uri()))
+                self._declare_grouping_class(
+                    self._mixin_grouping_class_uri(),
+                    label="mixin",
+                    description="Grouping class for LinkML mixins referenced via add_root_classes.",
+                )
             else:
                 self.graph.add((cls_uri, RDFS.subClassOf, URIRef(ClassDefinition.class_class_uri)))
+                self._declare_grouping_class(URIRef(ClassDefinition.class_class_uri), ClassDefinition.class_name)
         if self.has_profile(MetadataProfile.ols):
             # Add annotations for browser hints. See https://www.ebi.ac.uk/ols/docs/installation-guide
             if cls.is_a is None:
@@ -1142,6 +1148,7 @@ class OwlSchemaGenerator(Generator):
                 self.graph.add((enum_uri, RDFS.subClassOf, self._enum_uri(parent_name)))
         if not has_parent and self.add_root_classes:
             self.graph.add((enum_uri, RDFS.subClassOf, URIRef(EnumDefinition.class_class_uri)))
+            self._declare_grouping_class(URIRef(EnumDefinition.class_class_uri), EnumDefinition.class_name)
         if self.metaclasses:
             g.add(
                 (
@@ -1192,6 +1199,7 @@ class OwlSchemaGenerator(Generator):
                     self.graph.add((enum_uri, RDFS.subClassOf, parent))
                 if not has_parent and self.add_root_classes:
                     self.graph.add((pv_node, RDFS.subClassOf, URIRef(PermissibleValue.class_class_uri)))
+                    self._declare_grouping_class(URIRef(PermissibleValue.class_class_uri), PermissibleValue.class_name)
         if all([pv is not None for pv in pv_uris]):
             # every single PV in the enum is not-null
             all_is_class = all([owl_type == OWL.Class for owl_type in owl_types])
@@ -1530,6 +1538,43 @@ class OwlSchemaGenerator(Generator):
     @staticmethod
     def _mixin_grouping_class_uri() -> URIRef:
         return URIRef(ClassDefinition.class_class_uri + "#Mixin")
+
+    def _declare_grouping_class(
+        self,
+        uri: URIRef,
+        metamodel_class_name: str | None = None,
+        label: str | None = None,
+        description: str | None = None,
+    ) -> None:
+        """Declare a metamodel grouping class referenced by ``add_root_classes`` as an ``owl:Class``.
+
+        When ``add_root_classes`` is set, schema elements are made ``rdfs:subClassOf`` metamodel
+        classes such as ``linkml:EnumDefinition``. Those parent classes were referenced but never
+        declared, so RDF-only consumers (for example OLS) treat the parent as a dangling reference
+        and drop the grouping from the class hierarchy. This emits a minimal ``owl:Class``
+        declaration with an ``rdfs:label`` and ``skos:definition`` sourced from the metamodel,
+        making the grouping renderable without a reasoning step. Idempotent.
+
+        :param uri: URI of the grouping class to declare
+        :param metamodel_class_name: name of the metamodel class to source label/definition from
+        :param label: explicit label, used when the URI has no corresponding metamodel class
+        :param description: explicit definition, used as a fallback
+        """
+        if (uri, RDF.type, OWL.Class) in self.graph:
+            return
+        self.graph.add((uri, RDF.type, OWL.Class))
+        if metamodel_class_name is not None:
+            meta_class = self.metamodel_schemaview.get_class(metamodel_class_name)
+            if meta_class is not None:
+                # Prefer a metamodel title; otherwise use the UpperCamelCase form of the
+                # metamodel name (matching the class IRI local name and the LinkML model
+                # docs, e.g. "EnumDefinition"), not the raw snake_case name.
+                label = meta_class.title or camelcase(meta_class.name) or label
+                description = meta_class.description or description
+        if label is not None:
+            self.graph.add((uri, RDFS.label, Literal(label)))
+        if description is not None:
+            self.graph.add((uri, SKOS.definition, Literal(description)))
 
     def _class_uri(self, cn: str | ClassDefinitionName) -> URIRef:
         c = self.schemaview.get_class(cn)

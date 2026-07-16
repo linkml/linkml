@@ -1,0 +1,65 @@
+name: Audit dependencies
+
+permissions:
+  contents: read
+
+# Global environment variables applied to all steps
+env:
+  UV_VERSION: "0.11.21"
+  UV_PREVIEW: "1"          # Enables the preview uv audit and malware engines
+  UV_MALWARE_CHECK: "1"    # Automatically blocks malicious installs on sync/run
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  security-check:
+    name: Validate Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      # Pin uv to a known-good, recent release.
+      - name: Install uv and setup uv caching
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6.2.0
+        id: setup-python
+        with:
+          python-version: 3.13
+
+      # Step 1: Run uv audit to check for vulnerabilities (CVEs)
+      #
+      # GHSA-6w46-j5rx-g56g (pytest predictable tmpdir path) is fixed only in
+      # pytest 9.0.3, but pytest 9 removed the private _pytest.assertion.util
+      # ._diff_text API that tests/conftest.py depends on. We pin pytest <9
+      # (see packages/linkml/pyproject.toml) and ignore this single test-only,
+      # low-risk advisory until conftest is migrated to stdlib difflib.
+      - name: Audit lockfile for CVEs
+        run: uv audit --ignore GHSA-6w46-j5rx-g56g
+
+      # Step 2: Run a sync. If a package contains known malware,
+      # the OSV-lookup triggers an immediate, non-zero failure exit.
+      #
+      # NOTE: The malware gate only blocks malware that has *already* been
+      # published as an OSV advisory. There is a window between a malicious
+      # upload and its advisory. That gap is covered by uv's dependency
+      # cooldown (`exclude-newer`, a resolution-time setting added in uv
+      # 0.9.17), which is enabled with a 7-day window in the root pyproject.toml:
+      #
+      #   [tool.uv]
+      #   exclude-newer = "7 days"
+      #
+      - name: Verify Environment Sync (Anti-Malware Gate)
+        run: uv sync --frozen --all-groups

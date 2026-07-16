@@ -6,7 +6,7 @@
 
 name: Metamodel Compatibility
 env:
-  UV_VERSION: "0.7.13"
+  UV_VERSION: "0.11.21"
 on:
   schedule:
     # Run every Monday at 9:00 UTC
