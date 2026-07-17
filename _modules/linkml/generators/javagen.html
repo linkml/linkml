@@ -506,6 +506,25 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;_visitor&quot;</span>
 
 
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">JavaBundle</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;In-memory result of rendering a LinkML schema to Java source.</span>
+
+<span class="sd">    A ``JavaBundle`` is the output of :meth:`JavaGenerator.render`. It carries</span>
+<span class="sd">    the rendered Java source for every file that would be written to disk by</span>
+<span class="sd">    :meth:`JavaGenerator.serialize`, keyed by filename.</span>
+
+<span class="sd">    Mirrors render/serialize split used by `rustgen.RustGenerator` (FileResult /</span>
+<span class="sd">    CrateResult) and `pydanticgen.PydanticGenerator` (PydanticModule).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rendered Java source, keyed by filename (e.g. ``&quot;Address.java&quot;``).&quot;&quot;&quot;</span>
+
+    <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Java package name the rendered files belong to (informational).&quot;&quot;&quot;</span>
+
+
 <span class="k">class</span><span class="w"> </span><span class="nc">TemplateCache</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Cache for template objects.</span>
 
@@ -649,19 +668,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2"> cannot be mapped to a type&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="JavaGenerator.serialize">
-<a class="viewcode-back" href="../../../generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">template_variant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">extra_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">visitors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate and write the Java code to files.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JavaBundle</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render the schema to an in-memory :class:`JavaBundle`.</span>
 
-<span class="sd">        :param directory: The directory where to write the code files.</span>
+<span class="sd">        Pure counterpart of :meth:`serialize`: returns the rendered Java</span>
+<span class="sd">        source for every file without touching the filesystem.</span>
+
 <span class="sd">        :param template_variant: The name of the template variant to use, if any.</span>
 <span class="sd">        :param extra_templates: A list of additional templates from which to generate</span>
 <span class="sd">            additional code files. For example, if set to `[Foo,Bar]`, this will</span>
@@ -675,6 +692,8 @@
 <span class="sd">            `IFooVisitor` interface, and the generated code for both the `Foo`</span>
 <span class="sd">            class and all its descendants will include a `accept(IFooVisitor)`</span>
 <span class="sd">            method.</span>
+<span class="sd">        :return: A :class:`JavaBundle` whose ``files`` maps each output filename</span>
+<span class="sd">            (e.g. ``&quot;Address.java&quot;``) to its rendered source.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">oodocs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_documents</span><span class="p">()</span>
         <span class="c1"># Create additional documents for additional templates and visitors</span>
@@ -688,7 +707,8 @@
                 <span class="n">oodocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">OOVisitorDocument</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">visitor_name</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">,</span> <span class="n">visited_object</span><span class="o">=</span><span class="n">visited_name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">visitors</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span> <span class="o">=</span> <span class="n">directory</span>
+
+        <span class="n">files</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">oodoc</span> <span class="ow">in</span> <span class="n">oodocs</span><span class="p">:</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">enum</span> <span class="o">=</span> <span class="kc">None</span>
@@ -715,8 +735,54 @@
                 <span class="n">model_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">oodoc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.java&quot;</span>
+            <span class="n">files</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">oodoc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.java&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">code</span>
+
+        <span class="k">return</span> <span class="n">JavaBundle</span><span class="p">(</span><span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">package</span><span class="p">)</span>
+
+<div class="viewcode-block" id="JavaGenerator.serialize">
+<a class="viewcode-back" href="../../../generators/java.html#linkml.generators.javagen.JavaGenerator.serialize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">template_variant</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">extra_templates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">visitors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rendered_module</span><span class="p">:</span> <span class="n">JavaBundle</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the Java code and write it to ``directory``, one file per class.</span>
+
+<span class="sd">        Java requires one public class per file, so there is no meaningful</span>
+<span class="sd">        single-string serialization of a schema; callers that want the</span>
+<span class="sd">        generated code in memory should use :meth:`render` and work from the</span>
+<span class="sd">        returned :class:`JavaBundle` instead.</span>
+
+<span class="sd">        :param directory: The directory where to write the code files.</span>
+<span class="sd">        :param template_variant: The name of the template variant to use, if any.</span>
+<span class="sd">            Ignored when ``rendered_module`` is provided.</span>
+<span class="sd">        :param extra_templates: A list of additional templates from which to generate</span>
+<span class="sd">            additional code files. See :meth:`render` for details. Ignored when</span>
+<span class="sd">            ``rendered_module`` is provided.</span>
+<span class="sd">        :param visitors: A list of class names for which to generate a visitor</span>
+<span class="sd">            interface. See :meth:`render` for details. Ignored when</span>
+<span class="sd">            ``rendered_module`` is provided.</span>
+<span class="sd">        :param rendered_module: Optional pre-computed :class:`JavaBundle` to</span>
+<span class="sd">            write instead of calling :meth:`render` afresh. Allows caller to</span>
+<span class="sd">            render once and inspect/write multiple times. When supplied,</span>
+<span class="sd">            ``template_variant``, ``extra_templates``, and ``visitors``</span>
+<span class="sd">            are ignored (the bundle is used as-is).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bundle</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">rendered_module</span>
+            <span class="k">if</span> <span class="n">rendered_module</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                <span class="n">template_variant</span><span class="o">=</span><span class="n">template_variant</span><span class="p">,</span>
+                <span class="n">extra_templates</span><span class="o">=</span><span class="n">extra_templates</span><span class="p">,</span>
+                <span class="n">visitors</span><span class="o">=</span><span class="n">visitors</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">filename</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">bundle</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
                 <span class="n">stream</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">code</span><span class="p">)</span></div>
