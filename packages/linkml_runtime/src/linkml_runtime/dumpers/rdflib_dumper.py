@@ -44,6 +44,7 @@ class RDFLibDumper(Dumper):
         :return:
         """
         g = Graph()
+        schemaview.imports_closure()  # ensure all imported sub-schemas are in schema_map before namespaces() caches
         if isinstance(prefix_map, Converter):
             # TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8
             prefix_map = {record.prefix: record.uri_prefix for record in prefix_map.records}
