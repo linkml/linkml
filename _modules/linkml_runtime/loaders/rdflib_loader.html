@@ -471,6 +471,7 @@
 <span class="sd">        :param ignore_unmapped_predicates: if True then a predicate that has no mapping to a slot does not raise an error</span>
 <span class="sd">        :return: all instances of target class type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schemaview</span><span class="o">.</span><span class="n">imports_closure</span><span class="p">()</span>  <span class="c1"># ensure all imported sub-schemas are in schema_map before namespaces() caches</span>
         <span class="n">namespaces</span> <span class="o">=</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">namespaces</span><span class="p">()</span>
         <span class="n">uri_to_class_map</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">cn</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schemaview</span><span class="o">.</span><span class="n">all_classes</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -488,8 +489,11 @@
             <span class="n">prefix_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">uri_prefix</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">prefix_map</span><span class="o">.</span><span class="n">records</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">prefix_map</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">prefix_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">namespaces</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">namespace_manager</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">&quot;@base&quot;</span><span class="p">:</span>
+                    <span class="n">namespaces</span><span class="o">.</span><span class="n">_base</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">namespaces</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+                    <span class="n">graph</span><span class="o">.</span><span class="n">namespace_manager</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
         <span class="c1"># Step 1: Create stub root dict-objects</span>
         <span class="n">target_class_uriref</span><span class="p">:</span> <span class="n">URIRef</span> <span class="o">=</span> <span class="n">target_class</span><span class="o">.</span><span class="n">class_class_uri</span>
         <span class="n">root_dicts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ANYDICT</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>

@@ -450,6 +450,7 @@
 <span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+        <span class="n">schemaview</span><span class="o">.</span><span class="n">imports_closure</span><span class="p">()</span>  <span class="c1"># ensure all imported sub-schemas are in schema_map before namespaces() caches</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prefix_map</span><span class="p">,</span> <span class="n">Converter</span><span class="p">):</span>
             <span class="c1"># TODO replace with `prefix_map = prefix_map.bimap` after making minimum requirement on python 3.8</span>
             <span class="n">prefix_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">prefix</span><span class="p">:</span> <span class="n">record</span><span class="o">.</span><span class="n">uri_prefix</span> <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">prefix_map</span><span class="o">.</span><span class="n">records</span><span class="p">}</span>
