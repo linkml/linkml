@@ -1191,3 +1191,67 @@ def test_complement_of_union_of_mixed_none_filters_silently():
     # Should succeed and return a BNode (the complement expression).
     assert result is not None
     assert isinstance(result, BNode)
+
+
+def test_ols_profile_exposes_element_name_as_schema_name() -> None:
+    """Under the ``ols`` metadata profile, named elements carry their name as ``schema:name``.
+
+    OLS hides ``rdfs:label`` (which carries the LinkML name) on the term page, so the name is also
+    exposed as ``schema:name`` to remain visible. This applies to classes, slots, and enums, and
+    must not be added to the schema/ontology node.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_slot("full_name")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        metadata_profile=MetadataProfile.ols,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    schema_names = set(g.objects(None, SCHEMA.name))
+    assert Literal("Person") in schema_names
+    assert Literal("full_name") in schema_names
+    assert Literal("StatusEnum") in schema_names
+
+    ontology = next(g.subjects(RDF.type, OWL.Ontology), None)
+    assert ontology is not None
+    assert not list(g.objects(ontology, SCHEMA.name)), "schema:name must not be added to the ontology node"
+
+
+def test_ols_profile_schema_name_is_language_tagged() -> None:
+    """``schema:name`` honours ``default_language`` like the generator's other string literals."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        metadata_profile=MetadataProfile.ols,
+        default_language="en",
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert Literal("Person", lang="en") in set(g.objects(None, SCHEMA.name))
+
+
+def test_schema_name_only_emitted_under_ols_profile() -> None:
+    """``schema:name`` is not emitted under the default profile."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(sb.schema, metaclasses=False, type_objects=False).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert not list(g.objects(None, SCHEMA.name))
