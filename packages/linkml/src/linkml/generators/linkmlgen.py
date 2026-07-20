@@ -35,7 +35,17 @@ class LinkmlGenerator(Generator):
     def __post_init__(self):
         # TODO: consider moving up a level
         super().__post_init__()
-        self.schemaview = SchemaView(self.schema, merge_imports=self.mergeimports)
+        # Forward importmap/base_dir; the call to ``super().__post_init__``
+        # above built a ``self.schemaview`` with these honoured, and this
+        # overwrite must not drop them or URI-style imports resolved via
+        # ``--importmap`` will fall through to HTTP when ``mergeimports``
+        # triggers ``imports_closure()``.
+        self.schemaview = SchemaView(
+            self.schema,
+            merge_imports=self.mergeimports,
+            base_dir=self.base_dir,
+            importmap=self.importmap,
+        )
 
     def materialize_classes(self) -> None:
         """Materialize class slots from schema as attributes, in place"""
