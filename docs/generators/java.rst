@@ -32,6 +32,27 @@ Additional Notes
 
 The Java generator's default template uses Project Lombok's `@Data <https://projectlombok.org/features/Data>`__ annotation, which provides getters, setters, equals and hashcode functionality.
 
+Package Configuration
+---------------------
+
+The generated Java ``package`` statement is driven by the following precedence:
+
+1. ``--package`` command-line option (or ``package=...`` when using ``JavaGenerator`` programmatically)
+2. Schema-level annotation ``annotations.java_package``
+3. Fallback default: ``example``
+
+Example schema-level configuration:
+
+.. code-block:: yaml
+
+        annotations:
+            java_package: org.example.model
+
+The package applies to every generated class and enum: ``gen-java`` emits one file per
+class into a single flat output directory, and cross-class references rely on all
+generated types sharing one package. If the annotation value is not a syntactically
+valid Java package name, a warning is logged but the value is still used.
+
 
 Biolink Example
 ---------------
