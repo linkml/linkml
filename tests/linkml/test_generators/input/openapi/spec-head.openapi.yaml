@@ -44,3 +44,15 @@ paths:
 
 components:
   schemas:
+    MedicalEvent:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/kitchen_sink
+      x-linkml-source: MedicalEvent
+    MarriageEvent:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/kitchen_sink
+      x-linkml-source: MarriageEvent
+    Person:
+      type: object
+      x-linkml-schema: https://w3id.org/linkml/tests/kitchen_sink
+      x-linkml-source: Person
