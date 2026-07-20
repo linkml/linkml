@@ -24,9 +24,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import ClassVar, TextIO, Union, cast
+from typing import IO, ClassVar, TextIO, Union, cast
 
 import click
+import yaml
 from click import Argument, Command, Option
 from jsonasobj2 import JsonObj
 
@@ -990,3 +991,41 @@ def shared_arguments(g: type[Generator]) -> Callable[[Command], Command]:
         return f
 
     return decorator
+
+
+DEFAULT_CONFIG_FILENAME = "config.yaml"
+
+
+def read_generator_config_arg(config_file: IO[bytes] | None, generator_name: str, arg: str):
+    """Read ``generator_args.<generator_name>.<arg>`` from a gen-project-style config file.
+
+    The file format matches the project-wide config.yaml consumed by
+    ``gen-project --config-file`` (see ``ProjectConfiguration.generator_args`` in
+    projectgen.py), so one config.yaml can be shared between generators.
+
+    :param config_file: Open binary stream from an explicit ``--config-file`` option
+        (``click.File("rb")``), or None to auto-detect ``config.yaml`` in the cwd.
+    :param generator_name: Key under ``generator_args`` (e.g. ``"java"``, ``"golang"``).
+    :param arg: Key under ``generator_args.<generator_name>`` (e.g. ``"package"``).
+    :return: The configured value, or None if no config file / key was found.
+    :raises click.UsageError: if the config file is not a YAML mapping.
+    """
+    if config_file is None:
+        default_config_path = Path.cwd() / DEFAULT_CONFIG_FILENAME
+        if not default_config_path.is_file():
+            return None
+        with default_config_path.open("rb") as stream:
+            config_data = yaml.safe_load(stream) or {}
+    else:
+        config_data = yaml.safe_load(config_file) or {}
+    if not isinstance(config_data, dict):
+        raise click.UsageError(
+            f"--config-file must contain a YAML mapping (e.g. 'generator_args: {{{generator_name}: {{{arg}: ...}}}}')"
+        )
+    generator_args = config_data.get("generator_args") or {}
+    if not isinstance(generator_args, dict):
+        return None
+    gen_args = generator_args.get(generator_name) or {}
+    if not isinstance(gen_args, dict):
+        return None
+    return gen_args.get(arg)

@@ -32,6 +32,64 @@ Additional Notes
 
 The Java generator's default template uses Project Lombok's `@Data <https://projectlombok.org/features/Data>`__ annotation, which provides getters, setters, equals and hashcode functionality.
 
+Package Configuration
+---------------------
+
+The generated Java ``package`` statement is driven by the following precedence:
+
+1. ``--package`` command-line option (or ``package=...`` when using ``JavaGenerator`` programmatically)
+2. ``generator_args.java.package`` set via an explicit ``--config-file``/``-C`` (see :ref:`java-configuration-file` below)
+3. ``generator_args.java.package`` set via a project-level ``config.yaml`` (if detected and ``--config-file`` was omitted)
+4. Fallback default: ``example``
+
+NOTE:
+    The package name is *not* configurable via schema-level annotations: LinkML
+    classes, slots, and enums live in a single global namespace regardless of
+    which (sub-)schema declares them - the package is a global configuration for
+    the generator, not a property of the model.
+
+
+The package applies to every generated class and enum: ``gen-java`` emits one file per
+class into a single flat output directory, and cross-class references rely on all
+generated types sharing one package. If the configured value is not a syntactically
+valid Java package name, a warning is logged but the value is still used.
+
+.. _java-configuration-file:
+
+Configuration File
+-------------------
+
+As an alternative to the ``--package`` argument, ``gen-java`` accepts a
+``--config-file``/``-C`` YAML file -- the **same format** used by
+``gen-project``'s own ``--config-file`` (see :doc:`project-generator`), so a single
+project-wide ``config.yaml`` can be shared between ``gen-project`` and a
+standalone ``gen-java`` run. ``package`` lives under ``generator_args.java``,
+since that file is structured to configure every generator at once:
+
+.. code-block:: yaml
+
+    # config.yaml
+    generator_args:
+      java:
+        package: org.example.model
+
+``gen-java`` only ever reads ``generator_args.java.package`` out of this file --
+every other key (``directory``, ``excludes``, other generators' ``generator_args``
+entries, etc.) is ignored, so a full multi-generator project ``config.yaml`` can be
+passed as-is without modification.
+
+An explicit ``--package`` command-line option always overrides a value set via
+``--config-file``.
+
+If ``--config-file`` is not given, ``gen-java`` looks for a ``config.yaml`` in the
+current working directory (the conventional top-level directory of a project) and
+uses its ``generator_args.java.package`` value automatically, if present. This lets
+a project keep a single ``config.yaml`` at its root and simply run ``gen-java``
+from there without repeating ``--package`` or ``--config-file`` on every invocation.
+
+The same configuration-file mechanism is supported by ``gen-golang`` (see
+:doc:`golang`), which reads ``generator_args.golang.package`` from the same file.
+
 
 Biolink Example
 ---------------
