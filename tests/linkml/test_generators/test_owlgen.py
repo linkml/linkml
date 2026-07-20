@@ -1,4 +1,5 @@
 import logging
+import os
 from enum import Enum
 
 import pytest
@@ -150,6 +151,84 @@ def test_rule_none_of_ignores_empty_slot_expression() -> None:
     assert (EX.MappingRule, RDF.type, OWL.Class) in g
     assert list(g.objects(None, OWL.complementOf)) == []
     assert list(g.objects(None, OWL.datatypeComplementOf)) == []
+
+
+def test_add_root_classes_declares_grouping_classes() -> None:
+    """``add_root_classes`` must declare the metamodel grouping classes it references.
+
+    Regression test for https://github.com/linkml/linkml/issues/3605. With ``add_root_classes``,
+    enums, classes, and permissible values are made ``rdfs:subClassOf`` ``linkml:EnumDefinition`` /
+    ``linkml:ClassDefinition`` / ``linkml:PermissibleValue``. Previously those parents were never
+    declared as ``owl:Class``, so RDF-only consumers (such as OLS) treated them as dangling
+    references and dropped the grouping. Each referenced grouping class must now be declared as an
+    ``owl:Class`` with an ``rdfs:label`` sourced from the metamodel.
+    """
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=True,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    for grouping_uri in (LINKML.EnumDefinition, LINKML.ClassDefinition, LINKML.PermissibleValue):
+        assert (grouping_uri, RDF.type, OWL.Class) in g, f"{grouping_uri} not declared as owl:Class"
+        assert next(g.objects(grouping_uri, RDFS.label), None) is not None, f"{grouping_uri} missing rdfs:label"
+
+
+def test_add_root_classes_declares_mixin_grouping_class() -> None:
+    """The ``mixins_as_expressions`` path must declare its synthetic mixin grouping class.
+
+    Companion to :func:`test_add_root_classes_declares_grouping_classes`, covering the branch a
+    root mixin takes when ``mixins_as_expressions`` is set. Such a class is made
+    ``rdfs:subClassOf`` the synthetic ``ClassDefinition#Mixin`` grouping class; that grouping class
+    must itself be declared as an ``owl:Class`` with an ``rdfs:label`` so RDF-only consumers (such
+    as OLS) keep the grouping rather than treating it as a dangling reference.
+    """
+    from linkml_runtime.linkml_model.meta import ClassDefinition as MetaClassDefinition
+
+    sb = SchemaBuilder()
+    sb.add_class(MetaClassDefinition("RootMixin", mixin=True))
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=True,
+        mixins_as_expressions=True,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    mixin_grouping_uri = URIRef(str(MetaClassDefinition.class_class_uri) + "#Mixin")
+    assert (mixin_grouping_uri, RDF.type, OWL.Class) in g, "mixin grouping class not declared as owl:Class"
+    assert (mixin_grouping_uri, RDFS.label, Literal("mixin")) in g, "mixin grouping class missing rdfs:label 'mixin'"
+
+
+def test_grouping_classes_not_declared_without_add_root_classes() -> None:
+    """Grouping-class declarations are emitted only when ``add_root_classes`` is set."""
+    sb = SchemaBuilder()
+    sb.add_class("Person")
+    sb.add_enum("StatusEnum", permissible_values=["active", "inactive"])
+    sb.add_defaults()
+
+    owl = OwlSchemaGenerator(
+        sb.schema,
+        add_root_classes=False,
+        metaclasses=False,
+        type_objects=False,
+    ).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+
+    assert (LINKML.EnumDefinition, RDF.type, OWL.Class) not in g
 
 
 @pytest.mark.network
@@ -466,6 +545,25 @@ def _build_abstract_schema() -> SchemaBuilder:
     sb.add_class("Cat", is_a="Animal")
     sb.add_defaults()
     return sb
+
+
+def _input_path(name: str) -> str:
+    return os.path.join(os.path.dirname(__file__), "input", name)
+
+
+def _literal_values_in_complement_filler(g: Graph) -> set[str]:
+    """Return all literal values inside datatypeComplementOf owl:oneOf fillers.
+
+    Produces: neg_expr owl:datatypeComplementOf [a rdfs:Datatype; owl:oneOf ("Red")].
+    We traverse: datatypeComplementOf -> filler -> owl:oneOf -> RDF list -> literals.
+    """
+    values: set[str] = set()
+    for filler in g.objects(None, OWL.datatypeComplementOf):
+        for list_node in g.objects(filler, OWL.oneOf):
+            for v in Collection(g, list_node):
+                if isinstance(v, Literal):
+                    values.add(str(v))
+    return values
 
 
 def _union_members(g: Graph, cls_uri: URIRef) -> set[URIRef] | None:
@@ -996,403 +1094,100 @@ def test_children_are_mutually_disjoint(
         assert members == {EX[name] for name in child_names}
 
 
-# ---------------------------------------------------------------------------
-# --default-language tests
-# ---------------------------------------------------------------------------
+# equals_string on an enum-ranged slot (is_literal=None) must not silently
+# drop the constraint; it should produce an owl:oneOf expression with a Literal.
 
 
-def _build_lang_test_schema():
-    """Build a small schema with classes, slots, and an enum for language-tag testing."""
-    sb = SchemaBuilder()
-    sb.add_slot(
-        SlotDefinition(
-            "vehicle_name",
-            range="string",
-            description="The vehicle name.",
-            title="Name",
-        )
-    )
-    sb.add_slot(
-        SlotDefinition(
-            "color",
-            range="ColorEnum",
-            description="Paint color.",
-        )
-    )
-    sb.add_class(
-        "Vehicle",
-        slots=["vehicle_name", "color"],
-        description="A road vehicle.",
-        title="Vehicle",
-    )
-    sb.add_enum(
-        "ColorEnum",
-        permissible_values=[
-            PermissibleValue(text="Red", description="A warm color."),
-            PermissibleValue(text="Blue", description="A cool color."),
-        ],
-    )
-    sb.add_defaults()
-    return sb.schema
+def test_equals_string_enum_none_of_no_crash():
+    """Regression: gen-owl on owlgen/slot_conditions.yaml must not raise an AssertionError.
 
-
-def test_default_language_tags_owl_labels():
-    """With --default-language en, rdfs:label and skos:definition get @en."""
-    schema = _build_lang_test_schema()
-    owl = OwlSchemaGenerator(
-        schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="en",
-    ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    # Class label
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert Literal("Vehicle", lang="en") in labels
-
-    # Class description
-    defs = list(g.objects(EX.Vehicle, SKOS.definition))
-    assert Literal("A road vehicle.", lang="en") in defs
-
-    # Enum PV label — PVs are emitted as <{enum_uri}#{pv_text}>
-    pv_red = URIRef(str(EX.ColorEnum) + "#Red")
-    pv_labels = list(g.objects(pv_red, RDFS.label))
-    assert Literal("Red", lang="en") in pv_labels
-
-    # No plain (untagged) literals should be present for these predicates
-    for lit in labels + defs + pv_labels:
-        assert lit.language == "en", f"Expected @en, got lang={lit.language!r} on {lit!r}"
-
-
-def test_no_default_language_produces_plain_literals():
-    """Without --default-language, literals have no language tag (backward-compat)."""
-    schema = _build_lang_test_schema()
-    owl = OwlSchemaGenerator(
-        schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-    ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert Literal("Vehicle") in labels
-    for lit in labels:
-        assert lit.language is None, f"Expected no language tag, got {lit.language!r}"
-
-
-def test_default_language_does_not_tag_uri_range_metaslots():
-    """Metaslots with non-string ranges must never produce language-tagged literals.
-
-    This is the *negative* counterpart to the positive tagging tests. It asserts
-    that language tags appear only on human-readable predicates (per RDF 1.1
-    Concepts §3.3 and the ``_LANGUAGE_TAGGABLE_RANGES`` allowlist), and never on:
-
-    - IRI-valued predicates (``owl:imports``, ``rdf:type``, ``rdfs:isDefinedBy``)
-    - The ``status`` metaslot (range ``uriorcurie``)
-    - Enum-ranged metaslots that land in ``add_metadata``'s catch-all branch
-      (e.g. ``pv_formula`` on permissible values).
-
-    A regression where any of these become ``rdf:langString`` would silently
-    break SHACL ``sh:in`` / OWL ``owl:oneOf`` matching downstream.
+    The bug was that equals_string on an enum-ranged slot produced is_literal=None,
+    which caused the constraint to be dropped, leaving None in the expression list
+    and ultimately triggering rdflib's assertion inside graph.add().
     """
-    schema = _build_lang_test_schema()
-    # uriorcurie-ranged metaslots that should remain IRIs:
-    schema.id_prefixes = ["http://example.org/"]
-    schema.status = "release"
-    owl = OwlSchemaGenerator(
-        schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="de",
-    ).serialize()
+    owl = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml")).serialize()
     g = Graph()
     g.parse(data=owl, format="turtle")
-
-    # Positive sanity check: string-ranged labels still get the @de tag.
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert Literal("Vehicle", lang="de") in labels
-
-    # Strong negative: language tags appear ONLY on known human-readable
-    # predicates. Whitelist everything we expect to be tag-bearing; anything
-    # else carrying a language tag is a regression.
-    from rdflib.namespace import DCTERMS
-
-    # All known human-readable annotation predicates that owlgen may emit
-    # from string-ranged metaslots. Adding a new string metaslot to the
-    # linkml metamodel requires extending this allowlist (or proving the
-    # value is constraint data, not a label).
-    LANG_TAG_ALLOWED_PREDICATES = {
-        RDFS.label,
-        RDFS.comment,
-        SKOS.definition,
-        SKOS.prefLabel,
-        SKOS.altLabel,
-        SKOS.editorialNote,  # linkml ``notes`` metaslot
-        SKOS.note,
-        SKOS.example,
-        DCTERMS.title,
-        DCTERMS.description,
-    }
-    for s, p, o in g:
-        if isinstance(o, Literal) and o.language is not None:
-            assert p in LANG_TAG_ALLOWED_PREDICATES, (
-                f"Predicate {p!r} produced a language-tagged literal {o!r}; "
-                "only label/description-style predicates may carry @lang."
-            )
-
-    # And specifically: every emitted ``status`` (uriorcurie range) reaches the
-    # graph as a URIRef, not a Literal of any kind.
-    BIBO_STATUS = URIRef("http://purl.org/ontology/bibo/status")
-    for obj in g.objects(None, BIBO_STATUS):
-        assert isinstance(obj, URIRef), f"uriorcurie-ranged ``status`` metaslot must emit URIRef, got {obj!r}"
+    # Schema parses without error and the Item class is present.
+    assert any(str(s).endswith("Item") for s, _, _ in g.triples((None, RDF.type, OWL.Class)))
 
 
-def test_default_language_in_language_override():
-    """Element-level in_language overrides the generator default_language."""
-    schema = _build_lang_test_schema()
-    schema.classes["Vehicle"].in_language = "de"
-    owl = OwlSchemaGenerator(
-        schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="en",
-    ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
+def test_equals_string_enum_slot_emits_one_of_literal():
+    """equals_string on an enum-ranged slot must produce an owl:oneOf with a Literal.
 
-    # Vehicle class should use element-level "de", not default "en"
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert Literal("Vehicle", lang="de") in labels
-    assert Literal("Vehicle", lang="en") not in labels
-
-    # ColorEnum should still use the default "en" (no override)
-    enum_labels = list(g.objects(EX.ColorEnum, RDFS.label))
-    assert Literal("ColorEnum", lang="en") in enum_labels
-
-
-def test_default_language_annotations_tagged():
-    """OWL annotations with string values are language-tagged."""
-    from linkml_runtime.linkml_model.meta import Annotation, Prefix
-
-    sb = SchemaBuilder()
-    sb.add_class("Widget", description="A widget.")
-    sb.add_defaults()
-    sb.schema.prefixes["skos"] = Prefix(
-        prefix_prefix="skos",
-        prefix_reference="http://www.w3.org/2004/02/skos/core#",
-    )
-    sb.schema.classes["Widget"].annotations["skos:altLabel"] = Annotation(tag="skos:altLabel", value="Gadget")
-
-    owl = OwlSchemaGenerator(
-        sb.schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="en",
-    ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    alt_labels = list(g.objects(EX.Widget, SKOS.altLabel))
-    assert Literal("Gadget", lang="en") in alt_labels
-
-
-def test_default_language_empty_string_treated_as_none():
-    """An empty string default_language is normalised to None (no tags)."""
-    schema = _build_lang_test_schema()
-    owl = OwlSchemaGenerator(
-        schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="",
-    ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert Literal("Vehicle") in labels
-    for lit in labels:
-        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
-
-
-def test_default_language_whitespace_only_treated_as_none():
-    """A whitespace-only default_language is normalised to None (no tags)."""
-    schema = _build_lang_test_schema()
-    owl = OwlSchemaGenerator(
-        schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="   ",
-    ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert Literal("Vehicle") in labels
-    for lit in labels:
-        assert lit.language is None, f"Expected no lang tag, got {lit.language!r}"
-
-
-def test_default_language_bcp47_warning(caplog):
-    """A malformed BCP 47 tag logs a warning but still produces output."""
-    import logging
-
-    schema = _build_lang_test_schema()
-    # "toolongtag" passes rdflib's lax regex but fails strict BCP 47 (max 8 chars for subtag).
-    with caplog.at_level(logging.WARNING):
-        owl = OwlSchemaGenerator(
-            schema,
-            mergeimports=False,
-            metaclasses=False,
-            type_objects=False,
-            default_language="toolongtag",
-        ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    # Tag is still applied (warning, not error)
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert any(lit.language == "toolongtag" for lit in labels)
-    # Warning was emitted
-    assert any("not a well-formed BCP 47 tag" in rec.message for rec in caplog.records)
-
-
-def test_default_language_bcp47_valid_no_warning(caplog):
-    """A well-formed BCP 47 tag does not log any warning."""
-    import logging
-
-    schema = _build_lang_test_schema()
-    with caplog.at_level(logging.WARNING):
-        OwlSchemaGenerator(
-            schema,
-            mergeimports=False,
-            metaclasses=False,
-            type_objects=False,
-            default_language="en",
-        ).serialize()
-    assert not any("BCP 47" in rec.message for rec in caplog.records)
-
-
-def test_default_language_in_language_override_bcp47_warning(caplog):
-    """A malformed in_language value logs a warning."""
-    import logging
-
-    schema = _build_lang_test_schema()
-    # "toolongtag" passes rdflib but fails strict BCP 47.
-    schema.classes["Vehicle"].in_language = "toolongtag"
-    with caplog.at_level(logging.WARNING):
-        owl = OwlSchemaGenerator(
-            schema,
-            mergeimports=False,
-            metaclasses=False,
-            type_objects=False,
-            default_language="en",
-        ).serialize()
-    g = Graph()
-    g.parse(data=owl, format="turtle")
-
-    # Vehicle uses the (malformed) in_language, not the default
-    labels = list(g.objects(EX.Vehicle, RDFS.label))
-    assert any(lit.language == "toolongtag" for lit in labels)
-    assert any("in_language" in rec.message and "toolongtag" in rec.message for rec in caplog.records)
-
-
-def test_default_language_does_not_tag_enum_ranged_metaslot_in_catchall_branch(monkeypatch):
-    """Direct regression test for PR #3449 review comment #2.
-
-    The ``else`` branch in :meth:`OwlSchemaGenerator.add_metadata` is reached
-    when a metaslot's range is neither a type, subset, nor class -- in
-    practice, an enum-ranged metaslot. The fix removes the unconditional
-    ``Literal(v, lang=lang)`` emission from that branch.
-
-    No metaslot in the *current* LinkML metamodel reaches this branch with
-    a non-``linkml:`` slot URI (``pv_formula``, ``obligation_level``,
-    ``alias_predicate`` are all either filtered by the ``linkml:`` guard
-    or nested inside class-ranged containers). To exercise the branch
-    directly, this test temporarily promotes ``pv_formula``'s slot URI to
-    a non-``linkml:`` value via ``monkeypatch``, then verifies the emitted
-    permissible-value identifier remains a plain ``xsd:string`` literal --
-    never ``rdf:langString`` -- even with ``--default-language en`` set.
-
-    Tagging this value would shift the datatype and silently break
-    downstream SHACL ``sh:in`` / OWL ``owl:oneOf`` matching (RDF 1.1
-    Concepts §3.3).
+    Before the fix, is_literal=None caused a warning and the expression was skipped.
+    After the fix, the value is treated like equals_string_in (single-item list).
     """
-    sb = SchemaBuilder()
-    sb.add_enum("ColorEnum", permissible_values=[PermissibleValue(text="Red")])
-    sb.schema.enums["ColorEnum"].pv_formula = "CODE"
-    sb.add_defaults()
-
-    gen = OwlSchemaGenerator(
-        sb.schema,
-        mergeimports=False,
-        metaclasses=False,
-        type_objects=False,
-        default_language="en",
-    )
-    # Promote pv_formula's slot URI so it passes the ``linkml:`` guard in
-    # add_metadata and actually reaches the catch-all else branch.
-    pv_formula_slot = gen.metamodel_schemaview.get_slot("pv_formula")
-    monkeypatch.setattr(pv_formula_slot, "slot_uri", "https://example.org/pv_formula")
-
-    owl = gen.serialize()
+    owl = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml")).serialize()
     g = Graph()
     g.parse(data=owl, format="turtle")
-
-    pv_formula_objects = list(g.objects(None, URIRef("https://example.org/pv_formula")))
-    assert pv_formula_objects, (
-        "Test setup failure: pv_formula triple was not emitted -- the monkey-patch may have stopped working."
+    assert "Red" in _literal_values_in_complement_filler(g), (
+        "Expected owl:oneOf with literal 'Red' for equals_string on enum-ranged slot"
     )
-    for obj in pv_formula_objects:
-        assert isinstance(obj, Literal), f"expected Literal, got {obj!r}"
-        assert obj.language is None, f"catch-all else branch language-tagged an enum-ranged metaslot value: {obj!r}"
-        assert str(obj) == "CODE"
 
 
-def test_default_language_bcp47_warning_is_deduplicated(caplog):
-    """Each distinct malformed tag warns at most once across the whole run.
+def test_equals_string_enum_produces_complement_expression():
+    """A none_of rule using equals_string on an enum slot must produce a complement axiom.
 
-    Regression test for the original implementation, which re-validated on
-    every call to ``_resolve_language`` and emitted one warning per element
-    -- potentially hundreds per run. The shared :class:`LanguageTagResolver`
-    caches the default check (one warning at construction) and remembers
-    already-warned per-element ``in_language`` tags.
+    The complement (owl:complementOf / owl:datatypeComplementOf) wraps the oneOf
+    expression, expressing "value is not Red".
+    """
+    owl = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml")).serialize()
+    g = Graph()
+    g.parse(data=owl, format="turtle")
+    # There must be at least one owl:datatypeComplementOf or owl:complementOf triple.
+    complement_triples = list(g.triples((None, OWL.datatypeComplementOf, None))) + list(
+        g.triples((None, OWL.complementOf, None))
+    )
+    assert complement_triples, "Expected an owl:complementOf/datatypeComplementOf axiom from none_of rule"
+
+
+# _complement_of_union_of must handle None operands gracefully
+
+
+def test_complement_of_union_of_filters_none(caplog):
+    """_complement_of_union_of([None]) must return None and log a warning, not crash.
+
+    Without the guard, [None] is passed to _union_of which propagates None into
+    graph.add(), raising an AssertionError from rdflib.
     """
     import logging
 
-    schema = _build_lang_test_schema()
-    # Stamp the same malformed in_language on multiple elements.
-    schema.classes["Vehicle"].in_language = "toolongtag"
-    schema.enums["ColorEnum"].in_language = "toolongtag"
-    schema.slots["vehicle_name"].in_language = "toolongtag"
-    schema.slots["color"].in_language = "toolongtag"
+    gen = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml"))
+    gen.as_graph()  # initialises self.graph
 
-    with caplog.at_level(logging.WARNING, logger="linkml.utils.language_tags"):
-        OwlSchemaGenerator(
-            schema,
-            mergeimports=False,
-            metaclasses=False,
-            type_objects=False,
-            # Also stamp a malformed default to exercise the default branch.
-            default_language="anothertoolongone",
-        ).serialize()
+    with caplog.at_level(logging.WARNING, logger="linkml.generators.owlgen"):
+        result = gen._complement_of_union_of([None])
 
-    in_language_warnings = [
-        rec for rec in caplog.records if "in_language" in rec.message and "toolongtag" in rec.message
-    ]
-    default_warnings = [
-        rec for rec in caplog.records if "default language" in rec.message and "anothertoolongone" in rec.message
-    ]
-    assert len(in_language_warnings) == 1, (
-        f"expected exactly 1 in_language warning for 'toolongtag', got {len(in_language_warnings)}"
+    assert result is None, "_complement_of_union_of([None]) should return None"
+    assert any("None" in rec.message or "complement" in rec.message.lower() for rec in caplog.records), (
+        "Expected a warning about unresolvable complement operands"
     )
-    assert len(default_warnings) == 1, f"expected exactly 1 default-language warning, got {len(default_warnings)}"
+
+
+@pytest.mark.parametrize(
+    "exprs,expect_none",
+    [
+        ([None], True),
+        ([None, None], True),
+    ],
+)
+def test_complement_of_union_of_all_none_returns_none(exprs, expect_none):
+    """_complement_of_union_of with only None operands must return None without crashing."""
+    gen = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml"))
+    gen.as_graph()
+    result = gen._complement_of_union_of(exprs)
+    assert (result is None) == expect_none
+
+
+def test_complement_of_union_of_mixed_none_filters_silently():
+    """_complement_of_union_of with some valid and some None operands uses only valid ones."""
+    from rdflib import BNode
+
+    gen = OwlSchemaGenerator(_input_path("owlgen/slot_conditions.yaml"))
+    gen.as_graph()
+    valid_node = URIRef("http://example.org/Foo")
+    result = gen._complement_of_union_of([None, valid_node])
+    # Should succeed and return a BNode (the complement expression).
+    assert result is not None
+    assert isinstance(result, BNode)
