@@ -1,4 +1,6 @@
-from linkml.generators.javagen import JavaGenerator
+import pytest
+
+from linkml.generators.javagen import JavaBundle, JavaGenerator
 from linkml.generators.oocodegen import OOEnum, OOEnumValue
 from tests.linkml.utils.fileutils import assert_file_contains
 
@@ -104,7 +106,7 @@ def test_generate_enum_objects(kitchen_sink_path):
     # Same, but with an enum with names that must be transformed
     expected_enum = OOEnum(
         name="OtherCodes",
-        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/other codes",
+        enum_uri="https://w3id.org/linkml/tests/kitchen_sink/OtherCodes",
     )
     expected_enum.values = [OOEnumValue(label="a_b", text="a b")]
     assert expected_enum == enum_objects["other codes"]
@@ -181,3 +183,118 @@ def test_org_incenp_linkml_uriorcurie_rendered_as_string(input_path, tmp_path):
     gen = JavaGenerator(input_path("personinfo.yaml"))
     gen.serialize(directory=str(tmp_path), template_variant="org.incenp.linkml")
     assert_file_contains(tmp_path / "NamedThing.java", "private String id")
+
+
+def test_refined_slots(input_path, tmp_path):
+    """Test that OOCodeGen provides required infos about refined slots."""
+    gen = JavaGenerator(input_path("refined_derived_slots.yaml"))
+    expected = {
+        ("Foo", "bar"): [],
+        ("Foo", "bars"): [],
+        ("FirstDerivedFoo", "bar"): ["Bar"],
+        ("FirstDerivedFoo", "bars"): ["List<Bar>"],
+        ("SecondDerivedFoo", "bar"): [],
+        ("SecondDerivedFoo", "bars"): [],
+        ("ThirdDerivedFoo", "bar"): ["FirstDerivedBar", "Bar"],
+        ("ThirdDerivedFoo", "bars"): ["List<FirstDerivedBar>", "List<Bar>"],
+    }
+    for doc in gen.create_documents():
+        for klass in doc.classes:
+            for field in klass.all_fields:
+                exp = expected[(klass.name, field.name)]
+                if exp is not None:
+                    assert exp == field.refined_ranges
+
+
+def test_refined_ranges(input_path):
+    """Test that OOCodeGen correctly infers refined ranges."""
+    gen = JavaGenerator(input_path("refined_derived_slots.yaml"))
+
+    # Refined ranges in subclasses
+    # - Subclasses of Foo refine the bar slot twice
+    assert gen.get_refined_ranges("bar", "Foo") == ["FirstDerivedBar", "SecondDerivedBar"]
+    # - Subclasses of FirstDerivedFoo refine it once
+    assert gen.get_refined_ranges("bar", "FirstDerivedFoo") == ["SecondDerivedBar"]
+    # - Likewise, subclasses of SecondDerivedFoo refine the slot once
+    assert gen.get_refined_ranges("bar", "SecondDerivedFoo") == ["SecondDerivedBar"]
+    # - No more refinement from ThirdDerivedFoo
+    assert gen.get_refined_ranges("bar", "ThirdDerivedFoo") == []
+
+    # Refined ranges in superclasses
+    # - Foo is the defining class for the slot, no refinement possible
+    assert gen.get_refined_ranges("bar", "Foo", upwards=True) == []
+    # - FirstDerivedFoo refines the slot compared to its parent Foo
+    assert gen.get_refined_ranges("bar", "FirstDerivedFoo", upwards=True) == ["Bar"]
+    # - SecondDerivedFoo does not refine the slot compared to its parent FirstDerivedFoo
+    assert gen.get_refined_ranges("bar", "SecondDerivedFoo", upwards=True) == []
+    # - ThirdDerivedFoo refines the slot compared to its parent SecondDerivedFoo;
+    #   this is the second refinement in the hierarchy since the defining class
+    assert gen.get_refined_ranges("bar", "ThirdDerivedFoo", upwards=True) == ["FirstDerivedBar", "Bar"]
+
+
+def test_render_returns_bundle(kitchen_sink_path, tmp_path):
+    """`render()` returns a `JavaBundle` with rendered files but touches no disk."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+
+    assert isinstance(bundle, JavaBundle)
+    assert bundle.package == PACKAGE
+    assert "Address.java" in bundle.files
+    address_code = bundle.files["Address.java"]
+    assert "public class Address" in address_code
+    assert f"package {PACKAGE}" in address_code
+
+    # render() must not write anything to disk.
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_render_template_variant(kitchen_sink_path):
+    """`render(template_variant=...)` is honoured (records variant here)."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render(template_variant="records")
+
+    assert "Address.java" in bundle.files
+    assert "public record Address(String street, String city, BigDecimal altitude)" in bundle.files["Address.java"]
+
+
+def test_render_visitors(kitchen_sink_path):
+    """`render(visitors=[...])` emits the visitor interface and adds `accept()` to visited classes."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render(visitors=["Concept"])
+
+    assert "IConceptVisitor.java" in bundle.files
+    assert "public void visit(DiagnosisConcept visited);" in bundle.files["IConceptVisitor.java"]
+    # A class in the visited hierarchy carries the accept() method.
+    assert "ProcedureConcept.java" in bundle.files
+    assert "public void accept(IConceptVisitor visitor)" in bundle.files["ProcedureConcept.java"]
+
+
+def test_render_true_enums(kitchen_sink_path):
+    """With `true_enums=True`, enum-typed files appear in the bundle."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE, true_enums=True)
+    bundle = gen.render()
+
+    assert "CordialnessEnum.java" in bundle.files
+    assert "public enum CordialnessEnum" in bundle.files["CordialnessEnum.java"]
+
+
+def test_serialize_accepts_rendered_module(kitchen_sink_path, tmp_path):
+    """Passing `rendered_module=` writes the given bundle as-is."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    bundle = gen.render()
+    bundle.files["Address.java"] = "// sentinel: pre-rendered bundle content"
+
+    gen.serialize(directory=str(tmp_path), rendered_module=bundle)
+
+    assert_file_contains(tmp_path / "Address.java", "// sentinel: pre-rendered bundle content")
+
+
+@pytest.mark.parametrize("as_path", [False, True], ids=["str", "Path"])
+def test_serialize_accepts_str_or_path_directory(kitchen_sink_path, tmp_path, as_path):
+    """`directory` accepts both a ``str`` and a :class:`pathlib.Path`."""
+    gen = JavaGenerator(kitchen_sink_path, package=PACKAGE)
+    directory = tmp_path if as_path else str(tmp_path)
+
+    gen.serialize(directory=directory)
+
+    assert_file_contains(tmp_path / "Address.java", "public class Address", after=f"package {PACKAGE}")
