@@ -1,37 +1,10 @@
-@prefix OIO: <http://www.geneontology.org/formats/oboInOwl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix wgs: <https://www.w3.org/2003/01/geo/wgs84_pos#> .
-@prefix brick: <https://brickschema.org/schema/Brick#> .
-@prefix geo: <http://www.opengis.net/ont/geosparql#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix xml: <http://www.w3.org/XML/1998/namespace> .
-@prefix IAO: <http://purl.obolibrary.org/obo/IAO_> .
-@prefix qb: <http://purl.org/linked-data/cube#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix prof: <http://www.w3.org/ns/dx/prof/> .
-@prefix doap: <http://usefulinc.com/ns/doap#> .
-@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
-@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
-@prefix time: <http://www.w3.org/2006/time#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix vann: <http://purl.org/vocab/vann/> .
-@prefix prov: <http://www.w3.org/ns/prov#> .
-@prefix dcat: <http://www.w3.org/ns/dcat#> .
-@prefix sosa: <http://www.w3.org/ns/sosa/> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix csvw: <http://www.w3.org/ns/csvw#> .
-@prefix org: <http://www.w3.org/ns/org#> .
-@prefix dcterms: <http://purl.org/dc/terms/> .
-@prefix ssn: <http://www.w3.org/ns/ssn/> .
-@prefix meta: <http://example.org/owl1/> .
-@prefix dcam: <http://purl.org/dc/dcam/> .
-@prefix void: <http://rdfs.org/ns/void#> .
 @prefix linkml: <https://w3id.org/linkml/> .
-@prefix pav: <http://purl.org/pav/> .
-@prefix schema: <https://schema.org/> .
+@prefix meta: <http://example.org/owl1/> .
 meta:C1 a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "c1" ;
 	rdfs:subClassOf _:c14n0 , _:c14n1 , _:c14n10 , _:c14n3 , _:c14n4 , _:c14n5 , _:c14n6 , _:c14n7 , _:c14n8 , _:c14n9 ;
@@ -39,6 +12,8 @@ meta:C1 a owl:Class , linkml:ClassDefinition ;
 meta:C2 a owl:Class , linkml:ClassDefinition ;
 	rdfs:label "c2" ;
 	skos:inScheme <http://example.org/owl1> .
+meta:String a owl:Class , linkml:TypeDefinition ;
+	rdfs:subClassOf _:c14n2 .
 meta:slotonemany a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:domain meta:C1 ;
 	rdfs:label "slotonemany" ;
@@ -59,8 +34,6 @@ meta:slotzeromany a owl:ObjectProperty , linkml:SlotDefinition ;
 	rdfs:label "slotzeromany" ;
 	rdfs:range meta:C2 ;
 	skos:inScheme <http://example.org/owl1> .
-meta:string a owl:Class , linkml:TypeDefinition ;
-	rdfs:subClassOf _:c14n2 .
 <http://example.org/owl1> a owl:Ontology ;
 	rdfs:label "owl1" .
 linkml:topValue a owl:DatatypeProperty ;
@@ -75,7 +48,7 @@ _:c14n10 a owl:Restriction ;
 	owl:maxCardinality 1 ;
 	owl:onProperty meta:slotreq .
 _:c14n2 a owl:Restriction ;
-	owl:onDataRange meta:string ;
+	owl:onDataRange meta:String ;
 	owl:onProperty linkml:topValue ;
 	owl:qualifiedCardinality 1 .
 _:c14n3 a owl:Restriction ;
