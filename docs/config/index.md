@@ -13,11 +13,18 @@ priorities override lower priorities)
 * in a `.env` file in the working directory
 * in a `linkml_config.yaml` file in the working directory
 * in the `tool.linkml.config` table in a `pyproject.toml` file in the working directory
-* in the global `linkml_config.yaml` file in the platform-specific data directory
+* in the global `linkml_config.yaml` file in the platform-specific data directory[^platformdirs]
   (use `linkml config get config_file` to find its location)
 * the default values in the {class}`~linkml.utils.config.GlobalConfig` model
 
 Parent directories are _not_ checked.
+
+[^platformdirs]: These directories come from [platformdirs](https://platformdirs.readthedocs.io/en/latest/index.html),
+  see [their documentation](https://platformdirs.readthedocs.io/en/latest/platforms.html) for more info.
+  The default configuration directories for linkml are:
+    - Linux: `~/.config/linkml/`
+    - Mac: `~/Library/Application Support/linkml/`
+    - Windows: `~\AppData\Local\linkml\linkml\`
 
 ## Keys
 
