@@ -4,6 +4,7 @@ import os
 from collections.abc import Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 import click
@@ -203,12 +204,18 @@ class JSONLDGenerator(Generator):
         for imp in list(self.loaded.values())[1:]:
             context_list.append(imp[0] + ".context.jsonld")
 
-        # Absolute file paths have to have a prefix
+        # Absolute local filesystem paths must be expressed as file:// URIs
+        # before being handed to the JSON-LD processor. ``Path.as_uri`` handles
+        # both POSIX (``/x`` -> ``file:///x``) and Windows drive paths
+        # (``D:\x`` -> ``file:///D:/x``); the previous ``"file://" + path``
+        # only matched POSIX paths, so a bare Windows path slipped through and
+        # was later misread as a URL whose drive letter looks like a scheme
+        # (``d:``), causing the context to be dropped. URLs (anything with a
+        # ``://``) and relative refs are left untouched.
         for ci in range(0, len(context_list)):
-            if isinstance(context_list[ci], str) and context_list[ci].startswith(
-                "/"
-            ):  # TODO: how do we deal with absolute DOS paths?
-                context_list[ci] = "file://" + context_list[ci]
+            entry = context_list[ci]
+            if isinstance(entry, str) and "://" not in entry and os.path.isabs(entry):
+                context_list[ci] = Path(entry).as_uri()
 
         if self.format == "jsonld":
             self.schema["@context"] = context_list[0] if len(context_list) == 1 and not base_prefix else context_list

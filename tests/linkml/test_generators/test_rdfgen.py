@@ -151,18 +151,18 @@ classes:
 def test_rdfgen_strips_unresolvable_per_module_context_refs(tmp_path):
     """``gen-rdf`` must not 404 on per-module ``@context`` refs.
 
-    Regression: ``JSONLDGenerator.end_schema`` appends one
-    ``<import>.context.jsonld`` string per loaded import. For a sibling
-    import such as ``./base`` the resulting entry is ``./base.context.jsonld``
-    - a relative path that rdflib resolves against ``@base`` (the schema's
-    ``https://`` URI) and then fetches via HTTP. The file is not published
-    anywhere, so the call returns 404 and ``RDFGenerator.serialize`` raises
-    ``urllib.error.HTTPError``.
+    ``JSONLDGenerator.end_schema`` appends one ``<import>.context.jsonld``
+    string per loaded import. For a sibling import such as ``./base`` the
+    resulting entry is ``./base.context.jsonld`` - a relative path that
+    rdflib resolves against ``@base`` (the schema's ``https://`` URI) and
+    then fetches via HTTP. That file is never published anywhere, so if it
+    reached rdflib unchanged the fetch would 404 and ``RDFGenerator.serialize``
+    would raise ``urllib.error.HTTPError``.
 
-    The fix in ``rdfgen._strip_relative_context_refs`` drops string entries
-    from the ``@context`` array that have no resolvable URI scheme before
-    handing the JSON-LD to rdflib. The merged inline ``@context`` (and the
-    fully merged schema body) cover everything the per-module refs would
+    ``rdfgen._strip_relative_context_refs`` prevents this by dropping string
+    entries from the ``@context`` array that have no resolvable URI scheme
+    before handing the JSON-LD to rdflib. The merged inline ``@context`` (and
+    the fully merged schema body) cover everything the per-module refs would
     have contributed, so the filtering is non-destructive.
     """
     schemas_dir = tmp_path / "schemas"
