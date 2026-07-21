@@ -1,0 +1,49 @@
+id: https://w3id.org/linkml/tests/refined_derived_slots
+name: refined_derived_slots
+title: Test case for refined derived slots
+description: |-
+  This schema is intended to illustrate and test the case where a
+  derived class refines (through `slot_usage`) an inherited slot in such
+  a way that the inherited-and-refined slot has a more specialised range
+  than the original slot.
+
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+slots:
+  bar:
+    range: Bar
+  bars:
+    range: Bar
+    multivalued: true
+
+classes:
+  Foo:
+    slots:
+      - bar
+      - bars
+  FirstDerivedFoo:
+    is_a: Foo
+    slot_usage:
+      bar:
+        range: FirstDerivedBar
+      bars:
+        range: FirstDerivedBar
+  SecondDerivedFoo:
+    is_a: FirstDerivedFoo
+  ThirdDerivedFoo:
+    is_a: SecondDerivedFoo
+    slot_usage:
+      bar:
+        range: SecondDerivedBar
+      bars:
+        range: SecondDerivedBar
+
+  Bar:
+  FirstDerivedBar:
+    is_a: Bar
+  SecondDerivedBar:
+    is_a: FirstDerivedBar
