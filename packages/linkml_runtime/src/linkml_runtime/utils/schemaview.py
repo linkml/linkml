@@ -1494,14 +1494,17 @@ class SchemaView:
            unchanged — no expansion needed.
         2. If *uri* looks like a CURIE (contains ``":"`` with exactly one colon and a
            registered prefix), return the concatenated full URI.
-        3. If *uri* looks like a CURIE but the prefix is not registered, raise
-           :exc:`ValueError`.
-        4. If *uri* contains no ``":"`` at all (bare name), raise :exc:`ValueError`.
+        3. If *uri* looks like a CURIE but the prefix is not in the schema's registered
+           namespaces, try each ``default_curi_maps`` entry of every schema in the
+           schema_map (i.e. the schema itself and all its imports) to find the prefix.
+        4. If the prefix is still not found, raise :exc:`ValueError`.
+        5. If *uri* contains no ``":"`` at all (bare name), raise :exc:`ValueError`.
 
         :param uri: A CURIE or full URI string.
         :return: A full URI string.
-        :raises ValueError: When *uri* is a CURIE whose prefix is not registered in
-            the schema, or when it is neither a CURIE nor a full URI.
+        :raises ValueError: When *uri* is a CURIE whose prefix cannot be resolved via
+            the schema's registered namespaces or any explicitly declared
+            ``default_curi_maps``, or when it is neither a CURIE nor a full URI.
         """
         if "://" in uri:
             return uri
@@ -1512,6 +1515,17 @@ class SchemaView:
                 ns = self.namespaces()
                 if pfx in ns:
                     return ns[pfx] + local_id
+                # Fallback: try resolving via default_curi_maps declared in any
+                # schema in the schema_map. This handles cases where a sub-schema
+                # (e.g. units.yaml) uses a CURIE whose prefix is defined by a
+                # context map (e.g. semweb_context) that is declared in the
+                # sub-schema itself or one of its siblings/parents.
+                for s in self.schema_map.values():
+                    for cmap in s.default_curi_maps:
+                        tmp_ns = Namespaces()
+                        tmp_ns.add_prefixmap(cmap, include_defaults=False)
+                        if pfx in tmp_ns:
+                            return tmp_ns[pfx] + local_id
                 raise ValueError(f"'{uri}' cannot be expanded: prefix '{pfx}' is not registered in the schema")
         raise ValueError(f"'{uri}' is neither a CURIE nor a full URI")
 
