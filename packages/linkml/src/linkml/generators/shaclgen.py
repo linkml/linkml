@@ -275,9 +275,9 @@ class ShaclGenerator(Generator):
                     if msg_text:
                         g.add((pnode, SH.message, Literal(msg_text, lang=self._resolve_language(None))))
                 # minCount
-                if s.minimum_cardinality:
+                if s.minimum_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.minimum_cardinality)
-                elif s.exact_cardinality:
+                elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.minCount, s.exact_cardinality)
                 # Identifiers map to the node's IRI rather than a property triple,
                 # so there's no arc to constrain with sh:minCount 1 — emitting it
@@ -285,9 +285,9 @@ class ShaclGenerator(Generator):
                 elif s.required and not s.identifier:
                     prop_pv_literal(SH.minCount, 1)
                 # maxCount
-                if s.maximum_cardinality:
+                if s.maximum_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.maximum_cardinality)
-                elif s.exact_cardinality:
+                elif s.exact_cardinality is not None:
                     prop_pv_literal(SH.maxCount, s.exact_cardinality)
                 elif not s.multivalued:
                     prop_pv_literal(SH.maxCount, 1)
