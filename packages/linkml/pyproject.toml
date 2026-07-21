@@ -64,6 +64,8 @@ dependencies = [ # Specifier syntax: https://peps.python.org/pep-0631/
     "typing-extensions >= 4.6.0; python_version < '3.12'",
     "sphinx-click (>=6.0.0)",
     "openapi-spec-validator >= 0.8.4",
+    "pydantic-settings>=2.14.2",
+    "platformdirs>=4.5.0",
 ]
 
 [dependency-groups]
@@ -82,6 +84,7 @@ tests = [
   { include-group = "shacl" },
   "duckdb>=1.5.2",
   "sqlalchemy-bigquery >= 1.9.0",
+  "tomli-w>=1.2.0",
 ]
 dev = [
   {include-group = "tests" },
@@ -144,6 +147,7 @@ docs = [
   "matplotlib >= 3.7",
   "sphinx-jinja >= 2.0.2",
   "sphinxcontrib-programoutput >= 0.17",
+  "sphinx-design>=0.6.1",
 ]
 
 [tool.uv.sources]
