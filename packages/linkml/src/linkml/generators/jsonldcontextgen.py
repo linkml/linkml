@@ -279,13 +279,14 @@ class ContextGenerator(Generator):
                 continue
 
             range_type = self.schema.types[range_name]
-            range_uri = self.namespaces.uri_for(range_type.uri)
+            range_curie = self.schemaview.get_uri(range_type.name, expand=False)
+            range_uri = self.namespaces.uri_for(range_curie)
             if range_uri == XSD.string:
                 coercions.add(None)
             elif range_uri in uri_ranges:
                 coercions.add("@id")
             else:
-                coercions.add(range_type.uri)
+                coercions.add(range_curie)
 
         if not coercions:
             return False, None
@@ -389,13 +390,14 @@ class ContextGenerator(Generator):
                 else:
                     if slot.range is not None and slot.range in self.schema.types:
                         range_type = self.schema.types[slot.range]
+                        range_curie = self.schemaview.get_uri(range_type.name, expand=False)
                         uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
-                        if self.namespaces.uri_for(range_type.uri) == XSD.string:
+                        if self.namespaces.uri_for(range_curie) == XSD.string:
                             pass
-                        elif self.namespaces.uri_for(range_type.uri) in uri_ranges:
+                        elif self.namespaces.uri_for(range_curie) in uri_ranges:
                             slot_def["@type"] = "@id"
                         else:
-                            slot_def["@type"] = range_type.uri
+                            slot_def["@type"] = range_curie
 
                 if self.fix_multivalue_containers and slot.multivalued:
                     if slot.inlined and not slot.inlined_as_list:
@@ -425,12 +427,13 @@ class ContextGenerator(Generator):
             return None
         if range_name in self.schema.types:
             range_type = self.schema.types[range_name]
-            uri = self.namespaces.uri_for(range_type.uri)
+            range_curie = self.schemaview.get_uri(range_type.name, expand=False)
+            uri = self.namespaces.uri_for(range_curie)
             if uri == XSD.string:
                 return None
             if uri in URI_RANGES:
                 return "@id"
-            return range_type.uri
+            return range_curie
         return None
 
     def _build_scoped_context(self, cls: ClassDefinition) -> dict:
