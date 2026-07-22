@@ -381,6 +381,7 @@ def test_slot_not_required_nullability(input_path, not_closed):
 
     References:
         - https://github.com/linkml/linkml/issues/2155
+        - https://github.com/linkml/linkml/issues/3736
     """
     schema = input_path("not_required.yaml")
     generator = JsonSchemaGenerator(schema, mergeimports=True, top_class="Optionals", not_closed=not_closed)
@@ -391,6 +392,11 @@ def test_slot_not_required_nullability(input_path, not_closed):
             assert "null" in prop["type"], f"{key} does not allow null"
         elif "anyOf" in prop:
             assert {"type": "null"} in prop["anyOf"], f"{key} does not allow null"
+        else:
+            pytest.fail(f"{key} has neither 'type' nor 'anyOf', so it cannot allow null: {prop}")
+
+    # nullability of an optional multivalued enum slot applies to the array, not its elements
+    assert properties["enum_range_multivalued"]["items"] == {"$ref": "#/$defs/StatusEnum"}
 
 
 def test_lifecycle_classes(kitchen_sink_path):
