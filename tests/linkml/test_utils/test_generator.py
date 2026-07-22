@@ -511,7 +511,6 @@ classes:
     assert gen.formatted_element_name(cast(Element, gen)) is None
 
 
-@pytest.mark.skip(reason="See above")
 def test_own_slots(input_path):
     """Test the generator own_slots and all_slots helper functions"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))
@@ -562,7 +561,6 @@ def test_own_slots(input_path):
     ]
 
 
-@pytest.mark.skip(reason="See above")
 def test_slot_class_paths(input_path):
     """Test for aliased slot name, class identifier path and slot type path"""
     gen = GeneratorTest(str(input_path("ownalltest.yaml")))

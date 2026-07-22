@@ -135,7 +135,6 @@ def test_rdf_dumper(test_package):
         f.write(txt)
 
 
-@pytest.mark.skip(reason="Waiting until PyLD learns to handle relative context URI's")
 def test_nested_contexts(test_package):
     """Test JSON-LD with fully nested contexts"""
     from tests.linkml_runtime.test_loaders_dumpers.loaderdumpertestcase import LoaderDumperTestCase
