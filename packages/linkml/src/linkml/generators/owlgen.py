@@ -444,7 +444,7 @@ class OwlSchemaGenerator(Generator):
         # staying on that vocabulary keeps the OLS profile self-consistent.
         # Restricted to named elements (classes, slots, enums); add_metadata is also
         # called for the schema/ontology node, which should not get a schema:name.
-        if self.has_profile(MetadataProfile.ols) and isinstance(e, (ClassDefinition, SlotDefinition, EnumDefinition)):
+        if self.has_profile(MetadataProfile.ols) and isinstance(e, ClassDefinition | SlotDefinition | EnumDefinition):
             name = getattr(e, "name", None)
             if name:
                 self.graph.add((uri, URIRef("http://schema.org/name"), self._literal(name, e)))
