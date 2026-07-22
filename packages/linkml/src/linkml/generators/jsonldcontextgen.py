@@ -278,8 +278,7 @@ class ContextGenerator(Generator):
             if range_name not in self.schema.types:
                 continue
 
-            range_type = self.schema.types[range_name]
-            range_curie = self.schemaview.get_uri(range_type.name, expand=False)
+            range_curie = self._effective_type_uri(range_name)
             range_uri = self.namespaces.uri_for(range_curie)
             if range_uri == XSD.string:
                 coercions.add(None)
@@ -389,8 +388,7 @@ class ContextGenerator(Generator):
                     self.emit_prefixes.add(skos)
                 else:
                     if slot.range is not None and slot.range in self.schema.types:
-                        range_type = self.schema.types[slot.range]
-                        range_curie = self.schemaview.get_uri(range_type.name, expand=False)
+                        range_curie = self._effective_type_uri(slot.range)
                         uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
                         if self.namespaces.uri_for(range_curie) == XSD.string:
                             pass
@@ -426,8 +424,7 @@ class ContextGenerator(Generator):
         if range_name in self.schema.enums:
             return None
         if range_name in self.schema.types:
-            range_type = self.schema.types[range_name]
-            range_curie = self.schemaview.get_uri(range_type.name, expand=False)
+            range_curie = self._effective_type_uri(range_name)
             uri = self.namespaces.uri_for(range_curie)
             if uri == XSD.string:
                 return None
@@ -475,6 +472,27 @@ class ContextGenerator(Generator):
                 _add_if_type_differs(usage_name, usage.range)
 
         return scoped
+
+    def _effective_type_uri(self, range_name: str) -> str:
+        """Return the URI CURIE for a type, following typeof inheritance when no explicit URI is declared.
+
+        SchemaLoader used to synthesise URIs by walking the typeof chain; SchemaView leaves ``type.uri``
+        as ``None`` for types with no explicit declaration.  This method replicates the SchemaLoader
+        behaviour: if the type has an explicit ``uri``, return it; otherwise call
+        :meth:`~linkml_runtime.utils.schemaview.SchemaView.induced_type` which inherits ``uri`` via
+        ``typeof``; as a last resort synthesise a native CURIE via :meth:`~.schemaview.get_uri`.
+
+        :param range_name: name of the type in ``self.schema.types``
+        :return: CURIE string suitable for passing to :meth:`~linkml_runtime.utils.namespaces.Namespaces.uri_for`
+        """
+        range_type = self.schema.types[range_name]
+        if range_type.uri is not None:
+            return range_type.uri
+        induced = self.schemaview.induced_type(range_name)
+        if induced.uri is not None:
+            return induced.uri
+        return self.schemaview.get_uri(range_name, expand=False)
+
     def _build_element_id(self, definition: Any, uri: str) -> None:
         """
         Defines the elements @id attribute according to the default namespace prefix of the schema.
