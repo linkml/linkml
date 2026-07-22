@@ -889,6 +889,8 @@ class Generator(metaclass=abc.ABCMeta):
         if isinstance(defn, SlotDefinition):
             mappings.append(defn.slot_uri)
         for mapping in mappings:
+            if mapping is None:
+                continue
             if "://" in str(mapping):
                 mcurie = self.namespaces.curie_for(mapping)
                 if mcurie is None:
@@ -912,6 +914,8 @@ class Generator(metaclass=abc.ABCMeta):
 
         @param ncname: name to add
         """
+        if ncname is None:
+            return
         if ncname not in self.namespaces:
             self.logger.warning(f"Unrecognized prefix: {ncname}")
             self.namespaces[ncname] = f"http://example.org/UNKNOWN/{ncname}/"
