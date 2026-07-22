@@ -1730,3 +1730,46 @@ classes:
     # Each file must describe only its own element type
     assert_mdfile_does_not_contain(class_file, "# Subset:")
     assert_mdfile_does_not_contain(subset_file, "# Class:")
+
+
+def test_docgen_example_description(tmp_path):
+    """Regression for linkml/linkml#2714 -- gen-doc must render the ``description`` of
+    metamodel ``examples`` entries, not just their ``value``.
+
+    The Examples table previously had a single ``Value`` column and silently dropped
+    each example's ``description``.
+    """
+    schema_yaml = """\
+id: https://example.org/test
+name: test
+default_prefix: test
+prefixes:
+  test: https://example.org/test/
+  linkml: https://w3id.org/linkml/
+imports: [linkml:types]
+default_range: string
+
+classes:
+  Instrument:
+    description: a manufactured device
+    examples:
+      - value: centrifuge
+        description: a device that spins samples
+      - value: microtome
+"""
+    gen = DocGenerator(schema_yaml, mergeimports=False, no_types_dir=True)
+    gen.serialize(directory=str(tmp_path))
+
+    instrument_file = tmp_path / "Instrument.md"
+    # The example value and its description are both rendered, in the same table row.
+    assert_mdfile_contains(
+        instrument_file,
+        "| centrifuge | a device that spins samples |",
+        after="## Examples",
+    )
+    # An example without a description still renders without leaking ``None``.
+    assert_mdfile_contains(
+        instrument_file,
+        "| microtome |  |",
+        after="## Examples",
+    )
