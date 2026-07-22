@@ -42,8 +42,7 @@ class ContextGenerator(Generator):
     generatorversion = "0.1.1"
     valid_formats = ["context", "json"]
     visit_all_class_slots = False
-    uses_schemaloader = True
-    requires_metamodel = True
+    uses_schemaloader = False
     file_extension = "context.jsonld"
 
     # ObjectVars
@@ -91,16 +90,8 @@ class ContextGenerator(Generator):
 
     def __post_init__(self) -> None:
         super().__post_init__()
-        if self.namespaces is None:
-            raise TypeError("Schema text must be supplied to context generator.  Preparsed schema will not work")
         if self.exclude_imports or self.exclude_external_imports:
-            if self.schemaview:
-                sv = self.schemaview
-            else:
-                source = self.schema.source_file or self.schema
-                if isinstance(source, str) and self.base_dir and not Path(source).is_absolute():
-                    source = str(Path(self.base_dir) / source)
-                sv = SchemaView(source, importmap=self.importmap, base_dir=self.base_dir)
+            sv = self.schemaview
             if self.exclude_imports:
                 self._local_classes = set(sv.all_classes(imports=False).keys())
                 self._local_slots = set(sv.all_slots(imports=False).keys())
@@ -248,7 +239,9 @@ class ContextGenerator(Generator):
         cn = camelcase(cls.name)
         self.add_mappings(cls)
 
-        self._build_element_id(class_def, cls.class_uri)
+        # SchemaLoader always synthesised class_uri; SchemaView may leave it None.
+        class_uri = cls.class_uri or self.schemaview.get_uri(cls, expand=False)
+        self._build_element_id(class_def, class_uri)
 
         # Build scoped context for slots whose range differs from the global definition.
         # This handles attributes and slot_usage overrides that change a slot's range
@@ -394,14 +387,15 @@ class ContextGenerator(Generator):
                         skos = "skos"
                     self.emit_prefixes.add(skos)
                 else:
-                    range_type = self.schema.types[slot.range]
-                    uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
-                    if self.namespaces.uri_for(range_type.uri) == XSD.string:
-                        pass
-                    elif self.namespaces.uri_for(range_type.uri) in uri_ranges:
-                        slot_def["@type"] = "@id"
-                    else:
-                        slot_def["@type"] = range_type.uri
+                    if slot.range is not None and slot.range in self.schema.types:
+                        range_type = self.schema.types[slot.range]
+                        uri_ranges = URI_RANGES_WITH_XSD if self.xsd_anyuri_as_iri else URI_RANGES
+                        if self.namespaces.uri_for(range_type.uri) == XSD.string:
+                            pass
+                        elif self.namespaces.uri_for(range_type.uri) in uri_ranges:
+                            slot_def["@type"] = "@id"
+                        else:
+                            slot_def["@type"] = range_type.uri
 
                 if self.fix_multivalue_containers and slot.multivalued:
                     if slot.inlined and not slot.inlined_as_list:
@@ -448,32 +442,36 @@ class ContextGenerator(Generator):
         resolved @type actually differs from the global definition.
         """
         scoped: dict = {}
+        sv = self.schemaview
 
         def _add_if_type_differs(slot_name: str, override_range: str) -> None:
             """Add a scoped entry if the override's @type differs from the global slot's @type."""
-            global_slot = self.schema.slots[slot_name]
-            global_type = self._resolve_slot_type(global_slot.range) if global_slot.range else None
+            global_slot = sv.get_slot(slot_name)
+            if global_slot is None:
+                return
+            global_induced = sv.induced_slot(slot_name)
+            global_type = self._resolve_slot_type(global_induced.range) if global_induced.range else None
             override_type = self._resolve_slot_type(override_range)
             if override_type == global_type:
                 return
             entry: dict = {}
-            self._build_element_id(entry, global_slot.slot_uri)
+            slot_uri = global_induced.slot_uri or sv.get_uri(global_induced, expand=False)
+            self._build_element_id(entry, slot_uri)
             if override_type is not None:
                 entry["@type"] = override_type
             scoped[underscore(slot_name)] = entry
 
         # Check attributes that shadow global slots
         for attr_name, attr in cls.attributes.items():
-            if attr.range and attr_name in self.schema.slots:
+            if attr.range and sv.get_slot(attr_name) is not None:
                 _add_if_type_differs(attr_name, attr.range)
 
         # Check slot_usage overrides
         for usage_name, usage in cls.slot_usage.items():
-            if usage.range and usage_name in self.schema.slots:
+            if usage.range and sv.get_slot(usage_name) is not None:
                 _add_if_type_differs(usage_name, usage.range)
 
         return scoped
-
     def _build_element_id(self, definition: Any, uri: str) -> None:
         """
         Defines the elements @id attribute according to the default namespace prefix of the schema.
@@ -509,8 +507,56 @@ class ContextGenerator(Generator):
         model: bool | None = None,
         **kwargs,
     ) -> str:
-        return super().serialize(
-            base=base, output=output, prefixes=prefixes, flatprefixes=flatprefixes, model=model, **kwargs
+        sv = self.schemaview
+        imports = self.mergeimports
+
+        # Populate self.schema collections from SchemaView so the visitor
+        # methods (visit_slot, visit_class, _build_scoped_context, etc.) that
+        # read self.schema.{types,slots,classes,enums} see the full merged set.
+        self.schema.types.update(sv.all_types(imports=imports))
+        self.schema.slots.update(sv.all_slots(imports=imports, attributes=False))
+        self.schema.classes.update(sv.all_classes(imports=imports))
+        self.schema.enums.update(sv.all_enums(imports=imports))
+
+        # visit_schema: register prefixes and @vocab
+        self.visit_schema(base=base, output=output)
+
+        # visit each top-level slot using its induced definition so that
+        # range, slot_uri, identifier, multivalued, inlined etc. are resolved.
+        for slot_name in sv.all_slots(imports=imports, attributes=False):
+            induced = sv.induced_slot(slot_name)
+            # SchemaLoader always synthesises slot_uri; replicate that here.
+            if not induced.slot_uri:
+                induced.slot_uri = sv.get_uri(induced, expand=False)
+            self.visit_slot(self.aliased_slot_name(induced), induced)
+
+        # visit attributes as top-level slots only when they do not shadow a
+        # global slot (shadowing attributes are handled via scoped contexts in
+        # visit_class / _build_scoped_context).
+        seen_attr_names: set[str] = set()
+        for cls in sv.all_classes(imports=imports).values():
+            for attr_name, attr in cls.attributes.items():
+                if attr_name in sv.all_slots(imports=imports, attributes=False):
+                    # shadowing a global slot — scoped context handles it
+                    continue
+                if attr_name in seen_attr_names:
+                    continue
+                seen_attr_names.add(attr_name)
+                induced_attr = sv.induced_slot(attr_name, cls.name)
+                if not induced_attr.slot_uri:
+                    induced_attr.slot_uri = sv.get_uri(induced_attr, expand=False)
+                self.visit_slot(self.aliased_slot_name(induced_attr), induced_attr)
+
+        # visit each class
+        for cls in sv.all_classes(imports=imports).values():
+            self.visit_class(cls)
+
+        return self.end_schema(
+            base=base,
+            output=output,
+            prefixes=prefixes,
+            flatprefixes=flatprefixes,
+            model=model,
         )
 
 
