@@ -22,9 +22,9 @@ jobs:
           --health-retries 10
           --health-start-period 30s
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v8.2.0
-      - uses: actions/setup-python@v6.2.0
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v8.3.2
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: "3.12"
       - run: uv sync --group typedb --group tests-extra

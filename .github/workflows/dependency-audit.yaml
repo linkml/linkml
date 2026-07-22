@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Full history so we can diff against a base ref to see whether the
           # resolved dependency set changed (see "Detect dependency changes").
@@ -32,13 +32,13 @@ jobs:
 
       # Pin uv to a known-good, recent release.
       - name: Install uv and setup uv caching
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v8.3.2
         with:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v6.3.0
         id: setup-python
         with:
           python-version: 3.13
