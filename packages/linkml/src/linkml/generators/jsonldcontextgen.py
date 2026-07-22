@@ -510,6 +510,14 @@ class ContextGenerator(Generator):
         sv = self.schemaview
         imports = self.mergeimports
 
+        # Ensure the import closure is fully loaded before any namespace or
+        # element lookups, so that prefixes from imported schemas (e.g. xsd:
+        # from linkml:types) are available in sv.namespaces().
+        sv.imports_closure()
+        # imports_closure() calls sv.namespaces() internally before sub-schemas
+        # are in schema_map, freezing a stale result in the @lru_cache.
+        sv.namespaces.cache_clear()
+
         # Populate self.schema collections from SchemaView so the visitor
         # methods (visit_slot, visit_class, _build_scoped_context, etc.) that
         # read self.schema.{types,slots,classes,enums} see the full merged set.
