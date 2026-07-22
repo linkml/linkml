@@ -94,7 +94,7 @@ dev = [
   "nbconvert",
   "nbformat",
   "coverage >= 6.4.1",
-  "tox >= 4",
+  "tox>=4.56.4",
   "tox-uv",
   "myst-nb >= 1.0.0; python_version >= '3.10'",
   "sphinx-design >= 0.5.0",
