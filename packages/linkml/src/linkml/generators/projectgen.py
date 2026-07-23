@@ -12,6 +12,7 @@ from linkml._version import __version__
 from linkml.cli.logging import log_level_option
 from linkml.generators.excelgen import ExcelGenerator
 from linkml.generators.graphqlgen import GraphqlGenerator
+from linkml.generators.javagen import JavaGenerator
 from linkml.generators.jsonldcontextgen import ContextGenerator
 from linkml.generators.jsonldgen import JSONLDGenerator
 from linkml.generators.jsonschemagen import JsonSchemaGenerator
@@ -49,11 +50,19 @@ GEN_MAP = {
     "shex": (ShExGenerator, "shex/{name}.shex", {}),
     "shacl": (ShaclGenerator, "shacl/{name}.shacl.ttl", {}),
     "sqltable": (SQLTableGenerator, "sqlschema/{name}.sql", {}),
-    # # linkml/generators/javagen.py uses different architecture from most of the other generators
-    # # also linkml/generators/excelgen.py, which has a different mechanism for determining the output path
-    # 'java': (JavaGenerator, 'java/{name}.java', {'directory': '{parent}'}),
+    # JavaGenerator writes one file per class into a `directory` (passed to
+    # serialize(), not the constructor) and returns None; see
+    # SELF_ROUTING_GENERATORS / SERIALIZE_ONLY_ARGS below.
+    "java": (JavaGenerator, "java/{name}.java", {"directory": "{parent}"}),
     "excel": (ExcelGenerator, "excel/{name}.xlsx", {"output": "{parent}/{name}.xlsx"}),
 }
+
+# Generators whose serialize() writes its own output files and returns None,
+# so ProjectGenerator must not route a returned string into a file.
+SELF_ROUTING_GENERATORS = {"excel", "java"}
+
+# Argument keys consumed by serialize() only, not by the generator constructor.
+SERIALIZE_ONLY_ARGS = {"directory"}
 
 
 @lru_cache
@@ -128,7 +137,11 @@ class ProjectGenerator:
                 if "output" in all_gen_args:
                     all_gen_args["output"] = all_gen_args["output"].format(name=name, parent=parent_dir)
 
-                gen = gen_cls(local_path, **all_gen_args)
+                # Some generators (e.g. JavaGenerator) accept `directory`
+                # only in serialize(), not in their constructor; so keep
+                # serialize-only keys out of the constructor call.
+                constructor_args = {k: v for k, v in all_gen_args.items() if k not in SERIALIZE_ONLY_ARGS}
+                gen = gen_cls(local_path, **constructor_args)
 
                 serialize_args = {"mergeimports": config.mergeimports}
                 for k, v in all_gen_args.items():
@@ -137,18 +150,17 @@ class ProjectGenerator:
                         v = v.format(name=name, parent=parent_dir)
                     serialize_args[k] = v
                 logger.info(f" {gen_name} ARGS: {serialize_args}")
-                gen_dump = gen.serialize(**serialize_args)
 
-                if gen_name != "excel":
+                if gen_name in SELF_ROUTING_GENERATORS:
+                    # Generator writes its own file(s) (excel workbook; one java
+                    # file per class into `directory`) and returns None.
+                    gen.serialize(**serialize_args)
+                else:
+                    gen_dump = gen.serialize(**serialize_args)
                     if gen_path_full.suffix != "":
                         logger.info(f"  WRITING TO: {gen_path_full}")
                         with open(gen_path_full, "w", encoding="UTF-8") as stream:
                             stream.write(gen_dump)
-                else:
-                    # special handling for excel generator
-                    # we do not need to route the output
-                    # into a file like the other generators
-                    gen.serialize(**serialize_args)
 
 
 @click.command(name="project")
