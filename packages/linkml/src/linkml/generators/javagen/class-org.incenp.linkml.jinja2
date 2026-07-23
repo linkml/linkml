@@ -77,7 +77,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 
 {#- If the class is configured to allow extra slots, we need an extra
     field to store them. #}
-{%- if cls.source_class.extra_slots.allowed %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
     @ExtensionHolder
     private Map<String, Object> extraSlots;
 {% endif -%}
@@ -250,7 +250,7 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   endif %}
 {%- endfor %}
 
-{%- if cls.source_class.extra_slots.allowed %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
     public void setExtraSlots(Map<String,Object> extraSlots) {
         this.extraSlots = extraSlots;
     }
@@ -315,9 +315,12 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
 {%-   if f.range in ["int", "float", "double", "boolean"] %}
         if ( this${{ f.name }} != other${{ f.name }} ) return false;
 {%-   else %}
-        if ( this${{ f.name }} == null ? other${{ f.name }} != null : !this${{ f.name }}.equals(other${{ f.name }})) return false;
+        if ( this${{ f.name }} == null ? other${{ f.name }} != null : !this${{ f.name }}.equals(other${{ f.name }}) ) return false;
  {%-  endif %}
 {%- endfor %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
+        if ( this.extraSlots == null ? other.extraSlots != null : !this.extraSlots.equals(other.extraSlots) ) return false;
+{%- endif %}
         return true;
     }
 
@@ -344,6 +347,9 @@ public{%if cls.abstract %} abstract{% endif %} class {{ cls.name }}{% if cls.is_
         result = result * PRIME + (${{ f.name }} == null ? 43 : ${{ f.name }}.hashCode());
 {%-   endif %}
 {%- endfor %}
+{%- if gen.needs_extra_slots(cls.source_class) %}
+        result = result * PRIME + (this.extraSlots == null ? 43 : this.extraSlots.hashCode());
+{%- endif %}
         return result;
     }
 }
