@@ -99,7 +99,7 @@ jobs:
         shell: bash
       - name: Upload linkml coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7.0.0
         with:
           name: codecov-linkml-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -108,7 +108,7 @@ jobs:
           fail_ci_if_error: true
       - name: Upload runtime coverage report
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7.0.0
         with:
           name: codecov-runtime-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -154,7 +154,7 @@ jobs:
           uv run coverage report -m
       - name: Upload linkml slow test coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7.0.0
         with:
           name: codecov-linkml-slow-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -201,7 +201,7 @@ jobs:
           uv run pytest tests/linkml/test_notebooks/ --with-network -m "not kroki" --cov --cov-report xml:coverage-notebooks.xml --cov-report term-missing
       - name: Upload notebook coverage
         if: github.repository == 'linkml/linkml' && github.actor != 'dependabot[bot]'
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7.0.0
         with:
           name: codecov-notebooks-${{ matrix.os }}-${{ matrix.python-version }}
           token: ${{ secrets.CODECOV_TOKEN }}
