@@ -35,6 +35,10 @@
          "@type": "@id",
          "@id": "prov:actedOnBehalfOf"
       },
+      "activities": {
+         "@type": "@id",
+         "@id": "activities"
+      },
       "activity_set": {
          "@type": "@id",
          "@id": "core:activity_set"
@@ -51,9 +55,15 @@
          "@type": "@id",
          "@id": "core:agent_set"
       },
+      "aliases": {
+         "@id": "skos:altLabel"
+      },
       "altitude": {
          "@type": "xsd:decimal",
          "@id": "altitude"
+      },
+      "attribute1": {
+         "@id": "attribute1"
       },
       "attribute2": {
          "@type": "@id",
@@ -66,25 +76,18 @@
          "@type": "xsd:integer",
          "@id": "attribute4"
       },
-      "attribute1": {
-         "@id": "attribute1"
+      "attribute5": {
+         "@id": "attribute5"
       },
-      "city": {
-         "@id": "city"
-      },
-      "slot_with_space_1": {
-         "@id": "slot_with_space_1"
+      "attribute6": {
+         "@id": "attribute6"
       },
       "ceo": {
          "@type": "@id",
          "@id": "schema:ceo"
       },
-      "cordialness": {
-         "@id": "cordialness"
-      },
-      "activities": {
-         "@type": "@id",
-         "@id": "activities"
+      "city": {
+         "@id": "city"
       },
       "code_systems": {
          "@type": "@id",
@@ -94,9 +97,8 @@
          "@type": "@id",
          "@id": "companies"
       },
-      "persons": {
-         "@type": "@id",
-         "@id": "persons"
+      "cordialness": {
+         "@id": "cordialness"
       },
       "description": {
          "@id": "core:description"
@@ -112,15 +114,6 @@
       "ended_at_time": {
          "@type": "xsd:date",
          "@id": "prov:endedAtTime"
-      },
-      "attribute5": {
-         "@id": "attribute5"
-      },
-      "attribute6": {
-         "@id": "attribute6"
-      },
-      "test_attribute": {
-         "@id": "test_attribute"
       },
       "has_birth_event": {
          "@type": "@id",
@@ -142,9 +135,6 @@
          "@type": "@id",
          "@id": "has_medical_history"
       },
-      "aliases": {
-         "@id": "skos:altLabel"
-      },
       "id": "@id",
       "in_code_system": {
          "@type": "@id",
@@ -157,6 +147,14 @@
       "is_current": {
          "@type": "xsd:boolean",
          "@id": "is_current"
+      },
+      "is_living": {
+         "@context": {
+            "text": "skos:notation",
+            "description": "skos:prefLabel",
+            "meaning": "@id"
+         },
+         "@id": "is_living"
       },
       "life_status": {
          "@context": {
@@ -188,13 +186,9 @@
       "name": {
          "@id": "core:name"
       },
-      "is_living": {
-         "@context": {
-            "text": "skos:notation",
-            "description": "skos:prefLabel",
-            "meaning": "@id"
-         },
-         "@id": "is_living"
+      "persons": {
+         "@type": "@id",
+         "@id": "persons"
       },
       "procedure": {
          "@type": "@id",
@@ -202,6 +196,13 @@
       },
       "related_to": {
          "@id": "related_to"
+      },
+      "slot_with_space_1": {
+         "@id": "slot_with_space_1"
+      },
+      "slot_with_space_2": {
+         "@type": "@id",
+         "@id": "slot_with_space_2"
       },
       "species_name": {
          "@id": "species_name"
@@ -217,9 +218,8 @@
       "street": {
          "@id": "street"
       },
-      "slot_with_space_2": {
-         "@type": "@id",
-         "@id": "slot_with_space_2"
+      "test_attribute": {
+         "@id": "test_attribute"
       },
       "tree_slot_A": {
          "@id": "A"
