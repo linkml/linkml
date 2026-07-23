@@ -21,6 +21,22 @@
     {
       "prefix_prefix": "bar",
       "prefix_reference": "http://samples.r.us/bar_"
+    },
+    {
+      "prefix_prefix": "slotpfx",
+      "prefix_reference": "http://samples.r.us/slot/"
+    },
+    {
+      "prefix_prefix": "xsd",
+      "prefix_reference": "http://www.w3.org/2001/XMLSchema#"
+    },
+    {
+      "prefix_prefix": "shex",
+      "prefix_reference": "http://www.w3.org/ns/shex#"
+    },
+    {
+      "prefix_prefix": "schema",
+      "prefix_reference": "http://schema.org/"
     }
   ],
   "emit_prefixes": [
@@ -501,7 +517,10 @@
       },
       "foo": "http://samples.r.us/foo#",
       "linkml": "https://w3id.org/linkml/",
-      "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/"
+      "schema": "http://schema.org/",
+      "shex": "http://www.w3.org/ns/shex#",
+      "simple_uri_test": "https://raw.githubusercontent.com/linkml/linkml/main/tests/test_scripts/input/simple_uri_test/",
+      "slotpfx": "http://samples.r.us/slot/"
     },
     "https://w3id.org/linkml/extensions.context.jsonld",
     "simple_slots.context.jsonld",
