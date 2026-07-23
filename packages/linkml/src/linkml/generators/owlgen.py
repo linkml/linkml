@@ -1528,7 +1528,7 @@ class OwlSchemaGenerator(Generator):
             if self.type_objects:
                 return self._type_uri(typ.name)
             else:
-                return self.namespaces.uri_for(typ.uri)
+                return URIRef(self.schemaview.get_uri(typ, expand=True))
         elif slot.range in self.schema.enums:
             # TODO: enums fill this in
             return self._enum_uri(EnumDefinitionName(slot.range))
