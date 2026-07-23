@@ -13,8 +13,8 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 #RUN=pipenv run
 RUN=uv run
 
-# Enable parallelism with e.g. `make test PYTEST_FLAGS="-n auto"`
-PYTEST_FLAGS ?=
+# Enable parallelism: `make test PYTEST_FLAGS="-n auto"`
+PYTEST_FLAGS ?= --ignore=tests/linkml/test_notebooks
 
 lint-fix:
 	$(RUN) tox -e format
@@ -26,7 +26,6 @@ format: lint-fix
 
 test-linkml:
 	$(RUN) pytest tests/linkml/ \
-		--ignore=tests/linkml/test_notebooks \
 		--with-network \
 		-m "not kroki and not slow" \
 		$(PYTEST_FLAGS)
