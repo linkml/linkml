@@ -21,26 +21,32 @@ lint-fix:
 
 format: lint-fix
 
-# Fast tests — mirrors CI `test` job (linkml + runtime packages).
-test:
+# Fast tests (excludes slow, kroki).
+.PHONY: test test-linkml test-linkml-runtime test-slow test-all
+
+test-linkml:
 	$(RUN) pytest tests/linkml/ \
 		--ignore=tests/linkml/test_notebooks \
 		--with-network \
-		-m "not kroki" \
-		$(PYTEST_FLAGS)
-	$(RUN) pytest tests/linkml_runtime/ \
-		--with-network \
-		-m "not kroki" \
+		-m "not kroki and not slow" \
 		$(PYTEST_FLAGS)
 
-# Slow tests — mirrors CI `test_slow` job.
+test-linkml-runtime:
+	$(RUN) pytest tests/linkml_runtime/ \
+		--with-network \
+		-m "not kroki and not slow" \
+		$(PYTEST_FLAGS)
+
+test: test-linkml test-linkml-runtime
+
+# Slow tests only.
 test-slow:
 	$(RUN) pytest tests/linkml/ \
 		--with-slow --with-biolink \
 		-m "slow and not kroki" \
 		$(PYTEST_FLAGS)
 
-# All tests (fast + slow).
+# Full suite (fast + slow, no duplication).
 test-all: test test-slow
 
 # Metamodel compatibility: download latest metamodel from linkml-model
