@@ -60,6 +60,19 @@ test-slow:
 # Full suite (fast + slow, no duplication).
 test-all: test test-slow
 
+# Determine which packages have changes in the current branch (vs main) and run
+# only their fast tests.
+.PHONY: test-branch
+test-branch:
+	base="$$(git merge-base HEAD main)"; \
+	changes="$$(git diff --name-only "$$base"...HEAD)"; \
+	linkml=; linkml_runtime=; \
+	if echo "$$changes" | grep -qE '^packages/linkml/|^tests/linkml/'; then linkml=1; fi; \
+	if echo "$$changes" | grep -qE '^packages/linkml_runtime/|^tests/linkml_runtime/'; then linkml_runtime=1; fi; \
+	if [ -n "$$linkml" ]; then $(MAKE) test-linkml; fi; \
+	if [ -n "$$linkml_runtime" ]; then $(MAKE) test-linkml-runtime; fi; \
+	if [ -z "$$linkml$$linkml_runtime" ]; then echo "No package changes detected (only infra/docs?). Running full fast suite."; $(MAKE) test; fi
+
 # Metamodel compatibility: download latest metamodel from linkml-model
 LINKML_MODEL_BRANCH ?= main
 LINKML_MODEL_REPO = https://github.com/linkml/linkml-model.git
