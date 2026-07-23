@@ -135,7 +135,7 @@ tests-extra = [
   "openapi-spec-validator >= 0.8.4",
 ]
 docs = [
-  "furo >= 2023.03.27",
+  "furo>=2025.12.19",
   "sphinxcontrib-mermaid >= 0.7.1",
   "sphinx",
   "sphinx-click",
