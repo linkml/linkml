@@ -108,6 +108,11 @@ def load_raw_schema(
             schema.source_file_date = src_date
         schema.source_file_size = schema_metadata.source_file_size
         schema.generation_date = datetime.now().strftime(DATETIME_FORMAT)
+    else:
+        # ``metadata=False`` means no source-file metadata should be emitted. The loader now records
+        # ``source_file`` (the resolved path) whenever the source is a file, so clear it here to
+        # honor the flag and keep output free of machine-specific paths.
+        schema.source_file = None
     # Only set metamodel_version if the schema doesn't already define one.
     # This allows schemas (like the metamodel itself) to specify their own version
     # rather than inheriting from the currently installed runtime.

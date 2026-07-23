@@ -11,6 +11,8 @@ from linkml_runtime.loaders.loader_root import Loader
 from linkml_runtime.utils.yamlutils import DupCheckYamlLoader, YAMLRoot
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from pydantic import BaseModel
 
 
@@ -20,7 +22,7 @@ class YAMLLoader(Loader):
     """
 
     def load_as_dict(
-        self, source: str | dict | TextIO, *, base_dir: str | None = None, metadata: FileInfo | None = None
+        self, source: str | dict | TextIO | Path, *, base_dir: str | None = None, metadata: FileInfo | None = None
     ) -> dict | list[dict]:
         if metadata is None:
             metadata = FileInfo()
@@ -38,15 +40,26 @@ class YAMLLoader(Loader):
 
     def load_any(
         self,
-        source: str | dict | TextIO,
+        source: str | dict | TextIO | Path,
         target_class: type[YAMLRoot | BaseModel],
         *,
         base_dir: str | None = None,
         metadata: FileInfo | None = None,
         **_,
     ) -> YAMLRoot | list[YAMLRoot]:
+        if metadata is None:
+            metadata = FileInfo()
         data_as_dict = self.load_as_dict(source, base_dir=base_dir, metadata=metadata)
-        return self._construct_target_class(data_as_dict, target_class)
+        result = self._construct_target_class(data_as_dict, target_class)
+        # When the source was a file (or URL), ``hbread`` resolves and records it on the metadata.
+        # Propagate that to ``source_file`` (e.g. on a SchemaDefinition) so relative imports can be
+        # resolved against it. Inline string sources leave ``source_file`` unset, so this naturally
+        # distinguishes a path from schema text without inspecting the source itself.
+        if metadata.source_file:
+            for target in result if isinstance(result, list) else [result]:
+                if hasattr(target, "source_file") and not target.source_file:
+                    target.source_file = str(metadata.source_file)
+        return result
 
     def loads_any(
         self, source: str, target_class: type[BaseModel | YAMLRoot], *, metadata: FileInfo | None = None, **_
