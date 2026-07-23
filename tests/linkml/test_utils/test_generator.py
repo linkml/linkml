@@ -112,6 +112,11 @@ class GeneratorTest(Generator):
         self.visited.append(f"subset: {subset.name}")
 
 
+@dataclass
+class SchemaViewGeneratorTest(GeneratorTest):
+    uses_schemaloader = False
+
+
 # visit_all_class_slots = True, visits_are_sorted = False, sort_class_slots = False
 expected1 = [
     "init",
@@ -423,6 +428,25 @@ prefixes:
 
     with pytest.raises(ValueError):
         GeneratorTest(model + "\n\ndefault_prefix: CCCC")
+
+
+def test_schema_view_prefix_namespaces(tmp_path):
+    """SchemaView prefix objects are unwrapped when namespaces are initialized."""
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        """id: https://example.org/test
+name: test
+prefixes:
+  ex: https://example.org/test/
+default_prefix: ex
+classes:
+  Foo:
+"""
+    )
+
+    generator = SchemaViewGeneratorTest(schema_path)
+
+    assert str(generator.namespaces["ex"]) == "https://example.org/test/"
 
 
 def test_duplicate_names():
