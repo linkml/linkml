@@ -828,6 +828,28 @@ class JsonSchemaGenerator(Generator, LifecycleMixin):
                         else:
                             typ = ["object", "null"]
                         prop = JsonSchema({"type": typ, "additionalProperties": additionalProps})
+                        # In the inlined-dict form the mapping key *is* the value of the
+                        # range's identifier/key slot, so constraints declared on that
+                        # slot constrain the keys. Render them onto ``propertyNames``
+                        # (the JSON Schema key-constraint keyword, draft-06+) rather than
+                        # dropping them. JSON object keys are always strings (JSON Schema
+                        # Core 2019-09, 9.3.2.5), so only the string-applicable subset of
+                        # the slot's constraints is emitted: ``pattern``, ``enum``
+                        # (``equals_string_in``) and a string ``const`` (``equals_string``).
+                        # Numeric constraints (``minimum``/``maximum``, numeric ``const``
+                        # from ``equals_number``) and ``allOf`` are intentionally excluded
+                        # -- they cannot match a string key (a numeric ``const`` would
+                        # reject every key). Like value patterns, ``structured_pattern`` is
+                        # honoured only when ``materialize_patterns`` is enabled. Backward
+                        # compatible: emitted only when a key constraint applies.
+                        slot_constraints = self.get_value_constraints_for_slot(range_id_slot)
+                        key_constraints = JsonSchema(
+                            {k: slot_constraints[k] for k in ("pattern", "enum") if k in slot_constraints}
+                        )
+                        if isinstance(slot_constraints.get("const"), str):
+                            key_constraints["const"] = slot_constraints["const"]
+                        if key_constraints:
+                            prop["propertyNames"] = key_constraints
                         self.top_level_schema.add_lax_def(reference, self.aliased_slot_name(range_id_slot))
                     else:
                         prop = JsonSchema.array_of(JsonSchema.ref_for(reference), include_null, required=slot.required)
