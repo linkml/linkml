@@ -162,11 +162,19 @@ class AnyOfSimpleType(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfSimpleType"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfSimpleType
 
-    attribute1: Optional[str] = None
+    attribute1: Optional[Union[str, int]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute1 is not None and not isinstance(self.attribute1, str):
-            self.attribute1 = str(self.attribute1)
+        if self.attribute1 is not None and not isinstance(self.attribute1, (str, int)):
+            value = self.attribute1
+            for _coerce in (lambda: str(value), lambda: int(value)):
+                try:
+                    self.attribute1 = _coerce()
+                    break
+                except Exception:
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[str, int] could be constructed from {value!r} for slot attribute1")
 
         super().__post_init__(**kwargs)
 
@@ -180,11 +188,19 @@ class AnyOfClasses(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfClasses"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfClasses
 
-    attribute2: Optional[str] = None
+    attribute2: Optional[Union[str, PersonId, OrganizationId]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute2 is not None and not isinstance(self.attribute2, str):
-            self.attribute2 = str(self.attribute2)
+        if self.attribute2 is not None and not isinstance(self.attribute2, (PersonId, OrganizationId)):
+            value = self.attribute2
+            for _coerce in (lambda: PersonId(value), lambda: OrganizationId(value)):
+                try:
+                    self.attribute2 = _coerce()
+                    break
+                except Exception:
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[PersonId, OrganizationId] could be constructed from {value!r} for slot attribute2")
 
         super().__post_init__(**kwargs)
 
@@ -198,11 +214,19 @@ class AnyOfEnums(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfEnums"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfEnums
 
-    attribute3: Optional[str] = None
+    attribute3: Optional[Union[str, "DiagnosisType", "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute3 is not None and not isinstance(self.attribute3, str):
-            self.attribute3 = str(self.attribute3)
+        if self.attribute3 is not None and not isinstance(self.attribute3, (DiagnosisType, EmploymentEventType)):
+            value = self.attribute3
+            for _coerce in (lambda: DiagnosisType(value), lambda: EmploymentEventType(value)):
+                try:
+                    self.attribute3 = _coerce()
+                    break
+                except Exception:
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[DiagnosisType, EmploymentEventType] could be constructed from {value!r} for slot attribute3")
 
         super().__post_init__(**kwargs)
 
@@ -216,11 +240,19 @@ class AnyOfMix(YAMLRoot):
     class_name: ClassVar[str] = "AnyOfMix"
     class_model_uri: ClassVar[URIRef] = KS.AnyOfMix
 
-    attribute4: Optional[str] = None
+    attribute4: Optional[Union[int, str, PersonId, "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
-        if self.attribute4 is not None and not isinstance(self.attribute4, str):
-            self.attribute4 = str(self.attribute4)
+        if self.attribute4 is not None and not isinstance(self.attribute4, (int, PersonId, EmploymentEventType)):
+            value = self.attribute4
+            for _coerce in (lambda: int(value), lambda: PersonId(value), lambda: EmploymentEventType(value)):
+                try:
+                    self.attribute4 = _coerce()
+                    break
+                except Exception:
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[int, PersonId, EmploymentEventType] could be constructed from {value!r} for slot attribute4")
 
         super().__post_init__(**kwargs)
 
@@ -651,14 +683,22 @@ class EmploymentEvent(Event):
     class_model_uri: ClassVar[URIRef] = KS.EmploymentEvent
 
     employed_at: Optional[Union[str, CompanyId]] = None
-    type: Optional[str] = None
+    type: Optional[Union[str, "CordialnessEnum", "EmploymentEventType"]] = None
 
     def __post_init__(self, *_: str, **kwargs: Any):
         if self.employed_at is not None and not isinstance(self.employed_at, CompanyId):
             self.employed_at = CompanyId(self.employed_at)
 
-        if self.type is not None and not isinstance(self.type, str):
-            self.type = str(self.type)
+        if self.type is not None and not isinstance(self.type, (CordialnessEnum, EmploymentEventType)):
+            value = self.type
+            for _coerce in (lambda: CordialnessEnum(value), lambda: EmploymentEventType(value)):
+                try:
+                    self.type = _coerce()
+                    break
+                except Exception:
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[CordialnessEnum, EmploymentEventType] could be constructed from {value!r} for slot type")
 
         super().__post_init__(**kwargs)
 
@@ -1209,16 +1249,16 @@ slots.agent_set = Slot(uri=CORE.agent_set, name="agent set", curie=CORE.curie('a
                    model_uri=KS.agent_set, domain=None, range=Optional[Union[dict[Union[str, AgentId], Union[dict, Agent]], list[Union[dict, Agent]]]])
 
 slots.anyOfSimpleType__attribute1 = Slot(uri=KS.attribute1, name="anyOfSimpleType__attribute1", curie=KS.curie('attribute1'),
-                   model_uri=KS.anyOfSimpleType__attribute1, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfSimpleType__attribute1, domain=None, range=Optional[Union[str, int]])
 
 slots.anyOfClasses__attribute2 = Slot(uri=KS.attribute2, name="anyOfClasses__attribute2", curie=KS.curie('attribute2'),
-                   model_uri=KS.anyOfClasses__attribute2, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfClasses__attribute2, domain=None, range=Optional[Union[str, PersonId, OrganizationId]])
 
 slots.anyOfEnums__attribute3 = Slot(uri=KS.attribute3, name="anyOfEnums__attribute3", curie=KS.curie('attribute3'),
-                   model_uri=KS.anyOfEnums__attribute3, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfEnums__attribute3, domain=None, range=Optional[Union[str, "DiagnosisType", "EmploymentEventType"]])
 
 slots.anyOfMix__attribute4 = Slot(uri=KS.attribute4, name="anyOfMix__attribute4", curie=KS.curie('attribute4'),
-                   model_uri=KS.anyOfMix__attribute4, domain=None, range=Optional[str])
+                   model_uri=KS.anyOfMix__attribute4, domain=None, range=Optional[Union[int, str, PersonId, "EmploymentEventType"]])
 
 slots.equalsString__attribute5 = Slot(uri=KS.attribute5, name="equalsString__attribute5", curie=KS.curie('attribute5'),
                    model_uri=KS.equalsString__attribute5, domain=None, range=Optional[str])
@@ -1280,5 +1320,5 @@ slots.FamilialRelationship_cordialness = Slot(uri=KS.cordialness, name="Familial
                    model_uri=KS.FamilialRelationship_cordialness, domain=FamilialRelationship, range=Optional[Union[str, "CordialnessEnum"]])
 
 slots.EmploymentEvent_type = Slot(uri=KS.type, name="EmploymentEvent_type", curie=KS.curie('type'),
-                   model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[str])
+                   model_uri=KS.EmploymentEvent_type, domain=EmploymentEvent, range=Optional[Union[str, "CordialnessEnum", "EmploymentEventType"]])
 

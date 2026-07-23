@@ -405,3 +405,456 @@ def test_gen_references_cycle_safety_raises_value_error(monkeypatch):
 
     with pytest.raises(ValueError, match="Cyclic wrapper inheritance"):
         generator.gen_references()
+
+
+# ---------------------------------------------------------------------------
+# any_of / exactly_one_of range-union support (issue #1813)
+# ---------------------------------------------------------------------------
+#
+# Prior to this fix, pythongen ignored `any_of` entirely: a slot's Python type
+# annotation was derived solely from `slot.range`, and no `__post_init__`
+# coercion logic existed to decide which candidate class/type a raw value
+# should become. See https://github.com/linkml/linkml/issues/1813,
+# https://github.com/linkml/linkml/issues/1521, and
+# https://github.com/linkml/linkml/issues/1483.
+
+_ANY_OF_SCHEMA = """id: https://example.org/any-of-test
+name: any-of-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  D:
+    attributes:
+      s2:
+        range: string
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: D
+          - range: integer
+"""
+
+
+def test_any_of_union_annotation():
+    """The generated annotation should be a real Union of the any_of branches,
+    not the single generic type slot.range alone would produce."""
+    code = PythonGenerator(_ANY_OF_SCHEMA).serialize()
+    assert "s1: Optional[Union[dict, D, int]]" in code
+
+
+def test_any_of_coercion_picks_matching_candidate():
+    """A raw dict shaped for D becomes a D instance; a raw int stays an int."""
+    py_module = make_python(_ANY_OF_SCHEMA)
+    c = py_module.C(s1={"s2": "hello"})
+    assert isinstance(c.s1, py_module.D)
+    assert c.s1.s2 == "hello"
+
+    c2 = py_module.C(s1=1)
+    assert isinstance(c2.s1, int)
+    assert not isinstance(c2.s1, bool)
+
+
+def test_any_of_first_declared_candidate_wins_on_ambiguity():
+    """When a value could structurally satisfy more than one candidate, the
+    first one declared in any_of wins -- a deterministic, documented tie-break,
+    not an attempt to guess the 'best' match."""
+    schema = """id: https://example.org/any-of-tiebreak
+name: any-of-tiebreak
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  P:
+    attributes:
+      a:
+        range: string
+  Q:
+    attributes:
+      a:
+        range: string
+      b:
+        range: string
+  Top:
+    attributes:
+      thing:
+        range: Any
+        any_of:
+          - range: P
+          - range: Q
+"""
+    py_module = make_python(schema)
+    # {"a": "x"} satisfies both P and Q's (both optional) fields; P is declared first.
+    t = py_module.Top(thing={"a": "x"})
+    assert isinstance(t.thing, py_module.P)
+
+
+def test_any_of_raises_value_error_when_no_candidate_fits():
+    py_module = make_python(_ANY_OF_SCHEMA)
+    with pytest.raises(ValueError, match="None of the candidate types"):
+        py_module.C(s1="abc")
+
+
+def test_any_of_with_any_type_and_default_range():
+    """Reproduces the use_any_type=True, use_default_range=True combination from
+    tests/linkml/test_compliance/test_boolean_slot_compliance.py::test_slot_any_of:
+    any_of must take priority over both the explicit `range: Any` and the
+    schema's default_range, not collapse to either."""
+    schema = """id: https://example.org/any-of-default-range
+name: any-of-default-range
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  D:
+    attributes:
+      s2:
+        range: string
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: D
+          - range: integer
+"""
+    py_module = make_python(schema)
+    c = py_module.C(s1={"s2": "hi"})
+    assert isinstance(c.s1, py_module.D)
+    c2 = py_module.C(s1=1)
+    assert isinstance(c2.s1, int)
+    with pytest.raises(ValueError, match="None of the candidate types"):
+        py_module.C(s1="abc")
+
+
+def test_any_of_boolean_branch_compiles_and_coerces():
+    """Regression test: an any_of branch ranged over `boolean` must both compile
+    (no NameError/missing import for whatever runtime type the branch resolves
+    to) and correctly coerce a bool value. Mirrors the LinkML metamodel's own
+    `ArrayExpression.maximum_number_dimensions` slot shape
+    (`range: Anything, any_of: [integer, boolean]`)."""
+    schema = """id: https://example.org/any-of-boolean
+name: any-of-boolean
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: integer
+          - range: boolean
+"""
+    py_module = make_python(schema)
+    c = py_module.C(s1=True)
+    assert c.s1 is True
+    c2 = py_module.C(s1=5)
+    assert c2.s1 == 5
+
+
+def test_any_of_forward_reference_quotes_annotation():
+    """A branch class declared AFTER the slot's containing class, with no
+    identifier slot, must be quoted in the annotation (forward reference) and
+    still compile without NameError."""
+    schema = """id: https://example.org/any-of-forward-ref
+name: any-of-forward-ref
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  C:
+    attributes:
+      s1:
+        range: Any
+        any_of:
+          - range: D
+          - range: integer
+  D:
+    attributes:
+      s2:
+        range: string
+"""
+    code = PythonGenerator(schema).serialize()
+    assert '"D"' in code
+    py_module = make_python(schema)
+    c = py_module.C(s1={"s2": "hi"})
+    assert isinstance(c.s1, py_module.D)
+
+
+def test_any_of_multivalued_unchanged():
+    """Documents current scope: multivalued any_of slots are intentionally left
+    untouched by this fix (a separate, larger follow-up). This test pins
+    today's output so a future change to multivalued any_of support gets a
+    clear, intentional test failure to update, rather than silently changing
+    behavior."""
+    schema = """id: https://example.org/any-of-multivalued
+name: any-of-multivalued
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  D:
+    attributes:
+      s2:
+        range: string
+  C:
+    attributes:
+      s1:
+        range: Any
+        multivalued: true
+        any_of:
+          - range: D
+          - range: integer
+"""
+    code = PythonGenerator(schema).serialize()
+    class_c = code[code.index("class C(") : code.index("class D(")]
+    assert "__post_init__" not in class_c
+
+
+# --- Nested / recursive any_of -----------------------------------------------
+
+
+def test_any_of_nested_candidate_resolves_bottom_up():
+    """A slot whose any_of candidate class itself has its own any_of slot must
+    resolve correctly: constructing the outer candidate requires its nested
+    field to resolve first, via ordinary Python call-stack + exception
+    propagation -- no explicit recursive algorithm is needed."""
+    schema = """id: https://example.org/any-of-nested
+name: any-of-nested
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  X:
+    attributes:
+      a:
+        range: string
+        required: true
+  Y:
+    attributes:
+      b:
+        range: string
+        required: true
+  Inner:
+    attributes:
+      target:
+        range: Any
+        any_of:
+          - range: X
+          - range: Y
+  Top:
+    attributes:
+      thing:
+        range: Any
+        any_of:
+          - range: Inner
+"""
+    py_module = make_python(schema)
+    t = py_module.Top(thing={"target": {"a": "hi"}})
+    assert isinstance(t.thing, py_module.Inner)
+    assert isinstance(t.thing.target, py_module.X)
+
+
+def test_any_of_deep_disambiguation_by_nested_shape():
+    """Two outer candidate classes that are structurally identical at their own
+    level, distinguishable only by what their respective nested any_of
+    accepts, must still resolve correctly -- because attempting to construct
+    a candidate *is* looking inside its nested fields."""
+    schema = """id: https://example.org/any-of-deep-disambiguation
+name: any-of-deep-disambiguation
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  LeafA:
+    attributes:
+      value_a:
+        range: string
+        required: true
+  LeafB:
+    attributes:
+      value_b:
+        range: string
+        required: true
+  P:
+    attributes:
+      target:
+        range: Any
+        any_of:
+          - range: LeafA
+  Q:
+    attributes:
+      target:
+        range: Any
+        any_of:
+          - range: LeafB
+  Root:
+    attributes:
+      thing:
+        range: Any
+        any_of:
+          - range: P
+          - range: Q
+"""
+    py_module = make_python(schema)
+    r1 = py_module.Root(thing={"target": {"value_a": "x"}})
+    assert isinstance(r1.thing, py_module.P)
+    assert isinstance(r1.thing.target, py_module.LeafA)
+
+    r2 = py_module.Root(thing={"target": {"value_b": "y"}})
+    assert isinstance(r2.thing, py_module.Q)
+    assert isinstance(r2.thing.target, py_module.LeafB)
+
+
+def test_any_of_self_referential_tree():
+    """A modest-depth self-referential (tree-shaped) schema resolves correctly.
+    This does not attempt to test or guard against pathologically deep
+    (hundreds of levels) recursion hitting Python's own RecursionError -- that
+    is a pre-existing characteristic of LinkML's recursive object construction
+    in general, not something introduced by or specific to this fix."""
+    schema = """id: https://example.org/any-of-tree
+name: any-of-tree
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  Leaf:
+    attributes:
+      value:
+        range: string
+        required: true
+  Node:
+    attributes:
+      child:
+        range: Any
+        any_of:
+          - range: Leaf
+          - range: Node
+"""
+    py_module = make_python(schema)
+    depth = 25
+    data = {"value": "bottom"}
+    for _ in range(depth):
+        data = {"child": data}
+    root = py_module.Node(**data)
+    measured = 0
+    node = root
+    while isinstance(node, py_module.Node):
+        node = node.child
+        measured += 1
+    assert measured == depth
+    assert node.value == "bottom"
+
+
+# --- exactly_one_of type-union support ---------------------------------------
+
+_EXACTLY_ONE_OF_SCHEMA = """id: https://example.org/exactly-one-of-test
+name: exactly-one-of-test
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+default_range: string
+
+classes:
+  Any:
+    class_uri: linkml:Any
+  X:
+    attributes:
+      a:
+        range: string
+        required: true
+  Y:
+    attributes:
+      b:
+        range: string
+        required: true
+  Z:
+    attributes:
+      a:
+        range: string
+        required: true
+  Top:
+    attributes:
+      thing:
+        range: Any
+        exactly_one_of:
+          - range: X
+          - range: Y
+          - range: Z
+"""
+
+
+def test_exactly_one_of_union_annotation():
+    code = PythonGenerator(_EXACTLY_ONE_OF_SCHEMA).serialize()
+    assert "thing: Optional[Union[dict, X, Y, Z]]" in code
+
+
+def test_exactly_one_of_single_match_succeeds():
+    py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
+    t = py_module.Top(thing={"b": "hi"})
+    assert isinstance(t.thing, py_module.Y)
+
+
+def test_exactly_one_of_zero_matches_raises():
+    py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
+    with pytest.raises(ValueError, match="None of the candidate types"):
+        py_module.Top(thing={"c": "x"})
+
+
+def test_exactly_one_of_ambiguous_matches_raises_distinct_message():
+    """X and Z both have a required field named 'a', so a value with only
+    that field matches both -- a genuine exactly_one_of violation, which must
+    be reported distinctly from the "no candidate fits" case."""
+    py_module = make_python(_EXACTLY_ONE_OF_SCHEMA)
+    with pytest.raises(ValueError, match="ambiguously matches"):
+        py_module.Top(thing={"a": "hi"})

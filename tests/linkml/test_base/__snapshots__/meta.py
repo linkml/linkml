@@ -3001,7 +3001,7 @@ class ArrayExpression(YAMLRoot):
 
     exact_number_dimensions: Optional[int] = None
     minimum_number_dimensions: Optional[int] = None
-    maximum_number_dimensions: Optional[Union[dict, Anything]] = None
+    maximum_number_dimensions: Optional[Union[int, bool, Bool]] = None
     dimensions: Optional[Union[Union[dict, "DimensionExpression"], list[Union[dict, "DimensionExpression"]]]] = empty_list()
     extensions: Optional[Union[dict[Union[str, ExtensionTag], Union[dict, Extension]], list[Union[dict, Extension]]]] = empty_dict()
     annotations: Optional[Union[dict[Union[str, AnnotationTag], Union[dict, Annotation]], list[Union[dict, Annotation]]]] = empty_dict()
@@ -3045,6 +3045,17 @@ class ArrayExpression(YAMLRoot):
 
         if self.minimum_number_dimensions is not None and not isinstance(self.minimum_number_dimensions, int):
             self.minimum_number_dimensions = int(self.minimum_number_dimensions)
+
+        if self.maximum_number_dimensions is not None and not isinstance(self.maximum_number_dimensions, (int, Bool)):
+            value = self.maximum_number_dimensions
+            for _coerce in (lambda: int(value), lambda: Bool(value)):
+                try:
+                    self.maximum_number_dimensions = _coerce()
+                    break
+                except Exception:
+                    continue
+            else:
+                raise ValueError(f"None of the candidate types Union[int, Bool] could be constructed from {value!r} for slot maximum_number_dimensions")
 
         if not isinstance(self.dimensions, list):
             self.dimensions = [self.dimensions] if self.dimensions is not None else []
@@ -4934,7 +4945,7 @@ slots.minimum_number_dimensions = Slot(uri=LINKML.minimum_number_dimensions, nam
                    model_uri=LINKML.minimum_number_dimensions, domain=ArrayExpression, range=Optional[int])
 
 slots.maximum_number_dimensions = Slot(uri=LINKML.maximum_number_dimensions, name="maximum_number_dimensions", curie=LINKML.curie('maximum_number_dimensions'),
-                   model_uri=LINKML.maximum_number_dimensions, domain=ArrayExpression, range=Optional[Union[dict, Anything]])
+                   model_uri=LINKML.maximum_number_dimensions, domain=ArrayExpression, range=Optional[Union[int, bool, Bool]])
 
 slots.exact_number_dimensions = Slot(uri=LINKML.exact_number_dimensions, name="exact_number_dimensions", curie=LINKML.curie('exact_number_dimensions'),
                    model_uri=LINKML.exact_number_dimensions, domain=ArrayExpression, range=Optional[int])
