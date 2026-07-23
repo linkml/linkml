@@ -73,7 +73,7 @@ imports:
   - linkml:mappings
   - linkml:extensions
   - linkml:annotations
-#  - linkml:validation
+  #  - linkml:validation
   - linkml:units
 
 subsets:
@@ -129,7 +129,6 @@ subsets:
 # Slots                            #
 # ==================================
 slots:
-
   # -----------------------------------
   # Common metadata shared by all elements
   # -----------------------------------
@@ -440,8 +439,8 @@ slots:
     examples:
       - value: "bibo:draft"
     see_also:
-      - https://www.hl7.org/fhir/valueset-publication-status.html  ## Draft, Active, Retired, Unknown
-      - https://www.hl7.org/fhir/versions.html#std-process  ## Draft, Trial Use, Normative, Informative, Deprecated
+      - https://www.hl7.org/fhir/valueset-publication-status.html ## Draft, Active, Retired, Unknown
+      - https://www.hl7.org/fhir/versions.html#std-process ## Draft, Trial Use, Normative, Informative, Deprecated
     in_subset:
       - BasicSubset
 
@@ -650,6 +649,25 @@ slots:
     exact_mappings:
       - cdisc:PermissibleValue
 
+  is_open:
+    domain: enum_expression
+    range: boolean
+    description: >-
+      Whether the enumeration is open, meaning that values outside of the set of
+      permissible values are allowed. If true, the enumeration is open and data values
+      that are not in the set of permissible values are permitted (though they SHOULD be
+      drawn from the permissible values). If false (the default), the enumeration is
+      closed and data values MUST be drawn from the set of permissible values.
+    comments:
+      - An open enumeration is analogous to the OSCAL/Metaschema `allow-other="yes"` construct.
+      - When an enum is open, the permissible values are advisory - they document the recommended
+        or expected values but do not constrain the range. In JSON Schema this maps to a plain string.
+      - When an enum is closed (the default) and has no permissible values (and no other means of
+        computing them), this is a schema error.
+    in_subset:
+      - SpecificationSubset
+      - BasicSubset
+
   enum_uri:
     aliases:
       - public ID
@@ -830,8 +848,8 @@ slots:
     multivalued: true
     range: ncname
     description: >-
-        a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in
-        this list are added to the prefix sections of the target models.
+      a list of Curie prefixes that are used in the representation of instances of the model.  All prefixes in
+      this list are added to the prefix sections of the target models.
 
   version:
     domain: schema_definition
@@ -1003,7 +1021,6 @@ slots:
     description: date and time that the schema was loaded/generated
     in_subset:
       - BasicSubset
-
 
   # -----------------------------------
   # Class definition slots
@@ -1535,7 +1552,8 @@ slots:
       - minimum_cardinality cannot be greater than maximum_cardinality
 
   maximum_number_dimensions:
-    description: maximum number of dimensions in the array, or False if explicitly no maximum.
+    description:
+      maximum number of dimensions in the array, or False if explicitly no maximum.
       If this is unset, and an explicit list of dimensions are passed using dimensions, then this is interpreted
       as a closed list and the maximum_number_dimensions is the length of the dimensions list, unless this
       value is set to False
@@ -1641,7 +1659,7 @@ slots:
 
   equals_number:
     is_a: list_value_specification_constant
-    range: integer  ## todo, make the range a union
+    range: integer ## todo, make the range a union
     inherited: true
     description: the slot must have range of a number and the value of the slot must equal the specified value
     status: unstable
@@ -2563,12 +2581,10 @@ slots:
       - in the context of RDF, this should be used for slots that can be modeled using the RDF reification vocabulary
       - in the context of property graphs, this should be used on edge classes to indicate which slots represent the input and output nodes
 
-
 # ==================================
 # Classes                          #
 # ==================================
 classes:
-
   Anything:
     class_uri: linkml:Any
 
@@ -2682,9 +2698,9 @@ classes:
       name:
         range: ncname
         description: a unique name for the schema that is both human-readable and consists of only characters from the NCName set
-#    slot_usage:
-#      description:
-#        slot_uri: dcterms:description
+    #    slot_usage:
+    #      description:
+    #        slot_uri: dcterms:description
     in_subset:
       - SpecificationSubset
       - MinimalSubset
@@ -2782,6 +2798,7 @@ classes:
       - code_set_version
       - pv_formula
       - permissible_values
+      - is_open
       - include
       - minus
       - inherits
@@ -3331,7 +3348,6 @@ classes:
     slot_usage:
       range_expression:
         range: anonymous_slot_expression
-
 
 # ==================================
 # Enumerations                     #

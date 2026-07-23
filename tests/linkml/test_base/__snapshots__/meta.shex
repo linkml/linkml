@@ -104,6 +104,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
              <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
              <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
+          <is_open> @<Boolean> ? ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
           <inherits> @<EnumDefinition> * ;
@@ -635,6 +636,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
              <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
              <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
+          <is_open> @<Boolean> ? ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
           <inherits> @<EnumDefinition> * ;
@@ -656,6 +658,7 @@ PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
              <https://w3id.org/linkml/PvFormulaOptions#URI> <https://w3id.org/linkml/PvFormulaOptions#FHIR_CODING>
              <https://w3id.org/linkml/PvFormulaOptions#LABEL> ] ? ;
           <permissible_values> @<PermissibleValue> * ;
+          <is_open> @<Boolean> ? ;
           <include> @<AnonymousEnumExpression> * ;
           <minus> @<AnonymousEnumExpression> * ;
           <inherits> @<EnumDefinition> * ;
