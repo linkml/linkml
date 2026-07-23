@@ -13,8 +13,16 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 #RUN=pipenv run
 RUN=uv run
 
-# Enable parallelism: `make test PYTEST_FLAGS="-n auto"`
+# Extra pytest flags (e.g. parallelism): `make test PYTEST_FLAGS="-n auto"`
+# Default: skip notebooks (they mutate the shared venv and always fail locally).
 PYTEST_FLAGS ?= --ignore=tests/linkml/test_notebooks
+
+# Wrap with coverage.py: `make test COVERAGE=true`
+ifdef COVERAGE
+RUNNER = $(RUN) coverage run -m pytest
+else
+RUNNER = $(RUN) pytest
+endif
 
 lint-fix:
 	$(RUN) tox -e format
@@ -25,13 +33,13 @@ format: lint-fix
 .PHONY: test test-linkml test-linkml-runtime test-slow test-all
 
 test-linkml:
-	$(RUN) pytest tests/linkml/ \
+	$(RUNNER) tests/linkml/ \
 		--with-network \
 		-m "not kroki and not slow" \
 		$(PYTEST_FLAGS)
 
 test-linkml-runtime:
-	$(RUN) pytest tests/linkml_runtime/ \
+	$(RUNNER) tests/linkml_runtime/ \
 		--with-network \
 		-m "not kroki and not slow" \
 		$(PYTEST_FLAGS)
@@ -40,7 +48,7 @@ test: test-linkml test-linkml-runtime
 
 # Slow tests only.
 test-slow:
-	$(RUN) pytest tests/linkml/ \
+	$(RUNNER) tests/linkml/ \
 		--with-slow --with-biolink \
 		-m "slow and not kroki" \
 		$(PYTEST_FLAGS)
