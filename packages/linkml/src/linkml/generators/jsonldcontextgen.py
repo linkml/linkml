@@ -118,6 +118,10 @@ class ContextGenerator(Generator):
                 external_slots.update(schema_def.slots.keys())
         return external_classes, external_slots
 
+    @property
+    def _use_uris(self) -> bool:
+        return self.useuris if self.useuris is not None else True
+
     def visit_schema(self, base: str | Namespace | None = None, output: str | None = None, **_):
         # Add any explicitly declared prefixes
         for prefix in self.schema.prefixes.values():
@@ -249,7 +253,7 @@ class ContextGenerator(Generator):
         # ``class_uri`` is unset *or* ``useuris`` is False (``--metauris``) the
         # effective @id becomes the *model* URI (CamelCased class name under the
         # class's ``from_schema`` default prefix) instead of the declared URI.
-        use_uris = self.useuris if self.useuris is not None else True
+        use_uris = self._use_uris
         if cls.class_uri is not None and cls.class_uri not in cls.exact_mappings:
             cls.exact_mappings.insert(0, cls.class_uri)
         if cls.class_uri is None or not use_uris:
@@ -534,58 +538,28 @@ class ContextGenerator(Generator):
         if uri_prefix and not is_default_namespace:
             self.add_prefix(uri_prefix)
 
-    def _synthesize_slot_uri(self, slot: SlotDefinition) -> str:
-        """Synthesise the *model* slot_uri the way SchemaLoader does.
-
-        SchemaLoader derives the model URI from the slot's *aliased* name under
-        the default prefix of the slot's **own** ``from_schema`` (e.g. a slot
-        ``extension_tag`` with ``alias: tag`` becomes ``<default_prefix>:tag``).
-        This must be independent of any declared ``slot_uri``: with ``--metauris``
-        a slot whose ``slot_uri`` is ``dcat:downloadURL`` must still yield the
-        model URI ``<from_schema_prefix>:download_url``, not ``dcat:download_url``.
-
-        :meth:`SchemaView.get_uri` computes exactly the right prefix from the
-        slot's ``from_schema`` but honours an existing ``slot_uri`` (wrong prefix)
-        and uses the raw slot name (wrong local part).  So the declared
-        ``slot_uri`` is temporarily cleared to force get_uri onto the model-URI
-        path, and the raw local part is then replaced with the aliased name.
-
-        :param slot: the (induced) slot definition
-        :return: the synthesised model slot_uri as a CURIE or URI
-        """
-        saved_uri = slot.slot_uri
-        slot.slot_uri = None
+    def _model_uri(self, element: Any, uri_attr: str, *, local_name: str | None = None) -> str:
+        saved = getattr(element, uri_attr)
+        setattr(element, uri_attr, None)
         try:
-            base_uri = str(self.schemaview.get_uri(slot, expand=False))
+            base_uri = str(self.schemaview.get_uri(element, expand=False))
         finally:
-            slot.slot_uri = saved_uri
+            setattr(element, uri_attr, saved)
+        if local_name is not None:
+            match = re.search(r"[:/#][^:/#]*$", base_uri)
+            if match:
+                return base_uri[: match.start() + 1] + local_name
+            return local_name
+        return base_uri
+
+    def _synthesize_slot_uri(self, slot: SlotDefinition) -> str:
+        """Synthesise the *model* slot_uri the way SchemaLoader does."""
         aliased = underscore(self.aliased_slot_name(slot))
-        # Split off the raw local part, keeping the prefix/namespace delimiter.
-        match = re.search(r"[:/#][^:/#]*$", base_uri)
-        if match:
-            return base_uri[: match.start() + 1] + aliased
-        return aliased
+        return self._model_uri(slot, "slot_uri", local_name=aliased)
 
     def _synthesize_class_uri(self, cls: ClassDefinition) -> str:
-        """Synthesise the *model* class_uri the way SchemaLoader does.
-
-        SchemaLoader derives the model URI from ``camelcase(cls.name)`` under the
-        default prefix of the class's own ``from_schema`` (see ``schemaloader.py``).
-        This must be independent of any declared ``class_uri`` so that
-        ``--metauris`` yields the model URI even when a ``class_uri`` is declared.
-        :meth:`SchemaView.get_uri` computes the right prefix from ``from_schema``
-        but honours an existing ``class_uri``; it is therefore temporarily cleared
-        to force the model-URI path.
-
-        :param cls: the class definition
-        :return: the synthesised model class_uri as a CURIE or URI
-        """
-        saved_uri = cls.class_uri
-        cls.class_uri = None
-        try:
-            return str(self.schemaview.get_uri(cls, expand=False))
-        finally:
-            cls.class_uri = saved_uri
+        """Synthesise the *model* class_uri the way SchemaLoader does."""
+        return self._model_uri(cls, "class_uri")
 
     def _apply_slot_uri_policy(self, slot: SlotDefinition) -> None:
         """Set ``slot.slot_uri`` following SchemaLoader's ``useuris`` policy.
@@ -603,7 +577,7 @@ class ContextGenerator(Generator):
 
         :param slot: the induced slot definition to mutate in place
         """
-        use_uris = self.useuris if self.useuris is not None else True
+        use_uris = self._use_uris
         if slot.slot_uri is not None and slot.slot_uri not in slot.mappings:
             slot.mappings.insert(0, slot.slot_uri)
         if slot.slot_uri is None or not use_uris:
