@@ -13,13 +13,35 @@ all-examples-%:  examples/%.py examples/%.schema.json  examples/%.shex  examples
 #RUN=pipenv run
 RUN=uv run
 
+# Enable parallelism with e.g. `make test PYTEST_FLAGS="-n auto"`
+PYTEST_FLAGS ?=
+
 lint-fix:
 	$(RUN) tox -e format
 
 format: lint-fix
 
+# Fast tests — mirrors CI `test` job (linkml + runtime packages).
 test:
-	$(RUN) pytest
+	$(RUN) pytest tests/linkml/ \
+		--ignore=tests/linkml/test_notebooks \
+		--with-network \
+		-m "not kroki" \
+		$(PYTEST_FLAGS)
+	$(RUN) pytest tests/linkml_runtime/ \
+		--with-network \
+		-m "not kroki" \
+		$(PYTEST_FLAGS)
+
+# Slow tests — mirrors CI `test_slow` job.
+test-slow:
+	$(RUN) pytest tests/linkml/ \
+		--with-slow --with-biolink \
+		-m "slow and not kroki" \
+		$(PYTEST_FLAGS)
+
+# All tests (fast + slow).
+test-all: test test-slow
 
 # Metamodel compatibility: download latest metamodel from linkml-model
 LINKML_MODEL_BRANCH ?= main
