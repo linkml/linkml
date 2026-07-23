@@ -140,6 +140,8 @@ class JSONLDGenerator(Generator):
 
     def visit_class(self, cls: ClassDefinition) -> bool:
         self._visit(cls)
+        if self.namespaces.uri_for(cls.definition_uri) != self.namespaces.uri_for(cls.class_uri):
+            cls.exact_mappings.append(cls.class_uri)
         if hasattr(cls, "class_uri"):
             delattr(cls, "class_uri")
         # Slot usage is a construction artifact
