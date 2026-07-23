@@ -39,6 +39,7 @@ ignore-words-list = [
   "connexion",
   "EHR",
   "infarction",
+  "intensional",
   "linke",
   "mater",
   "mor",

@@ -29,6 +29,7 @@ from linkml_runtime.linkml_model.meta import (
     ElementName,
     EnumDefinition,
     EnumDefinitionName,
+    PermissibleValue,
     PermissibleValueText,
     SchemaDefinition,
     SchemaDefinitionName,
@@ -310,6 +311,25 @@ class SchemaView:
         if merge_imports:
             self.merge_imports()
         self.uuid = str(uuid.uuid4())
+        self._enum_reachable_from_resolver: Any = None
+        self._enum_matches_resolver: Any = None
+        self._enum_code_set_resolver: Any = None
+
+    def configure_enum_materialization_resolvers(
+        self,
+        reachable_from_resolver: Any = None,
+        matches_resolver: Any = None,
+        code_set_resolver: Any = None,
+    ) -> None:
+        """Configure optional callbacks for dynamic enum materialization.
+
+        Each resolver should return either:
+        - a mapping of permissible value text to ``PermissibleValue`` (or dict)
+        - an iterable of value texts/identifiers
+        """
+        self._enum_reachable_from_resolver = reachable_from_resolver
+        self._enum_matches_resolver = matches_resolver
+        self._enum_code_set_resolver = code_set_resolver
 
     def __key(self) -> tuple[str | URI, str, int]:
         return self.schema.id, self.uuid, self.modifications
@@ -2345,6 +2365,149 @@ class SchemaView:
                 for slot_definition in class_definition.attributes.values():
                     materialize_pattern_into_slot_definition(slot_definition)
 
+    def _coerce_permissible_value_dict(
+        self,
+        permissible_values: dict[PermissibleValueText | str, PermissibleValue | dict[str, Any]] | None,
+    ) -> dict[str, PermissibleValue]:
+        """Normalize raw permissible values into a text-keyed dictionary."""
+        if not permissible_values:
+            return {}
+        normalized: dict[str, PermissibleValue] = {}
+        for key, value in permissible_values.items():
+            if key == "_if_missing":
+                continue
+            if isinstance(value, PermissibleValue):
+                pv = deepcopy(value)
+            elif not isinstance(value, dict):
+                continue
+            else:
+                pv = PermissibleValue(**value)
+            text = str(pv.text if pv.text is not None else key)
+            normalized[text] = pv
+        return normalized
+
+    def _normalize_resolved_permissible_values(self, resolved: Any) -> dict[str, PermissibleValue]:
+        """Normalize resolver outputs into a text-keyed permissible value map."""
+        if resolved is None:
+            return {}
+        if isinstance(resolved, dict):
+            return self._coerce_permissible_value_dict(resolved)
+        normalized: dict[str, PermissibleValue] = {}
+        if isinstance(resolved, Iterable) and not isinstance(resolved, str | bytes):
+            for item in resolved:
+                text = str(item)
+                normalized[text] = PermissibleValue(text=text, meaning=text)
+        return normalized
+
+    def _merge_permissible_value_maps(
+        self,
+        target: dict[str, PermissibleValue],
+        source: dict[str, PermissibleValue],
+    ) -> None:
+        """Merge two permissible-value maps, preferring richer metadata for collisions."""
+        for text, pv in source.items():
+            if text not in target:
+                target[text] = deepcopy(pv)
+                continue
+            existing = target[text]
+            if existing.meaning is None and pv.meaning is not None:
+                target[text] = deepcopy(pv)
+
+    def _resolve_reachable_from_permissible_values(self, _: Any) -> dict[str, PermissibleValue]:
+        """Resolve a reachability query into permissible values.
+
+        The default implementation is a no-op. Toolchains can pre-materialize
+        dynamic enums externally and then call ``materialize_derived_schema``.
+        """
+        if self._enum_reachable_from_resolver is None:
+            return {}
+        return self._normalize_resolved_permissible_values(self._enum_reachable_from_resolver(_))
+
+    def _resolve_matches_permissible_values(self, _: Any) -> dict[str, PermissibleValue]:
+        """Resolve a match query into permissible values.
+
+        The default implementation is a no-op. Toolchains can pre-materialize
+        dynamic enums externally and then call ``materialize_derived_schema``.
+        """
+        if self._enum_matches_resolver is None:
+            return {}
+        return self._normalize_resolved_permissible_values(self._enum_matches_resolver(_))
+
+    def _resolve_code_set_permissible_values(self, _: Any) -> dict[str, PermissibleValue]:
+        """Resolve code_set/pv_formula into permissible values.
+
+        The default implementation is a no-op. Toolchains can pre-materialize
+        dynamic enums externally and then call ``materialize_derived_schema``.
+        """
+        if self._enum_code_set_resolver is None:
+            return {}
+        return self._normalize_resolved_permissible_values(self._enum_code_set_resolver(_))
+
+    def _materialize_enum_permissible_values(
+        self,
+        enum_name: str,
+        enum_index: dict[str, EnumDefinition],
+        cache: dict[str, dict[str, PermissibleValue]],
+        stack: set[str],
+    ) -> dict[str, PermissibleValue]:
+        """Materialize one enum's effective permissible values.
+
+        Implements the PVs algorithm from the metamodel specification for the
+        parts that can be resolved locally (permissible_values, include, minus,
+        inherits, and concepts), and hooks for resolver-backed parts.
+        """
+        if enum_name in cache:
+            return {k: deepcopy(v) for k, v in cache[enum_name].items()}
+        if enum_name in stack:
+            logger.warning("Detected cyclic enum inheritance while materializing '%s'", enum_name)
+            return {}
+        enum = enum_index.get(enum_name)
+        if enum is None:
+            return {}
+        stack.add(enum_name)
+
+        def expression_pvs(expr: Any) -> dict[str, PermissibleValue]:
+            pvs = self._coerce_permissible_value_dict(getattr(expr, "permissible_values", None))
+
+            for inherited_enum in getattr(expr, "inherits", []) or []:
+                inherited_name = str(inherited_enum)
+                inherited_pvs = self._materialize_enum_permissible_values(
+                    inherited_name,
+                    enum_index,
+                    cache,
+                    stack,
+                )
+                self._merge_permissible_value_maps(pvs, inherited_pvs)
+
+            for included_expr in getattr(expr, "include", []) or []:
+                self._merge_permissible_value_maps(pvs, expression_pvs(included_expr))
+
+            for concept in getattr(expr, "concepts", []) or []:
+                concept_text = str(concept)
+                pvs[concept_text] = PermissibleValue(text=concept_text, meaning=concept_text)
+
+            reachable_from = getattr(expr, "reachable_from", None)
+            if reachable_from is not None:
+                self._merge_permissible_value_maps(pvs, self._resolve_reachable_from_permissible_values(reachable_from))
+
+            matches = getattr(expr, "matches", None)
+            if matches is not None:
+                self._merge_permissible_value_maps(pvs, self._resolve_matches_permissible_values(matches))
+
+            if getattr(expr, "code_set", None) is not None:
+                self._merge_permissible_value_maps(pvs, self._resolve_code_set_permissible_values(expr))
+
+            for minus_expr in getattr(expr, "minus", []) or []:
+                for text in expression_pvs(minus_expr):
+                    pvs.pop(text, None)
+
+            return pvs
+
+        materialized = expression_pvs(enum)
+        cache[enum_name] = {k: deepcopy(v) for k, v in materialized.items()}
+        stack.remove(enum_name)
+        return materialized
+
     def materialize_derived_schema(self) -> SchemaDefinition:
         """Materialize a schema view into a schema definition."""
         derived_schema = deepcopy(self.schema)
@@ -2384,4 +2547,13 @@ class SchemaView:
             derived_schema.subsets[subset.name] = subset
         for enum in [deepcopy(e) for e in self.all_enums().values()]:
             derived_schema.enums[enum.name] = enum
+
+        # Materialize dynamic/intensional enum expressions into explicit
+        # permissible_values on the derived schema.
+        enum_index = {str(name): enum for name, enum in derived_schema.enums.items()}
+        cache: dict[str, dict[str, PermissibleValue]] = {}
+        for enum_name, enum in enum_index.items():
+            materialized_pvs = self._materialize_enum_permissible_values(enum_name, enum_index, cache, set())
+            enum.permissible_values = materialized_pvs
+
         return derived_schema

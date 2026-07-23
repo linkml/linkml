@@ -1096,3 +1096,76 @@ def test_add_lax_def_missing_required():
     schema["$defs"]["NormalClass"] = {"type": "object", "properties": {"id": {}}, "required": ["id", "name"]}
     schema.add_lax_def("NormalClass", "id")
     assert schema["$defs"]["NormalClass__identifier_optional"]["required"] == ["name"]
+
+
+@pytest.mark.parametrize(
+    ("is_open", "expect_enum_keyword"),
+    [
+        (False, True),
+        (None, True),
+        (True, False),
+    ],
+)
+def test_open_enum_omits_enum_keyword(is_open, expect_enum_keyword):
+    """An open enum maps to a plain string; a closed enum constrains to permissible values."""
+    schema = SchemaDefinition(
+        id="https://example.com/open_enum",
+        name="open_enum_schema",
+        classes={
+            "Person": ClassDefinition(name="Person", slots=["gender"]),
+        },
+        slots={
+            "gender": SlotDefinition(name="gender", range="GenderEnum"),
+        },
+        enums={
+            "GenderEnum": EnumDefinition(
+                name="GenderEnum",
+                is_open=is_open,
+                permissible_values={
+                    "male": PermissibleValue(text="male"),
+                    "female": PermissibleValue(text="female"),
+                },
+            ),
+        },
+    )
+    json_schema = json.loads(JsonSchemaGenerator(schema=schema).serialize())
+    enum_def = json_schema["$defs"]["GenderEnum"]
+    assert enum_def["type"] == "string"
+    if expect_enum_keyword:
+        assert enum_def["enum"] == ["male", "female"]
+    else:
+        assert "enum" not in enum_def
+
+
+def test_open_enum_validates_out_of_set_value():
+    """Data with a value outside an open enum's permissible values should validate."""
+    schema = SchemaDefinition(
+        id="https://example.com/open_enum_validate",
+        name="open_enum_validate_schema",
+        classes={
+            "Person": ClassDefinition(name="Person", slots=["gender", "species"], tree_root=True),
+        },
+        slots={
+            "gender": SlotDefinition(name="gender", range="GenderEnum"),
+            "species": SlotDefinition(name="species", range="SpeciesEnum"),
+        },
+        enums={
+            "GenderEnum": EnumDefinition(
+                name="GenderEnum",
+                is_open=True,
+                permissible_values={"male": PermissibleValue(text="male")},
+            ),
+            "SpeciesEnum": EnumDefinition(
+                name="SpeciesEnum",
+                permissible_values={"human": PermissibleValue(text="human")},
+            ),
+        },
+    )
+    validation_schema = json.loads(JsonSchemaGenerator(schema=schema).serialize())
+
+    # Value outside the open enum is accepted
+    jsonschema.validate({"gender": "nonbinary", "species": "human"}, validation_schema)
+
+    # Value outside the closed enum is rejected
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({"gender": "male", "species": "alien"}, validation_schema)

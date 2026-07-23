@@ -955,8 +955,9 @@ version = {'"' + self.schema.version + '"' if self.schema.version else None}
                 return ""
 
         if slot.range in self.schema.enums:
-            # Open enum
-            if not self.schema.enums[slot.range].permissible_values:
+            # Open enum: no permissible values, or explicitly declared open
+            enum = self.schema.enums[slot.range]
+            if not enum.permissible_values or enum.is_open:
                 return ""
 
         aliased_slot_name = self.slot_name(slot.name)  # Mangled name by which the slot is known in python
