@@ -3174,3 +3174,69 @@ classes:
     # InteractionAssociation should have narrowed constraint
     # (interacts_with and its descendants only)
     assert 'Literal["interacts_with", "physically_interacts_with"]' in code
+
+
+# --------------------------------------------------
+# extra_slots
+# --------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def extra_slots(input_path) -> ModuleType:
+    schema = input_path("extra_slots.yaml")
+    generated = PydanticGenerator(schema).serialize()
+    mod = compile_python(generated)
+    return mod
+
+
+@pytest.mark.parametrize(
+    "clsname,valid,data",
+    [
+        ("ExtraNotAllowed", True, {"x": 1}),
+        ("ExtraNotAllowed", False, {"x": 1, "y": 2}),
+        ("ExtraAllowed", True, {"x": 1, "whatever": "else", "we": {"want": ["in", "here", True]}}),
+        (
+            "ExtraString",
+            True,
+            {
+                "x": 1,
+                "y": "string",
+            },
+        ),
+        (
+            "ExtraString",
+            False,
+            {
+                "x": 1,
+                "y": 2,
+            },
+        ),
+        ("ExtraClass", True, {"x": 1, "another": {"y": "string"}, "third": {"y": "some string"}}),
+        (
+            "ExtraClass",
+            False,
+            {
+                "x": 1,
+                "another": {"y": 1},
+            },
+        ),
+        ("ExtraAnyOf", True, {"x": 1, "another": "hey", "third": 2}),
+        (
+            "ExtraAnyOf",
+            False,
+            {
+                "x": 1,
+                "another": 1.5,
+            },
+        ),
+        ("ExtraCardinality", True, {"x": 1, "another": [1, 2, 3, 4, 5]}),
+        ("ExtraCardinality", False, {"x": 1, "another": [1, 2, 3, 4, 5, 6]}),
+    ],
+)
+def test_extra_slots(data, clsname, valid, extra_slots):
+    cls = getattr(extra_slots, clsname)
+    if valid:
+        cls(**data)
+    else:
+        with pytest.raises(ValidationError):
+            cls(**data)
