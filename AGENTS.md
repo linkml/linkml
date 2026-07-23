@@ -19,6 +19,7 @@ Use Makefile targets (✅) instead of ad-hoc pytest commands. CI mirrors these t
 | `make test` | Both fast targets (linkml + runtime) | — |
 | `make test-slow` | Slow-marked tests only | `make test-slow TEST_PATH=tests/linkml/test_biolink/` |
 | `make test-all` | Fast + slow, no duplication | — |
+| `make test-branch` | Auto-detect changed package(s) and run their fast tests | — |
 
 **Flags** — append via `PYTEST_FLAGS`:
 - `make test PYTEST_FLAGS="-n auto"` — parallel execution
@@ -27,7 +28,15 @@ Use Makefile targets (✅) instead of ad-hoc pytest commands. CI mirrors these t
 
 Default `PYTEST_FLAGS` skips `tests/linkml/test_notebooks` (notebooks mutate the shared venv and always fail locally).
 
-When testing a branch, consider which files were modified and run the relevant target first. Fast tests before slow.
+### Workflow
+
+1. **Run `make test-branch`** — auto-detects which package(s) changed vs `main` and runs their fast tests with `-n auto`. Always leave at least 2 cores free: set `-n $(python -c "import os; print(max(1, os.cpu_count()-2))")`.
+2. **If tests fail**, run only the failing tests:
+   `make test-linkml TEST_PATH=<path> PYTEST_FLAGS="-x --tb=short -n $(python -c "import os; print(max(1, os.cpu_count()-2))")"`
+3. **Once failing tests pass**, re-run the full fast suite for the affected package(s):
+   `make test-linkml` (and/or `make test-linkml-runtime`)
+4. **When fast tests are green**, run slow tests:
+   `make test-slow PYTEST_FLAGS="-n $(python -c "import os; print(max(1, os.cpu_count()-2))")"`
 
 ## Best Practices
 
