@@ -30,16 +30,19 @@ lint-fix:
 format: lint-fix
 
 # Fast tests (excludes slow, kroki).
+# Override test path: `make test-linkml TEST_PATH=tests/linkml/test_compliance/`
 .PHONY: test test-linkml test-linkml-runtime test-slow test-all
 
+test-linkml: TEST_PATH ?= tests/linkml/
 test-linkml:
-	$(RUNNER) tests/linkml/ \
+	$(RUNNER) $(TEST_PATH) \
 		--with-network \
 		-m "not kroki and not slow" \
 		$(PYTEST_FLAGS)
 
+test-linkml-runtime: TEST_PATH ?= tests/linkml_runtime/
 test-linkml-runtime:
-	$(RUNNER) tests/linkml_runtime/ \
+	$(RUNNER) $(TEST_PATH) \
 		--with-network \
 		-m "not kroki and not slow" \
 		$(PYTEST_FLAGS)
@@ -47,8 +50,9 @@ test-linkml-runtime:
 test: test-linkml test-linkml-runtime
 
 # Slow tests only.
+test-slow: TEST_PATH ?= tests/linkml/
 test-slow:
-	$(RUNNER) tests/linkml/ \
+	$(RUNNER) $(TEST_PATH) \
 		--with-slow --with-biolink \
 		-m "slow and not kroki" \
 		$(PYTEST_FLAGS)
